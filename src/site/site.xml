@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="nom-tam-fits">
+	<skin>
+		<groupId>lt.velykis.maven.skins</groupId>
+		<artifactId>reflow-maven-skin</artifactId>
+		<version>1.1.1</version>
+	</skin>
+	<bannerLeft>
+		<src>images/fits_logo.png</src>
+	</bannerLeft>
+	<bannerRight>
+		<src>images/fits_logo_text.png</src>
+	</bannerRight>
+	<publishDate position="left" format="yyyy-MM-dd" />
+	<version position="right" />
+	<poweredBy>
+		<logo name="Maven" href="http://maven.apache.org/" img="http://maven.apache.org/images/logos/maven-feather.png" />
+	</poweredBy>
+	<custom>
+		<reflowSkin>
+			<protocolRelativeURLs>false</protocolRelativeURLs>
+			<smoothScroll>true</smoothScroll>
+			<navbarInverse>false</navbarInverse>
+			<skinAttribution>false</skinAttribution>
+			<theme>default</theme>
+			<highlightJs>true</highlightJs>
+			<highlightJsTheme>github</highlightJsTheme>
+			<brand>
+				<name>
+<![CDATA[
+nom-tam-<span class="color-highlight">FITS</span>
+]]>
+				</name>
+				<href>https://github.com/nom-tam-fits/nom-tam-fits</href>
+			</brand>
+		</reflowSkin>
+	</custom>
+	<body>
+		<breadcrumbs>
+			<item name="${project.name}" href="index.html" />
+		</breadcrumbs>
+		<menu ref="modules" />
+		<menu ref="reports" />
+	</body>
+</project>

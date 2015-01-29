@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+	<groupId>com.github.nom-tam-fits</groupId>
+	<version>1.11.2-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<artifactId>nom-tam-fits</artifactId>
+	<name>nom.tam FITS library</name>
+	<description>a full function Java library for reading and writing FITS files</description>
+	<inceptionYear>1996</inceptionYear>
+	<organization>
+		<name>nom-tam-fits</name>
+	</organization>
+	<url>http://nom-tam-fits.github.io/nom-tam-fits</url>
+	<developers>
+		<developer>
+			<id>tmcglynn</id>
+			<name>Thomas A Mcglynn</name>
+			<email>Thomas.A.McGlynn [at] NASA [dot] gov</email>
+			<roles>
+				<role>Developer</role>
+				<role>Admin</role>
+			</roles>
+			<url>http://science.gsfc.nasa.gov/sed/index.cfm?fuseAction=people.jumpBio&amp;&amp;iPhonebookId=849</url>
+			<properties>
+				<picUrl>http://science.gsfc.nasa.gov/sed/images/Photos/038982816/McGlynn,_Tom.jpg</picUrl>
+			</properties>
+		</developer>
+		<developer>
+			<id>ritchieGitHub</id>
+			<name>Richard van Nieuwenhoven</name>
+			<email>ritchie [at] gmx [dot] at</email>
+			<roles>
+				<role>Developer</role>
+				<role>Admin</role>
+			</roles>
+			<properties>
+				<picUrl>http://www.gravatar.com/avatar/9e2c2e7aa94335b72952a4b2d56bfc89.png</picUrl>
+			</properties>
+		</developer>
+	</developers>
+	<contributors>
+		<contributor>
+			<name>David Glowacki</name>
+		</contributor>
+		<contributor>
+			<name>R.J. Mathar</name>
+		</contributor>
+		<contributor>
+			<name>Laurent Michel</name>
+		</contributor>
+		<contributor>
+			<name>Guillaume Belanger</name>
+		</contributor>
+		<contributor>
+			<name>Laurent Bourges</name>
+		</contributor>
+		<contributor>
+			<name>Rose Early</name>
+		</contributor>
+		<contributor>
+			<name>Jorgo Baker</name>
+		</contributor>
+		<contributor>
+			<name>A. Kovacs</name>
+		</contributor>
+		<contributor>
+			<name>V. Forchi</name>
+		</contributor>
+		<contributor>
+			<name>J.C. Segovia</name>
+		</contributor>
+		<contributor>
+			<name>Booth Hartley</name>
+		</contributor>
+		<contributor>
+			<name>Jason Weiss</name>
+		</contributor>
+	</contributors>
+	<scm>
+		<connection>scm:git:git://github.com/nom-tam-fits/nom-tam-fits.git</connection>
+		<developerConnection>scm:git:git@github.nom-tam-fits/nom-tam-fits.git</developerConnection>
+		<url>https://github.com/nom-tam-fits/nom-tam-fits</url>
+		<tag>HEAD</tag>
+	</scm>
+	<distributionManagement>
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<name>i4j sonytype Maven 2 repository</name>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+		</repository>
+		<snapshotRepository>
+			<id>sonatype-nexus-staging</id>
+			<name>i4j sonytype Snapshot Maven 2 repository</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<site>
+			<id>nom-tam-fits-deploy</id>
+			<name>GitHub Maven 2 Project Site</name>
+			<url>file://${java.io.tmpdir}/stage/${project.version}</url>
+		</site>
+	</distributionManagement>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/nom-tam-fits/nom-tam-fits/issues/</url>
+	</issueManagement>
+	<licenses>
+		<license>
+			<name>GNU LESSER GENERAL PUBLIC LICENSE (LGPL) version 3</name>
+			<url>http://www.gnu.org/licenses/lgpl-3.0-standalone.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>2.7</version>
+			</extension>
+		</extensions>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.1</version>
+				<configuration>
+					<skip>${i4j.nonjavamodule}</skip>
+					<aggregate>false</aggregate>
+					<failOnError>false</failOnError>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<mavenExecutorId>forked-path</mavenExecutorId>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.tinyjee.dim</groupId>
+				<artifactId>doxia-include-macro</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>initialize-doxia-include-macro</id>
+						<phase>pre-site</phase>
+						<goals>
+							<goal>initialize</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.4</version>
+				<configuration>
+					<chmod>false</chmod>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.wagon</groupId>
+						<artifactId>wagon-ssh</artifactId>
+						<version>2.7</version>
+					</dependency>
+					<dependency>
+						<groupId>org.tinyjee.dim</groupId>
+						<artifactId>doxia-include-macro</artifactId>
+						<version>1.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>1.7</version>
+				<configuration>
+					<verbose>false</verbose>
+				</configuration>
+				<executions>
+					<execution>
+						<id>first</id>
+						<goals>
+							<goal>update-file-header</goal>
+							<goal>update-project-license</goal>
+						</goals>
+						<phase>process-sources</phase>
+						<configuration>
+							<licenseName>lgpl_v3</licenseName>
+							<roots>
+								<root>src/main/java</root>
+								<root>src/test</root>
+							</roots>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
+				<artifactId>maven-java-formatter-plugin</artifactId>
+				<version>0.4</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<configFile>${project.basedir}/src/main/eclipse/formatter.xml</configFile>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.13</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.3</version>
+				<dependencies>
+					<dependency>
+						<groupId>lt.velykis.maven.skins</groupId>
+						<artifactId>reflow-velocity-tools</artifactId>
+						<version>1.1.1</version>
+					</dependency>
+					<!-- Reflow skin requires Velocity >= 1.7 -->
+					<dependency>
+						<groupId>org.apache.velocity</groupId>
+						<artifactId>velocity</artifactId>
+						<version>1.7</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<!-- <plugin> sorry didn't got this to work had to do it manually -->
+			<!-- <groupId>com.github.github</groupId> -->
+			<!-- <artifactId>site-maven-plugin</artifactId> -->
+			<!-- <version>0.10</version> -->
+			<!-- <configuration> -->
+			<!-- <message>Creating site for ${project.artifactId}-${project.version}</message> -->
+			<!-- <path>https://github.com/nom-tam-fits/nom-tam-fits</path> -->
+			<!-- </configuration> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <goals> -->
+			<!-- <goal>site</goal> -->
+			<!-- </goals> -->
+			<!-- <phase>site-deploy</phase> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- </plugin> -->
+		</plugins>
+	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>index</report>
+							<report>dependencies</report>
+							<report>project-team</report>
+							<report>mailing-list</report>
+							<report>cim</report>
+							<report>issue-tracking</report>
+							<report>license</report>
+							<report>scm</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.13</version>
+				<configuration>
+					<configLocation>${project.basedir}/src/main/checkstyle/nom-tam-fits-style.xml</configLocation>
+					<suppressionsLocation>${project.basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
+					<suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
+					<encoding>UTF-8</encoding>
+					<consoleOutput>true</consoleOutput>
+					<failsOnError>false</failsOnError>
+					<linkXRef>true</linkXRef>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>checkstyle</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.1</version>
+				<configuration>
+					<failOnError>false</failOnError>
+					<aggregate>false</aggregate>
+				</configuration>
+				<reportSets>
+					<reportSet><!-- by default, id = "default" -->
+						<reports><!-- select non-aggregate reports -->
+							<report>javadoc-no-fork</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<linkJavadoc>true</linkJavadoc>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changes-plugin</artifactId>
+				<version>2.11</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>changes-report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<linkXref>true</linkXref>
+					<sourceEncoding>UTF-8</sourceEncoding>
+					<targetJdk>1.7</targetJdk>
+					<skipEmptyReport>false</skipEmptyReport>
+					<minimumTokens>50</minimumTokens>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>taglist-maven-plugin</artifactId>
+				<version>2.4</version>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>3.0.0</version>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.7</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.scm.id>nom-tam-fits-deploy</project.scm.id>
+		<github.global.server>github</github.global.server>
+	</properties>
+	<profiles>
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<!-- if the local user is not the key user use -Dgpg.keyname=XXXX -->
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

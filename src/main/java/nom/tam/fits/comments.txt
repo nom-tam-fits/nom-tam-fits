@@ -1,0 +1,60 @@
+# This file contains comment values for standard keywords.
+# The first token on each non-comment line is a keyword that
+# identifies the comment of the form class_keyword_n
+# where class is the class in which the data is written
+# keyword is the key value for the comment being written
+# and n is an integer (usually 1) used to distinguish multiple
+# entries.
+
+header_simple_1 Null Image Header
+header_bitpix_1 BITPIX for null image
+header_naxis_1  NAXIS for null image
+
+header_extend_1 Extensions are permitted
+header_simple_2 Java FITS: $DATE
+header_xtension_1 Java FITS: $DATE
+header_bitpix_2
+header_naxis_2  Dimensionality
+header_naxisN_1
+header_end_1
+
+randomgroupsdata_naxis1_1
+randomgroupsdata_naxisN_1
+randomgroupsdata_groups_1
+randomgroupsdata_gcount_1
+randomgroupsdata_pcount_1
+
+binarytablehdu_pcount_1
+binarytablehdu_theap_1
+binarytablehdu_tformN_1
+binarytablehdu_tdimN_1
+
+asciitable_pcount_1 No group data
+asciitable_gcount_1 One group
+asciitable_tfields_1 Number of fields in table
+
+asciitable_tbcolN_1 Column Offset
+asciitable_naxis1_1 Size of row in bytes
+asciitablehdu_tnullN_1
+asciitablehdu_tfields_1
+
+binarytable_pcount_1
+binarytable_gcount_1
+binarytable_naxis1_1 Bytes per row
+binarytable_tfields
+
+basichdu_extend_1 Allow extensions
+basichdu_pcount_1 Required value
+basichdu_gcount_1 Required value
+
+imagedata_extend_1 Extension permitted
+imagedata_pcount_1 No extra parameters
+imagedata_gcount_1 One group
+
+tablehdu_naxis2_1
+tablehdu_tfields_1 Number of table fields
+
+undefineddata_naxis1_1 Number of bytes in unknown structure
+undefineddata_pcount_1
+undefineddata_gcount_1
+undefineddata_extend_1 Extensions are permitted
