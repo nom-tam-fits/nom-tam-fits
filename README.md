@@ -1,4 +1,4 @@
 # nom-tam-fits
-a full function 100% Java library for reading and writing FITS files
+a 100% Java library for reading and writing atronomical FITS imaging files
 
 this is the original library from http://heasarc.gsfc.nasa.gov/docs/heasarc/fits/java/
