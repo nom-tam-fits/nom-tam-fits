@@ -11,3 +11,10 @@ Please feel free to fork us and report any found issues at our github pages (Pul
 visit our documentation at: 
 
 [nom-tam-fits project site](http://nom-tam-fits.github.io/nom-tam-fits/ "nom-tam-fits project site")
+
+current build status at https://travis-ci.org
+
+[![Build Status](https://travis-ci.org/nom-tam-fits/nom-tam-fits.png)](https://travis-ci.org/nom-tam-fits/nom-tam-fits)
+
+
+
