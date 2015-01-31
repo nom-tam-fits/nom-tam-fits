@@ -10,10 +10,10 @@ package nom.tam.fits.test;
  * modification, are permitted provided that the following conditions are met:
  * 
  * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
+ * this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -29,12 +29,19 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import junit.framework.JUnit4TestAdapter;
+import nom.tam.fits.AsciiTable;
+import nom.tam.fits.AsciiTableHDU;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsFactory;
+import nom.tam.fits.Header;
+import nom.tam.fits.TableHDU;
+import nom.tam.util.ArrayFuncs;
+import nom.tam.util.BufferedFile;
 
-import nom.tam.util.*;
-import nom.tam.fits.*;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * This class tests the AsciiTableHDU and AsciiTable FITS classes and implicitly
@@ -409,5 +416,10 @@ public class AsciiTableTest {
         assertEquals(hdr.getStringValue("TFORM3"), "A1");
         assertEquals(hdr.getStringValue("TFORM4"), "A1");
         assertEquals(hdr.getStringValue("TFORM5"), "A3");
+    }
+
+    @Before
+    public void setup() {
+        FitsFactory.setUseAsciiTables(true);
     }
 }
