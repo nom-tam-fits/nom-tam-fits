@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>DupTest xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../testapidocs/nom/tam/fits/test/DupTest.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> nom.tam.fits.test;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * #%L</em>
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * nom.tam FITS library</em>
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * %%</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 2004 - 2015 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This program is free software: you can redistribute it and/or modify</em>
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * it under the terms of the GNU Lesser General Public License as</em>
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * published by the Free Software Foundation, either version 3 of the</em>
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * License, or (at your option) any later version.</em>
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * </em>
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * This program is distributed in the hope that it will be useful,</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> * GNU General Lesser Public License for more details.</em>
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_comment"> * </em>
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_comment"> * You should have received a copy of the GNU General Lesser Public</em>
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_comment"> * License along with this program.  If not, see</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> * &lt;<a href="http://www.gnu.org/licenses/lgpl-3.0.html&gt;" target="alexandria_uri">http://www.gnu.org/licenses/lgpl-3.0.html&gt;</a>.</em>
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment"> * #L%</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> */</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertEquals;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertTrue;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> junit.framework.JUnit4TestAdapter;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.*;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.*;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.*;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> java.io.File;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> * Test adding a little junk after a valid image. We wish to test three</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment"> * scenarios: Junk at the beginning (should continue to fail) Short (&lt;80 byte)</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> * junk after valid HDU Long (&gt;80 byte) junk after valid HDU The last two should</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment"> * succeed after FitsFactory.setAllowTerminalJunk(true).</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/test/DupTest.html">DupTest</a> {
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>      @Test
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> test() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>          Fits f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"src/test/resources/nom/tam/fits/test/test_dup.fits"</span>);
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          Header hdr = f.readHDU().getHeader();
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          assertEquals(<span class="jxr_string">"Internal size:"</span>, hdr.getSize(), 2880);
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>          assertEquals(<span class="jxr_string">"External size:"</span>, hdr.getOriginalSize(), 8640);
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          assertTrue(<span class="jxr_string">"Has duplicates:"</span>, hdr.hadDuplicates());
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          List&lt;HeaderCard&gt; dups = hdr.getDuplicates();
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>          System.out.println(<span class="jxr_string">"Number of duplicates:"</span> + dups.size());
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          assertTrue(<span class="jxr_string">"Has dups:"</span>, dups != <strong class="jxr_keyword">null</strong> &amp;&amp; dups.size() &gt; 0);
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>          assertTrue(<span class="jxr_string">"Not rewriteable:"</span>, !hdr.rewriteable());
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          BufferedFile bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/created_dup.fits"</span>, <span class="jxr_string">"rw"</span>);
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          f.write(bf);
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          hdr.resetOriginalSize();
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          assertEquals(<span class="jxr_string">"External size, after reset"</span>, hdr.getOriginalSize(), 2880);
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          Fits g = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/created_dup.fits"</span>);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          hdr = g.readHDU().getHeader();
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          assertEquals(<span class="jxr_string">"Internal size, after rewrite"</span>, hdr.getSize(), 2880);
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          assertEquals(<span class="jxr_string">"External size, after rewrite"</span>, hdr.getOriginalSize(), 2880);
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          assertTrue(<span class="jxr_string">"Now rewriteable"</span>, hdr.rewriteable());
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          assertTrue(<span class="jxr_string">"No duplicates"</span>, !hdr.hadDuplicates());
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          assertTrue(<span class="jxr_string">"Dups is null"</span>, hdr.getDuplicates() == <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>      }
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>
+</body>
+</html>

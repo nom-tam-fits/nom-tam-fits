@@ -1,0 +1,964 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<rss version="0.91">
+  <channel>
+    <title>nom.tam FITS library - Checkstyle report</title>
+    <link>http://nom-tam-fits.github.io/nom-tam-fits</link>
+    <description>nom.tam FITS library - Checkstyle report</description>
+    <language>en-us</language>
+    <copyright>&#169;1996 - 2015 nom-tam-fits</copyright>
+    <item>
+      <title>File: 65,
+             Errors: 1118,
+             Warnings: 0,
+             Infos: 0
+      </title>
+            <link>http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html</link>
+      <description>
+        <p>Click <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html">here</a> for the full Checkstyle report.</p>
+
+        <table summary="Files" boder="1">
+          <thead>
+            <tr>
+              <th>Files</th>
+              <th style="width:30px;"><abbr title="Info">I</abbr></th>
+              <th style="width:30px;"><abbr title="Warning">W</abbr></th>
+              <th style="width:30px;"><abbr title="Error">E</abbr></th>
+            </tr>
+          </thead>
+          <tbody>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.ImageData.java">nom/tam/fits/ImageData.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ByteFormatter.java">nom/tam/util/ByteFormatter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  58
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.InputBitStream.java">nom/tam/image/comp/InputBitStream.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  12
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ArrayDataInput.java">nom/tam/util/ArrayDataInput.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.FitsUtil.java">nom/tam/fits/FitsUtil.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  26
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.TileDescriptor.java">nom/tam/image/TileDescriptor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.Cursor.java">nom/tam/util/Cursor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.BinaryTableHDU.java">nom/tam/fits/BinaryTableHDU.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  7
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.AsciiFuncs.java">nom/tam/util/AsciiFuncs.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  4
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.Rice.java">nom/tam/image/comp/Rice.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  34
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.FitsElement.java">nom/tam/fits/FitsElement.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ByteParser.java">nom/tam/util/ByteParser.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  31
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.RealStats.java">nom/tam/image/comp/RealStats.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  46
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.HeaderCard.java">nom/tam/fits/HeaderCard.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  43
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.UndefinedData.java">nom/tam/fits/UndefinedData.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.TableException.java">nom/tam/util/TableException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.OutputBitStream.java">nom/tam/image/comp/OutputBitStream.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  5
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.ImageHDU.java">nom/tam/fits/ImageHDU.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.HeaderOrder.java">nom/tam/fits/HeaderOrder.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  4
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.QuantizeRandoms.java">nom/tam/image/QuantizeRandoms.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  11
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.Gzip.java">nom/tam/image/comp/Gzip.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  4
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ArrayDataOutput.java">nom/tam/util/ArrayDataOutput.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.TiledImageHDU.java">nom/tam/image/comp/TiledImageHDU.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  28
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.TruncatedFileException.java">nom/tam/fits/TruncatedFileException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.DataIO.java">nom/tam/util/DataIO.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.FormatException.java">nom/tam/util/FormatException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ColumnTable.java">nom/tam/util/ColumnTable.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  19
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.FitsException.java">nom/tam/fits/FitsException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.FitsFactory.java">nom/tam/fits/FitsFactory.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.ImageTiler.java">nom/tam/image/ImageTiler.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.BinaryTable.java">nom/tam/fits/BinaryTable.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  42
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.TableData.java">nom/tam/fits/TableData.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  13
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.UndefinedHDU.java">nom/tam/fits/UndefinedHDU.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.FitsHeap.java">nom/tam/fits/FitsHeap.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  4
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.HCompTester.java">nom/tam/image/comp/HCompTester.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.Fits.java">nom/tam/fits/Fits.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  49
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.RandomGroupsHDU.java">nom/tam/fits/RandomGroupsHDU.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  7
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.FitsDate.java">nom/tam/fits/FitsDate.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  43
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.CompressionScheme.java">nom/tam/image/comp/CompressionScheme.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.RandomAccess.java">nom/tam/util/RandomAccess.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.TileLooper.java">nom/tam/image/TileLooper.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.Data.java">nom/tam/fits/Data.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  7
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.AsciiTable.java">nom/tam/fits/AsciiTable.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  10
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.HCompress.java">nom/tam/image/comp/HCompress.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  137
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.BadHeaderException.java">nom/tam/fits/BadHeaderException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.HeaderCommentsMap.java">nom/tam/fits/HeaderCommentsMap.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ArrayFuncs.java">nom/tam/util/ArrayFuncs.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.utilities.FitsReader.java">nom/tam/fits/utilities/FitsReader.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.StandardImageTiler.java">nom/tam/image/StandardImageTiler.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.BufferedDataOutputStream.java">nom/tam/util/BufferedDataOutputStream.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  58
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.PrimitiveInfo.java">nom/tam/util/PrimitiveInfo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.BasicHDU.java">nom/tam/fits/BasicHDU.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.RandomGroupsData.java">nom/tam/fits/RandomGroupsData.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  7
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.Header.java">nom/tam/fits/Header.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  35
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.HashedList.java">nom/tam/util/HashedList.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  9
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.HeaderCardException.java">nom/tam/fits/HeaderCardException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.PaddingException.java">nom/tam/fits/PaddingException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.utilities.FitsCopy.java">nom/tam/fits/utilities/FitsCopy.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.Quantizer.java">nom/tam/image/comp/Quantizer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.TableHDU.java">nom/tam/fits/TableHDU.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.AsciiTableHDU.java">nom/tam/fits/AsciiTableHDU.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  4
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.BufferedFile.java">nom/tam/util/BufferedFile.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  64
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.BufferedDataInputStream.java">nom/tam/util/BufferedDataInputStream.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  152
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.TruncationException.java">nom/tam/util/TruncationException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.DataTable.java">nom/tam/util/DataTable.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
+                </td>
+              </tr>
+                      </tbody>
+        </table>
+        
+      </description>
+    </item>
+  </channel>
+</rss>
+
