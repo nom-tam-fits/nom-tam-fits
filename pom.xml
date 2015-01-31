@@ -11,7 +11,7 @@
 	<packaging>jar</packaging>
 	<artifactId>nom-tam-fits</artifactId>
 	<name>nom.tam FITS library</name>
-	<description>a full function Java library for reading and writing FITS files</description>
+	<description>Java library for reading and writing FITS files. FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data.</description>
 	<inceptionYear>1996</inceptionYear>
 	<organization>
 		<name>nom-tam-fits</name>
@@ -83,8 +83,8 @@
 		</contributor>
 	</contributors>
 	<scm>
-		<connection>scm:git:git://github.com/nom-tam-fits/nom-tam-fits.git</connection>
-		<developerConnection>scm:git:git@github.nom-tam-fits/nom-tam-fits.git</developerConnection>
+		<connection>scm:git:git@github.com:nom-tam-fits/nom-tam-fits.git</connection>
+		<developerConnection>scm:git:git@github.com:nom-tam-fits/nom-tam-fits.git</developerConnection>
 		<url>https://github.com/nom-tam-fits/nom-tam-fits</url>
 		<tag>HEAD</tag>
 	</scm>
@@ -111,8 +111,8 @@
 	</issueManagement>
 	<licenses>
 		<license>
-			<name>GNU LESSER GENERAL PUBLIC LICENSE (LGPL) version 3</name>
-			<url>http://www.gnu.org/licenses/lgpl-3.0-standalone.html</url>
+			<name>BSD 2-Clause License</name>
+			<url>http://opensource.org/licenses/BSD-2-Clause</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -222,7 +222,7 @@
 						</goals>
 						<phase>process-sources</phase>
 						<configuration>
-							<licenseName>lgpl_v3</licenseName>
+							<licenseName>bsd_2</licenseName>
 							<roots>
 								<root>src/main/java</root>
 								<root>src/test</root>
@@ -257,35 +257,32 @@
 				<version>3.3</version>
 				<dependencies>
 					<dependency>
-						<groupId>lt.velykis.maven.skins</groupId>
-						<artifactId>reflow-velocity-tools</artifactId>
-						<version>1.1.1</version>
-					</dependency>
-					<!-- Reflow skin requires Velocity >= 1.7 -->
-					<dependency>
-						<groupId>org.apache.velocity</groupId>
-						<artifactId>velocity</artifactId>
-						<version>1.7</version>
+						<groupId>net.ju-n.maven.doxia</groupId>
+						<artifactId>doxia-module-markdown</artifactId>
+						<version>1.0.0</version>
 					</dependency>
 				</dependencies>
 			</plugin>
-			<!-- <plugin> sorry didn't got this to work had to do it manually -->
-			<!-- <groupId>com.github.github</groupId> -->
-			<!-- <artifactId>site-maven-plugin</artifactId> -->
-			<!-- <version>0.10</version> -->
-			<!-- <configuration> -->
-			<!-- <message>Creating site for ${project.artifactId}-${project.version}</message> -->
-			<!-- <path>https://github.com/nom-tam-fits/nom-tam-fits</path> -->
-			<!-- </configuration> -->
-			<!-- <executions> -->
-			<!-- <execution> -->
-			<!-- <goals> -->
-			<!-- <goal>site</goal> -->
-			<!-- </goals> -->
-			<!-- <phase>site-deploy</phase> -->
-			<!-- </execution> -->
-			<!-- </executions> -->
-			<!-- </plugin> -->
+			<plugin>
+				<groupId>com.github.github</groupId>
+				<artifactId>site-maven-plugin</artifactId>
+				<version>0.11</version>
+				<configuration>
+					<message>Creating site for ${project.artifactId}-${project.version}</message>
+					<server>github.com</server>
+					<repositoryName>nom-tam-fits</repositoryName>
+					<repositoryOwner>nom-tam-fits</repositoryOwner>
+				</configuration>
+				<executions>
+					<execution>
+						<id>deploy-to-github</id>
+						<goals>
+							<goal>site</goal>
+						</goals>
+						<phase>site-deploy</phase>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<reporting>
@@ -422,7 +419,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.scm.id>nom-tam-fits-deploy</project.scm.id>
-		<github.global.server>github</github.global.server>
 	</properties>
 	<profiles>
 		<profile>

@@ -1,6 +1,6 @@
 # nom-tam-fits
 
-Pure java Java library for reading and writing FITS files. FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data.
+The pure java Java library for reading and writing FITS files. FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data.
 
 This is the original library from http://heasarc.gsfc.nasa.gov/docs/heasarc/fits/java/ ported to maven and published to the central repo by the original developers!
 
@@ -11,6 +11,3 @@ Please feel free to fork us and report any found issues at our github pages (Pul
 visit our documentation at: 
 
 [nom-tam-fits project site](http://nom-tam-fits.github.io/nom-tam-fits/ "nom-tam-fits project site")
-
-
-

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="nom-tam-fits">
 	<skin>
-		<groupId>lt.velykis.maven.skins</groupId>
-		<artifactId>reflow-maven-skin</artifactId>
-		<version>1.1.1</version>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-fluido-skin</artifactId>
+		<version>1.3.0</version>
 	</skin>
 	<bannerLeft>
 		<src>images/fits_logo.png</src>
@@ -17,28 +17,24 @@
 		<logo name="Maven" href="http://maven.apache.org/" img="http://maven.apache.org/images/logos/maven-feather.png" />
 	</poweredBy>
 	<custom>
-		<reflowSkin>
-			<protocolRelativeURLs>false</protocolRelativeURLs>
-			<smoothScroll>true</smoothScroll>
-			<navbarInverse>false</navbarInverse>
-			<skinAttribution>false</skinAttribution>
-			<theme>default</theme>
-			<highlightJs>true</highlightJs>
-			<highlightJsTheme>github</highlightJsTheme>
-			<brand>
-				<name>
-<![CDATA[
-nom-tam-<span class="color-highlight">FITS</span>
-]]>
-				</name>
-				<href>https://github.com/nom-tam-fits/nom-tam-fits</href>
-			</brand>
-		</reflowSkin>
+		<fluidoSkin>
+			<topBarEnabled>false</topBarEnabled>
+			<sideBarEnabled>true</sideBarEnabled>
+			<gitHub>
+				<projectId>nom-tam-fits/nom-tam-fits</projectId>
+				<ribbonOrientation>right</ribbonOrientation>
+				<ribbonColor>black</ribbonColor>
+			</gitHub>
+		</fluidoSkin>
 	</custom>
 	<body>
 		<breadcrumbs>
 			<item name="${project.name}" href="index.html" />
 		</breadcrumbs>
+		<menu name="Documentation">
+			<item name="About" href="index.html" />
+			<item name="Introduction" href="intro.html" />
+		</menu>
 		<menu ref="modules" />
 		<menu ref="reports" />
 	</body>
