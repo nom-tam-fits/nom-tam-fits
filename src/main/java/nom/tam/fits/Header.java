@@ -1,35 +1,49 @@
 package nom.tam.fits;
 
 /*
- * #%L nom.tam FITS library %% Copyright (C) 2004 - 2015 nom-tam-fits %%
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
  * 
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer. 2. Redistributions in
- * binary form must reproduce the above copyright notice, this list of
- * conditions and the following disclaimer in the documentation and/or other
- * materials provided with the distribution.
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE. #L%
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
  */
 
-import java.io.*;
-import java.util.*;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.util.ArrayDataInput;
+import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.AsciiFuncs;
+import nom.tam.util.Cursor;
+import nom.tam.util.HashedList;
 import nom.tam.util.RandomAccess;
-import nom.tam.util.*;
 
 /**
  * This class describes methods to access and manipulate the header for a FITS
@@ -379,6 +393,17 @@ public class Header implements FitsElement {
      *            The header key.
      * @return The associated value or 0 if not found.
      */
+    public long getLongValue(IFitsHeader key) {
+        return getLongValue(key.key());
+    }
+
+    /**
+     * Get the <CODE>long</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
+     * @return The associated value or 0 if not found.
+     */
     public long getLongValue(String key) {
         return getLongValue(key, 0L);
     }
@@ -429,8 +454,31 @@ public class Header implements FitsElement {
      *            The header key.
      * @return The associated value or 0.0 if not found.
      */
+    public float getFloatValue(IFitsHeader key) {
+        return getFloatValue(key.key());
+
+    }
+
+    /**
+     * Get the <CODE>float</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
+     * @return The associated value or 0.0 if not found.
+     */
     public float getFloatValue(String key) {
         return (float) getDoubleValue(key);
+    }
+
+    /**
+     * Get the <CODE>double</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
+     * @return The associated value or 0.0 if not found.
+     */
+    public double getDoubleValue(IFitsHeader key) {
+        return getDoubleValue(key.key());
     }
 
     /**
@@ -469,6 +517,18 @@ public class Header implements FitsElement {
         }
 
         return dft;
+    }
+
+    /**
+     * Get the <CODE>boolean</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
+     * @return The value found, or false if not found or if the keyword is not a
+     *         logical keyword.
+     */
+    public boolean getBooleanValue(IFitsHeader key) {
+        return getBooleanValue(key.key());
     }
 
     /**
@@ -873,6 +933,20 @@ public class Header implements FitsElement {
      *            The header key.
      * @param val
      *            The boolean value.
+     * @exception HeaderCardException
+     *                If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(IFitsHeader key, boolean val) throws HeaderCardException {
+        addValue(key.key(), val, key.comment());
+    }
+
+    /**
+     * Add or replace a key with the given boolean value and comment.
+     * 
+     * @param key
+     *            The header key.
+     * @param val
+     *            The boolean value.
      * @param comment
      *            A comment to append to the card.
      * @exception HeaderCardException
@@ -881,6 +955,21 @@ public class Header implements FitsElement {
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
         removeCard(key);
         iter.add(key, new HeaderCard(key, val, comment));
+    }
+
+    /**
+     * Add or replace a key with the given double value and comment. Note that
+     * float values will be promoted to doubles.
+     * 
+     * @param key
+     *            The header key.
+     * @param val
+     *            The double value.
+     * @exception HeaderCardException
+     *                If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(IFitsHeader key, double val) throws HeaderCardException {
+        addValue(key.key(), val, key.comment());
     }
 
     /**
@@ -953,6 +1042,21 @@ public class Header implements FitsElement {
     public void addValue(String key, long val, String comment) throws HeaderCardException {
         removeCard(key);
         iter.add(key, new HeaderCard(key, val, comment));
+    }
+
+    /**
+     * Add or replace a key with the given long value and comment. Note that
+     * int's will be promoted to long's.
+     * 
+     * @param key
+     *            The header key.
+     * @param val
+     *            The long value.
+     * @exception HeaderCardException
+     *                If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(IFitsHeader key, long val) throws HeaderCardException {
+        addValue(key.key(), val, key.comment());
     }
 
     private int getAdjustedLength(String in, int max) {

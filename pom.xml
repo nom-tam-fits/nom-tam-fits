@@ -111,8 +111,8 @@
 	</issueManagement>
 	<licenses>
 		<license>
-			<name>BSD 2-Clause License</name>
-			<url>http://opensource.org/licenses/BSD-2-Clause</url>
+			<name>Public Domain</name>
+			<url>file://${project.basedir}/src/license/publicdomain/license.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -212,6 +212,8 @@
 				<version>1.7</version>
 				<configuration>
 					<verbose>false</verbose>
+					<licenseName>publicdomain</licenseName>
+					<licenseResolver>file://${project.basedir}/src/license</licenseResolver>
 				</configuration>
 				<executions>
 					<execution>
@@ -222,7 +224,6 @@
 						</goals>
 						<phase>process-sources</phase>
 						<configuration>
-							<licenseName>bsd_2</licenseName>
 							<roots>
 								<root>src/main/java</root>
 								<root>src/test</root>
