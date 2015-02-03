@@ -1,19 +1,15 @@
 package nom.tam.fits;
 
 /*
- * #%L
- * nom.tam FITS library
- * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
- * %%
+ * #%L nom.tam FITS library %% Copyright (C) 2004 - 2015 nom-tam-fits %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * 
  * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+ * this list of conditions and the following disclaimer. 2. Redistributions in
+ * binary form must reproduce the above copyright notice, this list of
+ * conditions and the following disclaimer in the documentation and/or other
+ * materials provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -25,12 +21,13 @@ package nom.tam.fits;
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- * #L%
+ * POSSIBILITY OF SUCH DAMAGE. #L%
  */
 
 import java.io.*;
 import java.util.*;
+
+import nom.tam.fits.header.IFitsHeader;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.*;
 
@@ -517,6 +514,10 @@ public class Header implements FitsElement {
         }
     }
 
+    public String getStringValue(IFitsHeader header) {
+        return getStringValue(header.key());
+    }
+
     /**
      * Get the <CODE>String</CODE> value associated with the given key.
      * 
@@ -900,7 +901,19 @@ public class Header implements FitsElement {
         iter.add(key, new HeaderCard(key, val, comment));
     }
 
-    ;
+    /**
+     * Add or replace a key with the given string value and comment.
+     * 
+     * @param key
+     *            The header key.
+     * @param val
+     *            The string value.
+     * @exception HeaderCardException
+     *                If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(IFitsHeader key, String val) throws HeaderCardException {
+        addValue(key.key(), val, key.comment());
+    }
 
     /**
      * Add or replace a key with the given string value and comment.

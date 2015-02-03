@@ -1,0 +1,131 @@
+package nom.tam.fits.header;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
+import nom.tam.fits.header.IFitsHeader.HDU;
+import nom.tam.fits.header.IFitsHeader.STATUS;
+import nom.tam.fits.header.IFitsHeader.VALUE;
+
+/**
+ * File checksum keywords. This data dictionary contains FITS keywords that have
+ * been widely used within the astronomical community. It is recommended that
+ * these keywords only be used as defined here. These are the Keywords that
+ * denote non-standard FITS keyword format conventions {@link http
+ * ://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html}
+ * 
+ * @author Richard van Nieuwenhoven
+ */
+public enum NonStandard implements IFitsHeader {
+    /**
+     * The HIERARCH keyword, when followed by spaces in columns 9 and 10 of the
+     * FITS card image, indicates that the ESO HIERARCH keyword convention
+     * should be used to interpret the name and value of the keyword. The
+     * HIERARCH keyword formally has no value because it is not followed by an
+     * equals sign in column 9. Under the HIERARCH convention the actual name of
+     * the keyword begins in column 11 of the card image and is terminated by
+     * the equal sign ('=') character. The name can contain any number of
+     * characters as long as it fits within columns 11 and 80 of the card image
+     * and also leaves enough space for the equal sign separator and the value
+     * field. The name can contain any printable ASCII text character, including
+     * spaces and lower-case characters, except for the equal sign character
+     * which serves as the terminator of the name field. Leading and trailing
+     * spaces in the name field are not significant, but embedded spaces within
+     * the name are significant. The value field follows the equals sign and
+     * must conform to the syntax for a free-format value field as defined in
+     * the FITS Standard. The value field may be null, in which case it contains
+     * only space characters, otherwise it may contain either a character string
+     * enclosed in single quotes, the logical constant T or F, an integer
+     * number, a floating point number, a complex integer number, or a complex
+     * floating point number. The value field may be followed by an optional
+     * comment string. The comment field must be separated from the value field
+     * by a slash character ('/'). It is recommended that the slash character be
+     * preceeded and followed by a space character. Example: "HIERARCH Filter
+     * Wheel = 12 / filter position". In this example the logical name of the
+     * keyword is 'Filter Wheel' and the value is 12.
+     */
+    HIERARCH(STATUS.ESO, HDU.ANY, VALUE.NONE, "denotes the HIERARCH keyword convention"),
+    /**
+     * The presence of this keyword with a value = T in an extension key
+     * indicates that the keywords contained in the primary key (except the FITS
+     * Mandatory keywords, and any COMMENT, HISTORY or 'blank' keywords) are to
+     * be inherited, or logically included in that extension key.
+     */
+    INHERIT(STATUS.STScI, HDU.EXTENSION, VALUE.LOGICAL, "denotes the INHERIT keyword convention"),
+    /**
+     * The CONTINUE keyword, when followed by spaces in columns 9 and 10 of the
+     * card image and a character string enclosed in single quotes starting in
+     * column 11 or higher, indicates that the quoted string should be treated
+     * as a continuation of the character string value in the previous key
+     * keyword. To conform to this convention, the character string value on the
+     * previous keyword must end with the ampersand character ('&'), but the
+     * ampersand is not part of the value string and should be deleted before
+     * concatenating the strings together. The character string value may be
+     * continued on any number of consecutive CONTINUE keywords, thus
+     * effectively allowing arbitrarily long strings to be written as keyword
+     * values.
+     */
+    CONTINUE(STATUS.HEASARC, HDU.ANY, VALUE.NONE, "denotes the CONTINUE long string keyword convention");
+
+    private IFitsHeader key;
+
+    private NonStandard(IFitsHeader.STATUS status, HDU hdu, VALUE valueType, String comment) {
+        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+    }
+
+    @Override
+    public String key() {
+        return key.key();
+    }
+
+    @Override
+    public STATUS status() {
+        return key.status();
+    }
+
+    @Override
+    public HDU hdu() {
+        return key.hdu();
+    }
+
+    @Override
+    public VALUE valueType() {
+        return key.valueType();
+    }
+
+    @Override
+    public String comment() {
+        return key.comment();
+    }
+
+    @Override
+    public IFitsHeader n(int number) {
+        return key.n(number);
+    }
+}

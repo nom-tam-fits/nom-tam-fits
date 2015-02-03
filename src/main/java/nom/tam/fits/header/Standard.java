@@ -35,16 +35,16 @@ package nom.tam.fits.header;
  * 
  * @author Richard van Nieuwenhoven
  */
-public enum FitsStandard implements IFitsHeader {
+public enum Standard implements IFitsHeader {
     /**
      * Columns 1-8 contain ASCII blanks. This keyword has no associated value.
      * Columns 9-80 may contain any ASCII text. Any number of card images with
-     * blank keyword fields may appear in a header.
+     * blank keyword fields may appear in a key.
      */
     BLANKS("        ", STATUS.RESERVED, HDU.ANY, VALUE.NONE, "descriptive comment"),
     /**
      * The value field shall contain a character string identifying who compiled
-     * the information in the data associated with the header. This keyword is
+     * the information in the data associated with the key. This keyword is
      * appropriate when the data originate in a published paper or are compiled
      * from many sources.
      */
@@ -66,17 +66,17 @@ public enum FitsStandard implements IFitsHeader {
     BLANK(STATUS.RESERVED, HDU.IMAGE, VALUE.INTEGER, "value used for undefined array elements"),
 
     /**
-     * This keyword may be used only in the primary header. It shall appear
-     * within the first 36 card images of the FITS file. (Note: This keyword
-     * thus cannot appear if NAXIS is greater than 31, or if NAXIS is greater
-     * than 30 and the EXTEND keyword is present.) Its presence with the
-     * required logical value of T advises that the physical block size of the
-     * FITS file on which it appears may be an integral multiple of the logical
-     * record length, and not necessarily equal to it. Physical block size and
-     * logical record length may be equal even if this keyword is present or
-     * unequal if it is absent. It is reserved primarily to prevent its use with
-     * other meanings. Since the issuance of version 1 of the standard, the
-     * BLOCKED keyword has been deprecated.
+     * This keyword may be used only in the primary key. It shall appear within
+     * the first 36 card images of the FITS file. (Note: This keyword thus
+     * cannot appear if NAXIS is greater than 31, or if NAXIS is greater than 30
+     * and the EXTEND keyword is present.) Its presence with the required
+     * logical value of T advises that the physical block size of the FITS file
+     * on which it appears may be an integral multiple of the logical record
+     * length, and not necessarily equal to it. Physical block size and logical
+     * record length may be equal even if this keyword is present or unequal if
+     * it is absent. It is reserved primarily to prevent its use with other
+     * meanings. Since the issuance of version 1 of the standard, the BLOCKED
+     * keyword has been deprecated.
      */
     BLOCKED(STATUS.RESERVED, HDU.PRIMARY, VALUE.LOGICAL, "is physical blocksize a multiple of 2880?"),
 
@@ -94,8 +94,8 @@ public enum FitsStandard implements IFitsHeader {
     /**
      * The value field shall contain a character string, describing the physical
      * units in which the quantities in the array, after application of BSCALE
-     * and BZERO, are expressed. The units of all FITS header keyword values,
-     * with the exception of measurements of angles, should conform with the
+     * and BZERO, are expressed. The units of all FITS key keyword values, with
+     * the exception of measurements of angles, should conform with the
      * recommendations in the IAU Style Manual. For angular measurements given
      * as floating point values and specified with reserved keywords, degrees
      * are the recommended units (with the units, if specified, given as 'deg').
@@ -123,7 +123,7 @@ public enum FitsStandard implements IFitsHeader {
 
     /**
      * This keyword shall have no associated value; columns 9-80 may contain any
-     * ASCII text. Any number of COMMENT card images may appear in a header.
+     * ASCII text. Any number of COMMENT card images may appear in a key.
      */
     COMMENT(STATUS.RESERVED, HDU.ANY, VALUE.NONE, "descriptive comment"),
 
@@ -198,7 +198,7 @@ public enum FitsStandard implements IFitsHeader {
      * This keyword has no associated value. Columns 9-80 shall be filled with
      * ASCII blanks.
      */
-    END(STATUS.MANDATORY, HDU.ANY, VALUE.NONE, "marks the end of the header keywords"),
+    END(STATUS.MANDATORY, HDU.ANY, VALUE.NONE, "marks the end of the key keywords"),
 
     /**
      * The value field shall contain a floating point number giving the equinox
@@ -219,21 +219,20 @@ public enum FitsStandard implements IFitsHeader {
     /**
      * If the FITS file may contain extensions, a card image with the keyword
      * EXTEND and the value field containing the logical value T must appear in
-     * the primary header immediately after the last NAXISn card image, or, if
+     * the primary key immediately after the last NAXISn card image, or, if
      * NAXIS=0, the NAXIS card image. The presence of this keyword with the
-     * value T in the primary header does not require that extensions be
-     * present.
+     * value T in the primary key does not require that extensions be present.
      */
     EXTEND(STATUS.RESERVED, HDU.PRIMARY, VALUE.LOGICAL, "may the FITS file contain extensions?"),
 
     /**
      * The value field shall contain an integer, specifying the level in a
-     * hierarchy of extension levels of the extension header containing it. The
+     * hierarchy of extension levels of the extension key containing it. The
      * value shall be 1 for the highest level; levels with a higher value of
      * this keyword shall be subordinate to levels with a lower value. If the
      * EXTLEVEL keyword is absent, the file should be treated as if the value
      * were 1. This keyword is used to describe an extension and should not
-     * appear in the primary header.RANGE: [1:] DEFAULT: 1
+     * appear in the primary key.RANGE: [1:] DEFAULT: 1
      */
     EXTLEVEL(STATUS.RESERVED, HDU.EXTENSION, VALUE.INTEGER, "hierarchical level of the extension"),
 
@@ -241,7 +240,7 @@ public enum FitsStandard implements IFitsHeader {
      * The value field shall contain a character string, to be used to
      * distinguish among different extensions of the same type, i.e., with the
      * same value of XTENSION, in a FITS file. This keyword is used to describe
-     * an extension and should not appear in the primary header.
+     * an extension and should not appear in the primary key.
      */
     EXTNAME(STATUS.RESERVED, HDU.EXTENSION, VALUE.STRING, "name of the extension"),
 
@@ -252,8 +251,8 @@ public enum FitsStandard implements IFitsHeader {
      * 1 for the first extension with a particular value of EXTNAME and need not
      * be in sequence for subsequent values. If the EXTVER keyword is absent,
      * the file should be treated as if the value were 1. This keyword is used
-     * to describe an extension and should not appear in the primary
-     * header.RANGE: [1:] DEFAULT: 1
+     * to describe an extension and should not appear in the primary key.RANGE:
+     * [1:] DEFAULT: 1
      */
     EXTVER(STATUS.RESERVED, HDU.EXTENSION, VALUE.INTEGER, "version of the extension"),
 
@@ -277,21 +276,21 @@ public enum FitsStandard implements IFitsHeader {
      * This keyword shall have no associated value; columns 9-80 may contain any
      * ASCII text. The text should contain a history of steps and procedures
      * associated with the processing of the associated data. Any number of
-     * HISTORY card images may appear in a header.
+     * HISTORY card images may appear in a key.
      */
     HISTORY(STATUS.RESERVED, HDU.ANY, VALUE.NONE, "processing history of the data"),
 
     /**
      * The value field shall contain a character string identifying the
-     * instrument used to acquire the data associated with the header.
+     * instrument used to acquire the data associated with the key.
      */
     INSTRUME(STATUS.RESERVED, HDU.ANY, VALUE.STRING, "name of instrument"),
 
     /**
      * The value field shall contain a non-negative integer no greater than 999,
      * representing the number of axes in the associated data array. A value of
-     * zero signifies that no data follow the header in the HDU. In the context
-     * of FITS 'TABLE' or 'BINTABLE' extensions, the value of NAXIS is always
+     * zero signifies that no data follow the key in the HDU. In the context of
+     * FITS 'TABLE' or 'BINTABLE' extensions, the value of NAXIS is always
      * 2.RANGE: [0:999]
      */
     NAXIS(STATUS.MANDATORY, HDU.ANY, VALUE.INTEGER, "number of axes"),
@@ -301,7 +300,7 @@ public enum FitsStandard implements IFitsHeader {
      * integer, representing the number of elements along axis n of a data
      * array. The NAXISn must be present for all values n = 1,...,NAXIS, and for
      * no other values of n. A value of zero for any of the NAXISn signifies
-     * that no data follow the header in the HDU. If NAXIS is equal to 0, there
+     * that no data follow the key in the HDU. If NAXIS is equal to 0, there
      * should not be any NAXISn keywords.RANGE: [0:]
      */
     NAXISn(STATUS.MANDATORY, HDU.ANY, VALUE.INTEGER, "size of the axis"),
@@ -314,7 +313,7 @@ public enum FitsStandard implements IFitsHeader {
 
     /**
      * The value field shall contain a character string identifying who acquired
-     * the data associated with the header.
+     * the data associated with the key.
      */
     OBSERVER(STATUS.RESERVED, HDU.ANY, VALUE.STRING, "observer who acquired the data"),
 
@@ -376,17 +375,16 @@ public enum FitsStandard implements IFitsHeader {
 
     /**
      * The value field shall contain a character string citing a reference where
-     * the data associated with the header are published.
+     * the data associated with the key are published.
      */
     REFERENC(STATUS.RESERVED, HDU.ANY, VALUE.STRING, "bibliographic reference"),
 
     /**
-     * The SIMPLE keyword is required to be the first keyword in the primary
-     * header of all FITS files. The value field shall contain a logical
-     * constant with the value T if the file conforms to the standard. This
-     * keyword is mandatory for the primary header and is not permitted in
-     * extension headers. A value of F signifies that the file does not conform
-     * to this standard.
+     * The SIMPLE keyword is required to be the first keyword in the primary key
+     * of all FITS files. The value field shall contain a logical constant with
+     * the value T if the file conforms to the standard. This keyword is
+     * mandatory for the primary key and is not permitted in extension headers.
+     * A value of F signifies that the file does not conform to this standard.
      */
     SIMPLE(STATUS.MANDATORY, HDU.PRIMARY, VALUE.LOGICAL, "does file conform to the Standard?"),
 
@@ -428,7 +426,7 @@ public enum FitsStandard implements IFitsHeader {
 
     /**
      * The value field shall contain a character string identifying the
-     * telescope used to acquire the data associated with the header.
+     * telescope used to acquire the data associated with the key.
      */
     TELESCOP(STATUS.RESERVED, HDU.ANY, VALUE.STRING, "name of telescope"),
 
@@ -492,8 +490,8 @@ public enum FitsStandard implements IFitsHeader {
     /**
      * The value field shall contain a character string describing the physical
      * units in which the quantity in field n, after any application of TSCALn
-     * and TZEROn, is expressed. The units of all FITS header keyword values,
-     * with the exception of measurements of angles, should conform with the
+     * and TZEROn, is expressed. The units of all FITS key keyword values, with
+     * the exception of measurements of angles, should conform with the
      * recommendations in the IAU Style Manual. For angular measurements given
      * as floating point values and specified with reserved keywords, degrees
      * are the recommended units (with the units, if specified, given as 'deg').
@@ -514,51 +512,51 @@ public enum FitsStandard implements IFitsHeader {
 
     /**
      * The value field shall contain a character string giving the name of the
-     * extension type. This keyword is mandatory for an extension header and
-     * must not appear in the primary header. For an extension that is not a
-     * standard extension, the type name must not be the same as that of a
-     * standard extension.
+     * extension type. This keyword is mandatory for an extension key and must
+     * not appear in the primary key. For an extension that is not a standard
+     * extension, the type name must not be the same as that of a standard
+     * extension.
      */
     XTENSION(STATUS.MANDATORY, HDU.EXTENSION, VALUE.STRING, "marks beginning of new HDU");
 
-    private IFitsHeader header;
+    private IFitsHeader key;
 
-    private FitsStandard(STATUS status, HDU hdu, VALUE valueType, String comment) {
-        this.header = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+    private Standard(STATUS status, HDU hdu, VALUE valueType, String comment) {
+        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
     }
 
-    private FitsStandard(String headerName, STATUS status, HDU hdu, VALUE valueType, String comment) {
-        this.header = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
+    private Standard(String headerName, STATUS status, HDU hdu, VALUE valueType, String comment) {
+        this.key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
     }
 
     @Override
-    public String headerName() {
-        return header.headerName();
+    public String key() {
+        return key.key();
     }
 
     @Override
     public STATUS status() {
-        return header.status();
+        return key.status();
     }
 
     @Override
     public HDU hdu() {
-        return header.hdu();
+        return key.hdu();
     }
 
     @Override
     public VALUE valueType() {
-        return header.valueType();
+        return key.valueType();
     }
 
     @Override
     public String comment() {
-        return header.comment();
+        return key.comment();
     }
 
     @Override
     public IFitsHeader n(int number) {
-        return header.n(number);
+        return key.n(number);
     }
 
 }

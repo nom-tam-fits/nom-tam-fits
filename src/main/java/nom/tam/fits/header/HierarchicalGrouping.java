@@ -29,68 +29,66 @@ package nom.tam.fits.header;
  * #L%
  */
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import nom.tam.fits.header.IFitsHeader.HDU;
+import nom.tam.fits.header.IFitsHeader.STATUS;
+import nom.tam.fits.header.IFitsHeader.VALUE;
 
-public class FitsHeaderImpl implements IFitsHeader {
+/**
+ * File checksum keywords. This data dictionary contains FITS keywords that have
+ * been widely used within the astronomical community. It is recommended that
+ * these keywords only be used as defined here. These are the Hierarchical file
+ * grouping keywords. {@link http
+ * ://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html}
+ * 
+ * @author Richard van Nieuwenhoven
+ */
+public enum HierarchicalGrouping implements IFitsHeader {
+    /**
+     * the grouping table name. TODO: find description?
+     */
+    GRPNAME(STATUS.HEASARC, HDU.TABLE, VALUE.STRING, "the grouping table name"),
+    /**
+     * TODO: find description?
+     */
+    GRPIDn(STATUS.HEASARC, HDU.TABLE, VALUE.STRING, ""),
+    /**
+     * TODO: find description?
+     */
+    GRPLCn(STATUS.HEASARC, HDU.TABLE, VALUE.STRING, "");
 
-    private final String key;
+    private IFitsHeader key;
 
-    private final STATUS status;
-
-    private final HDU hdu;
-
-    private final VALUE valueType;
-
-    private final String comment;
-
-    private final Map<Integer, IFitsHeader> indexedHeaders;
-
-    public FitsHeaderImpl(String headerName, STATUS status, HDU hdu, VALUE valueType, String comment) {
-        this.key = headerName;
-        this.status = status;
-        this.hdu = hdu;
-        this.valueType = valueType;
-        this.comment = comment;
-        if (this.key.charAt(this.key.length() - 1) == 'n') {
-            indexedHeaders = new LinkedHashMap<Integer, IFitsHeader>();
-        } else {
-            indexedHeaders = null;
-        }
+    private HierarchicalGrouping(IFitsHeader.STATUS status, HDU hdu, VALUE valueType, String comment) {
+        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
     }
 
     @Override
     public String key() {
-        return key;
+        return key.key();
     }
 
     @Override
     public STATUS status() {
-        return status;
+        return key.status();
     }
 
     @Override
     public HDU hdu() {
-        return hdu;
+        return key.hdu();
     }
 
     @Override
     public VALUE valueType() {
-        return valueType;
+        return key.valueType();
     }
 
     @Override
     public String comment() {
-        return comment;
+        return key.comment();
     }
 
     @Override
     public IFitsHeader n(int number) {
-        IFitsHeader result = indexedHeaders.get(number);
-        if (result == null) {
-            result = new FitsHeaderImpl(key.substring(0, key.lastIndexOf('n')) + Integer.toString(number), status, hdu, valueType, comment);
-            indexedHeaders.put(number, result);
-        }
-        return result;
+        return key.n(number);
     }
 }
