@@ -34,6 +34,7 @@
 		<menu name="Documentation">
 			<item name="About" href="index.html" />
 			<item name="Introduction" href="intro.html" />
+			<item name="Download" href="download.html" />
 		</menu>
 		<menu ref="modules" />
 		<menu ref="reports" />
