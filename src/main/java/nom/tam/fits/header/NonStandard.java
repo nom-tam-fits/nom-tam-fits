@@ -38,12 +38,26 @@ package nom.tam.fits.header;
  * keyword format conventions.
  * 
  * <pre>
- * {@link http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html}
+ * @see <a href="http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html</a>
  * </pre>
  * 
  * @author Richard van Nieuwenhoven
  */
 public enum NonStandard implements IFitsHeader {
+    /**
+     * The CONTINUE keyword, when followed by spaces in columns 9 and 10 of the
+     * card image and a character string enclosed in single quotes starting in
+     * column 11 or higher, indicates that the quoted string should be treated
+     * as a continuation of the character string value in the previous key
+     * keyword. To conform to this convention, the character string value on the
+     * previous keyword must end with the ampersand character ('&'), but the
+     * ampersand is not part of the value string and should be deleted before
+     * concatenating the strings together. The character string value may be
+     * continued on any number of consecutive CONTINUE keywords, thus
+     * effectively allowing arbitrarily long strings to be written as keyword
+     * values.
+     */
+    CONTINUE(SOURCE.HEASARC, HDU.ANY, VALUE.NONE, "denotes the CONTINUE long string keyword convention"),
     /**
      * The HIERARCH keyword, when followed by spaces in columns 9 and 10 of the
      * FITS card image, indicates that the ESO HIERARCH keyword convention
@@ -71,53 +85,19 @@ public enum NonStandard implements IFitsHeader {
      * Wheel = 12 / filter position". In this example the logical name of the
      * keyword is 'Filter Wheel' and the value is 12.
      */
-    HIERARCH(STATUS.ESO, HDU.ANY, VALUE.NONE, "denotes the HIERARCH keyword convention"),
+    HIERARCH(SOURCE.ESO, HDU.ANY, VALUE.NONE, "denotes the HIERARCH keyword convention"),
     /**
      * The presence of this keyword with a value = T in an extension key
      * indicates that the keywords contained in the primary key (except the FITS
      * Mandatory keywords, and any COMMENT, HISTORY or 'blank' keywords) are to
      * be inherited, or logically included in that extension key.
      */
-    INHERIT(STATUS.STScI, HDU.EXTENSION, VALUE.LOGICAL, "denotes the INHERIT keyword convention"),
-    /**
-     * The CONTINUE keyword, when followed by spaces in columns 9 and 10 of the
-     * card image and a character string enclosed in single quotes starting in
-     * column 11 or higher, indicates that the quoted string should be treated
-     * as a continuation of the character string value in the previous key
-     * keyword. To conform to this convention, the character string value on the
-     * previous keyword must end with the ampersand character ('&'), but the
-     * ampersand is not part of the value string and should be deleted before
-     * concatenating the strings together. The character string value may be
-     * continued on any number of consecutive CONTINUE keywords, thus
-     * effectively allowing arbitrarily long strings to be written as keyword
-     * values.
-     */
-    CONTINUE(STATUS.HEASARC, HDU.ANY, VALUE.NONE, "denotes the CONTINUE long string keyword convention");
+    INHERIT(SOURCE.STScI, HDU.EXTENSION, VALUE.LOGICAL, "denotes the INHERIT keyword convention");
 
     private IFitsHeader key;
 
-    private NonStandard(IFitsHeader.STATUS status, HDU hdu, VALUE valueType, String comment) {
+    private NonStandard(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public STATUS status() {
-        return key.status();
-    }
-
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public VALUE valueType() {
-        return key.valueType();
     }
 
     @Override
@@ -126,7 +106,27 @@ public enum NonStandard implements IFitsHeader {
     }
 
     @Override
+    public HDU hdu() {
+        return key.hdu();
+    }
+
+    @Override
+    public String key() {
+        return key.key();
+    }
+
+    @Override
     public IFitsHeader n(int number) {
         return key.n(number);
+    }
+
+    @Override
+    public SOURCE status() {
+        return key.status();
+    }
+
+    @Override
+    public VALUE valueType() {
+        return key.valueType();
     }
 }

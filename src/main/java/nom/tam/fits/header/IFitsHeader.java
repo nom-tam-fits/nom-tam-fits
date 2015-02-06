@@ -35,105 +35,110 @@ public interface IFitsHeader {
 
     public enum HDU {
         ANY,
-        IMAGE,
-        PRIMARY,
         ASCII_TABLE,
         BINTABLE,
-        TABLE,
+        EXTENSION,
         GROUPS,
-        EXTENSION
+        IMAGE,
+        PRIMARY,
+        PRIMARY_EXTENSION, TABLE
     }
 
-    public enum STATUS {
+    public enum SOURCE {
+        /**
+         * <pre>
+         *  @see <a href="http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html">http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html</a>
+         * </pre>
+         */
+        CHECKSUM,
+
+        /**
+         * <pre>
+         * @see <a href="http://cxc.harvard.edu/contrib/arots/fits/content.txt">http://cxc.harvard.edu/contrib/arots/fits/content.txt</a>
+         * </pre>
+         */
+        CXC,
+        /**
+         * <pre>
+         *  @see <a href="http://arcdev.hq.eso.org/dicb/dicd/dic-1-1.4.html">http://arcdev.hq.eso.org/dicb/dicd/dic-1-1.4.html</a>
+         * </pre>
+         */
+        ESO,
+        /**
+         * <pre>
+         *  @see <a href="http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/ofwg_recomm/r13.html">http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/ofwg_recomm/r13.html</a>
+         * </pre>
+         */
+        HEASARC,
+        /**
+         * integral.
+         */
+        INTEGRAL,
         /**
          * defined mandatory by the fits standard.
          */
         MANDATORY,
-
+        /**
+         * <pre>
+         * @see <a href="http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm">http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm</a>
+         * </pre>
+         */
+        MaxImDL,
+        /**
+         * <pre>
+         *  @see <a href="http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html">http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html</a>
+         * </pre>
+         */
+        NOAO,
         /**
          * defined reserved by the fits standard.
          */
         RESERVED,
-        /**
-         * <pre>
-         * {@link http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html}
-         * </pre>
-         */
-        CHECKSUM,
-        INTEGRAL,
         /**
          * rosat no link availabe.
          */
         ROSAT,
         /**
          * <pre>
-         * {@link http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/ofwg_recomm/r13.html}
-         * </pre>
-         */
-        HEASARC,
-        /**
-         * <pre>
-         * {@link http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html}
-         * </pre>
-         */
-        NOAO,
-        /**
-         * <pre>
-         * {@link http://www.ucolick.org/cgi-bin/Tcl/demos.cgi}
-         * </pre>
-         */
-        UCOLICK,
-        /**
-         * <pre>
-         * {@link http://arcdev.hq.eso.org/dicb/dicd/dic-1-1.4.html}
-         * </pre>
-         */
-        ESO,
-        /**
-         * <pre>
-         * {@link http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html}
-         * </pre>
-         */
-        STScI,
-        /**
-         * <pre>
-         * {@link http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf}
+         * @see <a href="http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf">http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf</a>
          * </pre>
          */
         SBIG,
         /**
          * <pre>
-         * {@link http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm}
+         *  @see <a href="http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>
          * </pre>
          */
-        MaxImDL,
+        STScI,
         /**
-         * http://cxc.harvard.edu/contrib/arots/fits/content.txt.
+         * <pre>
+         *  @see <a href="http://www.ucolick.org">http://www.ucolick.org</a>
+         * </pre>
          */
-        CXC,
+        UCOLICK,
         /**
-         * developed over time.
+         * developed over time, source long forgotten.
          */
         UNKNOWN;
     }
 
     public enum VALUE {
-        NONE,
-        STRING,
         INTEGER,
         LOGICAL,
-        REAL
+        NONE,
+        REAL,
+        STRING
     }
-
-    String key();
-
-    STATUS status();
-
-    HDU hdu();
-
-    VALUE valueType();
 
     String comment();
 
+    HDU hdu();
+
+    String key();
+
     IFitsHeader n(int number);
+
+    SOURCE status();
+
+    VALUE valueType();
 }

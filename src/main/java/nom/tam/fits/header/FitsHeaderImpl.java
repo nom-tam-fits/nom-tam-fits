@@ -36,19 +36,19 @@ import java.util.Map;
 
 public class FitsHeaderImpl implements IFitsHeader {
 
-    private final String key;
-
-    private final STATUS status;
+    private final String comment;
 
     private final HDU hdu;
 
-    private final VALUE valueType;
-
-    private final String comment;
-
     private final Map<Integer, IFitsHeader> indexedHeaders;
 
-    public FitsHeaderImpl(String headerName, STATUS status, HDU hdu, VALUE valueType, String comment) {
+    private final String key;
+
+    private final SOURCE status;
+
+    private final VALUE valueType;
+
+    public FitsHeaderImpl(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this.key = headerName;
         this.status = status;
         this.hdu = hdu;
@@ -62,13 +62,8 @@ public class FitsHeaderImpl implements IFitsHeader {
     }
 
     @Override
-    public String key() {
-        return key;
-    }
-
-    @Override
-    public STATUS status() {
-        return status;
+    public String comment() {
+        return comment;
     }
 
     @Override
@@ -77,13 +72,8 @@ public class FitsHeaderImpl implements IFitsHeader {
     }
 
     @Override
-    public VALUE valueType() {
-        return valueType;
-    }
-
-    @Override
-    public String comment() {
-        return comment;
+    public String key() {
+        return key;
     }
 
     @Override
@@ -94,5 +84,15 @@ public class FitsHeaderImpl implements IFitsHeader {
             indexedHeaders.put(number, result);
         }
         return result;
+    }
+
+    @Override
+    public SOURCE status() {
+        return status;
+    }
+
+    @Override
+    public VALUE valueType() {
+        return valueType;
     }
 }

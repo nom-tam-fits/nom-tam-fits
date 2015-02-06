@@ -37,49 +37,29 @@ package nom.tam.fits.header;
  * used as defined here. These are the Hierarchical file grouping keywords.
  * 
  * <pre>
- * {@link http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html}
+ * @see <a href="http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html</a>
  * </pre>
  * 
  * @author Richard van Nieuwenhoven
  */
 public enum HierarchicalGrouping implements IFitsHeader {
     /**
+     * TODO: find description?
+     */
+    GRPIDn(SOURCE.HEASARC, HDU.TABLE, VALUE.STRING, ""),
+    /**
+     * TODO: find description?
+     */
+    GRPLCn(SOURCE.HEASARC, HDU.TABLE, VALUE.STRING, ""),
+    /**
      * the grouping table name. TODO: find description?
      */
-    GRPNAME(STATUS.HEASARC, HDU.TABLE, VALUE.STRING, "the grouping table name"),
-    /**
-     * TODO: find description?
-     */
-    GRPIDn(STATUS.HEASARC, HDU.TABLE, VALUE.STRING, ""),
-    /**
-     * TODO: find description?
-     */
-    GRPLCn(STATUS.HEASARC, HDU.TABLE, VALUE.STRING, "");
+    GRPNAME(SOURCE.HEASARC, HDU.TABLE, VALUE.STRING, "the grouping table name");
 
     private IFitsHeader key;
 
-    private HierarchicalGrouping(IFitsHeader.STATUS status, HDU hdu, VALUE valueType, String comment) {
+    private HierarchicalGrouping(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public STATUS status() {
-        return key.status();
-    }
-
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public VALUE valueType() {
-        return key.valueType();
     }
 
     @Override
@@ -88,7 +68,27 @@ public enum HierarchicalGrouping implements IFitsHeader {
     }
 
     @Override
+    public HDU hdu() {
+        return key.hdu();
+    }
+
+    @Override
+    public String key() {
+        return key.key();
+    }
+
+    @Override
     public IFitsHeader n(int number) {
         return key.n(number);
+    }
+
+    @Override
+    public SOURCE status() {
+        return key.status();
+    }
+
+    @Override
+    public VALUE valueType() {
+        return key.valueType();
     }
 }

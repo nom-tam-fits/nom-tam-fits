@@ -37,7 +37,7 @@ package nom.tam.fits.header;
  * these keywords only be used as defined here.
  * 
  * <pre>
- * {@link http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html}
+ * @see <a href="http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html</a>
  * </pre>
  * 
  * @author Richard van Nieuwenhoven
@@ -56,16 +56,6 @@ public enum Checksum implements IFitsHeader {
      */
     CHECKSUM(HDU.ANY, VALUE.STRING, "checksum for the current HDU"),
     /**
-     * The value field of the DATASUM keyword shall be a character string
-     * containing the unsigned integer value of the checksum of the data records
-     * of the HDU. For dataless HDU's, this keyword may either be omitted, or
-     * the value field shall contain the string value '0', which is preferred. A
-     * missing DATASUM keyword asserts no knowledge of the checksum of the data
-     * records.
-     */
-    DATASUM(HDU.ANY, VALUE.STRING, "checksum of the data records"),
-
-    /**
      * The value field of the CHECKVER keyword shall contain a string, unique in
      * the first 8 characters, which distinguishes between any future
      * alternative checksum algorithms which may be defined. The default value
@@ -74,32 +64,22 @@ public enum Checksum implements IFitsHeader {
      * keyword be omitted from headers which implement the default ASCII encoded
      * 32-bit 1's complement algorithm.
      */
-    CHECKVER(HDU.ANY, VALUE.STRING, "version of checksum algorithm");
+    CHECKVER(HDU.ANY, VALUE.STRING, "version of checksum algorithm"),
+
+    /**
+     * The value field of the DATASUM keyword shall be a character string
+     * containing the unsigned integer value of the checksum of the data records
+     * of the HDU. For dataless HDU's, this keyword may either be omitted, or
+     * the value field shall contain the string value '0', which is preferred. A
+     * missing DATASUM keyword asserts no knowledge of the checksum of the data
+     * records.
+     */
+    DATASUM(HDU.ANY, VALUE.STRING, "checksum of the data records");
 
     private IFitsHeader key;
 
     private Checksum(HDU hdu, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(name(), IFitsHeader.STATUS.CHECKSUM, hdu, valueType, comment);
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public STATUS status() {
-        return key.status();
-    }
-
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public VALUE valueType() {
-        return key.valueType();
+        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CHECKSUM, hdu, valueType, comment);
     }
 
     @Override
@@ -108,8 +88,28 @@ public enum Checksum implements IFitsHeader {
     }
 
     @Override
+    public HDU hdu() {
+        return key.hdu();
+    }
+
+    @Override
+    public String key() {
+        return key.key();
+    }
+
+    @Override
     public IFitsHeader n(int number) {
         return key.n(number);
+    }
+
+    @Override
+    public SOURCE status() {
+        return key.status();
+    }
+
+    @Override
+    public VALUE valueType() {
+        return key.valueType();
     }
 
 }

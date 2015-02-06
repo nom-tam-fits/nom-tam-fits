@@ -37,35 +37,21 @@ package nom.tam.fits.header;
  * used as defined here. These are the Keywords that describe the observation.
  * 
  * <pre>
- * {@link http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html}
+ * @see <a href="http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html</a>
  * </pre>
  * 
  * @author Richard van Nieuwenhoven
  */
 public enum ObservationDescription implements IFitsHeader {
     /**
-     * The value field shall contain a floating point number giving the angle
-     * between the direction of the observation (e.g., the optical axis of the
-     * telescope or the position of the target) and the sun, measured in
-     * degrees.
+     * The value field shall contain a floating point number giving the air mass
+     * during the observation by a ground based telescope. The value of the
+     * airmass is often approximated by the secant of the elevation angle and
+     * has a value of 1.0 at the zenith and increases towards the horizon. This
+     * value is assumed to correspond to the start of the observation unless
+     * another interpretation is clearly explained in the comment field.
      */
-    SUNANGLE(STATUS.STScI, HDU.ANY, VALUE.REAL, "angle between the observation and the sun"),
-    /**
-     * The value field shall contain a floating point number giving the angle
-     * between the direction of the observation (e.g., the optical axis of the
-     * telescope or the position of the target) and the moon, measured in
-     * degrees.
-     */
-    MOONANGL(STATUS.STScI, HDU.ANY, VALUE.REAL, "angle between the observation and the moon"),
-    /**
-     * The value field gives the Right Ascension of the observation. It may be
-     * expressed either as a floating point number in units of decimal degrees,
-     * or as a character string in 'HH:MM:SS.sss' format where the decimal point
-     * and number of fractional digits are optional. The coordinate reference
-     * frame is given by the RADECSYS keyword, and the coordinate epoch is given
-     * by the EQUINOX keyword. Example: 180.6904 or '12:02:45.7'.
-     */
-    RA(STATUS.NOAO, HDU.ANY, VALUE.STRING, "R.A. of the observation"),
+    AIRMASS(SOURCE.NOAO, HDU.ANY, VALUE.REAL, "air mass"),
     /**
      * The value field gives the declination of the observation. It may be
      * expressed either as a floating point number in units of decimal degrees,
@@ -74,18 +60,7 @@ public enum ObservationDescription implements IFitsHeader {
      * frame is given by the RADECSYS keyword, and the coordinate epoch is given
      * by the EQUINOX keyword. Example: -47.25944 or '-47:15:34.00'.
      */
-    DEC(STATUS.NOAO, HDU.ANY, VALUE.STRING, "declination of the observed object"),
-    /**
-     * The value field shall contain a floating point number giving the nominal
-     * Right Ascension of the pointing direction in units of decimal degrees.
-     * The coordinate reference frame is given by the RADECSYS keyword, and the
-     * coordinate epoch is given by the EQUINOX keyword. The precise definition
-     * of this keyword is instrument-specific, but typically the nominal
-     * direction corresponds to the direction to which the instrument was
-     * requested to point. The RA_PNT keyword should be used to give the actual
-     * pointed direction.
-     */
-    RA_NOM(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "nominal R.A. of the observation"),
+    DEC(SOURCE.NOAO, HDU.ANY, VALUE.STRING, "declination of the observed object"),
     /**
      * The value field shall contain a floating point number giving the nominal
      * declination of the pointing direction in units of decimal degrees. The
@@ -96,32 +71,14 @@ public enum ObservationDescription implements IFitsHeader {
      * requested to point. The DEC_PNT keyword should be used to give the actual
      * pointed direction.
      */
-    DEC_NOM(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "nominal declination of the observation"),
-    /**
-     * The value field shall contain a floating point number giving the Right
-     * Ascension of the observed object in units of decimal degrees. The
-     * coordinate reference frame is given by the RADECSYS keyword, and the
-     * coordinate epoch is given by the EQUINOX keyword.
-     */
-    RA_OBJ(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "R.A. of the observed object"),
+    DEC_NOM(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "nominal declination of the observation"),
     /**
      * The value field shall contain a floating point number giving the
      * declination of the observed object in units of decimal degrees. The
      * coordinate reference frame is given by the RADECSYS keyword, and the
      * coordinate epoch is given by the EQUINOX keyword.
      */
-    DEC_OBJ(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "declination of the observed object"),
-    /**
-     * The value field shall contain a floating point number giving the Right
-     * Ascension of the pointing direction in units of decimal degrees. The
-     * coordinate reference frame is given by the RADECSYS keyword, and the
-     * coordinate epoch is given by the EQUINOX keyword. The precise definition
-     * of this keyword is instrument-specific, but typically the pointed
-     * direction corresponds to the optical axis of the instrument. This keyword
-     * gives a mean value in cases where the pointing axis was not fixed during
-     * the entire observation.
-     */
-    RA_PNT(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "R.A. of the pointed direction of the instrument"),
+    DEC_OBJ(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "declination of the observed object"),
     /**
      * The value field shall contain a floating point number giving the
      * declination of the pointing direction in units of decimal degrees. The
@@ -132,23 +89,7 @@ public enum ObservationDescription implements IFitsHeader {
      * gives a mean value in cases where the pointing axis was not fixed during
      * the entire observation.
      */
-    DEC_PNT(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "declination of the pointed direction of the instrument"),
-    /**
-     * The value field shall contain a floating point number giving the position
-     * angle of the relevant aspect of telescope pointing axis and/or instrument
-     * on the sky in units of degrees east of north. It commonly applies to the
-     * orientation of a slit mask.
-     */
-    PA_PNT(STATUS.UCOLICK, HDU.ANY, VALUE.REAL, "position angle of the pointing"),
-    /**
-     * The value field shall contain a floating point number giving the Right
-     * Ascension of the space craft (or telescope platform) X axis during the
-     * observation in decimal degrees. The coordinate reference frame is given
-     * by the RADECSYS keyword, and the coordinate epoch is given by the EQUINOX
-     * keyword. This keyword gives a mean value in cases where the axis was not
-     * fixed during the entire observation.
-     */
-    RA_SCX(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "R.A. of the X spacecraft axis"),
+    DEC_PNT(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "declination of the pointed direction of the instrument"),
     /**
      * The value field shall contain a floating point number giving the
      * declination of the space craft (or telescope platform) X axis during the
@@ -157,25 +98,7 @@ public enum ObservationDescription implements IFitsHeader {
      * keyword. This keyword gives a mean value in cases where the axis was not
      * fixed during the entire observation.
      */
-    DEC_SCX(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "declination of the X spacecraft axis"),
-    /**
-     * The value field shall contain a floating point number giving the Right
-     * Ascension of the space craft (or telescope platform) Y axis during the
-     * observation in decimal degrees. The coordinate reference frame is given
-     * by the RADECSYS keyword, and the coordinate epoch is given by the EQUINOX
-     * keyword. This keyword gives a mean value in cases where the axis was not
-     * fixed during the entire observation.
-     */
-    RA_SCY(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "R.A. of the Y spacecraft axis"),
-    /**
-     * The value field shall contain a floating point number giving the Right
-     * Ascension of the space craft (or telescope platform) Z axis during the
-     * observation in decimal degrees. The coordinate reference frame is given
-     * by the RADECSYS keyword, and the coordinate epoch is given by the EQUINOX
-     * keyword. This keyword gives a mean value in cases where the axis was not
-     * fixed during the entire observation.
-     */
-    RA_SCZ(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "R.A. of the Z spacecraft axis"),
+    DEC_SCX(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "declination of the X spacecraft axis"),
     /**
      * The value field shall contain a floating point number giving the
      * declination of the space craft (or telescope platform) Z axis during the
@@ -184,28 +107,20 @@ public enum ObservationDescription implements IFitsHeader {
      * keyword. This keyword gives a mean value in cases where the axis was not
      * fixed during the entire observation.
      */
-    DEC_SCZ(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "declination of the Z spacecraft axis"),
-    /**
-     * The value field shall contain a floating point number giving the position
-     * angle of the y axis of the detector projected on the sky, in degrees east
-     * of north. This keyword is synonymous with the CROTA2 WCS keyword.
-     */
-    ORIENTAT(STATUS.STScI, HDU.IMAGE, VALUE.REAL, "position angle of image y axis (deg. E of N)"),
-    /**
-     * The value field shall contain a floating point number giving the air mass
-     * during the observation by a ground based telescope. The value of the
-     * airmass is often approximated by the secant of the elevation angle and
-     * has a value of 1.0 at the zenith and increases towards the horizon. This
-     * value is assumed to correspond to the start of the observation unless
-     * another interpretation is clearly explained in the comment field.
-     */
-    AIRMASS(STATUS.NOAO, HDU.ANY, VALUE.REAL, "air mass"),
+    DEC_SCZ(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "declination of the Z spacecraft axis"),
     /**
      * The value field shall contain a floating point number giving the
      * geographic latitude from which the observation was made in units of
      * degrees.
      */
-    LATITUDE(STATUS.UCOLICK, HDU.ANY, VALUE.REAL, "geographic latitude of the observation"),
+    LATITUDE(SOURCE.UCOLICK, HDU.ANY, VALUE.REAL, "geographic latitude of the observation"),
+    /**
+     * The value field shall contain a floating point number giving the angle
+     * between the direction of the observation (e.g., the optical axis of the
+     * telescope or the position of the target) and the moon, measured in
+     * degrees.
+     */
+    MOONANGL(SOURCE.STScI, HDU.ANY, VALUE.REAL, "angle between the observation and the moon"),
     /**
      * The value field shall contain a character string giving a name for the
      * observed object that conforms to the IAU astronomical object naming
@@ -214,39 +129,104 @@ public enum ObservationDescription implements IFitsHeader {
      * record other ancillary information about the observation (e.g. filter,
      * exposure time, weather conditions, etc.).
      */
-    OBJNAME(STATUS.NOAO, HDU.ANY, VALUE.STRING, "AU name of observed object"),
+    OBJNAME(SOURCE.NOAO, HDU.ANY, VALUE.STRING, "AU name of observed object"),
     /**
      * The value field shall contain a character string which uniquely
      * identifies the dataset contained in the FITS file. This is typically a
      * sequence number that can contain a mixture of numerical and character
      * values. Example: '10315-01-01-30A'
      */
-    OBS_ID(STATUS.HEASARC, HDU.ANY, VALUE.STRING, "unique observation ID");
+    OBS_ID(SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "unique observation ID"),
+    /**
+     * The value field shall contain a floating point number giving the position
+     * angle of the y axis of the detector projected on the sky, in degrees east
+     * of north. This keyword is synonymous with the CROTA2 WCS keyword.
+     */
+    ORIENTAT(SOURCE.STScI, HDU.IMAGE, VALUE.REAL, "position angle of image y axis (deg. E of N)"),
+    /**
+     * The value field shall contain a floating point number giving the position
+     * angle of the relevant aspect of telescope pointing axis and/or instrument
+     * on the sky in units of degrees east of north. It commonly applies to the
+     * orientation of a slit mask.
+     */
+    PA_PNT(SOURCE.UCOLICK, HDU.ANY, VALUE.REAL, "position angle of the pointing"),
+    /**
+     * The value field gives the Right Ascension of the observation. It may be
+     * expressed either as a floating point number in units of decimal degrees,
+     * or as a character string in 'HH:MM:SS.sss' format where the decimal point
+     * and number of fractional digits are optional. The coordinate reference
+     * frame is given by the RADECSYS keyword, and the coordinate epoch is given
+     * by the EQUINOX keyword. Example: 180.6904 or '12:02:45.7'.
+     */
+    RA(SOURCE.NOAO, HDU.ANY, VALUE.STRING, "R.A. of the observation"),
+    /**
+     * The value field shall contain a floating point number giving the nominal
+     * Right Ascension of the pointing direction in units of decimal degrees.
+     * The coordinate reference frame is given by the RADECSYS keyword, and the
+     * coordinate epoch is given by the EQUINOX keyword. The precise definition
+     * of this keyword is instrument-specific, but typically the nominal
+     * direction corresponds to the direction to which the instrument was
+     * requested to point. The RA_PNT keyword should be used to give the actual
+     * pointed direction.
+     */
+    RA_NOM(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "nominal R.A. of the observation"),
+    /**
+     * The value field shall contain a floating point number giving the Right
+     * Ascension of the observed object in units of decimal degrees. The
+     * coordinate reference frame is given by the RADECSYS keyword, and the
+     * coordinate epoch is given by the EQUINOX keyword.
+     */
+    RA_OBJ(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "R.A. of the observed object"),
+    /**
+     * The value field shall contain a floating point number giving the Right
+     * Ascension of the pointing direction in units of decimal degrees. The
+     * coordinate reference frame is given by the RADECSYS keyword, and the
+     * coordinate epoch is given by the EQUINOX keyword. The precise definition
+     * of this keyword is instrument-specific, but typically the pointed
+     * direction corresponds to the optical axis of the instrument. This keyword
+     * gives a mean value in cases where the pointing axis was not fixed during
+     * the entire observation.
+     */
+    RA_PNT(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "R.A. of the pointed direction of the instrument"),
+    /**
+     * The value field shall contain a floating point number giving the Right
+     * Ascension of the space craft (or telescope platform) X axis during the
+     * observation in decimal degrees. The coordinate reference frame is given
+     * by the RADECSYS keyword, and the coordinate epoch is given by the EQUINOX
+     * keyword. This keyword gives a mean value in cases where the axis was not
+     * fixed during the entire observation.
+     */
+    RA_SCX(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "R.A. of the X spacecraft axis"),
+    /**
+     * The value field shall contain a floating point number giving the Right
+     * Ascension of the space craft (or telescope platform) Y axis during the
+     * observation in decimal degrees. The coordinate reference frame is given
+     * by the RADECSYS keyword, and the coordinate epoch is given by the EQUINOX
+     * keyword. This keyword gives a mean value in cases where the axis was not
+     * fixed during the entire observation.
+     */
+    RA_SCY(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "R.A. of the Y spacecraft axis"),
+    /**
+     * The value field shall contain a floating point number giving the Right
+     * Ascension of the space craft (or telescope platform) Z axis during the
+     * observation in decimal degrees. The coordinate reference frame is given
+     * by the RADECSYS keyword, and the coordinate epoch is given by the EQUINOX
+     * keyword. This keyword gives a mean value in cases where the axis was not
+     * fixed during the entire observation.
+     */
+    RA_SCZ(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "R.A. of the Z spacecraft axis"),
+    /**
+     * The value field shall contain a floating point number giving the angle
+     * between the direction of the observation (e.g., the optical axis of the
+     * telescope or the position of the target) and the sun, measured in
+     * degrees.
+     */
+    SUNANGLE(SOURCE.STScI, HDU.ANY, VALUE.REAL, "angle between the observation and the sun");
 
     private IFitsHeader key;
 
-    private ObservationDescription(IFitsHeader.STATUS status, HDU hdu, VALUE valueType, String comment) {
+    private ObservationDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public STATUS status() {
-        return key.status();
-    }
-
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public VALUE valueType() {
-        return key.valueType();
     }
 
     @Override
@@ -255,7 +235,27 @@ public enum ObservationDescription implements IFitsHeader {
     }
 
     @Override
+    public HDU hdu() {
+        return key.hdu();
+    }
+
+    @Override
+    public String key() {
+        return key.key();
+    }
+
+    @Override
     public IFitsHeader n(int number) {
         return key.n(number);
+    }
+
+    @Override
+    public SOURCE status() {
+        return key.status();
+    }
+
+    @Override
+    public VALUE valueType() {
+        return key.valueType();
     }
 }

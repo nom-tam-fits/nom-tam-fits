@@ -191,12 +191,11 @@ public class Header implements FitsElement {
     /**
      * Overwrite the lines in the header. Add the new PHDU header to the current
      * one. If keywords appear twice, the new value and comment overwrite the
-     * current contents.
+     * current contents. By Richard J Mathar.
      * 
      * @param newHdr
      *            the list of new header data lines to replace the current ones.
      * @throws nom.tam.fits.HeaderCardException
-     * @author Richard J Mathar
      * @since 2005-10-24
      */
     public void updateLines(final Header newHdr) throws nom.tam.fits.HeaderCardException {

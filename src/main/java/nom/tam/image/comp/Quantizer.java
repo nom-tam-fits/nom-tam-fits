@@ -180,14 +180,12 @@ public class Quantizer {
      * which calls the input method when it reaches the bottom level of the
      * array to actually read and convert the data values.
      * 
-     * @param tileStream
-     *            The stream of uncompressed bytes from the tile.
      * @param tileData
      *            The data array to be filled.
+     * @param data
+     *            The source of the data.
      * @param td
      *            The corners and size of the tile.
-     * @param tileIndex
-     *            The index of the tile.
      */
     public void fill(byte[] tileData, Object data, TileDescriptor td) {
         this.corner = td.corner;

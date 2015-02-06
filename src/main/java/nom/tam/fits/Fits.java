@@ -42,6 +42,7 @@ import java.net.URL;
 import java.util.NoSuchElementException;
 import java.util.Vector;
 
+import nom.tam.fits.header.Checksum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
@@ -1033,12 +1034,11 @@ public class Fits {
     }
 
     /**
-     * Add or update the CHECKSUM keyword.
+     * Add or update the CHECKSUM keyword. by R J Mathar
      * 
      * @param hdu
      *            the HDU to be updated.
      * @throws nom.tam.fits.HeaderCardException
-     * @author R J Mathar
      * @since 2005-10-05
      */
     public static void setChecksum(BasicHDU hdu) throws nom.tam.fits.HeaderCardException, nom.tam.fits.FitsException, java.io.IOException {
@@ -1104,11 +1104,10 @@ public class Fits {
     }
 
     /**
-     * Add or Modify the CHECKSUM keyword in all headers.
+     * Add or Modify the CHECKSUM keyword in all headers. by R J Mathar
      * 
      * @throws nom.tam.fits.HeaderCardException
      * @throws nom.tam.fits.FitsException
-     * @author R J Mathar
      * @since 2005-10-05
      */
     public void setChecksum() throws nom.tam.fits.HeaderCardException, nom.tam.fits.FitsException, java.io.IOException {
@@ -1128,13 +1127,12 @@ public class Fits {
      * maximum at 2^63-1) by summation of 16-bit values could only occur after
      * adding approximately 140G short values (=2^47) (280GBytes) or more. We
      * assume for now that this routine here is never called to swallow FITS
-     * files of that size or larger.
+     * files of that size or larger. by R J Mathar
      * 
      * @param data
      *            the byte sequence
      * @return the 32bit checksum in the range from 0 to 2^32-1
-     * @see "http://heasarc.gsfc.nasa.gov/docs/heasarc/fits/checksum.html"
-     * @author R J Mathar
+     * @see Checksum#CHECKSUM
      * @since 2005-10-05
      */
     public static long checksum(final byte[] data) {

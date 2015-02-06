@@ -37,23 +37,67 @@ package nom.tam.fits.header;
  * used as defined here. These are the Keywords that describe the observation.
  * 
  * <pre>
- * {@link http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html}
+ * @see <a href="http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html</a>
  * </pre>
  * 
  * @author Richard van Nieuwenhoven
  */
 public enum ObservationDurationDescription implements IFitsHeader {
     /**
-     * The value field shall contain a character string that gives the time at
-     * which the observation started. This keyword is used in conjunction with
-     * the standard DATE-OBS keyword to give the starting time of the
-     * observation; the DATE-OBS keyword gives the starting calendar date, with
-     * format 'yyyy-mm-dd', and TIME-OBS gives the time within that day using
-     * the format 'hh:mm:ss.sss...'. This keyword should not be used if the time
-     * is included directly as part of the DATE-OBS keyword value with the
-     * format 'yyyy-mm-ddThh:mm:ss.sss'.
+     * The value field shall contain a character string that gives the date on
+     * which the observation ended. This keyword has the same format, and is
+     * used in conjunction with, the standard DATA-OBS keyword that gives the
+     * starting date of the observation. These 2 keywords may give either the
+     * calendar date using the 'yyyy-mm-dd' format, or may give the full date
+     * and time using the 'yyyy-mm-ddThh:mm:ss.sss' format.
      */
-    TIME_OBS("TIME-OBS", STATUS.HEASARC, HDU.ANY, VALUE.STRING, "time at the start of the observation"),
+    DATE_END("DATE-END", SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "date of the end of observation"),
+    /**
+     * The value field shall contain a floating point number giving the
+     * difference between the stop and start times of the observation in units
+     * of seconds. This keyword is synonymous with the TELAPSE keyword.
+     */
+    ELAPTIME(SOURCE.UCOLICK, HDU.ANY, VALUE.REAL, "elapsed time of the observation"),
+    /**
+     * The value field shall contain a floating point number giving the exposure
+     * time of the observation in units of seconds. The exact definition of
+     * 'exposure time' is mission dependent and may, for example, include
+     * corrections for shutter open and close duration, detector dead time,
+     * vignetting, or other effects. This keyword is synonymous with the EXPTIME
+     * keyword.
+     */
+    EXPOSURE(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "exposure time"),
+    /**
+     * The value field shall contain a floating point number giving the exposure
+     * time of the observation in units of seconds. The exact definition of
+     * 'exposure time' is mission dependent and may, for example, include
+     * corrections for shutter open and close duration, detector dead time,
+     * vignetting, or other effects. This keyword is synonymous with the
+     * EXPOSURE keyword.
+     */
+    EXPTIME(SOURCE.NOAO, HDU.ANY, VALUE.REAL, "exposure time"),
+    /**
+     * The value field shall contain a floating point number giving the total
+     * integrated exposure time in units of seconds corrected for detector 'dead
+     * time' effects which reduce the net efficiency of the detector. The ratio
+     * of LIVETIME/ONTIME gives the mean dead time correction during the
+     * observation, which lies in the range 0.0 to 1.0.
+     */
+    LIVETIME(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "exposure time after deadtime correction"),
+    /**
+     * The value field shall contain a floating point number giving the total
+     * integrated exposure time of the observation in units of seconds. ONTIME
+     * may be less than TELAPSE if there were intevals during the observation in
+     * which the target was not observed (e.g., the shutter was closed, or the
+     * detector power was turned off).
+     */
+    ONTIME(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "integration time during the observation"),
+    /**
+     * The value field shall contain a floating point number giving the
+     * difference between the stop and start times of the observation in units
+     * of seconds. This keyword is synonymous with the ELAPTIME keyword.
+     */
+    TELAPSE(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "elapsed time of the observation"),
     /**
      * The value field shall contain a character string that gives the time at
      * which the observation ended. This keyword is used in conjunction with the
@@ -64,91 +108,27 @@ public enum ObservationDurationDescription implements IFitsHeader {
      * included directly as part of the DATE-END keyword value with the format
      * 'yyyy-mm-ddThh:mm:ss.sss'.
      */
-    TIME_END("TIME-END", STATUS.HEASARC, HDU.ANY, VALUE.STRING, "time at the end of the observation"),
+    TIME_END("TIME-END", SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "time at the end of the observation"),
     /**
-     * The value field shall contain a character string that gives the date on
-     * which the observation ended. This keyword has the same format, and is
-     * used in conjunction with, the standard DATA-OBS keyword that gives the
-     * starting date of the observation. These 2 keywords may give either the
-     * calendar date using the 'yyyy-mm-dd' format, or may give the full date
-     * and time using the 'yyyy-mm-ddThh:mm:ss.sss' format.
+     * The value field shall contain a character string that gives the time at
+     * which the observation started. This keyword is used in conjunction with
+     * the standard DATE-OBS keyword to give the starting time of the
+     * observation; the DATE-OBS keyword gives the starting calendar date, with
+     * format 'yyyy-mm-dd', and TIME-OBS gives the time within that day using
+     * the format 'hh:mm:ss.sss...'. This keyword should not be used if the time
+     * is included directly as part of the DATE-OBS keyword value with the
+     * format 'yyyy-mm-ddThh:mm:ss.sss'.
      */
-    DATE_END("DATE-END", STATUS.HEASARC, HDU.ANY, VALUE.STRING, "date of the end of observation"),
-    /**
-     * The value field shall contain a floating point number giving the exposure
-     * time of the observation in units of seconds. The exact definition of
-     * 'exposure time' is mission dependent and may, for example, include
-     * corrections for shutter open and close duration, detector dead time,
-     * vignetting, or other effects. This keyword is synonymous with the EXPTIME
-     * keyword.
-     */
-    EXPOSURE(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "exposure time"),
-    /**
-     * The value field shall contain a floating point number giving the exposure
-     * time of the observation in units of seconds. The exact definition of
-     * 'exposure time' is mission dependent and may, for example, include
-     * corrections for shutter open and close duration, detector dead time,
-     * vignetting, or other effects. This keyword is synonymous with the
-     * EXPOSURE keyword.
-     */
-    EXPTIME(STATUS.NOAO, HDU.ANY, VALUE.REAL, "exposure time"),
-    /**
-     * The value field shall contain a floating point number giving the
-     * difference between the stop and start times of the observation in units
-     * of seconds. This keyword is synonymous with the ELAPTIME keyword.
-     */
-    TELAPSE(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "elapsed time of the observation"),
-    /**
-     * The value field shall contain a floating point number giving the
-     * difference between the stop and start times of the observation in units
-     * of seconds. This keyword is synonymous with the TELAPSE keyword.
-     */
-    ELAPTIME(STATUS.UCOLICK, HDU.ANY, VALUE.REAL, "elapsed time of the observation"),
-    /**
-     * The value field shall contain a floating point number giving the total
-     * integrated exposure time of the observation in units of seconds. ONTIME
-     * may be less than TELAPSE if there were intevals during the observation in
-     * which the target was not observed (e.g., the shutter was closed, or the
-     * detector power was turned off).
-     */
-    ONTIME(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "integration time during the observation"),
-    /**
-     * The value field shall contain a floating point number giving the total
-     * integrated exposure time in units of seconds corrected for detector 'dead
-     * time' effects which reduce the net efficiency of the detector. The ratio
-     * of LIVETIME/ONTIME gives the mean dead time correction during the
-     * observation, which lies in the range 0.0 to 1.0.
-     */
-    LIVETIME(STATUS.HEASARC, HDU.ANY, VALUE.REAL, "exposure time after deadtime correction");
+    TIME_OBS("TIME-OBS", SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "time at the start of the observation");
 
     private IFitsHeader key;
 
-    private ObservationDurationDescription(STATUS status, HDU hdu, VALUE valueType, String comment) {
+    private ObservationDurationDescription(SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
     }
 
-    private ObservationDurationDescription(String key, STATUS status, HDU hdu, VALUE valueType, String comment) {
+    private ObservationDurationDescription(String key, SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(key == null ? name() : key, status, hdu, valueType, comment);
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public STATUS status() {
-        return key.status();
-    }
-
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public VALUE valueType() {
-        return key.valueType();
     }
 
     @Override
@@ -157,8 +137,28 @@ public enum ObservationDurationDescription implements IFitsHeader {
     }
 
     @Override
+    public HDU hdu() {
+        return key.hdu();
+    }
+
+    @Override
+    public String key() {
+        return key.key();
+    }
+
+    @Override
     public IFitsHeader n(int number) {
         return key.n(number);
+    }
+
+    @Override
+    public SOURCE status() {
+        return key.status();
+    }
+
+    @Override
+    public VALUE valueType() {
+        return key.valueType();
     }
 
 }
