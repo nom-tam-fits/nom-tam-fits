@@ -1,5 +1,36 @@
 package nom.tam.fits.header.extra;
 
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
 import nom.tam.fits.header.FitsHeaderImpl;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.IFitsHeader.HDU;
@@ -18,11 +49,9 @@ import nom.tam.fits.header.IFitsHeader.VALUE;
  * </pre>
  * 
  * @author Richard van Nieuwenhoven.
- *
  */
 public enum NOAOExt implements IFitsHeader {
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -32,7 +61,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     ACTFREQ(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -138,7 +166,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     ACTPREn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -148,7 +175,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     ACTSTAT(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -302,7 +328,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     ADAPREn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -312,7 +337,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     ADAPSWV(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -322,7 +346,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     ADAPTER(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -628,7 +651,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     ADOEQUIN(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -638,7 +660,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     ADOFREQ(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -777,7 +798,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     ADORAU(HDU.PRIMARY, VALUE.STRING, "Right ascension unit"),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -787,7 +807,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     ADOSTAT(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -2310,7 +2329,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     CHPANGLE(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -2320,7 +2338,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     CHPDIST(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -2330,7 +2347,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     CHPFREQ(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -2368,7 +2384,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     CHPMJDn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -2448,7 +2463,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     CHPPREn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -2458,7 +2472,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     CHPSTAT(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -5648,7 +5661,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     NCCDS(HDU.PRIMARY, VALUE.INTEGER, "Number of CCDs"),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -5658,7 +5670,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     NODANGLE(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -5668,7 +5679,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     NODDIST(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -5678,7 +5688,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     NODFREQ(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -5716,7 +5725,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     NODMJDn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -5796,7 +5804,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     NODPREn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
@@ -5806,7 +5813,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     NODSTAT(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     *
      * <p>
      * default value = none
      * </p>
