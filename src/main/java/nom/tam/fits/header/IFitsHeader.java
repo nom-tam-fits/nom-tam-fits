@@ -41,7 +41,8 @@ public interface IFitsHeader {
         GROUPS,
         IMAGE,
         PRIMARY,
-        PRIMARY_EXTENSION, TABLE
+        PRIMARY_EXTENSION,
+        TABLE
     }
 
     public enum SOURCE {
@@ -50,76 +51,87 @@ public interface IFitsHeader {
          *  @see <a href="http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html">http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html</a>
          * </pre>
          */
-        CHECKSUM,
+        CHECKSUM("http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html"),
 
         /**
          * <pre>
          * @see <a href="http://cxc.harvard.edu/contrib/arots/fits/content.txt">http://cxc.harvard.edu/contrib/arots/fits/content.txt</a>
          * </pre>
          */
-        CXC,
+        CXC("http://cxc.harvard.edu/contrib/arots/fits/content.txt"),
         /**
          * <pre>
          *  @see <a href="http://arcdev.hq.eso.org/dicb/dicd/dic-1-1.4.html">http://arcdev.hq.eso.org/dicb/dicd/dic-1-1.4.html</a>
          * </pre>
          */
-        ESO,
+        ESO("http://arcdev.hq.eso.org/dicb/dicd/dic-1-1.4.html"),
         /**
          * <pre>
          *  @see <a href="http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/ofwg_recomm/r13.html">http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/ofwg_recomm/r13.html</a>
          * </pre>
          */
-        HEASARC,
+        HEASARC("http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/ofwg_recomm/r13.html"),
         /**
          * integral.
          */
-        INTEGRAL,
+        INTEGRAL(null),
         /**
          * defined mandatory by the fits standard.
          */
-        MANDATORY,
+        MANDATORY("http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html"),
         /**
          * <pre>
          * @see <a href="http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm">http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm</a>
          * </pre>
          */
-        MaxImDL,
+        MaxImDL("http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm"),
         /**
          * <pre>
          *  @see <a href="http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html">http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html</a>
          * </pre>
          */
-        NOAO,
+        NOAO("http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html"),
         /**
          * defined reserved by the fits standard.
          */
-        RESERVED,
+        RESERVED("http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html"),
         /**
          * rosat no link availabe.
          */
-        ROSAT,
+        ROSAT(null),
         /**
          * <pre>
          * @see <a href="http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf">http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf</a>
          * </pre>
          */
-        SBIG,
+        SBIG("http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf"),
         /**
          * <pre>
          *  @see <a href="http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>
          * </pre>
          */
-        STScI,
+        STScI("http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html"),
         /**
          * <pre>
          *  @see <a href="http://www.ucolick.org">http://www.ucolick.org</a>
          * </pre>
          */
-        UCOLICK,
+        UCOLICK("http://www.ucolick.org"),
         /**
          * developed over time, source long forgotten.
          */
-        UNKNOWN;
+        UNKNOWN(null);
+
+        private final String url;
+
+        public String url() {
+            return url;
+        }
+
+        private SOURCE(String url) {
+            this.url = url;
+        }
+
     }
 
     public enum VALUE {

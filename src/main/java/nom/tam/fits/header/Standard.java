@@ -84,6 +84,7 @@ public enum Standard implements IFitsHeader {
      * meanings. Since the issuance of version 1 of the standard, the BLOCKED
      * keyword has been deprecated.
      */
+    @Deprecated
     BLOCKED(SOURCE.RESERVED, HDU.PRIMARY, VALUE.LOGICAL, "is physical blocksize a multiple of 2880?"),
 
     /**
@@ -214,6 +215,7 @@ public enum Standard implements IFitsHeader {
      * after the adoption of the standard; rather, the EQUINOX keyword shall be
      * used.
      */
+    @Deprecated
     EPOCH(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "equinox of celestial coordinate system"),
     /**
      * The value field shall contain a floating point number giving the equinox

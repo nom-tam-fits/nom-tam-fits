@@ -1288,19 +1288,6 @@ public enum NOAOExt implements IFitsHeader {
      * index = none 1-9999
      * </p>
      */
-    APERTURE(HDU.PRIMARY, VALUE.STRING, "Aperture identification"),
-    /**
-     * Aperture width of the aperture(s) for slit apertures.
-     * <p>
-     * units = APUNIT
-     * </p>
-     * <p>
-     * default value = none APERWID
-     * </p>
-     * <p>
-     * index = none 1-9999
-     * </p>
-     */
     APERWID(HDU.PRIMARY, VALUE.REAL, "Slit width"),
     /**
      * Aperture length of the aperture(s) for slit apertures.
@@ -2977,21 +2964,7 @@ public enum NOAOExt implements IFitsHeader {
      * </p>
      */
     CUNIT2(HDU.EXTENSION, VALUE.STRING, "Coordinate reference unit"),
-    /**
-     * Total dark time of the observation. This is the total time during which
-     * dark current is collected by the detector. If the times in the extension
-     * are different the primary HDU gives one of the extension times.
-     * <p>
-     * units = UNITTIME
-     * </p>
-     * <p>
-     * default value = EXPTIME
-     * </p>
-     * <p>
-     * index = none
-     * </p>
-     */
-    DARKTIME(HDU.PRIMARY_EXTENSION, VALUE.REAL, "Dark time"),
+
     /**
      * Mapping of the CCD section to image coordinates.
      * <p>
@@ -3002,17 +2975,6 @@ public enum NOAOExt implements IFitsHeader {
      * </p>
      */
     DATASEC(HDU.EXTENSION, VALUE.STRING, "Image data section"),
-    /**
-     * Date of observation in TIMESYS time system at the start of the exposure.
-     * The format follows the FITS 'date' standard.
-     * <p>
-     * default value = none
-     * </p>
-     * <p>
-     * index = none
-     * </p>
-     */
-    DATE_OBS("DATE-OBS", HDU.PRIMARY_EXTENSION, VALUE.STRING, "Date of exposure start"),
     /**
      * Date at the end of the exposure. The format follows the FITS standard.
      * <p>
@@ -4375,20 +4337,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     ENVWINn(HDU.PRIMARY, VALUE.REAL, "Average wind speed"),
     /**
-     * Equinox when equatorial coordinates are used in the world coordinate
-     * system. A value before 1984 is Besselian otherwise it is Julian.
-     * <p>
-     * units = 'yr' 'yr'
-     * </p>
-     * <p>
-     * default value = CCDEQUIN EQUINOX
-     * </p>
-     * <p>
-     * index = none 1-9999
-     * </p>
-     */
-    EQUINOX(HDU.PRIMARY_EXTENSION, VALUE.REAL, "WCS coordinate equinox"),
-    /**
      * Error information. The sequence numbers are used to order the
      * information.
      * <p>
@@ -4412,22 +4360,6 @@ public enum NOAOExt implements IFitsHeader {
      * </p>
      */
     EXPREQ(HDU.PRIMARY_EXTENSION, VALUE.REAL, "Requested exposure time"),
-    /**
-     * Total exposure time of the observation. This is the total time during
-     * which photons are collected by the detector. It includes any shutter
-     * correction. If the times in the extension are different the primary HDU
-     * gives one of the extension times.
-     * <p>
-     * units = UNITTIME
-     * </p>
-     * <p>
-     * default value = none
-     * </p>
-     * <p>
-     * index = none
-     * </p>
-     */
-    EXPTIME(HDU.PRIMARY_EXTENSION, VALUE.REAL, "Exposure time"),
     /**
      * Fiber identification for the fiber(s). The string consists of a fiber
      * number, an object type number (0=sky, 1=object, etc.), the right
@@ -4482,30 +4414,6 @@ public enum NOAOExt implements IFitsHeader {
      * </p>
      */
     FILPOSn(HDU.PRIMARY, VALUE.REAL, "Filter system position"),
-    /**
-     * Filter names. This name is the astronomical standard name if applicable;
-     * i.e. U, B, Gunn I, etc. The filter type and filter device position are
-     * given by other keywords.
-     * <p>
-     * default value = none none
-     * </p>
-     * <p>
-     * index = none 1-999
-     * </p>
-     */
-    FILTER(HDU.PRIMARY_EXTENSION, VALUE.STRING, "Filter name"),
-    /**
-     * Filter names. This name is the astronomical standard name if applicable;
-     * i.e. U, B, Gunn I, etc. The filter type and filter device position are
-     * given by other keywords.
-     * <p>
-     * default value = none none
-     * </p>
-     * <p>
-     * index = none 1-999
-     * </p>
-     */
-    FILTERn(HDU.PRIMARY_EXTENSION, VALUE.STRING, "Filter name"),
     /**
      * Filter type. This is the technical specification or observatory
      * identification name.
@@ -6153,16 +6061,6 @@ public enum NOAOExt implements IFitsHeader {
      */
     OBSERVAT(HDU.PRIMARY, VALUE.STRING, "Observatory"),
     /**
-     * Name(s) of the observers.
-     * <p>
-     * default value = none none
-     * </p>
-     * <p>
-     * index = none 1-9999
-     * </p>
-     */
-    OBSERVER(HDU.PRIMARY, VALUE.STRING, "Observer(s)"),
-    /**
      * The unique observatory observation identification. This serves to
      * identify all data from the same observation.
      * <p>
@@ -6687,19 +6585,6 @@ public enum NOAOExt implements IFitsHeader {
      * </p>
      */
     RECNO(HDU.PRIMARY, VALUE.STRING, "Archive identification"),
-    /**
-     * Pixel value above which the detector is saturated.
-     * <p>
-     * units = 'counts'
-     * </p>
-     * <p>
-     * default value = none
-     * </p>
-     * <p>
-     * index = none
-     * </p>
-     */
-    SATURATE(HDU.EXTENSION, VALUE.REAL, "Saturation value"),
     /**
      * Seeing estimates specified as the stellar full-width at half-maximum in
      * arc seconds. There may be more than one estimate. The times of the
@@ -7284,19 +7169,6 @@ public enum NOAOExt implements IFitsHeader {
      * </p>
      */
     TELVOLn(HDU.PRIMARY, VALUE.REAL, ""),
-    /**
-     * Time of exposure start in the TSYSOBS system.
-     * <p>
-     * units = UNITHOUR
-     * </p>
-     * <p>
-     * default value = none
-     * </p>
-     * <p>
-     * index = none
-     * </p>
-     */
-    TIME_OBS("TIME-OBS", HDU.PRIMARY_EXTENSION, VALUE.STRING, "Time of observation start"),
     /**
      * Time of exposure end in the TSYSEND system.
      * <p>

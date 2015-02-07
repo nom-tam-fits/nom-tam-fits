@@ -56,24 +56,9 @@ public enum SBFitsExt implements IFitsHeader {
      */
     CWHITE(VALUE.INTEGER, "use this ADU level for the White"),
     /**
-     * Pixels at or above DATAMAX are considered to be saturated and thus
-     * unusable for Photometric calculations.
-     */
-    DATAMAX(VALUE.INTEGER, "saturated pixel value"),
-    /**
      * Electronic gain in e-/ADU.
      */
     EGAIN(VALUE.REAL, "Electronic gain in e-/ADU"),
-    /*
-     * Mandatory Extension Keywords
-     * The following Keywords are not defined in the FITS Standard but are
-     * defined in this Standard. All must be included
-     */
-    /**
-     * The total exposure time in seconds. For Track
-     * and Accumulate Images this is the sum of all the exposure times.
-     */
-    EXPTIME(VALUE.REAL, "exposure time in seconds"),
     /*
      * Optional Keywords
      * <p>
@@ -83,11 +68,6 @@ public enum SBFitsExt implements IFitsHeader {
      * Package must be preserved in files written.
      * </p>
      */
-    /**
-     * Optical Filter used to take image, ie H-Alpha. If this keyword is not
-     * included there was no filter used to take the image.
-     */
-    FILTER(VALUE.STRING, "Filter used to take image"),
     /**
      * Focal Length of the Telescope used in millimeters.
      */
