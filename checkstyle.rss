@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;1996 - 2015 nom-tam-fits</copyright>
     <item>
-      <title>File: 75,
-             Errors: 1052,
+      <title>File: 84,
+             Errors: 1057,
              Warnings: 0,
              Infos: 0
       </title>
@@ -46,6 +46,20 @@ under the License.
           <tbody>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ByteFormatter.java">nom/tam/util/ByteFormatter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  58
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.ImageData.java">nom/tam/fits/ImageData.java</a>
                 </td>
                 <td>
@@ -60,7 +74,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ByteFormatter.java">nom/tam/util/ByteFormatter.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.extra.STScIExt.java">nom/tam/fits/header/extra/STScIExt.java</a>
                 </td>
                 <td>
                   0
@@ -69,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  58
+                  0
                 </td>
               </tr>
                           <tr>
@@ -284,6 +298,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.extra.NOAOExt.java">nom/tam/fits/header/extra/NOAOExt.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.UndefinedData.java">nom/tam/fits/UndefinedData.java</a>
                 </td>
                 <td>
@@ -364,6 +392,20 @@ under the License.
                 </td>
                 <td>
                   4
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.extra.MaxImDLExt.java">nom/tam/fits/header/extra/MaxImDLExt.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
                 </td>
               </tr>
                           <tr>
@@ -452,6 +494,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.extra.SBFitsExt.java">nom/tam/fits/header/extra/SBFitsExt.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.FormatException.java">nom/tam/util/FormatException.java</a>
                 </td>
                 <td>
@@ -467,6 +523,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.InstrumentDescription.java">nom/tam/fits/header/InstrumentDescription.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.extra.CXCStclSharedExt.java">nom/tam/fits/header/extra/CXCStclSharedExt.java</a>
                 </td>
                 <td>
                   0
@@ -522,20 +592,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.ObservationDescription.java">nom/tam/fits/header/ObservationDescription.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.FitsFactory.java">nom/tam/fits/FitsFactory.java</a>
                 </td>
                 <td>
@@ -546,6 +602,34 @@ under the License.
                 </td>
                 <td>
                   3
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.package-info.java">nom/tam/fits/header/package-info.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.ObservationDescription.java">nom/tam/fits/header/ObservationDescription.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
                 </td>
               </tr>
                           <tr>
@@ -643,7 +727,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  45
+                  46
                 </td>
               </tr>
                           <tr>
@@ -671,7 +755,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  0
+                  1
                 </td>
               </tr>
                           <tr>
@@ -742,6 +826,20 @@ under the License.
                 </td>
                 <td>
                   5
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.extra.StandardExtraExt.java">nom/tam/fits/header/extra/StandardExtraExt.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
                 </td>
               </tr>
                           <tr>
@@ -970,6 +1068,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.Synonyms.java">nom/tam/fits/header/Synonyms.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.utilities.FitsCopy.java">nom/tam/fits/utilities/FitsCopy.java</a>
                 </td>
                 <td>
@@ -1092,6 +1204,20 @@ under the License.
                 </td>
                 <td>
                   8
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.extra.CXCExt.java">nom/tam/fits/header/extra/CXCExt.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
                 </td>
               </tr>
                       </tbody>
