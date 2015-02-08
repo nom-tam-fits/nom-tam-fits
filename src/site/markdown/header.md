@@ -15,14 +15,33 @@ All included dictionaries of organisations can be found in the [nom.tam.fits.hea
 
 Currently we included:
 
-| Name             |  extention of    |  url |  
-| ---------------- | ---------------- | ---- |
-| Standard         |  -               |  [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) |
-| Common standard  |  Standard        |  [http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html) |
-| extra  standard  |  Common standard |  we found these duplicated |
-| NOAO             |  extra  standard |  [http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html) |
-| SBFits           |  extra  standard |  [http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf](http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf) |
-| MaxImDL          |  SBFits          |  [http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm) |
+* Standard
+   source: [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) |
+* Common standard
+  inherits from Standard
+  source: [http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html) |
+* extra  standard
+  inherits from Common standard
+  source: we found these duplicated |
+* NOAO
+  inherits from extra  standard
+  source: [http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html) |
+* SBFits
+  inherits from extra  standard
+  source: [http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf](http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf) |
+* MaxImDL
+  inherits from SBFits
+  source: [http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm) |
+* CXCStclShared
+  inherits from extra  standard
+  source: we found these duplicated |
+* CXC
+  inherits from CXCStclShared
+  source: [http://cxc.harvard.edu/contrib/arots/fits/content.txt](http://cxc.harvard.edu/contrib/arots/fits/content.txt) |
+* STScI
+  inherits from CXCStclShared
+  source: [http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html) |
+
 
 All duplicates where eliminated from enumerations including the enumerations that where already defined in one of the "parent" standards. So always use a keyword of one of the 
 higher level standards when possible.
@@ -33,3 +52,5 @@ primary keyword to use in stead of the synonym.
 All these enums have no real effect for now in the library appart from the fact that you can now make compiler checked references to keywords (No more pruney String references).
 Future versions of the library will try to validate against them and warn you if you use a "strange" constellation, or a depricated keyword.
 
+These are the dictionaries we collected and tried to find the depricated/synonym/inherited headers and we need help, if you find an other dictionary or some missing/wrong keywords
+please report it, any way is ok but the most appriciated would be a pull request. 

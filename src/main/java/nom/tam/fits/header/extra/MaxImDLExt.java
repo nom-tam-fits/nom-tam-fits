@@ -33,9 +33,6 @@ package nom.tam.fits.header.extra;
 
 import nom.tam.fits.header.FitsHeaderImpl;
 import nom.tam.fits.header.IFitsHeader;
-import nom.tam.fits.header.IFitsHeader.HDU;
-import nom.tam.fits.header.IFitsHeader.SOURCE;
-import nom.tam.fits.header.IFitsHeader.VALUE;
 
 /**
  * The Fits extension as defined by Maxim DL.Extension keywords that may be

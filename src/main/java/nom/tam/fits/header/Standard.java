@@ -382,6 +382,17 @@ public enum Standard implements IFitsHeader {
     PZEROn(SOURCE.RESERVED, HDU.GROUPS, VALUE.REAL, "parameter scaling zero point"),
 
     /**
+     * Coordinate reference frame of major/minor axes.If absent the default
+     * value is 'FK5'.
+     */
+    RADESYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Coordinate reference frame of major/minor axes."),
+    /**
+     * Coordinate reference frame of major/minor axes. use RADESYS instread.
+     */
+    @Deprecated
+    RADECSYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Coordinate reference frame of major/minor axes."),
+
+    /**
      * The value field shall contain a character string citing a reference where
      * the data associated with the key are published.
      */

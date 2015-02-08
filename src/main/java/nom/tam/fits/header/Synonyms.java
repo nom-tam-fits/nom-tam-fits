@@ -1,5 +1,8 @@
 package nom.tam.fits.header;
 
+import nom.tam.fits.header.extra.NOAOExt;
+import nom.tam.fits.header.extra.STScIExt;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -38,7 +41,9 @@ package nom.tam.fits.header;
  * @author Richard van Nieuwenhoven
  */
 public enum Synonyms {
-    EQUINOX(Standard.EQUINOX, Standard.EPOCH);
+    EQUINOX(Standard.EQUINOX, Standard.EPOCH),
+    TIMESYS(NOAOExt.TIMESYS, STScIExt.TIMESYS),
+    RADESYS(Standard.RADESYS, Standard.RADECSYS);
 
     private final IFitsHeader primaryKeyword;
 

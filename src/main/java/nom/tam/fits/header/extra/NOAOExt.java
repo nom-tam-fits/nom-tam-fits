@@ -33,9 +33,6 @@ package nom.tam.fits.header.extra;
 
 import nom.tam.fits.header.FitsHeaderImpl;
 import nom.tam.fits.header.IFitsHeader;
-import nom.tam.fits.header.IFitsHeader.HDU;
-import nom.tam.fits.header.IFitsHeader.SOURCE;
-import nom.tam.fits.header.IFitsHeader.VALUE;
 
 /**
  * This keyword dictionary defines keywords which may be used in image data
@@ -5577,34 +5574,7 @@ public enum NOAOExt implements IFitsHeader {
      * </p>
      */
     MINNSCAN(HDU.EXTENSION, VALUE.INTEGER, "Minimum number of scanned lines"),
-    /**
-     * Modified Julian date at the start of the exposure. The fractional part of
-     * the date is given to better than a second of time.
-     * <p>
-     * units = 'd'
-     * </p>
-     * <p>
-     * default value = none
-     * </p>
-     * <p>
-     * index = none
-     * </p>
-     */
-    MJD_OBS("MJD-OBS", HDU.PRIMARY_EXTENSION, VALUE.REAL, "MJD of exposure start"),
-    /**
-     * Modified Julian date at the end of the exposure. The fractional part of
-     * the date is given to better than a second of time.
-     * <p>
-     * units = 'd'
-     * </p>
-     * <p>
-     * default value = none
-     * </p>
-     * <p>
-     * index = none
-     * </p>
-     */
-    MJDEND(HDU.PRIMARY_EXTENSION, VALUE.REAL, "MJD at end of exposure"),
+
     /**
      * Modified Julian date when the image header was created by the software.
      * The fractional part of the date is given to better than a second of time.
@@ -6520,16 +6490,7 @@ public enum NOAOExt implements IFitsHeader {
      * </p>
      */
     RADECEQ(HDU.PRIMARY_EXTENSION, VALUE.REAL, "Default coordinate equinox"),
-    /**
-     * Default coordinate system type. If absent the default value is 'FK5'.
-     * <p>
-     * default value = 'FK5'
-     * </p>
-     * <p>
-     * index = none
-     * </p>
-     */
-    RADECSYS(HDU.PRIMARY, VALUE.STRING, "Default coordinate system"),
+
     /**
      * Projected position angle of the positive right ascension axis on the
      * detector. The position angle is measured clockwise from the image y axis.
@@ -8153,7 +8114,21 @@ public enum NOAOExt implements IFitsHeader {
      * index = none
      * </p>
      */
-    ZD(HDU.PRIMARY, VALUE.REAL, "Zenith distance");
+    ZD(HDU.PRIMARY, VALUE.REAL, "Zenith distance"),
+    /**
+     * Modified Julian date at the start of the exposure. The fractional part of
+     * the date is given to better than a second of time.
+     * <p>
+     * units = 'd'
+     * </p>
+     * <p>
+     * default value = none
+     * </p>
+     * <p>
+     * index = none
+     * </p>
+     */
+    MJD_OBS("MJD-OBS", HDU.PRIMARY_EXTENSION, VALUE.REAL, "MJD of exposure start");
 
     private IFitsHeader key;
 

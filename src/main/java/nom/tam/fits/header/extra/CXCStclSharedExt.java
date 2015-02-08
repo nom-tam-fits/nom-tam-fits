@@ -35,36 +35,63 @@ import nom.tam.fits.header.FitsHeaderImpl;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
- * A Set of FITS Standard Extensions that are detected as shared between alle
- * extra headers.
+ * This is the file represents the common keywords between CXC and STSclExt
  * 
- * @author Richard van Nieuwenhoven.
+ * @author Richard van Nieuwenhoven
  */
-public enum StandardExtraExt implements IFitsHeader {
+public enum CXCStclSharedExt implements IFitsHeader {
     /**
-     * Total dark time of the observation. This is the total time during which
-     * dark current is collected by the detector. If the times in the extension
-     * are different the primary HDU gives one of the extension times.
+     * Clock correction applied
      * <p>
-     * units = UNITTIME
-     * </p>
-     * <p>
-     * default value = EXPTIME
-     * </p>
-     * <p>
-     * index = none
+     * T
      * </p>
      */
-    DARKTIME(SOURCE.NOAO, HDU.PRIMARY_EXTENSION, VALUE.REAL, "Dark time");
+    CLOCKAPP("Clock correction applied"),
+    /**
+     * 1998-01-01T00:00:00 (TT) expressed in MJD (TT)
+     */
+    MJDREF("1998-01-01T00:00:00 (TT) expressed in MJD"),
+    /**
+     * Spacecraft clock
+     */
+    TASSIGN("Spacecraft clock"),
+    /**
+     * Time resolution of data (in seconds)
+     */
+    TIMEDEL("Time resolution of data (in seconds)"),
+    /**
+     * No pathlength corrections
+     */
+    TIMEREF("No pathlength corrections"),
+    /**
+     * Units of time e.g. 's'
+     */
+    TIMEUNIT("Units of time "),
+    /**
+     * AXAF FITS design document
+     */
+    TIMVERSN("AXAF FITS design document"),
+    /**
+     * Clock correction (if not zero)
+     */
+    TIMEZERO("Clock correction (if not zero)"),
+    /**
+     * As in the "TIME" column: raw space craft clock;
+     */
+    TSTART("As in the \"TIME\" column: raw space craft clock;"),
+    /**
+     * add TIMEZERO and MJDREF for absolute TT
+     */
+    TSTOP("add TIMEZERO and MJDREF for absolute TT");
 
     private IFitsHeader key;
 
-    private StandardExtraExt(SOURCE source, HDU hdu, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(name(), source, hdu, valueType, comment);
+    private CXCStclSharedExt(String comment) {
+        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
     }
 
-    private StandardExtraExt(String key, SOURCE source, HDU hdu, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(name(), source, hdu, valueType, comment);
+    private CXCStclSharedExt(String key, String comment) {
+        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
     }
 
     @Override
