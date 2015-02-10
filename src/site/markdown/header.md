@@ -1,26 +1,27 @@
-# Fits header keywords
+# FITS header keywords
 
-There many many sources of fits keywords, many organisations (or groups of organisations) defined there own sets of keywords.
-This results in many different dictionaries with partly overlapping definitions. To help the "normal" user of fits files
-with these we started to collect the standards and will try to include them in this library to ease the use of the "right" 
+There many many sources of FITS keywords, many organisations (or groups of organisations) defined their own sets of keywords.
+This results in many different dictionaries with partly overlapping definitions. To help the "normal" user of FITS files
+with these, we have started to collect the standards and will try to include them in this library to ease finding of the "right" 
 keyword.
 
-These dicrionaries are organized in a hirachical form, that means every ditionary extends the list of keywords of an other dictionary.
-The root of this tree of dictionaries is the dictionary used in the standard text itself. Under that is a dictionary that resulted from
-different libraries that used the same keywords, these are collected in a dicrionary with commonly used keywords.
+These dictionaries are organized in a hierarchical form, that means every dictionary extends the list of keywords of another dictionary.
+The root of this tree of dictionaries is the dictionary used in 
+the FITS standard itself. Below that is a dictionary that with entries from
+different libraries that used the same keywords. These are collected in a dictionary with commonly used keywords.
 
 These enumerations of keywords (dictionaries) can be found in and under the package [nom.tam.fits.header](./apidocs/nom/tam/fits/header/package-summary.html "nom.tam.fits.header").
-The standard and commonly used keywords can be found there, where the commonly used keywords are sorted in separate enumerations by theme.
+The standard and commonly used keywords can be found there. Commonly used keywords are sorted in separate enumerations by theme.
 All included dictionaries of organisations can be found in the [nom.tam.fits.header.extra](./apidocs/nom/tam/fits/header/extra/package-summary.html "nom.tam.fits.header.extra") package.  
 
-Currently we included:
+Currently we include:
 
 * Standard
    source: [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) |
 * Common standard
   inherits from Standard
   source: [http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html) |
-* extra  standard
+* Extra  standard
   inherits from Common standard
   source: we found these duplicated |
 * NOAO
@@ -43,14 +44,16 @@ Currently we included:
   source: [http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html) |
 
 
-All duplicates where eliminated from enumerations including the enumerations that where already defined in one of the "parent" standards. So always use a keyword of one of the 
+All duplicates where eliminated from enumerations (including enumerations that defined in one of the "parent" standards). So always use a keyword of one of the 
 higher level standards when possible.
 
-Furdermore there are synonym keywords inside and over dicrionaries, These we also started to collect in the Synonyms class in the header package. So you can easlly find the 
+Furthermore we have identified synonym keywords inside and between dictionaries. We have also started to collect these in the Synonyms class in the header package. So you can easily find the 
 primary keyword to use in stead of the synonym. 
 
-All these enums have no real effect for now in the library appart from the fact that you can now make compiler checked references to keywords (No more pruney String references).
-Future versions of the library will try to validate against them and warn you if you use a "strange" constellation, or a depricated keyword.
+Currently these enums have no real effect in the library. But you can now make compiler check references to keywords (No more pruney String references).
+Future versions of the library will try to validate using these dictionaries and warn you if you use a keyword inappropriately (e.g., wrong data type,
+wrong HDU or deprecated keyword).
 
-These are the dictionaries we collected and tried to find the depricated/synonym/inherited headers and we need help, if you find an other dictionary or some missing/wrong keywords
-please report it, any way is ok but the most appriciated would be a pull request. 
+We would appreciate any additional help in correcting errors in these definitions
+or adding new dictionaries.  While we are happy to receive information in any format,
+a pull request will work best.

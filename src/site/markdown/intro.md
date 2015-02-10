@@ -11,6 +11,7 @@ FITS is a binary format devised and primarily used for the storage of astronomic
 There are four basic types of HDU: 
 
 Image HDUs can store an array (the image) of 1-8 dimensions with a type corresponding to Java bytes, shorts, ints, longs, floats or double:  e.g., a one-dimensional time series where each bin in the array represents a constant interval, or a three-dimensional image cube with separate channels for different energies.   
+
 A random-groups HDU can contain a list of such ‘images’ where there is a header of parameters for each image.  The header comprises 0 or more elements of the same type as the image.  Each image in the random groups HDU has the same dimensionality.  A random-groups HDU might store a set of 2-D images each of which has a two-element header giving the center of the image.
 
 ASCII tables can store floating point, string and integer scalars.  The data are stored as ASCII strings using a fixed format within the table for each column.  There are essentially no limits on the size and precision of the values to be represented.  In principle, ASCII tables can represent data that cannot be conveniently represented using Java primitive types.  In practice the source data are common computer types and the nom.tam library is able to accurately decode the table values.  An ASCII table might represent a catalog of sources.

@@ -1,33 +1,33 @@
 /**
  * <p>
- * There many many sources of fits keywords, many organisations (or groups of
- * organisations) defined there own sets of keywords. This results in many
+ * There many many sources of FITS keywords. In addition to the standards
+ * documents many organisations (or groups of
+ * organisations) have defined their own sets of keywords. This results in many
  * different dictionaries with partly overlapping definitions. To help the
- * "normal" user of fits files with these we started to collect the standards
+ * "normal" user of FITS files with these we started to collect the standards
  * and will try to include them in this library to ease the use of the "right"
  * keyword.
  * </p>
  * <p>
- * These dicrionaries are organized in a hirachical form, that means every
- * ditionary extends the list of keywords of an other dictionary. The root of
+ * These dictionaries are organized in a hierarchical form, that means every
+ * dictionary extends the list of keywords of another dictionary. The root of
  * this tree of dictionaries is the dictionary used in the standard text itself.
  * Under that is a dictionary that resulted from different libraries that used
- * the same keywords, these are collected in a dicrionary with commonly used
+ * the same keywords, these are collected in a dictionary with commonly used
  * keywords.
  * </p>
  * <p>
  * These enumerations of keywords (dictionaries) can be found in and under the
- * package
+ * package:
  * [nom.tam.fits.header](./apidocs/nom/tam/fits/header/package-summary.html
- * "nom.tam.fits.header"). The standard and commonly used keywords can be found
+ * "nom.tam.fits.header"). Standard and commonly used keywords can be found
  * there, where the commonly used keywords are sorted in separate enumerations
  * by theme. All included dictionaries of organisations can be found in the
- * [nom.
- * tam.fits.header.extra](./apidocs/nom/tam/fits/header/extra/package-summary
+ * [nom.tam.fits.header.extra](./apidocs/nom/tam/fits/header/extra/package-summary
  * .html "nom.tam.fits.header.extra") package.
  * </p>
  * <p>
- * Currently we included:
+ * Currently we include:
  * 
  * <pre>
  * | Name             |  extention of    |  url |  
@@ -47,16 +47,17 @@
  * keyword of one of the higher level standards when possible.
  * </p>
  * <p>
- * Furdermore there are synonym keywords inside and over dicrionaries, These we
+ * Furthermore there are synonym keywords inside and over dictionaries, These we
  * also started to collect in the Synonyms class in the header package. So you
- * can easlly find the primary keyword to use in stead of the synonym.
+ * can easily find the primary keyword to use instead of the synonym.
  * </p>
  * <p>
- * All these enums have no real effect for now in the library appart from the
+ * All these enums have no real effect for now in the library apart from the
  * fact that you can now make compiler checked references to keywords (No more
  * pruney String references). Future versions of the library will try to
- * validate against them and warn you if you use a "strange" constellation, or a
- * depricated keyword.
+ * validate against them and warn you if you appear to be using a keyword inapprpopriately
+ * (in the wrong HDU, wrong type, etc)
+ * deprecated keyword.
  * </p>
  */
 package nom.tam.fits.header;
@@ -91,4 +92,3 @@ package nom.tam.fits.header;
  * OTHER DEALINGS IN THE SOFTWARE.
  * #L%
  */
-
