@@ -33,6 +33,9 @@ package nom.tam.fits.header.extra;
 
 import nom.tam.fits.header.FitsHeaderImpl;
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.IFitsHeader.HDU;
+import nom.tam.fits.header.IFitsHeader.SOURCE;
+import nom.tam.fits.header.IFitsHeader.VALUE;
 
 /**
  * This keyword dictionary defines keywords which may be used in image data
@@ -2974,7 +2977,21 @@ public enum NOAOExt implements IFitsHeader {
      * </p>
      */
     CUNIT2(HDU.EXTENSION, VALUE.STRING, "Coordinate reference unit"),
-
+    /**
+     * Total dark time of the observation. This is the total time during which
+     * dark current is collected by the detector. If the times in the extension
+     * are different the primary HDU gives one of the extension times.
+     * <p>
+     * units = UNITTIME
+     * </p>
+     * <p>
+     * default value = EXPTIME
+     * </p>
+     * <p>
+     * index = none
+     * </p>
+     */
+    DARKTIME(HDU.PRIMARY_EXTENSION, VALUE.REAL, "Dark time"),
     /**
      * Mapping of the CCD section to image coordinates.
      * <p>
@@ -8156,7 +8173,7 @@ public enum NOAOExt implements IFitsHeader {
     }
 
     @Override
-    public IFitsHeader n(int number) {
+    public IFitsHeader n(int... number) {
         return key.n(number);
     }
 

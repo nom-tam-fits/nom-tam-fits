@@ -249,7 +249,7 @@ public enum MaxImDLExt implements IFitsHeader {
     }
 
     @Override
-    public IFitsHeader n(int number) {
+    public IFitsHeader n(int... number) {
         return key.n(number);
     }
 

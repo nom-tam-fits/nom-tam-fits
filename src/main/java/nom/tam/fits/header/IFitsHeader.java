@@ -148,7 +148,7 @@ public interface IFitsHeader {
 
     String key();
 
-    IFitsHeader n(int number);
+    IFitsHeader n(int... number);
 
     SOURCE status();
 

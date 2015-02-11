@@ -33,32 +33,63 @@ package nom.tam.fits.test;
 
 import static nom.tam.fits.header.InstrumentDescription.FILTER;
 import static nom.tam.fits.header.Standard.INSTRUME;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.extra.NOAOExt.WATn_nnn;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
-import nom.tam.fits.header.Standard;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-public class StdHeaderTest {
-
-    /**
-     * Check out header manipulation.
-     */
-    @Test
-    public void headerIndexes() throws Exception {
-
-        Assert.assertEquals("NAXIS1", Standard.NAXISn.n(1).key());
-
-    }
+/**
+ * Check out header manipulation.
+ */
+public class EnumHeaderTest {
 
     @Test
     public void exampleHeaderEnums() throws Exception {
+        Header hdr = createHeader();
+
+        // now some simple keywords
+        hdr.addValue(INSTRUME, "My very big telescope");
+        hdr.addValue(FILTER, "meade #25A Red");
+
+        // and check if the simple keywords reached there destination.
+        Assert.assertEquals("My very big telescope", hdr.getStringValue(INSTRUME.name()));
+        Assert.assertEquals("meade #25A Red", hdr.getStringValue(FILTER.name()));
+    }
+
+    @Test
+    public void simpleHeaderIndexes() throws Exception {
+        Header hdr = createHeader();
+
+        // ok the header NAXISn has a index, the 'n' in the keyword
+        hdr.addValue(NAXISn.n(1), 10);
+        hdr.addValue(NAXISn.n(2), 20);
+
+        // lets check if the right values where set when we ask for the keyword
+        // by String
+        Assert.assertEquals(10, hdr.getIntValue("NAXIS1"));
+        Assert.assertEquals(20, hdr.getIntValue("NAXIS2"));
+    }
+
+    @Test
+    public void multiyHeaderIndexes() throws Exception {
+        Header hdr = createHeader();
+
+        // now we take a header with multiple indexes
+        hdr.addValue(WATn_nnn.n(9, 2, 3, 4), "50");
+
+        // lets check is the keyword was correctly cearted
+        Assert.assertEquals("50", hdr.getStringValue("WAT9_234"));
+    }
+
+    public Header createHeader() throws FitsException {
         byte[][] bimg = new byte[20][20];
         BasicHDU hdu = Fits.makeHDU(bimg);
         Header hdr = hdu.getHeader();
-        hdr.addValue(INSTRUME, "My very big telescope");
-        hdr.addValue(FILTER, "meade #25A Red");
+        return hdr;
     }
 }

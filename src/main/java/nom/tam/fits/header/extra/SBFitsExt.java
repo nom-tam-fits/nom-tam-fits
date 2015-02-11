@@ -87,6 +87,21 @@ public enum SBFitsExt implements IFitsHeader {
      */
     CWHITE(VALUE.INTEGER, "use this ADU level for the White"),
     /**
+     * Total dark time of the observation. This is the total time during which
+     * dark current is collected by the detector. If the times in the extension
+     * are different the primary HDU gives one of the extension times.
+     * <p>
+     * units = UNITTIME
+     * </p>
+     * <p>
+     * default value = EXPTIME
+     * </p>
+     * <p>
+     * index = none
+     * </p>
+     */
+    DARKTIME(VALUE.REAL, "Dark time"),
+    /**
      * Electronic gain in e-/ADU.
      */
     EGAIN(VALUE.REAL, "Electronic gain in e-/ADU"),
@@ -224,7 +239,7 @@ public enum SBFitsExt implements IFitsHeader {
     }
 
     @Override
-    public IFitsHeader n(int number) {
+    public IFitsHeader n(int... number) {
         return key.n(number);
     }
 

@@ -17,31 +17,28 @@ All included dictionaries of organisations can be found in the [nom.tam.fits.hea
 Currently we include:
 
 * Standard
-   source: [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) |
+   source: [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) 
 * Common standard
   inherits from Standard
-  source: [http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html) |
-* Extra  standard
-  inherits from Common standard
-  source: we found these duplicated |
+  source: [http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html) 
 * NOAO
-  inherits from extra  standard
-  source: [http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html) |
+  inherits from Common standard
+  source: [http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html) 
 * SBFits
-  inherits from extra  standard
-  source: [http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf](http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf) |
+  inherits from Common standard
+  source: [http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf](http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf) 
 * MaxImDL
   inherits from SBFits
-  source: [http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm) |
+  source: [http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm) 
 * CXCStclShared
-  inherits from extra  standard
-  source: we found these duplicated |
+  inherits from Common standard
+  source: we found these duplicated 
 * CXC
   inherits from CXCStclShared
-  source: [http://cxc.harvard.edu/contrib/arots/fits/content.txt](http://cxc.harvard.edu/contrib/arots/fits/content.txt) |
+  source: [http://cxc.harvard.edu/contrib/arots/fits/content.txt](http://cxc.harvard.edu/contrib/arots/fits/content.txt) 
 * STScI
   inherits from CXCStclShared
-  source: [http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html) |
+  source: [http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html) 
 
 
 All duplicates where eliminated from enumerations (including enumerations that defined in one of the "parent" standards). So always use a keyword of one of the 
@@ -57,3 +54,25 @@ wrong HDU or deprecated keyword).
 We would appreciate any additional help in correcting errors in these definitions
 or adding new dictionaries.  While we are happy to receive information in any format,
 a pull request will work best.
+
+## How to use them
+
+To use the header keywords, just make static imports of them and use them just as you would have used strings. Here a simple example:
+
+	import static nom.tam.fits.header.InstrumentDescription.FILTER;
+	import static nom.tam.fits.header.Standard.INSTRUME;
+	...
+	hdr.addValue(INSTRUME, "My very big telescope");
+	hdr.addValue(FILTER, "meade #25A Red");
+	...
+
+Some keywords have indexes that must be specified, just call the n() method on the keyword and specify the indexes you want. You must spececify one integer per 'n' in the keyword.
+
+	import static nom.tam.fits.header.extra.NOAOExt.WATn_nnn;
+	...
+	hdr.addValue(WATn_nnn.n(9, 2, 3, 4), "50");
+
+Now you can use the compiler to check your keywords, and also use your IDE to easelly find references to certain keywords.
+
+
+ 

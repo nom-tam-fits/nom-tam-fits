@@ -1,12 +1,11 @@
 /**
  * <p>
  * There many many sources of FITS keywords. In addition to the standards
- * documents many organisations (or groups of
- * organisations) have defined their own sets of keywords. This results in many
- * different dictionaries with partly overlapping definitions. To help the
- * "normal" user of FITS files with these we started to collect the standards
- * and will try to include them in this library to ease the use of the "right"
- * keyword.
+ * documents many organisations (or groups of organisations) have defined their
+ * own sets of keywords. This results in many different dictionaries with partly
+ * overlapping definitions. To help the "normal" user of FITS files with these
+ * we started to collect the standards and will try to include them in this
+ * library to ease the use of the "right" keyword.
  * </p>
  * <p>
  * These dictionaries are organized in a hierarchical form, that means every
@@ -18,26 +17,36 @@
  * </p>
  * <p>
  * These enumerations of keywords (dictionaries) can be found in and under the
- * package:
- * [nom.tam.fits.header](./apidocs/nom/tam/fits/header/package-summary.html
- * "nom.tam.fits.header"). Standard and commonly used keywords can be found
- * there, where the commonly used keywords are sorted in separate enumerations
- * by theme. All included dictionaries of organisations can be found in the
- * [nom.tam.fits.header.extra](./apidocs/nom/tam/fits/header/extra/package-summary
- * .html "nom.tam.fits.header.extra") package.
- * </p>
- * <p>
+ * packages:
+ * 
+ * {@link nom.tam.fits.header} {@link nom.tam.fits.header.extra}
+ * 
  * Currently we include:
  * 
  * <pre>
- * | Name             |  extention of    |  url |  
- * | ---------------- | ---------------- | ---- |
- * | Standard         |  -               |  [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) |
- * | Common standard  |  Standard        |  [http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html) |
- * | extra  standard  |  Common standard |  we found these duplicated |
- * | NOAO             |  extra  standard |  [http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html) |
- * | SBFits           |  extra  standard |  [http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf](http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf) |
- * | MaxImDL          |  SBFits          |  [http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm) |
+ * Standard
+ *    source: [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) |
+ * Common standard
+ *   inherits from Standard
+ *   source: [http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html) |
+ * NOAO
+ *   inherits from Common standard
+ *   source: [http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html) 
+ * SBFits
+ *   inherits from Common standard
+ *   source: [http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf](http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf) 
+ * MaxImDL
+ *   inherits from SBFits
+ *   source: [http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm) 
+ * CXCStclShared
+ *   inherits from Common standard
+ *   source: we found these duplicated 
+ * CXC
+ *   inherits from CXCStclShared
+ *   source: [http://cxc.harvard.edu/contrib/arots/fits/content.txt](http://cxc.harvard.edu/contrib/arots/fits/content.txt) 
+ * STScI
+ *   inherits from CXCStclShared
+ *   source: [http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)  |
  * </pre>
  * 
  * </p>
@@ -55,9 +64,8 @@
  * All these enums have no real effect for now in the library apart from the
  * fact that you can now make compiler checked references to keywords (No more
  * pruney String references). Future versions of the library will try to
- * validate against them and warn you if you appear to be using a keyword inapprpopriately
- * (in the wrong HDU, wrong type, etc)
- * deprecated keyword.
+ * validate against them and warn you if you appear to be using a keyword
+ * inapprpopriately (in the wrong HDU, wrong type, etc) deprecated keyword.
  * </p>
  */
 package nom.tam.fits.header;

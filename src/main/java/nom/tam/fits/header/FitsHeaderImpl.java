@@ -31,16 +31,11 @@ package nom.tam.fits.header;
  * #L%
  */
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 public class FitsHeaderImpl implements IFitsHeader {
 
     private final String comment;
 
     private final HDU hdu;
-
-    private final Map<Integer, IFitsHeader> indexedHeaders;
 
     private final String key;
 
@@ -54,11 +49,6 @@ public class FitsHeaderImpl implements IFitsHeader {
         this.hdu = hdu;
         this.valueType = valueType;
         this.comment = comment;
-        if (this.key.charAt(this.key.length() - 1) == 'n') {
-            indexedHeaders = new LinkedHashMap<Integer, IFitsHeader>();
-        } else {
-            indexedHeaders = null;
-        }
     }
 
     @Override
@@ -77,13 +67,13 @@ public class FitsHeaderImpl implements IFitsHeader {
     }
 
     @Override
-    public IFitsHeader n(int number) {
-        IFitsHeader result = indexedHeaders.get(number);
-        if (result == null) {
-            result = new FitsHeaderImpl(key.substring(0, key.lastIndexOf('n')) + Integer.toString(number), status, hdu, valueType, comment);
-            indexedHeaders.put(number, result);
+    public IFitsHeader n(int... numbers) {
+        StringBuffer headerName = new StringBuffer(key);
+        for (int number : numbers) {
+            int indexOfN = headerName.indexOf("n");
+            headerName.replace(indexOfN, indexOfN + 1, Integer.toString(number));
         }
-        return result;
+        return new FitsHeaderImpl(headerName.toString(), status, hdu, valueType, comment);
     }
 
     @Override

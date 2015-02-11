@@ -1,6 +1,7 @@
 package nom.tam.fits.header;
 
 import nom.tam.fits.header.extra.NOAOExt;
+import nom.tam.fits.header.extra.SBFitsExt;
 import nom.tam.fits.header.extra.STScIExt;
 
 /*
@@ -43,7 +44,8 @@ import nom.tam.fits.header.extra.STScIExt;
 public enum Synonyms {
     EQUINOX(Standard.EQUINOX, Standard.EPOCH),
     TIMESYS(NOAOExt.TIMESYS, STScIExt.TIMESYS),
-    RADESYS(Standard.RADESYS, Standard.RADECSYS);
+    RADESYS(Standard.RADESYS, Standard.RADECSYS),
+    DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);
 
     private final IFitsHeader primaryKeyword;
 
