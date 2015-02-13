@@ -80,13 +80,13 @@ public class ByteParser {
      */
     public ByteParser(byte[] input) {
         this.input = input;
-        this.offset = 0;
+        offset = 0;
     }
 
     /** Set the buffer for the parser */
     public void setBuffer(byte[] buf) {
-        this.input = buf;
-        this.offset = 0;
+        input = buf;
+        offset = 0;
     }
 
     /** Get the buffer being used by the parser */
@@ -157,8 +157,6 @@ public class ByteParser {
         boolean error = true;
 
         double number = 0;
-        int i = 0;
-
         // Skip initial blanks.
         length -= skipWhite(length);
 

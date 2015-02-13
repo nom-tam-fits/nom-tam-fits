@@ -84,13 +84,12 @@ public class OutputBitStream {
 
     /** Initialize the bit stream and set the endianness */
     public OutputBitStream(OutputStream out, boolean littleEndian) {
-        this.output = out;
+        output = out;
         this.littleEndian = littleEndian;
     }
 
     /** Read from 0-32 bits */
     public void writeBits(int val, int n) throws IOException {
-        int result = 0;
         if (n <= 0) {
             return;
         } else if (n > 32) {
@@ -124,14 +123,14 @@ public class OutputBitStream {
                 dest = BYTESIZE - outOffset - getting;
             }
 
-            int x = (masks[getting] << base) & val;
+            int x = masks[getting] << base & val;
             // Do we need to shift the result left or right?
             if (base == dest) {
                 currentByte |= x;
             } else if (base > dest) {
-                currentByte |= (x >>> (base - dest));
+                currentByte |= x >>> base - dest;
             } else {
-                currentByte |= (x << (dest - base));
+                currentByte |= x << dest - base;
             }
 
             outOffset += getting;

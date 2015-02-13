@@ -46,6 +46,7 @@ public interface ArrayDataInput extends java.io.DataInput {
      *            A [multidimensional] primitive (or Object) array.
      * @deprecated See readLArray(Object o).
      */
+    @Deprecated
     public int readArray(Object o) throws IOException;
 
     /**

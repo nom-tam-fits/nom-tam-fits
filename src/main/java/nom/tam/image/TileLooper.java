@@ -61,6 +61,7 @@ public class TileLooper implements Iterable<TileDescriptor> {
 
         boolean first = true;
 
+        @Override
         public boolean hasNext() {
             return nextCandidate() != null;
         }
@@ -74,9 +75,8 @@ public class TileLooper implements Iterable<TileDescriptor> {
             int[] candidate = tileIndices.clone();
             boolean found = false;
             for (int i = 0; i < dim; i += 1) {
-                int len = tileSize[i];
                 int lastIndex = tileIndices[i] + 1;
-                if (lastIndex < (tilesCorner[i] + tilesCount[i])) {
+                if (lastIndex < tilesCorner[i] + tilesCount[i]) {
                     candidate[i] = lastIndex;
                     found = true;
                     break;
@@ -92,6 +92,7 @@ public class TileLooper implements Iterable<TileDescriptor> {
             }
         }
 
+        @Override
         public TileDescriptor next() {
             int[] cand = nextCandidate();
             if (cand == null) {
@@ -126,6 +127,7 @@ public class TileLooper implements Iterable<TileDescriptor> {
             return t;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException("Can't delete tile descriptors.");
         }
@@ -164,7 +166,7 @@ public class TileLooper implements Iterable<TileDescriptor> {
 
         this.imageSize = imageSize.clone();
         this.tileSize = tileSize.clone();
-        this.nTiles = new int[imageSize.length];
+        nTiles = new int[imageSize.length];
 
         if (imageSize == null || tileSize == null) {
             throw new IllegalArgumentException("Invalid null argument");
@@ -206,9 +208,10 @@ public class TileLooper implements Iterable<TileDescriptor> {
         // The first tile is at the specified corner (which is 0,0... if
         // the user didn't specify it.
 
-        this.tileIndices = tilesCorner.clone();
+        tileIndices = tilesCorner.clone();
     }
 
+    @Override
     public Iterator<TileDescriptor> iterator() {
         return new TileIterator();
     }

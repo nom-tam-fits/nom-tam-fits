@@ -65,6 +65,7 @@ public abstract class Data implements FitsElement {
     protected RandomAccess input;
 
     /** Get the file offset */
+    @Override
     public long getFileOffset() {
         return fileOffset;
     }
@@ -84,6 +85,7 @@ public abstract class Data implements FitsElement {
      * @param o
      *            The output stream on which to write the data.
      */
+    @Override
     public abstract void write(ArrayDataOutput o) throws FitsException;
 
     /**
@@ -93,8 +95,10 @@ public abstract class Data implements FitsElement {
      * @param i
      *            The input data stream
      */
+    @Override
     public abstract void read(ArrayDataInput i) throws FitsException;
 
+    @Override
     public void rewrite() throws FitsException {
 
         if (!rewriteable()) {
@@ -110,6 +114,7 @@ public abstract class Data implements FitsElement {
         }
     }
 
+    @Override
     public boolean reset() {
         try {
             FitsUtil.reposition(input, fileOffset);
@@ -119,6 +124,7 @@ public abstract class Data implements FitsElement {
         }
     }
 
+    @Override
     public boolean rewriteable() {
         if (input == null || fileOffset < 0 || (getTrueSize() + 2879) / 2880 != (dataSize + 2879) / 2880) {
             return false;
@@ -130,6 +136,7 @@ public abstract class Data implements FitsElement {
     abstract long getTrueSize();
 
     /** Get the size of the data element in bytes */
+    @Override
     public long getSize() {
         return FitsUtil.addPadding(getTrueSize());
     }

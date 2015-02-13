@@ -34,6 +34,11 @@ package nom.tam.fits;
 /* This class was contributed by David Glowacki */
 public class HeaderCardException extends FitsException {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     public HeaderCardException() {
         super();
     }

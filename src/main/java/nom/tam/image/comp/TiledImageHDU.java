@@ -300,21 +300,18 @@ public class TiledImageHDU extends BinaryTableHDU {
 
     private void populateData(Object kern, int bitpix, TileLooper tl, CompressionScheme cs) throws FitsException, IOException {
 
-        // Get rid of the dummy rows we initialized with.
-        BinaryTable bt = (BinaryTable) this.getData();
+        this.getData();
         this.deleteRows(0, 2);
 
         int tileCount = 0;
 
         Iterator<TileDescriptor> ti = tl.iterator();
         kernelClass = kern.getClass().getName();
-        BinaryTable table = (BinaryTable) getData();
+        getData();
 
         while (ti.hasNext()) {
             TileDescriptor td = ti.next();
-            int sz = 1;
-            for (int i = 0; i < td.size.length; i += 1) {
-                sz *= td.size[i];
+            for (int element : td.size) {
             }
             byte[] data;
             if (quant == null) {
@@ -342,7 +339,7 @@ public class TiledImageHDU extends BinaryTableHDU {
         hdr.addValue("ZBITPIX", old.getIntValue("BITPIX"), "The original bitpix value");
         hdr.addValue("ZNAXIS", axes.length, "The original NAXIS");
         for (int i = 0; i < axes.length; i += 1) {
-            String d = (i + 1) + "";
+            String d = i + 1 + "";
             hdr.addValue("ZNAXIS" + d, axes[i], "The original NAXIS" + d);
             hdr.addValue("ZTILE" + d, tiles[i], "The tile size along this axis");
         }
@@ -411,8 +408,8 @@ public class TiledImageHDU extends BinaryTableHDU {
 
     private byte[] getTileData(TileDescriptor td, Object kern, int bitpix) {
         int sz = Math.abs(bitpix) / 8;
-        for (int i = 0; i < td.size.length; i += 1) {
-            sz *= td.size[i];
+        for (int element : td.size) {
+            sz *= element;
         }
         int[] size = td.size;
         int[] corn = td.corner;
@@ -593,19 +590,17 @@ public class TiledImageHDU extends BinaryTableHDU {
     public ImageHDU getImageHDU() throws FitsException, IOException {
 
         int[] axes = new int[hdr.getIntValue("ZNAXIS")];
-        int bitpix = hdr.getIntValue("ZBITPIX");
+        hdr.getIntValue("ZBITPIX");
         int[] tiles = new int[axes.length];
-        boolean found = true;
         getDimens(axes, tiles);
 
         Object data = ArrayFuncs.newInstance(baseClass, ArrayFuncs.reverseIndices(axes));
         int[] dataCorner = new int[naxis];
 
         TileLooper tl = new TileLooper(axes, tiles);
-        Iterator<TileDescriptor> ti = tl.iterator();
+        tl.iterator();
 
         Object[] rows = (Object[]) getColumn("COMPRESSED_DATA");
-        int nTile = 0;
         String className = data.getClass().getName();
         for (TileDescriptor td : tl) {
             byte[] tileData = (byte[]) rows[td.count];
@@ -623,8 +618,8 @@ public class TiledImageHDU extends BinaryTableHDU {
         int tileLen = 1;
         int[] tsize = td.size;
 
-        for (int j = 0; j < tsize.length; j += 1) {
-            tileLen *= tsize[j];
+        for (int element : tsize) {
+            tileLen *= element;
         }
 
         tileData = cs.decompress(tileData, tileLen);
@@ -646,22 +641,6 @@ public class TiledImageHDU extends BinaryTableHDU {
         System.out.println("  " + td.count + " " + buf[0] + " " + buf[1] + " " + buf[2] + " " + buf[3] + " " + buf[4] + " " + buf[5] + " " + buf[6] + " " + buf[7]);
 
         return getTile(td, buf);
-    }
-
-    private void importKeywords(BasicHDU hdu) {
-        Header newHdr = hdu.getHeader();
-        Header oldHdr = getHeader();
-        Cursor newC = newHdr.iterator();
-        newC.setKey("END");
-        Cursor oldC = oldHdr.iterator();
-        oldC.setKey("NAXIS");
-        while (oldC.hasNext()) {
-            HeaderCard old = (HeaderCard) (oldC.next());
-            String key = old.getKey();
-            if (!reservedKeys.contains(key)) {
-                newC.add(old);
-            }
-        }
     }
 
     /**
@@ -697,7 +676,7 @@ public class TiledImageHDU extends BinaryTableHDU {
 
         int txCnt = tileSize[x];
         if (tileCorners[x] + tileSize[x] > cutoutCorners[x] + cutoutSize[x]) {
-            txCnt = (cutoutCorners[x] + cutoutSize[x] - tileCorners[x] - txStart);
+            txCnt = cutoutCorners[x] + cutoutSize[x] - tileCorners[x] - txStart;
         }
 
         if (className.charAt(level + 1) == '[') {
@@ -743,6 +722,7 @@ public class TiledImageHDU extends BinaryTableHDU {
 
     class TiledTiler implements ImageTiler {
 
+        @Override
         public Object getTile(int[] corners, int[] lengths) throws IOException {
             Object array = ArrayFuncs.newInstance(baseClass, ArrayFuncs.reverseIndices(lengths));
             getTile(array, corners, lengths);
@@ -752,13 +732,14 @@ public class TiledImageHDU extends BinaryTableHDU {
         /**
          * Fill a subset from the tiles
          */
+        @Override
         public void getTile(Object array, int[] corners, int[] lengths) throws IOException {
             System.err.println("Getting tile");
             // First compute the tiles that we are going to loop over.
             int[] tFirst = new int[naxis];
             int[] tCount = new int[naxis];
             for (int i = 0; i < naxis; i += 1) {
-                if (corners[i] < 0 || corners[i] >= imageSize[i] || (lengths[i] <= 0 || (corners[i] + lengths[i]) > imageSize[i])) {
+                if (corners[i] < 0 || corners[i] >= imageSize[i] || lengths[i] <= 0 || corners[i] + lengths[i] > imageSize[i]) {
                     throw new IllegalArgumentException("Invalid tile request");
                 }
                 tFirst[i] = corners[i] / tileSize[i];
@@ -768,7 +749,7 @@ public class TiledImageHDU extends BinaryTableHDU {
             // Create a tile looper that goes over the tiles we want.
             TileLooper tl = new TileLooper(imageSize, tileSize, tFirst, tCount);
             String cName = array.getClass().getName();
-            Class base = ArrayFuncs.getBaseClass(array);
+            ArrayFuncs.getBaseClass(array);
 
             for (TileDescriptor td : tl) {
                 try {
@@ -780,6 +761,7 @@ public class TiledImageHDU extends BinaryTableHDU {
             }
         }
 
+        @Override
         public Object getCompleteImage() throws IOException {
             System.err.println("Getting complete image");
             Object array = ArrayFuncs.newInstance(baseClass, ArrayFuncs.reverseIndices(imageSize));

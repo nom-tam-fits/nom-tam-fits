@@ -59,9 +59,6 @@ public class ColumnTable implements DataTable {
     /** The number of rows */
     private int nrow;
 
-    /** The number or rows to read/write in one I/O. */
-    private int chunk;
-
     /** The size of a row in bytes */
     private int rowSize;
 
@@ -119,6 +116,7 @@ public class ColumnTable implements DataTable {
     /**
      * Get the number of rows in the table.
      */
+    @Override
     public int getNRows() {
         return nrow;
     }
@@ -126,6 +124,7 @@ public class ColumnTable implements DataTable {
     /**
      * Get the number of columns in the table.
      */
+    @Override
     public int getNCols() {
         return arrays.length;
     }
@@ -138,6 +137,7 @@ public class ColumnTable implements DataTable {
      * @return an object containing the column data desired. This will be an
      *         instance of a 1-d primitive array.
      */
+    @Override
     public Object getColumn(int col) {
         return arrays[col];
     }
@@ -154,6 +154,7 @@ public class ColumnTable implements DataTable {
      *                Thrown when the new data is not commenserable with
      *                information in the table.
      */
+    @Override
     public void setColumn(int col, Object newColumn) throws TableException {
 
         boolean reset = newColumn.getClass() != arrays[col].getClass() || Array.getLength(newColumn) != Array.getLength(arrays[col]);
@@ -211,8 +212,8 @@ public class ColumnTable implements DataTable {
 
         if (arrays.length == 0) {
 
-            for (int i = 0; i < row.length; i += 1) {
-                addColumn(row[i], Array.getLength(row[i]));
+            for (Object element : row) {
+                addColumn(element, Array.getLength(element));
             }
 
         } else {
@@ -245,6 +246,7 @@ public class ColumnTable implements DataTable {
      * @return A primitive array containing the information. Note that an array
      *         will be returned even if the element is a scalar.
      */
+    @Override
     public Object getElement(int row, int col) {
 
         Object x = ArrayFuncs.newInstance(bases[col], sizes[col]);
@@ -265,6 +267,7 @@ public class ColumnTable implements DataTable {
      *                Thrown when the new data is not of the same type as the
      *                data it replaces.
      */
+    @Override
     public void setElement(int row, int col, Object x) throws TableException {
 
         String classname = x.getClass().getName();
@@ -287,6 +290,7 @@ public class ColumnTable implements DataTable {
      *            The row desired.
      * @return An array of objects each containing a primitive array.
      */
+    @Override
     public Object getRow(int row) {
 
         Object[] x = new Object[arrays.length];
@@ -307,6 +311,7 @@ public class ColumnTable implements DataTable {
      *            implementations may use other methods to store the data (e.g., @see
      *            nom.tam.util.ColumnTable)
      */
+    @Override
     public void setRow(int row, Object x) throws TableException {
 
         if (!(x instanceof Object[])) {
@@ -346,11 +351,8 @@ public class ColumnTable implements DataTable {
         int ratio = 0;
         int rowSize = 0;
 
-        this.types = new char[arrays.length];
-        this.bases = new Class[arrays.length];
-
-        // Check for a null table.
-        boolean nullTable = true;
+        types = new char[arrays.length];
+        bases = new Class[arrays.length];
 
         for (int i = 0; i < arrays.length; i += 1) {
 
@@ -363,7 +365,7 @@ public class ColumnTable implements DataTable {
             bases[i] = ArrayFuncs.getBaseClass(arrays[i]);
         }
 
-        this.nrow = ratio;
+        nrow = ratio;
         this.rowSize = rowSize;
         this.arrays = arrays;
         this.sizes = sizes;
@@ -376,7 +378,7 @@ public class ColumnTable implements DataTable {
         }
 
         int thisSize = Array.getLength(data);
-        if ((thisSize == 0 && size != 0 && ratio != 0) || (thisSize != 0 && size == 0)) {
+        if (thisSize == 0 && size != 0 && ratio != 0 || thisSize != 0 && size == 0) {
             throw new TableException("Size mismatch in column: " + thisSize + " != " + size);
         }
 
@@ -391,7 +393,7 @@ public class ColumnTable implements DataTable {
         if (size > 0) {
             thisRatio = thisSize / size;
 
-            if (ratio != 0 && (thisRatio != ratio)) {
+            if (ratio != 0 && thisRatio != ratio) {
                 throw new TableException("Different number of rows in different columns");
             }
         }
@@ -412,16 +414,12 @@ public class ColumnTable implements DataTable {
 
         // If a row is larger than bufSize, then read one row at a time.
         if (rowSize == 0) {
-            this.chunk = 0;
 
         } else if (rowSize > bufSize) {
-            this.chunk = 1;
 
             // If the entire set is not too big, just read it all.
         } else if (bufSize / rowSize >= nrow) {
-            this.chunk = nrow;
         } else {
-            this.chunk = bufSize / rowSize + 1;
         }
 
     }
@@ -609,8 +607,6 @@ public class ColumnTable implements DataTable {
      *            The input stream to read from.
      */
     public int read(ArrayDataInput is) throws IOException {
-
-        int currRow = 0;
 
         // While we have not finished reading the table..
         for (int row = 0; row < nrow; row += 1) {

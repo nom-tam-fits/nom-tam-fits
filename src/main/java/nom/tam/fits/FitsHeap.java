@@ -99,6 +99,7 @@ public class FitsHeap implements FitsElement {
     /**
      * Read the heap
      */
+    @Override
     public void read(ArrayDataInput str) throws FitsException {
 
         if (str instanceof RandomAccess) {
@@ -127,6 +128,7 @@ public class FitsHeap implements FitsElement {
     /**
      * Write the heap
      */
+    @Override
     public void write(ArrayDataOutput str) throws FitsException {
         allocate();
         try {
@@ -136,6 +138,7 @@ public class FitsHeap implements FitsElement {
         }
     }
 
+    @Override
     public boolean rewriteable() {
         return fileOffset >= 0 && input instanceof ArrayDataOutput && !expanded;
     }
@@ -145,6 +148,7 @@ public class FitsHeap implements FitsElement {
      * checking is done to make sure that the heap does not extend past its
      * prior boundaries.
      */
+    @Override
     public void rewrite() throws IOException, FitsException {
         allocate();
         if (rewriteable()) {
@@ -157,6 +161,7 @@ public class FitsHeap implements FitsElement {
 
     }
 
+    @Override
     public boolean reset() {
         try {
             FitsUtil.reposition(input, fileOffset);
@@ -254,6 +259,7 @@ public class FitsHeap implements FitsElement {
     /**
      * Return the size of the heap using the more bean compatible format
      */
+    @Override
     public long getSize() {
         return size();
     }
@@ -261,6 +267,7 @@ public class FitsHeap implements FitsElement {
     /**
      * Get the file offset of the heap
      */
+    @Override
     public long getFileOffset() {
         return fileOffset;
     }

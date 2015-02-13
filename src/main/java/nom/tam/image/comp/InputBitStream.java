@@ -87,7 +87,7 @@ public class InputBitStream {
 
     /** Initialize the bit stream to read from an input stream. */
     public InputBitStream(InputStream in) {
-        this.input = in;
+        input = in;
     }
 
     /** Read from 0-32 bits */
@@ -99,7 +99,6 @@ public class InputBitStream {
             throw new IllegalArgumentException("Can only ask for up to 32 bits");
         }
         int need = n;
-        int outOffset = 0;
         while (need > 0) {
             if (inOffset == BYTESIZE) {
                 getByte();
@@ -116,7 +115,7 @@ public class InputBitStream {
             // Or with the mask to get only the bits that haven't already been
             // read
             // Shift bits up to the proper location in the output value.
-            int bits = ((currentByte >> (8 - (inOffset + getting))) & masks[getting]) << (need - getting);
+            int bits = (currentByte >> 8 - (inOffset + getting) & masks[getting]) << need - getting;
 
             // Or them with the output value.
             result |= bits;

@@ -220,7 +220,7 @@ public enum SBFitsExt implements IFitsHeader {
     }
 
     private SBFitsExt(VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);
+        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);
     }
 
     @Override

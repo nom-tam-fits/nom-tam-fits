@@ -54,11 +54,13 @@ public class ImageHDU extends BasicHDU {
     }
 
     /** Indicate that Images can appear at the beginning of a FITS dataset */
+    @Override
     protected boolean canBePrimary() {
         return true;
     }
 
     /** Change the Image from/to primary */
+    @Override
     protected void setPrimaryHDU(boolean status) {
 
         try {
@@ -129,6 +131,7 @@ public class ImageHDU extends BasicHDU {
      * @exception FitsException
      *                if the image extension could not be created.
      */
+    @Override
     public Data manufactureData() throws FitsException {
         return manufactureData(myHeader);
     }
@@ -169,6 +172,7 @@ public class ImageHDU extends BasicHDU {
     /**
      * Print out some information about this HDU.
      */
+    @Override
     public void info() {
         if (isHeader(myHeader)) {
             System.out.println("  Image");

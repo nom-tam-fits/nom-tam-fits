@@ -87,6 +87,7 @@ public class UndefinedData extends Data {
      * @param head
      *            The FITS header
      */
+    @Override
     protected void fillHeader(Header head) {
 
         try {
@@ -105,6 +106,7 @@ public class UndefinedData extends Data {
 
     }
 
+    @Override
     public void read(ArrayDataInput i) throws FitsException {
         setFileOffset(i);
 
@@ -134,6 +136,7 @@ public class UndefinedData extends Data {
         }
     }
 
+    @Override
     public void write(ArrayDataOutput o) throws FitsException {
 
         if (data == null) {
@@ -155,6 +158,7 @@ public class UndefinedData extends Data {
     }
 
     /** Get the size in bytes of the data */
+    @Override
     protected long getTrueSize() {
         return byteSize;
     }
@@ -165,6 +169,7 @@ public class UndefinedData extends Data {
      * very commonly called method and we prefered not to change how users must
      * invoke it.
      */
+    @Override
     public Object getData() {
 
         if (data == null) {

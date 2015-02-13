@@ -199,7 +199,7 @@ public class BinaryTable extends Data implements TableData {
             throw new FitsException("Unable to allocate heap > 2GB");
         }
 
-        heap = new FitsHeap((heapSize - heapOffset));
+        heap = new FitsHeap(heapSize - heapOffset);
         nCol = myHeader.getIntValue("TFIELDS");
         rowLen = 0;
 
@@ -233,8 +233,8 @@ public class BinaryTable extends Data implements TableData {
         modelRow = new Object[o.length];
         extendArrays(o.length);
 
-        for (int i = 0; i < o.length; i += 1) {
-            addColumn(o[i]);
+        for (Object element : o) {
+            addColumn(element);
         }
     }
 
@@ -590,6 +590,7 @@ public class BinaryTable extends Data implements TableData {
     /**
      * Update a FITS header to reflect the current state of the data.
      */
+    @Override
     public void fillHeader(Header h) throws FitsException {
 
         try {
@@ -775,6 +776,7 @@ public class BinaryTable extends Data implements TableData {
      *            The index of the row to be returned.
      * @return A row of data.
      */
+    @Override
     public Object[] getRow(int row) throws FitsException {
 
         if (!validRow(row)) {
@@ -847,6 +849,7 @@ public class BinaryTable extends Data implements TableData {
      * @exception FitsException
      *                Thrown if the new row cannot match the existing data.
      */
+    @Override
     public void setRow(int row, Object data[]) throws FitsException {
 
         if (table == null) {
@@ -882,6 +885,7 @@ public class BinaryTable extends Data implements TableData {
      *                Thrown if the data does not match the current column
      *                description.
      */
+    @Override
     public void setColumn(int col, Object xcol) throws FitsException {
 
         xcol = arrayToColumn(col, xcol);
@@ -923,6 +927,7 @@ public class BinaryTable extends Data implements TableData {
      * @param col
      *            The index of the column.
      */
+    @Override
     public Object getColumn(int col) throws FitsException {
 
         if (table == null) {
@@ -938,7 +943,7 @@ public class BinaryTable extends Data implements TableData {
 
         if (bases[col] != String.class) {
 
-            if (!isVarCol(col) && (dimens[col].length > 0)) {
+            if (!isVarCol(col) && dimens[col].length > 0) {
 
                 int[] dims = new int[dimens[col].length + 1];
                 System.arraycopy(dimens[col], 0, dims, 1, dimens[col].length);
@@ -999,6 +1004,7 @@ public class BinaryTable extends Data implements TableData {
      * @param j
      *            The column of the element.
      */
+    @Override
     public Object getElement(int i, int j) throws FitsException {
 
         if (!validRow(i) || !validColumn(j)) {
@@ -1057,6 +1063,7 @@ public class BinaryTable extends Data implements TableData {
      *            An array of elements to be added. Each element of o should be
      *            an array of primitives or a String.
      */
+    @Override
     public int addRow(Object[] o) throws FitsException {
 
         if (table == null) {
@@ -1064,7 +1071,7 @@ public class BinaryTable extends Data implements TableData {
         }
 
         if (nCol == 0 && nRow == 0) {
-            for (int i = 0; i < o.length; i += 1) {
+            for (Object element : o) {
                 addColumn(o);
             }
         } else {
@@ -1094,6 +1101,7 @@ public class BinaryTable extends Data implements TableData {
      * @param len
      *            The number of rows to be deleted.
      */
+    @Override
     public void deleteRows(int row, int len) throws FitsException {
         try {
             getData();
@@ -1111,6 +1119,7 @@ public class BinaryTable extends Data implements TableData {
      *            An array of identically structured objects with the same
      *            number of elements as other columns in the table.
      */
+    @Override
     public int addColumn(Object o) throws FitsException {
 
         int primeDim = Array.getLength(o);
@@ -1224,13 +1233,13 @@ public class BinaryTable extends Data implements TableData {
 
         boolean varying = false;
         int len0 = o[0].length;
-        for (int i = 0; i < o.length; i += 1) {
-            if (o[i].length != len0) {
+        for (float[][] element : o) {
+            if (element.length != len0) {
                 varying = true;
             }
-            if (o[i].length > 0) {
-                for (int j = 0; j < o[i].length; j += 1) {
-                    if (o[i][j].length != 2) {
+            if (element.length > 0) {
+                for (int j = 0; j < element.length; j += 1) {
+                    if (element[j].length != 2) {
                         return false;
                     }
                 }
@@ -1242,13 +1251,13 @@ public class BinaryTable extends Data implements TableData {
     private boolean checkDCompVary(double[][][] o) {
         boolean varying = false;
         int len0 = o[0].length;
-        for (int i = 0; i < o.length; i += 1) {
-            if (o[i].length != len0) {
+        for (double[][] element : o) {
+            if (element.length != len0) {
                 varying = true;
             }
-            if (o[i].length > 0) {
-                for (int j = 0; j < o[i].length; j += 1) {
-                    if (o[i][j].length != 2) {
+            if (element.length > 0) {
+                for (int j = 0; j < element.length; j += 1) {
+                    if (element[j].length != 2) {
                         return false;
                     }
                 }
@@ -1285,8 +1294,8 @@ public class BinaryTable extends Data implements TableData {
 
         int size = 1;
 
-        for (int dim = 0; dim < dims.length; dim += 1) {
-            size *= dims[dim];
+        for (int dim2 : dims) {
+            size *= dim2;
         }
         sizes[nCol] = size;
 
@@ -1333,6 +1342,7 @@ public class BinaryTable extends Data implements TableData {
     /**
      * Get the number of rows in the table
      */
+    @Override
     public int getNRows() {
         return nRow;
     }
@@ -1340,6 +1350,7 @@ public class BinaryTable extends Data implements TableData {
     /**
      * Get the number of columns in the table.
      */
+    @Override
     public int getNCols() {
         return nCol;
     }
@@ -1366,7 +1377,7 @@ public class BinaryTable extends Data implements TableData {
      *            The Java index (first=0) of the column to check.
      */
     protected boolean validColumn(int j) {
-        return (j >= 0 && j < getNCols());
+        return j >= 0 && j < getNCols();
     }
 
     /**
@@ -1379,6 +1390,7 @@ public class BinaryTable extends Data implements TableData {
      * @param o
      *            The replacement data.
      */
+    @Override
     public void setElement(int i, int j, Object o) throws FitsException {
 
         getData();
@@ -1414,6 +1426,7 @@ public class BinaryTable extends Data implements TableData {
     /**
      * Read the data -- or defer reading on random access
      */
+    @Override
     public void read(ArrayDataInput i) throws FitsException {
 
         setFileOffset(i);
@@ -1487,8 +1500,9 @@ public class BinaryTable extends Data implements TableData {
     /**
      * Get the size of the data in the HDU sans padding.
      */
+    @Override
     public long getTrueSize() {
-        long len = ((long) nRow) * rowLen;
+        long len = (long) nRow * rowLen;
         if (heap.size() > 0) {
             len += heap.size() + heapOffset;
         }
@@ -1496,15 +1510,13 @@ public class BinaryTable extends Data implements TableData {
     }
 
     /** Write the table, heap and padding */
+    @Override
     public void write(ArrayDataOutput os) throws FitsException {
 
         getData();
-        int len;
-
         try {
 
-            // First write the table.
-            len = table.write(os);
+            table.write(os);
             if (heapOffset > 0) {
                 int off = heapOffset;
                 // Minimize memory usage. This also accommodates
@@ -1515,7 +1527,7 @@ public class BinaryTable extends Data implements TableData {
                 int arrSiz = 4000000;
                 while (off > 0) {
                     if (arrSiz > off) {
-                        arrSiz = (int) off;
+                        arrSiz = off;
                     }
                     os.write(new byte[arrSiz]);
                     off -= arrSiz;
@@ -1534,6 +1546,7 @@ public class BinaryTable extends Data implements TableData {
         }
     }
 
+    @Override
     public Object getData() throws FitsException {
 
         if (table == null) {
@@ -1910,15 +1923,11 @@ public class BinaryTable extends Data implements TableData {
         return (flags[col] & COL_BOOLEAN) != 0;
     }
 
-    /** Is this column a bit column */
-    private boolean isBit(int col) {
-        return (flags[col] & COL_BOOLEAN) != 0;
-    }
-
     /**
      * Delete a set of columns. Note that this does not fix the header, so users
      * should normally call the routine in TableHDU.
      */
+    @Override
     public void deleteColumns(int start, int len) throws FitsException {
         getData();
         try {
@@ -1930,6 +1939,7 @@ public class BinaryTable extends Data implements TableData {
     }
 
     /** Update the header after a deletion. */
+    @Override
     public void updateAfterDelete(int oldNcol, Header hdr) throws FitsException {
         hdr.addValue("NAXIS1", rowLen, "ntf::binarytable:naxis1:1");
     }

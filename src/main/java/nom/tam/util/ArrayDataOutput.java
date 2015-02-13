@@ -55,6 +55,7 @@ public interface ArrayDataOutput extends java.io.DataOutput {
     public void writeArray(Object o) throws IOException;
 
     /* Write a complete array */
+    @Override
     public void write(byte[] buf) throws IOException;
 
     public void write(boolean[] buf) throws IOException;
@@ -75,6 +76,7 @@ public interface ArrayDataOutput extends java.io.DataOutput {
     public void write(String[] buf) throws IOException;
 
     /* Write a segment of a primitive array. */
+    @Override
     public void write(byte[] buf, int offset, int size) throws IOException;
 
     public void write(boolean[] buf, int offset, int size) throws IOException;

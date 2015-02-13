@@ -85,6 +85,7 @@ import nom.tam.util.BufferedDataOutputStream;
  */
 public class HCompress implements CompressionScheme {
 
+    @Override
     public String name() {
         return "hcomp_0";
     }
@@ -178,6 +179,7 @@ public class HCompress implements CompressionScheme {
         return ny;
     }
 
+    @Override
     public void initialize(Map<String, String> params) {
         try {
             System.err.println("NX");
@@ -195,9 +197,11 @@ public class HCompress implements CompressionScheme {
         initialized = true;
     }
 
+    @Override
     public void updateForWrite(Header hdr, Map<String, String> parameters) {
     }
 
+    @Override
     public void getParameters(Map<String, String> params, Header hdr) {
 
         if (!params.containsKey("nx")) {
@@ -217,6 +221,7 @@ public class HCompress implements CompressionScheme {
      * compress the input image using the H-compress algorithm input - input
      * image array as a byte array.
      */
+    @Override
     public byte[] compress(byte[] input) throws IOException {
 
         if (!initialized) {
@@ -232,21 +237,6 @@ public class HCompress implements CompressionScheme {
         } catch (Exception e) {
             throw new IOException("Unable to read input byte buffer", e);
         }
-    }
-
-    private void printSample(String label, int[] array) {
-        System.out.println(label + ":");
-        for (int i = 0; i < 10; i += 1) {
-            System.out.println("i,a[i]:" + i + " " + array[i]);
-        }
-        for (int i = array.length - 10; i < array.length; i += 1) {
-            System.out.println("i,a[i]:" + " " + i + " " + array[i]);
-        }
-        int sum = 0;
-        for (int i = 0; i < array.length; i += 1) {
-            sum += i * array[i];
-        }
-        System.out.println("Sum is:" + sum);
     }
 
     /**
@@ -265,9 +255,9 @@ public class HCompress implements CompressionScheme {
         /*
          * log2n is log2 of max(nx,ny) rounded up to next power of 2
          */
-        int nmax = (nx > ny) ? nx : ny;
-        int log2n = (int) (Math.log((float) nmax) / log2 + 0.5);
-        if (nmax > (1 << log2n)) {
+        int nmax = nx > ny ? nx : ny;
+        int log2n = (int) (Math.log(nmax) / log2 + 0.5);
+        if (nmax > 1 << log2n) {
             log2n += 1;
         }
 
@@ -307,10 +297,10 @@ public class HCompress implements CompressionScheme {
                     /*
                      * Divide h0,hx,hy,hc by 2 (1 the first time through).
                      */
-                    int h0 = (a[s10 + 1] + a[s10] + a[s00 + 1] + a[s00]) >> shift;
-                    int hx = (a[s10 + 1] + a[s10] - a[s00 + 1] - a[s00]) >> shift;
-                    int hy = (a[s10 + 1] - a[s10] + a[s00 + 1] - a[s00]) >> shift;
-                    int hc = (a[s10 + 1] - a[s10] - a[s00 + 1] + a[s00]) >> shift;
+                    int h0 = a[s10 + 1] + a[s10] + a[s00 + 1] + a[s00] >> shift;
+                    int hx = a[s10 + 1] + a[s10] - a[s00 + 1] - a[s00] >> shift;
+                    int hy = a[s10 + 1] - a[s10] + a[s00 + 1] - a[s00] >> shift;
+                    int hc = a[s10 + 1] - a[s10] - a[s00 + 1] + a[s00] >> shift;
 
                     /*
                      * Throw away the 2 bottom bits of h0, bottom bit of hx,hy.
@@ -318,9 +308,9 @@ public class HCompress implements CompressionScheme {
                      * numbers, nrnd2 = prnd2 - 1.
                      */
                     a[s10 + 1] = hc;
-                    a[s10] = ((hx >= 0) ? (hx + prnd) : hx) & mask;
-                    a[s00 + 1] = ((hy >= 0) ? (hy + prnd) : hy) & mask;
-                    a[s00] = ((h0 >= 0) ? (h0 + prnd2) : (h0 + nrnd2)) & mask2;
+                    a[s10] = (hx >= 0 ? hx + prnd : hx) & mask;
+                    a[s00 + 1] = (hy >= 0 ? hy + prnd : hy) & mask;
+                    a[s00] = (h0 >= 0 ? h0 + prnd2 : h0 + nrnd2) & mask2;
                     s00 += 2;
                     s10 += 2;
                 }
@@ -329,11 +319,11 @@ public class HCompress implements CompressionScheme {
                      * do last element in row if row length is odd s00+1, s10+1
                      * are off edge
                      */
-                    int h0 = (a[s10] + a[s00]) << (1 - shift);
-                    int hx = (a[s10] - a[s00]) << (1 - shift);
+                    int h0 = a[s10] + a[s00] << 1 - shift;
+                    int hx = a[s10] - a[s00] << 1 - shift;
 
-                    a[s10] = ((hx >= 0) ? (hx + prnd) : hx) & mask;
-                    a[s00] = ((h0 >= 0) ? (h0 + prnd2) : (h0 + nrnd2)) & mask2;
+                    a[s10] = (hx >= 0 ? hx + prnd : hx) & mask;
+                    a[s00] = (h0 >= 0 ? h0 + prnd2 : h0 + nrnd2) & mask2;
                     s00 += 1;
                     s10 += 1;
                 }
@@ -345,11 +335,11 @@ public class HCompress implements CompressionScheme {
                 int s00 = i * ny;
                 for (int j = 0; j < nytop - oddy; j += 2) {
 
-                    int h0 = (a[s00 + 1] + a[s00]) << (1 - shift);
-                    int hy = (a[s00 + 1] - a[s00]) << (1 - shift);
+                    int h0 = a[s00 + 1] + a[s00] << 1 - shift;
+                    int hy = a[s00 + 1] - a[s00] << 1 - shift;
 
-                    a[s00 + 1] = ((hy >= 0) ? (hy + prnd) : hy) & mask;
-                    a[s00] = ((h0 >= 0) ? (h0 + prnd2) : (h0 + nrnd2)) & mask2;
+                    a[s00 + 1] = (hy >= 0 ? hy + prnd : hy) & mask;
+                    a[s00] = (h0 >= 0 ? h0 + prnd2 : h0 + nrnd2) & mask2;
                     s00 += 2;
                 }
                 if (oddy != 0) {
@@ -357,8 +347,8 @@ public class HCompress implements CompressionScheme {
                      * do corner element if both row and column lengths are odd
                      * s00+1, s10, s10+1 are off edge
                      */
-                    int h0 = a[s00] << (2 - shift);
-                    a[s00] = ((h0 >= 0) ? (h0 + prnd2) : (h0 + nrnd2)) & mask2;
+                    int h0 = a[s00] << 2 - shift;
+                    a[s00] = (h0 >= 0 ? h0 + prnd2 : h0 + nrnd2) & mask2;
                 }
             }
             /*
@@ -374,8 +364,8 @@ public class HCompress implements CompressionScheme {
             /*
              * image size reduced by 2 (round up if odd)
              */
-            nxtop = (nxtop + 1) >> 1;
-            nytop = (nytop + 1) >> 1;
+            nxtop = nxtop + 1 >> 1;
+            nytop = nytop + 1 >> 1;
             /*
              * divisor doubles after first reduction
              */
@@ -414,7 +404,7 @@ public class HCompress implements CompressionScheme {
         for (int i = 2; i < n; i += 2) {
             a[p1] = a[p2];
             p1 += n2;
-            p2 += (n2 + n2);
+            p2 += n2 + n2;
         }
         /*
          * put odd elements into 2nd half
@@ -437,7 +427,7 @@ public class HCompress implements CompressionScheme {
         int d = (scale + 1) / 2 - 1;
 
         for (int p = 0; p < a.length; p += 1) {
-            a[p] = ((a[p] > 0) ? (a[p] + d) : (a[p] - d)) / scale;
+            a[p] = (a[p] > 0 ? a[p] + d : a[p] - d) / scale;
         }
     }
 
@@ -520,14 +510,13 @@ public class HCompress implements CompressionScheme {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         OutputBitStream os = new OutputBitStream(bytes);
 
-        int noutchar = 0;
         /* initialize the number of compressed bytes that have been written */
         int nel = nx * ny;
         /*
          * write magic value
          */
-        for (int i = 0; i < code_magic.length; i += 1) {
-            os.writeBits(code_magic[i], 8);
+        for (int element : code_magic) {
+            os.writeBits(element, 8);
         }
         os.writeBits(nx, 32);
         os.writeBits(ny, 32);
@@ -551,8 +540,8 @@ public class HCompress implements CompressionScheme {
         /*
          * write nbitplanes
          */
-        for (int i = 0; i < bitPlanes.length; i += 1) {
-            os.writeBits(bitPlanes[i], 8);
+        for (byte bitPlane : bitPlanes) {
+            os.writeBits(bitPlane, 8);
         }
 
         /*
@@ -598,9 +587,9 @@ public class HCompress implements CompressionScheme {
         /*
          * log2n is log2 of max(nqx,nqy) rounded up to next power of 2
          */
-        int nqmax = (nqx > nqy) ? nqx : nqy;
-        int log2n = (int) (Math.log((float) nqmax) / log2 + 0.5);
-        if (nqmax > (1 << log2n)) {
+        int nqmax = nqx > nqy ? nqx : nqy;
+        int log2n = (int) (Math.log(nqmax) / log2 + 0.5);
+        if (nqmax > 1 << log2n) {
             log2n += 1;
         }
 
@@ -634,8 +623,8 @@ public class HCompress implements CompressionScheme {
              * on first pass copy A to scratch array
              */
             qtreeOnebit(a, offset, n, nqx, nqy, scratch, bit);
-            int tnx = (nqx + 1) >> 1;
-            int tny = (nqy + 1) >> 1;
+            int tnx = nqx + 1 >> 1;
+            int tny = nqy + 1 >> 1;
             /*
              * copy non-zero values to output buffer, which will be written in
              * reverse order
@@ -654,8 +643,8 @@ public class HCompress implements CompressionScheme {
                 for (int k = 1; k < log2n; k++) {
 
                     qtreeReduce(scratch, tny, tnx, tny, scratch);
-                    tnx = (tnx + 1) >> 1;
-                    tny = (tny + 1) >> 1;
+                    tnx = tnx + 1 >> 1;
+                    tny = tny + 1 >> 1;
 
                     // If we ever run off the buffer we just
                     // do a direct write.
@@ -743,7 +732,7 @@ public class HCompress implements CompressionScheme {
                 // for each of the four corner pixels. Remember
                 // that we are big-endian, so the s00 bit is
                 // the highest order bit.
-                b[k] = (byte) (((a[offset + s10 + 1] & b0) | ((a[offset + s10] << 1) & b1) | ((a[offset + s00 + 1] << 2) & b2) | ((a[offset + s00] << 3) & b3)) >> bit);
+                b[k] = (byte) ((a[offset + s10 + 1] & b0 | a[offset + s10] << 1 & b1 | a[offset + s00 + 1] << 2 & b2 | a[offset + s00] << 3 & b3) >> bit);
 
                 k += 1;
                 s00 += 2;
@@ -754,7 +743,7 @@ public class HCompress implements CompressionScheme {
                  * row size is odd, do last element in row s00+1,s10+1 are off
                  * edge
                  */
-                b[k] = (byte) (((a[s10] << 1 & b1) | (a[s00] << 3 & b3)) >> bit);
+                b[k] = (byte) ((a[s10] << 1 & b1 | a[s00] << 3 & b3) >> bit);
                 k += 1;
             }
         }
@@ -765,7 +754,7 @@ public class HCompress implements CompressionScheme {
             int s00 = n * i;
             int j;
             for (j = 0; j < ny - 1; j += 2) {
-                b[k] = (byte) (((a[s00 + 1] << 2 & b2) | (a[s00] << 3 & b3)) >> bit);
+                b[k] = (byte) ((a[s00 + 1] << 2 & b2 | a[s00] << 3 & b3) >> bit);
                 k += 1;
                 s00 += 2;
             }
@@ -774,7 +763,7 @@ public class HCompress implements CompressionScheme {
                  * both row and column size are odd, do corner element s00+1,
                  * s10, s10+1 are off edge
                  */
-                b[k] = (byte) (((a[s00] << 3 & b3)) >> bit);
+                b[k] = (byte) ((a[s00] << 3 & b3) >> bit);
                 k += 1;
             }
         }
@@ -796,7 +785,7 @@ public class HCompress implements CompressionScheme {
             int j;
 
             for (j = 0; j < ny - 1; j += 2) {
-                b[k] = (byte) (((a[s10 + 1] != 0) ? 1 : 0) | (((a[s10] != 0) ? 1 : 0) << 1) | (((a[s00 + 1] != 0) ? 1 : 0) << 2) | (((a[s00] != 0) ? 1 : 0) << 3));
+                b[k] = (byte) ((a[s10 + 1] != 0 ? 1 : 0) | (a[s10] != 0 ? 1 : 0) << 1 | (a[s00 + 1] != 0 ? 1 : 0) << 2 | (a[s00] != 0 ? 1 : 0) << 3);
                 k += 1;
                 s00 += 2;
                 s10 += 2;
@@ -807,7 +796,7 @@ public class HCompress implements CompressionScheme {
                  * row size is odd, do last element in row s00+1,s10+1 are off
                  * edge
                  */
-                b[k] = (byte) ((((a[s10] != 0) ? 1 : 0) << 1) | (((a[s00] != 0) ? 1 : 0) << 3));
+                b[k] = (byte) ((a[s10] != 0 ? 1 : 0) << 1 | (a[s00] != 0 ? 1 : 0) << 3);
                 k += 1;
             }
         }
@@ -818,7 +807,7 @@ public class HCompress implements CompressionScheme {
             int s00 = n * i;
             int j;
             for (j = 0; j < ny - 1; j += 2) {
-                b[k] = (byte) ((((a[s00 + 1] != 0) ? 1 : 0) << 2) | (((a[s00] != 0) ? 1 : 0) << 3));
+                b[k] = (byte) ((a[s00 + 1] != 0 ? 1 : 0) << 2 | (a[s00] != 0 ? 1 : 0) << 3);
                 k += 1;
                 s00 += 2;
             }
@@ -827,7 +816,7 @@ public class HCompress implements CompressionScheme {
                  * both row and column size are odd, do corner element s00+1,
                  * s10, s10+1 are off edge
                  */
-                b[k] = (byte) ((((a[s00] != 0) ? 1 : 0) << 3));
+                b[k] = (byte) ((a[s00] != 0 ? 1 : 0) << 3);
                 k += 1;
             }
         }
@@ -846,7 +835,7 @@ public class HCompress implements CompressionScheme {
         /*
          * write to outfile
          */
-        for (int i = 0; i < ((nqx + 1) / 2) * ((nqy + 1) / 2); i++) {
+        for (int i = 0; i < (nqx + 1) / 2 * ((nqy + 1) / 2); i++) {
             os.writeBits(scratch[i], 4);
         }
     }
@@ -886,17 +875,9 @@ public class HCompress implements CompressionScheme {
         return bytes.toByteArray();
     }
 
+    @Override
     public byte[] decompress(byte[] input, int length) throws IOException {
         return decompress(input);
-    }
-
-    /**
-     * Input buffering.
-     * 
-     * @return the next int
-     */
-    private int getint(InputBitStream dis) throws IOException {
-        return dis.readBits(32);
     }
 
     /**
@@ -924,51 +905,52 @@ public class HCompress implements CompressionScheme {
             /*
              * this is all we need return 1,2,4,8 for c=0,1,2,3
              */
-            return (1 << c);
+            return 1 << c;
         }
 
         /* get the next bit */
-        c = dis.readBits(1) | (c << 1);
+        c = dis.readBits(1) | c << 1;
         if (c < 13) {
             /* OK, 4 bits is enough */
             switch (c) {
                 case 8:
-                    return (3);
+                    return 3;
                 case 9:
-                    return (5);
+                    return 5;
                 case 10:
-                    return (10);
+                    return 10;
                 case 11:
-                    return (12);
+                    return 12;
                 case 12:
-                    return (15);
+                    return 15;
             }
         }
 
         /* get yet another bit */
-        c = dis.readBits(1) | (c << 1);
+        c = dis.readBits(1) | c << 1;
         if (c < 31) {
             /* OK, 5 bits is enough */
             switch (c) {
                 case 26:
-                    return (6);
+                    return 6;
                 case 27:
-                    return (7);
+                    return 7;
                 case 28:
-                    return (9);
+                    return 9;
                 case 29:
-                    return (11);
+                    return 11;
                 case 30:
-                    return (13);
+                    return 13;
             }
         }
 
         /* need the 6th bit */
-        c = dis.readBits(1) | (c << 1);
-        if (c == 62)
-            return (0);
-        else
-            return (14);
+        c = dis.readBits(1) | c << 1;
+        if (c == 62) {
+            return 0;
+        } else {
+            return 14;
+        }
     }
 
     /**
@@ -981,7 +963,7 @@ public class HCompress implements CompressionScheme {
      *            declared y dimension of b
      */
     private void qtreeBitInsert(int[] a, byte d[], int nx, int ny, int off, int n, int bit) {
-        int i, j, k;
+        int i, j;
         int s00, s10;
         int nxN = nx - 1;
         int nyN = ny - 1;
@@ -996,9 +978,9 @@ public class HCompress implements CompressionScheme {
             for (j = 0; j < nyN; j += 2) {
                 dc = d[c];
                 a[s10 + 1] |= (dc & 1) << bit;
-                a[s10] |= ((dc >> 1) & 1) << bit;
-                a[s00 + 1] |= ((dc >> 2) & 1) << bit;
-                a[s00] |= ((dc >> 3) & 1) << bit;
+                a[s10] |= (dc >> 1 & 1) << bit;
+                a[s00 + 1] |= (dc >> 2 & 1) << bit;
+                a[s00] |= (dc >> 3 & 1) << bit;
                 s00 += 2;
                 s10 += 2;
                 c += 1;
@@ -1009,8 +991,8 @@ public class HCompress implements CompressionScheme {
                  * edge
                  */
                 dc = d[c];
-                a[s10] |= ((dc >> 1) & 1) << bit;
-                a[s00] |= ((dc >> 3) & 1) << bit;
+                a[s10] |= (dc >> 1 & 1) << bit;
+                a[s00] |= (dc >> 3 & 1) << bit;
                 c++;
             }
         }
@@ -1021,8 +1003,8 @@ public class HCompress implements CompressionScheme {
             s00 = off + n * i;
             for (j = 0; j < nyN; j += 2) {
                 dc = d[c];
-                a[s00 + 1] |= ((dc >> 2) & 1) << bit;
-                a[s00] |= ((dc >> 3) & 1) << bit;
+                a[s00 + 1] |= (dc >> 2 & 1) << bit;
+                a[s00] |= (dc >> 3 & 1) << bit;
                 s00 += 2;
                 c++;
             }
@@ -1031,7 +1013,7 @@ public class HCompress implements CompressionScheme {
                  * both row and column size are odd, do corner element s00+1,
                  * s10, s10+1 are off edge
                  */
-                a[s00] |= ((d[c] >> 3) & 1) << bit;
+                a[s00] |= (d[c] >> 3 & 1) << bit;
                 c++;
             }
         }
@@ -1039,11 +1021,11 @@ public class HCompress implements CompressionScheme {
 
     private void readDirect(int[] a, int off, int n, int nqx, int nqy, byte scratch[], int bit, InputBitStream dis) throws IOException {
         int i;
-        int j = ((nqx + 1) / 2) * ((nqy + 1) / 2);
+        int j = (nqx + 1) / 2 * ((nqy + 1) / 2);
 
         /* read bit image packed 4 pixels/nybble */
         for (i = 0; i < j; i++) {
-            scratch[i] = (byte) (dis.readBits(4));
+            scratch[i] = (byte) dis.readBits(4);
         }
 
         /* insert in bitplane BIT of image A */
@@ -1072,7 +1054,7 @@ public class HCompress implements CompressionScheme {
         k = ny2 * (nx2 - 1) + ny2 - 1; /* k is index of a[i,j] */
 
         for (i = nx2 - 1; i >= 0; i--) {
-            s00 = (n * i + ny2 - 1) << 1; /* s00 is index of b[2*i,2*j] */
+            s00 = n * i + ny2 - 1 << 1; /* s00 is index of b[2*i,2*j] */
             for (j = ny2 - 1; j >= 0; j--) {
                 b[s00] = d[k--];
                 s00 -= 2;
@@ -1086,9 +1068,9 @@ public class HCompress implements CompressionScheme {
             for (j = 0; j < nyN; j += 2) {
                 bs00 = b[s00];
                 b[s10 + 1] = (byte) (bs00 & 1);
-                b[s10] = (byte) ((bs00 >> 1) & 1);
-                b[s00 + 1] = (byte) ((bs00 >> 2) & 1);
-                b[s00] = (byte) ((bs00 >> 3) & 1);
+                b[s10] = (byte) (bs00 >> 1 & 1);
+                b[s00 + 1] = (byte) (bs00 >> 2 & 1);
+                b[s00] = (byte) (bs00 >> 3 & 1);
                 s00 += 2;
                 s10 += 2;
             }
@@ -1098,8 +1080,8 @@ public class HCompress implements CompressionScheme {
                  * edge
                  */
                 bs00 = b[s00];
-                b[s10] = (byte) ((bs00 >> 1) & 1);
-                b[s00] = (byte) ((bs00 >> 3) & 1);
+                b[s10] = (byte) (bs00 >> 1 & 1);
+                b[s00] = (byte) (bs00 >> 3 & 1);
             }
         }
         if (i < nx) {
@@ -1109,8 +1091,8 @@ public class HCompress implements CompressionScheme {
             s00 = n * i;
             for (j = 0; j < nyN; j += 2) {
                 bs00 = b[s00];
-                b[s00 + 1] = (byte) ((bs00 >> 2) & 1);
-                b[s00] = (byte) ((bs00 >> 3) & 1);
+                b[s00 + 1] = (byte) (bs00 >> 2 & 1);
+                b[s00] = (byte) (bs00 >> 3 & 1);
                 s00 += 2;
             }
             if (j < ny) {
@@ -1118,7 +1100,7 @@ public class HCompress implements CompressionScheme {
                  * both row and column size are odd, do corner element s00+1,
                  * s10, s10+1 are off edge
                  */
-                b[s00] = (byte) ((b[s00] >> 3) & 1);
+                b[s00] = (byte) (b[s00] >> 3 & 1);
             }
         }
     }
@@ -1135,8 +1117,9 @@ public class HCompress implements CompressionScheme {
 
         /* now read new 4-bit values into b for each non-zero element */
         for (i = nx * ny - 1; i >= 0; i--) {
-            if (b[i] != 0)
+            if (b[i] != 0) {
                 b[i] = (byte) decodeHuffman(dis);
+            }
         }
     }
 
@@ -1156,10 +1139,11 @@ public class HCompress implements CompressionScheme {
         int nqx2, nqy2;
 
         /* log2n is log2 of max(nqx,nqy) rounded up to next power of 2 */
-        nqmax = (nqx > nqy) ? nqx : nqy;
+        nqmax = nqx > nqy ? nqx : nqy;
         log2n = (int) (Math.log(nqmax) / log2 + 0.5);
-        if (nqmax > (1 << log2n))
+        if (nqmax > 1 << log2n) {
             log2n += 1;
+        }
 
         /* allocate scratch array for working space */
         nqx2 = (nqx + 1) / 2;
@@ -1246,8 +1230,8 @@ public class HCompress implements CompressionScheme {
         /* Now get the sign bits - Re-initialize bit input */
         dis.flush();
 
-        for (i = 0; i < (nx * ny); i++) {
-            if (((aa = a[i]) != 0) && (dis.readBits(1) != 0)) {
+        for (i = 0; i < nx * ny; i++) {
+            if ((aa = a[i]) != 0 && dis.readBits(1) != 0) {
                 a[i] = -aa;
             }
         }
@@ -1255,12 +1239,10 @@ public class HCompress implements CompressionScheme {
 
     private int[] decode(InputBitStream dis) throws IOException {
         int sumall;
-        int q = 0, w = 0;
-
         int m1 = dis.readBits(8) & 0xff;
         int m2 = dis.readBits(8) & 0xff;
         // Read magic number
-        if ((m1 != code_magic[0]) || (m2 != code_magic[1])) {
+        if (m1 != code_magic[0] || m2 != code_magic[1]) {
             throw new IOException("Bad magic number");
         }
 
@@ -1292,8 +1274,9 @@ public class HCompress implements CompressionScheme {
     }
 
     private void undigitize(int[] a) {
-        if (scale <= 1)
+        if (scale <= 1) {
             return;
+        }
         for (int i = 0; i < a.length; i += 1) {
             a[i] *= scale;
         }
@@ -1305,10 +1288,10 @@ public class HCompress implements CompressionScheme {
         /*
          * log2n is log2 of max(nx,ny) rounded up to next power of 2
          */
-        int nmax = (nx > ny) ? nx : ny;
-        int log2n = (int) (Math.log((double) nmax) / log2 + 0.5);
+        int nmax = nx > ny ? nx : ny;
+        int log2n = (int) (Math.log(nmax) / log2 + 0.5);
 
-        if (nmax > (1 << log2n)) {
+        if (nmax > 1 << log2n) {
             log2n += 1;
         }
         /*
@@ -1363,12 +1346,12 @@ public class HCompress implements CompressionScheme {
                      */
                     int sum1 = h0 + hx + 1;
                     int sum2 = hy + hc;
-                    a[p10 + 1] = (sum1 + sum2) >> 1;
-                    a[p10] = (sum1 - sum2) >> 1;
+                    a[p10 + 1] = sum1 + sum2 >> 1;
+                    a[p10] = sum1 - sum2 >> 1;
                     sum1 = h0 - hx + 1;
                     sum2 = hy - hc;
-                    a[p00 + 1] = (sum1 + sum2) >> 1;
-                    a[p00] = (sum1 - sum2) >> 1;
+                    a[p00 + 1] = sum1 + sum2 >> 1;
+                    a[p00] = sum1 - sum2 >> 1;
 
                 }
                 if (p00 == pend) {
@@ -1378,8 +1361,8 @@ public class HCompress implements CompressionScheme {
                      */
                     int h0 = a[p00];
                     int hx = a[p10];
-                    a[p10] = (h0 + hx + 1) >> 1;
-                    a[p00] = (h0 - hx + 1) >> 1;
+                    a[p10] = h0 + hx + 1 >> 1;
+                    a[p00] = h0 - hx + 1 >> 1;
                 }
             }
             if (nxtop % 2 == 1) {
@@ -1393,8 +1376,8 @@ public class HCompress implements CompressionScheme {
 
                     int h0 = a[p00];
                     int hy = a[p00 + 1];
-                    a[p00 + 1] = (h0 + hy + 1) >> 1;
-                    a[p00] = (h0 - hy + 1) >> 1;
+                    a[p00 + 1] = h0 + hy + 1 >> 1;
+                    a[p00] = h0 - hy + 1 >> 1;
                 }
 
                 if (p00 == pend) {
@@ -1402,7 +1385,7 @@ public class HCompress implements CompressionScheme {
                      * do corner element if both row and column lengths are odd
                      * p00+1, p10, p10+1 are off edge
                      */
-                    a[p00] = (a[p00] + 1) >> 1;
+                    a[p00] = a[p00] + 1 >> 1;
                 }
             }
         }
@@ -1457,12 +1440,12 @@ public class HCompress implements CompressionScheme {
                  */
                 int sum1 = h0 + hx + 2;
                 int sum2 = hy + hc;
-                a[p10 + 1] = (sum1 + sum2) >> 2;
-                a[p10] = (sum1 - sum2) >> 2;
+                a[p10 + 1] = sum1 + sum2 >> 2;
+                a[p10] = sum1 - sum2 >> 2;
                 sum1 = h0 - hx + 2;
                 sum2 = hy - hc;
-                a[p00 + 1] = (sum1 + sum2) >> 2;
-                a[p00] = (sum1 - sum2) >> 2;
+                a[p00 + 1] = sum1 + sum2 >> 2;
+                a[p00] = sum1 - sum2 >> 2;
             }
             if (p00 == pend) {
                 /*
@@ -1471,8 +1454,8 @@ public class HCompress implements CompressionScheme {
                  */
                 int h0 = a[p00];
                 int hx = a[p10];
-                a[p10] = (h0 + hx + 2) >> 2;
-                a[p00] = (h0 - hx + 2) >> 2;
+                a[p10] = h0 + hx + 2 >> 2;
+                a[p00] = h0 - hx + 2 >> 2;
             }
         }
         if (nx % 2 == 1) {
@@ -1485,8 +1468,8 @@ public class HCompress implements CompressionScheme {
             for (p00 = ny * i; p00 < pend; p00 += 2) {
                 int h0 = a[p00];
                 int hy = a[p00 + 1];
-                a[p00 + 1] = (h0 + hy + 2) >> 2;
-                a[p00] = (h0 - hy + 2) >> 2;
+                a[p00 + 1] = h0 + hy + 2 >> 2;
+                a[p00] = h0 - hy + 2 >> 2;
             }
             if (p00 == pend) {
                 /*
@@ -1500,7 +1483,7 @@ public class HCompress implements CompressionScheme {
 
     private void xunshuffle(int[] a, int nx, int ny, int nydim) {
 
-        int nhalf = (ny + 1) >> 1;
+        int nhalf = ny + 1 >> 1;
         for (int j = 0; j < nx; j++) {
             /*
              * copy 2nd half of array to tmp
@@ -1510,7 +1493,7 @@ public class HCompress implements CompressionScheme {
              * distribute 1st half of array to even elements
              */
             int pend = j * nydim;
-            for (int p2 = j * nydim + nhalf - 1, p1 = j * nydim + ((nhalf - 1) << 1); p2 >= pend; p1 -= 2, p2 -= 1) {
+            for (int p2 = j * nydim + nhalf - 1, p1 = j * nydim + (nhalf - 1 << 1); p2 >= pend; p1 -= 2, p2 -= 1) {
                 a[p1] = a[p2];
             }
             /*
@@ -1528,8 +1511,9 @@ public class HCompress implements CompressionScheme {
         /*
          * initialize flag array telling whether row is done
          */
-        for (int j = 0; j < nx; j++)
+        for (int j = 0; j < nx; j++) {
             flag[j] = true;
+        }
 
         int oddoffset = (nx + 1) / 2;
         /*
@@ -1546,7 +1530,7 @@ public class HCompress implements CompressionScheme {
                  */
                 if (j >= oddoffset) {
                     /* odd row */
-                    k = ((j - oddoffset) << 1) + 1;
+                    k = (j - oddoffset << 1) + 1;
                 } else {
                     /* even row */
                     k = j << 1;
@@ -1571,7 +1555,7 @@ public class HCompress implements CompressionScheme {
 
                         }
                         if (k >= oddoffset) {
-                            k = ((k - oddoffset) << 1) + 1;
+                            k = (k - oddoffset << 1) + 1;
                         } else {
                             k <<= 1;
                         }

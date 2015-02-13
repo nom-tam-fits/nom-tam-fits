@@ -124,7 +124,7 @@ public enum ObservationDurationDescription implements IFitsHeader {
     private IFitsHeader key;
 
     private ObservationDurationDescription(SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+        key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
     }
 
     private ObservationDurationDescription(String key, SOURCE status, HDU hdu, VALUE valueType, String comment) {

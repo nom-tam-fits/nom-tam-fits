@@ -113,7 +113,7 @@ public enum InstrumentDescription implements IFitsHeader {
     private IFitsHeader key;
 
     private InstrumentDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+        key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
     }
 
     @Override

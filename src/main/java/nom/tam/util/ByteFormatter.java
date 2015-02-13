@@ -98,7 +98,7 @@ public final class ByteFormatter {
         int max = (int) Math.floor((int) (Math.log(Double.MAX_VALUE) * ilog10));
         max += 1;
 
-        tenpow = new double[(max - min) + 1];
+        tenpow = new double[max - min + 1];
 
         for (int i = 0; i < tenpow.length; i += 1) {
             tenpow[i] = Math.pow(10, i + min);
@@ -205,7 +205,7 @@ public final class ByteFormatter {
 
         // Special case
         if (val == Integer.MIN_VALUE) {
-            if (len > 10 || (!truncateOnOverflow && buf.length - off > 10)) {
+            if (len > 10 || !truncateOnOverflow && buf.length - off > 10) {
                 return format("-2147483648", buf, off, len);
             } else {
                 truncationFiller(buf, off, len);
@@ -231,7 +231,7 @@ public final class ByteFormatter {
         }
 
         // Truncate if necessary.
-        if ((truncateOnOverflow && ndig > len) || ndig > buf.length - off) {
+        if (truncateOnOverflow && ndig > len || ndig > buf.length - off) {
             truncationFiller(buf, off, len);
             return off + len;
         }
@@ -290,7 +290,7 @@ public final class ByteFormatter {
 
         // Special case
         if (val == Long.MIN_VALUE) {
-            if (len > 19 || (!truncateOnOverflow && buf.length - off > 19)) {
+            if (len > 19 || !truncateOnOverflow && buf.length - off > 19) {
                 return format("-9223372036854775808", buf, off, len);
             } else {
                 truncationFiller(buf, off, len);
@@ -319,7 +319,7 @@ public final class ByteFormatter {
 
         // Truncate if necessary.
 
-        if ((truncateOnOverflow && ndig > len) || ndig > buf.length - off) {
+        if (truncateOnOverflow && ndig > len || ndig > buf.length - off) {
             truncationFiller(buf, off, len);
             return off + len;
         }
@@ -335,7 +335,7 @@ public final class ByteFormatter {
         int xoff = off - 1;
 
         buf[xoff] = (byte) '0';
-        boolean last = (pos == 0);
+        boolean last = pos == 0;
 
         while (!last) {
 
@@ -344,7 +344,7 @@ public final class ByteFormatter {
             int giga = (int) (pos % 1000000000L);
             pos /= 1000000000L;
 
-            last = (pos == 0);
+            last = pos == 0;
 
             for (int i = 0; i < 9; i += 1) {
 
@@ -432,12 +432,12 @@ public final class ByteFormatter {
 
         int slen = val.length();
 
-        if ((truncateOnOverflow && slen > len) || (slen > array.length - off)) {
+        if (truncateOnOverflow && slen > len || slen > array.length - off) {
             val = val.substring(0, len);
             slen = len;
         }
 
-        if (align && (len > slen)) {
+        if (align && len > slen) {
             off = alignFill(array, off, len - slen);
         }
 
@@ -494,9 +494,7 @@ public final class ByteFormatter {
      */
     public int format(float val, byte[] buf, int off, int len) throws TruncationException {
 
-        float pos = (float) Math.abs(val);
-
-        int minlen, actlen;
+        float pos = Math.abs(val);
 
         // Special cases
         if (pos == 0.) {
@@ -511,7 +509,7 @@ public final class ByteFormatter {
             }
         }
 
-        int power = (int) Math.floor((Math.log(pos) * ilog10));
+        int power = (int) Math.floor(Math.log(pos) * ilog10);
         int shift = 8 - power;
         float scale;
         float scale2 = 1;
@@ -527,7 +525,7 @@ public final class ByteFormatter {
             scale = (float) tenpow[shift - 30 + zeropow];
         }
 
-        pos = (pos * scale) * scale2;
+        pos = pos * scale * scale2;
 
         // Parse the float bits.
 
@@ -536,11 +534,11 @@ public final class ByteFormatter {
         // The exponent should be a little more than 23
         int exp = ((bits & 0x7F800000) >> 23) - 127;
 
-        int numb = (bits & 0x007FFFFF);
+        int numb = bits & 0x007FFFFF;
 
         if (exp > -127) {
             // Normalized....
-            numb |= (0x00800000);
+            numb |= 0x00800000;
         } else {
             // Denormalized
             exp += 1;
@@ -550,7 +548,7 @@ public final class ByteFormatter {
         // over 24. This completes the conversion of float to int
         // (<<= did not work on Alpha TruUnix)
 
-        numb = numb << (exp - 23L);
+        numb = numb << exp - 23L;
 
         // Get a decimal mantissa.
         boolean oldAlign = align;
@@ -610,8 +608,6 @@ public final class ByteFormatter {
 
         double pos = Math.abs(val);
 
-        int minlen, actlen;
-
         // Special cases -- It is OK if these get truncated.
         if (pos == 0.) {
             return format("0.0", buf, off, len);
@@ -641,7 +637,7 @@ public final class ByteFormatter {
             scale = tenpow[shift - 200 + zeropow];
         }
 
-        pos = (pos * scale) * scale2;
+        pos = pos * scale * scale2;
 
         // Parse the double bits.
 
@@ -650,11 +646,11 @@ public final class ByteFormatter {
         // The exponent should be a little more than 52.
         int exp = (int) (((bits & 0x7FF0000000000000L) >> 52) - 1023);
 
-        long numb = (bits & 0x000FFFFFFFFFFFFFL);
+        long numb = bits & 0x000FFFFFFFFFFFFFL;
 
         if (exp > -1023) {
             // Normalized....
-            numb |= (0x0010000000000000L);
+            numb |= 0x0010000000000000L;
         } else {
             // Denormalized
             exp += 1;
@@ -662,7 +658,7 @@ public final class ByteFormatter {
 
         // Multiple this number by the excess of the exponent
         // over 52. This completes the conversion of double to long.
-        numb = numb << (exp - 52);
+        numb = numb << exp - 52;
 
         // Get a decimal mantissa.
         boolean oldAlign = align;
@@ -752,7 +748,7 @@ public final class ByteFormatter {
         }
 
         // Can the number fit?
-        if ((truncateOnOverflow && minSize > len) || (minSize > buf.length - off)) {
+        if (truncateOnOverflow && minSize > len || minSize > buf.length - off) {
             truncationFiller(buf, off, len);
             return off + len;
         }
@@ -763,8 +759,6 @@ public final class ByteFormatter {
             off = alignFill(buf, off, nal);
             len -= nal;
         }
-
-        int off0 = off;
 
         // Now begin filling in the buffer.
         if (val < 0) {

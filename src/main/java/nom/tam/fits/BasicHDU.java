@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 
+import nom.tam.fits.header.IFitsHeader;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 
@@ -135,6 +136,7 @@ public abstract class BasicHDU implements FitsElement {
     }
 
     /** Get the starting offset of the HDU */
+    @Override
     public long getFileOffset() {
         return myHeader.getFileOffset();
     }
@@ -158,6 +160,7 @@ public abstract class BasicHDU implements FitsElement {
      * 
      * @return The size in bytes.
      */
+    @Override
     public long getSize() {
         int size = 0;
 
@@ -207,6 +210,7 @@ public abstract class BasicHDU implements FitsElement {
      * Read out the HDU from the data stream. This will overwrite any existing
      * header and data components.
      */
+    @Override
     public void read(ArrayDataInput stream) throws FitsException, IOException {
         myHeader = Header.readHeader(stream);
         myData = myHeader.makeData();
@@ -217,6 +221,7 @@ public abstract class BasicHDU implements FitsElement {
      * Write out the HDU
      * @param stream The data stream to be written to.
      */
+    @Override
     public void write(ArrayDataOutput stream) throws FitsException {
         if (myHeader != null) {
             myHeader.write(stream);
@@ -232,11 +237,13 @@ public abstract class BasicHDU implements FitsElement {
     }
 
     /** Is the HDU rewriteable */
+    @Override
     public boolean rewriteable() {
         return myHeader.rewriteable() && myData.rewriteable();
     }
 
     /** Rewrite the HDU */
+    @Override
     public void rewrite() throws FitsException, IOException {
 
         if (rewriteable()) {
@@ -418,6 +425,7 @@ public abstract class BasicHDU implements FitsElement {
      * @deprecated Replaced by getEquinox
      * @see #getEquinox()
      */
+    @Deprecated
     public double getEpoch() {
         return myHeader.getDoubleValue("EPOCH", -1.0);
     }
@@ -472,6 +480,7 @@ public abstract class BasicHDU implements FitsElement {
      * Reset the input stream to the beginning of the HDU, i.e., the beginning
      * of the header
      */
+    @Override
     public boolean reset() {
         return myHeader.reset();
     }
@@ -482,7 +491,7 @@ public abstract class BasicHDU implements FitsElement {
         if (newPrimary && !canBePrimary()) {
             throw new FitsException("Invalid attempt to make HDU of type:" + this.getClass().getName() + " primary.");
         } else {
-            this.isPrimary = newPrimary;
+            isPrimary = newPrimary;
         }
 
         // Some FITS readers don't like the PCOUNT and GCOUNT keywords
@@ -505,13 +514,12 @@ public abstract class BasicHDU implements FitsElement {
 
         if (!isPrimary) {
 
-            Iterator iter = myHeader.iterator();
+            myHeader.iterator();
 
             int pcount = myHeader.getIntValue("PCOUNT", 0);
             int gcount = myHeader.getIntValue("GCOUNT", 1);
             int naxis = myHeader.getIntValue("NAXIS", 0);
             myHeader.deleteKey("EXTEND");
-            HeaderCard card;
             HeaderCard pcard = myHeader.findCard("PCOUNT");
             HeaderCard gcard = myHeader.findCard("GCOUNT");
 
@@ -522,7 +530,7 @@ public abstract class BasicHDU implements FitsElement {
             if (gcard == null) {
                 myHeader.addValue("GCOUNT", gcount, "ntf::basichdu:gcount:1");
             }
-            iter = myHeader.iterator();
+            myHeader.iterator();
         }
 
     }
@@ -542,6 +550,22 @@ public abstract class BasicHDU implements FitsElement {
 
     public void addValue(String key, String val, String comment) throws HeaderCardException {
         myHeader.addValue(key, val, comment);
+    }
+
+    public void addValue(IFitsHeader key, boolean val) throws HeaderCardException {
+        myHeader.addValue(key.key(), val, key.comment());
+    }
+
+    public void addValue(IFitsHeader key, int val) throws HeaderCardException {
+        myHeader.addValue(key.key(), val, key.comment());
+    }
+
+    public void addValue(IFitsHeader key, double val) throws HeaderCardException {
+        myHeader.addValue(key.key(), val, key.comment());
+    }
+
+    public void addValue(IFitsHeader key, String val) throws HeaderCardException {
+        myHeader.addValue(key.key(), val, key.comment());
     }
 
     /** Get an HDU without content */

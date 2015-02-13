@@ -81,16 +81,19 @@ public class HashedList implements Collection {
         }
 
         /** Is there another element? */
+        @Override
         public boolean hasNext() {
             return current >= 0 && current < ordered.size();
         }
 
         /** Is there a previous element? */
+        @Override
         public boolean hasPrev() {
             return current > 0;
         }
 
         /** Get the next entry. */
+        @Override
         public Object next() throws NoSuchElementException {
 
             if (current < 0 || current >= ordered.size()) {
@@ -104,6 +107,7 @@ public class HashedList implements Collection {
         }
 
         /** Get the previous entry. */
+        @Override
         public Object prev() throws NoSuchElementException {
             if (current <= 0) {
                 throw new NoSuchElementException("Before beginning of list");
@@ -117,6 +121,7 @@ public class HashedList implements Collection {
          * Remove an entry from the tree. Note that this can now be called
          * anytime after the iterator is created.
          */
+        @Override
         public void remove() {
             if (current > 0 && current <= ordered.size()) {
 
@@ -136,6 +141,7 @@ public class HashedList implements Collection {
          * will not be affected by the insertion. Note: this method is not in
          * the Iterator interface.
          */
+        @Override
         public void add(Object ref) {
             Integer nKey = new Integer(unkeyedIndex);
             unkeyedIndex += 1;
@@ -149,6 +155,7 @@ public class HashedList implements Collection {
          * 'next'. The return value for that call is unaffected. Note: this
          * method is not in the Iterator interface.
          */
+        @Override
         public void add(Object key, Object ref) {
             HashedList.this.add(current, key, ref);
             current += 1;
@@ -160,6 +167,7 @@ public class HashedList implements Collection {
          * 
          * @param key
          */
+        @Override
         public void setKey(Object key) {
             if (keyed.containsKey(key)) {
                 current = ordered.indexOf(key);
@@ -171,6 +179,7 @@ public class HashedList implements Collection {
     }
 
     /** Add an element to the end of the list. */
+    @Override
     public boolean add(Object reference) {
         Integer nKey = new Integer(unkeyedIndex);
         unkeyedIndex += 1;
@@ -235,6 +244,7 @@ public class HashedList implements Collection {
     /**
      * Remove an object from the list giving just the object value.
      */
+    @Override
     public boolean remove(Object o) {
 
         if (keyed.containsValue(o)) {
@@ -262,6 +272,7 @@ public class HashedList implements Collection {
      * user can cast this to a HashedListIterator and use it to add as well as
      * delete entries.
      */
+    @Override
     public Iterator iterator() {
         return new HashedListIterator(0);
     }
@@ -330,6 +341,7 @@ public class HashedList implements Collection {
     }
 
     /** Return the number of elements in the list. */
+    @Override
     public int size() {
         return ordered.size();
     }
@@ -338,21 +350,24 @@ public class HashedList implements Collection {
      * Add another collection to this one list. All entries are added as unkeyed
      * entries to the end of the list.
      */
+    @Override
     public boolean addAll(Collection c) {
         Object[] array = c.toArray();
-        for (int i = 0; i < array.length; i += 1) {
-            add(array[i]);
+        for (Object element : array) {
+            add(element);
         }
         return true;
     }
 
     /** Clear the collection */
+    @Override
     public void clear() {
         keyed.clear();
         ordered.clear();
     }
 
     /** Does the HashedList contain this element? */
+    @Override
     public boolean contains(Object o) {
         return keyed.containsValue(o);
     }
@@ -360,26 +375,30 @@ public class HashedList implements Collection {
     /**
      * Does the HashedList contain all the elements of this other collection.
      */
+    @Override
     public boolean containsAll(Collection c) {
         return keyed.values().containsAll(c);
     }
 
     /** Is the HashedList empty? */
+    @Override
     public boolean isEmpty() {
         return keyed.isEmpty();
     }
 
     /** Remove all the elements that are found in another collection. */
+    @Override
     public boolean removeAll(Collection c) {
         Object[] o = c.toArray();
         boolean result = false;
-        for (int i = 0; i < o.length; i += 1) {
-            result = result | remove(o[i]);
+        for (Object element : o) {
+            result = result | remove(element);
         }
         return result;
     }
 
     /** Retain only elements contained in another collection */
+    @Override
     public boolean retainAll(Collection c) {
 
         Iterator iter = iterator();
@@ -395,6 +414,7 @@ public class HashedList implements Collection {
     }
 
     /** Convert to an array of objects */
+    @Override
     public Object[] toArray() {
         Object[] o = new Object[ordered.size()];
         return toArray(o);
@@ -403,6 +423,7 @@ public class HashedList implements Collection {
     /**
      * Convert to an array of objects of a specified type.
      */
+    @Override
     public Object[] toArray(Object[] o) {
         return keyed.values().toArray(o);
     }

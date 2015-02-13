@@ -53,6 +53,7 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            The object whose size is desired.
      * @deprecated May silently underestimate the size if the size > 2 GB.
      */
+    @Deprecated
     public static int computeSize(Object o) {
         return (int) computeLSize(o);
     }
@@ -78,7 +79,7 @@ public class ArrayFuncs implements PrimitiveInfo {
 
             for (int i = 0; i < PrimitiveInfo.suffixes.length; i += 1) {
                 if (c == PrimitiveInfo.suffixes[i]) {
-                    return (long) (Array.getLength(o)) * PrimitiveInfo.sizes[i];
+                    return (long) Array.getLength(o) * PrimitiveInfo.sizes[i];
                 }
             }
             return 0;
@@ -118,6 +119,7 @@ public class ArrayFuncs implements PrimitiveInfo {
      * 
      * @deprecated May silently underestimate size if number is > 2 G.
      */
+    @Deprecated
     public static int nElements(Object o) {
         return (int) nLElements(o);
     }
@@ -127,6 +129,7 @@ public class ArrayFuncs implements PrimitiveInfo {
      * 
      * @deprecated May silently underestimate size if number is > 2 G.
      */
+    @Deprecated
     public static long nLElements(Object o) {
 
         if (o == null) {
@@ -305,7 +308,7 @@ public class ArrayFuncs implements PrimitiveInfo {
             if (x.length != y.length) {
                 return;
             }
-            for (int i = 0; i < x.length; i += 1) {
+            for (Object element : x) {
                 copyArray(x, y);
             }
         }
@@ -578,8 +581,8 @@ public class ArrayFuncs implements PrimitiveInfo {
             return input;
         }
         int size = 1;
-        for (int i = 0; i < dimens.length; i += 1) {
-            size *= dimens[i];
+        for (int dimen : dimens) {
+            size *= dimen;
         }
 
         Object flat = ArrayFuncs.newInstance(getBaseClass(input), size);
@@ -647,8 +650,8 @@ public class ArrayFuncs implements PrimitiveInfo {
         int size = Array.getLength(input);
 
         int test = 1;
-        for (int i = 0; i < dimens.length; i += 1) {
-            test *= dimens[i];
+        for (int dimen : dimens) {
+            test *= dimen;
         }
 
         if (test != size) {
@@ -1035,13 +1038,13 @@ public class ArrayFuncs implements PrimitiveInfo {
                 } else if (newType == float.class) {
                     xfarr = (float[]) mimic;
                     for (int i = 0; i < larr.length; i += 1) {
-                        xfarr[i] = (float) larr[i];
+                        xfarr[i] = larr[i];
                     }
 
                 } else if (newType == double.class) {
                     xdarr = (double[]) mimic;
                     for (int i = 0; i < larr.length; i += 1) {
-                        xdarr[i] = (double) larr[i];
+                        xdarr[i] = larr[i];
                     }
                 }
 
@@ -1185,8 +1188,8 @@ public class ArrayFuncs implements PrimitiveInfo {
         if (o == null) {
             String desc = cl + "[";
             String comma = "";
-            for (int i = 0; i < dims.length; i += 1) {
-                desc += comma + dims[i];
+            for (int dim : dims) {
+                desc += comma + dim;
                 comma = ",";
             }
             desc += "]";

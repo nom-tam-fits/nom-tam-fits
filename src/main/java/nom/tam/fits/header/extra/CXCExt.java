@@ -178,7 +178,7 @@ public enum CXCExt implements IFitsHeader {
     private IFitsHeader key;
 
     private CXCExt(String comment) {
-        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
+        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
     }
 
     private CXCExt(String key, String comment) {

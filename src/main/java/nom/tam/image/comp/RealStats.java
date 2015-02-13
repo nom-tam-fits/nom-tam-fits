@@ -144,24 +144,24 @@ public class RealStats {
     }
 
     private void updateFloat(float[] input) {
-        for (int i = 0; i < input.length; i += 1) {
+        for (float element : input) {
             n += 1;
-            if (Float.isNaN(input[i])) {
+            if (Float.isNaN(element)) {
                 nNaN += 1;
             } else {
-                process(input[i]);
+                process(element);
             }
             computeFloatNoise(input);
         }
     }
 
     private void updateDouble(double[] input) {
-        for (int i = 0; i < input.length; i += 1) {
+        for (double element : input) {
             n += 1;
-            if (Double.isNaN(input[i])) {
+            if (Double.isNaN(element)) {
                 nNaN += 1;
             } else {
-                process(input[i]);
+                process(element);
             }
         }
         computeDoubleNoise(input);
@@ -177,7 +177,7 @@ public class RealStats {
         }
         List<Float> lineList = new ArrayList<Float>();
         for (int i = 2; i < input.length - 2; i += 1) {
-            if (input[i - 2] != Float.NaN && input[i] != Float.NaN && input[i + 2] != Float.NaN) {
+            if (!Float.isNaN(input[i - 2]) && !Float.isNaN(input[i]) && !Float.isNaN(input[i + 2])) {
 
                 lineList.add(2 * input[i] - input[i - 2] - input[i + 2]);
             }
@@ -204,7 +204,7 @@ public class RealStats {
         }
         List<Double> lineList = new ArrayList<Double>();
         for (int i = 2; i < input.length - 2; i += 1) {
-            if (input[i - 2] != Double.NaN && input[i] != Double.NaN && input[i + 2] != Double.NaN) {
+            if (!Double.isNaN(input[i - 2]) && !Double.isNaN(input[i]) && !Double.isNaN(input[i + 2])) {
 
                 lineList.add(Math.abs(2 * input[i] - input[i - 2] - input[i + 2]));
 
@@ -237,7 +237,7 @@ public class RealStats {
             max = in;
         }
         sum += in;
-        var += (in * in);
+        var += in * in;
     }
 
     private void checkAxes(int len, int level) {
@@ -262,68 +262,6 @@ public class RealStats {
                 img[i][j] = 1000 + .0001 * i + 0.01 * i * j + .1 * j + g;
             }
         }
-        double[][][] test = {
-            {
-                {
-                    1,
-                    2
-                },
-                {
-                    2,
-                    3
-                }
-            },
-            {
-                {
-                    4,
-                    5
-                },
-                {
-                    6,
-                    Double.NaN
-                }
-            },
-            {
-                {
-                    10,
-                    20
-                },
-                {
-                    30,
-                    10
-                }
-            },
-            {
-                {
-                    1,
-                    2
-                },
-                {
-                    2,
-                    3
-                }
-            },
-            {
-                {
-                    4,
-                    5
-                },
-                {
-                    6,
-                    Double.NaN
-                }
-            },
-            {
-                {
-                    10,
-                    20
-                },
-                {
-                    30,
-                    10
-                }
-            }
-        };
         RealStats rs = new RealStats(img);
         System.err.println("N:    " + rs.n);
         System.err.println("NaNs: " + rs.nNaN);
@@ -332,8 +270,8 @@ public class RealStats {
             System.err.println("  Not rectangular");
         } else {
             System.err.print(" [");
-            for (int i = 0; i < rs.naxes.length; i += 1) {
-                System.err.print(" " + rs.naxes[i]);
+            for (int naxe : rs.naxes) {
+                System.err.print(" " + naxe);
             }
             System.err.println("]");
         }

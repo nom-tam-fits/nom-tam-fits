@@ -163,6 +163,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * @param buf
      *            The array to be filled.
      */
+    @Override
     public int read(byte[] buf) throws IOException {
         return read(buf, 0, buf.length);
     }
@@ -178,6 +179,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      *            The number of bytes to be read. Fewer bytes will be read if an
      *            EOF is reached.
      */
+    @Override
     public int read(byte[] buf, int offset, int len) throws IOException {
 
         checkBuffer(-1);
@@ -284,6 +286,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      *            The number of bytes from the current position. This may be
      *            negative.
      */
+    @Override
     public long skip(long offset) throws IOException {
 
         if (offset > 0 && fileOffset + bufferOffset + offset > raf.length()) {
@@ -303,6 +306,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * move past the end of file but this does not extend the file unless data
      * is written there.
      */
+    @Override
     public void seek(long offsetFromStart) throws IOException {
 
         if (!doingInput) {
@@ -334,6 +338,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * 
      * @return a boolean generated from the next byte in the input.
      */
+    @Override
     public boolean readBoolean() throws IOException {
         return convertToBoolean();
     }
@@ -350,6 +355,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * 
      * @return the next byte in the input.
      */
+    @Override
     public byte readByte() throws IOException {
         checkBuffer(1);
         bufferOffset += 1;
@@ -361,6 +367,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * 
      * @return the unsigned value of the next byte as an integer.
      */
+    @Override
     public int readUnsignedByte() throws IOException {
         checkBuffer(1);
         bufferOffset += 1;
@@ -372,6 +379,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * 
      * @return an integer read from the input.
      */
+    @Override
     public int readInt() throws IOException {
         return convertToInt();
     }
@@ -380,7 +388,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     private int convertToInt() throws IOException {
         checkBuffer(4);
         int x = bufferOffset;
-        int i = buffer[x] << 24 | (buffer[x + 1] & 0xFF) << 16 | (buffer[x + 2] & 0xFF) << 8 | (buffer[x + 3] & 0xFF);
+        int i = buffer[x] << 24 | (buffer[x + 1] & 0xFF) << 16 | (buffer[x + 2] & 0xFF) << 8 | buffer[x + 3] & 0xFF;
         bufferOffset += 4;
         return i;
     }
@@ -390,6 +398,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * 
      * @return a short read from the input.
      */
+    @Override
     public short readShort() throws IOException {
         return convertToShort();
     }
@@ -397,7 +406,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /** Get a short from the buffer */
     private short convertToShort() throws IOException {
         checkBuffer(2);
-        short s = (short) (buffer[bufferOffset] << 8 | (buffer[bufferOffset + 1] & 0xFF));
+        short s = (short) (buffer[bufferOffset] << 8 | buffer[bufferOffset + 1] & 0xFF);
         bufferOffset += 2;
         return s;
     }
@@ -407,6 +416,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * 
      * @return an unsigned short value as an integer.
      */
+    @Override
     public int readUnsignedShort() throws IOException {
         return readShort() & 0xFFFF;
     }
@@ -416,6 +426,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * 
      * @return a char read from the input.
      */
+    @Override
     public char readChar() throws IOException {
         return convertToChar();
     }
@@ -423,7 +434,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /** Get a char from the buffer */
     private char convertToChar() throws IOException {
         checkBuffer(2);
-        char c = (char) (buffer[bufferOffset] << 8 | (buffer[bufferOffset + 1] & 0xFF));
+        char c = (char) (buffer[bufferOffset] << 8 | buffer[bufferOffset + 1] & 0xFF);
         bufferOffset += 2;
         return c;
     }
@@ -433,6 +444,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * 
      * @return a long value read from the input.
      */
+    @Override
     public long readLong() throws IOException {
         return convertToLong();
     }
@@ -442,11 +454,11 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
         checkBuffer(8);
         int x = bufferOffset;
 
-        int i1 = buffer[x] << 24 | (buffer[x + 1] & 0xFF) << 16 | (buffer[x + 2] & 0xFF) << 8 | (buffer[x + 3] & 0xFF);
-        int i2 = buffer[x + 4] << 24 | (buffer[x + 5] & 0xFF) << 16 | (buffer[x + 6] & 0xFF) << 8 | (buffer[x + 7] & 0xFF);
+        int i1 = buffer[x] << 24 | (buffer[x + 1] & 0xFF) << 16 | (buffer[x + 2] & 0xFF) << 8 | buffer[x + 3] & 0xFF;
+        int i2 = buffer[x + 4] << 24 | (buffer[x + 5] & 0xFF) << 16 | (buffer[x + 6] & 0xFF) << 8 | buffer[x + 7] & 0xFF;
         bufferOffset += 8;
 
-        return (((long) i1) << 32) | (((long) i2) & 0x00000000ffffffffL);
+        return (long) i1 << 32 | i2 & 0x00000000ffffffffL;
     }
 
     /**
@@ -454,6 +466,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * 
      * @return a float value read from the input.
      */
+    @Override
     public float readFloat() throws IOException {
         return Float.intBitsToFloat(convertToInt());
     }
@@ -463,6 +476,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * 
      * @return a double value read from the input.
      */
+    @Override
     public double readDouble() throws IOException {
         return Double.longBitsToDouble(convertToLong());
     }
@@ -472,6 +486,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * entire buffer, the only difference with readFully is that readFully will
      * signal an EOF if the buffer cannot be filled.
      */
+    @Override
     public void readFully(byte[] b) throws IOException {
         readFully(b, 0, b.length);
     }
@@ -481,6 +496,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * entire buffer, the only difference with readFully is that readFully will
      * signal an EOF if the buffer cannot be filled.
      */
+    @Override
     public void readFully(byte[] b, int off, int len) throws IOException {
 
         if (off < 0 || len < 0 || off + len > b.length) {
@@ -498,10 +514,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * (However that isn't supposed to happen with a random access file, so
      * there is probably no operational difference).
      */
+    @Override
     public int skipBytes(int toSkip) throws IOException {
         return (int) skipBytes((long) toSkip);
     }
 
+    @Override
     public long skipBytes(long toSkip) throws IOException {
 
         // Note that we allow negative skips...
@@ -517,6 +535,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * 
      * @return the string.
      */
+    @Override
     public String readUTF() throws IOException {
         checkBuffer(-1);
         raf.seek(fileOffset + bufferOffset);
@@ -535,6 +554,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * 
      * @return the next line.
      */
+    @Override
     public String readLine() throws IOException {
 
         checkBuffer(-1);
@@ -559,6 +579,8 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      *            The object to be read. It must be an array of a primitive
      *            type, or an array of Object's.
      */
+    @Deprecated
+    @Override
     public int readArray(Object o) throws IOException {
         return (int) readLArray(o);
     }
@@ -571,6 +593,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      *            (or any dimension), or an array of Objects which contains
      *            pointers to primitive arrays or other object arrays.
      */
+    @Override
     public long readLArray(Object o) throws IOException {
 
         // Note that we assume that only a single thread is
@@ -608,7 +631,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
                     primitiveArrayCount += read((boolean[]) o, 0, ((boolean[]) o).length);
                     break;
                 case 'B':
-                    int len = read((byte[]) o, 0, ((byte[]) o).length);
+                    read((byte[]) o, 0, ((byte[]) o).length);
                     break;
                 case 'C':
                     primitiveArrayCount += read((char[]) o, 0, ((char[]) o).length);
@@ -647,10 +670,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
         return primitiveArrayCount;
     }
 
+    @Override
     public int read(boolean[] b) throws IOException {
         return read(b, 0, b.length);
     }
 
+    @Override
     public int read(boolean[] b, int start, int length) throws IOException {
 
         int i = start;
@@ -664,10 +689,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
         }
     }
 
+    @Override
     public int read(short[] s) throws IOException {
         return read(s, 0, s.length);
     }
 
+    @Override
     public int read(short[] s, int start, int length) throws IOException {
 
         int i = start;
@@ -681,10 +708,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
         }
     }
 
+    @Override
     public int read(char[] c) throws IOException {
         return read(c, 0, c.length);
     }
 
+    @Override
     public int read(char[] c, int start, int length) throws IOException {
 
         int i = start;
@@ -698,10 +727,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
         }
     }
 
+    @Override
     public int read(int[] i) throws IOException {
         return read(i, 0, i.length);
     }
 
+    @Override
     public int read(int[] i, int start, int length) throws IOException {
 
         int ii = start;
@@ -715,10 +746,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
         }
     }
 
+    @Override
     public int read(long[] l) throws IOException {
         return read(l, 0, l.length);
     }
 
+    @Override
     public int read(long[] l, int start, int length) throws IOException {
 
         int i = start;
@@ -733,10 +766,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
 
     }
 
+    @Override
     public int read(float[] f) throws IOException {
         return read(f, 0, f.length);
     }
 
+    @Override
     public int read(float[] f, int start, int length) throws IOException {
 
         int i = start;
@@ -750,10 +785,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
         }
     }
 
+    @Override
     public int read(double[] d) throws IOException {
         return read(d, 0, d.length);
     }
 
+    @Override
     public int read(double[] d, int start, int length) throws IOException {
 
         int i = start;
@@ -797,14 +834,17 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
         }
     }
 
+    @Override
     public void write(int buf) throws IOException {
         convertFromByte(buf);
     }
 
+    @Override
     public void write(byte[] buf) throws IOException {
         write(buf, 0, buf.length);
     }
 
+    @Override
     public void write(byte[] buf, int offset, int length) throws IOException {
 
         if (length < bufferSize) {
@@ -834,6 +874,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * RandomAccessFile but users may need to call flush to ensure that data has
      * been written.
      */
+    @Override
     public void flush() throws IOException {
 
         if (!doingInput && bufferOffset > 0) {
@@ -847,6 +888,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Clear up any pending output at cleanup.
      */
+    @Override
     protected void finalize() {
         try {
             if (getFD().valid()) {
@@ -864,6 +906,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      *            The value to be written. Externally true is represented as a
      *            byte of 1 and false as a byte value of 0.
      */
+    @Override
     public void writeBoolean(boolean b) throws IOException {
         convertFromBoolean(b);
     }
@@ -881,6 +924,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write a byte value.
      */
+    @Override
     public void writeByte(int b) throws IOException {
         convertFromByte(b);
     }
@@ -893,6 +937,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write an integer value.
      */
+    @Override
     public void writeInt(int i) throws IOException {
         convertFromInt(i);
     }
@@ -909,6 +954,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write a short value.
      */
+    @Override
     public void writeShort(int s) throws IOException {
 
         convertFromShort(s);
@@ -924,6 +970,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write a char value.
      */
+    @Override
     public void writeChar(int c) throws IOException {
         convertFromChar(c);
     }
@@ -937,6 +984,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write a long value.
      */
+    @Override
     public void writeLong(long l) throws IOException {
         convertFromLong(l);
     }
@@ -957,6 +1005,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write a float value.
      */
+    @Override
     public void writeFloat(float f) throws IOException {
         convertFromInt(Float.floatToIntBits(f));
     }
@@ -964,6 +1013,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write a double value.
      */
+    @Override
     public void writeDouble(double d) throws IOException {
         convertFromLong(Double.doubleToLongBits(d));
     }
@@ -974,6 +1024,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * @param s
      *            The string to be written.
      */
+    @Override
     public void writeBytes(String s) throws IOException {
         write(s.getBytes(), 0, s.length());
     }
@@ -981,6 +1032,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write a string as an array of chars.
      */
+    @Override
     public void writeChars(String s) throws IOException {
 
         int len = s.length();
@@ -992,6 +1044,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write a string as a UTF.
      */
+    @Override
     public void writeUTF(String s) throws IOException {
         flush();
         raf.writeUTF(s);
@@ -1011,6 +1064,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      *            The object to be written. It must be an array of a primitive
      *            type, Object, or String.
      */
+    @Override
     public void writeArray(Object o) throws IOException {
         String className = o.getClass().getName();
 
@@ -1075,10 +1129,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write an array of booleans.
      */
+    @Override
     public void write(boolean[] b) throws IOException {
         write(b, 0, b.length);
     }
 
+    @Override
     public void write(boolean[] b, int start, int length) throws IOException {
         for (int i = start; i < start + length; i += 1) {
             convertFromBoolean(b[i]);
@@ -1088,10 +1144,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write an array of shorts.
      */
+    @Override
     public void write(short[] s) throws IOException {
         write(s, 0, s.length);
     }
 
+    @Override
     public void write(short[] s, int start, int length) throws IOException {
 
         for (int i = start; i < start + length; i += 1) {
@@ -1102,10 +1160,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write an array of char's.
      */
+    @Override
     public void write(char[] c) throws IOException {
         write(c, 0, c.length);
     }
 
+    @Override
     public void write(char[] c, int start, int length) throws IOException {
 
         for (int i = start; i < start + length; i += 1) {
@@ -1116,10 +1176,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write an array of int's.
      */
+    @Override
     public void write(int[] i) throws IOException {
         write(i, 0, i.length);
     }
 
+    @Override
     public void write(int[] i, int start, int length) throws IOException {
         for (int ii = start; ii < start + length; ii += 1) {
             convertFromInt(i[ii]);
@@ -1129,10 +1191,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write an array of longs.
      */
+    @Override
     public void write(long[] l) throws IOException {
         write(l, 0, l.length);
     }
 
+    @Override
     public void write(long[] l, int start, int length) throws IOException {
 
         for (int i = start; i < start + length; i += 1) {
@@ -1143,10 +1207,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write an array of floats.
      */
+    @Override
     public void write(float[] f) throws IOException {
         write(f, 0, f.length);
     }
 
+    @Override
     public void write(float[] f, int start, int length) throws IOException {
         for (int i = start; i < start + length; i += 1) {
             convertFromInt(Float.floatToIntBits(f[i]));
@@ -1156,10 +1222,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Write an array of doubles.
      */
+    @Override
     public void write(double[] d) throws IOException {
         write(d, 0, d.length);
     }
 
+    @Override
     public void write(double[] d, int start, int length) throws IOException {
 
         for (int i = start; i < start + length; i += 1) {
@@ -1171,10 +1239,12 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
      * Write an array of Strings -- equivalent to calling writeBytes for each
      * string.
      */
+    @Override
     public void write(String[] s) throws IOException {
         write(s, 0, s.length);
     }
 
+    @Override
     public void write(String[] s, int start, int length) throws IOException {
         for (int i = start; i < start + length; i += 1) {
             writeBytes(s[i]);
@@ -1182,6 +1252,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     }
 
     /** Close the file */
+    @Override
     public void close() throws IOException {
         flush();
         raf.close();
@@ -1218,6 +1289,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     /**
      * Get the current offset into the file.
      */
+    @Override
     public long getFilePointer() {
         return fileOffset + bufferOffset;
     }

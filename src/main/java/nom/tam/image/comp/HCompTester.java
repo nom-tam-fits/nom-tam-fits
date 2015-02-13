@@ -99,8 +99,8 @@ public class HCompTester {
         hc.initialize(mp);
         byte[] cmp = hc.compress(data);
         int sum = 0;
-        for (int i = 0; i < cmp.length; i += 1) {
-            sum += cmp[i] & 0xff;
+        for (byte element : cmp) {
+            sum += element & 0xff;
         }
         System.out.println("Sum is:" + sum);
         bf = new BufferedFile(args[2], "rw");

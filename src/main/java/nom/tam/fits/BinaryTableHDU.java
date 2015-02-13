@@ -72,6 +72,7 @@ public class BinaryTableHDU extends TableHDU {
         return new BinaryTable(header);
     }
 
+    @Override
     public Data manufactureData() throws FitsException {
         return manufactureData(myHeader);
     }
@@ -165,6 +166,7 @@ public class BinaryTableHDU extends TableHDU {
      * @exception FitsException
      *                the column could not be added.
      */
+    @Override
     public int addColumn(Object data) throws FitsException {
 
         int col = table.addColumn(data);
@@ -173,6 +175,7 @@ public class BinaryTableHDU extends TableHDU {
     }
 
     // Need to tell header about the Heap before writing.
+    @Override
     public void write(ArrayDataOutput ado) throws FitsException {
 
         int oldSize = myHeader.getIntValue("PCOUNT");
@@ -267,6 +270,7 @@ public class BinaryTableHDU extends TableHDU {
     /**
      * Print out some information about this HDU.
      */
+    @Override
     public void info() {
 
         BinaryTable myData = (BinaryTable) this.myData;
@@ -312,6 +316,7 @@ public class BinaryTableHDU extends TableHDU {
     /**
      * What are the standard column stems for a binary table?
      */
+    @Override
     public String[] columnKeyStems() {
         return keyStems;
     }

@@ -216,7 +216,7 @@ public enum STScIExt implements IFitsHeader {
     private IFitsHeader key;
 
     private STScIExt(String comment) {
-        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
+        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
     }
 
     private STScIExt(String key, String comment) {

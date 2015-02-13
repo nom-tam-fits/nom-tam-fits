@@ -91,6 +91,7 @@ public class ImageData extends Data {
             super(o, offset, d.dims, d.type);
         }
 
+        @Override
         protected Object getMemoryImage() {
             return dataArray;
         }
@@ -117,13 +118,10 @@ public class ImageData extends Data {
     protected ArrayDesc parseHeader(Header h) throws FitsException {
 
         int bitpix;
-        int type;
         int ndim;
         int[] dims;
 
         int i;
-
-        Object dataArray;
 
         Class baseClass;
 
@@ -203,6 +201,7 @@ public class ImageData extends Data {
      * @exception FitsException
      *                if the object does not contain valid image data.
      */
+    @Override
     protected void fillHeader(Header head) throws FitsException {
 
         if (dataArray == null) {
@@ -261,6 +260,7 @@ public class ImageData extends Data {
 
     }
 
+    @Override
     public void read(ArrayDataInput i) throws FitsException {
 
         // Don't need to read null data (noted by Jens Knudstrup)
@@ -299,6 +299,7 @@ public class ImageData extends Data {
         }
     }
 
+    @Override
     public void write(ArrayDataOutput o) throws FitsException {
 
         // Don't need to write null data (noted by Jens Knudstrup)
@@ -336,6 +337,7 @@ public class ImageData extends Data {
     }
 
     /** Get the size in bytes of the data */
+    @Override
     protected long getTrueSize() {
         return byteSize;
     }
@@ -346,6 +348,7 @@ public class ImageData extends Data {
      * very commonly called method and we prefered not to change how users must
      * invoke it.
      */
+    @Override
     public Object getData() {
 
         if (dataArray == null && tiler != null) {

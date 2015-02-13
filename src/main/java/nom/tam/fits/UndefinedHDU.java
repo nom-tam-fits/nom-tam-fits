@@ -83,6 +83,7 @@ public class UndefinedHDU extends BasicHDU {
      * @exception FitsException
      *                if the image extension could not be created.
      */
+    @Override
     public Data manufactureData() throws FitsException {
         return manufactureData(myHeader);
     }
@@ -115,6 +116,7 @@ public class UndefinedHDU extends BasicHDU {
     /**
      * Print out some information about this HDU.
      */
+    @Override
     public void info() {
 
         System.out.println("  Unhandled/Undefined/Unknown Type");

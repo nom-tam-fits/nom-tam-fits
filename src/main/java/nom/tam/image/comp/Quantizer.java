@@ -100,12 +100,12 @@ public class Quantizer {
             }
         }
         // Extract info from the tile descriptor.
-        this.corner = td.corner;
-        this.size = td.size;
-        ndim = this.size.length;
+        corner = td.corner;
+        size = td.size;
+        ndim = size.length;
         int n = 1;
         for (int i = 0; i < ndim; i += 1) {
-            n *= this.size[i];
+            n *= size[i];
         }
 
         ByteArrayOutputStream bo = new ByteArrayOutputStream(n);
@@ -188,11 +188,9 @@ public class Quantizer {
      *            The corners and size of the tile.
      */
     public void fill(byte[] tileData, Object data, TileDescriptor td) {
-        this.corner = td.corner;
-        this.size = td.size;
-        ndim = this.size.length;
-        int n = 1;
-
+        corner = td.corner;
+        size = td.size;
+        ndim = size.length;
         ByteArrayInputStream bi = new ByteArrayInputStream(tileData);
         DataInputStream ds = new DataInputStream(bi);
 

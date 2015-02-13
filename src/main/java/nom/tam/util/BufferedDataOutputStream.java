@@ -89,6 +89,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
      *            The value to be written. Externally true is represented as a
      *            byte of 1 and false as a byte value of 0.
      */
+    @Override
     public void writeBoolean(boolean b) throws IOException {
 
         checkBuf(1);
@@ -102,6 +103,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write a byte value.
      */
+    @Override
     public void writeByte(int b) throws IOException {
         checkBuf(1);
         buf[count++] = (byte) b;
@@ -110,6 +112,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write an integer value.
      */
+    @Override
     public void writeInt(int i) throws IOException {
 
         checkBuf(4);
@@ -122,6 +125,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write a short value.
      */
+    @Override
     public void writeShort(int s) throws IOException {
 
         checkBuf(2);
@@ -133,6 +137,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write a char value.
      */
+    @Override
     public void writeChar(int c) throws IOException {
 
         checkBuf(2);
@@ -143,6 +148,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write a long value.
      */
+    @Override
     public void writeLong(long l) throws IOException {
 
         checkBuf(8);
@@ -160,6 +166,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write a float value.
      */
+    @Override
     public void writeFloat(float f) throws IOException {
 
         checkBuf(4);
@@ -176,6 +183,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write a double value.
      */
+    @Override
     public void writeDouble(double d) throws IOException {
 
         checkBuf(8);
@@ -194,18 +202,20 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 
     /**
      * Write a string using the local protocol to convert char's to bytes.
+     * Attention only ascii values will be written.
      * 
      * @param s
      *            The string to be written.
      */
+    @Override
     public void writeBytes(String s) throws IOException {
-
-        write(s.getBytes(), 0, s.length());
+        write(AsciiFuncs.getBytes(s), 0, s.length());
     }
 
     /**
      * Write a string as an array of chars.
      */
+    @Override
     public void writeChars(String s) throws IOException {
 
         for (int i = 0; i < s.length(); i += 1) {
@@ -218,6 +228,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
      * situation efficiently since it creates new DataOutputStream to handle
      * each call.
      */
+    @Override
     public void writeUTF(String s) throws IOException {
 
         // Punt on this one and use standard routines.
@@ -257,70 +268,48 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
      *            The object to be written. It must be an array of a primitive
      *            type, Object, or String.
      */
+    @Override
     public void writeArray(Object o) throws IOException {
-        String className = o.getClass().getName();
-
-        if (className.charAt(0) != '[') {
-            throw new IOException("Invalid object passed to BufferedDataOutputStream.write" + className);
+        if (!o.getClass().isArray()) {
+            throw new IOException("Invalid object passed to BufferedDataOutputStream.write" + o.getClass().getName());
         }
 
         // Is this a multidimensional array? If so process recursively.
-        if (className.charAt(1) == '[') {
+        if (o.getClass().getComponentType().isArray()) {
             for (int i = 0; i < ((Object[]) o).length; i += 1) {
                 writeArray(((Object[]) o)[i]);
             }
         } else {
-
-            // This is a one-d array. Process it using our special functions.
-            switch (className.charAt(1)) {
-                case 'Z':
-                    write((boolean[]) o, 0, ((boolean[]) o).length);
-                    break;
-                case 'B':
-                    write((byte[]) o, 0, ((byte[]) o).length);
-                    break;
-                case 'C':
-                    write((char[]) o, 0, ((char[]) o).length);
-                    break;
-                case 'S':
-                    write((short[]) o, 0, ((short[]) o).length);
-                    break;
-                case 'I':
-                    write((int[]) o, 0, ((int[]) o).length);
-                    break;
-                case 'J':
-                    write((long[]) o, 0, ((long[]) o).length);
-                    break;
-                case 'F':
-                    write((float[]) o, 0, ((float[]) o).length);
-                    break;
-                case 'D':
-                    write((double[]) o, 0, ((double[]) o).length);
-                    break;
-                case 'L':
-
-                    // Handle two exceptions: an array of strings, or an
-                    // array of objects. .
-                    if (className.equals("[Ljava.lang.String;")) {
-                        write((String[]) o, 0, ((String[]) o).length);
-                    } else if (className.equals("[Ljava.lang.Object;")) {
-                        for (int i = 0; i < ((Object[]) o).length; i += 1) {
-                            writeArray(((Object[]) o)[i]);
-                        }
-                    } else {
-                        throw new IOException("Invalid object passed to BufferedDataOutputStream.writeArray: " + className);
-                    }
-                    break;
-                default:
-                    throw new IOException("Invalid object passed to BufferedDataOutputStream.writeArray: " + className);
+            if (o instanceof boolean[]) {
+                write((boolean[]) o, 0, ((boolean[]) o).length);
+            } else if (o instanceof byte[]) {
+                write((byte[]) o, 0, ((byte[]) o).length);
+            } else if (o instanceof char[]) {
+                write((char[]) o, 0, ((char[]) o).length);
+            } else if (o instanceof short[]) {
+                write((short[]) o, 0, ((short[]) o).length);
+            } else if (o instanceof int[]) {
+                write((int[]) o, 0, ((int[]) o).length);
+            } else if (o instanceof long[]) {
+                write((long[]) o, 0, ((long[]) o).length);
+            } else if (o instanceof float[]) {
+                write((float[]) o, 0, ((float[]) o).length);
+            } else if (o instanceof double[]) {
+                write((double[]) o, 0, ((double[]) o).length);
+            } else if (o instanceof String[]) {
+                write((String[]) o, 0, ((String[]) o).length);
+            } else {
+                for (int i = 0; i < ((Object[]) o).length; i += 1) {
+                    writeArray(((Object[]) o)[i]);
+                }
             }
         }
-
     }
 
     /**
      * Write an array of booleans.
      */
+    @Override
     public void write(boolean[] b) throws IOException {
         write(b, 0, b.length);
     }
@@ -328,6 +317,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write a segment of an array of booleans.
      */
+    @Override
     public void write(boolean[] b, int start, int len) throws IOException {
 
         for (int i = start; i < start + len; i += 1) {
@@ -346,6 +336,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write an array of shorts.
      */
+    @Override
     public void write(short[] s) throws IOException {
         write(s, 0, s.length);
     }
@@ -353,6 +344,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write a segment of an array of shorts.
      */
+    @Override
     public void write(short[] s, int start, int len) throws IOException {
 
         for (int i = start; i < start + len; i += 1) {
@@ -360,13 +352,14 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
                 checkBuf(2);
             }
             buf[count++] = (byte) (s[i] >> 8);
-            buf[count++] = (byte) (s[i]);
+            buf[count++] = (byte) s[i];
         }
     }
 
     /**
      * Write an array of char's.
      */
+    @Override
     public void write(char[] c) throws IOException {
         write(c, 0, c.length);
     }
@@ -374,6 +367,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write a segment of an array of char's.
      */
+    @Override
     public void write(char[] c, int start, int len) throws IOException {
 
         for (int i = start; i < start + len; i += 1) {
@@ -381,13 +375,14 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
                 checkBuf(2);
             }
             buf[count++] = (byte) (c[i] >> 8);
-            buf[count++] = (byte) (c[i]);
+            buf[count++] = (byte) c[i];
         }
     }
 
     /**
      * Write an array of int's.
      */
+    @Override
     public void write(int[] i) throws IOException {
         write(i, 0, i.length);
     }
@@ -395,6 +390,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write a segment of an array of int's.
      */
+    @Override
     public void write(int[] i, int start, int len) throws IOException {
 
         for (int ii = start; ii < start + len; ii += 1) {
@@ -405,7 +401,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
             buf[count++] = (byte) (i[ii] >>> 24);
             buf[count++] = (byte) (i[ii] >>> 16);
             buf[count++] = (byte) (i[ii] >>> 8);
-            buf[count++] = (byte) (i[ii]);
+            buf[count++] = (byte) i[ii];
 
         }
 
@@ -414,6 +410,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write an array of longs.
      */
+    @Override
     public void write(long[] l) throws IOException {
         write(l, 0, l.length);
     }
@@ -421,6 +418,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write a segement of an array of longs.
      */
+    @Override
     public void write(long[] l, int start, int len) throws IOException {
 
         for (int i = start; i < start + len; i += 1) {
@@ -432,24 +430,26 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
             buf[count++] = (byte) (t >>> 24);
             buf[count++] = (byte) (t >>> 16);
             buf[count++] = (byte) (t >>> 8);
-            buf[count++] = (byte) (t);
+            buf[count++] = (byte) t;
 
-            t = (int) (l[i]);
+            t = (int) l[i];
 
             buf[count++] = (byte) (t >>> 24);
             buf[count++] = (byte) (t >>> 16);
             buf[count++] = (byte) (t >>> 8);
-            buf[count++] = (byte) (t);
+            buf[count++] = (byte) t;
         }
     }
 
     /**
      * Write an array of floats.
      */
+    @Override
     public void write(float[] f) throws IOException {
         write(f, 0, f.length);
     }
 
+    @Override
     public void write(float[] f, int start, int len) throws IOException {
 
         for (int i = start; i < start + len; i += 1) {
@@ -468,10 +468,12 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     /**
      * Write an array of doubles.
      */
+    @Override
     public void write(double[] d) throws IOException {
         write(d, 0, d.length);
     }
 
+    @Override
     public void write(double[] d, int start, int len) throws IOException {
 
         for (int i = start; i < start + len; i += 1) {
@@ -485,7 +487,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
             buf[count++] = (byte) (ix >>> 24);
             buf[count++] = (byte) (ix >>> 16);
             buf[count++] = (byte) (ix >>> 8);
-            buf[count++] = (byte) (ix);
+            buf[count++] = (byte) ix;
 
             ix = (int) t;
 
@@ -501,6 +503,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
      * Write an array of Strings -- equivalent to calling writeBytes for each
      * string.
      */
+    @Override
     public void write(String[] s) throws IOException {
         write(s, 0, s.length);
     }
@@ -509,13 +512,14 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
      * Write a segment of an array of Strings. Equivalent to calling writeBytes
      * for the selected elements.
      */
+    @Override
     public void write(String[] s, int start, int len) throws IOException {
 
         // Do not worry about buffering this specially since the
         // strings may be of differing lengths.
 
-        for (int i = 0; i < s.length; i += 1) {
-            writeBytes(s[i]);
+        for (String element : s) {
+            writeBytes(element);
         }
     }
 

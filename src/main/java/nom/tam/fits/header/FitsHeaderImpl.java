@@ -44,7 +44,7 @@ public class FitsHeaderImpl implements IFitsHeader {
     private final VALUE valueType;
 
     public FitsHeaderImpl(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        this.key = headerName;
+        key = headerName;
         this.status = status;
         this.hdu = hdu;
         this.valueType = valueType;

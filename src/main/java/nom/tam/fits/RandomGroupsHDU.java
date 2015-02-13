@@ -55,6 +55,7 @@ public class RandomGroupsHDU extends BasicHDU {
     /**
      * Indicate that a RandomGroupsHDU can come at the beginning of a FITS file.
      */
+    @Override
     protected boolean canBePrimary() {
         return true;
     }
@@ -64,6 +65,7 @@ public class RandomGroupsHDU extends BasicHDU {
      * the FITS standard only supports Random Groups data at the beginning of
      * the file, but we allow it within Image extensions.
      */
+    @Override
     protected void setPrimaryHDU(boolean status) {
         try {
             super.setPrimaryHDU(status);
@@ -151,6 +153,7 @@ public class RandomGroupsHDU extends BasicHDU {
     /**
      * Create a FITS Data object corresponding to this HDU header.
      */
+    @Override
     public Data manufactureData() throws FitsException {
         return manufactureData(myHeader);
     }
@@ -178,8 +181,8 @@ public class RandomGroupsHDU extends BasicHDU {
 
         Object[] sampleRow = generateSampleRow(hdr);
         for (int i = 0; i < gcount; i += 1) {
-            ((Object[][]) dataArray)[i][0] = ((Object[]) nom.tam.util.ArrayFuncs.deepClone(sampleRow))[0];
-            ((Object[][]) dataArray)[i][1] = ((Object[]) nom.tam.util.ArrayFuncs.deepClone(sampleRow))[1];
+            dataArray[i][0] = ((Object[]) nom.tam.util.ArrayFuncs.deepClone(sampleRow))[0];
+            dataArray[i][1] = ((Object[]) nom.tam.util.ArrayFuncs.deepClone(sampleRow))[1];
         }
         return new RandomGroupsData(dataArray);
 
@@ -248,6 +251,7 @@ public class RandomGroupsHDU extends BasicHDU {
     /**
      * Display structural information about the current HDU.
      */
+    @Override
     public void info() {
 
         System.out.println("Random Groups HDU");

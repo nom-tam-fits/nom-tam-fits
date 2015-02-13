@@ -285,8 +285,6 @@ public class HeaderCard {
         }
 
         int vend = -1;
-        boolean quote = false;
-
         // If we have a ' then find the matching '.
         if (valueAndComment.charAt(0) == '\'') {
 
@@ -519,7 +517,7 @@ public class HeaderCard {
      * Is this a key/value card?
      */
     public boolean isKeyValuePair() {
-        return (key != null && value != null);
+        return key != null && value != null;
     }
 
     /**
@@ -560,6 +558,7 @@ public class HeaderCard {
     /**
      * Return the 80 character card image
      */
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer(80);
 
@@ -595,7 +594,7 @@ public class HeaderCard {
 
                 } else {
 
-                    int offset = buf.length();
+                    buf.length();
                     if (value.length() < 20) {
                         buf.append(space80.substring(0, 20 - value.length()));
                     }

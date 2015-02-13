@@ -39,8 +39,6 @@ public abstract class TableHDU extends BasicHDU {
 
     private TableData table;
 
-    private int currentColumn;
-
     /**
      * Create the TableHDU. Note that this will normally only be invoked by
      * subclasses in the FITS package.
@@ -391,17 +389,17 @@ public abstract class TableHDU extends BasicHDU {
 
         // Get rid of the keywords for the deleted columns
         for (int col = column; col < column + len; col += 1) {
-            for (int fld = 0; fld < fields.length; fld += 1) {
-                String key = fields[fld] + (col + 1);
+            for (String field : fields) {
+                String key = field + (col + 1);
                 myHeader.deleteKey(key);
             }
         }
 
         // Shift the keywords for the columns after the deleted columns
         for (int col = column + len; col < ncol; col += 1) {
-            for (int fld = 0; fld < fields.length; fld += 1) {
-                String oldKey = fields[fld] + (col + 1);
-                String newKey = fields[fld] + (col + 1 - len);
+            for (String field : fields) {
+                String oldKey = field + (col + 1);
+                String newKey = field + (col + 1 - len);
                 if (myHeader.containsKey(oldKey)) {
                     myHeader.replaceKey(oldKey, newKey);
                 }

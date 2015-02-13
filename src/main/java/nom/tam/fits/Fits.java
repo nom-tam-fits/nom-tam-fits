@@ -588,16 +588,14 @@ public class Fits {
      **/
     public Fits(String filename, boolean compressed) throws FitsException {
 
-        InputStream inp;
-
         if (filename == null) {
             throw new FitsException("Null FITS Identifier String");
         }
 
-        int len = filename.length();
-        String lc = filename.toLowerCase();
+        filename.length();
+        filename.toLowerCase();
         try {
-            URL test = new URL(filename);
+            new URL(filename);
             InputStream is = FitsUtil.getURLStream(new URL(filename), 0);
             streamInit(is);
             return;
@@ -790,6 +788,7 @@ public class Fits {
      * @return number of HDUs.
      * @deprecated The meaning of size of ambiguous. Use
      */
+    @Deprecated
     public int size() throws FitsException {
         readToEnd();
         return getNumberOfHDUs();
@@ -964,6 +963,7 @@ public class Fits {
      * @return The number of HDU's in the object.
      * @deprecated See getNumberOfHDUs()
      */
+    @Deprecated
     public int currentSize() {
         return hduList.size();
     }
@@ -1074,7 +1074,7 @@ public class Fits {
         hdu.getData().write(bdos);
         bdos.flush();
         byte[] data = hduByteImage.toByteArray();
-        long checksum = checksum(data);
+        checksum(data);
         hdu.write(new BufferedDataOutputStream(hduByteImage));
         long csd = checksum(data);
         hdu.getHeader().addValue("DATASUM", "" + csd, "Checksum of data");
@@ -1152,8 +1152,8 @@ public class Fits {
              * signed (-128 to 127) in Java and need to be masked indivdually to
              * avoid sign extension /propagation.
              */
-            hi += (data[2 * i] << 8) & 0xff00L | data[2 * i + 1] & 0xffL;
-            lo += (data[2 * i + 2] << 8) & 0xff00L | data[2 * i + 3] & 0xffL;
+            hi += data[2 * i] << 8 & 0xff00L | data[2 * i + 1] & 0xffL;
+            lo += data[2 * i + 2] << 8 & 0xff00L | data[2 * i + 3] & 0xffL;
         }
 
         /*
@@ -1161,13 +1161,13 @@ public class Fits {
          * are multiples of 2880 bytes.
          */
         if (remain >= 1) {
-            hi += (data[2 * len] << 8) & 0xff00L;
+            hi += data[2 * len] << 8 & 0xff00L;
         }
         if (remain >= 2) {
             hi += data[2 * len + 1] & 0xffL;
         }
         if (remain >= 3) {
-            lo += (data[2 * len + 2] << 8) & 0xff00L;
+            lo += data[2 * len + 2] << 8 & 0xff00L;
         }
 
         long hicarry = hi >>> 16;
@@ -1219,10 +1219,10 @@ public class Fits {
         final int offset = 0x30; /* ASCII 0 (zero */
         final long value = compl ? ~c : c;
         for (int i = 0; i < 4; i++) {
-            final int byt = (int) ((value & mask[i]) >>> (24 - 8 * i)); // each
-                                                                        // byte
-                                                                        // becomes
-                                                                        // four
+            final int byt = (int) ((value & mask[i]) >>> 24 - 8 * i); // each
+                                                                      // byte
+                                                                      // becomes
+                                                                      // four
             final int quotient = byt / 4 + offset;
             final int remainder = byt % 4;
             int[] ch = new int[4];
@@ -1235,9 +1235,9 @@ public class Fits {
             for (; check;) // avoid ASCII punctuation
             {
                 check = false;
-                for (int k = 0; k < exclude.length; k++) {
+                for (int element : exclude) {
                     for (int j = 0; j < 4; j += 2) {
-                        if (ch[j] == exclude[k] || ch[j + 1] == exclude[k]) {
+                        if (ch[j] == element || ch[j + 1] == element) {
                             ch[j]++;
                             ch[j + 1]--;
                             check = true;
@@ -1248,7 +1248,7 @@ public class Fits {
 
             for (int j = 0; j < 4; j++) // assign the bytes
             {
-                asc[4 * j + i] = (byte) (ch[j]);
+                asc[4 * j + i] = (byte) ch[j];
             }
         }
 

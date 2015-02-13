@@ -49,6 +49,11 @@ package nom.tam.fits;
 public class PaddingException extends FitsException {
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * The HDU where the error happened.
      */
     private BasicHDU truncatedHDU;

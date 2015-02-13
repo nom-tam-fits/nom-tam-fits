@@ -87,6 +87,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param lengths
      *            The length requested in each dimension.
      */
+    @Override
     public Object getTile(int[] corners, int[] lengths) throws IOException {
 
         if (corners.length != dims.length || lengths.length != dims.length) {
@@ -123,6 +124,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param lengths
      *            The dimensions of the tile.
      */
+    @Override
     public void getTile(Object outArray, int[] corners, int[] lengths) throws IOException {
 
         Object data = getMemoryImage();
@@ -255,7 +257,7 @@ public abstract class StandardImageTiler implements ImageTiler {
                 copyLength += posits[dim];
             }
             if (posits[dim] + length > dims[dim]) {
-                copyLength -= (posits[dim] + length - dims[dim]);
+                copyLength -= posits[dim] + length - dims[dim];
             }
 
             System.arraycopy(data, startFrom, output, startTo, copyLength);
@@ -346,6 +348,7 @@ public abstract class StandardImageTiler implements ImageTiler {
     /**
      * Read the entire image into a multidimensional array.
      */
+    @Override
     public Object getCompleteImage() throws IOException {
 
         if (f == null) {

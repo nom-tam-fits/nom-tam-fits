@@ -173,6 +173,7 @@ public class FitsUtil {
             // Now copy everything in a separate thread.
             Thread copier = new Thread(new Runnable() {
 
+                @Override
                 public void run() {
                     try {
                         byte[] buffer = new byte[8192];
@@ -234,7 +235,6 @@ public class FitsUtil {
         if (filename == null) {
             return false;
         }
-        FileInputStream fis = null;
         File test = new File(filename);
         if (test.exists()) {
             return isCompressed(test);
@@ -250,9 +250,9 @@ public class FitsUtil {
     public static int maxLength(String[] o) throws FitsException {
 
         int max = 0;
-        for (int i = 0; i < o.length; i += 1) {
-            if (o[i] != null && o[i].length() > max) {
-                max = o[i].length();
+        for (String element : o) {
+            if (element != null && element.length() > max) {
+                max = element.length();
             }
         }
         return max;
@@ -361,7 +361,7 @@ public class FitsUtil {
         boolean[] bool = new boolean[byt.length];
 
         for (int i = 0; i < byt.length; i += 1) {
-            bool[i] = (byt[i] == 'T');
+            bool[i] = byt[i] == 'T';
         }
         return bool;
     }
@@ -386,9 +386,7 @@ public class FitsUtil {
         // since we want to match without regard to case.
         String[] keys = (String[]) hdrs.keySet().toArray(new String[0]);
         // for (String key: hdrs.keySet()) {
-        for (int i = 0; i < keys.length; i += 1) {
-            String key = keys[i];
-
+        for (String key : keys) {
             if (key != null && key.toLowerCase().equals("location")) {
                 // String val = hdrs.get(key).get(0);
                 String val = (String) ((List) hdrs.get(key)).get(0);
@@ -443,11 +441,11 @@ public class FitsUtil {
 
             t = new Thread(new Runnable() {
 
+                @Override
                 public void run() {
                     try {
                         byte[] buf = new byte[16384];
                         int len;
-                        long total = 0;
                         while ((len = pb.read(buf)) > 0) {
                             try {
                                 out.write(buf, 0, len);
@@ -457,7 +455,6 @@ public class FitsUtil {
                                 // stream.
                                 break;
                             }
-                            total += len;
                         }
                         pb.close();
                         out.close();
@@ -489,6 +486,7 @@ class CloseIS extends FilterInputStream {
         this.o = o;
     }
 
+    @Override
     public void close() throws IOException {
         super.close();
         o.close();

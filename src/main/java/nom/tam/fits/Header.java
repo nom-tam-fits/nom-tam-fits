@@ -130,8 +130,8 @@ public class Header implements FitsElement {
      */
     public Header(String[] newCards) {
 
-        for (int i = 0; i < newCards.length; i += 1) {
-            HeaderCard card = new HeaderCard(newCards[i]);
+        for (String newCard : newCards) {
+            HeaderCard card = new HeaderCard(newCard);
             if (card.getValue() == null) {
                 cards.add(card);
             } else {
@@ -224,6 +224,7 @@ public class Header implements FitsElement {
     }
 
     /** Get the offset of this header */
+    @Override
     public long getFileOffset() {
         return fileOffset;
     }
@@ -247,7 +248,7 @@ public class Header implements FitsElement {
             return 0;
         }
 
-        int bitpix = getIntValue("BITPIX");
+        getIntValue("BITPIX");
 
         int[] axes = new int[naxis];
 
@@ -291,6 +292,7 @@ public class Header implements FitsElement {
     }
 
     /** Get the size of the header in bytes */
+    @Override
     public long getSize() {
         return headerSize();
     }
@@ -371,7 +373,7 @@ public class Header implements FitsElement {
      *            The value to be returned if the key is not found.
      */
     public int getIntValue(String key, int dft) {
-        return (int) getLongValue(key, (long) dft);
+        return (int) getLongValue(key, dft);
     }
 
     /**
@@ -382,6 +384,17 @@ public class Header implements FitsElement {
      * @return The associated value or 0 if not found.
      */
     public int getIntValue(String key) {
+        return (int) getLongValue(key);
+    }
+
+    /**
+     * Get the <CODE>int</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
+     * @return The associated value or 0 if not found.
+     */
+    public int getIntValue(IFitsHeader key) {
         return (int) getLongValue(key);
     }
 
@@ -674,6 +687,7 @@ public class Header implements FitsElement {
      * @param dis
      *            The input stream to read the data from.
      */
+    @Override
     public void read(ArrayDataInput dis) throws TruncatedFileException, IOException {
         if (dis instanceof RandomAccess) {
             fileOffset = FitsUtil.findOffset(dis);
@@ -711,7 +725,7 @@ public class Header implements FitsElement {
                     // If this is an extension HDU, then we may allow
                     // junk at the end and simply ignore it
                     //
-                    if (firstCard && (need == 80 || (fileOffset > 0 && FitsFactory.getAllowTerminalJunk()))) {
+                    if (firstCard && (need == 80 || fileOffset > 0 && FitsFactory.getAllowTerminalJunk())) {
                         throw e;
                     }
                     throw new TruncatedFileException(e.getMessage());
@@ -724,7 +738,7 @@ public class Header implements FitsElement {
 
                     String key = fcard.getKey();
 
-                    if (key == null || (!key.equals("SIMPLE") && !key.equals("XTENSION"))) {
+                    if (key == null || !key.equals("SIMPLE") && !key.equals("XTENSION")) {
                         if (fileOffset > 0 && FitsFactory.getAllowTerminalJunk()) {
                             throw new EOFException("Not FITS format at " + fileOffset + ":" + cbuf);
                         } else {
@@ -858,6 +872,7 @@ public class Header implements FitsElement {
      * @exception FitsException
      *                if the header could not be written.
      */
+    @Override
     public void write(ArrayDataOutput dos) throws FitsException {
 
         fileOffset = FitsUtil.findOffset(dos);
@@ -892,6 +907,7 @@ public class Header implements FitsElement {
     }
 
     /** Rewrite the header. */
+    @Override
     public void rewrite() throws FitsException, IOException {
 
         ArrayDataOutput dos = (ArrayDataOutput) input;
@@ -906,6 +922,7 @@ public class Header implements FitsElement {
     }
 
     /** Reset the file pointer to the beginning of the header */
+    @Override
     public boolean reset() {
         try {
             FitsUtil.reposition(input, fileOffset);
@@ -916,6 +933,7 @@ public class Header implements FitsElement {
     }
 
     /** Can the header be rewritten without rewriting the entire file? */
+    @Override
     public boolean rewriteable() {
 
         if (fileOffset >= 0 && input instanceof ArrayDataOutput && (cards.size() + 35) / 36 == (originalCardCount + 35) / 36) {
@@ -1291,7 +1309,7 @@ public class Header implements FitsElement {
             iter = iterator();
 
             if (findCard("NAXIS" + nax) != null) {
-                HeaderCard hc = (HeaderCard) iter.next();
+                iter.next();
                 try {
                     removeCard("EXTEND");
                     iter.add("EXTEND", new HeaderCard("EXTEND", true, "ntf::header:extend:1"));
@@ -1513,6 +1531,7 @@ public class Header implements FitsElement {
      * @deprecated see numberOfCards(). The units of the size of the header may
      *             be unclear.
      */
+    @Deprecated
     public int size() {
         return cards.size();
     }
@@ -1525,6 +1544,7 @@ public class Header implements FitsElement {
      * @deprecated An iterator should be used for sequential access to the
      *             header.
      */
+    @Deprecated
     public String getCard(int n) {
         if (n >= 0 && n < cards.size()) {
             iter = cards.iterator(n);
@@ -1542,6 +1562,7 @@ public class Header implements FitsElement {
      * @deprecated An iterator should be used for sequential access to the
      *             header.
      */
+    @Deprecated
     public String getKey(int n) {
 
         String card = getCard(n);
@@ -1569,6 +1590,7 @@ public class Header implements FitsElement {
      *                if the data was not valid for this header.
      * @deprecated Use the appropriate Header constructor.
      */
+    @Deprecated
     public void pointToData(Data o) throws FitsException {
         o.fillHeader(this);
     }

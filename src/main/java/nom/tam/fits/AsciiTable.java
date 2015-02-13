@@ -169,6 +169,7 @@ public class AsciiTable extends Data implements TableData {
      * @throws FitsException
      */
 
+    @Override
     public void read(ArrayDataInput str) throws FitsException {
 
         setFileOffset(str);
@@ -227,6 +228,7 @@ public class AsciiTable extends Data implements TableData {
      * @throws FitsException
      */
 
+    @Override
     public Object getData() throws FitsException {
 
         if (data == null) {
@@ -324,6 +326,7 @@ public class AsciiTable extends Data implements TableData {
      * @throws FitsException
      */
 
+    @Override
     public Object getColumn(int col) throws FitsException {
         if (data == null) {
             getData();
@@ -340,6 +343,7 @@ public class AsciiTable extends Data implements TableData {
      * @throws FitsException
      */
 
+    @Override
     public Object[] getRow(int row) throws FitsException {
 
         if (data != null) {
@@ -362,6 +366,7 @@ public class AsciiTable extends Data implements TableData {
      *             when unable to get the data.
      */
 
+    @Override
     public Object getElement(int row, int col) throws FitsException {
         if (data != null) {
             return singleElement(row, col);
@@ -404,8 +409,6 @@ public class AsciiTable extends Data implements TableData {
      * dimension 1.
      */
     private Object[] parseSingleRow(int row) throws FitsException {
-
-        int offset = row * rowLen;
 
         Object[] res = new Object[nFields];
 
@@ -463,6 +466,7 @@ public class AsciiTable extends Data implements TableData {
      *             file arises.
      */
 
+    @Override
     public void write(ArrayDataOutput str) throws FitsException {
 
         // Make sure we have the data in hand.
@@ -548,6 +552,7 @@ public class AsciiTable extends Data implements TableData {
      * @throws FitsException
      */
 
+    @Override
     public void setColumn(int col, Object newData) throws FitsException {
         if (data == null) {
             getData();
@@ -573,6 +578,7 @@ public class AsciiTable extends Data implements TableData {
      * @throws FitsException
      */
 
+    @Override
     public void setRow(int row, Object[] newData) throws FitsException {
         if (row < 0 || row > nRows) {
             throw new FitsException("Invalid row in setRow");
@@ -607,6 +613,7 @@ public class AsciiTable extends Data implements TableData {
      * @throws FitsException
      */
 
+    @Override
     public void setElement(int row, int col, Object newData) throws FitsException {
 
         if (data == null) {
@@ -681,14 +688,15 @@ public class AsciiTable extends Data implements TableData {
      * @throws FitsException
      */
 
+    @Override
     public int addColumn(Object newCol) throws FitsException {
         int maxLen = 1;
         if (newCol instanceof String[]) {
 
             String[] sa = (String[]) newCol;
-            for (int i = 0; i < sa.length; i += 1) {
-                if (sa[i] != null && sa[i].length() > maxLen) {
-                    maxLen = sa[i].length();
+            for (String element : sa) {
+                if (element != null && element.length() > maxLen) {
+                    maxLen = element.length();
                 }
             }
         } else if (newCol instanceof double[]) {
@@ -786,6 +794,7 @@ public class AsciiTable extends Data implements TableData {
      * @throws FitsException
      */
 
+    @Override
     public int addRow(Object[] newRow) throws FitsException {
 
         // If there are no fields, then this is the
@@ -793,8 +802,8 @@ public class AsciiTable extends Data implements TableData {
         // to get the descriptors set up.
 
         if (nFields == 0) {
-            for (int i = 0; i < newRow.length; i += 1) {
-                addColumn(newRow[i]);
+            for (Object element : newRow) {
+                addColumn(element);
             }
         } else {
             for (int i = 0; i < nFields; i += 1) {
@@ -826,6 +835,7 @@ public class AsciiTable extends Data implements TableData {
      * @throws FitsException
      */
 
+    @Override
     public void deleteRows(int start, int len) throws FitsException {
 
         if (nRows == 0 || start < 0 || start >= nRows || len <= 0) {
@@ -866,8 +876,9 @@ public class AsciiTable extends Data implements TableData {
      *         padding.
      */
 
+    @Override
     protected long getTrueSize() {
-        return (long) (nRows) * rowLen;
+        return (long) nRows * rowLen;
     }
 
     /**
@@ -878,6 +889,7 @@ public class AsciiTable extends Data implements TableData {
      *            current table data.
      */
 
+    @Override
     public void fillHeader(Header hdr) {
 
         try {
@@ -929,6 +941,7 @@ public class AsciiTable extends Data implements TableData {
      * @return The number of rows.
      */
 
+    @Override
     public int getNRows() {
         return nRows;
     }
@@ -939,6 +952,7 @@ public class AsciiTable extends Data implements TableData {
      * @return The number of columns
      */
 
+    @Override
     public int getNCols() {
         return nFields;
     }
@@ -962,6 +976,7 @@ public class AsciiTable extends Data implements TableData {
      * @throws FitsException
      */
 
+    @Override
     public void deleteColumns(int start, int len) throws FitsException {
 
         getData();
@@ -987,7 +1002,7 @@ public class AsciiTable extends Data implements TableData {
         System.arraycopy(nulls, start + len, newNulls, start, nFields - start - len);
 
         for (int i = start; i < start + len; i += 1) {
-            rowLen -= (lengths[i] + 1);
+            rowLen -= lengths[i] + 1;
         }
 
         data = newData;
@@ -1036,6 +1051,7 @@ public class AsciiTable extends Data implements TableData {
      * @throws FitsException
      */
 
+    @Override
     public void updateAfterDelete(int oldNCol, Header hdr) throws FitsException {
 
         int offset = 0;

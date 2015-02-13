@@ -285,6 +285,7 @@ public class FitsDate {
         }
     }
 
+    @Override
     public String toString() {
         if (year == -1) {
             return "";
@@ -343,13 +344,13 @@ public class FitsDate {
     }
 
     public static void testArgs(String args[]) {
-        for (int i = 0; i < args.length; i++) {
+        for (String arg : args) {
 
             try {
-                FitsDate fd = new FitsDate(args[i]);
-                System.out.println("\"" + args[i] + "\" => " + fd + " => " + fd.toDate());
+                FitsDate fd = new FitsDate(arg);
+                System.out.println("\"" + arg + "\" => " + fd + " => " + fd.toDate());
             } catch (Exception e) {
-                System.err.println("Date \"" + args[i] + "\" threw " + e.getClass().getName() + "(" + e.getMessage() + ")");
+                System.err.println("Date \"" + arg + "\" threw " + e.getClass().getName() + "(" + e.getMessage() + ")");
             }
         }
     }

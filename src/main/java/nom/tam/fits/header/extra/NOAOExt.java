@@ -33,9 +33,6 @@ package nom.tam.fits.header.extra;
 
 import nom.tam.fits.header.FitsHeaderImpl;
 import nom.tam.fits.header.IFitsHeader;
-import nom.tam.fits.header.IFitsHeader.HDU;
-import nom.tam.fits.header.IFitsHeader.SOURCE;
-import nom.tam.fits.header.IFitsHeader.VALUE;
 
 /**
  * This keyword dictionary defines keywords which may be used in image data
@@ -8150,7 +8147,7 @@ public enum NOAOExt implements IFitsHeader {
     private IFitsHeader key;
 
     private NOAOExt(HDU hdu, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
+        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
     }
 
     private NOAOExt(String key, HDU hdu, VALUE valueType, String comment) {

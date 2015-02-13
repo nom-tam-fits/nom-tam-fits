@@ -541,11 +541,11 @@ public enum Standard implements IFitsHeader {
     private IFitsHeader key;
 
     private Standard(SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+        key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
     }
 
     private Standard(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
+        key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
     }
 
     @Override

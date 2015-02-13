@@ -222,7 +222,7 @@ public enum DataDescription implements IFitsHeader {
     private IFitsHeader key;
 
     private DataDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+        key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
     }
 
     @Override

@@ -116,10 +116,12 @@ public class Rice implements CompressionScheme {
 
     private int bbits;
 
+    @Override
     public String name() {
         return "RICE_1";
     }
 
+    @Override
     public void initialize(Map<String, String> params) {
         // Rice compression expects a length and block size parameter
         try {
@@ -162,6 +164,7 @@ public class Rice implements CompressionScheme {
      * integers of any length. This routine sets up input and output processing
      * streams.
      */
+    @Override
     public byte[] compress(byte[] in) throws IOException {
         if (!initialized) {
             throw new IllegalStateException("Rice compressor not initialized");
@@ -303,8 +306,8 @@ public class Rice implements CompressionScheme {
      */
     private void specialCaseRandom(OutputBitStream bo, int[] diffs) throws IOException {
         bo.writeBits(fsmax + 1, fsbits);
-        for (int i = 0; i < diffs.length; i += 1) {
-            bo.writeBits(diffs[i], bitpix);
+        for (int diff : diffs) {
+            bo.writeBits(diff, bitpix);
         }
     }
 
@@ -356,7 +359,7 @@ public class Rice implements CompressionScheme {
 
         // How many bits does it take to represent the 'average' difference.
         int fs;
-        int psum = ((int) dpSum >> 1);
+        int psum = (int) dpSum >> 1;
         for (fs = 0; psum > 0; fs += 1) {
             psum >>= 1;
         }
@@ -388,6 +391,7 @@ public class Rice implements CompressionScheme {
      *         be read through a ByteArrayInputStream to recover the appropriate
      *         pixel values (which may not be bytes).
      */
+    @Override
     public byte[] decompress(byte[] in, int len) throws IOException {
 
         if (!initialized) {
@@ -423,19 +427,15 @@ public class Rice implements CompressionScheme {
     /** Decompress a single block */
 
     private void decompressBlock(int word, InputBitStream bin, DataOutputStream ds, int len) throws IOException {
-
         int fs = bin.readBits(fsbits) - 1;
 
         if (fs < 0) {
             decompressConstant(word, ds, len);
-
         } else if (fs >= fsmax) {
-            word = decompressRandom(word, bin, ds, len);
-
+            decompressRandom(word, bin, ds, len);
         } else {
             for (int i = 0; i < len; i += 1) {
-                word = decodeWord(word, fs, bin);
-                writeWord(ds, word);
+                writeWord(ds, decodeWord(word, fs, bin));
             }
         }
     }
@@ -467,8 +467,6 @@ public class Rice implements CompressionScheme {
 
     /** Reconstruct a single word. */
     private int decodeWord(int word, int fs, InputBitStream bin) throws IOException {
-        int nbits = 0;
-        int b = 0;
         // Find the number of 0 bits. That count is the
         // high order part of the difference.
         int high = bin.skipBits(false);
@@ -477,7 +475,7 @@ public class Rice implements CompressionScheme {
         // Read the fs 'noise' bits.
         int low = bin.readBits(fs);
         // We don't worry about sign extension since fs is always < 32.
-        int diff = (high << fs) | low;
+        int diff = high << fs | low;
 
         // Remember that this is not quite the difference, so
         // convert back to the actual difference and add to the previous
@@ -537,6 +535,7 @@ public class Rice implements CompressionScheme {
         }
     }
 
+    @Override
     public void updateForWrite(Header hdr, Map<String, String> parameters) throws FitsException {
 
         int bitpix = hdr.getIntValue("ZBITPIX", -1);
@@ -562,6 +561,7 @@ public class Rice implements CompressionScheme {
         }
     }
 
+    @Override
     public void getParameters(Map<String, String> params, Header hdr) {
         if (!params.containsKey("bitpix")) {
             params.put("bitpix", hdr.getIntValue("ZBITPIX") + "");

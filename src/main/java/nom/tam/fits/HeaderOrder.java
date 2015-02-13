@@ -51,6 +51,7 @@ public class HeaderOrder implements java.util.Comparator {
      *         1 if the second argument should be written first <br>
      *         0 if either is legal.
      */
+    @Override
     public int compare(Object a, Object b) {
 
         // Note that we look at each of the ordered FITS keywords in the

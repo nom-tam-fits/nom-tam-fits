@@ -102,8 +102,8 @@ public class AsciiTableHDU extends TableHDU {
 
         if (o instanceof Object[]) {
             Object[] oo = (Object[]) o;
-            for (int i = 0; i < oo.length; i += 1) {
-                if (oo[i] instanceof String[] || oo[i] instanceof int[] || oo[i] instanceof long[] || oo[i] instanceof float[] || oo[i] instanceof double[]) {
+            for (Object element : oo) {
+                if (element instanceof String[] || element instanceof int[] || element instanceof long[] || element instanceof float[] || element instanceof double[]) {
                     continue;
                 }
                 return false;
@@ -130,6 +130,7 @@ public class AsciiTableHDU extends TableHDU {
     /**
      * Create an empty data structure corresponding to the input header.
      */
+    @Override
     public Data manufactureData() throws FitsException {
         return manufactureData(myHeader);
     }
@@ -138,7 +139,7 @@ public class AsciiTableHDU extends TableHDU {
     public static Header manufactureHeader(Data d) throws FitsException {
         Header hdr = new Header();
         d.fillHeader(hdr);
-        Iterator iter = hdr.iterator();
+        hdr.iterator();
         return hdr;
     }
 
@@ -150,8 +151,8 @@ public class AsciiTableHDU extends TableHDU {
 
         Object[] oo = (Object[]) o;
         AsciiTable d = new AsciiTable();
-        for (int i = 0; i < oo.length; i += 1) {
-            d.addColumn(oo[i]);
+        for (Object element : oo) {
+            d.addColumn(element);
         }
         return d;
     }
@@ -162,6 +163,7 @@ public class AsciiTableHDU extends TableHDU {
      * @param stream
      *            the stream from which the data is read.
      */
+    @Override
     public void readData(ArrayDataInput stream) throws FitsException {
         myData.read(stream);
     }
@@ -197,6 +199,7 @@ public class AsciiTableHDU extends TableHDU {
     }
 
     /** Add a column */
+    @Override
     public int addColumn(Object newCol) throws FitsException {
 
         data.addColumn(newCol);
@@ -222,6 +225,7 @@ public class AsciiTableHDU extends TableHDU {
     /**
      * Print a little information about the data set.
      */
+    @Override
     public void info() {
         System.out.println("ASCII Table:");
         System.out.println("  Header:");
@@ -238,6 +242,7 @@ public class AsciiTableHDU extends TableHDU {
     /**
      * Return the FITS data structure associated with this HDU.
      */
+    @Override
     public Data getData() {
         return data;
     }
@@ -245,6 +250,7 @@ public class AsciiTableHDU extends TableHDU {
     /**
      * Return the keyword column stems for an ASCII table.
      */
+    @Override
     public String[] columnKeyStems() {
         return keyStems;
     }

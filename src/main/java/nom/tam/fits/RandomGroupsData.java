@@ -69,6 +69,7 @@ public class RandomGroupsData extends Data {
     }
 
     /** Get the size of the actual data element. */
+    @Override
     protected long getTrueSize() {
 
         if (dataArray != null && dataArray.length > 0) {
@@ -79,6 +80,7 @@ public class RandomGroupsData extends Data {
     }
 
     /** Read the RandomGroupsData */
+    @Override
     public void read(ArrayDataInput str) throws FitsException {
 
         setFileOffset(str);
@@ -99,6 +101,7 @@ public class RandomGroupsData extends Data {
     }
 
     /** Write the RandomGroupsData */
+    @Override
     public void write(ArrayDataOutput str) throws FitsException {
         try {
             str.writeArray(dataArray);
@@ -108,13 +111,13 @@ public class RandomGroupsData extends Data {
         }
     }
 
+    @Override
     protected void fillHeader(Header h) throws FitsException {
 
         if (dataArray.length <= 0 || dataArray[0].length != 2) {
             throw new FitsException("Data not conformable to Random Groups");
         }
 
-        int gcount = dataArray.length;
         Object paraSamp = dataArray[0][0];
         Object dataSamp = dataArray[0][1];
 
@@ -162,6 +165,7 @@ public class RandomGroupsData extends Data {
         h.addValue("PCOUNT", pdims[0], "ntf::randomgroupsdata:pcount:1");
     }
 
+    @Override
     public Object getData() {
         return dataArray;
     }

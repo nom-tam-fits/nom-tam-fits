@@ -33,6 +33,11 @@ package nom.tam.util;
 
 public class FormatException extends java.lang.Exception {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     FormatException() {
         super();
     }
