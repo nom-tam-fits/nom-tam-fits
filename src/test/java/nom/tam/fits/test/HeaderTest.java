@@ -42,6 +42,8 @@ import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 
 import org.junit.Test;
+import static nom.tam.fits.header.Standard.*;
+import static nom.tam.fits.header.extra.NOAOExt.*;
 
 public class HeaderTest {
 
@@ -64,29 +66,29 @@ public class HeaderTest {
         hdu = (ImageHDU) f.getHDU(0);
         Header hdr = hdu.getHeader();
 
-        assertEquals("NAXIS", 2, hdr.getIntValue("NAXIS"));
-        assertEquals("NAXIS1", 300, hdr.getIntValue("NAXIS1"));
-        assertEquals("NAXIS2", 300, hdr.getIntValue("NAXIS2"));
-        assertEquals("NAXIS2a", 300, hdr.getIntValue("NAXIS2", -1));
-        assertEquals("NAXIS3", -1, hdr.getIntValue("NAXIS3", -1));
+        assertEquals("NAXIS", 2, hdr.getIntValue(NAXIS));
+        assertEquals("NAXIS1", 300, hdr.getIntValue(NAXISn.n(1)));
+        assertEquals("NAXIS2", 300, hdr.getIntValue(NAXISn.n(2)));
+        assertEquals("NAXIS2a", 300, hdr.getIntValue(NAXISn.n(2), -1));
+        assertEquals("NAXIS3", -1, hdr.getIntValue(NAXISn.n(3), -1));
 
-        assertEquals("BITPIX", -32, hdr.getIntValue("BITPIX"));
+        assertEquals("BITPIX", -32, hdr.getIntValue(BITPIX));
 
         Cursor c = hdr.iterator();
         HeaderCard hc = (HeaderCard) c.next();
-        assertEquals("SIMPLE_1", "SIMPLE", hc.getKey());
+        assertEquals("SIMPLE_1", SIMPLE.key(), hc.getKey());
 
         hc = (HeaderCard) c.next();
-        assertEquals("BITPIX_2", "BITPIX", hc.getKey());
+        assertEquals("BITPIX_2", BITPIX.key(), hc.getKey());
 
         hc = (HeaderCard) c.next();
-        assertEquals("NAXIS_3", "NAXIS", hc.getKey());
+        assertEquals("NAXIS_3", NAXIS.key(), hc.getKey());
 
         hc = (HeaderCard) c.next();
-        assertEquals("NAXIS1_4", "NAXIS1", hc.getKey());
+        assertEquals("NAXIS1_4", NAXISn.n(1).key(), hc.getKey());
 
         hc = (HeaderCard) c.next();
-        assertEquals("NAXIS2_5", "NAXIS2", hc.getKey());
+        assertEquals("NAXIS2_5", NAXISn.n(2).key(), hc.getKey());
     }
 
     /** Confirm initial location versus EXTEND keyword (V. Forchi). */
@@ -105,12 +107,12 @@ public class HeaderTest {
         h.addValue("TESTKEY2", "TESTVAL2", null); // Should precede TESTKEY
 
         Cursor c = h.iterator();
-        assertEquals("E1", ((HeaderCard) c.next()).getKey(), "SIMPLE");
-        assertEquals("E2", ((HeaderCard) c.next()).getKey(), "BITPIX");
-        assertEquals("E3", ((HeaderCard) c.next()).getKey(), "NAXIS");
-        assertEquals("E4", ((HeaderCard) c.next()).getKey(), "NAXIS1");
-        assertEquals("E5", ((HeaderCard) c.next()).getKey(), "NAXIS2");
-        assertEquals("E6", ((HeaderCard) c.next()).getKey(), "EXTEND");
+        assertEquals("E1", ((HeaderCard) c.next()).getKey(), SIMPLE.key());
+        assertEquals("E2", ((HeaderCard) c.next()).getKey(), BITPIX.key());
+        assertEquals("E3", ((HeaderCard) c.next()).getKey(), NAXIS.key());
+        assertEquals("E4", ((HeaderCard) c.next()).getKey(), NAXISn.n(1).key());
+        assertEquals("E5", ((HeaderCard) c.next()).getKey(), NAXISn.n(2).key());
+        assertEquals("E6", ((HeaderCard) c.next()).getKey(), EXTEND.key());
         assertEquals("E7", ((HeaderCard) c.next()).getKey(), "TESTKEY2");
         assertEquals("E8", ((HeaderCard) c.next()).getKey(), "TESTKEY");
 
@@ -125,41 +127,41 @@ public class HeaderTest {
         Cursor c = hdr.iterator();
 
         c.setKey("XXX");
-        c.add("CTYPE1", new HeaderCard("CTYPE1", "GLON-CAR", "Galactic Longitude"));
-        c.add("CTYPE2", new HeaderCard("CTYPE2", "GLAT-CAR", "Galactic Latitude"));
-        c.setKey("CTYPE1"); // Move before CTYPE1
-        c.add("CRVAL1", new HeaderCard("CRVAL1", 0., "Longitude at reference"));
-        c.setKey("CTYPE2"); // Move before CTYPE2
-        c.add("CRVAL2", new HeaderCard("CRVAL2", -90., "Latitude at reference"));
-        c.setKey("CTYPE1"); // Just practicing moving around!!
-        c.add("CRPIX1", new HeaderCard("CRPIX1", 150.0, "Reference Pixel X"));
-        c.setKey("CTYPE2");
-        c.add("CRPIX2", new HeaderCard("CRPIX2", 0., "Reference pixel Y"));
+        c.add(CTYPE1.key(), new HeaderCard(CTYPE1.key(), "GLON-CAR", "Galactic Longitude"));
+        c.add(CTYPE2.key(), new HeaderCard(CTYPE2.key(), "GLAT-CAR", "Galactic Latitude"));
+        c.setKey(CTYPE1.key()); // Move before CTYPE1
+        c.add(CRVAL1.key(), new HeaderCard(CRVAL1.key(), 0., "Longitude at reference"));
+        c.setKey(CTYPE2.key()); // Move before CTYPE2
+        c.add(CRVAL2.key(), new HeaderCard(CRVAL2.key(), -90., "Latitude at reference"));
+        c.setKey(CTYPE1.key()); // Just practicing moving around!!
+        c.add(CRPIX1.key(), new HeaderCard(CRPIX1.key(), 150.0, "Reference Pixel X"));
+        c.setKey(CTYPE2.key());
+        c.add(CRPIX2.key(), new HeaderCard(CRPIX2.key(), 0., "Reference pixel Y"));
         c.add("INV2", new HeaderCard("INV2", true, "Invertible axis"));
         c.add("SYM2", new HeaderCard("SYM2", "YZ SYMMETRIC", "Symmetries..."));
 
-        assertEquals("CTYPE1", "GLON-CAR", hdr.getStringValue("CTYPE1"));
-        assertEquals("CRPIX2", 0., hdr.getDoubleValue("CRPIX2", -2.), 0);
+        assertEquals(CTYPE1.key(), "GLON-CAR", hdr.getStringValue(CTYPE1));
+        assertEquals(CRPIX2.key(), 0., hdr.getDoubleValue(CRPIX2, -2.), 0);
 
-        c.setKey("CRVAL1");
+        c.setKey(CRVAL1.key());
         HeaderCard hc = (HeaderCard) c.next();
-        assertEquals("CRVAL1_c", "CRVAL1", hc.getKey());
+        assertEquals("CRVAL1_c", CRVAL1.key(), hc.getKey());
         hc = (HeaderCard) c.next();
-        assertEquals("CRPIX1_c", "CRPIX1", hc.getKey());
+        assertEquals("CRPIX1_c", CRPIX1.key(), hc.getKey());
         hc = (HeaderCard) c.next();
-        assertEquals("CTYPE1_c", "CTYPE1", hc.getKey());
+        assertEquals("CTYPE1_c", CTYPE1.key(), hc.getKey());
         hc = (HeaderCard) c.next();
-        assertEquals("CRVAL2_c", "CRVAL2", hc.getKey());
+        assertEquals("CRVAL2_c", CRVAL2.key(), hc.getKey());
         hc = (HeaderCard) c.next();
-        assertEquals("CRPIX2_c", "CRPIX2", hc.getKey());
+        assertEquals("CRPIX2_c", CRPIX2.key(), hc.getKey());
         hc = (HeaderCard) c.next();
         assertEquals("INV2_c", "INV2", hc.getKey());
         hc = (HeaderCard) c.next();
         assertEquals("SYM2_c", "SYM2", hc.getKey());
         hc = (HeaderCard) c.next();
-        assertEquals("CTYPE2_c", "CTYPE2", hc.getKey());
+        assertEquals("CTYPE2_c", CTYPE2.key(), hc.getKey());
 
-        hdr.findCard("CRPIX1");
+        hdr.findCard(CRPIX1.key());
         hdr.addValue("INTVAL1", 1, "An integer value");
         hdr.addValue("LOG1", true, "A true value");
         hdr.addValue("LOGB1", false, "A false value");
@@ -180,7 +182,7 @@ public class HeaderTest {
         assertEquals("FLT2", "FLT2", hc.getKey());
         c.next(); // Skip comment
         hc = (HeaderCard) c.next();
-        assertEquals("CRPIX1x", "CRPIX1", hc.getKey());
+        assertEquals("CRPIX1x", CRPIX1.key(), hc.getKey());
 
         assertEquals("FLT1", 1.34, hdr.getDoubleValue("FLT1", 0), 0);
         c.setKey("FLT1");
@@ -226,9 +228,9 @@ public class HeaderTest {
         f.write(bf);
         bf.close();
         f = new Fits("target/hx1.fits");
-        HeaderCard c1 = f.getHDU(0).getHeader().findCard("SIMPLE");
+        HeaderCard c1 = f.getHDU(0).getHeader().findCard(SIMPLE.key());
         assertEquals("tuhc1", c1.getComment(), HeaderCommentsMap.getComment("header:simple:1"));
-        c1 = f.getHDU(0).getHeader().findCard("BITPIX");
+        c1 = f.getHDU(0).getHeader().findCard(BITPIX.key());
         assertEquals("tuhc2", c1.getComment(), HeaderCommentsMap.getComment("header:bitpix:1"));
         HeaderCommentsMap.updateComment("header:bitpix:1", "A byte array");
         HeaderCommentsMap.deleteComment("header:simple:1");
@@ -238,9 +240,9 @@ public class HeaderTest {
         f.write(bf);
         bf.close();
         f = new Fits("target/hx2.fits");
-        c1 = f.getHDU(0).getHeader().findCard("SIMPLE");
+        c1 = f.getHDU(0).getHeader().findCard(SIMPLE.key());
         assertEquals("tuhc1", c1.getComment(), null);
-        c1 = f.getHDU(0).getHeader().findCard("BITPIX");
+        c1 = f.getHDU(0).getHeader().findCard(BITPIX.key());
         assertEquals("tuhc2", c1.getComment(), "A byte array");
     }
 

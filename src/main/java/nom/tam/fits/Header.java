@@ -377,6 +377,18 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Get the value associated with the key as an int.
+     * 
+     * @param key
+     *            The header key.
+     * @param dft
+     *            The value to be returned if the key is not found.
+     */
+    public int getIntValue(IFitsHeader key, int dft) {
+        return (int) getLongValue(key, dft);
+    }
+
+    /**
      * Get the <CODE>int</CODE> value associated with the given key.
      * 
      * @param key
@@ -429,6 +441,19 @@ public class Header implements FitsElement {
      *            The default value to be returned if the key cannot be found.
      * @return the associated value.
      */
+    public long getLongValue(IFitsHeader key, long dft) {
+        return getLongValue(key.key(), dft);
+    }
+
+    /**
+     * Get the <CODE>long</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
+     * @param dft
+     *            The default value to be returned if the key cannot be found.
+     * @return the associated value.
+     */
     public long getLongValue(String key, long dft) {
 
         HeaderCard fcard = findCard(key);
@@ -456,6 +481,18 @@ public class Header implements FitsElement {
      *            The value to be returned if the key is not found.
      */
     public float getFloatValue(String key, float dft) {
+        return (float) getDoubleValue(key, dft);
+    }
+
+    /**
+     * Get the <CODE>float</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
+     * @param dft
+     *            The value to be returned if the key is not found.
+     */
+    public float getFloatValue(IFitsHeader key, float dft) {
         return (float) getDoubleValue(key, dft);
     }
 
@@ -502,6 +539,19 @@ public class Header implements FitsElement {
      */
     public double getDoubleValue(String key) {
         return getDoubleValue(key, 0.);
+    }
+
+    /**
+     * Get the <CODE>double</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
+     * @param dft
+     *            The default value to return if the key cannot be found.
+     * @return the associated value.
+     */
+    public double getDoubleValue(IFitsHeader key, double dft) {
+        return getDoubleValue(key.key(), dft);
     }
 
     /**
