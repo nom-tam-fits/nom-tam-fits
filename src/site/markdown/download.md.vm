@@ -1,6 +1,6 @@
 # Download
 
-The current stable release is nom-tam-fits ${project.version} for Java 1.5 and higher.
+The current stable release is nom-tam-fits ${project.version} for Java 1.6 and higher.
 
 To include nom-tam-fits into an existing project use the library published on Maven Central.
 
