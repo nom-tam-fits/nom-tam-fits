@@ -549,11 +549,11 @@
 <a class="jxr_linenumber" name="L541" href="#L541">541</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key;
 <a class="jxr_linenumber" name="L542" href="#L542">542</a> 
 <a class="jxr_linenumber" name="L543" href="#L543">543</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/fits/header/Standard.html">Standard</a>(<a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment) {
-<a class="jxr_linenumber" name="L544" href="#L544">544</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(name(), status, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L544" href="#L544">544</a>         key = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(name(), status, hdu, valueType, comment);
 <a class="jxr_linenumber" name="L545" href="#L545">545</a>     }
 <a class="jxr_linenumber" name="L546" href="#L546">546</a> 
 <a class="jxr_linenumber" name="L547" href="#L547">547</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/fits/header/Standard.html">Standard</a>(String headerName, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment) {
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(headerName == <strong class="jxr_keyword">null</strong> ? name() : headerName, status, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L548" href="#L548">548</a>         key = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(headerName == <strong class="jxr_keyword">null</strong> ? name() : headerName, status, hdu, valueType, comment);
 <a class="jxr_linenumber" name="L549" href="#L549">549</a>     }
 <a class="jxr_linenumber" name="L550" href="#L550">550</a> 
 <a class="jxr_linenumber" name="L551" href="#L551">551</a>     @Override

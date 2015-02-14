@@ -181,68 +181,68 @@
 <a class="jxr_linenumber" name="L173" href="#L173">173</a>             <em class="jxr_comment">// Now copy everything in a separate thread.</em>
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>             Thread copier = <strong class="jxr_keyword">new</strong> Thread(<strong class="jxr_keyword">new</strong> Runnable() {
 <a class="jxr_linenumber" name="L175" href="#L175">175</a> 
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>                 <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run() {
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>                     <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>                         byte[] buffer = <strong class="jxr_keyword">new</strong> byte[8192];
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>                         <strong class="jxr_keyword">int</strong> len;
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>                         <strong class="jxr_keyword">while</strong> ((len = compressed.read(buffer, 0, buffer.length)) &gt; 0) {
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>                             input.write(buffer, 0, len);
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>                         }
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>                         compressed.close();
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>                         input.close();
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>                     } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>                         <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L187" href="#L187">187</a>                     }
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>                 }
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>             });
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>             copier.start();
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>             <strong class="jxr_keyword">return</strong> proc.getInputStream();
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Unable to read .Z compressed stream.\nIs `uncompress' in the path?\n:"</span> + e);
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>         }
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>     }
-<a class="jxr_linenumber" name="L196" href="#L196">196</a> 
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>     <em class="jxr_javadoccomment">/** Is a file compressed? */</em>
-<a class="jxr_linenumber" name="L198" href="#L198">198</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isCompressed(File test) {
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>         InputStream fis = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L200" href="#L200">200</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>             <strong class="jxr_keyword">if</strong> (test.exists()) {
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>                 fis = <strong class="jxr_keyword">new</strong> FileInputStream(test);
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>                 <strong class="jxr_keyword">int</strong> mag1 = fis.read();
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>                 <strong class="jxr_keyword">int</strong> mag2 = fis.read();
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>                 fis.close();
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>                 <strong class="jxr_keyword">if</strong> (mag1 == 0x1f &amp;&amp; (mag2 == 0x8b || mag2 == 0x9d)) {
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (mag1 == 'B' &amp;&amp; mag2 == 'Z') {
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>                     <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L212" href="#L212">212</a>                 }
-<a class="jxr_linenumber" name="L213" href="#L213">213</a>             }
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> 
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L216" href="#L216">216</a>             <em class="jxr_comment">// This is probably a prelude to failure...</em>
-<a class="jxr_linenumber" name="L217" href="#L217">217</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> 
-<a class="jxr_linenumber" name="L219" href="#L219">219</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>             <strong class="jxr_keyword">if</strong> (fis != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>                 <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>                     fis.close();
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>                 } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>                 }
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>             }
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>         }
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>         <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>     }
-<a class="jxr_linenumber" name="L229" href="#L229">229</a> 
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_javadoccomment">     * Check if a file seems to be compressed.</em>
-<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isCompressed(String filename) {
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>         <strong class="jxr_keyword">if</strong> (filename == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>         }
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>         FileInputStream fis = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>                 @Override
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>                 <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run() {
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>                     <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>                         byte[] buffer = <strong class="jxr_keyword">new</strong> byte[8192];
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>                         <strong class="jxr_keyword">int</strong> len;
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>                         <strong class="jxr_keyword">while</strong> ((len = compressed.read(buffer, 0, buffer.length)) &gt; 0) {
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>                             input.write(buffer, 0, len);
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>                         }
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>                         compressed.close();
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>                         input.close();
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>                     } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>                         <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>                     }
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>                 }
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>             });
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>             copier.start();
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>             <strong class="jxr_keyword">return</strong> proc.getInputStream();
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Unable to read .Z compressed stream.\nIs `uncompress' in the path?\n:"</span> + e);
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>         }
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>     }
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> 
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>     <em class="jxr_javadoccomment">/** Is a file compressed? */</em>
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isCompressed(File test) {
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>         InputStream fis = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>             <strong class="jxr_keyword">if</strong> (test.exists()) {
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>                 fis = <strong class="jxr_keyword">new</strong> FileInputStream(test);
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>                 <strong class="jxr_keyword">int</strong> mag1 = fis.read();
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>                 <strong class="jxr_keyword">int</strong> mag2 = fis.read();
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>                 fis.close();
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>                 <strong class="jxr_keyword">if</strong> (mag1 == 0x1f &amp;&amp; (mag2 == 0x8b || mag2 == 0x9d)) {
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (mag1 == 'B' &amp;&amp; mag2 == 'Z') {
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>                     <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>                 }
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>             }
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> 
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>             <em class="jxr_comment">// This is probably a prelude to failure...</em>
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> 
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>         } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>             <strong class="jxr_keyword">if</strong> (fis != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>                 <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>                     fis.close();
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>                 } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>                 }
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>             }
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>         }
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>     }
+<a class="jxr_linenumber" name="L230" href="#L230">230</a> 
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">     * Check if a file seems to be compressed.</em>
+<a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isCompressed(String filename) {
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>         <strong class="jxr_keyword">if</strong> (filename == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>         }
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>         File test = <strong class="jxr_keyword">new</strong> File(filename);
 <a class="jxr_linenumber" name="L239" href="#L239">239</a>         <strong class="jxr_keyword">if</strong> (test.exists()) {
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>             <strong class="jxr_keyword">return</strong> isCompressed(test);
@@ -258,9 +258,9 @@
 <a class="jxr_linenumber" name="L250" href="#L250">250</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> maxLength(String[] o) <strong class="jxr_keyword">throws</strong> FitsException {
 <a class="jxr_linenumber" name="L251" href="#L251">251</a> 
 <a class="jxr_linenumber" name="L252" href="#L252">252</a>         <strong class="jxr_keyword">int</strong> max = 0;
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; o.length; i += 1) {
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>             <strong class="jxr_keyword">if</strong> (o[i] != <strong class="jxr_keyword">null</strong> &amp;&amp; o[i].length() &gt; max) {
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>                 max = o[i].length();
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>         <strong class="jxr_keyword">for</strong> (String element : o) {
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>             <strong class="jxr_keyword">if</strong> (element != <strong class="jxr_keyword">null</strong> &amp;&amp; element.length() &gt; max) {
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>                 max = element.length();
 <a class="jxr_linenumber" name="L256" href="#L256">256</a>             }
 <a class="jxr_linenumber" name="L257" href="#L257">257</a>         }
 <a class="jxr_linenumber" name="L258" href="#L258">258</a>         <strong class="jxr_keyword">return</strong> max;
@@ -369,7 +369,7 @@
 <a class="jxr_linenumber" name="L361" href="#L361">361</a>         <strong class="jxr_keyword">boolean</strong>[] bool = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">boolean</strong>[byt.length];
 <a class="jxr_linenumber" name="L362" href="#L362">362</a> 
 <a class="jxr_linenumber" name="L363" href="#L363">363</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; byt.length; i += 1) {
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>             bool[i] = (byt[i] == 'T');
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>             bool[i] = byt[i] == 'T';
 <a class="jxr_linenumber" name="L365" href="#L365">365</a>         }
 <a class="jxr_linenumber" name="L366" href="#L366">366</a>         <strong class="jxr_keyword">return</strong> bool;
 <a class="jxr_linenumber" name="L367" href="#L367">367</a>     }
@@ -394,115 +394,113 @@
 <a class="jxr_linenumber" name="L386" href="#L386">386</a>         <em class="jxr_comment">// since we want to match without regard to case.</em>
 <a class="jxr_linenumber" name="L387" href="#L387">387</a>         String[] keys = (String[]) hdrs.keySet().toArray(<strong class="jxr_keyword">new</strong> String[0]);
 <a class="jxr_linenumber" name="L388" href="#L388">388</a>         <em class="jxr_comment">// for (String key: hdrs.keySet()) {</em>
-<a class="jxr_linenumber" name="L389" href="#L389">389</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; keys.length; i += 1) {
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>             String key = keys[i];
-<a class="jxr_linenumber" name="L391" href="#L391">391</a> 
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>             <strong class="jxr_keyword">if</strong> (key != <strong class="jxr_keyword">null</strong> &amp;&amp; key.toLowerCase().equals(<span class="jxr_string">"location"</span>)) {
-<a class="jxr_linenumber" name="L393" href="#L393">393</a>                 <em class="jxr_comment">// String val = hdrs.get(key).get(0);</em>
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>                 String val = (String) ((List) hdrs.get(key)).get(0);
-<a class="jxr_linenumber" name="L395" href="#L395">395</a>                 <strong class="jxr_keyword">if</strong> (val != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>                     val = val.trim();
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>                     <strong class="jxr_keyword">if</strong> (val.length() &gt; 0) {
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>                         <em class="jxr_comment">// Redirect</em>
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>                         <strong class="jxr_keyword">return</strong> getURLStream(<strong class="jxr_keyword">new</strong> URL(val), level + 1);
-<a class="jxr_linenumber" name="L400" href="#L400">400</a>                     }
-<a class="jxr_linenumber" name="L401" href="#L401">401</a>                 }
-<a class="jxr_linenumber" name="L402" href="#L402">402</a>             }
-<a class="jxr_linenumber" name="L403" href="#L403">403</a>         }
-<a class="jxr_linenumber" name="L404" href="#L404">404</a>         <em class="jxr_comment">// No redirection</em>
-<a class="jxr_linenumber" name="L405" href="#L405">405</a>         <strong class="jxr_keyword">return</strong> conn.getInputStream();
-<a class="jxr_linenumber" name="L406" href="#L406">406</a>     }
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> 
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>     <em class="jxr_javadoccomment">/** Add padding to an output stream. */</em>
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> pad(<a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> stream, <strong class="jxr_keyword">long</strong> size) <strong class="jxr_keyword">throws</strong> FitsException {
-<a class="jxr_linenumber" name="L410" href="#L410">410</a>         pad(stream, size, (byte) 0);
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>     }
-<a class="jxr_linenumber" name="L412" href="#L412">412</a> 
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>     <em class="jxr_javadoccomment">/** Add padding to an output stream. */</em>
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> pad(<a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> stream, <strong class="jxr_keyword">long</strong> size, byte fill) <strong class="jxr_keyword">throws</strong> FitsException {
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>         <strong class="jxr_keyword">int</strong> len = padding(size);
-<a class="jxr_linenumber" name="L416" href="#L416">416</a>         <strong class="jxr_keyword">if</strong> (len &gt; 0) {
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>             byte[] buf = <strong class="jxr_keyword">new</strong> byte[len];
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; len; i += 1) {
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>                 buf[i] = fill;
-<a class="jxr_linenumber" name="L420" href="#L420">420</a>             }
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>                 stream.write(buf);
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>                 stream.flush();
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>             } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Unable to write padding"</span>, e);
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>             }
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>         }
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>     }
-<a class="jxr_linenumber" name="L429" href="#L429">429</a> 
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>     <strong class="jxr_keyword">static</strong> InputStream bunzipper(<strong class="jxr_keyword">final</strong> InputStream pb) <strong class="jxr_keyword">throws</strong> FitsException {
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>         String cmd = System.getenv(<span class="jxr_string">"BZIP_DECOMPRESSOR"</span>);
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>         <em class="jxr_comment">// Allow the user to have already specified the - option.</em>
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>         <strong class="jxr_keyword">if</strong> (cmd.indexOf(<span class="jxr_string">" -"</span>) &lt; 0) {
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>             cmd += <span class="jxr_string">" -"</span>;
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>         }
-<a class="jxr_linenumber" name="L436" href="#L436">436</a>         <strong class="jxr_keyword">final</strong> OutputStream out;
-<a class="jxr_linenumber" name="L437" href="#L437">437</a>         String[] flds = cmd.split(<span class="jxr_string">" +"</span>);
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>         Thread t;
-<a class="jxr_linenumber" name="L439" href="#L439">439</a>         Process p;
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L441" href="#L441">441</a>             p = <strong class="jxr_keyword">new</strong> ProcessBuilder(flds).start();
-<a class="jxr_linenumber" name="L442" href="#L442">442</a>             out = p.getOutputStream();
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>         <strong class="jxr_keyword">for</strong> (String key : keys) {
+<a class="jxr_linenumber" name="L390" href="#L390">390</a>             <strong class="jxr_keyword">if</strong> (key != <strong class="jxr_keyword">null</strong> &amp;&amp; key.toLowerCase().equals(<span class="jxr_string">"location"</span>)) {
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>                 <em class="jxr_comment">// String val = hdrs.get(key).get(0);</em>
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>                 String val = (String) ((List) hdrs.get(key)).get(0);
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>                 <strong class="jxr_keyword">if</strong> (val != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>                     val = val.trim();
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>                     <strong class="jxr_keyword">if</strong> (val.length() &gt; 0) {
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>                         <em class="jxr_comment">// Redirect</em>
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>                         <strong class="jxr_keyword">return</strong> getURLStream(<strong class="jxr_keyword">new</strong> URL(val), level + 1);
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>                     }
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>                 }
+<a class="jxr_linenumber" name="L400" href="#L400">400</a>             }
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>         }
+<a class="jxr_linenumber" name="L402" href="#L402">402</a>         <em class="jxr_comment">// No redirection</em>
+<a class="jxr_linenumber" name="L403" href="#L403">403</a>         <strong class="jxr_keyword">return</strong> conn.getInputStream();
+<a class="jxr_linenumber" name="L404" href="#L404">404</a>     }
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> 
+<a class="jxr_linenumber" name="L406" href="#L406">406</a>     <em class="jxr_javadoccomment">/** Add padding to an output stream. */</em>
+<a class="jxr_linenumber" name="L407" href="#L407">407</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> pad(<a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> stream, <strong class="jxr_keyword">long</strong> size) <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>         pad(stream, size, (byte) 0);
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>     }
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> 
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>     <em class="jxr_javadoccomment">/** Add padding to an output stream. */</em>
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> pad(<a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> stream, <strong class="jxr_keyword">long</strong> size, byte fill) <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>         <strong class="jxr_keyword">int</strong> len = padding(size);
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>         <strong class="jxr_keyword">if</strong> (len &gt; 0) {
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>             byte[] buf = <strong class="jxr_keyword">new</strong> byte[len];
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; len; i += 1) {
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>                 buf[i] = fill;
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>             }
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>                 stream.write(buf);
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>                 stream.flush();
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>             } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Unable to write padding"</span>, e);
+<a class="jxr_linenumber" name="L424" href="#L424">424</a>             }
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>         }
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>     }
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> 
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>     <strong class="jxr_keyword">static</strong> InputStream bunzipper(<strong class="jxr_keyword">final</strong> InputStream pb) <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L429" href="#L429">429</a>         String cmd = System.getenv(<span class="jxr_string">"BZIP_DECOMPRESSOR"</span>);
+<a class="jxr_linenumber" name="L430" href="#L430">430</a>         <em class="jxr_comment">// Allow the user to have already specified the - option.</em>
+<a class="jxr_linenumber" name="L431" href="#L431">431</a>         <strong class="jxr_keyword">if</strong> (cmd.indexOf(<span class="jxr_string">" -"</span>) &lt; 0) {
+<a class="jxr_linenumber" name="L432" href="#L432">432</a>             cmd += <span class="jxr_string">" -"</span>;
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>         }
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>         <strong class="jxr_keyword">final</strong> OutputStream out;
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>         String[] flds = cmd.split(<span class="jxr_string">" +"</span>);
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>         Thread t;
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>         Process p;
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L439" href="#L439">439</a>             p = <strong class="jxr_keyword">new</strong> ProcessBuilder(flds).start();
+<a class="jxr_linenumber" name="L440" href="#L440">440</a>             out = p.getOutputStream();
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> 
+<a class="jxr_linenumber" name="L442" href="#L442">442</a>             t = <strong class="jxr_keyword">new</strong> Thread(<strong class="jxr_keyword">new</strong> Runnable() {
 <a class="jxr_linenumber" name="L443" href="#L443">443</a> 
-<a class="jxr_linenumber" name="L444" href="#L444">444</a>             t = <strong class="jxr_keyword">new</strong> Thread(<strong class="jxr_keyword">new</strong> Runnable() {
-<a class="jxr_linenumber" name="L445" href="#L445">445</a> 
-<a class="jxr_linenumber" name="L446" href="#L446">446</a>                 <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run() {
-<a class="jxr_linenumber" name="L447" href="#L447">447</a>                     <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>                         byte[] buf = <strong class="jxr_keyword">new</strong> byte[16384];
-<a class="jxr_linenumber" name="L449" href="#L449">449</a>                         <strong class="jxr_keyword">int</strong> len;
-<a class="jxr_linenumber" name="L450" href="#L450">450</a>                         <strong class="jxr_keyword">long</strong> total = 0;
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>                         <strong class="jxr_keyword">while</strong> ((len = pb.read(buf)) &gt; 0) {
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>                             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>                                 out.write(buf, 0, len);
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>                             } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L455" href="#L455">455</a>                                 <em class="jxr_comment">// Skip this. It can happen when we</em>
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>                                 <em class="jxr_comment">// stop reading the compressed file in mid</em>
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>                                 <em class="jxr_comment">// stream.</em>
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>                                 <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>                             }
-<a class="jxr_linenumber" name="L460" href="#L460">460</a>                             total += len;
-<a class="jxr_linenumber" name="L461" href="#L461">461</a>                         }
-<a class="jxr_linenumber" name="L462" href="#L462">462</a>                         pb.close();
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>                         out.close();
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> 
-<a class="jxr_linenumber" name="L465" href="#L465">465</a>                     } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Error(<span class="jxr_string">"Error reading BZIP compression using: "</span> + System.getenv(<span class="jxr_string">"BZIP_DECOMPRESSOR"</span>), e);
-<a class="jxr_linenumber" name="L467" href="#L467">467</a>                     }
-<a class="jxr_linenumber" name="L468" href="#L468">468</a>                 }
-<a class="jxr_linenumber" name="L469" href="#L469">469</a>             });
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> 
-<a class="jxr_linenumber" name="L471" href="#L471">471</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L472" href="#L472">472</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Error initiating BZIP decompression: "</span> + e);
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>         }
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>         t.start();
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsUtil.html">CloseIS</a>(p.getInputStream(), pb, out);
+<a class="jxr_linenumber" name="L444" href="#L444">444</a>                 @Override
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>                 <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run() {
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>                     <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>                         byte[] buf = <strong class="jxr_keyword">new</strong> byte[16384];
+<a class="jxr_linenumber" name="L448" href="#L448">448</a>                         <strong class="jxr_keyword">int</strong> len;
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>                         <strong class="jxr_keyword">while</strong> ((len = pb.read(buf)) &gt; 0) {
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>                             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>                                 out.write(buf, 0, len);
+<a class="jxr_linenumber" name="L452" href="#L452">452</a>                             } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L453" href="#L453">453</a>                                 <em class="jxr_comment">// Skip this. It can happen when we</em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>                                 <em class="jxr_comment">// stop reading the compressed file in mid</em>
+<a class="jxr_linenumber" name="L455" href="#L455">455</a>                                 <em class="jxr_comment">// stream.</em>
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>                                 <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L457" href="#L457">457</a>                             }
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>                         }
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>                         pb.close();
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>                         out.close();
+<a class="jxr_linenumber" name="L461" href="#L461">461</a> 
+<a class="jxr_linenumber" name="L462" href="#L462">462</a>                     } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Error(<span class="jxr_string">"Error reading BZIP compression using: "</span> + System.getenv(<span class="jxr_string">"BZIP_DECOMPRESSOR"</span>), e);
+<a class="jxr_linenumber" name="L464" href="#L464">464</a>                     }
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>                 }
+<a class="jxr_linenumber" name="L466" href="#L466">466</a>             });
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> 
+<a class="jxr_linenumber" name="L468" href="#L468">468</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L469" href="#L469">469</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Error initiating BZIP decompression: "</span> + e);
+<a class="jxr_linenumber" name="L470" href="#L470">470</a>         }
+<a class="jxr_linenumber" name="L471" href="#L471">471</a>         t.start();
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsUtil.html">CloseIS</a>(p.getInputStream(), pb, out);
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> 
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>     }
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> }
 <a class="jxr_linenumber" name="L476" href="#L476">476</a> 
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>     }
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> }
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> 
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/fits/FitsUtil.html">CloseIS</a> <strong class="jxr_keyword">extends</strong> FilterInputStream {
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> 
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>     InputStream i;
-<a class="jxr_linenumber" name="L483" href="#L483">483</a> 
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>     OutputStream o;
-<a class="jxr_linenumber" name="L485" href="#L485">485</a> 
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>     <a href="../../../nom/tam/fits/FitsUtil.html">CloseIS</a>(InputStream inp, InputStream i, OutputStream o) {
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>         <strong class="jxr_keyword">super</strong>(inp);
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>         <strong class="jxr_keyword">this</strong>.i = i;
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>         <strong class="jxr_keyword">this</strong>.o = o;
-<a class="jxr_linenumber" name="L490" href="#L490">490</a>     }
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> 
-<a class="jxr_linenumber" name="L492" href="#L492">492</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>         <strong class="jxr_keyword">super</strong>.close();
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>         o.close();
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>         i.close();
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>     }
-<a class="jxr_linenumber" name="L497" href="#L497">497</a> }
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/fits/FitsUtil.html">CloseIS</a> <strong class="jxr_keyword">extends</strong> FilterInputStream {
+<a class="jxr_linenumber" name="L478" href="#L478">478</a> 
+<a class="jxr_linenumber" name="L479" href="#L479">479</a>     InputStream i;
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> 
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>     OutputStream o;
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> 
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>     <a href="../../../nom/tam/fits/FitsUtil.html">CloseIS</a>(InputStream inp, InputStream i, OutputStream o) {
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>         <strong class="jxr_keyword">super</strong>(inp);
+<a class="jxr_linenumber" name="L485" href="#L485">485</a>         <strong class="jxr_keyword">this</strong>.i = i;
+<a class="jxr_linenumber" name="L486" href="#L486">486</a>         <strong class="jxr_keyword">this</strong>.o = o;
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>     }
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> 
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>     @Override
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>         <strong class="jxr_keyword">super</strong>.close();
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>         o.close();
+<a class="jxr_linenumber" name="L493" href="#L493">493</a>         i.close();
+<a class="jxr_linenumber" name="L494" href="#L494">494</a>     }
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>

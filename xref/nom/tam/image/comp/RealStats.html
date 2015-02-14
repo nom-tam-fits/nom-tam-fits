@@ -152,24 +152,24 @@
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>     }
 <a class="jxr_linenumber" name="L145" href="#L145">145</a> 
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> updateFloat(<strong class="jxr_keyword">float</strong>[] input) {
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; input.length; i += 1) {
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">float</strong> element : input) {
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>             n += 1;
-<a class="jxr_linenumber" name="L149" href="#L149">149</a>             <strong class="jxr_keyword">if</strong> (Float.isNaN(input[i])) {
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>             <strong class="jxr_keyword">if</strong> (Float.isNaN(element)) {
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>                 nNaN += 1;
 <a class="jxr_linenumber" name="L151" href="#L151">151</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>                 process(input[i]);
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>                 process(element);
 <a class="jxr_linenumber" name="L153" href="#L153">153</a>             }
 <a class="jxr_linenumber" name="L154" href="#L154">154</a>             computeFloatNoise(input);
 <a class="jxr_linenumber" name="L155" href="#L155">155</a>         }
 <a class="jxr_linenumber" name="L156" href="#L156">156</a>     }
 <a class="jxr_linenumber" name="L157" href="#L157">157</a> 
 <a class="jxr_linenumber" name="L158" href="#L158">158</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> updateDouble(<strong class="jxr_keyword">double</strong>[] input) {
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; input.length; i += 1) {
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">double</strong> element : input) {
 <a class="jxr_linenumber" name="L160" href="#L160">160</a>             n += 1;
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>             <strong class="jxr_keyword">if</strong> (Double.isNaN(input[i])) {
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>             <strong class="jxr_keyword">if</strong> (Double.isNaN(element)) {
 <a class="jxr_linenumber" name="L162" href="#L162">162</a>                 nNaN += 1;
 <a class="jxr_linenumber" name="L163" href="#L163">163</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>                 process(input[i]);
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>                 process(element);
 <a class="jxr_linenumber" name="L165" href="#L165">165</a>             }
 <a class="jxr_linenumber" name="L166" href="#L166">166</a>         }
 <a class="jxr_linenumber" name="L167" href="#L167">167</a>         computeDoubleNoise(input);
@@ -185,7 +185,7 @@
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>         }
 <a class="jxr_linenumber" name="L178" href="#L178">178</a>         List&lt;Float&gt; lineList = <strong class="jxr_keyword">new</strong> ArrayList&lt;Float&gt;();
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 2; i &lt; input.length - 2; i += 1) {
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>             <strong class="jxr_keyword">if</strong> (input[i - 2] != Float.NaN &amp;&amp; input[i] != Float.NaN &amp;&amp; input[i + 2] != Float.NaN) {
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>             <strong class="jxr_keyword">if</strong> (!Float.isNaN(input[i - 2]) &amp;&amp; !Float.isNaN(input[i]) &amp;&amp; !Float.isNaN(input[i + 2])) {
 <a class="jxr_linenumber" name="L181" href="#L181">181</a> 
 <a class="jxr_linenumber" name="L182" href="#L182">182</a>                 lineList.add(2 * input[i] - input[i - 2] - input[i + 2]);
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>             }
@@ -212,7 +212,7 @@
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>         }
 <a class="jxr_linenumber" name="L205" href="#L205">205</a>         List&lt;Double&gt; lineList = <strong class="jxr_keyword">new</strong> ArrayList&lt;Double&gt;();
 <a class="jxr_linenumber" name="L206" href="#L206">206</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 2; i &lt; input.length - 2; i += 1) {
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>             <strong class="jxr_keyword">if</strong> (input[i - 2] != Double.NaN &amp;&amp; input[i] != Double.NaN &amp;&amp; input[i + 2] != Double.NaN) {
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>             <strong class="jxr_keyword">if</strong> (!Double.isNaN(input[i - 2]) &amp;&amp; !Double.isNaN(input[i]) &amp;&amp; !Double.isNaN(input[i + 2])) {
 <a class="jxr_linenumber" name="L208" href="#L208">208</a> 
 <a class="jxr_linenumber" name="L209" href="#L209">209</a>                 lineList.add(Math.abs(2 * input[i] - input[i - 2] - input[i + 2]));
 <a class="jxr_linenumber" name="L210" href="#L210">210</a> 
@@ -245,7 +245,7 @@
 <a class="jxr_linenumber" name="L237" href="#L237">237</a>             max = in;
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>         }
 <a class="jxr_linenumber" name="L239" href="#L239">239</a>         sum += in;
-<a class="jxr_linenumber" name="L240" href="#L240">240</a>         <strong class="jxr_keyword">var</strong> += (in * in);
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>         <strong class="jxr_keyword">var</strong> += in * in;
 <a class="jxr_linenumber" name="L241" href="#L241">241</a>     }
 <a class="jxr_linenumber" name="L242" href="#L242">242</a> 
 <a class="jxr_linenumber" name="L243" href="#L243">243</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkAxes(<strong class="jxr_keyword">int</strong> len, <strong class="jxr_keyword">int</strong> level) {
@@ -270,90 +270,28 @@
 <a class="jxr_linenumber" name="L262" href="#L262">262</a>                 img[i][j] = 1000 + .0001 * i + 0.01 * i * j + .1 * j + g;
 <a class="jxr_linenumber" name="L263" href="#L263">263</a>             }
 <a class="jxr_linenumber" name="L264" href="#L264">264</a>         }
-<a class="jxr_linenumber" name="L265" href="#L265">265</a>         <strong class="jxr_keyword">double</strong>[][][] test = {
-<a class="jxr_linenumber" name="L266" href="#L266">266</a>             {
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>                 {
-<a class="jxr_linenumber" name="L268" href="#L268">268</a>                     1,
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>                     2
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>                 },
-<a class="jxr_linenumber" name="L271" href="#L271">271</a>                 {
-<a class="jxr_linenumber" name="L272" href="#L272">272</a>                     2,
-<a class="jxr_linenumber" name="L273" href="#L273">273</a>                     3
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>                 }
-<a class="jxr_linenumber" name="L275" href="#L275">275</a>             },
-<a class="jxr_linenumber" name="L276" href="#L276">276</a>             {
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>                 {
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>                     4,
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>                     5
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>                 },
-<a class="jxr_linenumber" name="L281" href="#L281">281</a>                 {
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>                     6,
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>                     Double.NaN
-<a class="jxr_linenumber" name="L284" href="#L284">284</a>                 }
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>             },
-<a class="jxr_linenumber" name="L286" href="#L286">286</a>             {
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>                 {
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>                     10,
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>                     20
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>                 },
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>                 {
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>                     30,
-<a class="jxr_linenumber" name="L293" href="#L293">293</a>                     10
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>                 }
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>             },
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>             {
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>                 {
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>                     1,
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>                     2
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>                 },
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>                 {
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>                     2,
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>                     3
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>                 }
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>             },
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>             {
-<a class="jxr_linenumber" name="L307" href="#L307">307</a>                 {
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>                     4,
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>                     5
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>                 },
-<a class="jxr_linenumber" name="L311" href="#L311">311</a>                 {
-<a class="jxr_linenumber" name="L312" href="#L312">312</a>                     6,
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>                     Double.NaN
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>                 }
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>             },
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>             {
-<a class="jxr_linenumber" name="L317" href="#L317">317</a>                 {
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>                     10,
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>                     20
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>                 },
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>                 {
-<a class="jxr_linenumber" name="L322" href="#L322">322</a>                     30,
-<a class="jxr_linenumber" name="L323" href="#L323">323</a>                     10
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>                 }
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>             }
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>         };
-<a class="jxr_linenumber" name="L327" href="#L327">327</a>         <a href="../../../../nom/tam/image/comp/RealStats.html">RealStats</a> rs = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/image/comp/RealStats.html">RealStats</a>(img);
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>         System.err.println(<span class="jxr_string">"N:    "</span> + rs.n);
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>         System.err.println(<span class="jxr_string">"NaNs: "</span> + rs.nNaN);
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>         System.err.print(<span class="jxr_string">"Naxis:"</span> + rs.naxis);
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>         <strong class="jxr_keyword">if</strong> (rs.naxes == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>             System.err.println(<span class="jxr_string">"  Not rectangular"</span>);
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>             System.err.print(<span class="jxr_string">" ["</span>);
-<a class="jxr_linenumber" name="L335" href="#L335">335</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; rs.naxes.length; i += 1) {
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>                 System.err.print(<span class="jxr_string">" "</span> + rs.naxes[i]);
-<a class="jxr_linenumber" name="L337" href="#L337">337</a>             }
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>             System.err.println(<span class="jxr_string">"]"</span>);
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>         }
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>         System.err.println(<span class="jxr_string">"Min:  "</span> + rs.min);
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>         System.err.println(<span class="jxr_string">"Max:  "</span> + rs.max);
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>         System.err.println(<span class="jxr_string">"Sum:  "</span> + rs.sum);
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>         System.err.println(<span class="jxr_string">"Var:  "</span> + rs.<strong class="jxr_keyword">var</strong>);
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>         System.err.println(<span class="jxr_string">"Avg:  "</span> + rs.avg);
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>         System.err.println(<span class="jxr_string">"Std:  "</span> + rs.std);
-<a class="jxr_linenumber" name="L346" href="#L346">346</a>         System.err.println(<span class="jxr_string">"Noise:"</span> + rs.noise3);
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>     }
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> }
+<a class="jxr_linenumber" name="L265" href="#L265">265</a>         <a href="../../../../nom/tam/image/comp/RealStats.html">RealStats</a> rs = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/image/comp/RealStats.html">RealStats</a>(img);
+<a class="jxr_linenumber" name="L266" href="#L266">266</a>         System.err.println(<span class="jxr_string">"N:    "</span> + rs.n);
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>         System.err.println(<span class="jxr_string">"NaNs: "</span> + rs.nNaN);
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>         System.err.print(<span class="jxr_string">"Naxis:"</span> + rs.naxis);
+<a class="jxr_linenumber" name="L269" href="#L269">269</a>         <strong class="jxr_keyword">if</strong> (rs.naxes == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L270" href="#L270">270</a>             System.err.println(<span class="jxr_string">"  Not rectangular"</span>);
+<a class="jxr_linenumber" name="L271" href="#L271">271</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L272" href="#L272">272</a>             System.err.print(<span class="jxr_string">" ["</span>);
+<a class="jxr_linenumber" name="L273" href="#L273">273</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> naxe : rs.naxes) {
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>                 System.err.print(<span class="jxr_string">" "</span> + naxe);
+<a class="jxr_linenumber" name="L275" href="#L275">275</a>             }
+<a class="jxr_linenumber" name="L276" href="#L276">276</a>             System.err.println(<span class="jxr_string">"]"</span>);
+<a class="jxr_linenumber" name="L277" href="#L277">277</a>         }
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>         System.err.println(<span class="jxr_string">"Min:  "</span> + rs.min);
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>         System.err.println(<span class="jxr_string">"Max:  "</span> + rs.max);
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>         System.err.println(<span class="jxr_string">"Sum:  "</span> + rs.sum);
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>         System.err.println(<span class="jxr_string">"Var:  "</span> + rs.<strong class="jxr_keyword">var</strong>);
+<a class="jxr_linenumber" name="L282" href="#L282">282</a>         System.err.println(<span class="jxr_string">"Avg:  "</span> + rs.avg);
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>         System.err.println(<span class="jxr_string">"Std:  "</span> + rs.std);
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>         System.err.println(<span class="jxr_string">"Noise:"</span> + rs.noise3);
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>     }
+<a class="jxr_linenumber" name="L286" href="#L286">286</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>

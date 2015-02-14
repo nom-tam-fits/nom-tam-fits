@@ -224,7 +224,7 @@
 <a class="jxr_linenumber" name="L216" href="#L216">216</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key;
 <a class="jxr_linenumber" name="L217" href="#L217">217</a> 
 <a class="jxr_linenumber" name="L218" href="#L218">218</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../../nom/tam/fits/header/extra/STScIExt.html">STScIExt</a>(String comment) {
-<a class="jxr_linenumber" name="L219" href="#L219">219</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a href="../../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>         key = <strong class="jxr_keyword">new</strong> <a href="../../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
 <a class="jxr_linenumber" name="L220" href="#L220">220</a>     }
 <a class="jxr_linenumber" name="L221" href="#L221">221</a> 
 <a class="jxr_linenumber" name="L222" href="#L222">222</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../../nom/tam/fits/header/extra/STScIExt.html">STScIExt</a>(String key, String comment) {

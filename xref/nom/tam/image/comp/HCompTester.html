@@ -107,8 +107,8 @@
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>          hc.initialize(mp);
 <a class="jxr_linenumber" name="L100" href="#L100">100</a>         byte[] cmp = hc.compress(data);
 <a class="jxr_linenumber" name="L101" href="#L101">101</a>         <strong class="jxr_keyword">int</strong> sum = 0;
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; cmp.length; i += 1) {
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>             sum += cmp[i] &amp; 0xff;
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>         <strong class="jxr_keyword">for</strong> (byte element : cmp) {
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>             sum += element &amp; 0xff;
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>         }
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>         System.out.println(<span class="jxr_string">"Sum is:"</span> + sum);
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>         bf = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/BufferedFile.html">BufferedFile</a>(args[2], <span class="jxr_string">"rw"</span>);
