@@ -441,11 +441,7 @@ public final class ByteFormatter {
             off = alignFill(array, off, len - slen);
         }
 
-        /**
-         * We should probably require ASCII here, but for the nonce we do not
-         * [TAM 5/11]
-         */
-        System.arraycopy(val.getBytes(), 0, array, off, slen);
+        System.arraycopy(AsciiFuncs.getBytes(val), 0, array, off, slen);
         return off + slen;
     }
 
