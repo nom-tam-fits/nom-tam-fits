@@ -1,14 +1,15 @@
 # FITS header keywords
 
-There many many sources of FITS keywords, many organisations (or groups of organisations) defined their own sets of keywords.
+There many, many sources of FITS keywords.   Many organisations (or groups of organisations) have defined their own sets of keywords.
 This results in many different dictionaries with partly overlapping definitions. To help the "normal" user of FITS files
 with these, we have started to collect the standards and will try to include them in this library to ease finding of the "right" 
 keyword.
 
-These dictionaries are organized in a hierarchical form, that means every dictionary extends the list of keywords of another dictionary.
-The root of this tree of dictionaries is the dictionary used in 
-the FITS standard itself. Below that is a dictionary that with entries from
-different libraries that used the same keywords. These are collected in a dictionary with commonly used keywords.
+These dictionaries are organized in a hierarchical form.  Every dictionary other than the root 
+extends the list of keywords of another dictionary.
+The root of this tree is the dictionary used in 
+the FITS standard itself. Below that is a dictionary with entries from
+different libraries that use the same keywords. These are collected in a dictionary of commonly used keywords.
 
 These enumerations of keywords (dictionaries) can be found in and under the package [nom.tam.fits.header](./apidocs/nom/tam/fits/header/package-summary.html "nom.tam.fits.header").
 The standard and commonly used keywords can be found there. Commonly used keywords are sorted in separate enumerations by theme.
@@ -41,14 +42,17 @@ Currently we include:
   source: [http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html) 
 
 
-All duplicates where eliminated from enumerations (including enumerations that defined in one of the "parent" standards). So always use a keyword of one of the 
-higher level standards when possible.
+All duplicates were eliminated from enumerations (including enumerations that are defined in one of the "parent" standards). 
+So always use a keyword of one of the higher level standards when possible.
 
-Furthermore we have identified synonym keywords inside and between dictionaries. We have also started to collect these in the Synonyms class in the header package. So you can easily find the 
-primary keyword to use in stead of the synonym. 
+Furthermore we have identified synonym keywords inside and between dictionaries. 
+We have also started to collect these in the Synonyms class in the header package. So you can find the best keyword to
+use rather than a less widely defined synonym. 
 
-Currently these enums have no real effect in the library. But you can now make compiler check references to keywords (No more pruney String references).
-Future versions of the library will try to validate using these dictionaries and warn you if you use a keyword inappropriately (e.g., wrong data type,
+The enums may be used to set and extract keyword values.
+You can also make the compiler check references to keywords (No more pruney String references).
+Future versions of the library will try to validate using these dictionaries and 
+warn you when you use a keyword inappropriately (e.g., wrong data type,
 wrong HDU or deprecated keyword).
 
 We would appreciate any additional help in correcting errors in these definitions
@@ -72,7 +76,4 @@ Some keywords have indexes that must be specified, just call the n() method on t
 	...
 	hdr.addValue(WATn_nnn.n(9, 2, 3, 4), "50");
 
-Now you can use the compiler to check your keywords, and also use your IDE to easelly find references to certain keywords.
-
-
- 
+You can use the compiler to check your keywords, and also use your IDE to easily find references to certain keywords.
