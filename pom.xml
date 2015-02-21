@@ -430,9 +430,12 @@
 								<goals>
 									<goal>sign</goal>
 								</goals>
-								<!-- if the local user is not the key user use -Dgpg.keyname=XXXX -->
+
 							</execution>
 						</executions>
+						<configuration>
+							<passphraseServerId>gpg</passphraseServerId>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
