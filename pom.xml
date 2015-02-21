@@ -83,8 +83,8 @@
 		</contributor>
 	</contributors>
 	<scm>
-		<connection>scm:git:git@github.com:nom-tam-fits/nom-tam-fits.git</connection>
-		<developerConnection>scm:git:git@github.com:nom-tam-fits/nom-tam-fits.git</developerConnection>
+		<connection>scm:git:https://github.com/nom-tam-fits/nom-tam-fits.git</connection>
+		<developerConnection>scm:git:https://github.com/nom-tam-fits/nom-tam-fits.git</developerConnection>
 		<url>https://github.com/nom-tam-fits/nom-tam-fits</url>
 		<tag>HEAD</tag>
 	</scm>
