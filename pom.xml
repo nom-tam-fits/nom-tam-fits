@@ -170,6 +170,7 @@
 				<version>2.5.1</version>
 				<configuration>
 					<mavenExecutorId>forked-path</mavenExecutorId>
+					<pushChanges>false</pushChanges>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -416,13 +417,7 @@
 	</properties>
 	<profiles>
 		<profile>
-			<id>release-sign-artifacts</id>
-			<activation>
-				<property>
-					<name>performRelease</name>
-					<value>true</value>
-				</property>
-			</activation>
+			<id>release-profile</id>
 			<build>
 				<plugins>
 					<plugin>

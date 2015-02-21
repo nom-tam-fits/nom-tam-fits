@@ -3,25 +3,25 @@
 	<body>
 		<release version="1.12.0" date="2015-02-20">
 			<action type="add" dev="ritchieGitHub">
-				enumerations where added for ~1000 more or less Standard fits headers are now included (making compile references to headers possible).
+				Enumerations where added for ~1000 more or less Standard fits headers are now included (making compile references to headers possible).
 			</action>
 			<action type="add" dev="ritchieGitHub">
-				moved the sources to github and the artifacts to the central repo.
+				Moved the sources to github and the artifacts to the central repo.
 			</action>
 			<action type="add" dev="ritchieGitHub">
-				moved the license to maven as build system, incl reoganisation of the project. tests are no included in the published jars anymore.
+				Moved the license to maven as build system, incl reorganisation of the project. tests are no included in the published jars any more.
 			</action>
 			<action type="update" dev="ritchieGitHub">
-				moved the license to the official unlicense.
+				Moved the license to the official unlicensed.
 			</action>
 			<action type="add" dev="ritchieGitHub">
-				creation of a project site on github with issue management.
+				Creation of a project site on github with issue management.
 			</action>
 			<action type="update" dev="ritchieGitHub">
-				java formating/licence updating is now done by the maven plugins.
+				Java formatting/licence updating is now done by the maven plug ins.
 			</action>
 			<action type="update" dev="ritchieGitHub">
-				moved the code to java 1.6 and @Override is now conststent
+				Moved the code to Java 1.6 and @Override is now consistent.
 			</action>
 			<action type="add" dev="tmcglynn">
 				Richard van Nieuwenhoven joined the team.
@@ -46,7 +46,8 @@
 			<action type="update" dev="Pat Dowler">
 				Fixed error in getting size of associated data for dummy
 				headers in Header.getDataSize(). This could return 1 rather than 0 if
-				NAXIS=0 was used to signal a
+				NAXIS=0 was used to
+				signal a
 				dummy. This doesn't affect data
 				when read normally (as full HDUs) since the ImageData class
 				does the computation correctly. (Thanks to Pat Dowler, CADC)
@@ -57,7 +58,8 @@
 				classes are
 				pre-alpha versions of support for tile compressed data that
 				is being developed. Interested Users may take a look at these, but they
-				definitely are not expected to work today.
+				definitely are not expected to work
+				today.
 				Support for Rice, Gzip and
 				HCompress compression is expected.
 			</action>
@@ -67,25 +69,29 @@
 			<action type="update" dev="tmcglynn">
 				No functional changes to the FITS code are included in this release.
 				All internal documentation has been updated to reflect that this library
-				is now available
+				is
+				now available
 				in the public domain.
 			</action>
 		</release>
 		<release version="1.08.1" date="2012-02-01">
-			<action type="fix"  dev="Jason Weiss">
+			<action type="fix" dev="Jason Weiss">
 				Fixed error in the writing of ASCII table columns where
 				all of the elements of the table were null or 0 length
-				strings. Previously we would write a column with
+				strings. Previously we would write a
+				column with
 				TFORM A0.
 				This is not supported by CFITSIO and since it is not
 				valid Fortran is of dubious legality for FITS. Such columns
-				are now written with A1 (issue noted by Jason Weiss,
+				are now written with A1 (issue noted by Jason
+				Weiss,
 				UCLA).
 			</action>
 			<action type="fix" dev="tmcglynn">
 				AsciiTable did not check if columns were of a valid type
 				(if the FitsFactory methods were used, then a BinaryTable
-				would be written, but a user can explicitly
+				would be written, but a user can
+				explicitly
 				instantiate
 				an AsciiTable). A FitsException is now returned if
 				a column other than a String, double, int or long array is
@@ -113,16 +119,19 @@
 			<action type="update" dev="tmcglynn">
 				Allow a FITS file to have invalid data after a valid FITS HDU.
 				User can call FitsFactory.setAllowTerminalJunk(true) to enable
-				this. The Fits object will return
+				this. The Fits
+				object will return
 				all valid HDUs. Note that
 				whatever follows the valid FITS data must start with something
 				that is clearly not FITs.
-				This includes modifications to FitsFactory and Header.
+				This includes modifications to FitsFactory and
+				Header.
 			</action>
 			<action type="update" dev="tmcglynn">
 				Allow users to find original size of headers as they were
 				read from some source file. The library throws away duplicate
-				key values, so that the number of
+				key values, so that the
+				number of
 				header cards in the header as read
 				may be smaller than the original data. The getOriginalSize() gets
 				the original size of the header in bytes. A resetOriginalSize()
@@ -133,7 +142,8 @@
 			<action type="fix" dev="tmcglynn">
 				Fixed the order of the EXTEND keyword to follow the NAXISn keywords
 				when it is specified. This constraint on the EXTEND keyword is
-				no longer required in the
+				no longer required
+				in the
 				latest version of the standard, but it
 				doesn't hurt anything and may make the file more acceptable to some
 				readers.
@@ -160,10 +170,12 @@
 			<action type="update" dev="tmcglynn">
 				Substantial reworking of compression to accommodate
 				BZIP2 compression. The Apache Bzip library is used or
-				since this is very slow, the user can specify a local
+				since this is very slow, the user can
+				specify a local
 				command to do the decompression using the BZIP_DECOMPRESSOR
 				environment variable. This is assumed to require a
-				'-' argument which is added if not supplied by the user.
+				'-' argument which is added if not supplied by the
+				user.
 				The
 				decompressor should act as a filter between standard input
 				and output.
@@ -172,7 +184,8 @@
 				User compression flags are now completely
 				ignored and the compression and the compression
 				is determined entirely by the content of the stream.
-				The Apache
+				The
+				Apache
 				library will be needed in the
 				classpath to accommodate BZIP2 inputs if the user
 				does not supply the BZIP_DECOMPRESSOR.
@@ -180,7 +193,8 @@
 			<action type="update" dev="tmcglynn">
 				Adding additional compression methods should be much easier and
 				may only involve adding a couple of lines in the
-				FitsUtil.decompress function if a decompressor
+				FitsUtil.decompress function if a
+				decompressor
 				class
 				is available.
 			</action>
@@ -201,14 +215,16 @@
 				The nom.tam.util.AsciiFuncs class now handles
 				ASCII encoding to more cleanly separate this
 				functionality from the FITS library and to enable
-				Java 1.5
+				Java
+				1.5
 				compatibitity. (Suggested by changes of L.Bourges)
 				Other V1.5 incompatiblities removed.
 			</action>
 			<action type="update" dev="tmcglynn">
 				The HeaderCommentsMap class is now provided to enable
 				users to control the comments that are generated in system
-				generated header cards. The map is initialized
+				generated header cards. The map
+				is initialized
 				to values
 				that should be the same as the current defaults. This
 				should allow users to emulate the comments of other packages.
@@ -226,19 +242,23 @@
 			<action type="fix" dev="V. Forchi">
 				The placement of the header cursor after opening a primary array
 				was such that unless the user took explicit action to move
-				the cursor, new header records
+				the cursor, new header
+				records
 				would be written before the
 				EXTEND keyword which is a violation of the FITS standard (although
 				it would not affect the operations of this library). The
-				library now leaves the
+				library now leaves
+				the
 				cursor just after the EXTEND keyword where
 				new keywords are legal. It's still possible for users to write an
-				illegal header but now it requires at least a little effort on their
+				illegal header but now it requires at least a little effort on
+				their
 				part.noted originally by V. Forchi.
 			</action>
 			<action type="update" dev="tmcglynn">
 				This build procedure for FITS library has been changed. The library is now stored
-				as a NetBeans project and the standard NetBeans build script has been
+				as a NetBeans project and the standard NetBeans build script
+				has been
 				modified
 				to generate the fits.jar and fits_src.jar. The names of a number of the test procedures
 				have been slightly modified (XXXTester -> XXXTest) and test data are
@@ -251,7 +271,8 @@
 			<action type="update" dev="Laurent Bourges">
 				Adding methods to allow finer control of the placement of
 				metadata records for columns of FITS tables. This could previously
-				be done using Cursors, but the
+				be done using
+				Cursors, but the
 				TableHDU.setTableMeta() methods now
 				allow these to be specified more directly.
 
@@ -262,12 +283,14 @@
 			<action type="update" dev="Laurent Bourges">
 				Adding more rigor to the transformation between bytes and strings and
 				fixing a bug in the handling of strings with embedded nuls. According
-				to the standard an
+				to the
+				standard an
 				embedded null should terminate an string in a
 				binary table.by Laurent Bourges
 
 				The standard also precludes other non-printing characters from strings.
-				This has been ignored
+				This has been
+				ignored
 				previously, but there is now a method
 				FitsFactory.setCheckAsciiString(boolean flag) which can be called
 				to turn on checking. A warning will be issued and non-printing
@@ -276,44 +299,53 @@
 				warning will be issued regardless of the number of invalid characters are
 				seen.
 
-				There are changes in a number of
+				There are changes in a
+				number of
 				classes where the conversions occur
 				to ensure that the ASCII charset is used.
 
-				How these changes work is illustrated in BinaryTableTest.specialStringsTest.by Laurent Bourges
+				How these changes work is illustrated in BinaryTableTest.specialStringsTest.by Laurent
+				Bourges
 			</action>
 			<action type="update" dev="tmcglynn">
 				Handling fixed and variable length, single and double precision
 				complex data. The library uses a float[2] or double[2]
 				for a complex scalar.
 
-				This is mostly bug
+				This
+				is mostly bug
 				fixes to existing code and changes are only
 				in BinaryTable and BinaryTableHDU.
 
 				The method BinaryTableHDU.setComplexColumn() allows the user to
-				tell the FITS writer that a field
+				tell the FITS writer
+				that a field
 				which otherwise would be treated
 				as a float or double array (with most rapidly varying
 				dimensionality of 2) should be treated as complex. The internal
-				data representations are
+				data
+				representations are
 				identical.
 
 				Variable length complex data will be found automatically if
 				number of elements actually varies. A variable length complex
-				column is a 3-D float or double array
+				column is a 3-D float or
+				double array
 				where the
 				last dimension (for Java) is always 2, the first
 				dimension is the number of rows in the table and the middle
-				dimension is the number of complex numbers in the row and may
+				dimension is the number of complex numbers in
+				the row and may
 				vary
 				from row to row. Other variable length columns are
 				represented as 2-D arrays, where the first index points to the
-				row, and the second index enumerates the elements in the row.
+				row, and the second index enumerates the
+				elements in the row.
 
 				Use of complex columns is illustrated in BinaryTableTest in the routines
 				testSimpleComplex (fixed columns), testVar (variable length
-				columns), and buildByColumn and buildByRow
+				columns), and
+				buildByColumn and buildByRow
 				where columns
 				and rows containing complex numbers are added to existing
 				tables.by Laurent Bourges
@@ -321,7 +353,8 @@
 			<action type="update" dev="tmcglynn">
 				Changing the null HDU created when a table is to be written without
 				a prior image to use a vector with dimensionality 0 rather than
-				a one-dimensional vector
+				a
+				one-dimensional vector
 				with a dimension of 0. I.e, use
 				NAXIS=0 rather than NAXIS=1, NAXIS1=0.by Laurent Bourges
 			</action>
@@ -332,10 +365,12 @@
 			<action type="update" dev="tmcglynn">
 				Adding the reset() method to the FitsElement interface. This attempts
 				to reset the Fits input stream pointer to the beginning of the element.
-				It does not throw
+				It
+				does not throw
 				exceptions but will return false if not successful.
 				This is intended to make it easier for user who wish to use low-level
-				I/O to read FITS data, by allowing them to position the
+				I/O to read FITS data, by allowing them to
+				position the
 				stream to the
 				beginning of the data they are interested in.
 			</action>
@@ -346,7 +381,8 @@
 			<action type="update" dev="tmcglynn">
 				Provided a method in BinaryTable to get back the ModelRow array.
 				This makes is easier for users to do low level I/O in binary tables.
-				An ArrayDataInput object
+				An
+				ArrayDataInput object
 				will read a row of the table, given the
 				result of getModelRow().
 			</action>
@@ -378,7 +414,8 @@
 			</action>
 			<action type="fix" dev="tmcglynn">
 				A bug in the processing of keyword values with embedded apostrophes was fixed.
-				Apostrophe's were properly doubled in encoding but the doubling was left
+				Apostrophe's were properly doubled in encoding but the doubling was
+				left
 				when
 				the values were read.
 			</action>
@@ -388,7 +425,7 @@
 		</release>
 
 		<release version="1.03.1" date="2009-07-27">
-			<action type="add"  dev="J.C. Segovia">
+			<action type="add" dev="J.C. Segovia">
 				The implementation of the FitsUtil.byteArrayToStrings method was changed
 				so that trimmed space from strings can be cleaned up more efficiently.
 				Change
@@ -443,7 +480,8 @@
 			<action type="add" dev="tmcglynn">
 				The Header.read() method may now throw an IOException in circumstances
 				where it would previously throw an Error. It probably should throw
-				a FitsException, but
+				a
+				FitsException, but
 				that was not in the signature and might have broken
 				existing programs.
 			</action>
@@ -454,43 +492,53 @@
 			<action type="update" dev="tmcglynn">
 				Some obsolete comments indicating that BITPIX=64 was an extension of
 				FITS were deleted. FITS has officially supported longs for a fair number
-				of years now.
+				of
+				years now.
 			</action>
 			<action type="update" dev="tmcglynn">
 				The regression tests have been augmented to test the new features, but users
-				should note that the new BigFileTester test takes a very long time to run. E.g.,
+				should note that the new BigFileTester test takes a very long time
+				to run. E.g.,
 				on the primary development machine this takes 240 seconds while all of the
 				other tests finish in just a few seconds. The time is simply the time it
-				takes to write a file of known
+				takes to write a
+				file of known
 				content that is more than 2 GB in size.
 			</action>
 		</release>
 
 		<release version="1.02.0" date="2009-07-08">
-			<action type="update"  dev="L. Michel">
+			<action type="update" dev="L. Michel">
 				ASCII tables with data fields that were blank filled were not being handled properly.
-				According to the FITS standards, numeric fields where the FITS table has
+				According to the FITS standards, numeric fields where the
+				FITS table has
 				blanks are
 				to be treated as containing 0. A parsing error was being returned. The getInt, getLong,
-				and getDouble methods in ByteParser were changed to acoommodate this case
+				and getDouble methods in ByteParser were changed to acoommodate
+				this case
 				(getFloat simply
 				calls getDouble).suggested by L. Michel
 			</action>
 			<action type="update" dev="tmcglynn">
 				A new exception, PaddingException, which inherits from FitsException has been added.
-				This exception is thrown when an otherwise valid HDU is not properly
+				This exception is thrown when an otherwise valid HDU is not
+				properly
 				padded to the next
 				2880 byte boundary. The exception class has a getTruncatedHDU method which allows the
-				user to get the information in the truncated HDU. In addition to the new
+				user to get the information in the truncated HDU. In addition to
+				the new
 				class changes were
 				made in BinaryTable, AsciiTable, UndefinedData, ImageData and RandomGroupsData to throw the
-				exception at the appropriate time. The main Fits method was also
+				exception at the appropriate time. The main Fits method was
+				also
 				updated so that when
 				its readHDU() method is being used, the notional header that is given to the truncated HDU
-				in the Data classes is replaced by the actual header. If a user
+				in the Data classes is replaced by the actual header. If a
+				user
 				wishes to ignore padding
 				exceptions, then a FITS file may be read using the following idiom in the new nom.tam.fits.test.PaddingTester to see a complete example
-				of this idiom.
+				of this
+				idiom.
 			</action>
 		</release>
 
@@ -498,11 +546,13 @@
 			<action type="update" dev="tmcglynn">
 				A number of changes were implemented to handle large FITS files more
 				gracefully and to correct bugs associated with large files. This includes
-				a change to the
+				a
+				change to the
 				method
 				Data.getTrueSize();
 				This method was public only for the BinaryTable data type and previously
-				returned an int. It now returns a long. User programs which called this
+				returned an int. It now returns a long. User programs which called
+				this
 				method
 				will need to be recompiled.
 				Specific bugs were noted by Javier Diaz and Juan Carlos Segovia.
@@ -525,7 +575,7 @@
 
 
 		<release version="1.00.1" date="2009-02-19">
-			<action type="fix"  dev="Javier Diaz">
+			<action type="fix" dev="Javier Diaz">
 				Fixed bug where exponential notation in FITS header keywords used 'e' rather than 'E' (noted by Javier Diaz)
 			</action>
 		</release>
@@ -543,20 +593,23 @@
 		<release version="1.00.0" date="2008-06-10">
 			<action type="add" dev="tmcglynn">The major chage to this release is support for .Z compressed images.
 				This is implemented by using the uncompress command which must
-				be in the user's execution
+				be in the user's
+				execution
 				path.
 			</action>
 			<action type="update" dev="tmcglynn">There is much more dynamic checking of the magic number of inputs
 				to determine whether the input to the FITS constructor is compressed
-				or not, and if
+				or not, and
+				if
 				compressed what the compression type is.
 				This can still be confused but in many cases it will get the
 				compression right regardless of what the user specifies.
-				Future versions may
+				Future versions
+				may
 				completely ignore the user specified compression
 				flag.
 			</action>
-			<action type="fix"  dev="A. Kovacs">Bug fix to BinaryTable by A. Kovacs
+			<action type="fix" dev="A. Kovacs">Bug fix to BinaryTable by A. Kovacs
 			</action>
 		</release>
 		<release version="0.99.3" date="2007-12-04">
@@ -582,7 +635,8 @@
 				Changed handling of double values in header
 				so that they all fit into the fixed format.
 				In rare circumstances this may result in a loss
-				of precision.
+				of
+				precision.
 			</action>
 			<action type="fix" dev="tmcglynn">
 				Additional fixes for zero length and null strings
@@ -634,7 +688,8 @@
 			<action type="fix" dev="tmcglynn">
 				FitsUtil: Fixed bug in maxLength which looked for nulls in
 				the array pointer rather than the individual strings.
-				Added check for nulls in stringsToByteArray
+				Added check for nulls in
+				stringsToByteArray
 			</action>
 			<action type="fix" dev="tmcglynn">
 				HeaderCard: Truncated String in one argument constructor to
@@ -652,13 +707,16 @@
 		<release version="0.99.1" date="2006-07-29">
 			<action type="update" dev="tmcglynn">
 				Added new methods to delete rows and columns from both binary and ASCII tables.
-				There are changes to many of the table classes including util/ColumnTable.
+				There are changes to many of the table classes including
+				util/ColumnTable.
 				These changes were suggested by row deletion code written by R. Mathar,
 				but the actual implementation is entirely independent and errors
-				are handled somewhat differently than in
+				are handled somewhat
+				differently than in
 				his code. There are deleteColumns
 				and deleteRows methods in TableHDU that delete either a specified range
-				or all tables or columns after (and including) the one specified.
+				or all tables or columns after (and including) the
+				one specified.
 			</action>
 			<action type="update" dev="tmcglynn">
 				The util.HashedList implementation has been completely revised. It now
@@ -670,7 +728,8 @@
 			<action type="update" dev="tmcglynn">
 				Header now sorts keywords before a header is written to ensure that
 				required keywords come where they need to be. Previously users
-				needed to work to make sure
+				needed to work
+				to make sure
 				that they wrote required keywords
 				in the right location in the header. A new class, HeaderOrder,
 				is used.
@@ -678,7 +737,8 @@
 			<action type="fix" dev="tmcglynn">
 				A number of errors in the handling of variable length arrays were
 				fixed. These were pointed out by Guillame Belanger. This included
-				changes to util.ColumnTable
+				changes to
+				util.ColumnTable
 				but mostly BinaryTable and FitsHeap.
 			</action>
 			<action type="update" dev="R.J. Mathar">
@@ -695,11 +755,13 @@
 			<action type="add" dev="R.J. Mathar">
 				Added support for Checksums. Use the setChecksum methods in the
 				FITS class to add checksums to FITS HDUs. The static method
-				setChecksum(HDU) adds a checksum to
+				setChecksum(HDU) adds a
+				checksum to
 				a given HDU. The instance
 				method setChecksum() adds checksums to all HDUs in the file.
 				Note that setting the checksum should be the last step before
-				writing the file since any
+				writing the file
+				since any
 				manipulation of the file is likely
 				to invalidate the checksum.
 				(This code was contributed by R.J. Mathar, Leiden University).
@@ -707,17 +769,20 @@
 			<action type="add" dev="tmcglynn">
 				Changed handling of 1-d arrays with a single element so that
 				they can be distinguished from scalar values. No TDIM will be
-				be created for scalar columns, and a
+				be created for scalar
+				columns, and a
 				TDIMn = '(1)' will give
 				an array rather than a scalar value. (Suggested by Jorgo Bakker. ESA)
 				For data written using the previous version of the FITS library,
-				this may cause
+				this
+				may cause
 				problems when the data is read with the new version,
 				since the type of the returned column will be different.
 			</action>
 			<action type="add" dev="Laurent Michel">
 				When checking if a file is compressed, the actual content of the
-				file will be used if possible rather than the name (Suggested by Laurent Michel, CDS)
+				file will be used if possible rather than the name (Suggested by Laurent Michel,
+				CDS)
 			</action>
 			<action type="update" dev="Laurent Michel">
 				The code used to support TFORMn = 'xNNN' where the array dimension followed rather
@@ -734,10 +799,12 @@
 			</action>
 			<action type="update" dev="tmcglynn">
 				If the Fits.write() method is called using a BufferedFile, then the size of the
-				file is truncated at the end of the write. Otherwise if the FITS data was
+				file is truncated at the end of the write. Otherwise if the FITS
+				data was
 				being written into a previously existing file of greater length, there
 				would be extra bytes at the end of the file. This is still possible
-				if the user uses the write methods for
+				if the user uses the write
+				methods for
 				individual constituents of the FITS
 				object.
 			</action>
@@ -759,7 +826,8 @@
 				The HeaderCard class now has constructor
 				with the signature (String,String,boolean) which
 				may be used to generate either a comment style
-				card with the keyword
+				card with
+				the keyword
 				and value
 				given, or a card with a null value
 			</action>
@@ -768,12 +836,14 @@
 			</action>
 			<action type="fix" dev="tmcglynn">ASCII tables are first read to an intermediate byte
 				buffer and then parsed as needed. Bugs where this
-				buffer was being deleted at inappropriate times, or
+				buffer was being deleted at inappropriate
+				times, or
 				left
 				undeleted when it was invalid were fixed.
 				This should fix errors when AsciiTables are read
 				from non-seekable sources. This should slightly
-				speed up most access to ASCII tables
+				speed up most access to
+				ASCII tables
 			</action>
 			<action type="fix" dev="tmcglynn">In certain circumstances an Image would not be
 				properly initialized before it was to be written
@@ -794,7 +864,8 @@
 			</action>
 			<action type="fix" dev="tmcglynn">A bug in the creation of ASCII Table Headers was fixed.
 				Some of the header cards in the header were being
-				inserted as if they were comments, allowing multiple
+				inserted as if they were comments, allowing
+				multiple
 				copies to be generated.
 				This was also possible when a Header was created
 				from an array of strings.
@@ -803,17 +874,20 @@
 		<release version="0.93" date="2001-01-01">
 			<action type="add" dev="tmcglynn">The HeaderCard class has been modified to handle
 				The HIERARCH keyword convention. The FitsFactory
-				now has methods set/getUseHierarch to enable/disable this
+				now has methods set/getUseHierarch to
+				enable/disable this
 				processing
 			</action>
 			<action type="add" dev="tmcglynn">A new interface FitsElement has been added which
 				is implemented by the BasicHDU, Header, Data and FitsHeap
-				classes. It enables users to more easily deal with
+				classes. It enables users to more easily
+				deal with
 				FITS data
 				at the byte level. There is also a public method
 				getDataSize in Header to get the size in bytes
 				of the associated data element including padding.
-				The FitsHeap class has
+				The FitsHeap
+				class has
 				been made public
 			</action>
 			<action type="fix" dev="Jens Knudstrup">Several bugs relating to null images were corrected.
@@ -821,7 +895,8 @@
 			</action>
 			<action type="fix" dev="tmcglynn">The handling of EOF conditions in array reads in
 				the BufferedFile and BufferedDataInputStream classes
-				was made consistent with the behavior of java.io classes
+				was made consistent with the behavior of
+				java.io classes
 				reading byte arrays
 			</action>
 			<action type="fix" dev="tmcglynn">Several bug fixes implemented by Alan Brighton (and already
@@ -829,11 +904,13 @@
 			</action>
 			<action type="fix" dev="tmcglynn">All references to the java.lang.reflect.Array.newInstance()
 				methods were modified to use new methods with the same signature
-				in ArrayFuncs. These new methods
+				in ArrayFuncs. These new
+				methods
 				throw an OutOfMemory exception
 				when an array cannot be created. The JVM methods seem -- in
 				contradiction to the documentation -- to simply return null.
-				Previously the program
+				Previously the
+				program
 				could mysteriously crash when used to read large
 				files, when the null in a dynamic allocation was eventually
 				dereferenced
