@@ -85,12 +85,21 @@ public class InputBitStream {
         }
     }
 
-    /** Initialize the bit stream to read from an input stream. */
+    /**
+     * Initialize the bit stream to read from an input stream.
+     * 
+     * @param in
+     *            the underlaying input stream.
+     */
     public InputBitStream(InputStream in) {
         input = in;
     }
 
-    /** Read from 0-32 bits */
+    /**
+     * @return Read from 0-32 bits.
+     * @param n
+     *            number of bits to read.
+     */
     public int readBits(int n) throws IOException {
         int result = 0;
         if (n <= 0) {
@@ -139,7 +148,12 @@ public class InputBitStream {
     }
 
     /**
-     * Skip a set of either ones or zeroes and return the number of bits skipped
+     * @return Skip a set of either ones or zeroes and return the number of bits
+     *         skipped.
+     * @param ones
+     *            true if skipping 1's and false when skipping 0's.
+     * @throws IOException
+     *             if no more data could be read.
      */
     public int skipBits(boolean ones) throws IOException {
 
@@ -173,7 +187,12 @@ public class InputBitStream {
         return sum;
     }
 
-    /** Close the input stream */
+    /**
+     * Close the input stream .
+     * 
+     * @throws IOException
+     *             if the undelaying stream throws an error.
+     */
     public void close() throws IOException {
         input.close();
     }

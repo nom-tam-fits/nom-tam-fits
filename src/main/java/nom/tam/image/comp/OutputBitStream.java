@@ -88,7 +88,9 @@ public class OutputBitStream {
         this.littleEndian = littleEndian;
     }
 
-    /** Read from 0-32 bits */
+    /**
+     * Read from 0-32 bits.
+     */
     public void writeBits(int val, int n) throws IOException {
         if (n <= 0) {
             return;

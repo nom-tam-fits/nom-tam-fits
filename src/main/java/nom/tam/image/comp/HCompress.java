@@ -217,10 +217,6 @@ public class HCompress implements CompressionScheme {
         System.err.println("After get:" + params.keySet());
     }
 
-    /**
-     * compress the input image using the H-compress algorithm input - input
-     * image array as a byte array.
-     */
     @Override
     public byte[] compress(byte[] input) throws IOException {
 
@@ -242,6 +238,12 @@ public class HCompress implements CompressionScheme {
     /**
      * compress the input image using the H-compress algorithm input - input
      * image array as an int array.
+     * 
+     * @param input
+     *            the date to compress.
+     * @return the compressed bytes.
+     * @throws IOException
+     *             if the compression fails
      */
     public byte[] compress(int[] input) throws IOException {
         htrans(input);
@@ -843,6 +845,12 @@ public class HCompress implements CompressionScheme {
     /**
      * Decompress the input stream. The result left in the a[] array and can be
      * accessed using the various get methods.
+     * 
+     * @param input
+     *            the data to decompress.
+     * @return the decompressed data
+     * @throws IOException
+     *             if the decompression fails.
      */
     public int[] decomp(byte[] input) throws IOException {
 

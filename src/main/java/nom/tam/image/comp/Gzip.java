@@ -56,16 +56,6 @@ public class Gzip implements CompressionScheme {
         // No initialization.
     }
 
-    /**
-     * Compress data. If non-byte data is to be compressed it should be
-     * converted to a byte array first (e.g., by writing it to a
-     * ByteArrayOutputStream).
-     * 
-     * @param in
-     *            The input data to be compressed.
-     * @return The compressed array.
-     * @throws IOException
-     */
     @Override
     public byte[] compress(byte[] in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -75,19 +65,6 @@ public class Gzip implements CompressionScheme {
         return out.toByteArray();
     }
 
-    /**
-     * Decompress data. If non-byte data is to be compressed it should be read
-     * from the resulting array (e.g., by reading it from a
-     * ByteArrayInputStream).
-     * 
-     * @param in
-     *            The compressed array.
-     * @param length
-     *            The number of output elements expected. For GZIP encoding this
-     *            is ignored.
-     * @return The decompressed array.
-     * @throws IOException
-     */
     @Override
     public byte[] decompress(byte[] in, int length) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();

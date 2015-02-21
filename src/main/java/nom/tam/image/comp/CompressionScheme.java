@@ -46,27 +46,67 @@ import nom.tam.fits.Header;
  */
 public interface CompressionScheme {
 
-    /** Return the 'name' of the compression scheme */
+    /** @return Return the 'name' of the compression scheme */
     public abstract String name();
 
     /**
      * Initialize the compression scheme with any appropriate parameters.
+     * 
+     * @param params
+     *            initialisationparameters.
      */
     public abstract void initialize(Map<String, String> params);
 
-    /** Return a stream which compresses the input. */
+    /**
+     * Compress data. If non-byte data is to be compressed it should be
+     * converted to a byte array first (e.g., by writing it to a
+     * ByteArrayOutputStream).
+     * 
+     * @param in
+     *            The input data to be compressed.
+     * @return The compressed array.
+     * @throws IOException
+     *             if the compression fails
+     */
     public abstract byte[] compress(byte[] in) throws IOException;
 
-    /** Return a stream with decompresses the input. */
+    /**
+     * Decompress data. If non-byte data is to be compressed it should be read
+     * from the resulting array (e.g., by reading it from a
+     * ByteArrayInputStream).
+     * 
+     * @param in
+     *            The compressed array.
+     * @param length
+     *            The number of output elements expected. For GZIP encoding this
+     *            is ignored.
+     * @return The decompressed array.
+     * @throws IOException
+     *             if the decompression fails
+     */
     public abstract byte[] decompress(byte[] in, int length) throws IOException;
 
     /**
-     * Update the FITS header and compression parameterswith information about
-     * the compression
+     * Update the FITS header and compression parameters with information about
+     * the compression.
+     * 
+     * @param hdr
+     *            header to update
+     * @param parameters
+     *            compression parameters
+     * @throws FitsException
+     *             if something goes wrong
      */
     public abstract void updateForWrite(Header hdr, Map<String, String> parameters) throws FitsException;
 
-    /** Get the parameters indicated by a given header */
+    /**
+     * Get the parameters indicated by a given header.
+     * 
+     * @param params
+     *            compression parameters from the header
+     * @param hdr
+     *            ths fits header to get the parameters
+     */
     public abstract void getParameters(Map<String, String> params, Header hdr);
 
 }
