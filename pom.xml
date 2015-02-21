@@ -137,6 +137,14 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+				<configuration>
+					<passphraseServerId>gpg</passphraseServerId>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
@@ -396,7 +404,6 @@
 			</plugin>
 		</plugins>
 	</reporting>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -430,12 +437,8 @@
 								<goals>
 									<goal>sign</goal>
 								</goals>
-
 							</execution>
 						</executions>
-						<configuration>
-							<passphraseServerId>gpg</passphraseServerId>
-						</configuration>
 					</plugin>
 				</plugins>
 			</build>
