@@ -61,9 +61,21 @@ public class HashedListTest {
     @Test
     public void testCollection() {
 
-        HashedList h1 = new HashedList();
-        HashedList h2 = new HashedList();
+        HashedList<Object, Object> h1 = new HashedList<Object, Object>() {
 
+            @Override
+            protected Object intToKey(int i) {
+                return Integer.valueOf(i);
+            }
+        };
+        HashedList<Object, Object> h2 = new HashedList<Object, Object>() {
+
+            @Override
+            protected Object intToKey(int i) {
+                return Integer.valueOf(i);
+            }
+
+        };
         Cursor i = h1.iterator(0);
         Iterator j;
 
@@ -157,7 +169,13 @@ public class HashedListTest {
     @Test
     public void testIterator() {
 
-        HashedList h1 = new HashedList();
+        HashedList<Object, Object> h1 = new HashedList<Object, Object>() {
+
+            @Override
+            protected Object intToKey(int i) {
+                return Integer.valueOf(i);
+            }
+        };
 
         h1.add("key 4", "Row 4");
         h1.add("key 5", "Row 5");
@@ -194,8 +212,13 @@ public class HashedListTest {
 
     @Test
     public void TestCursor() {
+        HashedList<Object, Object> h1 = new HashedList<Object, Object>() {
 
-        HashedList h1 = new HashedList();
+            @Override
+            protected Object intToKey(int i) {
+                return Integer.valueOf(i);
+            }
+        };
 
         h1.add("key 1", "Row 1");
         h1.add("Row 3");

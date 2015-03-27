@@ -33,7 +33,6 @@ package nom.tam.fits;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Iterator;
 
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.util.ArrayDataInput;

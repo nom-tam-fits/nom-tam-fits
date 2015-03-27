@@ -31,21 +31,22 @@ package nom.tam.util;
  * #L%
  */
 
-/** This class implements a structure which can
- *  be accessed either through a hash or
- *  as linear list.  Only some elements may have
- *  a hash key.
+/**
+ * This class implements a structure which can
+ * be accessed either through a hash or
+ * as linear list. Only some elements may have
+ * a hash key.
  *
- *  This class is motivated by the FITS header
- *  structure where a user may wish to go through
- *  the header element by element, or jump directly
- *  to a given keyword.  It assumes that all
- *  keys are unique.  However, all elements in the
- *  structure need not have a key.
+ * This class is motivated by the FITS header
+ * structure where a user may wish to go through
+ * the header element by element, or jump directly
+ * to a given keyword. It assumes that all
+ * keys are unique. However, all elements in the
+ * structure need not have a key.
  *
- *  This class does only the search structure
- *  and knows nothing of the semantics of the
- *  referenced objects.
+ * This class does only the search structure
+ * and knows nothing of the semantics of the
+ * referenced objects.
  *
  */
 import java.util.ArrayList;
@@ -55,20 +56,28 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class HashedList implements Collection {
+/**
+ * a ordered hash map implementation.
+ * 
+ * @param <KEY>
+ *            key of the map
+ * @param <VALUE>
+ *            value of the map
+ */
+public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
 
     /** An ordered list of the keys */
-    private ArrayList ordered = new ArrayList();
+    private ArrayList<KEY> ordered = new ArrayList<>();
 
     /** The key value pairs */
-    private HashMap keyed = new HashMap();
+    private HashMap<KEY, VALUE> keyed = new HashMap<>();
 
     /**
      * This is used to generate unique keys for elements entered without an key.
      */
     private int unkeyedIndex = 0;
 
-    private class HashedListIterator implements Cursor {
+    private class HashedListIterator implements Cursor<KEY, VALUE> {
 
         /**
          * This index points to the value that would be returned in the next
@@ -94,7 +103,7 @@ public class HashedList implements Collection {
 
         /** Get the next entry. */
         @Override
-        public Object next() throws NoSuchElementException {
+        public VALUE next() throws NoSuchElementException {
 
             if (current < 0 || current >= ordered.size()) {
                 throw new NoSuchElementException("Outside list");
@@ -108,7 +117,7 @@ public class HashedList implements Collection {
 
         /** Get the previous entry. */
         @Override
-        public Object prev() throws NoSuchElementException {
+        public VALUE prev() throws NoSuchElementException {
             if (current <= 0) {
                 throw new NoSuchElementException("Before beginning of list");
             }
@@ -142,11 +151,8 @@ public class HashedList implements Collection {
          * the Iterator interface.
          */
         @Override
-        public void add(Object ref) {
-            Integer nKey = new Integer(unkeyedIndex);
-            unkeyedIndex += 1;
-            HashedList.this.add(current, nKey, ref);
-            current += 1;
+        public void add(VALUE ref) {
+            HashedList.this.add(current++, createUnindexedKey(), ref);
         }
 
         /**
@@ -156,9 +162,8 @@ public class HashedList implements Collection {
          * method is not in the Iterator interface.
          */
         @Override
-        public void add(Object key, Object ref) {
-            HashedList.this.add(current, key, ref);
-            current += 1;
+        public void add(KEY key, VALUE ref) {
+            HashedList.this.add(current++, key, ref);
         }
 
         /**
@@ -168,7 +173,7 @@ public class HashedList implements Collection {
          * @param key
          */
         @Override
-        public void setKey(Object key) {
+        public void setKey(KEY key) {
             if (keyed.containsKey(key)) {
                 current = ordered.indexOf(key);
             } else {
@@ -180,16 +185,14 @@ public class HashedList implements Collection {
 
     /** Add an element to the end of the list. */
     @Override
-    public boolean add(Object reference) {
-        Integer nKey = new Integer(unkeyedIndex);
-        unkeyedIndex += 1;
-        HashedList.this.add(ordered.size(), nKey, reference);
+    public boolean add(VALUE reference) {
+        HashedList.this.add(ordered.size(), createUnindexedKey(), reference);
         return true;
 
     }
 
     /** Add a keyed element to the end of the list. */
-    public boolean add(Object key, Object reference) {
+    public boolean add(KEY key, VALUE reference) {
         add(ordered.size(), key, reference);
         return true;
     }
@@ -206,7 +209,7 @@ public class HashedList implements Collection {
      * @param reference
      *            The actual object being stored.
      */
-    public boolean add(int pos, Object key, Object reference) {
+    public boolean add(int pos, KEY key, VALUE reference) {
 
         if (keyed.containsKey(key)) {
             int oldPos = ordered.indexOf(key);
@@ -273,7 +276,7 @@ public class HashedList implements Collection {
      * delete entries.
      */
     @Override
-    public Iterator iterator() {
+    public Iterator<VALUE> iterator() {
         return new HashedListIterator(0);
     }
 
@@ -281,7 +284,7 @@ public class HashedList implements Collection {
      * Return an iterator over the list starting with the entry with a given
      * key.
      */
-    public HashedListIterator iterator(Object key) throws NoSuchElementException {
+    public HashedListIterator iterator(KEY key) throws NoSuchElementException {
         if (keyed.containsKey(key)) {
             return new HashedListIterator(ordered.indexOf(key));
         } else {
@@ -292,7 +295,7 @@ public class HashedList implements Collection {
     /**
      * Return an iterator starting with the n'th entry.
      */
-    public HashedListIterator iterator(int n) throws NoSuchElementException {
+    public Cursor<KEY, VALUE> iterator(int n) throws NoSuchElementException {
         if (n >= 0 && n <= ordered.size()) {
             return new HashedListIterator(n);
         } else {
@@ -322,13 +325,13 @@ public class HashedList implements Collection {
      *            The new key. This key must not be present in the hash.
      * @return if the replacement was successful.
      */
-    public boolean replaceKey(Object oldKey, Object newKey) {
+    public boolean replaceKey(KEY oldKey, KEY newKey) {
 
         if (!keyed.containsKey(oldKey) || keyed.containsKey(newKey)) {
             return false;
         }
 
-        Object oldVal = keyed.get(oldKey);
+        VALUE oldVal = keyed.get(oldKey);
         int index = ordered.indexOf(oldKey);
         remove(index);
         return add(index, newKey, oldVal);
@@ -351,9 +354,8 @@ public class HashedList implements Collection {
      * entries to the end of the list.
      */
     @Override
-    public boolean addAll(Collection c) {
-        Object[] array = c.toArray();
-        for (Object element : array) {
+    public boolean addAll(Collection<? extends VALUE> c) {
+        for (VALUE element : c) {
             add(element);
         }
         return true;
@@ -376,7 +378,7 @@ public class HashedList implements Collection {
      * Does the HashedList contain all the elements of this other collection.
      */
     @Override
-    public boolean containsAll(Collection c) {
+    public boolean containsAll(Collection<?> c) {
         return keyed.values().containsAll(c);
     }
 
@@ -388,7 +390,7 @@ public class HashedList implements Collection {
 
     /** Remove all the elements that are found in another collection. */
     @Override
-    public boolean removeAll(Collection c) {
+    public boolean removeAll(Collection<?> c) {
         Object[] o = c.toArray();
         boolean result = false;
         for (Object element : o) {
@@ -399,9 +401,9 @@ public class HashedList implements Collection {
 
     /** Retain only elements contained in another collection */
     @Override
-    public boolean retainAll(Collection c) {
+    public boolean retainAll(Collection<?> c) {
 
-        Iterator iter = iterator();
+        Iterator<VALUE> iter = iterator();
         boolean result = false;
         while (iter.hasNext()) {
             Object o = iter.next();
@@ -424,14 +426,24 @@ public class HashedList implements Collection {
      * Convert to an array of objects of a specified type.
      */
     @Override
-    public Object[] toArray(Object[] o) {
+    public <T> T[] toArray(T[] o) {
         return keyed.values().toArray(o);
     }
 
     /**
      * Sort the keys into some desired order.
      */
-    public void sort(Comparator comp) {
+    public void sort(Comparator<KEY> comp) {
         java.util.Collections.sort(ordered, comp);
     }
+
+    /**
+     * @return create the next unindexed key.
+     */
+    @SuppressWarnings("unchecked")
+    private KEY createUnindexedKey() {
+        return intToKey(unkeyedIndex++);
+    }
+
+    protected abstract KEY intToKey(int i);
 }

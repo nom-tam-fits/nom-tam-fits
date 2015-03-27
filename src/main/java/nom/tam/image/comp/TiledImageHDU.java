@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.Set;
 
 import nom.tam.fits.BasicHDU;
-import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Data;
 import nom.tam.fits.Fits;

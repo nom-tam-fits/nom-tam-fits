@@ -35,10 +35,10 @@ package nom.tam.fits;
  * This class implements a comparator which ensures that FITS keywords are
  * written out in a proper order.
  */
-public class HeaderOrder implements java.util.Comparator {
+public class HeaderOrder implements java.util.Comparator<String> {
 
     /** Can two cards be exchanged when being written out? */
-    public boolean equals(Object a, Object b) {
+    public boolean equals(String a, String b) {
         return compare(a, b) == 0;
     }
 
@@ -52,25 +52,11 @@ public class HeaderOrder implements java.util.Comparator {
      *         0 if either is legal.
      */
     @Override
-    public int compare(Object a, Object b) {
+    public int compare(String c1, String c2) {
 
         // Note that we look at each of the ordered FITS keywords in the
         // required
         // order.
-
-        String c1, c2;
-
-        if (a != null && a instanceof String) {
-            c1 = (String) a;
-        } else {
-            c1 = " ";
-        }
-
-        if (b != null && b instanceof String) {
-            c2 = (String) b;
-        } else {
-            c2 = " ";
-        }
 
         // Equals are equal
         if (c1.equals(c2)) {

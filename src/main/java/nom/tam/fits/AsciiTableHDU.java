@@ -31,8 +31,6 @@ package nom.tam.fits;
  * #L%
  */
 
-import java.util.Iterator;
-
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.Cursor;

@@ -74,12 +74,19 @@ public class Header implements FitsElement {
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
      */
-    private HashedList cards = new HashedList();
+    private HashedList<String, HeaderCard> cards = new HashedList<String, HeaderCard>() {
+
+        @Override
+        protected String intToKey(int i) {
+            return Integer.toString(i);
+        }
+
+    };
 
     /**
      * This iterator allows one to run through the list.
      */
-    private Cursor iter = cards.iterator(0);
+    private Cursor<String, HeaderCard> iter = cards.iterator(0);
 
     /** Offset of this Header in the FITS file */
     private long fileOffset = -1;
@@ -199,7 +206,7 @@ public class Header implements FitsElement {
      * @since 2005-10-24
      */
     public void updateLines(final Header newHdr) throws nom.tam.fits.HeaderCardException {
-        Cursor j = newHdr.iterator();
+        Cursor<String, HeaderCard> j = newHdr.iterator();
 
         while (j.hasNext()) {
             HeaderCard nextHCard = (HeaderCard) j.next();
@@ -219,7 +226,7 @@ public class Header implements FitsElement {
     }
 
     /** Get an iterator over the header cards */
-    public Cursor iterator() {
+    public Cursor<String, HeaderCard> iterator() {
         return cards.iterator(0);
     }
 
@@ -935,7 +942,7 @@ public class Header implements FitsElement {
             return;
         }
 
-        Cursor iter = cards.iterator(0);
+        Cursor<String, HeaderCard> iter = cards.iterator(0);
 
         try {
             while (iter.hasNext()) {
@@ -1652,7 +1659,7 @@ public class Header implements FitsElement {
      * specified. The user should specify a prefix to a keyword that is
      * guaranteed to be present.
      */
-    Cursor positionAfterIndex(String prefix, int col) {
+    Cursor<String, HeaderCard> positionAfterIndex(String prefix, int col) {
         String colnum = "" + col;
 
         iter.setKey(prefix + colnum);
