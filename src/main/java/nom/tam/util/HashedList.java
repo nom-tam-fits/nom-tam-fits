@@ -181,6 +181,14 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
             }
 
         }
+
+        @Override
+        public VALUE next(int count) {
+            for (int index = 1; index < count; index++) {
+                next();
+            }
+            return next();
+        }
     }
 
     /** Add an element to the end of the list. */

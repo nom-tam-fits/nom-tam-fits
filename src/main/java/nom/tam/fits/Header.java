@@ -229,7 +229,12 @@ public class Header implements FitsElement {
     public Cursor<String, HeaderCard> iterator() {
         return cards.iterator(0);
     }
-
+    
+    /** Get an iterator over the header cards starting at an index*/
+    public Cursor<String, HeaderCard> iterator(int index) {
+        return cards.iterator(index);
+    }
+    
     /** Get the offset of this header */
     @Override
     public long getFileOffset() {
