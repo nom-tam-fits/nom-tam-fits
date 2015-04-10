@@ -55,8 +55,15 @@ public class HeaderCard {
     /** Maximum length of a FITS keyword field */
     public static final int MAX_KEYWORD_LENGTH = 8;
 
-    /** Maximum length of a FITS value field */
+    /**
+     * Maximum length of a FITS value field
+     * */
     public static final int MAX_VALUE_LENGTH = 70;
+
+    /**
+     * Maximum length of a FITS string value field
+     * */
+    public static final int MAX_STRING_VALUE_LENGTH = MAX_VALUE_LENGTH - 2;
 
     /** padding for building card images */
     private static String space80 = "                                                                                ";
@@ -74,8 +81,7 @@ public class HeaderCard {
      *                for any invalid keyword
      */
     public HeaderCard(String key, double value, String comment) throws HeaderCardException {
-        this(key, dblString(value), comment);
-        isString = false;
+        this(key, dblString(value), comment, false, false);
     }
 
     /**
@@ -91,8 +97,7 @@ public class HeaderCard {
      *                for any invalid keyword
      */
     public HeaderCard(String key, boolean value, String comment) throws HeaderCardException {
-        this(key, value ? "T" : "F", comment);
-        isString = false;
+        this(key, value ? "T" : "F", comment, false, false);
     }
 
     /**
@@ -108,8 +113,7 @@ public class HeaderCard {
      *                for any invalid keyword
      */
     public HeaderCard(String key, int value, String comment) throws HeaderCardException {
-        this(key, String.valueOf(value), comment);
-        isString = false;
+        this(key, String.valueOf(value), comment, false, false);
     }
 
     /**
@@ -125,8 +129,7 @@ public class HeaderCard {
      *                for any invalid keyword
      */
     public HeaderCard(String key, long value, String comment) throws HeaderCardException {
-        this(key, String.valueOf(value), comment);
-        isString = false;
+        this(key, String.valueOf(value), comment, false, false);
     }
 
     /**
@@ -142,7 +145,7 @@ public class HeaderCard {
      *                for any invalid keyword or value
      */
     public HeaderCard(String key, String value, String comment) throws HeaderCardException {
-        this(key, value, comment, false);
+        this(key, value, comment, false, true);
     }
 
     /**
@@ -159,7 +162,7 @@ public class HeaderCard {
      *            Is this a nullable field or a comment-style card?
      */
     public HeaderCard(String key, String comment, boolean nullable) throws HeaderCardException {
-        this(key, null, comment, nullable);
+        this(key, null, comment, nullable, true);
     }
 
     /**
@@ -190,6 +193,25 @@ public class HeaderCard {
      *                for any invalid keyword or value
      */
     public HeaderCard(String key, String value, String comment, boolean nullable) throws HeaderCardException {
+        this(key, value, comment, nullable, true);
+    }
+
+    /**
+     * Create a HeaderCard from its component parts
+     * 
+     * @param key
+     *            Keyword (null for a COMMENT)
+     * @param value
+     *            Value
+     * @param comment
+     *            Comment
+     * @param nullable
+     *            Is this a nullable value card?
+     * @exception HeaderCardException
+     *                for any invalid keyword or value
+     */
+    private HeaderCard(String key, String value, String comment, boolean nullable, boolean isString) throws HeaderCardException {
+        this.isString = isString;
         if (comment != null && comment.startsWith("ntf::")) {
             String ckey = comment.substring(5); // Get rid of ntf:: prefix
             comment = HeaderCommentsMap.getComment(ckey);
@@ -207,7 +229,7 @@ public class HeaderCard {
         if (value != null) {
             value = value.replaceAll(" *$", "");
 
-            if (value.length() > MAX_VALUE_LENGTH) {
+            if (value.length() > (this.isString ? MAX_STRING_VALUE_LENGTH : MAX_VALUE_LENGTH)) {
                 throw new HeaderCardException("Value too long");
             }
 
@@ -225,7 +247,6 @@ public class HeaderCard {
         this.value = value;
         this.comment = comment;
         this.nullable = nullable;
-        isString = true;
     }
 
     /**

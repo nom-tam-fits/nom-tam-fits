@@ -32,16 +32,20 @@ package nom.tam.fits.test;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.ImageHDU;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 
 import org.junit.Test;
+
+import static org.junit.Test.*;
 import static nom.tam.fits.header.Standard.*;
 import static nom.tam.fits.header.extra.NOAOExt.*;
 
@@ -228,6 +232,7 @@ public class HeaderTest {
         f.write(bf);
         bf.close();
         f = new Fits("target/hx1.fits");
+        f.read();
         HeaderCard c1 = f.getHDU(0).getHeader().findCard(SIMPLE.key());
         assertEquals("tuhc1", c1.getComment(), HeaderCommentsMap.getComment("header:simple:1"));
         c1 = f.getHDU(0).getHeader().findCard(BITPIX.key());
@@ -331,4 +336,17 @@ public class HeaderTest {
 
     }
 
+    @Test
+    public void testStringLengthProblems() throws HeaderCardException {
+        HeaderCard card = null;
+        try {
+            new HeaderCard("TESTKEY", "random value just for testing purpose - random value just for testing", "");
+            fail("must trow an value too long exception");
+        } catch (HeaderCardException e) {
+            // ok this is expected
+        }
+        // now one char less.
+        card = new HeaderCard("TESTKEY", "random value just for testing purpose - random value just for testin", "");
+        assertEquals("TESTKEY = 'random value just for testing purpose - random value just for testin'", card.toString());
+    }
 }
