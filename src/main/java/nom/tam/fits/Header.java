@@ -229,12 +229,12 @@ public class Header implements FitsElement {
     public Cursor<String, HeaderCard> iterator() {
         return cards.iterator(0);
     }
-    
-    /** Get an iterator over the header cards starting at an index*/
+
+    /** Get an iterator over the header cards starting at an index */
     public Cursor<String, HeaderCard> iterator(int index) {
         return cards.iterator(index);
     }
-    
+
     /** Get the offset of this header */
     @Override
     public long getFileOffset() {
@@ -1098,7 +1098,7 @@ public class Header implements FitsElement {
     public void addValue(String key, String val, String comment) throws HeaderCardException {
         removeCard(key);
         // Remember that quotes get doubled in the value...
-        if (longStringsEnabled && val.replace("'", "''").length() > 68) {
+        if (longStringsEnabled && val.replace("'", "''").length() > HeaderCard.MAX_STRING_VALUE_LENGTH) {
             addLongString(key, val, comment);
         } else {
             iter.add(key, new HeaderCard(key, val, comment));

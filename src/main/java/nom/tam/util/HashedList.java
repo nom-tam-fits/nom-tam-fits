@@ -189,6 +189,12 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
             }
             return next();
         }
+
+        @Override
+        public VALUE end() {
+            current = Math.max(0, ordered.size() - 1);
+            return next();
+        }
     }
 
     /** Add an element to the end of the list. */

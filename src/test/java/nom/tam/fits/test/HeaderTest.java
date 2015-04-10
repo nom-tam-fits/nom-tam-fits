@@ -33,6 +33,7 @@ package nom.tam.fits.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
@@ -221,6 +222,32 @@ public class HeaderTest {
             thrown = true;
         }
         assertEquals("BITPIX delete", true, thrown);
+    }
+
+    @Test
+    public void testHeaderCommentsDrift() throws Exception {
+        byte[][] z = new byte[4][4];
+        Fits f = new Fits();
+        BasicHDU hdu = FitsFactory.HDUFactory(z);
+        f.addHDU(hdu);
+        Cursor<String, HeaderCard> iter = hdu.getHeader().iterator();
+        iter.end();
+        iter.add("KEY", new HeaderCard("KEY", "VALUE", "COMMENT"));
+        BufferedFile bf = new BufferedFile("target/testHeaderCommentsDrift.fits", "rw");
+        f.write(bf);
+        bf.close();
+        f = new Fits("target/testHeaderCommentsDrift.fits");
+        f.read();
+        bf = new BufferedFile("target/testHeaderCommentsDrift.fits", "rw");
+        f.write(bf);
+        f = new Fits("target/testHeaderCommentsDrift.fits");
+        f.read();
+        // there was a bug that let the comments drift with every write due to
+        // backward compatibility we let one blank happen but not more. (this
+        // test is done after 2 writes.
+        String ONE_BLANK_BACKWARD_COMPATIPLE = " ";
+        assertEquals(ONE_BLANK_BACKWARD_COMPATIPLE + "COMMENT", f.getHDU(0).getHeader().findCard("KEY").getComment());
+
     }
 
     @Test

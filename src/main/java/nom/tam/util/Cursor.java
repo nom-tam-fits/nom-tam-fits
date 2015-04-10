@@ -62,12 +62,18 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
      * that it will be called by a prev() call, but not a next() call.
      */
     public abstract void add(KEY key, VALUE reference);
-    
+
     /**
      * Returns the count next element in the iteration.
-     *
+     * 
      * @return the n'th next element in the iteration
-     * @throws NoSuchElementException if the iteration has no more elements
+     * @throws NoSuchElementException
+     *             if the iteration has no more elements
      */
-    public abstract VALUE next(int count) ;
+    public abstract VALUE next(int count);
+
+    /**
+     * move to the last element and return that.
+     */
+    public abstract VALUE end();
 }

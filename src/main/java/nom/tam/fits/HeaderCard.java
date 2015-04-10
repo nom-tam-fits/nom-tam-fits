@@ -57,12 +57,12 @@ public class HeaderCard {
 
     /**
      * Maximum length of a FITS value field
-     * */
+     */
     public static final int MAX_VALUE_LENGTH = 70;
 
     /**
      * Maximum length of a FITS string value field
-     * */
+     */
     public static final int MAX_STRING_VALUE_LENGTH = MAX_VALUE_LENGTH - 2;
 
     /** padding for building card images */
@@ -639,7 +639,11 @@ public class HeaderCard {
 
         // finally, add any comment
         if (comment != null) {
-            buf.append(comment);
+            if (comment.startsWith(" ")) {
+                buf.append(comment, 1, comment.length());
+            } else {
+                buf.append(comment);
+            }
         }
 
         // make sure the final string is exactly 80 characters long
