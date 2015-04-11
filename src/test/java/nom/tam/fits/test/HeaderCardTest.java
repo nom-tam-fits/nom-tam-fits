@@ -175,5 +175,41 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard("TEST", -1.234567890123456789e-123, "dummy");
         String val = hc.getValue();
         assertEquals("tld1", val.length(), 20);
+        assertEquals(Double.class, hc.valueType());
     }
+
+    @Test
+    public void testLong() throws Exception {
+        // Check to see if we make long double values
+        // fit in the recommended space.
+        HeaderCard hc = new HeaderCard("TEST", 999999999999999999L, "dummy");
+        assertEquals(Long.class, hc.valueType());
+    }
+
+    @Test
+    public void testInt() throws Exception {
+        // Check to see if we make long double values
+        // fit in the recommended space.
+        HeaderCard hc = new HeaderCard("TEST", 9999, "dummy");
+        assertEquals(Integer.class, hc.valueType());
+    }
+
+    @Test
+    public void testBoolean() throws Exception {
+        // Check to see if we make long double values
+        // fit in the recommended space.
+        HeaderCard hc = new HeaderCard("TEST", true, "dummy");
+        assertEquals(Boolean.class, hc.valueType());
+        hc = new HeaderCard("TEST", false, "dummy");
+        assertEquals(Boolean.class, hc.valueType());
+    }
+
+    @Test
+    public void testString() throws Exception {
+        // Check to see if we make long double values
+        // fit in the recommended space.
+        HeaderCard hc = new HeaderCard("TEST", "bla bla", "dummy");
+        assertEquals(String.class, hc.valueType());
+    }
+
 }

@@ -1,5 +1,8 @@
 package nom.tam.fits;
 
+import java.math.BigInteger;
+import java.util.regex.Pattern;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -36,6 +39,26 @@ package nom.tam.fits;
  * for a FITS Header.
  */
 public class HeaderCard {
+
+    /**
+     * regexp for IEEE floats
+     */
+    private static final Pattern IEEE_REGEX = Pattern.compile("[+-]?(?=\\d*[.eE])(?=\\.?\\d)\\d*\\.?\\d*(?:[eE][+-]?\\d+)?");
+
+    /**
+     * regexp for numbers.
+     */
+    private static final Pattern LONG_REGEX = Pattern.compile("[0-9][0-9]*");
+
+    /**
+     * max number of characters an integer can have.
+     */
+    private static final int MAX_INTEGER_STRING_SIZE = Integer.valueOf(Integer.MAX_VALUE).toString().length() - 1;
+
+    /**
+     * max number of characters a long can have.
+     */
+    private static final int MAX_LONG_STRING_SIZE = Long.valueOf(Long.MAX_VALUE).toString().length() - 1;
 
     /** The keyword part of the card (set to null if there's no keyword) */
     private String key;
@@ -723,4 +746,31 @@ public class HeaderCard {
         }
         return card;
     }
+
+    /**
+     * @return the type of the value.
+     */
+    public Class<?> valueType() {
+        if (isString) {
+            return String.class;
+        } else if (value != null) {
+            String trimedValue = value.trim();
+            if (trimedValue.equals("T") || trimedValue.equals("F")) {
+                return Boolean.class;
+            } else if (LONG_REGEX.matcher(trimedValue).matches()) {
+                if (trimedValue.length() <= MAX_INTEGER_STRING_SIZE) {
+                    return Integer.class;
+                } else if (trimedValue.length() <= MAX_LONG_STRING_SIZE) {
+                    return Long.class;
+                } else {
+                    return BigInteger.class;
+                }
+            } else if (IEEE_REGEX.matcher(trimedValue).find()) {
+                // We should detect if we are loosing presicion here
+                return Double.class;
+            }
+        }
+        return null;
+    }
+
 }
