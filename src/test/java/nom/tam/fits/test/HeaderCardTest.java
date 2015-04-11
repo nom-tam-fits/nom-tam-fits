@@ -34,6 +34,10 @@ package nom.tam.fits.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.HeaderCard;
 
@@ -212,4 +216,39 @@ public class HeaderCardTest {
         assertEquals(String.class, hc.valueType());
     }
 
+    @Test
+    public void testBigInteger() throws Exception {
+        // Check to see if we make long double values
+        // fit in the recommended space.
+        HeaderCard hc = new HeaderCard("TEST", new BigInteger("1234567890123456789012345678901234567890123456789012345678901234567890"), "dummy");
+        assertEquals(BigInteger.class, hc.valueType());
+        assertEquals("1.23456789012346E+69", hc.getValue());
+    }
+
+    @Test
+    public void testBigDecimal1() throws Exception {
+        // Check to see if we make long double values
+        // fit in the recommended space.
+        HeaderCard hc = new HeaderCard("TEST", new BigDecimal("1234567890123456789012345678901234567890123456789012345678901234567.890"), "dummy");
+        assertEquals(BigInteger.class, hc.valueType());
+        assertEquals("1.23456789012346E+66", hc.getValue());
+    }
+
+    @Test
+    public void testBigDecimal2() throws Exception {
+        // Check to see if we make long double values
+        // fit in the recommended space.
+        HeaderCard hc = new HeaderCard("TEST", new BigDecimal("123.66666666666666666666666666666666666666666666666666666666666666666"), "dummy");
+        assertEquals(Double.class, hc.valueType());
+        assertEquals("123.6666666666666667", hc.getValue());
+    }
+
+    @Test
+    public void testBigDecimal3() throws Exception {
+        // Check to see if we make long double values
+        // fit in the recommended space.
+        HeaderCard hc = new HeaderCard("TEST", new BigDecimal("1234567890123456789012345678901234567.890123456789012345678901234567890"), "dummy");
+        assertEquals(BigInteger.class, hc.valueType());
+        assertEquals("1.23456789012346E+36", hc.getValue());
+    }
 }

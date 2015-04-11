@@ -1,6 +1,12 @@
 package nom.tam.fits;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /*
@@ -119,6 +125,38 @@ public class HeaderCard {
      * @exception HeaderCardException
      *                for any invalid keyword
      */
+    public HeaderCard(String key, BigDecimal value, String comment) throws HeaderCardException {
+        this(key, dblString(value), comment, false, false);
+    }
+
+    /**
+     * Create a HeaderCard from its component parts
+     * 
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword
+     */
+    public HeaderCard(String key, BigInteger value, String comment) throws HeaderCardException {
+        this(key, dblString(new BigDecimal(value)), comment, false, false);
+    }
+
+    /**
+     * Create a HeaderCard from its component parts
+     * 
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword
+     */
     public HeaderCard(String key, boolean value, String comment) throws HeaderCardException {
         this(key, value ? "T" : "F", comment, false, false);
     }
@@ -194,9 +232,24 @@ public class HeaderCard {
      * this since we can loose precision for some doubles.
      */
     private static String dblString(double input) {
-        String value = String.valueOf(input);
+        String value = Double.toString(input);
         if (value.length() > 20) {
-            value = new java.util.Formatter().format("%20.13G", input).out().toString();
+            return dblString(BigDecimal.valueOf(input));
+        }
+        return value;
+    }
+
+    /**
+     * Create a string from a BigDecimal making sure that it's not more than 20
+     * characters long. Probably would be better if we had a way to override
+     * this since we can loose precision for some doubles.
+     */
+    private static String dblString(BigDecimal input) {
+        String value = input.toString();
+        BigDecimal decimal = input;
+        while (value.length() > 20) {
+            decimal = decimal.setScale(decimal.scale() - 1, BigDecimal.ROUND_HALF_UP);
+            value = decimal.toString();
         }
         return value;
     }
@@ -766,11 +819,30 @@ public class HeaderCard {
                     return BigInteger.class;
                 }
             } else if (IEEE_REGEX.matcher(trimedValue).find()) {
-                // We should detect if we are loosing presicion here
-                return Double.class;
+                // We should detect if we are loosing precision here
+                BigDecimal bigDecimal = null;
+
+                try {
+                    bigDecimal = new BigDecimal(this.value);
+                } catch (Exception e) {
+                    throw new NumberFormatException("could not parse " + this.value);
+                }
+                if (bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
+                    return BigInteger.class;
+                } else if (bigDecimal.doubleValue() == Double.valueOf(trimedValue)) {
+                    return Double.class;
+                } else {
+                    return BigDecimal.class;
+                }
             }
         }
         return null;
     }
 
+    private static DecimalFormat decimalFormat() {
+        DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+        df.setParseBigDecimal(true);
+        df.setGroupingUsed(false);
+        return df;
+    }
 }

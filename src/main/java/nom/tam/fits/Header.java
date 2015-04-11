@@ -34,6 +34,8 @@ package nom.tam.fits;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -462,6 +464,57 @@ public class Header implements FitsElement {
      * 
      * @param key
      *            The header key.
+     * @return The associated value or 0 if not found.
+     */
+    public BigInteger getBigIntegerValue(String key) {
+        return getBigIntegerValue(key, BigInteger.ZERO);
+    }
+
+    /**
+     * Get the <CODE>long</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
+     * @param dft
+     *            The default value to be returned if the key cannot be found.
+     * @return the associated value.
+     */
+    public BigInteger getBigIntegerValue(IFitsHeader key, BigInteger dft) {
+        return getBigIntegerValue(key.key(), dft);
+    }
+
+    /**
+     * Get the <CODE>long</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
+     * @param dft
+     *            The default value to be returned if the key cannot be found.
+     * @return the associated value.
+     */
+    public BigInteger getBigIntegerValue(String key, BigInteger dft) {
+
+        HeaderCard fcard = findCard(key);
+        if (fcard == null) {
+            return dft;
+        }
+
+        try {
+            String v = fcard.getValue();
+            if (v != null) {
+                return new BigInteger(v);
+            }
+        } catch (NumberFormatException e) {
+        }
+
+        return dft;
+    }
+
+    /**
+     * Get the <CODE>long</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
      * @param dft
      *            The default value to be returned if the key cannot be found.
      * @return the associated value.
@@ -538,6 +591,28 @@ public class Header implements FitsElement {
      *            The header key.
      * @return The associated value or 0.0 if not found.
      */
+    public BigDecimal getBigDecimalValue(IFitsHeader key) {
+        return getBigDecimalValue(key.key());
+    }
+
+    /**
+     * Get the <CODE>double</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
+     * @return The associated value or 0.0 if not found.
+     */
+    public BigDecimal getBigDecimalValue(String key) {
+        return getBigDecimalValue(key, BigDecimal.ZERO);
+    }
+
+    /**
+     * Get the <CODE>double</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
+     * @return The associated value or 0.0 if not found.
+     */
     public double getDoubleValue(IFitsHeader key) {
         return getDoubleValue(key.key());
     }
@@ -564,6 +639,33 @@ public class Header implements FitsElement {
      */
     public double getDoubleValue(IFitsHeader key, double dft) {
         return getDoubleValue(key.key(), dft);
+    }
+
+    /**
+     * Get the <CODE>double</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
+     * @param dft
+     *            The default value to return if the key cannot be found.
+     * @return the associated value.
+     */
+    public BigDecimal getBigDecimalValue(String key, BigDecimal dft) {
+
+        HeaderCard fcard = findCard(key);
+        if (fcard == null) {
+            return dft;
+        }
+
+        try {
+            String v = fcard.getValue();
+            if (v != null) {
+                return new BigDecimal(v);
+            }
+        } catch (NumberFormatException e) {
+        }
+
+        return dft;
     }
 
     /**
@@ -1070,6 +1172,42 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Add or replace a key with the given bigdecimal value and comment. Note
+     * that float values will be promoted to doubles.
+     * 
+     * @param key
+     *            The header key.
+     * @param val
+     *            The bigDecimal value.
+     * @param comment
+     *            A comment to append to the card.
+     * @exception HeaderCardException
+     *                If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(String key, BigDecimal val, String comment) throws HeaderCardException {
+        removeCard(key);
+        iter.add(key, new HeaderCard(key, val, comment));
+    }
+
+    /**
+     * Add or replace a key with the given BigInteger value and comment. Note
+     * that float values will be promoted to doubles.
+     * 
+     * @param key
+     *            The header key.
+     * @param val
+     *            The BigInteger value.
+     * @param comment
+     *            A comment to append to the card.
+     * @exception HeaderCardException
+     *                If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(String key, BigInteger val, String comment) throws HeaderCardException {
+        removeCard(key);
+        iter.add(key, new HeaderCard(key, val, comment));
+    }
+
+    /**
      * Add or replace a key with the given string value and comment.
      * 
      * @param key
@@ -1181,7 +1319,7 @@ public class Header implements FitsElement {
                 val = null;
             }
 
-            iter.add(new HeaderCard("CONTINUE", null, curr));
+            iter.add(new HeaderCard("CONTINUE", (String) null, curr));
         }
     }
 
@@ -1278,7 +1416,7 @@ public class Header implements FitsElement {
         // an exception...
 
         try {
-            iter.add(new HeaderCard(header, null, value));
+            iter.add(new HeaderCard(header, (String) null, value));
         } catch (HeaderCardException e) {
             System.err.println("Impossible Exception for comment style:" + header + ":" + value);
         }
@@ -1568,7 +1706,7 @@ public class Header implements FitsElement {
         }
         try {
             // End cannot have a comment
-            iter.add(new HeaderCard("END", null, null));
+            iter.add(new HeaderCard("END", (String) null, null));
         } catch (HeaderCardException e) {
         }
     }

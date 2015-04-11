@@ -295,7 +295,7 @@ public class HeaderTest {
         while (hdr.rewriteable()) {
             int nbx = (hdr.getNumberOfCards() - 1) / 36;
             assertEquals("Rewrite:" + nbx, nb == nbx, hdr.rewriteable());
-            c.add(new HeaderCard("DUMMY" + nbx, null, null));
+            c.add(new HeaderCard("DUMMY" + nbx, (String) null, null));
         }
     }
 
