@@ -180,75 +180,86 @@ public class HeaderCardTest {
         String val = hc.getValue();
         assertEquals("tld1", val.length(), 20);
         assertEquals(Double.class, hc.valueType());
+        assertEquals(Double.valueOf(-1.234567890123e-123), hc.getValue(Double.class, null));
+    }
+
+    @Test
+    public void testFloat() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", -123456789012345678.242342429f, "dummy");
+        String val = hc.getValue();
+        assertEquals(Long.class, hc.valueType());
+        assertEquals(Double.valueOf(-123456789012345678d), hc.getValue(Double.class, null), 100000000000d);
     }
 
     @Test
     public void testLong() throws Exception {
-        // Check to see if we make long double values
-        // fit in the recommended space.
         HeaderCard hc = new HeaderCard("TEST", 999999999999999999L, "dummy");
         assertEquals(Long.class, hc.valueType());
+        assertEquals(Long.valueOf(999999999999999999L), hc.getValue(Long.class, null));
     }
 
     @Test
     public void testInt() throws Exception {
-        // Check to see if we make long double values
-        // fit in the recommended space.
         HeaderCard hc = new HeaderCard("TEST", 9999, "dummy");
         assertEquals(Integer.class, hc.valueType());
+        assertEquals(Integer.valueOf(9999), hc.getValue(Integer.class, null));
     }
 
     @Test
     public void testBoolean() throws Exception {
-        // Check to see if we make long double values
-        // fit in the recommended space.
         HeaderCard hc = new HeaderCard("TEST", true, "dummy");
         assertEquals(Boolean.class, hc.valueType());
+        assertEquals(Boolean.TRUE, hc.getValue(Boolean.class, null));
         hc = new HeaderCard("TEST", false, "dummy");
         assertEquals(Boolean.class, hc.valueType());
+        assertEquals(Boolean.FALSE, hc.getValue(Boolean.class, null));
     }
 
     @Test
     public void testString() throws Exception {
-        // Check to see if we make long double values
-        // fit in the recommended space.
         HeaderCard hc = new HeaderCard("TEST", "bla bla", "dummy");
         assertEquals(String.class, hc.valueType());
+        assertEquals("bla bla", hc.getValue(String.class, null));
     }
 
     @Test
     public void testBigInteger() throws Exception {
-        // Check to see if we make long double values
-        // fit in the recommended space.
         HeaderCard hc = new HeaderCard("TEST", new BigInteger("1234567890123456789012345678901234567890123456789012345678901234567890"), "dummy");
         assertEquals(BigInteger.class, hc.valueType());
         assertEquals("1.23456789012346E+69", hc.getValue());
+        assertEquals(new BigInteger("1234567890123460000000000000000000000000000000000000000000000000000000"), hc.getValue(BigInteger.class, null));
     }
 
     @Test
     public void testBigDecimal1() throws Exception {
-        // Check to see if we make long double values
-        // fit in the recommended space.
         HeaderCard hc = new HeaderCard("TEST", new BigDecimal("1234567890123456789012345678901234567890123456789012345678901234567.890"), "dummy");
         assertEquals(BigInteger.class, hc.valueType());
         assertEquals("1.23456789012346E+66", hc.getValue());
+        assertEquals(new BigInteger("1234567890123460000000000000000000000000000000000000000000000000000"), hc.getValue(BigInteger.class, null));
     }
 
     @Test
     public void testBigDecimal2() throws Exception {
-        // Check to see if we make long double values
-        // fit in the recommended space.
         HeaderCard hc = new HeaderCard("TEST", new BigDecimal("123.66666666666666666666666666666666666666666666666666666666666666666"), "dummy");
         assertEquals(Double.class, hc.valueType());
         assertEquals("123.6666666666666667", hc.getValue());
+        assertEquals(new BigDecimal("123.6666666666666667"), hc.getValue(BigDecimal.class, null));
+        assertEquals(new Double("123.6666666666666667"), hc.getValue(Double.class, null));
     }
 
     @Test
     public void testBigDecimal3() throws Exception {
-        // Check to see if we make long double values
-        // fit in the recommended space.
         HeaderCard hc = new HeaderCard("TEST", new BigDecimal("1234567890123456789012345678901234567.890123456789012345678901234567890"), "dummy");
         assertEquals(BigInteger.class, hc.valueType());
         assertEquals("1.23456789012346E+36", hc.getValue());
+        assertEquals(new BigInteger("1234567890123460000000000000000000000"), hc.getValue(BigInteger.class, null));
+    }
+
+    @Test
+    public void testBigDecimal4() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", new BigDecimal("123.0"), "dummy");
+        assertEquals(Double.class, hc.valueType());
+        assertEquals(new BigDecimal("123.0"), hc.getValue(BigDecimal.class, null));
+        assertEquals(new Double("123.0"), hc.getValue(Double.class, null));
     }
 }

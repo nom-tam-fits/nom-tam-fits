@@ -46,6 +46,8 @@ import java.util.regex.Pattern;
  */
 public class HeaderCard {
 
+    private static final BigDecimal LONG_MAX_VALUE_AS_BIG_DECIMAL = BigDecimal.valueOf(Long.MAX_VALUE);
+
     /**
      * regexp for IEEE floats
      */
@@ -54,7 +56,7 @@ public class HeaderCard {
     /**
      * regexp for numbers.
      */
-    private static final Pattern LONG_REGEX = Pattern.compile("[0-9][0-9]*");
+    private static final Pattern LONG_REGEX = Pattern.compile("[+-]?[0-9][0-9]*");
 
     /**
      * max number of characters an integer can have.
@@ -110,6 +112,22 @@ public class HeaderCard {
      *                for any invalid keyword
      */
     public HeaderCard(String key, double value, String comment) throws HeaderCardException {
+        this(key, dblString(value), comment, false, false);
+    }
+
+    /**
+     * Create a HeaderCard from its component parts
+     * 
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword
+     */
+    public HeaderCard(String key, float value, String comment) throws HeaderCardException {
         this(key, dblString(value), comment, false, false);
     }
 
@@ -248,7 +266,7 @@ public class HeaderCard {
         String value = input.toString();
         BigDecimal decimal = input;
         while (value.length() > 20) {
-            decimal = decimal.setScale(decimal.scale() - 1, BigDecimal.ROUND_HALF_UP);
+            decimal = input.setScale(decimal.scale() - 1, BigDecimal.ROUND_HALF_UP);
             value = decimal.toString();
         }
         return value;
@@ -639,6 +657,43 @@ public class HeaderCard {
     }
 
     /**
+     * Return the value from this card as a specific type
+     */
+    public <T> T getValue(Class<T> clazz, T defaultValue) {
+        if (String.class.isAssignableFrom(clazz)) {
+            return clazz.cast(this.value);
+        } else if (this.value == null || this.value.isEmpty()) {
+            return defaultValue;
+        } else if (Boolean.class.isAssignableFrom(clazz)) {
+            if ("T".equals(this.value)) {
+                return clazz.cast(Boolean.TRUE);
+            } else if ("F".equals(this.value)) {
+                return clazz.cast(Boolean.FALSE);
+            }
+            return clazz.cast(defaultValue);
+        }
+        BigDecimal parsedValue;
+        try {
+            parsedValue = new BigDecimal(this.value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+        if (Integer.class.isAssignableFrom(clazz)) {
+            return clazz.cast(parsedValue.intValueExact());
+        } else if (Long.class.isAssignableFrom(clazz)) {
+            return clazz.cast(parsedValue.longValueExact());
+        } else if (Double.class.isAssignableFrom(clazz)) {
+            return clazz.cast(parsedValue.doubleValue());
+        } else if (BigDecimal.class.isAssignableFrom(clazz)) {
+            return clazz.cast(parsedValue);
+        } else if (BigInteger.class.isAssignableFrom(clazz)) {
+            return clazz.cast(parsedValue.toBigIntegerExact());
+        } else {
+            throw new IllegalArgumentException("unsupported class " + clazz);
+        }
+    }
+
+    /**
      * Set the value for this card.
      */
     public void setValue(String update) {
@@ -811,9 +866,13 @@ public class HeaderCard {
             if (trimedValue.equals("T") || trimedValue.equals("F")) {
                 return Boolean.class;
             } else if (LONG_REGEX.matcher(trimedValue).matches()) {
-                if (trimedValue.length() <= MAX_INTEGER_STRING_SIZE) {
+                int length = trimedValue.length();
+                if (trimedValue.charAt(0) == '-' || trimedValue.charAt(0) == '+') {
+                    length--;
+                }
+                if (length <= MAX_INTEGER_STRING_SIZE) {
                     return Integer.class;
-                } else if (trimedValue.length() <= MAX_LONG_STRING_SIZE) {
+                } else if (length <= MAX_LONG_STRING_SIZE) {
                     return Long.class;
                 } else {
                     return BigInteger.class;
@@ -827,7 +886,7 @@ public class HeaderCard {
                 } catch (Exception e) {
                     throw new NumberFormatException("could not parse " + this.value);
                 }
-                if (bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
+                if (bigDecimal.abs().compareTo(LONG_MAX_VALUE_AS_BIG_DECIMAL) > 0 && bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
                     return BigInteger.class;
                 } else if (bigDecimal.doubleValue() == Double.valueOf(trimedValue)) {
                     return Double.class;
@@ -837,12 +896,5 @@ public class HeaderCard {
             }
         }
         return null;
-    }
-
-    private static DecimalFormat decimalFormat() {
-        DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-        df.setParseBigDecimal(true);
-        df.setGroupingUsed(false);
-        return df;
     }
 }
