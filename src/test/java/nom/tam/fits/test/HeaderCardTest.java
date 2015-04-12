@@ -262,4 +262,15 @@ public class HeaderCardTest {
         assertEquals(new BigDecimal("123.0"), hc.getValue(BigDecimal.class, null));
         assertEquals(new Double("123.0"), hc.getValue(Double.class, null));
     }
+
+    @Test
+    public void testCardCopy() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", new BigDecimal("123.0"), "dummy");
+        hc = new HeaderCard(hc.toString());
+
+        assertEquals(Double.class, hc.valueType());
+        assertEquals(new BigDecimal("123.0"), hc.getValue(BigDecimal.class, null));
+        assertEquals(new Double("123.0"), hc.getValue(Double.class, null));
+    }
+
 }
