@@ -106,9 +106,6 @@ public class Header implements FitsElement {
      */
     private int originalCardCount = 0; // RBH ADDED
 
-    /** Do we support long strings when reading/writing keywords */
-    private static boolean longStringsEnabled = false;
-
     /** Create an empty header */
     public Header() {
     }
@@ -154,10 +151,6 @@ public class Header implements FitsElement {
         }
     }
 
-    public static boolean getLongStringsEnabled() {
-        return longStringsEnabled;
-    }
-
     /**
      * Create a header by reading the information from the input stream.
      * 
@@ -180,7 +173,7 @@ public class Header implements FitsElement {
     }
 
     public static void setLongStringsEnabled(boolean flag) {
-        longStringsEnabled = flag;
+        FitsFactory.setLongStringsEnabled(flag);
     }
 
     /**
@@ -374,7 +367,7 @@ public class Header implements FitsElement {
     public void addValue(String key, String val, String comment) throws HeaderCardException {
         removeCard(key);
         // Remember that quotes get doubled in the value...
-        if (longStringsEnabled && val.replace("'", "''").length() > HeaderCard.MAX_STRING_VALUE_LENGTH) {
+        if (FitsFactory.isLongStringsEnabled() && val.replace("'", "''").length() > HeaderCard.MAX_STRING_VALUE_LENGTH) {
             addLongString(key, val, comment);
         } else {
             iter.add(key, new HeaderCard(key, val, comment));
@@ -893,7 +886,7 @@ public class Header implements FitsElement {
         }
 
         String val = fcard.getValue();
-        boolean append = longStringsEnabled && val != null && val.endsWith("&");
+        boolean append = FitsFactory.isLongStringsEnabled() && val != null && val.endsWith("&");
         iter.next(); // skip the primary card.
         while (append) {
             HeaderCard nxt = (HeaderCard) iter.next();
@@ -1089,7 +1082,7 @@ public class Header implements FitsElement {
                 // reading the header.
                 // (Missing null check here fixed thanks to Kevin McAbee).
                 if (key != null && key.equals("LONGSTRN")) {
-                    longStringsEnabled = true;
+                    FitsFactory.setLongStringsEnabled(true);
                 }
                 // save card
 
@@ -1138,7 +1131,7 @@ public class Header implements FitsElement {
             if (iter.hasNext()) {
                 HeaderCard hc = (HeaderCard) iter.next();
                 String val = hc.getValue();
-                boolean delExtensions = longStringsEnabled && val != null && val.endsWith("&");
+                boolean delExtensions = FitsFactory.isLongStringsEnabled() && val != null && val.endsWith("&");
                 iter.remove();
                 while (delExtensions) {
                     hc = (HeaderCard) iter.next();

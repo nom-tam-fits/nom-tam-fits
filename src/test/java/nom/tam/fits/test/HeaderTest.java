@@ -309,9 +309,9 @@ public class HeaderTest {
         for (int i = 0; i < 20; i += 1) {
             lng += seq;
         }
-        assertEquals("Initial state:", false, Header.getLongStringsEnabled());
+        assertEquals("Initial state:", false, FitsFactory.isLongStringsEnabled());
         Header.setLongStringsEnabled(true);
-        assertEquals("Set state:", true, Header.getLongStringsEnabled());
+        assertEquals("Set state:", true, FitsFactory.isLongStringsEnabled());
         hdr.addValue("LONG1", lng, "Here is a comment");
         hdr.addValue("LONG2", "xx'yy'zz" + lng, "Another comment");
         hdr.addValue("SHORT", "A STRING ENDING IN A &", null);
@@ -339,7 +339,7 @@ public class HeaderTest {
         assertEquals("longamp1", hdr.getStringValue("SHORT"), "A STRING ENDING IN A &");
         bf = new BufferedFile("target/ht4.hdr", "r");
         hdr = new Header(bf);
-        assertEquals("Set state2:", true, Header.getLongStringsEnabled());
+        assertEquals("Set state2:", true, FitsFactory.isLongStringsEnabled());
         val = hdr.getStringValue("LONG1");
         assertEquals("LongT5", val, lng);
         val = hdr.getStringValue("LONG2");

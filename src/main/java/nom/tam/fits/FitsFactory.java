@@ -49,6 +49,8 @@ public class FitsFactory {
 
     private static boolean allowTerminalJunk = false;
 
+    private static boolean longStringsEnabled = false;
+
     /**
      * Indicate whether ASCII tables should be used where feasible.
      */
@@ -64,6 +66,11 @@ public class FitsFactory {
     /** Enable/Disable hierarchical keyword processing. */
     public static void setUseHierarch(boolean flag) {
         useHierarch = flag;
+    }
+
+    /** Enable/Disable longstring support. */
+    public static void setLongStringsEnabled(boolean flag) {
+        longStringsEnabled = flag;
     }
 
     /**
@@ -96,6 +103,13 @@ public class FitsFactory {
      */
     public static boolean getAllowTerminalJunk() {
         return allowTerminalJunk;
+    }
+
+    /**
+     * Is long string support enabled.
+     */
+    public static boolean isLongStringsEnabled() {
+        return longStringsEnabled;
     }
 
     /**
