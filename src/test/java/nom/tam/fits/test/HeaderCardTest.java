@@ -49,24 +49,24 @@ public class HeaderCardTest {
     public void test1() throws Exception {
 
         HeaderCard p;
-        p = new HeaderCard("SIMPLE  =                     T");
+        p = HeaderCard.create("SIMPLE  =                     T");
 
         assertEquals("t1", "SIMPLE", p.getKey());
         assertEquals("t2", "T", p.getValue());
         assertNull("t3", p.getComment());
 
-        p = new HeaderCard("VALUE   =                   123");
+        p = HeaderCard.create("VALUE   =                   123");
         assertEquals("t4", "VALUE", p.getKey());
         assertEquals("t5", "123", p.getValue());
         assertNull("t3", p.getComment());
 
-        p = new HeaderCard("VALUE   =    1.23698789798798E23 / Comment ");
+        p = HeaderCard.create("VALUE   =    1.23698789798798E23 / Comment ");
         assertEquals("t6", "VALUE", p.getKey());
         assertEquals("t7", "1.23698789798798E23", p.getValue());
         assertEquals("t8", "Comment", p.getComment());
 
         String lng = "111111111111111111111111111111111111111111111111111111111111111111111111";
-        p = new HeaderCard("COMMENT " + lng);
+        p = HeaderCard.create("COMMENT " + lng);
         assertEquals("t9", "COMMENT", p.getKey());
         assertNull("t10", p.getValue());
         assertEquals("t11", lng, p.getComment());
@@ -74,13 +74,13 @@ public class HeaderCardTest {
         boolean thrown = false;
         try {
             //
-            p = new HeaderCard("VALUE   = '   ");
+            p = HeaderCard.create("VALUE   = '   ");
         } catch (Exception e) {
             thrown = true;
         }
         assertEquals("t12", true, thrown);
 
-        p = new HeaderCard("COMMENT " + lng + lng);
+        p = HeaderCard.create("COMMENT " + lng + lng);
         assertEquals("t13", lng, p.getComment());
 
         HeaderCard z = new HeaderCard("TTTT", 1.234567891234567891234567e101, "a comment");
@@ -153,7 +153,7 @@ public class HeaderCardTest {
         assertEquals("h1", true, thrown);
 
         String card = "HIERARCH TEST1 TEST2 INT=           123 / Comment                               ";
-        hc = new HeaderCard(card);
+        hc = HeaderCard.create(card);
         assertEquals("h2", "HIERARCH", hc.getKey());
         assertNull("h3", hc.getValue());
         assertEquals("h4", "TEST1 TEST2 INT=           123 / Comment", hc.getComment());
@@ -166,7 +166,7 @@ public class HeaderCardTest {
         assertEquals("h6", "123", hc.getValue());
         assertEquals("h7", "Comment", hc.getComment());
 
-        hc = new HeaderCard(card);
+        hc = HeaderCard.create(card);
         assertEquals("h8", key, hc.getKey());
         assertEquals("h9", "123", hc.getValue());
         assertEquals("h10", "Comment", hc.getComment());
@@ -266,7 +266,7 @@ public class HeaderCardTest {
     @Test
     public void testCardCopy() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", new BigDecimal("123.0"), "dummy");
-        hc = new HeaderCard(hc.toString());
+        hc = HeaderCard.create(hc.toString());
 
         assertEquals(Double.class, hc.valueType());
         assertEquals(new BigDecimal("123.0"), hc.getValue(BigDecimal.class, null));

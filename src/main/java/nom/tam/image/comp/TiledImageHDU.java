@@ -35,6 +35,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -50,10 +51,12 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.TruncatedFileException;
 import nom.tam.image.ImageTiler;
 import nom.tam.image.TileDescriptor;
 import nom.tam.image.TileLooper;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
@@ -369,9 +372,9 @@ public class TiledImageHDU extends BinaryTableHDU {
 
     private void copyOldKeywords(Cursor oldPointer, Cursor newPointer) {
 
-        newPointer.add(new HeaderCard("COMMENT"));
-        newPointer.add(new HeaderCard("COMMENT   Header info copied from original image"));
-        newPointer.add(new HeaderCard("COMMENT"));
+        newPointer.add(HeaderCard.create("COMMENT"));
+        newPointer.add(HeaderCard.create("COMMENT   Header info copied from original image"));
+        newPointer.add(HeaderCard.create("COMMENT"));
 
         while (oldPointer.hasNext()) {
             HeaderCard card = (HeaderCard) oldPointer.next();

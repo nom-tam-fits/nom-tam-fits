@@ -31,35 +31,32 @@ package nom.tam.util;
  * #L%
  */
 
-/** This class is intended for high performance I/O in scientific applications.
+/**
+ * This class is intended for high performance I/O in scientific applications.
  * It adds buffering to the RandomAccessFile and also
- * provides efficient handling of arrays.  Primitive arrays
- * may be written using a single method call.  Large buffers
+ * provides efficient handling of arrays. Primitive arrays
+ * may be written using a single method call. Large buffers
  * are used to minimize synchronization overheads since methods
  * of this class are not synchronized.
  * <p>
- * Note that although this class supports most of the
- * contract of RandomAccessFile it does not (and can not)
- * extend that class since many of the methods of
- * RandomAccessFile are final.  In practice this
- * method works much like the StreamFilter classes.
- * All methods are implemented in this class but
+ * Note that although this class supports most of the contract of
+ * RandomAccessFile it does not (and can not) extend that class since many of
+ * the methods of RandomAccessFile are final. In practice this method works much
+ * like the StreamFilter classes. All methods are implemented in this class but
  * some are simply delegated to an underlying RandomAccessFile member.
  * <p>
- * Testing and timing routines are available in
- * the nom.tam.util.test.BufferedFileTester class.
+ * Testing and timing routines are available in the
+ * nom.tam.util.test.BufferedFileTester class.
  *
- *  Version 1.1 October 12, 2000: Fixed handling of EOF in array reads
- *  so that a partial array will be returned when an EOF is detected.
- *  Excess bytes that cannot be used to construct array elements will
- *  be discarded (e.g., if there are 2 bytes left and the user is
- *  reading an int array).
- *  Version 1.2 December 8, 2002: Added getChannel method.
- *  Version 1.3 March 2, 2007:  Added File based constructors.
- *  Version 1.4 July 20, 2009: Added support for >2G Object reads.
- *     This is still a bit problematic in that we do not support
- *     primitive arrays larger than 2 GB/atomsize.  However except
- *     in the case of bytes this is not currently a major issue.
+ * Version 1.1 October 12, 2000: Fixed handling of EOF in array reads so that a
+ * partial array will be returned when an EOF is detected. Excess bytes that
+ * cannot be used to construct array elements will be discarded (e.g., if there
+ * are 2 bytes left and the user is reading an int array). Version 1.2 December
+ * 8, 2002: Added getChannel method. Version 1.3 March 2, 2007: Added File based
+ * constructors. Version 1.4 July 20, 2009: Added support for >2G Object reads.
+ * This is still a bit problematic in that we do not support primitive arrays
+ * larger than 2 GB/atomsize. However except in the case of bytes this is not
+ * currently a major issue.
  *
  */
 import java.io.EOFException;
@@ -93,6 +90,11 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
 
     /** Is the buffer being used for input or output */
     private boolean doingInput;
+
+    /**
+     * marker position in the buffer.
+     */
+    private int bufferMarker;
 
     /** Create a read-only buffered file */
     public BufferedFile(String filename) throws IOException {
@@ -1309,6 +1311,23 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
         if (newLength < fileOffset) {
             fileOffset = newLength;
         }
+    }
 
+    @Override
+    public void mark(int readlimit) throws IOException {
+        this.bufferMarker = bufferOffset;
+        if (this.bufferMarker + readlimit > bufferLength) {
+            try {
+                checkBuffer(readlimit);
+            } catch (EOFException e) {
+                // ok read as far as possible.
+            }
+            this.bufferMarker = bufferOffset;
+        }
+    }
+
+    @Override
+    public void reset() throws IOException {
+        this.bufferOffset = this.bufferMarker;
     }
 }

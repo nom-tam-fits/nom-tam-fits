@@ -97,4 +97,32 @@ public interface ArrayDataInput extends java.io.DataInput {
 
     /* Close the file. */
     public void close() throws IOException;
+
+    /**
+     * See the general contract of the <code>mark</code> method of
+     * <code>InputStream</code>.
+     * 
+     * @param readlimit
+     *            the maximum limit of bytes that can be read before the mark
+     *            position becomes invalid.
+     * @see java.io.BufferedInputStream#reset()
+     */
+    public void mark(int readlimit) throws IOException;
+
+    /**
+     * See the general contract of the <code>reset</code> method of
+     * <code>InputStream</code>.
+     * <p>
+     * If <code>markpos</code> is <code>-1</code> (no mark has been set or the
+     * mark has been invalidated), an <code>IOException</code> is thrown.
+     * Otherwise, <code>pos</code> is set equal to <code>markpos</code>.
+     * 
+     * @exception IOException
+     *                if this stream has not been marked or, if the mark has
+     *                been invalidated, or the stream has been closed by
+     *                invoking its {@link #close()} method, or an I/O error
+     *                occurs.
+     * @see java.io.BufferedInputStream#mark(int)
+     */
+    public void reset() throws IOException;
 }

@@ -1,13 +1,18 @@
 package nom.tam.fits;
 
+import java.io.ByteArrayInputStream;
+import java.io.EOFException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.Locale;
+import java.util.Arrays;
 import java.util.regex.Pattern;
+
+import javax.management.RuntimeErrorException;
+
+import nom.tam.util.ArrayDataInput;
+import nom.tam.util.AsciiFuncs;
+import nom.tam.util.BufferedDataInputStream;
 
 /*
  * #%L
@@ -323,18 +328,17 @@ public class HeaderCard {
         if (value != null) {
             value = value.replaceAll(" *$", "");
 
-            if (value.length() > (this.isString ? MAX_STRING_VALUE_LENGTH : MAX_VALUE_LENGTH)) {
-                throw new HeaderCardException("Value too long");
-            }
-
             if (value.startsWith("'")) {
                 if (value.charAt(value.length() - 1) != '\'') {
                     throw new HeaderCardException("Missing end quote in string value");
                 }
-
                 value = value.substring(1, value.length() - 1).trim();
-
             }
+            // Remember that quotes get doubled in the value...
+            if (!FitsFactory.isLongStringsEnabled() && value.replace("'", "''").length() > (this.isString ? MAX_STRING_VALUE_LENGTH : MAX_VALUE_LENGTH)) {
+                throw new HeaderCardException("Value too long");
+            }
+
         }
 
         this.key = key;
@@ -348,16 +352,64 @@ public class HeaderCard {
      * 
      * @param card
      *            the 80 character card image
+     * @throws IOException
+     * @throws TruncatedFileException
      */
-    public HeaderCard(String card) {
+    public static HeaderCard create(String card) {
+        try {
+            return new HeaderCard(stringToArrayInputStream(card));
+        } catch (Exception e) {
+            throw new IllegalArgumentException("card not legal", e);
+        }
+    }
+
+    private static ArrayDataInput stringToArrayInputStream(String card) {
+        byte[] bytes = AsciiFuncs.getBytes(card);
+        if ((bytes.length % 80) != 0) {
+            byte[] newBytes = new byte[bytes.length + 80 - (bytes.length % 80)];
+            System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
+            Arrays.fill(newBytes, bytes.length, newBytes.length, (byte) ' ');
+            bytes = newBytes;
+        }
+        return new BufferedDataInputStream(new ByteArrayInputStream(bytes));
+    }
+
+    private String readOneHeaderLine(ArrayDataInput dis) throws IOException, TruncatedFileException, EOFException {
+        byte[] buffer = new byte[80];
+        int len;
+        int need = 80;
+        try {
+
+            while (need > 0) {
+                len = dis.read(buffer, 80 - need, need);
+                if (len == 0) {
+                    throw new TruncatedFileException();
+                }
+                need -= len;
+            }
+        } catch (EOFException e) {
+
+            // Rethrow the EOF if we are at the beginning of the header,
+            // otherwise we have a FITS error.
+            // Added by Booth Hartley:
+            // If this is an extension HDU, then we may allow
+            // junk at the end and simply ignore it
+            //
+            if (need == 80 || FitsFactory.getAllowTerminalJunk()) {
+                throw e;
+            }
+            throw new TruncatedFileException(e.getMessage());
+        }
+        return AsciiFuncs.asciiString(buffer);
+    }
+
+    public HeaderCard(ArrayDataInput dis) throws TruncatedFileException, IOException {
         key = null;
         value = null;
         comment = null;
         isString = false;
 
-        if (card.length() > 80) {
-            card = card.substring(0, 80);
-        }
+        String card = readOneHeaderLine(dis);
 
         if (FitsFactory.getUseHierarch() && card.length() > 9 && card.substring(0, 9).equals("HIERARCH ")) {
             hierarchCard(card);
@@ -390,6 +442,10 @@ public class HeaderCard {
             return;
         }
 
+        if (FitsFactory.isLongStringsEnabled() && card.indexOf("&'") >= 0) {
+            longStringCard(dis, card);
+            return;
+        }
         // extract the value/comment part of the string
         String valueAndComment = card.substring(10).trim();
 
@@ -466,6 +522,47 @@ public class HeaderCard {
                 value = valueAndComment;
             }
         }
+    }
+
+    private void longStringCard(ArrayDataInput dis, String card) throws IOException, TruncatedFileException, EOFException {
+        // ok this is a longString now read over all continues.
+        StringBuilder longValue = new StringBuilder();
+        StringBuilder longComment = new StringBuilder();
+        String continueCard = card;
+        do {
+            int start = continueCard.indexOf('\'') + 1;
+            int end = continueCard.indexOf('\'', start);
+            while (end > 0 && end < (continueCard.length() - 1) && continueCard.charAt(end + 1) == '\'') {
+                end = continueCard.indexOf('\'', end + 1);
+            }
+            longValue.append(continueCard.substring(start, end));
+            int commentStart = continueCard.indexOf('/', end);
+            if (commentStart > 0) {
+                if (longComment.length() > 0) {
+                    longComment.append(' ');
+                }
+                longComment.append(continueCard.substring(commentStart + 1));
+                int commentLength = longComment.length();
+                while (commentLength > 0 && Character.isWhitespace(longComment.charAt(commentLength - 1))) {
+                    commentLength--;
+                }
+                longComment.setLength(commentLength);
+            }
+            if (longValue.charAt(longValue.length() - 1) == '&') {
+                longValue.setLength(longValue.length() - 1);
+                dis.mark(80);
+                continueCard = readOneHeaderLine(dis);
+            } else {
+                continueCard = null;
+            }
+        } while (continueCard != null && continueCard.startsWith("CONTINUE"));
+        if (continueCard != null) {
+            // ok move the imputstream one card back.
+            dis.reset();
+        }
+        this.value = longValue.toString().replace("''", "'");
+        this.comment = longComment.toString();
+        this.isString = true;
     }
 
     /**
@@ -731,19 +828,50 @@ public class HeaderCard {
             if (value != null) {
 
                 if (isString) {
-                    // left justify the string inside the quotes
-                    buf.append('\'');
-                    buf.append(value.replace("'", "''"));
-                    if (buf.length() < 19) {
+                    String stringValue = value.replace("'", "''");
+                    if (FitsFactory.isLongStringsEnabled() && stringValue.length() > HeaderCard.MAX_STRING_VALUE_LENGTH) {
+                        // We assume that we've made the test so that
+                        // we need to write a long string.
+                        // We also need to be careful that single quotes don't
+                        // make the string too long and that we don't split
+                        // in the middle of a quote.
+                        int off = getAdjustedLength(stringValue, 67);
+                        String curr = stringValue.substring(0, off) + '&';
+                        // No comment here since we're using as much of the card
+                        // as we can
+                        buf.append('\'');
+                        buf.append(stringValue);
+                        buf.append('\'');
+                        stringValue = stringValue.substring(off);
 
-                        buf.append(space80.substring(0, 19 - buf.length()));
-                    }
-                    buf.append('\'');
-                    // Now add space to the comment area starting at column 40
-                    if (buf.length() < 30) {
-                        buf.append(space80.substring(0, 30 - buf.length()));
-                    }
+                        while (stringValue != null && stringValue.length() > 0) {
+                            off = getAdjustedLength(stringValue, 67);
+                            if (off < stringValue.length()) {
+                                curr = "'" + stringValue.substring(0, off).replace("'", "''") + "&'";
+                                stringValue = stringValue.substring(off);
+                            } else {
+                                curr = "'" + stringValue.replace("'", "''") + "' / " + comment;
+                                stringValue = null;
+                            }
+                            buf.append("CONTINUE");
+                            buf.append(curr);
+                        }
 
+                    } else {
+                        // left justify the string inside the quotes
+                        buf.append('\'');
+                        buf.append(stringValue);
+                        if (buf.length() < 19) {
+
+                            buf.append(space80.substring(0, 19 - buf.length()));
+                        }
+                        buf.append('\'');
+                        // Now add space to the comment area starting at column
+                        // 40
+                        if (buf.length() < 30) {
+                            buf.append(space80.substring(0, 30 - buf.length()));
+                        }
+                    }
                 } else {
 
                     buf.length();
@@ -779,8 +907,11 @@ public class HeaderCard {
 
         // make sure the final string is exactly 80 characters long
         if (buf.length() > 80) {
-            buf.setLength(80);
-
+            if (isString && FitsFactory.isLongStringsEnabled()) {
+                buf.setLength(buf.length() - (buf.length() % 80));
+            } else {
+                buf.setLength(80);
+            }
         } else {
 
             if (buf.length() < 80) {
@@ -789,6 +920,24 @@ public class HeaderCard {
         }
 
         return buf.toString();
+    }
+
+    private int getAdjustedLength(String in, int max) {
+        // Find the longest string that we can use when
+        // we accommodate needing to double quotes.
+        int size = 0;
+        int i;
+        for (i = 0; i < in.length() && size < max; i += 1) {
+            if (in.charAt(i) == '\'') {
+                size += 2;
+                if (size > max) {
+                    break; // Jumped over the edge
+                }
+            } else {
+                size += 1;
+            }
+        }
+        return i;
     }
 
     private String hierarchToString() {
@@ -896,5 +1045,13 @@ public class HeaderCard {
             }
         }
         return null;
+    }
+
+    /**
+     * @return the size of the card in blocks of 80 bytes. So noramlly every
+     *         card will return 1. only long stings can return more than one.
+     */
+    public int cardSize() {
+        return 1;
     }
 }

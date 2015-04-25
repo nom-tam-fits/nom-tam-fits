@@ -141,7 +141,7 @@ public class Header implements FitsElement {
     public Header(String[] newCards) {
 
         for (String newCard : newCards) {
-            HeaderCard card = new HeaderCard(newCard);
+            HeaderCard card = HeaderCard.create(newCard);
             if (card.getValue() == null) {
                 cards.add(card);
             } else {
@@ -191,18 +191,6 @@ public class Header implements FitsElement {
                 iter.add(fcard);
             }
         }
-    }
-
-    /**
-     * Add a card image to the header.
-     * 
-     * @param card
-     *            The card to be added.
-     * @exception HeaderCardException
-     *                If the card is not valid.
-     */
-    public void addLine(String card) throws HeaderCardException {
-        addLine(new HeaderCard(card));
     }
 
     /**
@@ -366,12 +354,7 @@ public class Header implements FitsElement {
      */
     public void addValue(String key, String val, String comment) throws HeaderCardException {
         removeCard(key);
-        // Remember that quotes get doubled in the value...
-        if (FitsFactory.isLongStringsEnabled() && val.replace("'", "''").length() > HeaderCard.MAX_STRING_VALUE_LENGTH) {
-            addLongString(key, val, comment);
-        } else {
-            iter.add(key, new HeaderCard(key, val, comment));
-        }
+        iter.add(key, new HeaderCard(key, val, comment));
     }
 
     /**
@@ -885,30 +868,7 @@ public class Header implements FitsElement {
             return null;
         }
 
-        String val = fcard.getValue();
-        boolean append = FitsFactory.isLongStringsEnabled() && val != null && val.endsWith("&");
-        iter.next(); // skip the primary card.
-        while (append) {
-            HeaderCard nxt = (HeaderCard) iter.next();
-            if (nxt == null) {
-                append = false;
-            } else {
-                key = nxt.getKey();
-                String comm = nxt.getComment();
-                if (key == null || comm == null || !key.equals("CONTINUE")) {
-                    append = false;
-                } else {
-                    comm = continueString(comm);
-                    if (comm != null) {
-                        comm = comm.substring(1, comm.length() - 1);
-                        val = val.substring(0, val.length() - 1) + comm;
-                        append = comm.endsWith("&");
-                    }
-                }
-            }
-        }
-
-        return val;
+        return fcard.getValue();
     }
 
     /** Were duplicate header keys found when this record was read in? */
@@ -1017,44 +977,14 @@ public class Header implements FitsElement {
             fileOffset = -1;
         }
 
-        byte[] buffer = new byte[80];
-
         boolean firstCard = true;
         int count = 0;
 
         try {
             while (true) {
 
-                int len;
-
-                int need = 80;
-
-                try {
-
-                    while (need > 0) {
-                        len = dis.read(buffer, 80 - need, need);
-                        count += 1;
-                        if (len == 0) {
-                            throw new TruncatedFileException();
-                        }
-                        need -= len;
-                    }
-                } catch (EOFException e) {
-
-                    // Rethrow the EOF if we are at the beginning of the header,
-                    // otherwise we have a FITS error.
-                    // Added by Booth Hartley:
-                    // If this is an extension HDU, then we may allow
-                    // junk at the end and simply ignore it
-                    //
-                    if (firstCard && (need == 80 || fileOffset > 0 && FitsFactory.getAllowTerminalJunk())) {
-                        throw e;
-                    }
-                    throw new TruncatedFileException(e.getMessage());
-                }
-
-                String cbuf = AsciiFuncs.asciiString(buffer);
-                HeaderCard fcard = new HeaderCard(cbuf);
+                HeaderCard fcard = new HeaderCard(dis);
+                count = count + fcard.cardSize();
 
                 if (firstCard) {
 
@@ -1062,9 +992,9 @@ public class Header implements FitsElement {
 
                     if (key == null || !key.equals("SIMPLE") && !key.equals("XTENSION")) {
                         if (fileOffset > 0 && FitsFactory.getAllowTerminalJunk()) {
-                            throw new EOFException("Not FITS format at " + fileOffset + ":" + cbuf);
+                            throw new EOFException("Not FITS format at " + fileOffset + ":" + key);
                         } else {
-                            throw new IOException("Not FITS format at " + fileOffset + ":" + cbuf);
+                            throw new IOException("Not FITS format at " + fileOffset + ":" + key);
                         }
                     }
                     firstCard = false;
@@ -1088,12 +1018,15 @@ public class Header implements FitsElement {
 
                 originalCardCount++; // RBH ADDED
                 addLine(fcard);
-                if (cbuf.substring(0, 8).equals("END     ")) {
+                if (key.equals("END")) {
                     break; // Out of reading the header.
                 }
             }
 
         } catch (EOFException e) {
+            if (!firstCard) {
+                throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage()));
+            }
             throw e;
 
         } catch (Exception e) {
@@ -1426,35 +1359,6 @@ public class Header implements FitsElement {
 
     }
 
-    protected void addLongString(String key, String val, String comment) throws HeaderCardException {
-        // We assume that we've made the test so that
-        // we need to write a long string. We need to
-        // double the quotes in the string value. addValue
-        // takes care of that for us, but we need to do it
-        // ourselves when we are extending into the comments.
-        // We also need to be careful that single quotes don't
-        // make the string too long and that we don't split
-        // in the middle of a quote.
-        int off = getAdjustedLength(val, 67);
-        String curr = val.substring(0, off) + '&';
-        // No comment here since we're using as much of the card as we can
-        addValue(key, curr, null);
-        val = val.substring(off);
-
-        while (val != null && val.length() > 0) {
-            off = getAdjustedLength(val, 67);
-            if (off < val.length()) {
-                curr = "'" + val.substring(0, off).replace("'", "''") + "&'";
-                val = val.substring(off);
-            } else {
-                curr = "'" + val.replace("'", "''") + "' / " + comment;
-                val = null;
-            }
-
-            iter.add(new HeaderCard("CONTINUE", (String) null, curr));
-        }
-    }
-
     private void addDuplicate(HeaderCard dup) {
         if (duplicates == null) {
             duplicates = new ArrayList<HeaderCard>();
@@ -1513,24 +1417,6 @@ public class Header implements FitsElement {
         }
         // Never found a closing apostrophe.
         return null;
-    }
-
-    private int getAdjustedLength(String in, int max) {
-        // Find the longest string that we can use when
-        // we accommodate needing to double quotes.
-        int size = 0;
-        int i;
-        for (i = 0; i < in.length() && size < max; i += 1) {
-            if (in.charAt(i) == '\'') {
-                size += 2;
-                if (size > max) {
-                    break; // Jumped over the edge
-                }
-            } else {
-                size += 1;
-            }
-        }
-        return i;
     }
 
     /**
