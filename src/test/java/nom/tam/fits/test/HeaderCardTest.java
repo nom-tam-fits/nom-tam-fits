@@ -111,6 +111,7 @@ public class HeaderCardTest {
         thrown = false;
         String lng = "00000000001111111111222222222233333333334444444444555555555566666666667777777777";
         try {
+            FitsFactory.setLongStringsEnabled(false);
             p = new HeaderCard("KEY", lng, "COMMENT");
         } catch (Exception e) {
             thrown = true;

@@ -31,12 +31,14 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import nom.tam.fits.Fits;
 
@@ -55,5 +57,74 @@ public class MiscTest {
         out.close();
         String version = Fits.version();
         assertEquals("1.1.1-SNAPSHOT", version);
+    }
+
+    @Test
+    public void testRegex() {
+        Pattern doubleQuotePattern = Pattern.compile("''");
+        Pattern stringPattern = Pattern.compile("'(?:[^']|'{2})*'");
+        String[] testStrings = {
+            "xx''   ",
+            "xx'test'   / ",
+            "xx''''  ",
+            "xx'test''' /    ",
+            "xx'test''a''aaa' /",
+            "xx'' / yy",
+            "xx'test' / yy",
+            "xx'''' / yy    ",
+            "xx'test''' / yy    ",
+            "xx'test''a''aaa' / yy                    ",
+            "xx'test''a''aaa              ' / yy                    ",
+        };
+        for (String string : testStrings) {
+            try {
+                System.out.println("---" + string + "---");
+                Matcher matcher = stringPattern.matcher(string);
+                while (matcher.find()) {
+                    String result = replaceAll(doubleQuotePattern, matcher.group(0));
+                    String comment = extractComment(string, matcher.end());
+
+                    System.out.println(result);
+                    System.out.println("comment:" + comment);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String extractComment(String string, int end) {
+        int startOfComment = string.indexOf('/', end);
+        int endOfComment = string.length() - 1;
+        if (startOfComment > 0 && endOfComment > startOfComment) {
+            startOfComment++;
+            if (Character.isWhitespace(string.charAt(startOfComment))) {
+                startOfComment++;
+            }
+            while (Character.isWhitespace(string.charAt(endOfComment))) {
+                endOfComment--;
+            }
+            if (!Character.isWhitespace(string.charAt(endOfComment))) {
+                endOfComment++;
+            }
+            if (endOfComment > startOfComment) {
+                return string.substring(startOfComment, endOfComment);
+            }
+        }
+        return null;
+    }
+
+    private String replaceAll(Pattern doubleQuotePattern, String quotedString) {
+        Matcher doubleQuoteMatcher = doubleQuotePattern.matcher(quotedString);
+        StringBuffer sb = new StringBuffer();
+        if (doubleQuoteMatcher.find(1)) {
+            do {
+                doubleQuoteMatcher.appendReplacement(sb, "'");
+            } while (doubleQuoteMatcher.find());
+        }
+        doubleQuoteMatcher.appendTail(sb);
+        sb.deleteCharAt(0);
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
     }
 }

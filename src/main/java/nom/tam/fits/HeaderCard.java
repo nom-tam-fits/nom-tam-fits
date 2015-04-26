@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 
 import javax.management.RuntimeErrorException;
 
+import nom.tam.fits.utilities.FitsHeaderCardParser;
+import nom.tam.fits.utilities.FitsHeaderCardParser.ParsedValue;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
@@ -441,127 +443,52 @@ public class HeaderCard {
             comment = card.substring(8).trim();
             return;
         }
-
-        if (FitsFactory.isLongStringsEnabled() && card.indexOf("&'") >= 0) {
-            longStringCard(dis, card);
-            return;
-        }
         // extract the value/comment part of the string
-        String valueAndComment = card.substring(10).trim();
+        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
 
-        // If there is no value/comment part, we are done.
-        if (valueAndComment.length() == 0) {
-            value = "";
-            return;
-        }
-
-        int vend = -1;
-        // If we have a ' then find the matching '.
-        if (valueAndComment.charAt(0) == '\'') {
-
-            int offset = 1;
-            while (offset < valueAndComment.length()) {
-
-                // look for next single-quote character
-                vend = valueAndComment.indexOf("'", offset);
-
-                // if the quote character is the last character on the line...
-                if (vend == valueAndComment.length() - 1) {
-                    break;
-                }
-
-                // if we did not find a matching single-quote...
-                if (vend == -1) {
-                    // pretend this is a comment card
-                    key = null;
-                    comment = card;
-                    return;
-                }
-
-                // if this is not an escaped single-quote, we are done
-                if (valueAndComment.charAt(vend + 1) != '\'') {
-                    break;
-                }
-
-                // skip past escaped single-quote
-                offset = vend + 2;
-            }
-
-            // break apart character string
-            value = valueAndComment.substring(1, vend).trim();
-            value = value.replace("''", "'");
-
-            if (vend + 1 >= valueAndComment.length()) {
-                comment = null;
-            } else {
-
-                comment = valueAndComment.substring(vend + 1).trim();
-                if (comment.charAt(0) == '/') {
-                    if (comment.length() > 1) {
-                        comment = comment.substring(1);
-                    } else {
-                        comment = "";
-                    }
-                }
-
-                if (comment.length() == 0) {
-                    comment = null;
-                }
-
-            }
-            isString = true;
-
+        if (FitsFactory.isLongStringsEnabled() && parsedValue.isString() && parsedValue.getValue().endsWith("&")) {
+            longStringCard(dis, parsedValue);
         } else {
-
-            // look for a / to terminate the field.
-            int slashLoc = valueAndComment.indexOf('/');
-            if (slashLoc != -1) {
-                comment = valueAndComment.substring(slashLoc + 1).trim();
-                value = valueAndComment.substring(0, slashLoc).trim();
-            } else {
-                value = valueAndComment;
+            this.value = parsedValue.getValue();
+            this.isString = parsedValue.isString();
+            this.comment = parsedValue.getComment();
+            if (!this.isString && this.value.indexOf('\'') >= 0) {
+                throw new IllegalArgumentException("no single quotes allowed in values");
             }
         }
     }
 
-    private void longStringCard(ArrayDataInput dis, String card) throws IOException, TruncatedFileException, EOFException {
+    private void longStringCard(ArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException, EOFException {
         // ok this is a longString now read over all continues.
         StringBuilder longValue = new StringBuilder();
         StringBuilder longComment = new StringBuilder();
-        String continueCard = card;
+        ParsedValue continueCard = parsedValue;
         do {
-            int start = continueCard.indexOf('\'') + 1;
-            int end = continueCard.indexOf('\'', start);
-            while (end > 0 && end < (continueCard.length() - 1) && continueCard.charAt(end + 1) == '\'') {
-                end = continueCard.indexOf('\'', end + 1);
+            if (continueCard.getValue() != null) {
+                longValue.append(continueCard.getValue());
             }
-            longValue.append(continueCard.substring(start, end));
-            int commentStart = continueCard.indexOf('/', end);
-            if (commentStart > 0) {
-                if (longComment.length() > 0) {
+            if (continueCard.getComment() != null) {
+                if (longComment.length() != 0) {
                     longComment.append(' ');
                 }
-                longComment.append(continueCard.substring(commentStart + 1));
-                int commentLength = longComment.length();
-                while (commentLength > 0 && Character.isWhitespace(longComment.charAt(commentLength - 1))) {
-                    commentLength--;
-                }
-                longComment.setLength(commentLength);
+                longComment.append(continueCard.getComment());
             }
+            continueCard = null;
             if (longValue.charAt(longValue.length() - 1) == '&') {
                 longValue.setLength(longValue.length() - 1);
                 dis.mark(80);
-                continueCard = readOneHeaderLine(dis);
-            } else {
-                continueCard = null;
+                String card = readOneHeaderLine(dis);
+                if (card.startsWith("CONTINUE")) {
+                    // extract the value/comment part of the string
+                    continueCard = FitsHeaderCardParser.parseCardValue(card);
+                } else {
+                    // ok move the imputstream one card back.
+                    dis.reset();
+                }
             }
-        } while (continueCard != null && continueCard.startsWith("CONTINUE"));
-        if (continueCard != null) {
-            // ok move the imputstream one card back.
-            dis.reset();
-        }
-        this.value = longValue.toString().replace("''", "'");
+        } while (continueCard != null);
         this.comment = longComment.toString();
+        this.value = longValue.toString();
         this.isString = true;
     }
 
@@ -1052,6 +979,12 @@ public class HeaderCard {
      *         card will return 1. only long stings can return more than one.
      */
     public int cardSize() {
+        if (isString) {
+            for (int index = this.value.length() - 1; index >= 0; index--) {
+
+            }
+
+        }
         return 1;
     }
 }
