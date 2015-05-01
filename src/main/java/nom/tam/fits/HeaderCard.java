@@ -390,14 +390,7 @@ public class HeaderCard {
                 need -= len;
             }
         } catch (EOFException e) {
-
-            // Rethrow the EOF if we are at the beginning of the header,
-            // otherwise we have a FITS error.
-            // Added by Booth Hartley:
-            // If this is an extension HDU, then we may allow
-            // junk at the end and simply ignore it
-            //
-            if (need == 80 || FitsFactory.getAllowTerminalJunk()) {
+            if (need == 80) {
                 throw e;
             }
             throw new TruncatedFileException(e.getMessage());

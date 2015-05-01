@@ -48,7 +48,6 @@ import org.junit.Test;
 public class JunkTest {
 
     @Test
-    @Ignore("Must be repared new longString handling")
     public void test() throws Exception {
 
         Fits f = new Fits();

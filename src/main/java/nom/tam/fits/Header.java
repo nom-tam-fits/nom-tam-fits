@@ -164,6 +164,9 @@ public class Header implements FitsElement {
         try {
             myHeader.read(dis);
         } catch (EOFException e) {
+            if (e.getCause() instanceof TruncatedFileException) {
+                throw e;
+            }
             // An EOF exception is thrown only if the EOF was detected
             // when reading the first card. In this case we want
             // to return a null.
@@ -1040,14 +1043,15 @@ public class Header implements FitsElement {
             }
             throw e;
 
-        } catch (Exception e) {
-            if (!(e instanceof EOFException)) {
-                // For compatibility with Java V5 we just add in the error
-                // message
-                // rather than using using the cause mechanism.
-                // Probably should update this when we can ignore Java 5.
-                throw new IOException("Invalid FITS Header:" + e);
+        } catch (TruncatedFileException e) {
+            if (firstCard && FitsFactory.getAllowTerminalJunk()) {
+                EOFException eofException = new EOFException("First card truncated");
+                eofException.initCause(e);
+                throw eofException;
             }
+            throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage()));
+        } catch (Exception e) {
+            throw new IOException("Invalid FITS Header", e);
         }
         if (fileOffset >= 0) {
             input = dis;

@@ -35,6 +35,7 @@ import java.beans.PropertyChangeEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -498,6 +499,14 @@ public class Fits {
                 if (readHDU() == null) {
                     break;
                 }
+            } catch (EOFException e) {
+                if (FitsFactory.getAllowTerminalJunk() && e.getCause() instanceof TruncatedFileException) {
+                    if (getNumberOfHDUs() > 0) {
+                        atEOF = true;
+                        return;
+                    }
+                }
+                throw new FitsException("IO error: " + e);
             } catch (IOException e) {
                 throw new FitsException("IO error: " + e);
             }
