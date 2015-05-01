@@ -837,6 +837,17 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Find the number of physical cards in the header.
+     */
+    public int getNumberOfPhysicalCards() {
+        int count = 0;
+        for (HeaderCard card : cards) {
+            count += card.cardSize();
+        }
+        return count;
+    }
+
+    /**
      * Get the size of the original header in bytes.
      */
     public long getOriginalSize() {
@@ -1107,7 +1118,7 @@ public class Header implements FitsElement {
      * method unless the underlying data has actually been updated.
      */
     public void resetOriginalSize() {
-        originalCardCount = cards.size();
+        originalCardCount = getNumberOfPhysicalCards();
     }
 
     /** Rewrite the header. */
@@ -1129,7 +1140,7 @@ public class Header implements FitsElement {
     @Override
     public boolean rewriteable() {
 
-        if (fileOffset >= 0 && input instanceof ArrayDataOutput && (cards.size() + 35) / 36 == (originalCardCount + 35) / 36) {
+        if (fileOffset >= 0 && input instanceof ArrayDataOutput && (getNumberOfPhysicalCards() + 35) / 36 == (originalCardCount + 35) / 36) {
             return true;
         } else {
             return false;
@@ -1348,7 +1359,7 @@ public class Header implements FitsElement {
                 dos.write(b);
             }
 
-            FitsUtil.pad(dos, getNumberOfCards() * 80, (byte) ' ');
+            FitsUtil.pad(dos, getNumberOfPhysicalCards() * 80, (byte) ' ');
         } catch (IOException e) {
             throw new FitsException("IO Error writing header: " + e);
         }
@@ -1518,7 +1529,7 @@ public class Header implements FitsElement {
             return 0;
         }
 
-        return FitsUtil.addPadding(cards.size() * 80);
+        return FitsUtil.addPadding(getNumberOfPhysicalCards() * 80);
     }
 
     /**

@@ -414,7 +414,7 @@ public class HeaderCard {
         String card = readOneHeaderLine(dis);
 
         if (FitsFactory.getUseHierarch() && card.length() > 9 && card.substring(0, 9).equals("HIERARCH ")) {
-            hierarchCard(card);
+            hierarchCard(card, dis);
             return;
         }
 
@@ -458,7 +458,7 @@ public class HeaderCard {
         }
     }
 
-    private void longStringCard(ArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException, EOFException {
+    private void longStringCard(ArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException {
         // ok this is a longString now read over all continues.
         StringBuilder longValue = new StringBuilder();
         StringBuilder longComment = new StringBuilder();
@@ -496,153 +496,26 @@ public class HeaderCard {
      * Process HIERARCH style cards... HIERARCH LEV1 LEV2 ... = value / comment
      * The keyword for the card will be "HIERARCH.LEV1.LEV2..." A '/' is assumed
      * to start a comment.
+     * 
+     * @param dis
      */
-    private void hierarchCard(String card) {
+    private void hierarchCard(String card, ArrayDataInput dis) throws IOException, TruncatedFileException {
 
-        String name = "";
-        String token = null;
-        String separator = "";
-        int[] tokLimits;
-        int posit = 0;
-        int commStart = -1;
+        key = FitsHeaderCardParser.parseCardKey(card);
 
-        // First get the hierarchy levels
-        while ((tokLimits = getToken(card, posit)) != null) {
-            token = card.substring(tokLimits[0], tokLimits[1]);
-            if (!token.equals("=")) {
-                name += separator + token;
-                separator = ".";
-            } else {
-                tokLimits = getToken(card, tokLimits[1]);
-                if (tokLimits != null) {
-                    token = card.substring(tokLimits[0], tokLimits[1]);
-                } else {
-                    key = name;
-                    value = null;
-                    comment = null;
-                    return;
-                }
-                break;
-            }
-            posit = tokLimits[1];
-        }
-        key = name;
+        // extract the value/comment part of the string
+        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
 
-        // At the end?
-        if (tokLimits == null) {
-            value = null;
-            comment = null;
-            isString = false;
-            return;
-        }
-
-        // Really should consolidate the two instances
-        // of this test in this class!
-        if (token.charAt(0) == '\'') {
-            // Find the next undoubled quote...
-            isString = true;
-            if (token.length() > 1 && token.charAt(1) == '\'' && (token.length() == 2 || token.charAt(2) != '\'')) {
-                value = "";
-                commStart = tokLimits[0] + 2;
-            } else if (card.length() < tokLimits[0] + 2) {
-                value = null;
-                comment = null;
-                isString = false;
-                return;
-            } else {
-                int i;
-                for (i = tokLimits[0] + 1; i < card.length(); i += 1) {
-                    if (card.charAt(i) == '\'') {
-                        if (i == card.length() - 1) {
-                            value = card.substring(tokLimits[0] + 1, i);
-                            commStart = i + 1;
-                            break;
-                        } else if (card.charAt(i + 1) == '\'') {
-                            // Doubled quotes.
-                            i += 1;
-                            continue;
-                        } else {
-                            value = card.substring(tokLimits[0] + 1, i);
-                            commStart = i + 1;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (commStart < 0) {
-                value = null;
-                comment = null;
-                isString = false;
-                return;
-            }
-            for (int i = commStart; i < card.length(); i += 1) {
-                if (card.charAt(i) == '/') {
-                    comment = card.substring(i + 1).trim();
-                    break;
-                } else if (card.charAt(i) != ' ') {
-                    comment = null;
-                    break;
-                }
-            }
+        if (FitsFactory.isLongStringsEnabled() && parsedValue.isString() && parsedValue.getValue().endsWith("&")) {
+            longStringCard(dis, parsedValue);
         } else {
-            isString = false;
-            int sl = token.indexOf('/');
-            if (sl == 0) {
-                value = null;
-                comment = card.substring(tokLimits[0] + 1);
-            } else if (sl > 0) {
-                value = token.substring(0, sl);
-                comment = card.substring(tokLimits[0] + sl + 1);
-            } else {
-                value = token;
-
-                for (int i = tokLimits[1]; i < card.length(); i += 1) {
-                    if (card.charAt(i) == '/') {
-                        comment = card.substring(i + 1).trim();
-                        break;
-                    } else if (card.charAt(i) != ' ') {
-                        comment = null;
-                        break;
-                    }
-                }
+            this.value = parsedValue.getValue();
+            this.isString = parsedValue.isString();
+            this.comment = parsedValue.getComment();
+            if (!this.isString && this.value.indexOf('\'') >= 0) {
+                throw new IllegalArgumentException("no single quotes allowed in values");
             }
         }
-    }
-
-    /**
-     * Get the next token. Can't use StringTokenizer since we sometimes need to
-     * know the position within the string.
-     */
-    private int[] getToken(String card, int posit) {
-
-        int i;
-        for (i = posit; i < card.length(); i += 1) {
-            if (card.charAt(i) != ' ') {
-                break;
-            }
-        }
-
-        if (i >= card.length()) {
-            return null;
-        }
-
-        if (card.charAt(i) == '=') {
-            return new int[]{
-                i,
-                i + 1
-            };
-        }
-
-        int j;
-        for (j = i + 1; j < card.length(); j += 1) {
-            if (card.charAt(j) == ' ' || card.charAt(j) == '=') {
-                break;
-            }
-        }
-        return new int[]{
-            i,
-            j
-        };
     }
 
     /**
@@ -975,15 +848,37 @@ public class HeaderCard {
     }
 
     /**
-     * @return the size of the card in blocks of 80 bytes. So noramlly every
+     * @return the size of the card in blocks of 80 bytes. So normally every
      *         card will return 1. only long stings can return more than one.
      */
     public int cardSize() {
-        if (isString) {
-            for (int index = this.value.length() - 1; index >= 0; index--) {
-
+        if (isString && this.value != null && FitsFactory.isLongStringsEnabled()) {
+            int spaceInFirstCard = MAX_VALUE_LENGTH;
+            if (FitsFactory.getUseHierarch() && key.startsWith("HIERARCH")) {
+                // the hierach eats space from the value.
+                spaceInFirstCard -= key.length() - MAX_KEYWORD_LENGTH;
             }
-
+            int charSize = 2;
+            for (int index = this.value.length() - 1; index >= 0; index--) {
+                if (this.value.charAt(index) == '\'') {
+                    charSize += 2;
+                } else {
+                    charSize += 1;
+                }
+            }
+            // substract the space available in
+            charSize = charSize - spaceInFirstCard;
+            if (charSize > 0) {
+                // ok the string will be spaced out over multiple cards. so take
+                // space in the first card for the &
+                charSize++;
+                // every card has an overhead of 3 chars
+                int cards = charSize / (MAX_VALUE_LENGTH - 3);
+                if ((charSize % (MAX_VALUE_LENGTH - 3)) != 0) {
+                    cards++;
+                }
+                return cards;
+            }
         }
         return 1;
     }

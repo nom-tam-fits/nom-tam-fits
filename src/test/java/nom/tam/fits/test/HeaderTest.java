@@ -31,6 +31,17 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.EXTEND;
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.SIMPLE;
+import static nom.tam.fits.header.extra.NOAOExt.CRPIX1;
+import static nom.tam.fits.header.extra.NOAOExt.CRPIX2;
+import static nom.tam.fits.header.extra.NOAOExt.CRVAL1;
+import static nom.tam.fits.header.extra.NOAOExt.CRVAL2;
+import static nom.tam.fits.header.extra.NOAOExt.CTYPE1;
+import static nom.tam.fits.header.extra.NOAOExt.CTYPE2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import nom.tam.fits.BasicHDU;
@@ -41,14 +52,11 @@ import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.utilities.FitsHeaderCardParser;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 
 import org.junit.Test;
-
-import static org.junit.Test.*;
-import static nom.tam.fits.header.Standard.*;
-import static nom.tam.fits.header.extra.NOAOExt.*;
 
 public class HeaderTest {
 
@@ -242,11 +250,7 @@ public class HeaderTest {
         f.write(bf);
         f = new Fits("target/testHeaderCommentsDrift.fits");
         f.read();
-        // there was a bug that let the comments drift with every write due to
-        // backward compatibility we let one blank happen but not more. (this
-        // test is done after 2 writes.
-        String ONE_BLANK_BACKWARD_COMPATIPLE = " ";
-        assertEquals(ONE_BLANK_BACKWARD_COMPATIPLE + "COMMENT", f.getHDU(0).getHeader().findCard("KEY").getComment());
+        assertEquals("COMMENT", f.getHDU(0).getHeader().findCard("KEY").getComment());
 
     }
 
@@ -378,5 +382,29 @@ public class HeaderTest {
         // now one char less.
         card = new HeaderCard("TESTKEY", "random value just for testing purpose - random value just for testin", "");
         assertEquals("TESTKEY = 'random value just for testing purpose - random value just for testin'", card.toString());
+    }
+
+    @Test
+    public void testHierachKeyWordParsing() {
+        String keyword = FitsHeaderCardParser.parseCardKey("HIERARCH ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier");
+        assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
+
+        keyword = FitsHeaderCardParser.parseCardKey("HIERARCH ESO INS. OPTI-3 ID = 'ESO#427 ' / Optical element identifier");
+        assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
+
+        keyword = FitsHeaderCardParser.parseCardKey("HIERARCH ESO.INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier");
+        assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
+
+        keyword = FitsHeaderCardParser.parseCardKey("HIERARCH..ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier");
+        assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
+
+        keyword = FitsHeaderCardParser.parseCardKey("HIERARCH    ESO INS   OPTI-3 ID= 'ESO#427 ' / Optical element identifier");
+        assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
+
+        keyword = FitsHeaderCardParser.parseCardKey("sdfajsg sdgf asdgf kasj sjk ID Optical element identifier");
+        assertEquals("", keyword);
+
+        keyword = FitsHeaderCardParser.parseCardKey("SIMPLE = T");
+        assertEquals("SIMPLE", keyword);
     }
 }

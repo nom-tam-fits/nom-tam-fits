@@ -54,6 +54,11 @@ public class FitsHeaderCardParser {
     private static Pattern STRING_PATTERN = Pattern.compile("'(?:[^']|'{2})*'");
 
     /**
+     * pattern to match FITS keywords, specially to parse hirarchical keywords.
+     */
+    private static Pattern KEYWORD_PATTERN = Pattern.compile("([A-Z|0-9|_|-]+)([ |\\|.]*=?)");
+
+    /**
      * value comment pair of the header card.
      */
     public static class ParsedValue {
@@ -113,19 +118,9 @@ public class FitsHeaderCardParser {
      * @return the not empty comment or null if no comment was found.
      */
     private static String extractComment(String stringCard, int startPosition) {
-        int startOfComment = stringCard.indexOf('/', startPosition);
-        int endOfComment = stringCard.length() - 1;
-        if (startOfComment > 0 && endOfComment > startOfComment) {
-            startOfComment++;
-            while (Character.isWhitespace(stringCard.charAt(endOfComment))) {
-                endOfComment--;
-            }
-            if (!Character.isWhitespace(stringCard.charAt(endOfComment))) {
-                endOfComment++;
-            }
-            if (endOfComment > startOfComment) {
-                return stringCard.substring(startOfComment, endOfComment);
-            }
+        int startOfComment = stringCard.indexOf('/', startPosition) + 1;
+        if (startOfComment > 0 && stringCard.length() > startOfComment) {
+            return stringCard.substring(startOfComment).trim();
         }
         return null;
     }
@@ -204,9 +199,33 @@ public class FitsHeaderCardParser {
         doubleQuoteMatcher.appendTail(sb);
         sb.deleteCharAt(0);
         sb.setLength(sb.length() - 1);
-        while (Character.isWhitespace(sb.charAt(sb.length() - 1))) {
+        while (sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
             sb.setLength(sb.length() - 1);
         }
         return sb.toString();
     }
+
+    /**
+     * parse a fits keyword from a card and return it as a dot separated list.
+     * 
+     * @param card
+     *            the card to parse.
+     * @return
+     */
+    public static String parseCardKey(String card) {
+        int indexOfEquals = card.indexOf('=');
+        StringBuilder builder = new StringBuilder();
+        Matcher kewordMatcher = KEYWORD_PATTERN.matcher(card);
+        while (kewordMatcher.find() && kewordMatcher.start() < indexOfEquals) {
+            if (builder.length() != 0) {
+                builder.append('.');
+            }
+            builder.append(kewordMatcher.group(1));
+            if (kewordMatcher.group(2).endsWith("=")) {
+                break;
+            }
+        }
+        return builder.toString();
+    }
+
 }
