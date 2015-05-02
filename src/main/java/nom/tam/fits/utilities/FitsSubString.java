@@ -40,9 +40,51 @@ public class FitsSubString {
     private int length;
 
     public FitsSubString(String originalString) {
-        this.originalString = originalString;
+        this.originalString = originalString == null ? "" : originalString;
         offset = 0;
         length = this.originalString.length();
     }
 
+    public int getAdjustedLength(int max) {
+        if (length > max) {
+            int pos = max - 1;
+            while (charAt(pos) == '\'') {
+                pos--;
+            }
+            // now we are at the start of the quotes step forward in steps of 2
+            pos += (((max - 1) - pos) / 2) * 2;
+            return length = pos + 1;
+        } else {
+            return length;
+        }
+    }
+
+    public char charAt(int pos) {
+        return originalString.charAt(pos + offset);
+    }
+
+    public void appendTo(StringBuffer buffer) {
+        buffer.append(originalString, offset, offset + length);
+    }
+
+    public int length() {
+        return length;
+    }
+
+    public void rest() {
+        offset += length;
+        length = originalString.length() - offset;
+    }
+
+    public void skip(int i) {
+        offset++;
+    }
+
+    public int fullLength() {
+        return originalString.length() - offset;
+    }
+
+    public boolean startsWith(String string) {
+        return originalString.regionMatches(offset, string, 0, string.length());
+    }
 }

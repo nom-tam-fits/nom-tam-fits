@@ -33,10 +33,48 @@ package nom.tam.fits.utilities;
 
 public class FitsLineAppender {
 
+    private static String _80_SPACES = "                                                                                ";
+
     private final StringBuffer buffer;
+
+    private int charCount;
 
     public FitsLineAppender(StringBuffer buffer) {
         this.buffer = buffer;
+    }
+
+    public FitsLineAppender(StringBuffer buffer, int charCount) {
+        this(buffer);
+        this.charCount = charCount;
+    }
+
+    public void append(char c) {
+        buffer.append(c);
+        charCount++;
+    }
+
+    public void append(FitsSubString stringValue) {
+        stringValue.appendTo(buffer);
+        charCount += stringValue.length();
+    }
+
+    public void completeLine() {
+        int count = 80 - (charCount % 80);
+        if (count < 80) {
+            buffer.append(_80_SPACES, 0, count);
+        }
+        // line completed start with 0;
+        charCount = 0;
+    }
+
+    public void append(String string) {
+        buffer.append(string);
+        charCount += string.length();
+    }
+
+    public int spaceLeftInLine() {
+        charCount = charCount % 80;
+        return 80 - charCount;
     }
 
 }
