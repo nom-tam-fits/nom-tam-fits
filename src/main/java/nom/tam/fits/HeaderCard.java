@@ -475,6 +475,8 @@ public class HeaderCard {
                     // extract the value/comment part of the string
                     continueCard = FitsHeaderCardParser.parseCardValue(card);
                 } else {
+                    // the & was part of the string put it back.
+                    longValue.append('&');
                     // ok move the imputstream one card back.
                     dis.reset();
                 }
@@ -614,7 +616,7 @@ public class HeaderCard {
                 buf.append(space80.substring(0, 8 - buf.length()));
             }
         }
-
+        boolean commentHandled = false;
         if (value != null || nullable) {
             buf.append("= ");
 
@@ -623,33 +625,8 @@ public class HeaderCard {
                 if (isString) {
                     String stringValue = value.replace("'", "''");
                     if (FitsFactory.isLongStringsEnabled() && stringValue.length() > HeaderCard.MAX_STRING_VALUE_LENGTH) {
-                        // We assume that we've made the test so that
-                        // we need to write a long string.
-                        // We also need to be careful that single quotes don't
-                        // make the string too long and that we don't split
-                        // in the middle of a quote.
-                        int off = getAdjustedLength(stringValue, 67);
-                        String curr = stringValue.substring(0, off) + '&';
-                        // No comment here since we're using as much of the card
-                        // as we can
-                        buf.append('\'');
-                        buf.append(stringValue);
-                        buf.append('\'');
-                        stringValue = stringValue.substring(off);
-
-                        while (stringValue != null && stringValue.length() > 0) {
-                            off = getAdjustedLength(stringValue, 67);
-                            if (off < stringValue.length()) {
-                                curr = "'" + stringValue.substring(0, off).replace("'", "''") + "&'";
-                                stringValue = stringValue.substring(off);
-                            } else {
-                                curr = "'" + stringValue.replace("'", "''") + "' / " + comment;
-                                stringValue = null;
-                            }
-                            buf.append("CONTINUE");
-                            buf.append(curr);
-                        }
-
+                        writeLongStringValue(buf, stringValue);
+                        commentHandled = true;
                     } else {
                         // left justify the string inside the quotes
                         buf.append('\'');
@@ -681,7 +658,7 @@ public class HeaderCard {
             }
 
             // if there is a comment, add a comment delimiter
-            if (comment != null) {
+            if (!commentHandled && comment != null) {
                 buf.append(" / ");
             }
 
@@ -690,7 +667,7 @@ public class HeaderCard {
         }
 
         // finally, add any comment
-        if (comment != null) {
+        if (!commentHandled && comment != null) {
             if (comment.startsWith(" ")) {
                 buf.append(comment, 1, comment.length());
             } else {
@@ -715,22 +692,82 @@ public class HeaderCard {
         return buf.toString();
     }
 
-    private int getAdjustedLength(String in, int max) {
-        // Find the longest string that we can use when
-        // we accommodate needing to double quotes.
-        int size = 0;
-        int i;
-        for (i = 0; i < in.length() && size < max; i += 1) {
-            if (in.charAt(i) == '\'') {
-                size += 2;
-                if (size > max) {
-                    break; // Jumped over the edge
-                }
-            } else {
-                size += 1;
-            }
+    private void writeLongStringValue(StringBuffer buf, String stringValue) {
+        // We assume that we've made the test so that
+        // we need to write a long string.
+        // We also need to be careful that single quotes don't
+        // make the string too long and that we don't split
+        // in the middle of a quote.
+        int off = getAdjustedLength(stringValue, 67);
+        String curr = stringValue.substring(0, off) + '&';
+        // No comment here since we're using as much of the card
+        // as we can
+        buf.append('\'');
+        buf.append(curr);
+        buf.append('\'');
+        if (curr.length() < MAX_STRING_VALUE_LENGTH) {
+            buf.append(space80, 0, MAX_STRING_VALUE_LENGTH - curr.length());
         }
-        return i;
+        stringValue = stringValue.substring(off);
+        String commentValue;
+        if (comment == null) {
+            commentValue = "";
+        } else if (comment.charAt(0) == ' ') {
+            commentValue = comment.substring(1);
+        } else {
+            commentValue = comment;
+        }
+
+        while (stringValue != null && stringValue.length() > 0) {
+            off = getAdjustedLength(stringValue, 67);
+            if (off < stringValue.length()) {
+                curr = "'" + stringValue.substring(0, off) + "&'";
+                stringValue = stringValue.substring(off);
+            } else {
+                if (commentValue.length() > (67 - stringValue.length())) {
+                    // ok comment does not fit lets give it a little more room
+                    off = getAdjustedLength(stringValue, 35);
+                    if (stringValue.length() > off) {
+                        curr = "'" + stringValue.substring(0, off) + "&' / ";
+                    } else {
+                        curr = "'" + stringValue.substring(0, off) + "' / ";
+                    }
+                    int spaceForComment = MAX_VALUE_LENGTH - curr.length();
+                    String currComment = commentValue;
+                    if (currComment.length() > spaceForComment) {
+                        currComment = currComment.substring(0, spaceForComment);
+                        commentValue = commentValue.substring(spaceForComment);
+                        curr = curr + currComment;
+                    } else {
+                        curr = curr + space80.substring(0, spaceForComment);
+                    }
+                    stringValue = stringValue.substring(off);
+                } else {
+                    curr = "'" + stringValue + "' / " + commentValue;
+                    if (curr.length() < MAX_VALUE_LENGTH) {
+                        curr = curr + space80.substring(0, MAX_VALUE_LENGTH - curr.length());
+                    }
+                    stringValue = null;
+                }
+            }
+            buf.append("CONTINUE  ");
+            buf.append(curr);
+        }
+    }
+
+    private int getAdjustedLength(String in, int max) {
+
+        if (in.length() > max) {
+            int pos = max - 1;
+            while (in.charAt(pos) == '\'') {
+                pos--;
+            }
+            // now we are at the start of the quotes step forward in steps of 2
+            pos += (((max - 1) - pos) / 2) * 2;
+            return pos + 1;
+        } else {
+            return in.length();
+        }
     }
 
     private String hierarchToString() {
@@ -867,8 +904,16 @@ public class HeaderCard {
                 charSize++;
                 // every card has an overhead of 3 chars
                 int cards = charSize / (MAX_VALUE_LENGTH - 3);
-                if ((charSize % (MAX_VALUE_LENGTH - 3)) != 0) {
+                int spaceUsedInLastCard = charSize % (MAX_VALUE_LENGTH - 3);
+                if (spaceUsedInLastCard != 0) {
                     cards++;
+                }
+                // now check if the comment will trigger an other card
+                if (comment != null) {
+                    int spaceLeftInLastCard = charSize - (MAX_VALUE_LENGTH * cards);
+                    if (comment.length() > spaceLeftInLastCard) {
+                        cards++;
+                    }
                 }
                 return cards;
             }

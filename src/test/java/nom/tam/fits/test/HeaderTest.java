@@ -304,25 +304,45 @@ public class HeaderTest {
     }
 
     @Test
-    public void longStringTest() throws Exception {
+    public void longStringTest2() throws Exception {
+        FitsFactory.setLongStringsEnabled(true);
+        HeaderCard card = HeaderCard.create("STRKEY  = 'This is a very long string keyword&'  / Optional Comment             " + //
+                "CONTINUE  ' value that is continued over 3 keywords in the &  '                 " + //
+                "CONTINUE  'FITS header.' / This is another optional comment.                    ");
 
-        Header hdr = new Fits("target/ht1.fits").getHDU(0).getHeader();
+        assertEquals("This is a very long string keyword value that is continued over 3 keywords in the FITS header.", card.getValue());
+        assertEquals("Optional Comment This is another optional comment.", card.getComment());
+
+        card = HeaderCard.create("STRKEY  = 'This is a very long string keyword&'  / Optional Comment             " + //
+                "CONTINUE  ' value that is continued over 2 keywords        &  '                 " + //
+                "STRKEY2 = 'This is a very long string keyword '  / Optional Comment             ");
+
+        assertEquals("This is a very long string keyword value that is continued over 2 keywords        &", card.getValue());
+        assertEquals("Optional Comment", card.getComment());
+
+        FitsFactory.setLongStringsEnabled(false);
+    }
+
+    @Test
+    public void longStringTest() throws Exception {
 
         String seq = "0123456789";
         String lng = "";
+        String sixty = seq + seq + seq + seq + seq + seq;
+
         for (int i = 0; i < 20; i += 1) {
             lng += seq;
         }
+        Header hdr = new Fits("target/ht1.fits").getHDU(0).getHeader();
         assertEquals("Initial state:", false, FitsFactory.isLongStringsEnabled());
-        Header.setLongStringsEnabled(true);
+        FitsFactory.setLongStringsEnabled(true);
         assertEquals("Set state:", true, FitsFactory.isLongStringsEnabled());
-        hdr.addValue("LONG1", lng, "Here is a comment");
+        hdr.addValue("LONG1", lng, "Here is a comment that is also very long and will be truncated at least a little");
         hdr.addValue("LONG2", "xx'yy'zz" + lng, "Another comment");
         hdr.addValue("SHORT", "A STRING ENDING IN A &", null);
         hdr.addValue("LONGISH", lng + "&", null);
         hdr.addValue("LONGSTRN", "OGIP 1.0", "Uses long strings");
 
-        String sixty = seq + seq + seq + seq + seq + seq;
         hdr.addValue("APOS1", sixty + "''''''''''", "Should be 70 chars long");
         hdr.addValue("APOS2", sixty + " ''''''''''", "Should be 71 chars long");
 
@@ -337,37 +357,40 @@ public class HeaderTest {
         assertEquals("APOS1", hdr.getStringValue("APOS1").length(), 70);
         assertEquals("APOS2", hdr.getStringValue("APOS2").length(), 71);
 
-        if (false) {
-            // must be tested diferently, because the string was already added.
-            Header.setLongStringsEnabled(false);
-            val = hdr.getStringValue("LONG1");
-            assertEquals("LongT3", true, !val.equals(lng));
-            assertEquals("Longt4", true, val.length() <= 70);
-            assertEquals("longamp1", hdr.getStringValue("SHORT"), "A STRING ENDING IN A &");
-            bf = new BufferedFile("target/ht4.hdr", "r");
-            hdr = new Header(bf);
-            assertEquals("Set state2:", true, FitsFactory.isLongStringsEnabled());
-            val = hdr.getStringValue("LONG1");
-            assertEquals("LongT5", val, lng);
-            val = hdr.getStringValue("LONG2");
-            assertEquals("LongT6", val, "xx'yy'zz" + lng);
-            assertEquals("longamp2", hdr.getStringValue("LONGISH"), lng + "&");
-            assertEquals("APOS1b", hdr.getStringValue("APOS1").length(), 70);
-            assertEquals("APOS2b", hdr.getStringValue("APOS2").length(), 71);
-            assertEquals("APOS2c", hdr.getStringValue("APOS2"), sixty + " ''''''''''");
-            assertEquals("longamp1b", hdr.getStringValue("SHORT"), "A STRING ENDING IN A &");
-            assertEquals("longamp2b", hdr.getStringValue("LONGISH"), lng + "&");
+        String string = hdr.findCard("LONG1").toString();
+        val = FitsHeaderCardParser.parseCardValue(string).getValue();
+        FitsFactory.setLongStringsEnabled(false);
+        val = FitsHeaderCardParser.parseCardValue(string).getValue();
+        FitsFactory.setLongStringsEnabled(true);
 
-            int cnt = hdr.getNumberOfCards();
-            // This should remove all three cards associated with
-            // LONG1
-            hdr.removeCard("LONG1");
-            assertEquals("deltest", cnt - 3, hdr.getNumberOfCards());
-            Header.setLongStringsEnabled(false);
-            // With long strings disabled this should only remove one more card.
-            hdr.removeCard("LONG2");
-            assertEquals("deltest2", cnt - 4, hdr.getNumberOfCards());
-        }
+        assertEquals("LongT3", true, !val.equals(lng));
+        assertEquals("Longt4", true, val.length() <= 70);
+        assertEquals("longamp1", hdr.getStringValue("SHORT"), "A STRING ENDING IN A &");
+        bf = new BufferedFile("target/ht4.hdr", "r");
+        hdr = new Header(bf);
+        assertEquals("Set state2:", true, FitsFactory.isLongStringsEnabled());
+        val = hdr.getStringValue("LONG1");
+        assertEquals("LongT5", val, lng);
+        val = hdr.getStringValue("LONG2");
+        assertEquals("LongT6", val, "xx'yy'zz" + lng);
+        assertEquals("longamp2", hdr.getStringValue("LONGISH"), lng + "&");
+        assertEquals("APOS1b", hdr.getStringValue("APOS1").length(), 70);
+        assertEquals("APOS2b", hdr.getStringValue("APOS2").length(), 71);
+        assertEquals("APOS2c", hdr.getStringValue("APOS2"), sixty + " ''''''''''");
+        assertEquals("longamp1b", hdr.getStringValue("SHORT"), "A STRING ENDING IN A &");
+        assertEquals("longamp2b", hdr.getStringValue("LONGISH"), lng + "&");
+
+        int cnt = hdr.getNumberOfCards();
+        int pcnt = hdr.getNumberOfPhysicalCards();
+        // This should remove all three cards associated with
+        // LONG1
+        hdr.removeCard("LONG1");
+        assertEquals("deltest", cnt - 1, hdr.getNumberOfCards());
+        assertEquals("deltest", pcnt - 3, hdr.getNumberOfPhysicalCards());
+
+        hdr.removeCard("LONG2");
+        assertEquals("deltest2", pcnt - 7, hdr.getNumberOfPhysicalCards());
+        assertEquals("deltest2", cnt - 2, hdr.getNumberOfCards());
     }
 
     @Test

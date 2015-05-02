@@ -175,6 +175,13 @@ public class Header implements FitsElement {
         return myHeader;
     }
 
+    /**
+     * please use {@link FitsFactory#setLongStringsEnabled(boolean)} instead.
+     * 
+     * @param flag
+     *            the new value for long-string enabeling.
+     */
+    @Deprecated
     public static void setLongStringsEnabled(boolean flag) {
         FitsFactory.setLongStringsEnabled(flag);
     }
