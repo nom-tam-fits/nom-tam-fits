@@ -68,8 +68,15 @@ public class FitsLineAppender {
     }
 
     public void append(String string) {
-        buffer.append(string);
-        charCount += string.length();
+        charCount = charCount % 80;
+        int newLength = charCount + string.length();
+        if (newLength > 80) {
+            buffer.append(string, 0, 80 - charCount);
+            charCount = 0;
+        } else {
+            charCount = newLength;
+            buffer.append(string);
+        }
     }
 
     public int spaceLeftInLine() {
@@ -77,4 +84,37 @@ public class FitsLineAppender {
         return 80 - charCount;
     }
 
+    public void appendSpacesTo(int count) {
+        charCount = charCount % 80;
+        if (charCount != 0) {
+            int spaces = count - charCount;
+            if (spaces > 0) {
+                buffer.append(_80_SPACES, 0, spaces);
+                charCount += spaces;
+            }
+        }
+    }
+
+    public int length() {
+        charCount = charCount % 80;
+        return charCount;
+    }
+
+    public void append(String string, int offset) {
+
+        int newLength = charCount + string.length() - offset;
+        if (newLength > 80) {
+            buffer.append(string, offset, offset + (80 - charCount));
+            charCount = 0;
+        } else {
+            charCount = newLength;
+            buffer.append(string, offset, string.length());
+        }
+
+    }
+
+    @Override
+    public String toString() {
+        return buffer.toString();
+    }
 }

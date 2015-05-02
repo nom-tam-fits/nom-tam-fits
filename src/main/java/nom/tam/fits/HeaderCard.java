@@ -8,11 +8,9 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import javax.management.RuntimeErrorException;
-
 import nom.tam.fits.utilities.FitsHeaderCardParser;
-import nom.tam.fits.utilities.FitsLineAppender;
 import nom.tam.fits.utilities.FitsHeaderCardParser.ParsedValue;
+import nom.tam.fits.utilities.FitsLineAppender;
 import nom.tam.fits.utilities.FitsSubString;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.AsciiFuncs;
@@ -606,18 +604,16 @@ public class HeaderCard {
      */
     @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer(80);
-
+        FitsLineAppender buf = new FitsLineAppender(new StringBuffer(80));
         // start with the keyword, if there is one
         if (key != null) {
             if (key.length() > 9 && key.substring(0, 9).equals("HIERARCH.")) {
                 return hierarchToString();
             }
             buf.append(key);
-            if (key.length() < 8) {
-                buf.append(space80.substring(0, 8 - buf.length()));
-            }
+            buf.appendSpacesTo(8);
         }
+        FitsSubString comment = new FitsSubString(this.comment);
         boolean commentHandled = false;
         if (value != null || nullable) {
             buf.append("= ");
@@ -633,69 +629,42 @@ public class HeaderCard {
                         // left justify the string inside the quotes
                         buf.append('\'');
                         buf.append(stringValue);
-                        if (buf.length() < 19) {
-
-                            buf.append(space80.substring(0, 19 - buf.length()));
-                        }
+                        buf.appendSpacesTo(19);
                         buf.append('\'');
                         // Now add space to the comment area starting at column
-                        // 40
-                        if (buf.length() < 30) {
-                            buf.append(space80.substring(0, 30 - buf.length()));
-                        }
+                        // 30
+                        buf.appendSpacesTo(30);
                     }
                 } else {
-
-                    buf.length();
-                    if (value.length() < 20) {
-                        buf.append(space80.substring(0, 20 - value.length()));
-                    }
-
+                    buf.appendSpacesTo(30 - value.length());
                     buf.append(value);
-
                 }
             } else {
                 // Pad out a null value.
-                buf.append(space80.substring(0, 20));
+                buf.appendSpacesTo(30);
             }
-
+            comment.getAdjustedLength(80 - buf.length() - 3);
             // if there is a comment, add a comment delimiter
-            if (!commentHandled && comment != null) {
+            if (!commentHandled && comment.length() > 0) {
                 buf.append(" / ");
             }
 
-        } else if (comment != null && comment.startsWith("= ")) {
+        } else if (comment.startsWith("= ")) {
             buf.append("  ");
         }
 
         // finally, add any comment
-        if (!commentHandled && comment != null) {
+        if (!commentHandled && comment.length() > 0) {
             if (comment.startsWith(" ")) {
-                buf.append(comment, 1, comment.length());
-            } else {
-                buf.append(comment);
+                comment.skip(1);
             }
+            buf.append(comment);
         }
-
-        // make sure the final string is exactly 80 characters long
-        if (buf.length() > 80) {
-            if (isString && FitsFactory.isLongStringsEnabled()) {
-                buf.setLength(buf.length() - (buf.length() % 80));
-            } else {
-                buf.setLength(80);
-            }
-        } else {
-
-            if (buf.length() < 80) {
-                buf.append(space80.substring(0, 80 - buf.length()));
-            }
-        }
-
+        buf.completeLine();
         return buf.toString();
     }
 
-    private void writeLongStringValue(StringBuffer buffer, String stringValueString) {
-        FitsLineAppender buf = new FitsLineAppender(buffer, 10);
+    private void writeLongStringValue(FitsLineAppender buf, String stringValueString) {
         FitsSubString stringValue = new FitsSubString(stringValueString);
         FitsSubString commentValue = new FitsSubString(comment);
         // We assume that we've made the test so that

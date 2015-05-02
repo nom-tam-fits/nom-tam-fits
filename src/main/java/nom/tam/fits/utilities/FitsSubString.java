@@ -45,17 +45,17 @@ public class FitsSubString {
         length = this.originalString.length();
     }
 
-    public int getAdjustedLength(int max) {
-        if (length > max) {
+    public void getAdjustedLength(int max) {
+        if (max <= 0) {
+            length = 0;
+        } else if (length > max) {
             int pos = max - 1;
             while (charAt(pos) == '\'') {
                 pos--;
             }
             // now we are at the start of the quotes step forward in steps of 2
             pos += (((max - 1) - pos) / 2) * 2;
-            return length = pos + 1;
-        } else {
-            return length;
+            length = pos + 1;
         }
     }
 
