@@ -31,6 +31,12 @@ package nom.tam.fits.utilities;
  * #L%
  */
 
+/**
+ * This class handles the writing of a card line. It keeps track of the position
+ * in the line and will limit it to 80 characters.
+ * 
+ * @author Richard van Nieuwenhoven
+ */
 public class FitsLineAppender {
 
     private static String _80_SPACES = "                                                                                ";
