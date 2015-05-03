@@ -604,16 +604,26 @@ public class HeaderCard {
      */
     @Override
     public String toString() {
+        int alignSmallString = 19;
+        int alignPosition = 30;
         FitsLineAppender buf = new FitsLineAppender(new StringBuffer(80));
         // start with the keyword, if there is one
         if (key != null) {
             if (key.length() > 9 && key.substring(0, 9).equals("HIERARCH.")) {
-                return hierarchToString();
+                buf.appendRepacing(key, '.', ' ');
+                alignSmallString = 29;
+                alignPosition = 39;
+            } else {
+                buf.append(key);
+                buf.appendSpacesTo(8);
             }
-            buf.append(key);
-            buf.appendSpacesTo(8);
         }
         FitsSubString comment = new FitsSubString(this.comment);
+        if ((80 - alignPosition - 3) < comment.length()) {
+            // with alignment the comment would not fit so lets make more space
+            alignPosition = Math.max(buf.length(), 80 - 3 - comment.length());
+            alignSmallString = buf.length();
+        }
         boolean commentHandled = false;
         if (value != null || nullable) {
             buf.append("= ");
@@ -629,19 +639,19 @@ public class HeaderCard {
                         // left justify the string inside the quotes
                         buf.append('\'');
                         buf.append(stringValue);
-                        buf.appendSpacesTo(19);
+                        buf.appendSpacesTo(alignSmallString);
                         buf.append('\'');
                         // Now add space to the comment area starting at column
                         // 30
-                        buf.appendSpacesTo(30);
+                        buf.appendSpacesTo(alignPosition);
                     }
                 } else {
-                    buf.appendSpacesTo(30 - value.length());
+                    buf.appendSpacesTo(alignPosition - value.length());
                     buf.append(value);
                 }
             } else {
                 // Pad out a null value.
-                buf.appendSpacesTo(30);
+                buf.appendSpacesTo(alignPosition);
             }
             comment.getAdjustedLength(80 - buf.length() - 3);
             // if there is a comment, add a comment delimiter
@@ -672,7 +682,7 @@ public class HeaderCard {
         // We also need to be careful that single quotes don't
         // make the string too long and that we don't split
         // in the middle of a quote.
-        stringValue.getAdjustedLength(67);
+        stringValue.getAdjustedLength(80 - buf.length() - 3);
         // No comment here since we're using as much of the card
         // as we can
         buf.append('\'');
@@ -717,70 +727,6 @@ public class HeaderCard {
                 stringValue.rest();
             }
         }
-    }
-
-    private String hierarchToString() {
-
-        StringBuffer b = new StringBuffer(80);
-        int p = 0;
-        String space = "";
-        while (p < key.length()) {
-            int q = key.indexOf('.', p);
-            if (q < 0) {
-                b.append(space + key.substring(p));
-                break;
-            } else {
-                b.append(space + key.substring(p, q));
-            }
-            space = " ";
-            p = q + 1;
-        }
-
-        if (value != null || nullable) {
-            b.append("= ");
-
-            if (value != null) {
-                // Try to align values
-                int avail = 80 - (b.length() + value.length());
-
-                if (isString) {
-                    avail -= 2;
-                }
-                if (comment != null) {
-                    avail -= 3 + comment.length();
-                }
-
-                if (avail > 0 && b.length() < 29) {
-                    b.append(space80.substring(0, Math.min(avail, 29 - b.length())));
-                }
-
-                if (isString) {
-                    b.append('\'');
-                } else if (avail > 0 && value.length() < 10) {
-                    b.append(space80.substring(0, Math.min(avail, 10 - value.length())));
-                }
-                b.append(value);
-                if (isString) {
-                    b.append('\'');
-                }
-            } else if (b.length() < 30) {
-
-                // Pad out a null value
-                b.append(space80.substring(0, 30 - b.length()));
-            }
-        }
-
-        if (comment != null) {
-            b.append(" / " + comment);
-        }
-        if (b.length() < 80) {
-            b.append(space80.substring(0, 80 - b.length()));
-        }
-        String card = new String(b);
-        if (card.length() > 80) {
-            card = card.substring(0, 80);
-        }
-        return card;
     }
 
     /**

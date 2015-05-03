@@ -117,4 +117,17 @@ public class FitsLineAppender {
     public String toString() {
         return buffer.toString();
     }
+
+    public void appendRepacing(String key, char toReplace, char with) {
+        int size = key.length();
+        for (int index = 0; index < size; index++) {
+            char character = key.charAt(index);
+            if (character == toReplace) {
+                buffer.append(with);
+            } else {
+                buffer.append(character);
+            }
+        }
+        charCount += size;
+    }
 }

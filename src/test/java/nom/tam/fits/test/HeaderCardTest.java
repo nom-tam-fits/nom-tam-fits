@@ -157,11 +157,14 @@ public class HeaderCardTest {
         hc = HeaderCard.create(card);
         assertEquals("h2", "HIERARCH", hc.getKey());
         assertNull("h3", hc.getValue());
+        // its wrong because setUseHierarch -> false
         assertEquals("h4", "TEST1 TEST2 INT=           123 / Comment", hc.getComment());
 
         FitsFactory.setUseHierarch(true);
 
         hc = new HeaderCard(key, 123, "Comment");
+
+        assertEquals("HIERARCH TEST1 TEST2 INT=           123 / Comment", hc.toString().trim());
 
         assertEquals("h5", key, hc.getKey());
         assertEquals("h6", "123", hc.getValue());
@@ -171,6 +174,17 @@ public class HeaderCardTest {
         assertEquals("h8", key, hc.getKey());
         assertEquals("h9", "123", hc.getValue());
         assertEquals("h10", "Comment", hc.getComment());
+
+        // now test a longString
+
+        FitsFactory.setLongStringsEnabled(true);
+
+        hc = new HeaderCard(key, "a verly long value that must be splitted over multiple lines to fit the card", "the comment is also not the smallest");
+
+        assertEquals("HIERARCH TEST1 TEST2 INT= 'a verly long value that must be splitted over multi&'" + //
+                "CONTINUE  'ple lines to fit the card' / the comment is also not the smallest    ", hc.toString());
+
+        FitsFactory.setLongStringsEnabled(false);
     }
 
     @Test
