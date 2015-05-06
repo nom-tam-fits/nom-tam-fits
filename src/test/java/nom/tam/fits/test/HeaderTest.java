@@ -320,6 +320,17 @@ public class HeaderTest {
         assertEquals("This is a very long string keyword value that is continued over 2 keywords        &", card.getValue());
         assertEquals("Optional Comment", card.getComment());
 
+        card =
+                new HeaderCard(
+
+                        "LONGSTR",
+                        "This is very very very very very very very very very very very very very very very very very very very very very very very very very very very long string value of FITS card",
+                        "long longer longest comment");
+        assertEquals("LONGSTR = 'This is very very very very very very very very very very very very&'" + //
+                "CONTINUE  ' very very very very very very very very very very very very very v&'" + //
+                "CONTINUE  'ery very long string value of FITS &' / long longer longest comment  " + //
+                "CONTINUE  'card'                                                                ", card.toString());
+
         FitsFactory.setLongStringsEnabled(false);
     }
 

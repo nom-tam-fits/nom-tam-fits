@@ -701,7 +701,7 @@ public class HeaderCard {
                 buf.append("&'");
                 stringValue.rest();
             } else {
-                if (commentValue.length() > (67 - stringValue.length())) {
+                if (commentValue.length() > (65 - stringValue.length())) {
                     // ok comment does not fit lets give it a little more room
                     stringValue.getAdjustedLength(35);
                     if (stringValue.fullLength() > stringValue.length()) {
@@ -720,9 +720,11 @@ public class HeaderCard {
                     buf.append(stringValue);
                     buf.append('\'');
                 }
-                buf.append(" / ");
-                buf.append(commentValue);
-                commentValue.rest();
+                if (commentValue.length() > 0) {
+                    buf.append(" / ");
+                    buf.append(commentValue);
+                    commentValue.rest();
+                }
                 buf.completeLine();
                 stringValue.rest();
             }
