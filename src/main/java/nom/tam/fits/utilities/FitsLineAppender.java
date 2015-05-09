@@ -33,46 +33,66 @@ package nom.tam.fits.utilities;
 
 /**
  * This class handles the writing of a card line. It keeps track of the position
- * in the line and will limit it to 80 characters.
+ * in the line and will limit it to 80 characters. A write will never cross the
+ * line border but a write when the line is at position 80 will start a new
+ * line.
  * 
  * @author Richard van Nieuwenhoven
  */
 public class FitsLineAppender {
 
+    /**
+     * A String of 80 spaces to fill up fits card space.
+     */
     private static String _80_SPACES = "                                                                                ";
 
+    /**
+     * the underlying StringBuffer to which the writing of fits lines happens.
+     */
     private final StringBuffer buffer;
 
+    /**
+     * the char current position in the line.
+     */
     private int charCount;
 
-    public FitsLineAppender(StringBuffer buffer) {
-        this.buffer = buffer;
+    /**
+     * create a new FitsLineAppender that will have space allocated for one
+     * line.
+     */
+    public FitsLineAppender() {
+        buffer = new StringBuffer(80);
     }
 
-    public FitsLineAppender(StringBuffer buffer, int charCount) {
-        this(buffer);
-        this.charCount = charCount;
-    }
-
-    public void append(char c) {
-        buffer.append(c);
+    /**
+     * append a character to the fits line.
+     * 
+     * @param character
+     *            the character to append to the line.
+     */
+    public void append(char character) {
+        buffer.append(character);
         charCount++;
     }
 
+    /**
+     * Append a sub-sting to this line.
+     * 
+     * @param stringValue
+     *            the sub string to append.
+     */
     public void append(FitsSubString stringValue) {
         stringValue.appendTo(buffer);
         charCount += stringValue.length();
     }
 
-    public void completeLine() {
-        int count = 80 - (charCount % 80);
-        if (count < 80) {
-            buffer.append(_80_SPACES, 0, count);
-        }
-        // line completed start with 0;
-        charCount = 0;
-    }
-
+    /**
+     * append a string to the fits line, but limit the append to the line
+     * length. rest of the string will be silently truncated.
+     * 
+     * @param string
+     *            the string to append
+     */
     public void append(String string) {
         charCount = charCount % 80;
         int newLength = charCount + string.length();
@@ -85,32 +105,20 @@ public class FitsLineAppender {
         }
     }
 
-    public int spaceLeftInLine() {
-        charCount = charCount % 80;
-        return 80 - charCount;
-    }
-
-    public void appendSpacesTo(int count) {
-        charCount = charCount % 80;
-        if (charCount != 0) {
-            int spaces = count - charCount;
-            if (spaces > 0) {
-                buffer.append(_80_SPACES, 0, spaces);
-                charCount += spaces;
-            }
-        }
-    }
-
-    public int length() {
-        charCount = charCount % 80;
-        return charCount;
-    }
-
+    /**
+     * append a part of a string starting at the offset. Limit the append to the
+     * line length. rest of the string will be silently truncated.
+     * 
+     * @param string
+     *            the sting to append.
+     * @param offset
+     *            the ofsset in the sting to append.
+     */
     public void append(String string, int offset) {
 
         int newLength = charCount + string.length() - offset;
         if (newLength > 80) {
-            buffer.append(string, offset, offset + (80 - charCount));
+            buffer.append(string, offset, offset + 80 - charCount);
             charCount = 0;
         } else {
             charCount = newLength;
@@ -119,11 +127,17 @@ public class FitsLineAppender {
 
     }
 
-    @Override
-    public String toString() {
-        return buffer.toString();
-    }
-
+    /**
+     * append a string to the buffer but replace all occurrences of a character
+     * with an other.
+     * 
+     * @param key
+     *            the string to write
+     * @param toReplace
+     *            the character to replace
+     * @param with
+     *            the character to replace the toReplace character with.
+     */
     public void appendRepacing(String key, char toReplace, char with) {
         int size = key.length();
         for (int index = 0; index < size; index++) {
@@ -135,5 +149,56 @@ public class FitsLineAppender {
             }
         }
         charCount += size;
+    }
+
+    /**
+     * append a number of spaces to the line, limited to the line length!
+     * 
+     * @param count
+     *            the number of spaces to write.
+     */
+    public void appendSpacesTo(int count) {
+        charCount = charCount % 80;
+        if (charCount != 0) {
+            int spaces = count - charCount;
+            if (spaces > 0) {
+                buffer.append(_80_SPACES, 0, spaces);
+                charCount += spaces;
+            }
+        }
+    }
+
+    /**
+     * fill the rest of current line with spaces and start a new fits line.
+     */
+    public void completeLine() {
+        int count = 80 - charCount % 80;
+        if (count < 80) {
+            buffer.append(_80_SPACES, 0, count);
+        }
+        // line completed start with 0;
+        charCount = 0;
+    }
+
+    /**
+     * @return the character position in the current line.
+     */
+    public int length() {
+        charCount = charCount % 80;
+        return charCount;
+    }
+
+    /**
+     * @return the number of characters still available in the current fits
+     *         line.
+     */
+    public int spaceLeftInLine() {
+        charCount = charCount % 80;
+        return 80 - charCount;
+    }
+
+    @Override
+    public String toString() {
+        return buffer.toString();
     }
 }

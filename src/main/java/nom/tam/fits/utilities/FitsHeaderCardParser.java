@@ -43,30 +43,14 @@ import java.util.regex.Pattern;
 public class FitsHeaderCardParser {
 
     /**
-     * pattern to replace the double quotes from string values to single quotes.
-     */
-    private static Pattern DOUBLE_QUOTE_PATTERN = Pattern.compile("''");
-
-    /**
-     * pattern to match a quoted string where 2 quotes are used to escape a
-     * single quote inside the string.
-     */
-    private static Pattern STRING_PATTERN = Pattern.compile("'(?:[^']|'{2})*'");
-
-    /**
-     * pattern to match FITS keywords, specially to parse hirarchical keywords.
-     */
-    private static Pattern KEYWORD_PATTERN = Pattern.compile("([A-Z|0-9|_|-]+)([ |\\|.]*=?)");
-
-    /**
      * value comment pair of the header card.
      */
     public static class ParsedValue {
 
         /**
-         * the value of the card. (trimmed)
+         * the comment specified with the value.
          */
-        private String value = null;
+        private String comment = null;
 
         /**
          * was the value quoted?
@@ -74,9 +58,16 @@ public class FitsHeaderCardParser {
         private boolean isString = false;
 
         /**
-         * the comment specified with the value.
+         * the value of the card. (trimmed)
          */
-        private String comment = null;
+        private String value = null;
+
+        /**
+         * @return the comment of the card.
+         */
+        public String getComment() {
+            return comment;
+        }
 
         /**
          * @return the value of the card.
@@ -92,14 +83,23 @@ public class FitsHeaderCardParser {
             return isString;
         }
 
-        /**
-         * @return the comment of the card.
-         */
-        public String getComment() {
-            return comment;
-        }
-
     }
+
+    /**
+     * pattern to replace the double quotes from string values to single quotes.
+     */
+    private static Pattern DOUBLE_QUOTE_PATTERN = Pattern.compile("''");
+
+    /**
+     * pattern to match FITS keywords, specially to parse hirarchical keywords.
+     */
+    private static Pattern KEYWORD_PATTERN = Pattern.compile("([A-Z|0-9|_|-]+)([ |\\|.]*=?)");
+
+    /**
+     * pattern to match a quoted string where 2 quotes are used to escape a
+     * single quote inside the string.
+     */
+    private static Pattern STRING_PATTERN = Pattern.compile("'(?:[^']|'{2})*'");
 
     /**
      * utility class will not be instantiated.
@@ -108,21 +108,26 @@ public class FitsHeaderCardParser {
     }
 
     /**
-     * get the not empty comment string from the end of the card. start scanning
-     * from the end of the value.
+     * parse a fits keyword from a card and return it as a dot separated list.
      * 
-     * @param stringCard
-     *            the string representing the card
-     * @param startPosition
-     *            the start point for the scan
-     * @return the not empty comment or null if no comment was found.
+     * @param card
+     *            the card to parse.
+     * @return
      */
-    private static String extractComment(String stringCard, int startPosition) {
-        int startOfComment = stringCard.indexOf('/', startPosition) + 1;
-        if (startOfComment > 0 && stringCard.length() > startOfComment) {
-            return stringCard.substring(startOfComment).trim();
+    public static String parseCardKey(String card) {
+        int indexOfEquals = card.indexOf('=');
+        StringBuilder builder = new StringBuilder();
+        Matcher kewordMatcher = KEYWORD_PATTERN.matcher(card);
+        while (kewordMatcher.find() && kewordMatcher.start() < indexOfEquals) {
+            if (builder.length() != 0) {
+                builder.append('.');
+            }
+            builder.append(kewordMatcher.group(1));
+            if (kewordMatcher.group(2).endsWith("=")) {
+                break;
+            }
         }
-        return null;
+        return builder.toString();
     }
 
     /**
@@ -155,31 +160,6 @@ public class FitsHeaderCardParser {
     }
 
     /**
-     * lets see if there is a quoted sting in the card.
-     * 
-     * @param card
-     *            the card string to parse.
-     * @return the parsed value with the unquoted string or null if no quoted
-     *         string was found.
-     */
-    private static ParsedValue parseStringValue(String card) {
-        ParsedValue stringValue = null;
-        Matcher matcher = STRING_PATTERN.matcher(card);
-        if (matcher.find()) {
-            int indexOfComment = card.indexOf('/');
-            if (indexOfComment >= 0 && indexOfComment < matcher.start()) {
-                // ok the string was commented, forget the string.
-                return null;
-            }
-            stringValue = new ParsedValue();
-            stringValue.isString = true;
-            stringValue.value = deleteQuotes(matcher.group(0));
-            stringValue.comment = extractComment(card, matcher.end());
-        }
-        return stringValue;
-    }
-
-    /**
      * delete the start and trailing quote from the sting and replace all
      * (escaped)double quotes with a single quote. Then trim the trailing
      * blanks.
@@ -206,26 +186,46 @@ public class FitsHeaderCardParser {
     }
 
     /**
-     * parse a fits keyword from a card and return it as a dot separated list.
+     * get the not empty comment string from the end of the card. start scanning
+     * from the end of the value.
+     * 
+     * @param stringCard
+     *            the string representing the card
+     * @param startPosition
+     *            the start point for the scan
+     * @return the not empty comment or null if no comment was found.
+     */
+    private static String extractComment(String stringCard, int startPosition) {
+        int startOfComment = stringCard.indexOf('/', startPosition) + 1;
+        if (startOfComment > 0 && stringCard.length() > startOfComment) {
+            return stringCard.substring(startOfComment).trim();
+        }
+        return null;
+    }
+
+    /**
+     * lets see if there is a quoted sting in the card.
      * 
      * @param card
-     *            the card to parse.
-     * @return
+     *            the card string to parse.
+     * @return the parsed value with the unquoted string or null if no quoted
+     *         string was found.
      */
-    public static String parseCardKey(String card) {
-        int indexOfEquals = card.indexOf('=');
-        StringBuilder builder = new StringBuilder();
-        Matcher kewordMatcher = KEYWORD_PATTERN.matcher(card);
-        while (kewordMatcher.find() && kewordMatcher.start() < indexOfEquals) {
-            if (builder.length() != 0) {
-                builder.append('.');
+    private static ParsedValue parseStringValue(String card) {
+        ParsedValue stringValue = null;
+        Matcher matcher = STRING_PATTERN.matcher(card);
+        if (matcher.find()) {
+            int indexOfComment = card.indexOf('/');
+            if (indexOfComment >= 0 && indexOfComment < matcher.start()) {
+                // ok the string was commented, forget the string.
+                return null;
             }
-            builder.append(kewordMatcher.group(1));
-            if (kewordMatcher.group(2).endsWith("=")) {
-                break;
-            }
+            stringValue = new ParsedValue();
+            stringValue.isString = true;
+            stringValue.value = deleteQuotes(matcher.group(0));
+            stringValue.comment = extractComment(card, matcher.end());
         }
-        return builder.toString();
+        return stringValue;
     }
 
 }

@@ -31,20 +31,79 @@ package nom.tam.fits.utilities;
  * #L%
  */
 
+/**
+ * This class is a pointer into a part of an other string, it can be manipulated
+ * by changing the position pointers into the "original" string. This class is
+ * aware of the escape quote, two quotes in sequence the respresent a single
+ * quote.
+ * 
+ * @author Richard van Nieuwenhoven
+ */
 public class FitsSubString {
 
-    private final String originalString;
-
-    private int offset;
-
+    /**
+     * the length of the substring (starting at the offset).
+     */
     private int length;
 
+    /**
+     * the offset into the original string where this string starts.
+     */
+    private int offset;
+
+    /**
+     * the original String.
+     */
+    private final String originalString;
+
+    /**
+     * constructor for the substring, start by representing the whole string.
+     * 
+     * @param originalString
+     *            the string to represent.
+     */
     public FitsSubString(String originalString) {
         this.originalString = originalString == null ? "" : originalString;
         offset = 0;
         length = this.originalString.length();
     }
 
+    /**
+     * append the current string representation to the StringBuffer.
+     * 
+     * @param buffer
+     *            the buffer to append to.
+     */
+    public void appendTo(StringBuffer buffer) {
+        buffer.append(originalString, offset, offset + length);
+    }
+
+    /**
+     * get the character at the specified position.
+     * 
+     * @param pos
+     *            the position the get the character from
+     * @return the character at the specified position
+     */
+    public char charAt(int pos) {
+        return originalString.charAt(pos + offset);
+    }
+
+    /**
+     * @return get the length of the orginal string from the current offset.
+     */
+    public int fullLength() {
+        return originalString.length() - offset;
+    }
+
+    /**
+     * check the string and set it to the maximum length specified. if a escaped
+     * quote is on the boundary the length is reduced in a way that the string
+     * does not separate an escape quote.
+     * 
+     * @param max
+     *            the maximum string legth to set.
+     */
     public void getAdjustedLength(int max) {
         if (max <= 0) {
             length = 0;
@@ -54,36 +113,42 @@ public class FitsSubString {
                 pos--;
             }
             // now we are at the start of the quotes step forward in steps of 2
-            pos += (((max - 1) - pos) / 2) * 2;
+            pos += (max - 1 - pos) / 2 * 2;
             length = pos + 1;
         }
     }
 
-    public char charAt(int pos) {
-        return originalString.charAt(pos + offset);
-    }
-
-    public void appendTo(StringBuffer buffer) {
-        buffer.append(originalString, offset, offset + length);
-    }
-
+    /**
+     * @return the string length of this String.
+     */
     public int length() {
         return length;
     }
 
+    /**
+     * shift the sting to the rest of the string, the part of the original
+     * string that is after the part of the string this instance currently
+     * represents.
+     */
     public void rest() {
         offset += length;
         length = originalString.length() - offset;
     }
 
-    public void skip(int i) {
-        offset++;
+    /**
+     * skip over the specified number of characters.
+     * 
+     * @param count
+     */
+    public void skip(int count) {
+        offset += count;
     }
 
-    public int fullLength() {
-        return originalString.length() - offset;
-    }
-
+    /**
+     * @param string
+     *            the string to check
+     * @return true if the current string starts with the specified string.
+     */
     public boolean startsWith(String string) {
         return originalString.regionMatches(offset, string, 0, string.length());
     }

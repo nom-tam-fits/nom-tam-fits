@@ -606,7 +606,7 @@ public class HeaderCard {
     public String toString() {
         int alignSmallString = 19;
         int alignPosition = 30;
-        FitsLineAppender buf = new FitsLineAppender(new StringBuffer(80));
+        FitsLineAppender buf = new FitsLineAppender();
         // start with the keyword, if there is one
         if (key != null) {
             if (key.length() > 9 && key.substring(0, 9).equals("HIERARCH.")) {
