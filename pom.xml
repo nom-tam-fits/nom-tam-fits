@@ -311,9 +311,6 @@
 				<groupId>org.eluder.coveralls</groupId>
 				<artifactId>coveralls-maven-plugin</artifactId>
 				<version>3.1.0</version>
-				<configuration>
-					<serviceJobId>${env.TRAVIS_JOB_ID}</serviceJobId>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
