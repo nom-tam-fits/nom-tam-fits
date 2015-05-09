@@ -9,3 +9,4 @@ release.properties
 /LICENSE.txt
 /.settings/
 /jtest.fil
+/.travis.yml~
