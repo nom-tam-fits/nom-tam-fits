@@ -14,5 +14,7 @@ visit our documentation at:
 
 current build status at https://travis-ci.org [![Build Status](https://travis-ci.org/nom-tam-fits/nom-tam-fits.png)](https://travis-ci.org/nom-tam-fits/nom-tam-fits)
 
+Test Coverage Status [![Coverage Status](https://coveralls.io/repos/dzlab/nanohttpd/badge.png)](https://coveralls.io/r/dzlab/nanohttpd)
+
 
 
