@@ -189,13 +189,8 @@ public class Header implements FitsElement {
      *            The card to be added.
      */
     public void addLine(HeaderCard fcard) {
-
         if (fcard != null) {
-            if (fcard.isKeyValuePair()) {
-                this.iter.add(fcard.getKey(), fcard);
-            } else {
-                this.iter.add(fcard);
-            }
+            this.iter.add(fcard);
         }
     }
 
@@ -272,7 +267,7 @@ public class Header implements FitsElement {
      */
     public void addValue(String key, BigDecimal val, String comment) throws HeaderCardException {
         removeCard(key);
-        this.iter.add(key, new HeaderCard(key, val, comment));
+        this.iter.add(new HeaderCard(key, val, comment));
     }
 
     /**
@@ -290,7 +285,7 @@ public class Header implements FitsElement {
      */
     public void addValue(String key, BigInteger val, String comment) throws HeaderCardException {
         removeCard(key);
-        this.iter.add(key, new HeaderCard(key, val, comment));
+        this.iter.add(new HeaderCard(key, val, comment));
     }
 
     /**
@@ -307,7 +302,7 @@ public class Header implements FitsElement {
      */
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
         removeCard(key);
-        this.iter.add(key, new HeaderCard(key, val, comment));
+        this.iter.add(new HeaderCard(key, val, comment));
     }
 
     /**
@@ -325,7 +320,7 @@ public class Header implements FitsElement {
      */
     public void addValue(String key, double val, String comment) throws HeaderCardException {
         removeCard(key);
-        this.iter.add(key, new HeaderCard(key, val, comment));
+        this.iter.add(new HeaderCard(key, val, comment));
     }
 
     /**
@@ -343,7 +338,7 @@ public class Header implements FitsElement {
      */
     public void addValue(String key, long val, String comment) throws HeaderCardException {
         removeCard(key);
-        this.iter.add(key, new HeaderCard(key, val, comment));
+        this.iter.add(new HeaderCard(key, val, comment));
     }
 
     /**
@@ -360,7 +355,7 @@ public class Header implements FitsElement {
      */
     public void addValue(String key, String val, String comment) throws HeaderCardException {
         removeCard(key);
-        this.iter.add(key, new HeaderCard(key, val, comment));
+        this.iter.add(new HeaderCard(key, val, comment));
     }
 
     /**
@@ -1437,7 +1432,7 @@ public class Header implements FitsElement {
         this.iter = iterator();
         this.iter.next();
         try {
-            this.iter.add("BITPIX", new HeaderCard("BITPIX", val, "ntf::header:bitpix:1"));
+            this.iter.add(new HeaderCard("BITPIX", val, "ntf::header:bitpix:1"));
         } catch (HeaderCardException e) {
             System.err.println("Impossible exception at setBitpix " + e);
         }
@@ -1456,7 +1451,7 @@ public class Header implements FitsElement {
         }
 
         try {
-            this.iter.add("NAXIS", new HeaderCard("NAXIS", val, "ntf::header:naxis:1"));
+            this.iter.add(new HeaderCard("NAXIS", val, "ntf::header:naxis:1"));
         } catch (HeaderCardException e) {
             System.err.println("Impossible exception at setNaxes " + e);
         }
@@ -1484,7 +1479,7 @@ public class Header implements FitsElement {
             this.iter.next();
         }
         try {
-            this.iter.add("NAXIS" + axis, new HeaderCard("NAXIS" + axis, dim, "ntf::header:naxisN:1"));
+            this.iter.add(new HeaderCard("NAXIS" + axis, dim, "ntf::header:naxisN:1"));
 
         } catch (HeaderCardException e) {
             System.err.println("Impossible exception at setNaxis " + e);
@@ -1514,7 +1509,7 @@ public class Header implements FitsElement {
                 this.iter.next();
                 try {
                     removeCard("EXTEND");
-                    this.iter.add("EXTEND", new HeaderCard("EXTEND", true, "ntf::header:extend:1"));
+                    this.iter.add(new HeaderCard("EXTEND", true, "ntf::header:extend:1"));
                 } catch (Exception e) { // Ignore the exception
                 }
                 ;
@@ -1523,7 +1518,7 @@ public class Header implements FitsElement {
 
         this.iter = iterator();
         try {
-            this.iter.add("SIMPLE", new HeaderCard("SIMPLE", val, "ntf::header:simple:1"));
+            this.iter.add(new HeaderCard("SIMPLE", val, "ntf::header:simple:1"));
         } catch (HeaderCardException e) {
             System.err.println("Impossible exception at setSimple " + e);
         }
@@ -1542,7 +1537,7 @@ public class Header implements FitsElement {
         deleteKey("EXTEND");
         this.iter = iterator();
         try {
-            this.iter.add("XTENSION", new HeaderCard("XTENSION", val, "ntf::header:xtension:1"));
+            this.iter.add(new HeaderCard("XTENSION", val, "ntf::header:xtension:1"));
         } catch (HeaderCardException e) {
             System.err.println("Impossible exception at setXtension " + e);
         }
@@ -1623,7 +1618,7 @@ public class Header implements FitsElement {
      */
     public void updateLine(String key, HeaderCard card) throws HeaderCardException {
         removeCard(key);
-        this.iter.add(key, card);
+        this.iter.add(card);
     }
 
     /**

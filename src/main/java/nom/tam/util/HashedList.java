@@ -102,12 +102,12 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
          */
         @Override
         public void add(KEY key, VALUE ref) {
-            HashedList.this.add(this.current++, key, ref);
+            add(ref);
         }
 
         @Override
         public void add(VALUE reference) {
-            add(reference.getKey(), reference);
+            HashedList.this.add(this.current++, reference);
         }
 
         @Override
@@ -215,8 +215,9 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
      * @param reference
      *            The actual object being stored.
      */
-    public boolean add(int pos, KEY key, VALUE reference) {
+    public boolean add(int pos, VALUE reference) {
         VALUE entry = reference;
+        KEY key = entry.getKey();
         if (this.keyed.containsKey(key)) {
             int oldPos = indexOf(entry);
             if (oldPos == -1) {
@@ -239,7 +240,7 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
 
     @Override
     public boolean add(VALUE e) {
-        add(this.ordered.size(), e.getKey(), e);
+        add(this.ordered.size(), e);
         return true;
     }
 

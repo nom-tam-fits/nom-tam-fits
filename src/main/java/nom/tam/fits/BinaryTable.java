@@ -1021,7 +1021,7 @@ public class BinaryTable extends Data implements TableData {
         }
 
         String key = "TFORM" + (col + 1);
-        iter.add(key, new HeaderCard(key, tform, "ntf::binarytable:tformN:1"));
+        iter.add(new HeaderCard(key, tform, "ntf::binarytable:tformN:1"));
 
         if (this.dimens[col].length > 0 && !isVarCol(col)) {
 
@@ -1034,7 +1034,7 @@ public class BinaryTable extends Data implements TableData {
             }
             tdim.append(')');
             key = "TDIM" + (col + 1);
-            iter.add(key, new HeaderCard(key, new String(tdim), "ntf::headercard:tdimN:1"));
+            iter.add(new HeaderCard(key, new String(tdim), "ntf::headercard:tdimN:1"));
         }
     }
 
@@ -1055,7 +1055,7 @@ public class BinaryTable extends Data implements TableData {
             Cursor iter = h.iterator();
             iter.setKey("GCOUNT");
             iter.next();
-            iter.add("TFIELDS", new HeaderCard("TFIELDS", this.modelRow.length, "ntf::binarytable:tfields:1"));
+            iter.add(new HeaderCard("TFIELDS", this.modelRow.length, "ntf::binarytable:tfields:1"));
 
             for (int i = 0; i < this.modelRow.length; i += 1) {
                 if (i > 0) {

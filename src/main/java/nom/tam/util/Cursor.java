@@ -43,6 +43,7 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
      * Add a keyed element to the collection. The new element is placed such
      * that it will be called by a prev() call, but not a next() call.
      */
+    @Deprecated
     public abstract void add(KEY key, VALUE reference);
 
     /**

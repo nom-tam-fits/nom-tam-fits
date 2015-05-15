@@ -175,9 +175,9 @@ public class AsciiTable extends Data implements TableData {
         }
         String key;
         key = "TFORM" + (col + 1);
-        iter.add(key, new HeaderCard(key, tform, "ntf::asciitable:tformN:1"));
+        iter.add(new HeaderCard(key, tform, "ntf::asciitable:tformN:1"));
         key = "TBCOL" + (col + 1);
-        iter.add(key, new HeaderCard(key, this.offsets[col] + 1, "ntf::asciitable:tbcolN:1"));
+        iter.add(new HeaderCard(key, this.offsets[col] + 1, "ntf::asciitable:tbcolN:1"));
         return this.lengths[col];
     }
 
@@ -505,9 +505,9 @@ public class AsciiTable extends Data implements TableData {
             Cursor iter = hdr.iterator();
             iter.setKey("NAXIS2");
             iter.next();
-            iter.add("PCOUNT", new HeaderCard("PCOUNT", 0, "ntf::asciitable:pcount:1"));
-            iter.add("GCOUNT", new HeaderCard("GCOUNT", 1, "ntf::asciitable:gcount:1"));
-            iter.add("TFIELDS", new HeaderCard("TFIELDS", this.nFields, "ntf::asciitable:tfields:1"));
+            iter.add(new HeaderCard("PCOUNT", 0, "ntf::asciitable:pcount:1"));
+            iter.add(new HeaderCard("GCOUNT", 1, "ntf::asciitable:gcount:1"));
+            iter.add(new HeaderCard("TFIELDS", this.nFields, "ntf::asciitable:tfields:1"));
 
             for (int i = 0; i < this.nFields; i += 1) {
                 addColInfo(i, iter);

@@ -69,18 +69,18 @@ public class HeaderTest {
         Cursor c = hdr.iterator();
 
         c.setKey("XXX");
-        c.add(CTYPE1.key(), new HeaderCard(CTYPE1.key(), "GLON-CAR", "Galactic Longitude"));
-        c.add(CTYPE2.key(), new HeaderCard(CTYPE2.key(), "GLAT-CAR", "Galactic Latitude"));
+        c.add(new HeaderCard(CTYPE1.key(), "GLON-CAR", "Galactic Longitude"));
+        c.add(new HeaderCard(CTYPE2.key(), "GLAT-CAR", "Galactic Latitude"));
         c.setKey(CTYPE1.key()); // Move before CTYPE1
-        c.add(CRVAL1.key(), new HeaderCard(CRVAL1.key(), 0., "Longitude at reference"));
+        c.add(new HeaderCard(CRVAL1.key(), 0., "Longitude at reference"));
         c.setKey(CTYPE2.key()); // Move before CTYPE2
-        c.add(CRVAL2.key(), new HeaderCard(CRVAL2.key(), -90., "Latitude at reference"));
+        c.add(new HeaderCard(CRVAL2.key(), -90., "Latitude at reference"));
         c.setKey(CTYPE1.key()); // Just practicing moving around!!
-        c.add(CRPIX1.key(), new HeaderCard(CRPIX1.key(), 150.0, "Reference Pixel X"));
+        c.add(new HeaderCard(CRPIX1.key(), 150.0, "Reference Pixel X"));
         c.setKey(CTYPE2.key());
-        c.add(CRPIX2.key(), new HeaderCard(CRPIX2.key(), 0., "Reference pixel Y"));
-        c.add("INV2", new HeaderCard("INV2", true, "Invertible axis"));
-        c.add("SYM2", new HeaderCard("SYM2", "YZ SYMMETRIC", "Symmetries..."));
+        c.add(new HeaderCard(CRPIX2.key(), 0., "Reference pixel Y"));
+        c.add(new HeaderCard("INV2", true, "Invertible axis"));
+        c.add(new HeaderCard("SYM2", "YZ SYMMETRIC", "Symmetries..."));
 
         assertEquals(CTYPE1.key(), "GLON-CAR", hdr.getStringValue(CTYPE1));
         assertEquals(CRPIX2.key(), 0., hdr.getDoubleValue(CRPIX2, -2.), 0);
@@ -341,7 +341,7 @@ public class HeaderTest {
         f.addHDU(hdu);
         Cursor<String, HeaderCard> iter = hdu.getHeader().iterator();
         iter.end();
-        iter.add("KEY", new HeaderCard("KEY", "VALUE", "COMMENT"));
+        iter.add(new HeaderCard("KEY", "VALUE", "COMMENT"));
         BufferedFile bf = new BufferedFile("target/testHeaderCommentsDrift.fits", "rw");
         f.write(bf);
         bf.close();
