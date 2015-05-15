@@ -37,65 +37,9 @@ import nom.tam.util.ArrayFuncs;
 /** FITS image header/data unit */
 public class ImageHDU extends BasicHDU {
 
-    /**
-     * Build an image HDU using the supplied data.
-     * 
-     * @param h
-     *            the header for the image.
-     * @param d
-     *            the data used in the image.
-     * @exception FitsException
-     *                if there was a problem with the data.
-     */
-    public ImageHDU(Header h, Data d) throws FitsException {
-        myData = d;
-        myHeader = h;
-
-    }
-
-    /** Indicate that Images can appear at the beginning of a FITS dataset */
-    @Override
-    protected boolean canBePrimary() {
-        return true;
-    }
-
-    /** Change the Image from/to primary */
-    @Override
-    protected void setPrimaryHDU(boolean status) {
-
-        try {
-            super.setPrimaryHDU(status);
-        } catch (FitsException e) {
-            System.err.println("Impossible exception in ImageData");
-        }
-
-        if (status) {
-            myHeader.setSimple(true);
-        } else {
-            myHeader.setXtension("IMAGE");
-        }
-    }
-
-    /**
-     * Check that this HDU has a valid header for this type.
-     * 
-     * @return <CODE>true</CODE> if this HDU has a valid header.
-     */
-    public static boolean isHeader(Header hdr) {
-        boolean found = false;
-        found = hdr.getBooleanValue("SIMPLE");
-        if (!found) {
-            String s = hdr.getStringValue("XTENSION");
-            if (s != null) {
-                if (s.trim().equals("IMAGE") || s.trim().equals("IUEIMAGE")) {
-                    found = true;
-                }
-            }
-        }
-        if (!found) {
-            return false;
-        }
-        return !hdr.getBooleanValue("GROUPS");
+    /** Encapsulate an object as an ImageHDU. */
+    public static Data encapsulate(Object o) throws FitsException {
+        return new ImageData(o);
     }
 
     /**
@@ -124,16 +68,25 @@ public class ImageHDU extends BasicHDU {
     }
 
     /**
-     * Create a Data object to correspond to the header description.
+     * Check that this HDU has a valid header for this type.
      * 
-     * @return An unfilled Data object which can be used to read in the data for
-     *         this HDU.
-     * @exception FitsException
-     *                if the image extension could not be created.
+     * @return <CODE>true</CODE> if this HDU has a valid header.
      */
-    @Override
-    public Data manufactureData() throws FitsException {
-        return manufactureData(myHeader);
+    public static boolean isHeader(Header hdr) {
+        boolean found = false;
+        found = hdr.getBooleanValue("SIMPLE");
+        if (!found) {
+            String s = hdr.getStringValue("XTENSION");
+            if (s != null) {
+                if (s.trim().equals("IMAGE") || s.trim().equals("IUEIMAGE")) {
+                    found = true;
+                }
+            }
+        }
+        if (!found) {
+            return false;
+        }
+        return !hdr.getBooleanValue("GROUPS");
     }
 
     public static Data manufactureData(Header hdr) throws FitsException {
@@ -160,13 +113,30 @@ public class ImageHDU extends BasicHDU {
         return h;
     }
 
-    /** Encapsulate an object as an ImageHDU. */
-    public static Data encapsulate(Object o) throws FitsException {
-        return new ImageData(o);
+    /**
+     * Build an image HDU using the supplied data.
+     * 
+     * @param h
+     *            the header for the image.
+     * @param d
+     *            the data used in the image.
+     * @exception FitsException
+     *                if there was a problem with the data.
+     */
+    public ImageHDU(Header h, Data d) throws FitsException {
+        this.myData = d;
+        this.myHeader = h;
+
+    }
+
+    /** Indicate that Images can appear at the beginning of a FITS dataset */
+    @Override
+    protected boolean canBePrimary() {
+        return true;
     }
 
     public StandardImageTiler getTiler() {
-        return ((ImageData) myData).getTiler();
+        return ((ImageData) this.myData).getTiler();
     }
 
     /**
@@ -174,29 +144,59 @@ public class ImageHDU extends BasicHDU {
      */
     @Override
     public void info() {
-        if (isHeader(myHeader)) {
+        if (isHeader(this.myHeader)) {
             System.out.println("  Image");
         } else {
             System.out.println("  Image (bad header)");
         }
 
         System.out.println("      Header Information:");
-        System.out.println("         BITPIX=" + myHeader.getIntValue("BITPIX", -1));
-        int naxis = myHeader.getIntValue("NAXIS", -1);
+        System.out.println("         BITPIX=" + this.myHeader.getIntValue("BITPIX", -1));
+        int naxis = this.myHeader.getIntValue("NAXIS", -1);
         System.out.println("         NAXIS=" + naxis);
         for (int i = 1; i <= naxis; i += 1) {
-            System.out.println("         NAXIS" + i + "=" + myHeader.getIntValue("NAXIS" + i, -1));
+            System.out.println("         NAXIS" + i + "=" + this.myHeader.getIntValue("NAXIS" + i, -1));
         }
 
         System.out.println("      Data information:");
         try {
-            if (myData.getData() == null) {
+            if (this.myData.getData() == null) {
                 System.out.println("        No Data");
             } else {
-                System.out.println("         " + ArrayFuncs.arrayDescription(myData.getData()));
+                System.out.println("         " + ArrayFuncs.arrayDescription(this.myData.getData()));
             }
         } catch (Exception e) {
             System.out.println("      Unable to get data");
+        }
+    }
+
+    /**
+     * Create a Data object to correspond to the header description.
+     * 
+     * @return An unfilled Data object which can be used to read in the data for
+     *         this HDU.
+     * @exception FitsException
+     *                if the image extension could not be created.
+     */
+    @Override
+    public Data manufactureData() throws FitsException {
+        return manufactureData(this.myHeader);
+    }
+
+    /** Change the Image from/to primary */
+    @Override
+    protected void setPrimaryHDU(boolean status) {
+
+        try {
+            super.setPrimaryHDU(status);
+        } catch (FitsException e) {
+            System.err.println("Impossible exception in ImageData");
+        }
+
+        if (status) {
+            this.myHeader.setSimple(true);
+        } else {
+            this.myHeader.setXtension("IMAGE");
         }
     }
 }

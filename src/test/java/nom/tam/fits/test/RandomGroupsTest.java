@@ -94,10 +94,10 @@ public class RandomGroupsTest {
             pa = (float[]) data[i][0];
             fa = (float[][]) data[i][1];
             for (int j = 0; j < pa.length; j += 1) {
-                assertEquals("paramTest:" + i + " " + j, (float) (i + j), pa[j], 0);
+                assertEquals("paramTest:" + i + " " + j, i + j, pa[j], 0);
             }
             for (int j = 0; j < fa.length; j += 1) {
-                assertEquals("dataTest:" + i + " " + j, (float) (i * j), fa[j][j], 0);
+                assertEquals("dataTest:" + i + " " + j, i * j, fa[j][j], 0);
             }
         }
 
@@ -120,10 +120,10 @@ public class RandomGroupsTest {
             pa = (float[]) data[i][0];
             fa = (float[][]) data[i][1];
             for (int j = 0; j < pa.length; j += 1) {
-                assertEquals("paramTest:" + i + " " + j, (float) (i + j), pa[j], 0);
+                assertEquals("paramTest:" + i + " " + j, i + j, pa[j], 0);
             }
             for (int j = 0; j < fa.length; j += 1) {
-                assertEquals("dataTest:" + i + " " + j, (float) (i * j), fa[j][j], 0);
+                assertEquals("dataTest:" + i + " " + j, i * j, fa[j][j], 0);
             }
         }
     }

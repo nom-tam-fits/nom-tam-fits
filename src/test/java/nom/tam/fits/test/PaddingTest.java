@@ -81,7 +81,7 @@ public class PaddingTest {
             assertEquals("HDUCount2", 1, f.getNumberOfHDUs());
         }
 
-        ImageHDU hdu0 = (ImageHDU) (f.getHDU(0));
+        ImageHDU hdu0 = (ImageHDU) f.getHDU(0);
         byte[][] aa = (byte[][]) hdu0.getKernel();
         int miss = 0;
         int match = 0;
@@ -174,8 +174,8 @@ public class PaddingTest {
             assertEquals("HDUCount2", 2, f.getNumberOfHDUs());
         }
 
-        ImageHDU hdu0 = (ImageHDU) (f.getHDU(0));
-        ImageHDU hdu1 = (ImageHDU) (f.getHDU(1));
+        ImageHDU hdu0 = (ImageHDU) f.getHDU(0);
+        ImageHDU hdu1 = (ImageHDU) f.getHDU(1);
         byte[][] aa = (byte[][]) hdu0.getKernel();
         byte[][] bb = (byte[][]) hdu1.getKernel();
         int miss = 0;

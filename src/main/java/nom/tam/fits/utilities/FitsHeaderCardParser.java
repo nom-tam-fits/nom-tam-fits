@@ -66,21 +66,21 @@ public class FitsHeaderCardParser {
          * @return the comment of the card.
          */
         public String getComment() {
-            return comment;
+            return this.comment;
         }
 
         /**
          * @return the value of the card.
          */
         public String getValue() {
-            return value;
+            return this.value;
         }
 
         /**
          * @return true if the value was quoted.
          */
         public boolean isString() {
-            return isString;
+            return this.isString;
         }
 
     }
@@ -102,9 +102,47 @@ public class FitsHeaderCardParser {
     private static Pattern STRING_PATTERN = Pattern.compile("'(?:[^']|'{2})*'");
 
     /**
-     * utility class will not be instantiated.
+     * delete the start and trailing quote from the sting and replace all
+     * (escaped)double quotes with a single quote. Then trim the trailing
+     * blanks.
+     * 
+     * @param quotedString
+     *            the string to un-quote.
+     * @return the unquoted string
      */
-    private FitsHeaderCardParser() {
+    private static String deleteQuotes(String quotedString) {
+        Matcher doubleQuoteMatcher = FitsHeaderCardParser.DOUBLE_QUOTE_PATTERN.matcher(quotedString);
+        StringBuffer sb = new StringBuffer();
+        if (doubleQuoteMatcher.find(1)) {
+            do {
+                doubleQuoteMatcher.appendReplacement(sb, "'");
+            } while (doubleQuoteMatcher.find());
+        }
+        doubleQuoteMatcher.appendTail(sb);
+        sb.deleteCharAt(0);
+        sb.setLength(sb.length() - 1);
+        while (sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
+            sb.setLength(sb.length() - 1);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * get the not empty comment string from the end of the card. start scanning
+     * from the end of the value.
+     * 
+     * @param stringCard
+     *            the string representing the card
+     * @param startPosition
+     *            the start point for the scan
+     * @return the not empty comment or null if no comment was found.
+     */
+    private static String extractComment(String stringCard, int startPosition) {
+        int startOfComment = stringCard.indexOf('/', startPosition) + 1;
+        if (startOfComment > 0 && stringCard.length() > startOfComment) {
+            return stringCard.substring(startOfComment).trim();
+        }
+        return null;
     }
 
     /**
@@ -117,7 +155,7 @@ public class FitsHeaderCardParser {
     public static String parseCardKey(String card) {
         int indexOfEquals = card.indexOf('=');
         StringBuilder builder = new StringBuilder();
-        Matcher kewordMatcher = KEYWORD_PATTERN.matcher(card);
+        Matcher kewordMatcher = FitsHeaderCardParser.KEYWORD_PATTERN.matcher(card);
         while (kewordMatcher.find() && kewordMatcher.start() < indexOfEquals) {
             if (builder.length() != 0) {
                 builder.append('.');
@@ -160,50 +198,6 @@ public class FitsHeaderCardParser {
     }
 
     /**
-     * delete the start and trailing quote from the sting and replace all
-     * (escaped)double quotes with a single quote. Then trim the trailing
-     * blanks.
-     * 
-     * @param quotedString
-     *            the string to un-quote.
-     * @return the unquoted string
-     */
-    private static String deleteQuotes(String quotedString) {
-        Matcher doubleQuoteMatcher = DOUBLE_QUOTE_PATTERN.matcher(quotedString);
-        StringBuffer sb = new StringBuffer();
-        if (doubleQuoteMatcher.find(1)) {
-            do {
-                doubleQuoteMatcher.appendReplacement(sb, "'");
-            } while (doubleQuoteMatcher.find());
-        }
-        doubleQuoteMatcher.appendTail(sb);
-        sb.deleteCharAt(0);
-        sb.setLength(sb.length() - 1);
-        while (sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
-            sb.setLength(sb.length() - 1);
-        }
-        return sb.toString();
-    }
-
-    /**
-     * get the not empty comment string from the end of the card. start scanning
-     * from the end of the value.
-     * 
-     * @param stringCard
-     *            the string representing the card
-     * @param startPosition
-     *            the start point for the scan
-     * @return the not empty comment or null if no comment was found.
-     */
-    private static String extractComment(String stringCard, int startPosition) {
-        int startOfComment = stringCard.indexOf('/', startPosition) + 1;
-        if (startOfComment > 0 && stringCard.length() > startOfComment) {
-            return stringCard.substring(startOfComment).trim();
-        }
-        return null;
-    }
-
-    /**
      * lets see if there is a quoted sting in the card.
      * 
      * @param card
@@ -213,7 +207,7 @@ public class FitsHeaderCardParser {
      */
     private static ParsedValue parseStringValue(String card) {
         ParsedValue stringValue = null;
-        Matcher matcher = STRING_PATTERN.matcher(card);
+        Matcher matcher = FitsHeaderCardParser.STRING_PATTERN.matcher(card);
         if (matcher.find()) {
             int indexOfComment = card.indexOf('/');
             if (indexOfComment >= 0 && indexOfComment < matcher.start()) {
@@ -226,6 +220,12 @@ public class FitsHeaderCardParser {
             stringValue.comment = extractComment(card, matcher.end());
         }
         return stringValue;
+    }
+
+    /**
+     * utility class will not be instantiated.
+     */
+    private FitsHeaderCardParser() {
     }
 
 }

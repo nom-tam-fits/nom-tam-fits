@@ -39,17 +39,11 @@ import java.util.NoSuchElementException;
  */
 public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
 
-    /** Is there a previous element in the collection? */
-    public abstract boolean hasPrev();
-
-    /** Get the previous element */
-    public abstract VALUE prev() throws java.util.NoSuchElementException;
-
     /**
-     * Point the list at a particular element. Point to the end of the list if
-     * the key is not found.
+     * Add a keyed element to the collection. The new element is placed such
+     * that it will be called by a prev() call, but not a next() call.
      */
-    public abstract void setKey(KEY key);
+    public abstract void add(KEY key, VALUE reference);
 
     /**
      * Add an unkeyed element to the collection. The new element is placed such
@@ -58,10 +52,12 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
     public abstract void add(VALUE reference);
 
     /**
-     * Add a keyed element to the collection. The new element is placed such
-     * that it will be called by a prev() call, but not a next() call.
+     * move to the last element and return that.
      */
-    public abstract void add(KEY key, VALUE reference);
+    public abstract VALUE end();
+
+    /** Is there a previous element in the collection? */
+    public abstract boolean hasPrev();
 
     /**
      * Returns the count next element in the iteration.
@@ -72,8 +68,12 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
      */
     public abstract VALUE next(int count);
 
+    /** Get the previous element */
+    public abstract VALUE prev() throws java.util.NoSuchElementException;
+
     /**
-     * move to the last element and return that.
+     * Point the list at a particular element. Point to the end of the list if
+     * the key is not found.
      */
-    public abstract VALUE end();
+    public abstract void setKey(KEY key);
 }

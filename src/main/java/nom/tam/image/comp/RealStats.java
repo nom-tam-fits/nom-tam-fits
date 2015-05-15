@@ -42,6 +42,38 @@ import nom.tam.util.ArrayFuncs;
  */
 public class RealStats {
 
+    public static void main(String[] args) {
+        java.util.Random r = new java.util.Random(123451);
+
+        double[][] img = new double[100][100];
+        for (int i = 0; i < 100; i += 1) {
+            for (int j = 0; j < 100; j += 1) {
+                double g = r.nextGaussian();
+                img[i][j] = 1000 + .0001 * i + 0.01 * i * j + .1 * j + g;
+            }
+        }
+        RealStats rs = new RealStats(img);
+        System.err.println("N:    " + rs.n);
+        System.err.println("NaNs: " + rs.nNaN);
+        System.err.print("Naxis:" + rs.naxis);
+        if (rs.naxes == null) {
+            System.err.println("  Not rectangular");
+        } else {
+            System.err.print(" [");
+            for (int naxe : rs.naxes) {
+                System.err.print(" " + naxe);
+            }
+            System.err.println("]");
+        }
+        System.err.println("Min:  " + rs.min);
+        System.err.println("Max:  " + rs.max);
+        System.err.println("Sum:  " + rs.sum);
+        System.err.println("Var:  " + rs.var);
+        System.err.println("Avg:  " + rs.avg);
+        System.err.println("Std:  " + rs.std);
+        System.err.println("Noise:" + rs.noise3);
+    }
+
     public boolean flt; // Float versus double
 
     public int n; // Total number of pixels.
@@ -73,9 +105,9 @@ public class RealStats {
      */
     public RealStats(Object input) {
         Class base = ArrayFuncs.getBaseClass(input);
-        flt = false;
+        this.flt = false;
         if (base == float.class) {
-            flt = true;
+            this.flt = true;
         } else if (base != double.class) {
             throw new IllegalArgumentException("Handles only real data");
         }
@@ -83,114 +115,22 @@ public class RealStats {
         computeStats(input);
     }
 
-    private void computeStats(Object input) {
-        String clName = input.getClass().getName();
-        naxis = clName.length() - 1;
-        // Assume rectangular. We'll set to null
-        // later if proven wrong.
-        naxes = new int[naxis];
-        for (int i = 0; i < naxis; i += 1) {
-            naxes[i] = -1; // Mark axes as undetermined.
+    private void addMedian(double val) {
+        if (this.medians == null) {
+            this.medians = new ArrayList<Double>();
         }
-
-        update(input, 0);
-
-        if (n > nNaN) {
-            avg = sum / (n - nNaN);
-            std = Math.sqrt(var / (n - nNaN) - avg * avg);
-        } else {
-            avg = Double.NaN;
-            std = Double.NaN;
-        }
-        if (medians != null && medians.size() > 0) {
-            Collections.sort(medians);
-            int sz = medians.size();
-            if (sz % 2 == 1) {
-                noise3 = medians.get(sz / 2);
-            } else {
-                noise3 = 0.5 * (medians.get(sz / 2 - 1) + medians.get(sz / 2));
-            }
-            // Coefficient integrating over gaussian noise.
-            noise3 *= 1.482602 / Math.sqrt(6);
-        } else {
-            noise3 = Double.NaN;
-        }
+        this.medians.add(val);
     }
 
-    private void update(Object input, int level) {
-        if (level < naxis - 1) {
-            Object[] o = (Object[]) input;
-            int len = o.length;
-            checkAxes(len, level);
-
-            for (int i = 0; i < len; i += 1) {
-                update(o[i], level + 1);
+    private void checkAxes(int len, int level) {
+        if (this.naxes != null) {
+            if (this.naxes[level] == -1) {
+                // Seeing this dimension the first time.
+                this.naxes[level] = len;
+            } else if (len != this.naxes[level]) {
+                // Not a rectangular image
+                this.naxes = null;
             }
-
-        } else {
-            int len;
-            if (flt) {
-                len = ((float[]) input).length;
-            } else {
-                len = ((double[]) input).length;
-            }
-            checkAxes(len, level);
-            if (flt) {
-                updateFloat((float[]) input);
-            } else {
-                updateDouble((double[]) input);
-            }
-        }
-    }
-
-    private void updateFloat(float[] input) {
-        for (float element : input) {
-            n += 1;
-            if (Float.isNaN(element)) {
-                nNaN += 1;
-            } else {
-                process(element);
-            }
-            computeFloatNoise(input);
-        }
-    }
-
-    private void updateDouble(double[] input) {
-        for (double element : input) {
-            n += 1;
-            if (Double.isNaN(element)) {
-                nNaN += 1;
-            } else {
-                process(element);
-            }
-        }
-        computeDoubleNoise(input);
-    }
-
-    private void computeFloatNoise(float[] input) {
-        // Compute the noise for a single line using
-        // the algorithm of Stoehr, et al (2007), ST-ECF newsletter #42.
-        // We store the median of the current line and then
-        // use the median over all lines as the global value for the image.
-        if (input.length < 4) {
-            return;
-        }
-        List<Float> lineList = new ArrayList<Float>();
-        for (int i = 2; i < input.length - 2; i += 1) {
-            if (!Float.isNaN(input[i - 2]) && !Float.isNaN(input[i]) && !Float.isNaN(input[i + 2])) {
-
-                lineList.add(2 * input[i] - input[i - 2] - input[i + 2]);
-            }
-        }
-        int sz = lineList.size();
-        if (sz == 0) {
-            return;
-        }
-        Collections.sort(lineList);
-        if (sz % 2 == 1) {
-            addMedian(lineList.get(sz / 2));
-        } else {
-            addMedian(0.5 * (lineList.get(sz / 2 - 1) + lineList.get(sz / 2)));
         }
     }
 
@@ -222,65 +162,125 @@ public class RealStats {
         }
     }
 
-    private void addMedian(double val) {
-        if (medians == null) {
-            medians = new ArrayList<Double>();
+    private void computeFloatNoise(float[] input) {
+        // Compute the noise for a single line using
+        // the algorithm of Stoehr, et al (2007), ST-ECF newsletter #42.
+        // We store the median of the current line and then
+        // use the median over all lines as the global value for the image.
+        if (input.length < 4) {
+            return;
         }
-        medians.add(val);
+        List<Float> lineList = new ArrayList<Float>();
+        for (int i = 2; i < input.length - 2; i += 1) {
+            if (!Float.isNaN(input[i - 2]) && !Float.isNaN(input[i]) && !Float.isNaN(input[i + 2])) {
+
+                lineList.add(2 * input[i] - input[i - 2] - input[i + 2]);
+            }
+        }
+        int sz = lineList.size();
+        if (sz == 0) {
+            return;
+        }
+        Collections.sort(lineList);
+        if (sz % 2 == 1) {
+            addMedian(lineList.get(sz / 2));
+        } else {
+            addMedian(0.5 * (lineList.get(sz / 2 - 1) + lineList.get(sz / 2)));
+        }
+    }
+
+    private void computeStats(Object input) {
+        String clName = input.getClass().getName();
+        this.naxis = clName.length() - 1;
+        // Assume rectangular. We'll set to null
+        // later if proven wrong.
+        this.naxes = new int[this.naxis];
+        for (int i = 0; i < this.naxis; i += 1) {
+            this.naxes[i] = -1; // Mark axes as undetermined.
+        }
+
+        update(input, 0);
+
+        if (this.n > this.nNaN) {
+            this.avg = this.sum / (this.n - this.nNaN);
+            this.std = Math.sqrt(this.var / (this.n - this.nNaN) - this.avg * this.avg);
+        } else {
+            this.avg = Double.NaN;
+            this.std = Double.NaN;
+        }
+        if (this.medians != null && this.medians.size() > 0) {
+            Collections.sort(this.medians);
+            int sz = this.medians.size();
+            if (sz % 2 == 1) {
+                this.noise3 = this.medians.get(sz / 2);
+            } else {
+                this.noise3 = 0.5 * (this.medians.get(sz / 2 - 1) + this.medians.get(sz / 2));
+            }
+            // Coefficient integrating over gaussian noise.
+            this.noise3 *= 1.482602 / Math.sqrt(6);
+        } else {
+            this.noise3 = Double.NaN;
+        }
     }
 
     private void process(double in) {
-        if (in < min) {
-            min = in;
+        if (in < this.min) {
+            this.min = in;
         }
-        if (in > max) {
-            max = in;
+        if (in > this.max) {
+            this.max = in;
         }
-        sum += in;
-        var += in * in;
+        this.sum += in;
+        this.var += in * in;
     }
 
-    private void checkAxes(int len, int level) {
-        if (naxes != null) {
-            if (naxes[level] == -1) {
-                // Seeing this dimension the first time.
-                naxes[level] = len;
-            } else if (len != naxes[level]) {
-                // Not a rectangular image
-                naxes = null;
-            }
-        }
-    }
+    private void update(Object input, int level) {
+        if (level < this.naxis - 1) {
+            Object[] o = (Object[]) input;
+            int len = o.length;
+            checkAxes(len, level);
 
-    public static void main(String[] args) {
-        java.util.Random r = new java.util.Random(123451);
-
-        double[][] img = new double[100][100];
-        for (int i = 0; i < 100; i += 1) {
-            for (int j = 0; j < 100; j += 1) {
-                double g = r.nextGaussian();
-                img[i][j] = 1000 + .0001 * i + 0.01 * i * j + .1 * j + g;
+            for (int i = 0; i < len; i += 1) {
+                update(o[i], level + 1);
             }
-        }
-        RealStats rs = new RealStats(img);
-        System.err.println("N:    " + rs.n);
-        System.err.println("NaNs: " + rs.nNaN);
-        System.err.print("Naxis:" + rs.naxis);
-        if (rs.naxes == null) {
-            System.err.println("  Not rectangular");
+
         } else {
-            System.err.print(" [");
-            for (int naxe : rs.naxes) {
-                System.err.print(" " + naxe);
+            int len;
+            if (this.flt) {
+                len = ((float[]) input).length;
+            } else {
+                len = ((double[]) input).length;
             }
-            System.err.println("]");
+            checkAxes(len, level);
+            if (this.flt) {
+                updateFloat((float[]) input);
+            } else {
+                updateDouble((double[]) input);
+            }
         }
-        System.err.println("Min:  " + rs.min);
-        System.err.println("Max:  " + rs.max);
-        System.err.println("Sum:  " + rs.sum);
-        System.err.println("Var:  " + rs.var);
-        System.err.println("Avg:  " + rs.avg);
-        System.err.println("Std:  " + rs.std);
-        System.err.println("Noise:" + rs.noise3);
+    }
+
+    private void updateDouble(double[] input) {
+        for (double element : input) {
+            this.n += 1;
+            if (Double.isNaN(element)) {
+                this.nNaN += 1;
+            } else {
+                process(element);
+            }
+        }
+        computeDoubleNoise(input);
+    }
+
+    private void updateFloat(float[] input) {
+        for (float element : input) {
+            this.n += 1;
+            if (Float.isNaN(element)) {
+                this.nNaN += 1;
+            } else {
+                process(element);
+            }
+            computeFloatNoise(input);
+        }
     }
 }

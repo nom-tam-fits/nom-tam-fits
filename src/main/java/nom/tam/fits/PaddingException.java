@@ -49,7 +49,7 @@ package nom.tam.fits;
 public class PaddingException extends FitsException {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -65,22 +65,22 @@ public class PaddingException extends FitsException {
      * appropriate value.
      */
     public PaddingException(Data datum) throws FitsException {
-        truncatedHDU = FitsFactory.HDUFactory(datum.getKernel());
+        this.truncatedHDU = FitsFactory.HDUFactory(datum.getKernel());
         // We want to use the original Data object... so
-        truncatedHDU = FitsFactory.HDUFactory(truncatedHDU.getHeader(), datum);
+        this.truncatedHDU = FitsFactory.HDUFactory(this.truncatedHDU.getHeader(), datum);
     }
 
     public PaddingException(String msg, Data datum) throws FitsException {
         super(msg);
-        truncatedHDU = FitsFactory.HDUFactory(datum.getKernel());
-        truncatedHDU = FitsFactory.HDUFactory(truncatedHDU.getHeader(), datum);
-    }
-
-    void updateHeader(Header hdr) throws FitsException {
-        truncatedHDU = FitsFactory.HDUFactory(hdr, truncatedHDU.getData());
+        this.truncatedHDU = FitsFactory.HDUFactory(datum.getKernel());
+        this.truncatedHDU = FitsFactory.HDUFactory(this.truncatedHDU.getHeader(), datum);
     }
 
     public BasicHDU getTruncatedHDU() {
-        return truncatedHDU;
+        return this.truncatedHDU;
+    }
+
+    void updateHeader(Header hdr) throws FitsException {
+        this.truncatedHDU = FitsFactory.HDUFactory(hdr, this.truncatedHDU.getData());
     }
 }

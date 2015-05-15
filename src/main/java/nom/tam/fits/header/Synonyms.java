@@ -51,17 +51,17 @@ public enum Synonyms {
 
     private final IFitsHeader[] synonyms;
 
-    public IFitsHeader primaryKeyword() {
-        return primaryKeyword;
-    }
-
-    public IFitsHeader[] getSynonyms() {
-        return synonyms;
-    }
-
     private Synonyms(IFitsHeader primaryKeyword, IFitsHeader... synonyms) {
         this.primaryKeyword = primaryKeyword;
         this.synonyms = synonyms;
+    }
+
+    public IFitsHeader[] getSynonyms() {
+        return this.synonyms;
+    }
+
+    public IFitsHeader primaryKeyword() {
+        return this.primaryKeyword;
     }
 
 }

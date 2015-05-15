@@ -42,13 +42,59 @@ import nom.tam.util.RandomAccess;
  */
 public abstract class StandardImageTiler implements ImageTiler {
 
-    private RandomAccess f;
+    /**
+     * Get the offset of a given position.
+     * 
+     * @param dims
+     *            The dimensions of the array.
+     * @param pos
+     *            The index requested.
+     */
+    public static int getOffset(int[] dims, int[] pos) {
 
-    private long fileOffset;
+        int offset = 0;
+        for (int i = 0; i < dims.length; i += 1) {
+            if (i > 0) {
+                offset *= dims[i];
+            }
+            offset += pos[i];
+        }
+        return offset;
+    }
 
-    private int[] dims;
+    /**
+     * Increment the offset within the position array. Note that we never look
+     * at the last index since we copy data a block at a time and not byte by
+     * byte.
+     * 
+     * @param start
+     *            The starting corner values.
+     * @param current
+     *            The current offsets.
+     * @param lengths
+     *            The desired dimensions of the subset.
+     */
+    protected static boolean incrementPosition(int[] start, int[] current, int[] lengths) {
 
-    private Class base;
+        for (int i = start.length - 2; i >= 0; i -= 1) {
+            if (current[i] - start[i] < lengths[i] - 1) {
+                current[i] += 1;
+                for (int j = i + 1; j < start.length - 1; j += 1) {
+                    current[j] = start[j];
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private final RandomAccess f;
+
+    private final long fileOffset;
+
+    private final int[] dims;
+
+    private final Class base;
 
     /**
      * Create a tiler.
@@ -73,66 +119,84 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * See if we can get the image data from memory. This may be overriden by
-     * other classes, notably in nom.tam.fits.ImageData.
-     */
-    protected abstract Object getMemoryImage();
-
-    /**
-     * Get a subset of the image. An image tile is returned as a one-dimensional
-     * array although the image will normally be multi-dimensional.
+     * File a tile segment from a file.
      * 
-     * @param corners
-     *            The starting corner (using 0 as the start) for the image.
-     * @param lengths
-     *            The length requested in each dimension.
+     * @param output
+     *            The output tile.
+     * @param delta
+     *            The offset from the beginning of the image in bytes.
+     * @param outputOffset
+     *            The index into the output array.
+     * @param segment
+     *            The number of elements to be read for this segment.
      */
-    @Override
-    public Object getTile(int[] corners, int[] lengths) throws IOException {
+    protected void fillFileData(Object output, int delta, int outputOffset, int segment) throws IOException {
 
-        if (corners.length != dims.length || lengths.length != dims.length) {
-            throw new IOException("Inconsistent sub-image request");
+        this.f.seek(this.fileOffset + delta);
+
+        if (this.base == float.class) {
+            this.f.read((float[]) output, outputOffset, segment);
+        } else if (this.base == int.class) {
+            this.f.read((int[]) output, outputOffset, segment);
+        } else if (this.base == short.class) {
+            this.f.read((short[]) output, outputOffset, segment);
+        } else if (this.base == double.class) {
+            this.f.read((double[]) output, outputOffset, segment);
+        } else if (this.base == byte.class) {
+            this.f.read((byte[]) output, outputOffset, segment);
+        } else if (this.base == char.class) {
+            this.f.read((char[]) output, outputOffset, segment);
+        } else if (this.base == long.class) {
+            this.f.read((long[]) output, outputOffset, segment);
+        } else {
+            throw new IOException("Invalid type for tile array");
         }
-
-        int arraySize = 1;
-        for (int i = 0; i < dims.length; i += 1) {
-
-            if (corners[i] < 0 || lengths[i] < 0 || corners[i] + lengths[i] > dims[i]) {
-                throw new IOException("Sub-image not within image");
-            }
-
-            arraySize *= lengths[i];
-        }
-
-        Object outArray = ArrayFuncs.newInstance(base, arraySize);
-
-        getTile(outArray, corners, lengths);
-        return outArray;
     }
 
     /**
-     * Get a tile, filling in a prespecified array. This version does not check
-     * that the user hase entered a valid set of corner and length arrays.
-     * ensure that out matches the length implied by the lengths array.
+     * Fill a single segment from memory. This routine is called recursively to
+     * handle multi-dimensional arrays. E.g., if data is three-dimensional, this
+     * will recurse two levels until we get a call with a single dimensional
+     * datum. At that point the appropriate data will be copied into the output.
      * 
-     * @param outArray
-     *            The output tile array. A one-dimensional array. Data not
-     *            within the valid limits of the image will be left unchanged.
-     *            The length of this array should be the product of lengths.
-     * @param corners
-     *            The corners of the tile.
-     * @param lengths
-     *            The dimensions of the tile.
+     * @param data
+     *            The in-memory image data.
+     * @param posits
+     *            The current position for which data is requested.
+     * @param length
+     *            The size of the segments.
+     * @param output
+     *            The output tile.
+     * @param outputOffset
+     *            The current offset into the output tile.
+     * @param dim
+     *            The current dimension being
      */
-    @Override
-    public void getTile(Object outArray, int[] corners, int[] lengths) throws IOException {
+    protected void fillMemData(Object data, int[] posits, int length, Object output, int outputOffset, int dim) {
 
-        Object data = getMemoryImage();
+        if (data instanceof Object[]) {
 
-        if (data == null && f == null) {
-            throw new IOException("No data source for tile subset");
+            Object[] xo = (Object[]) data;
+            fillMemData(xo[posits[dim]], posits, length, output, outputOffset, dim + 1);
+
+        } else {
+
+            // Adjust the spacing for the actual copy.
+            int startFrom = posits[dim];
+            int startTo = outputOffset;
+            int copyLength = length;
+
+            if (posits[dim] < 0) {
+                startFrom -= posits[dim];
+                startTo -= posits[dim];
+                copyLength += posits[dim];
+            }
+            if (posits[dim] + length > this.dims[dim]) {
+                copyLength -= posits[dim] + length - this.dims[dim];
+            }
+
+            System.arraycopy(data, startFrom, output, startTo, copyLength);
         }
-        fillTile(data, outArray, dims, corners, lengths);
     }
 
     /**
@@ -161,7 +225,7 @@ public abstract class StandardImageTiler implements ImageTiler {
         System.arraycopy(corners, 0, posits, 0, n);
         long currentOffset = 0;
         if (data == null) {
-            currentOffset = f.getFilePointer();
+            currentOffset = this.f.getFilePointer();
         }
 
         int outputOffset = 0;
@@ -214,135 +278,8 @@ public abstract class StandardImageTiler implements ImageTiler {
 
         } while (incrementPosition(corners, posits, lengths));
         if (data == null) {
-            f.seek(currentOffset);
+            this.f.seek(currentOffset);
         }
-    }
-
-    /**
-     * Fill a single segment from memory. This routine is called recursively to
-     * handle multi-dimensional arrays. E.g., if data is three-dimensional, this
-     * will recurse two levels until we get a call with a single dimensional
-     * datum. At that point the appropriate data will be copied into the output.
-     * 
-     * @param data
-     *            The in-memory image data.
-     * @param posits
-     *            The current position for which data is requested.
-     * @param length
-     *            The size of the segments.
-     * @param output
-     *            The output tile.
-     * @param outputOffset
-     *            The current offset into the output tile.
-     * @param dim
-     *            The current dimension being
-     */
-    protected void fillMemData(Object data, int[] posits, int length, Object output, int outputOffset, int dim) {
-
-        if (data instanceof Object[]) {
-
-            Object[] xo = (Object[]) data;
-            fillMemData(xo[posits[dim]], posits, length, output, outputOffset, dim + 1);
-
-        } else {
-
-            // Adjust the spacing for the actual copy.
-            int startFrom = posits[dim];
-            int startTo = outputOffset;
-            int copyLength = length;
-
-            if (posits[dim] < 0) {
-                startFrom -= posits[dim];
-                startTo -= posits[dim];
-                copyLength += posits[dim];
-            }
-            if (posits[dim] + length > dims[dim]) {
-                copyLength -= posits[dim] + length - dims[dim];
-            }
-
-            System.arraycopy(data, startFrom, output, startTo, copyLength);
-        }
-    }
-
-    /**
-     * File a tile segment from a file.
-     * 
-     * @param output
-     *            The output tile.
-     * @param delta
-     *            The offset from the beginning of the image in bytes.
-     * @param outputOffset
-     *            The index into the output array.
-     * @param segment
-     *            The number of elements to be read for this segment.
-     */
-    protected void fillFileData(Object output, int delta, int outputOffset, int segment) throws IOException {
-
-        f.seek(fileOffset + delta);
-
-        if (base == float.class) {
-            f.read((float[]) output, outputOffset, segment);
-        } else if (base == int.class) {
-            f.read((int[]) output, outputOffset, segment);
-        } else if (base == short.class) {
-            f.read((short[]) output, outputOffset, segment);
-        } else if (base == double.class) {
-            f.read((double[]) output, outputOffset, segment);
-        } else if (base == byte.class) {
-            f.read((byte[]) output, outputOffset, segment);
-        } else if (base == char.class) {
-            f.read((char[]) output, outputOffset, segment);
-        } else if (base == long.class) {
-            f.read((long[]) output, outputOffset, segment);
-        } else {
-            throw new IOException("Invalid type for tile array");
-        }
-    }
-
-    /**
-     * Increment the offset within the position array. Note that we never look
-     * at the last index since we copy data a block at a time and not byte by
-     * byte.
-     * 
-     * @param start
-     *            The starting corner values.
-     * @param current
-     *            The current offsets.
-     * @param lengths
-     *            The desired dimensions of the subset.
-     */
-    protected static boolean incrementPosition(int[] start, int[] current, int[] lengths) {
-
-        for (int i = start.length - 2; i >= 0; i -= 1) {
-            if (current[i] - start[i] < lengths[i] - 1) {
-                current[i] += 1;
-                for (int j = i + 1; j < start.length - 1; j += 1) {
-                    current[j] = start[j];
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Get the offset of a given position.
-     * 
-     * @param dims
-     *            The dimensions of the array.
-     * @param pos
-     *            The index requested.
-     */
-    public static int getOffset(int[] dims, int[] pos) {
-
-        int offset = 0;
-        for (int i = 0; i < dims.length; i += 1) {
-            if (i > 0) {
-                offset *= dims[i];
-            }
-            offset += pos[i];
-        }
-        return offset;
     }
 
     /**
@@ -351,14 +288,77 @@ public abstract class StandardImageTiler implements ImageTiler {
     @Override
     public Object getCompleteImage() throws IOException {
 
-        if (f == null) {
+        if (this.f == null) {
             throw new IOException("Attempt to read from null file");
         }
-        long currentOffset = f.getFilePointer();
-        Object o = ArrayFuncs.newInstance(base, dims);
-        f.seek(fileOffset);
-        f.readLArray(o);
-        f.seek(currentOffset);
+        long currentOffset = this.f.getFilePointer();
+        Object o = ArrayFuncs.newInstance(this.base, this.dims);
+        this.f.seek(this.fileOffset);
+        this.f.readLArray(o);
+        this.f.seek(currentOffset);
         return o;
+    }
+
+    /**
+     * See if we can get the image data from memory. This may be overriden by
+     * other classes, notably in nom.tam.fits.ImageData.
+     */
+    protected abstract Object getMemoryImage();
+
+    /**
+     * Get a subset of the image. An image tile is returned as a one-dimensional
+     * array although the image will normally be multi-dimensional.
+     * 
+     * @param corners
+     *            The starting corner (using 0 as the start) for the image.
+     * @param lengths
+     *            The length requested in each dimension.
+     */
+    @Override
+    public Object getTile(int[] corners, int[] lengths) throws IOException {
+
+        if (corners.length != this.dims.length || lengths.length != this.dims.length) {
+            throw new IOException("Inconsistent sub-image request");
+        }
+
+        int arraySize = 1;
+        for (int i = 0; i < this.dims.length; i += 1) {
+
+            if (corners[i] < 0 || lengths[i] < 0 || corners[i] + lengths[i] > this.dims[i]) {
+                throw new IOException("Sub-image not within image");
+            }
+
+            arraySize *= lengths[i];
+        }
+
+        Object outArray = ArrayFuncs.newInstance(this.base, arraySize);
+
+        getTile(outArray, corners, lengths);
+        return outArray;
+    }
+
+    /**
+     * Get a tile, filling in a prespecified array. This version does not check
+     * that the user hase entered a valid set of corner and length arrays.
+     * ensure that out matches the length implied by the lengths array.
+     * 
+     * @param outArray
+     *            The output tile array. A one-dimensional array. Data not
+     *            within the valid limits of the image will be left unchanged.
+     *            The length of this array should be the product of lengths.
+     * @param corners
+     *            The corners of the tile.
+     * @param lengths
+     *            The dimensions of the tile.
+     */
+    @Override
+    public void getTile(Object outArray, int[] corners, int[] lengths) throws IOException {
+
+        Object data = getMemoryImage();
+
+        if (data == null && this.f == null) {
+            throw new IOException("No data source for tile subset");
+        }
+        fillTile(data, outArray, this.dims, corners, lengths);
     }
 }

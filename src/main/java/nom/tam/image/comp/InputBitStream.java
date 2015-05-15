@@ -44,14 +44,7 @@ import java.io.InputStream;
  */
 public class InputBitStream {
 
-    private InputStream input;
-
-    private int currentByte;
-
     private static final int BYTESIZE = 8;
-
-    private int inOffset = BYTESIZE; // Start saying we've consumed the current
-                                     // byte
 
     /** Define a set of bit masks with 0-8 bits turned on. */
     final static int[] masks = new int[]{
@@ -68,22 +61,32 @@ public class InputBitStream {
 
     /** How many leading zero bits */
     final static int[] zeroBits;
+
     static {
         zeroBits = new int[256];
         int zb = 8;
-        zeroBits[0] = zb;
+        InputBitStream.zeroBits[0] = zb;
 
         int n = 1;
         int offset = 1;
-        while (offset < zeroBits.length) {
+        while (offset < InputBitStream.zeroBits.length) {
             zb -= 1;
             for (int i = 0; i < n; i += 1) {
-                zeroBits[i + offset] = zb;
+                InputBitStream.zeroBits[i + offset] = zb;
             }
             offset += n;
             n *= 2;
         }
     }
+
+    private final InputStream input;
+
+    private int currentByte;
+
+    private int inOffset = InputBitStream.BYTESIZE; // Start saying we've
+                                                    // consumed the current
+
+    // byte
 
     /**
      * Initialize the bit stream to read from an input stream.
@@ -92,7 +95,30 @@ public class InputBitStream {
      *            the underlaying input stream.
      */
     public InputBitStream(InputStream in) {
-        input = in;
+        this.input = in;
+    }
+
+    /**
+     * Close the input stream .
+     * 
+     * @throws IOException
+     *             if the undelaying stream throws an error.
+     */
+    public void close() throws IOException {
+        this.input.close();
+    }
+
+    /** Ignore the rest of the current byte. */
+    public void flush() {
+        this.inOffset = 8;
+    }
+
+    private void getByte() throws IOException {
+        this.currentByte = this.input.read();
+        this.inOffset = 0;
+        if (this.currentByte < 0) {
+            throw new EOFException("EOF on input stream");
+        }
     }
 
     /**
@@ -109,10 +135,10 @@ public class InputBitStream {
         }
         int need = n;
         while (need > 0) {
-            if (inOffset == BYTESIZE) {
+            if (this.inOffset == InputBitStream.BYTESIZE) {
                 getByte();
             }
-            int getting = 8 - inOffset;
+            int getting = 8 - this.inOffset;
             if (getting > need) {
                 getting = need;
             }
@@ -124,27 +150,14 @@ public class InputBitStream {
             // Or with the mask to get only the bits that haven't already been
             // read
             // Shift bits up to the proper location in the output value.
-            int bits = (currentByte >> 8 - (inOffset + getting) & masks[getting]) << need - getting;
+            int bits = (this.currentByte >> 8 - (this.inOffset + getting) & InputBitStream.masks[getting]) << need - getting;
 
             // Or them with the output value.
             result |= bits;
             need -= getting;
-            inOffset += getting;
+            this.inOffset += getting;
         }
         return result;
-    }
-
-    private void getByte() throws IOException {
-        currentByte = input.read();
-        inOffset = 0;
-        if (currentByte < 0) {
-            throw new EOFException("EOF on input stream");
-        }
-    }
-
-    /** Ignore the rest of the current byte. */
-    public void flush() {
-        inOffset = 8;
     }
 
     /**
@@ -159,23 +172,23 @@ public class InputBitStream {
 
         int sum = 0;
         while (true) {
-            if (inOffset == 8) {
+            if (this.inOffset == 8) {
                 getByte();
             }
             // Look in the remainder of the current byte
-            int bitsLeft = 8 - inOffset;
+            int bitsLeft = 8 - this.inOffset;
             int msk = (1 << bitsLeft) - 1; // A mask of ones of the appropriate
                                            // length.
 
-            int remainder = currentByte & msk;
+            int remainder = this.currentByte & msk;
 
             // If we're looking for ones, flip the bits.
             if (ones) {
                 remainder = ~remainder;
             }
 
-            int cnt = zeroBits[remainder] - inOffset;
-            inOffset += cnt;
+            int cnt = InputBitStream.zeroBits[remainder] - this.inOffset;
+            this.inOffset += cnt;
             sum += cnt;
 
             // Did we find a bit that we're not to consume?
@@ -185,15 +198,5 @@ public class InputBitStream {
             }
         }
         return sum;
-    }
-
-    /**
-     * Close the input stream .
-     * 
-     * @throws IOException
-     *             if the undelaying stream throws an error.
-     */
-    public void close() throws IOException {
-        input.close();
     }
 }

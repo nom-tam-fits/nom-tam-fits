@@ -104,6 +104,40 @@ import nom.tam.util.BufferedDataOutputStream;
  */
 public class Rice implements CompressionScheme {
 
+    public static void main(String[] args) throws Exception {
+        int[] test = new int[100];
+        for (int i = 0; i < test.length; i += 1) {
+            if (i % 2 != 0) {
+                test[i] = 1000 - 2 * i;
+            } else {
+                test[i] = 1000 + 2 * i;
+            }
+        }
+        Rice comp = new Rice();
+        Map<String, String> init = new HashMap<String, String>();
+        init.put("bitpix", "32");
+        init.put("block", "32");
+        init.put("length", "100");
+        comp.initialize(init);
+
+        ByteArrayOutputStream bo = new ByteArrayOutputStream();
+        BufferedDataOutputStream d = new BufferedDataOutputStream(bo);
+        d.write(test);
+        d.close();
+        byte[] input = bo.toByteArray();
+        byte[] result = comp.compress(input);
+        System.out.println("Result len:" + result.length);
+        for (int i = 0; i < result.length; i += 1) {
+            System.out.printf("%d: %3d %2x\n", i, result[i], result[i]);
+        }
+
+        result = comp.decompress(result, 100);
+        DataInputStream bi = new DataInputStream(new ByteArrayInputStream(result));
+        for (int i = 0; i < 100; i += 1) {
+            System.out.println(i + ": " + bi.readInt());
+        }
+    }
+
     private int block;
 
     private int bitpix;
@@ -116,47 +150,6 @@ public class Rice implements CompressionScheme {
 
     private int bbits;
 
-    @Override
-    public String name() {
-        return "RICE_1";
-    }
-
-    @Override
-    public void initialize(Map<String, String> params) {
-        // Rice compression expects a length and block size parameter
-        try {
-
-            System.err.println("Start1");
-            block = Integer.parseInt(params.get("block"));
-            System.err.println("Start2");
-            System.err.println("keys:" + params.keySet());
-            System.err.println("keys:" + params.values());
-            String bp = params.get("bitpix");
-            System.err.println("bp is:" + bp);
-            bitpix = Integer.parseInt(bp);
-            System.err.println("Start3");
-            if (bitpix == 8) {
-                fsbits = 3;
-                fsmax = 6;
-            } else if (bitpix == 16) {
-                fsbits = 4;
-                fsmax = 14;
-            } else if (bitpix == 32) {
-                fsbits = 5;
-                fsmax = 25;
-            } else {
-                throw new IllegalArgumentException("Invalid bitpix for Rice compression");
-            }
-            bbits = 1 << fsbits;
-
-        } catch (Exception e) {
-            System.err.println("Required parameters not found for rice compression");
-            e.printStackTrace(System.err);
-            throw new RuntimeException("Invalid compression", e);
-        }
-        initialized = true;
-    }
-
     int maxTop = 0;
 
     /**
@@ -166,13 +159,13 @@ public class Rice implements CompressionScheme {
      */
     @Override
     public byte[] compress(byte[] in) throws IOException {
-        if (!initialized) {
+        if (!this.initialized) {
             throw new IllegalStateException("Rice compressor not initialized");
         }
 
         // The number of elements is just the number of bytes
         // over the number of bytes per element.
-        int len = in.length / (bitpix / 8);
+        int len = in.length / (this.bitpix / 8);
 
         DataInputStream ds = new DataInputStream(new ByteArrayInputStream(in));
         ByteArrayOutputStream out = new ByteArrayOutputStream(32768);
@@ -181,32 +174,6 @@ public class Rice implements CompressionScheme {
         bo.flush();
         bo.close();
         return out.toByteArray();
-    }
-
-    /**
-     * This routine compresses a stream of input values into the output. It
-     * handles the looping over all blocks.
-     */
-    public void compressStream(DataInputStream ds, OutputBitStream bo, int len) throws IOException {
-
-        int offset = 0;
-        int word = 0;
-        if (offset < len) {
-            word = getWord(ds);
-            // Write out the first word. We'll be computing
-            // differences starting from this value.
-            bo.writeBits(word, bitpix);
-        }
-
-        boolean first = true;
-        // Loop over individual compression blocks.
-        while (offset < len) {
-            int thisBlock = Math.min(block, len - offset);
-            word = compressBlock(first, word, thisBlock, ds, bo);
-            first = false;
-            offset += thisBlock;
-        }
-        bo.close();
     }
 
     /**
@@ -254,7 +221,7 @@ public class Rice implements CompressionScheme {
         if (sum == 0) {
             // A constant block
             specialCaseZero(bo);
-        } else if (sum >= fsmax) {
+        } else if (sum >= this.fsmax) {
             // To much variation to comprss
             specialCaseRandom(bo, diffs);
         } else {
@@ -262,7 +229,7 @@ public class Rice implements CompressionScheme {
             // The normal case.
             int mask = (1 << fs) - 1;
             // Write out the number of 'noise' bits.
-            bo.writeBits(fs + 1, fsbits);
+            bo.writeBits(fs + 1, this.fsbits);
             for (int i = 0; i < len; i += 1) {
                 // Now write out the encoded differences
                 emit(diffs[i], fs, bo, mask);
@@ -275,40 +242,29 @@ public class Rice implements CompressionScheme {
     }
 
     /**
-     * Emit the coding for a single compressed word.
-     * 
-     * @param val
-     *            The input value to be emitted (normally a pixel difference).
-     * @param fs
-     *            The number of 'noise' bits for this block.
-     * @param bo
-     *            The output bit stream.
-     * @param mask
-     *            A mask getting the noise bits (= (1<<fs)-1).
+     * This routine compresses a stream of input values into the output. It
+     * handles the looping over all blocks.
      */
-    private void emit(int val, int fs, OutputBitStream bo, int mask) throws IOException {
-        int top = val >>> fs;
-        int bot = val & mask;
-        bo.writeBits(1, top + 1);
-        bo.writeBits(bot, fs);
-    }
+    public void compressStream(DataInputStream ds, OutputBitStream bo, int len) throws IOException {
 
-    /**
-     * Handle the case where all the pixels are the same
-     */
-    private void specialCaseZero(OutputBitStream bo) throws IOException {
-        bo.writeBits(0, fsbits);
-    }
-
-    /**
-     * Handle the case where the noise is so large that no compression is
-     * possible
-     */
-    private void specialCaseRandom(OutputBitStream bo, int[] diffs) throws IOException {
-        bo.writeBits(fsmax + 1, fsbits);
-        for (int diff : diffs) {
-            bo.writeBits(diff, bitpix);
+        int offset = 0;
+        int word = 0;
+        if (offset < len) {
+            word = getWord(ds);
+            // Write out the first word. We'll be computing
+            // differences starting from this value.
+            bo.writeBits(word, this.bitpix);
         }
+
+        boolean first = true;
+        // Loop over individual compression blocks.
+        while (offset < len) {
+            int thisBlock = Math.min(this.block, len - offset);
+            word = compressBlock(first, word, thisBlock, ds, bo);
+            first = false;
+            offset += thisBlock;
+        }
+        bo.close();
     }
 
     /**
@@ -342,129 +298,6 @@ public class Rice implements CompressionScheme {
         return sum;
     }
 
-    /**
-     * Get the number of 'noise' bits in the block
-     */
-    private int getFs(long sum, int len) {
-        // We made 1 -> 1. since in original sum was double,
-        // so expression in parens should be double.
-
-        // We want to compute the 'average' difference. Not
-        // sure why we have the thisBlock/2 - 1 there, but
-        // presumably that comes out in the details.
-        double dpSum = (sum - len / 2 - 1.) / len;
-        if (dpSum < 0) {
-            dpSum = 0;
-        }
-
-        // How many bits does it take to represent the 'average' difference.
-        int fs;
-        int psum = (int) dpSum >> 1;
-        for (fs = 0; psum > 0; fs += 1) {
-            psum >>= 1;
-        }
-        return fs;
-    }
-
-    /**
-     * Read a full pixel from the input where the length of pixels has been set
-     * by the user
-     */
-    private int getWord(DataInputStream is) throws IOException {
-        if (bitpix == 8) {
-            return is.readByte() & 0xFF;
-        } else if (bitpix == 16) {
-            return is.readShort() & 0xFFFF;
-        } else {
-            return is.readInt();
-        }
-    }
-
-    /**
-     * Decompress input data using the Rice algorithm.
-     * 
-     * @param in
-     *            The compressed data.
-     * @param len
-     *            The number of pixels expected on the input.
-     * @return A byte array representing the uncompressed data. This may need to
-     *         be read through a ByteArrayInputStream to recover the appropriate
-     *         pixel values (which may not be bytes).
-     */
-    @Override
-    public byte[] decompress(byte[] in, int len) throws IOException {
-
-        if (!initialized) {
-            throw new IllegalStateException("Rice compressor not initialized");
-        }
-
-        InputBitStream bin = new InputBitStream(new ByteArrayInputStream(in));
-        ByteArrayOutputStream out = new ByteArrayOutputStream(32768);
-        DataOutputStream ds = new DataOutputStream(out);
-
-        decompressStream(bin, ds, len);
-        bin.close();
-        return out.toByteArray();
-    }
-
-    /** Decompress an input stream expecting a given number of words */
-
-    public void decompressStream(InputBitStream bin, DataOutputStream ds, int len) throws IOException {
-
-        int offset = 0;
-        // Read the first pixel.
-        int word = bin.readBits(bitpix);
-        while (offset < len) {
-            int thisBlock = block;
-            if (offset + block > len) {
-                thisBlock = len - offset;
-            }
-            decompressBlock(word, bin, ds, thisBlock);
-            offset += thisBlock;
-        }
-    }
-
-    /** Decompress a single block */
-
-    private void decompressBlock(int word, InputBitStream bin, DataOutputStream ds, int len) throws IOException {
-        int fs = bin.readBits(fsbits) - 1;
-
-        if (fs < 0) {
-            decompressConstant(word, ds, len);
-        } else if (fs >= fsmax) {
-            decompressRandom(word, bin, ds, len);
-        } else {
-            for (int i = 0; i < len; i += 1) {
-                writeWord(ds, decodeWord(word, fs, bin));
-            }
-        }
-    }
-
-    /** Decompress a block of constant values */
-    private void decompressConstant(int word, DataOutputStream ds, int len) throws IOException {
-        for (int i = 0; i < len; i += 1) {
-            writeWord(ds, word);
-        }
-    }
-
-    /**
-     * Write a block of 'random' values, i.e., where the noise is to large to be
-     * usefully compressed.
-     */
-    private int decompressRandom(int word, InputBitStream bin, DataOutputStream ds, int len) throws IOException {
-        for (int i = 0; i < len; i += 1) {
-            int diff = bin.readBits(bbits);
-            if (diff % 2 == 0) {
-                diff >>= 1;
-            } else {
-                diff = ~(diff >> 1);
-            }
-            word += diff;
-            writeWord(ds, word);
-        }
-        return word;
-    }
-
     /** Reconstruct a single word. */
     private int decodeWord(int word, int fs, InputBitStream bin) throws IOException {
         // Find the number of 0 bits. That count is the
@@ -489,50 +322,211 @@ public class Rice implements CompressionScheme {
     }
 
     /**
-     * Write a full pixel value to the output decompression stream.
+     * Decompress input data using the Rice algorithm.
+     * 
+     * @param in
+     *            The compressed data.
+     * @param len
+     *            The number of pixels expected on the input.
+     * @return A byte array representing the uncompressed data. This may need to
+     *         be read through a ByteArrayInputStream to recover the appropriate
+     *         pixel values (which may not be bytes).
      */
-    private void writeWord(DataOutputStream ds, int val) throws IOException {
-        if (bitpix == 8) {
-            ds.writeByte(val);
-        } else if (bitpix == 16) {
-            ds.writeShort(val);
-        } else if (bitpix == 32) {
-            ds.writeInt(val);
+    @Override
+    public byte[] decompress(byte[] in, int len) throws IOException {
+
+        if (!this.initialized) {
+            throw new IllegalStateException("Rice compressor not initialized");
+        }
+
+        InputBitStream bin = new InputBitStream(new ByteArrayInputStream(in));
+        ByteArrayOutputStream out = new ByteArrayOutputStream(32768);
+        DataOutputStream ds = new DataOutputStream(out);
+
+        decompressStream(bin, ds, len);
+        bin.close();
+        return out.toByteArray();
+    }
+
+    /** Decompress a single block */
+
+    private void decompressBlock(int word, InputBitStream bin, DataOutputStream ds, int len) throws IOException {
+        int fs = bin.readBits(this.fsbits) - 1;
+
+        if (fs < 0) {
+            decompressConstant(word, ds, len);
+        } else if (fs >= this.fsmax) {
+            decompressRandom(word, bin, ds, len);
+        } else {
+            for (int i = 0; i < len; i += 1) {
+                writeWord(ds, decodeWord(word, fs, bin));
+            }
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        int[] test = new int[100];
-        for (int i = 0; i < test.length; i += 1) {
-            if (i % 2 != 0) {
-                test[i] = 1000 - 2 * i;
+    /** Decompress a block of constant values */
+    private void decompressConstant(int word, DataOutputStream ds, int len) throws IOException {
+        for (int i = 0; i < len; i += 1) {
+            writeWord(ds, word);
+        }
+    }
+
+    /**
+     * Write a block of 'random' values, i.e., where the noise is to large to be
+     * usefully compressed.
+     */
+    private int decompressRandom(int word, InputBitStream bin, DataOutputStream ds, int len) throws IOException {
+        for (int i = 0; i < len; i += 1) {
+            int diff = bin.readBits(this.bbits);
+            if (diff % 2 == 0) {
+                diff >>= 1;
             } else {
-                test[i] = 1000 + 2 * i;
+                diff = ~(diff >> 1);
             }
+            word += diff;
+            writeWord(ds, word);
         }
-        Rice comp = new Rice();
-        Map<String, String> init = new HashMap<String, String>();
-        init.put("bitpix", "32");
-        init.put("block", "32");
-        init.put("length", "100");
-        comp.initialize(init);
+        return word;
+    }
 
-        ByteArrayOutputStream bo = new ByteArrayOutputStream();
-        BufferedDataOutputStream d = new BufferedDataOutputStream(bo);
-        d.write(test);
-        d.close();
-        byte[] input = bo.toByteArray();
-        byte[] result = comp.compress(input);
-        System.out.println("Result len:" + result.length);
-        for (int i = 0; i < result.length; i += 1) {
-            System.out.printf("%d: %3d %2x\n", i, result[i], result[i]);
+    /** Decompress an input stream expecting a given number of words */
+
+    public void decompressStream(InputBitStream bin, DataOutputStream ds, int len) throws IOException {
+
+        int offset = 0;
+        // Read the first pixel.
+        int word = bin.readBits(this.bitpix);
+        while (offset < len) {
+            int thisBlock = this.block;
+            if (offset + this.block > len) {
+                thisBlock = len - offset;
+            }
+            decompressBlock(word, bin, ds, thisBlock);
+            offset += thisBlock;
+        }
+    }
+
+    /**
+     * Emit the coding for a single compressed word.
+     * 
+     * @param val
+     *            The input value to be emitted (normally a pixel difference).
+     * @param fs
+     *            The number of 'noise' bits for this block.
+     * @param bo
+     *            The output bit stream.
+     * @param mask
+     *            A mask getting the noise bits (= (1<<fs)-1).
+     */
+    private void emit(int val, int fs, OutputBitStream bo, int mask) throws IOException {
+        int top = val >>> fs;
+        int bot = val & mask;
+        bo.writeBits(1, top + 1);
+        bo.writeBits(bot, fs);
+    }
+
+    /**
+     * Get the number of 'noise' bits in the block
+     */
+    private int getFs(long sum, int len) {
+        // We made 1 -> 1. since in original sum was double,
+        // so expression in parens should be double.
+
+        // We want to compute the 'average' difference. Not
+        // sure why we have the thisBlock/2 - 1 there, but
+        // presumably that comes out in the details.
+        double dpSum = (sum - len / 2 - 1.) / len;
+        if (dpSum < 0) {
+            dpSum = 0;
         }
 
-        result = comp.decompress(result, 100);
-        DataInputStream bi = new DataInputStream(new ByteArrayInputStream(result));
-        for (int i = 0; i < 100; i += 1) {
-            System.out.println(i + ": " + bi.readInt());
+        // How many bits does it take to represent the 'average' difference.
+        int fs;
+        int psum = (int) dpSum >> 1;
+        for (fs = 0; psum > 0; fs += 1) {
+            psum >>= 1;
         }
+        return fs;
+    }
+
+    @Override
+    public void getParameters(Map<String, String> params, Header hdr) {
+        if (!params.containsKey("bitpix")) {
+            params.put("bitpix", hdr.getIntValue("ZBITPIX") + "");
+        }
+    }
+
+    /**
+     * Read a full pixel from the input where the length of pixels has been set
+     * by the user
+     */
+    private int getWord(DataInputStream is) throws IOException {
+        if (this.bitpix == 8) {
+            return is.readByte() & 0xFF;
+        } else if (this.bitpix == 16) {
+            return is.readShort() & 0xFFFF;
+        } else {
+            return is.readInt();
+        }
+    }
+
+    @Override
+    public void initialize(Map<String, String> params) {
+        // Rice compression expects a length and block size parameter
+        try {
+
+            System.err.println("Start1");
+            this.block = Integer.parseInt(params.get("block"));
+            System.err.println("Start2");
+            System.err.println("keys:" + params.keySet());
+            System.err.println("keys:" + params.values());
+            String bp = params.get("bitpix");
+            System.err.println("bp is:" + bp);
+            this.bitpix = Integer.parseInt(bp);
+            System.err.println("Start3");
+            if (this.bitpix == 8) {
+                this.fsbits = 3;
+                this.fsmax = 6;
+            } else if (this.bitpix == 16) {
+                this.fsbits = 4;
+                this.fsmax = 14;
+            } else if (this.bitpix == 32) {
+                this.fsbits = 5;
+                this.fsmax = 25;
+            } else {
+                throw new IllegalArgumentException("Invalid bitpix for Rice compression");
+            }
+            this.bbits = 1 << this.fsbits;
+
+        } catch (Exception e) {
+            System.err.println("Required parameters not found for rice compression");
+            e.printStackTrace(System.err);
+            throw new RuntimeException("Invalid compression", e);
+        }
+        this.initialized = true;
+    }
+
+    @Override
+    public String name() {
+        return "RICE_1";
+    }
+
+    /**
+     * Handle the case where the noise is so large that no compression is
+     * possible
+     */
+    private void specialCaseRandom(OutputBitStream bo, int[] diffs) throws IOException {
+        bo.writeBits(this.fsmax + 1, this.fsbits);
+        for (int diff : diffs) {
+            bo.writeBits(diff, this.bitpix);
+        }
+    }
+
+    /**
+     * Handle the case where all the pixels are the same
+     */
+    private void specialCaseZero(OutputBitStream bo) throws IOException {
+        bo.writeBits(0, this.fsbits);
     }
 
     @Override
@@ -561,10 +555,16 @@ public class Rice implements CompressionScheme {
         }
     }
 
-    @Override
-    public void getParameters(Map<String, String> params, Header hdr) {
-        if (!params.containsKey("bitpix")) {
-            params.put("bitpix", hdr.getIntValue("ZBITPIX") + "");
+    /**
+     * Write a full pixel value to the output decompression stream.
+     */
+    private void writeWord(DataOutputStream ds, int val) throws IOException {
+        if (this.bitpix == 8) {
+            ds.writeByte(val);
+        } else if (this.bitpix == 16) {
+            ds.writeShort(val);
+        } else if (this.bitpix == 32) {
+            ds.writeInt(val);
         }
     }
 }

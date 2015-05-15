@@ -48,6 +48,13 @@ import org.junit.Test;
  */
 public class EnumHeaderTest {
 
+    public Header createHeader() throws FitsException {
+        byte[][] bimg = new byte[20][20];
+        BasicHDU hdu = Fits.makeHDU(bimg);
+        Header hdr = hdu.getHeader();
+        return hdr;
+    }
+
     @Test
     public void exampleHeaderEnums() throws Exception {
         Header hdr = createHeader();
@@ -62,6 +69,17 @@ public class EnumHeaderTest {
     }
 
     @Test
+    public void multiyHeaderIndexes() throws Exception {
+        Header hdr = createHeader();
+
+        // now we take a header with multiple indexes
+        hdr.addValue(WATn_nnn.n(9, 2, 3, 4), "50");
+
+        // lets check is the keyword was correctly cearted
+        Assert.assertEquals("50", hdr.getStringValue("WAT9_234"));
+    }
+
+    @Test
     public void simpleHeaderIndexes() throws Exception {
         Header hdr = createHeader();
 
@@ -73,23 +91,5 @@ public class EnumHeaderTest {
         // by String
         Assert.assertEquals(10, hdr.getIntValue("NAXIS1"));
         Assert.assertEquals(20, hdr.getIntValue("NAXIS2"));
-    }
-
-    @Test
-    public void multiyHeaderIndexes() throws Exception {
-        Header hdr = createHeader();
-
-        // now we take a header with multiple indexes
-        hdr.addValue(WATn_nnn.n(9, 2, 3, 4), "50");
-
-        // lets check is the keyword was correctly cearted
-        Assert.assertEquals("50", hdr.getStringValue("WAT9_234"));
-    }
-
-    public Header createHeader() throws FitsException {
-        byte[][] bimg = new byte[20][20];
-        BasicHDU hdu = Fits.makeHDU(bimg);
-        Header hdr = hdu.getHeader();
-        return hdr;
     }
 }

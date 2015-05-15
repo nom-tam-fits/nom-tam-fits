@@ -36,19 +36,19 @@ package nom.tam.util;
  */
 public interface DataTable {
 
-    public abstract void setRow(int row, Object newRow) throws TableException;
+    public abstract Object getColumn(int column);
+
+    public abstract Object getElement(int row, int col);
+
+    public abstract int getNCols();
+
+    public abstract int getNRows();
 
     public abstract Object getRow(int row);
 
     public abstract void setColumn(int column, Object newColumn) throws TableException;
 
-    public abstract Object getColumn(int column);
-
     public abstract void setElement(int row, int col, Object newElement) throws TableException;
 
-    public abstract Object getElement(int row, int col);
-
-    public abstract int getNRows();
-
-    public abstract int getNCols();
+    public abstract void setRow(int row, Object newRow) throws TableException;
 }

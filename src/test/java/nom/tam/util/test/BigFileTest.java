@@ -77,14 +77,14 @@ public class BigFileTest {
 
             assertEquals("SkipResult", skip, val1);
             assertEquals("SkipPos", skip, val2);
-            assertEquals("SkipVal", (int) sample, val);
+            assertEquals("SkipVal", sample, val);
 
             BufferedDataInputStream bdis = new BufferedDataInputStream(new FileInputStream(fname));
             val1 = bdis.skipBytes(skip);
             val = bdis.read();
             bdis.close();
             assertEquals("SSkipResult", skip, val1);
-            assertEquals("SSkipVal", (int) sample, val);
+            assertEquals("SSkipVal", sample, val);
         } catch (Exception e) {
             e.printStackTrace(System.err);
             throw e;

@@ -18,11 +18,11 @@
  * <p>
  * These enumerations of keywords (dictionaries) can be found in and under the
  * packages:
- * 
+ *
  * {@link nom.tam.fits.header} {@link nom.tam.fits.header.extra}
- * 
+ *
  * Currently we include:
- * 
+ *
  * <pre>
  * Standard
  *    source: [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) |
@@ -31,24 +31,24 @@
  *   source: [http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html) |
  * NOAO
  *   inherits from Common standard
- *   source: [http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html) 
+ *   source: [http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html)
  * SBFits
  *   inherits from Common standard
- *   source: [http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf](http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf) 
+ *   source: [http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf](http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf)
  * MaxImDL
  *   inherits from SBFits
- *   source: [http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm) 
+ *   source: [http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm)
  * CXCStclShared
  *   inherits from Common standard
- *   source: we found these duplicated 
+ *   source: we found these duplicated
  * CXC
  *   inherits from CXCStclShared
- *   source: [http://cxc.harvard.edu/contrib/arots/fits/content.txt](http://cxc.harvard.edu/contrib/arots/fits/content.txt) 
+ *   source: [http://cxc.harvard.edu/contrib/arots/fits/content.txt](http://cxc.harvard.edu/contrib/arots/fits/content.txt)
  * STScI
  *   inherits from CXCStclShared
  *   source: [http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)  |
  * </pre>
- * 
+ *
  * </p>
  * <p>
  * All duplicates where eliminated from enumerations including the enumerations

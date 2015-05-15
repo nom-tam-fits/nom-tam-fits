@@ -47,16 +47,6 @@ import nom.tam.fits.Header;
 public class Gzip implements CompressionScheme {
 
     @Override
-    public String name() {
-        return "GZIP_1";
-    }
-
-    @Override
-    public void initialize(Map<String, String> params) {
-        // No initialization.
-    }
-
-    @Override
     public byte[] compress(byte[] in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         GZIPOutputStream zout = new GZIPOutputStream(out);
@@ -80,10 +70,20 @@ public class Gzip implements CompressionScheme {
     }
 
     @Override
-    public void updateForWrite(Header hdr, Map<String, String> parameters) throws FitsException {
+    public void getParameters(Map<String, String> params, Header hdr) {
     }
 
     @Override
-    public void getParameters(Map<String, String> params, Header hdr) {
+    public void initialize(Map<String, String> params) {
+        // No initialization.
+    }
+
+    @Override
+    public String name() {
+        return "GZIP_1";
+    }
+
+    @Override
+    public void updateForWrite(Header hdr, Map<String, String> parameters) throws FitsException {
     }
 }

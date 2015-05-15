@@ -52,7 +52,7 @@ public class AsciiFuncs {
     /** Convert to ASCII or return null if not compatible */
     public static String asciiString(byte[] buf, int start, int len) {
         try {
-            return new String(buf, start, len, ASCII);
+            return new String(buf, start, len, AsciiFuncs.ASCII);
         } catch (java.io.UnsupportedEncodingException e) {
             // Shouldn't happen
             System.err.println("AsciiFuncs.asciiString error finding ASCII encoding");
@@ -63,7 +63,7 @@ public class AsciiFuncs {
     /** Convert an ASCII string to bytes */
     public static byte[] getBytes(String in) {
         try {
-            return in.getBytes(ASCII);
+            return in.getBytes(AsciiFuncs.ASCII);
         } catch (UnsupportedEncodingException ex) {
             System.err.println("Unable to find ASCII encoding");
             return null;

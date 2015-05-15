@@ -43,11 +43,24 @@ import java.io.OutputStream;
  */
 public class OutputBitStream {
 
-    private OutputStream output;
+    private static final int BYTESIZE = 8;
+
+    /** Define a set of bit masks with 0-8 bits turned on. */
+    final static int[] masks = new int[]{
+        0,
+        1,
+        3,
+        7,
+        15,
+        31,
+        63,
+        127,
+        255
+    };
+
+    private final OutputStream output;
 
     private int currentByte;
-
-    private static final int BYTESIZE = 8;
 
     private int outOffset = 0; // Start with an empty byte.
 
@@ -64,19 +77,6 @@ public class OutputBitStream {
     /** The number of bits written in the last byte */
     private int lastBitsUsed;
 
-    /** Define a set of bit masks with 0-8 bits turned on. */
-    final static int[] masks = new int[]{
-        0,
-        1,
-        3,
-        7,
-        15,
-        31,
-        63,
-        127,
-        255
-    };
-
     /** Initialize the bit stream to read from an input stream. */
     public OutputBitStream(OutputStream out) {
         this(out, false);
@@ -84,8 +84,42 @@ public class OutputBitStream {
 
     /** Initialize the bit stream and set the endianness */
     public OutputBitStream(OutputStream out, boolean littleEndian) {
-        output = out;
+        this.output = out;
         this.littleEndian = littleEndian;
+    }
+
+    /** Close the stream */
+    public void close() throws IOException {
+        flush();
+        this.output.close();
+    }
+
+    private void emit() throws IOException {
+        this.lastBitsUsed = this.outOffset;
+        this.output.write(this.currentByte);
+        this.length += 1;
+        this.outOffset = 0;
+        this.currentByte = 0;
+    }
+
+    /** Get rid of any outstanding data. */
+    public void flush() throws IOException {
+        if (this.outOffset > 0) {
+            emit();
+        }
+    }
+
+    /** How many bits are used in the current byte ? */
+    public int lastBitsUsed() {
+        return this.lastBitsUsed;
+    }
+
+    /**
+     * How my bytes have been used in this stream. This does not include the
+     * currentByte even if some bits of that have been filled.
+     */
+    public int size() {
+        return this.length;
     }
 
     /**
@@ -102,11 +136,15 @@ public class OutputBitStream {
         int got = 0; // The number of bits we have gotten
 
         while (need > 0) {
-            if (outOffset == BYTESIZE) {
+            if (this.outOffset == OutputBitStream.BYTESIZE) {
                 emit();
             }
-            int getting = BYTESIZE - outOffset; // The number of bits to get on
-                                                // this iteration.0
+            int getting = OutputBitStream.BYTESIZE - this.outOffset; // The
+                                                                     // number
+                                                                     // of bits
+                                                                     // to get
+                                                                     // on
+            // this iteration.0
             if (getting > need) {
                 getting = need;
             }
@@ -117,61 +155,27 @@ public class OutputBitStream {
             // The endianess controls the location at which we extract and
             // insert
             // bits.
-            if (littleEndian) {
+            if (this.littleEndian) {
                 base = got;
-                dest = outOffset;
+                dest = this.outOffset;
             } else {
                 base = n - getting - got;
-                dest = BYTESIZE - outOffset - getting;
+                dest = OutputBitStream.BYTESIZE - this.outOffset - getting;
             }
 
-            int x = masks[getting] << base & val;
+            int x = OutputBitStream.masks[getting] << base & val;
             // Do we need to shift the result left or right?
             if (base == dest) {
-                currentByte |= x;
+                this.currentByte |= x;
             } else if (base > dest) {
-                currentByte |= x >>> base - dest;
+                this.currentByte |= x >>> base - dest;
             } else {
-                currentByte |= x << dest - base;
+                this.currentByte |= x << dest - base;
             }
 
-            outOffset += getting;
+            this.outOffset += getting;
             need -= getting;
             got += getting;
         }
-    }
-
-    /** Get rid of any outstanding data. */
-    public void flush() throws IOException {
-        if (outOffset > 0) {
-            emit();
-        }
-    }
-
-    private void emit() throws IOException {
-        lastBitsUsed = outOffset;
-        output.write(currentByte);
-        length += 1;
-        outOffset = 0;
-        currentByte = 0;
-    }
-
-    /**
-     * How my bytes have been used in this stream. This does not include the
-     * currentByte even if some bits of that have been filled.
-     */
-    public int size() {
-        return length;
-    }
-
-    /** Close the stream */
-    public void close() throws IOException {
-        flush();
-        output.close();
-    }
-
-    /** How many bits are used in the current byte ? */
-    public int lastBitsUsed() {
-        return lastBitsUsed;
     }
 }

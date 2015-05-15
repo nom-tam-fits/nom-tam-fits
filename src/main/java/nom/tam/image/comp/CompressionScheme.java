@@ -46,17 +46,6 @@ import nom.tam.fits.Header;
  */
 public interface CompressionScheme {
 
-    /** @return Return the 'name' of the compression scheme */
-    public abstract String name();
-
-    /**
-     * Initialize the compression scheme with any appropriate parameters.
-     * 
-     * @param params
-     *            initialisationparameters.
-     */
-    public abstract void initialize(Map<String, String> params);
-
     /**
      * Compress data. If non-byte data is to be compressed it should be
      * converted to a byte array first (e.g., by writing it to a
@@ -87,6 +76,27 @@ public interface CompressionScheme {
     public abstract byte[] decompress(byte[] in, int length) throws IOException;
 
     /**
+     * Get the parameters indicated by a given header.
+     * 
+     * @param params
+     *            compression parameters from the header
+     * @param hdr
+     *            ths fits header to get the parameters
+     */
+    public abstract void getParameters(Map<String, String> params, Header hdr);
+
+    /**
+     * Initialize the compression scheme with any appropriate parameters.
+     * 
+     * @param params
+     *            initialisationparameters.
+     */
+    public abstract void initialize(Map<String, String> params);
+
+    /** @return Return the 'name' of the compression scheme */
+    public abstract String name();
+
+    /**
      * Update the FITS header and compression parameters with information about
      * the compression.
      * 
@@ -98,15 +108,5 @@ public interface CompressionScheme {
      *             if something goes wrong
      */
     public abstract void updateForWrite(Header hdr, Map<String, String> parameters) throws FitsException;
-
-    /**
-     * Get the parameters indicated by a given header.
-     * 
-     * @param params
-     *            compression parameters from the header
-     * @param hdr
-     *            ths fits header to get the parameters
-     */
-    public abstract void getParameters(Map<String, String> params, Header hdr);
 
 }

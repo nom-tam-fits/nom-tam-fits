@@ -49,23 +49,156 @@ public class ByteFormatParseTest {
 
     ByteFormatter bf = new ByteFormatter();
 
-    ByteParser bp = new ByteParser(buffer);
+    ByteParser bp = new ByteParser(this.buffer);
 
     int offset = 0;
 
     int cnt = 0;
 
     @Test
+    public void testBoolean() throws Exception {
+
+        boolean[] btst = new boolean[100];
+        for (int i = 0; i < btst.length; i += 1) {
+            btst[i] = Math.random() > 0.5;
+        }
+        this.offset = 0;
+        for (boolean element : btst) {
+            this.offset = this.bf.format(element, this.buffer, this.offset, 1);
+            this.offset = this.bf.format(" ", this.buffer, this.offset, 1);
+        }
+
+        this.bp.setOffset(0);
+        for (int i = 0; i < btst.length; i += 1) {
+            assertEquals("Boolean:" + i, btst[i], this.bp.getBoolean());
+        }
+    }
+
+    @Test
+    public void testDouble() throws Exception {
+
+        for (int i = 0; i < 10; i += 1) {
+            this.buffer[i] = (byte) ' ';
+        }
+        this.bp.setOffset(0);
+        assertEquals("DoubBlank", 0., this.bp.getDouble(10), 0.);
+
+        double[] dbl = new double[100];
+        for (int i = 6; i < dbl.length; i += 1) {
+            dbl[i] = 2 * (Math.random() - 0.5) * Math.pow(10, 60 * (Math.random() - 0.5));
+        }
+
+        dbl[0] = Double.MAX_VALUE;
+        dbl[1] = Double.MIN_VALUE;
+        dbl[2] = 0;
+        dbl[3] = Double.NaN;
+        dbl[4] = Double.POSITIVE_INFINITY;
+        dbl[5] = Double.NEGATIVE_INFINITY;
+
+        this.bf.setTruncationThrow(false);
+        this.bf.setAlign(true);
+        this.offset = 0;
+        this.cnt = 0;
+        while (this.cnt < dbl.length) {
+            this.offset = this.bf.format(dbl[this.cnt], this.buffer, this.offset, 25);
+            this.cnt += 1;
+            if (this.cnt % 4 == 0) {
+                this.offset = this.bf.format("\n", this.buffer, this.offset, 1);
+            }
+        }
+
+        this.bp.setOffset(0);
+        for (int i = 0; i < dbl.length; i += 1) {
+
+            double chk = this.bp.getDouble(25);
+
+            double dx = Math.abs(chk - dbl[i]);
+            if (dbl[i] != 0) {
+                dx = dx / Math.abs(dbl[i]);
+            }
+            if (Double.isNaN(dbl[i])) {
+                assertEquals("Double check:" + i, true, Double.isNaN(chk));
+            } else if (Double.isInfinite(dbl[i])) {
+                assertEquals("Double check:" + i, dbl[i], chk, 0);
+            } else {
+                assertEquals("Double check:" + i, 0., dx, 1.e-14);
+            }
+
+            if ((i + 1) % 4 == 0) {
+                this.bp.skip(1);
+            }
+        }
+    }
+
+    @Test
+    public void testFloat() throws Exception {
+
+        for (int i = 0; i < 10; i += 1) {
+            this.buffer[i] = (byte) ' ';
+        }
+        this.bp.setOffset(0);
+        assertEquals("FloatBlank", 0.f, this.bp.getFloat(10), 0.);
+
+        float[] flt = new float[100];
+        for (int i = 6; i < flt.length; i += 1) {
+            flt[i] = (float) (2 * (Math.random() - 0.5) * Math.pow(10, 60 * (Math.random() - 0.5)));
+        }
+
+        flt[0] = Float.MAX_VALUE;
+        flt[1] = Float.MIN_VALUE;
+        flt[2] = 0;
+        flt[3] = Float.NaN;
+        flt[4] = Float.POSITIVE_INFINITY;
+        flt[5] = Float.NEGATIVE_INFINITY;
+
+        this.bf.setTruncationThrow(false);
+        this.bf.setAlign(true);
+
+        this.offset = 0;
+        this.cnt = 0;
+
+        while (this.cnt < flt.length) {
+            this.offset = this.bf.format(flt[this.cnt], this.buffer, this.offset, 24);
+            this.cnt += 1;
+            if (this.cnt % 4 == 0) {
+                this.offset = this.bf.format("\n", this.buffer, this.offset, 1);
+            }
+        }
+
+        this.bp.setOffset(0);
+
+        for (int i = 0; i < flt.length; i += 1) {
+
+            float chk = this.bp.getFloat(24);
+
+            float dx = Math.abs(chk - flt[i]);
+            if (flt[i] != 0) {
+                dx = dx / Math.abs(flt[i]);
+            }
+            if (Float.isNaN(flt[i])) {
+                assertEquals("Float check:" + i, true, Float.isNaN(chk));
+            } else if (Float.isInfinite(flt[i])) {
+                assertEquals("Float check:" + i, flt[i], chk, 0);
+            } else {
+                assertEquals("Float check:" + i, 0., dx, 1.e-6);
+            }
+            if ((i + 1) % 4 == 0) {
+                this.bp.skip(1);
+            }
+        }
+    }
+
+    @Test
     public void testInt() throws Exception {
 
         for (int i = 0; i < 10; i += 1) {
-            buffer[i] = (byte) ' ';
+            this.buffer[i] = (byte) ' ';
         }
-        bp.setOffset(0);
-        assertEquals("IntBlank", 0, bp.getInt(10));
+        this.bp.setOffset(0);
+        assertEquals("IntBlank", 0, this.bp.getInt(10));
 
-        bf.setAlign(true);
-        bf.setTruncationThrow(false);
+        this.bf.setAlign(true);
+        this.bf.setTruncationThrow(false);
 
         int[] tint = new int[100];
 
@@ -79,85 +212,85 @@ public class ByteFormatParseTest {
 
         // Write 100 numbers
         int colSize = 12;
-        while (cnt < tint.length) {
-            offset = bf.format(tint[cnt], buffer, offset, colSize);
-            cnt += 1;
-            if (cnt % 8 == 0) {
-                offset = bf.format("\n", buffer, offset, 1);
+        while (this.cnt < tint.length) {
+            this.offset = this.bf.format(tint[this.cnt], this.buffer, this.offset, colSize);
+            this.cnt += 1;
+            if (this.cnt % 8 == 0) {
+                this.offset = this.bf.format("\n", this.buffer, this.offset, 1);
             }
         }
 
         // Now see if we can get them back
-        bp.setOffset(0);
+        this.bp.setOffset(0);
         for (int i = 0; i < tint.length; i += 1) {
 
-            int chk = bp.getInt(colSize);
+            int chk = this.bp.getInt(colSize);
 
             assertEquals("IntegersRA", chk, tint[i]);
             if ((i + 1) % 8 == 0) {
-                bp.skip(1);
+                this.bp.skip(1);
             }
         }
 
         // Now do it with left-aligned numbers.
-        bf.setAlign(false);
-        bp.setFillFields(true);
-        offset = 0;
+        this.bf.setAlign(false);
+        this.bp.setFillFields(true);
+        this.offset = 0;
         colSize = 12;
-        cnt = 0;
-        offset = 0;
-        while (cnt < tint.length) {
-            int oldOffset = offset;
-            offset = bf.format(tint[cnt], buffer, offset, colSize);
-            int nb = colSize - (offset - oldOffset);
+        this.cnt = 0;
+        this.offset = 0;
+        while (this.cnt < tint.length) {
+            int oldOffset = this.offset;
+            this.offset = this.bf.format(tint[this.cnt], this.buffer, this.offset, colSize);
+            int nb = colSize - (this.offset - oldOffset);
             if (nb > 0) {
-                offset = bf.alignFill(buffer, offset, nb);
+                this.offset = this.bf.alignFill(this.buffer, this.offset, nb);
             }
-            cnt += 1;
-            if (cnt % 8 == 0) {
-                offset = bf.format("\n", buffer, offset, 1);
+            this.cnt += 1;
+            if (this.cnt % 8 == 0) {
+                this.offset = this.bf.format("\n", this.buffer, this.offset, 1);
             }
         }
 
         // Now see if we can get them back
-        bp.setOffset(0);
+        this.bp.setOffset(0);
         for (int i = 0; i < tint.length; i += 1) {
 
-            int chk = bp.getInt(colSize);
+            int chk = this.bp.getInt(colSize);
 
             assertEquals("IntegersLA", chk, tint[i]);
             if ((i + 1) % 8 == 0) {
-                bp.skip(1);
+                this.bp.skip(1);
             }
         }
 
-        offset = 0;
+        this.offset = 0;
         colSize = 12;
-        cnt = 0;
-        offset = 0;
-        while (cnt < tint.length) {
-            offset = bf.format(tint[cnt], buffer, offset, colSize);
-            cnt += 1;
-            if (cnt % 8 == 0) {
-                offset = bf.format("\n", buffer, offset, 1);
+        this.cnt = 0;
+        this.offset = 0;
+        while (this.cnt < tint.length) {
+            this.offset = this.bf.format(tint[this.cnt], this.buffer, this.offset, colSize);
+            this.cnt += 1;
+            if (this.cnt % 8 == 0) {
+                this.offset = this.bf.format("\n", this.buffer, this.offset, 1);
             }
         }
 
-        String myStr = new String(buffer, 0, offset);
+        String myStr = new String(this.buffer, 0, this.offset);
         assertEquals("No spaces", -1, myStr.indexOf(" "));
 
-        bf.setAlign(false);
+        this.bf.setAlign(false);
 
-        offset = 0;
+        this.offset = 0;
         colSize = 12;
-        cnt = 0;
-        offset = 0;
-        while (cnt < tint.length) {
-            offset = bf.format(tint[cnt], buffer, offset, colSize);
-            offset = bf.format(" ", buffer, offset, 1);
-            cnt += 1;
+        this.cnt = 0;
+        this.offset = 0;
+        while (this.cnt < tint.length) {
+            this.offset = this.bf.format(tint[this.cnt], this.buffer, this.offset, colSize);
+            this.offset = this.bf.format(" ", this.buffer, this.offset, 1);
+            this.cnt += 1;
         }
-        myStr = new String(buffer, 0, offset);
+        myStr = new String(this.buffer, 0, this.offset);
         String[] array = myStr.split(" ");
 
         assertEquals("Split size", 100, array.length);
@@ -166,28 +299,28 @@ public class ByteFormatParseTest {
             assertEquals("Parse token", tint[i], Integer.parseInt(array[i]));
         }
 
-        bf.setTruncationThrow(false);
+        this.bf.setTruncationThrow(false);
 
         int val = 1;
-        Arrays.fill(buffer, (byte) ' ');
+        Arrays.fill(this.buffer, (byte) ' ');
 
         for (int i = 0; i < 10; i += 1) {
-            offset = bf.format(val, buffer, 0, 6);
+            this.offset = this.bf.format(val, this.buffer, 0, 6);
             String test = (val + "      ").substring(0, 6);
             if (i < 6) {
-                assertEquals("TestTrunc" + i, test, new String(buffer, 0, 6));
+                assertEquals("TestTrunc" + i, test, new String(this.buffer, 0, 6));
             } else {
-                assertEquals("TestTrunc" + i, "******", new String(buffer, 0, 6));
+                assertEquals("TestTrunc" + i, "******", new String(this.buffer, 0, 6));
             }
             val *= 10;
         }
 
-        bf.setTruncationThrow(true);
+        this.bf.setTruncationThrow(true);
         val = 1;
         for (int i = 0; i < 10; i += 1) {
             boolean thrown = false;
             try {
-                offset = bf.format(val, buffer, 0, 6);
+                this.offset = this.bf.format(val, this.buffer, 0, 6);
             } catch (TruncationException e) {
                 thrown = true;
             }
@@ -204,10 +337,10 @@ public class ByteFormatParseTest {
     public void testLong() throws Exception {
 
         for (int i = 0; i < 10; i += 1) {
-            buffer[i] = (byte) ' ';
+            this.buffer[i] = (byte) ' ';
         }
-        bp.setOffset(0);
-        assertEquals("LongBlank", 0L, bp.getLong(10));
+        this.bp.setOffset(0);
+        assertEquals("LongBlank", 0L, this.bp.getLong(10));
 
         long[] lng = new long[100];
         for (int i = 0; i < lng.length; i += 1) {
@@ -218,172 +351,39 @@ public class ByteFormatParseTest {
         lng[1] = Long.MIN_VALUE;
         lng[2] = 0;
 
-        bf.setTruncationThrow(false);
-        bp.setFillFields(true);
-        bf.setAlign(true);
-        offset = 0;
+        this.bf.setTruncationThrow(false);
+        this.bp.setFillFields(true);
+        this.bf.setAlign(true);
+        this.offset = 0;
         for (int i = 0; i < lng.length; i += 1) {
-            offset = bf.format(lng[i], buffer, offset, 20);
+            this.offset = this.bf.format(lng[i], this.buffer, this.offset, 20);
             if ((i + 1) % 4 == 0) {
-                offset = bf.format("\n", buffer, offset, 1);
+                this.offset = this.bf.format("\n", this.buffer, this.offset, 1);
             }
         }
 
-        bp.setOffset(0);
+        this.bp.setOffset(0);
 
         for (int i = 0; i < lng.length; i += 1) {
-            assertEquals("Long check", lng[i], bp.getLong(20));
+            assertEquals("Long check", lng[i], this.bp.getLong(20));
             if ((i + 1) % 4 == 0) {
-                bp.skip(1);
+                this.bp.skip(1);
             }
-        }
-    }
-
-    @Test
-    public void testFloat() throws Exception {
-
-        for (int i = 0; i < 10; i += 1) {
-            buffer[i] = (byte) ' ';
-        }
-        bp.setOffset(0);
-        assertEquals("FloatBlank", 0.f, bp.getFloat(10), 0.);
-
-        float[] flt = new float[100];
-        for (int i = 6; i < flt.length; i += 1) {
-            flt[i] = (float) (2 * (Math.random() - 0.5) * Math.pow(10, 60 * (Math.random() - 0.5)));
-        }
-
-        flt[0] = Float.MAX_VALUE;
-        flt[1] = Float.MIN_VALUE;
-        flt[2] = 0;
-        flt[3] = Float.NaN;
-        flt[4] = Float.POSITIVE_INFINITY;
-        flt[5] = Float.NEGATIVE_INFINITY;
-
-        bf.setTruncationThrow(false);
-        bf.setAlign(true);
-
-        offset = 0;
-        cnt = 0;
-
-        while (cnt < flt.length) {
-            offset = bf.format(flt[cnt], buffer, offset, 24);
-            cnt += 1;
-            if (cnt % 4 == 0) {
-                offset = bf.format("\n", buffer, offset, 1);
-            }
-        }
-
-        bp.setOffset(0);
-
-        for (int i = 0; i < flt.length; i += 1) {
-
-            float chk = bp.getFloat(24);
-
-            float dx = Math.abs(chk - flt[i]);
-            if (flt[i] != 0) {
-                dx = dx / Math.abs(flt[i]);
-            }
-            if (Float.isNaN(flt[i])) {
-                assertEquals("Float check:" + i, true, Float.isNaN(chk));
-            } else if (Float.isInfinite(flt[i])) {
-                assertEquals("Float check:" + i, flt[i], chk, 0);
-            } else {
-                assertEquals("Float check:" + i, 0., dx, 1.e-6);
-            }
-            if ((i + 1) % 4 == 0) {
-                bp.skip(1);
-            }
-        }
-    }
-
-    @Test
-    public void testDouble() throws Exception {
-
-        for (int i = 0; i < 10; i += 1) {
-            buffer[i] = (byte) ' ';
-        }
-        bp.setOffset(0);
-        assertEquals("DoubBlank", 0., bp.getDouble(10), 0.);
-
-        double[] dbl = new double[100];
-        for (int i = 6; i < dbl.length; i += 1) {
-            dbl[i] = 2 * (Math.random() - 0.5) * Math.pow(10, 60 * (Math.random() - 0.5));
-        }
-
-        dbl[0] = Double.MAX_VALUE;
-        dbl[1] = Double.MIN_VALUE;
-        dbl[2] = 0;
-        dbl[3] = Double.NaN;
-        dbl[4] = Double.POSITIVE_INFINITY;
-        dbl[5] = Double.NEGATIVE_INFINITY;
-
-        bf.setTruncationThrow(false);
-        bf.setAlign(true);
-        offset = 0;
-        cnt = 0;
-        while (cnt < dbl.length) {
-            offset = bf.format(dbl[cnt], buffer, offset, 25);
-            cnt += 1;
-            if (cnt % 4 == 0) {
-                offset = bf.format("\n", buffer, offset, 1);
-            }
-        }
-
-        bp.setOffset(0);
-        for (int i = 0; i < dbl.length; i += 1) {
-
-            double chk = bp.getDouble(25);
-
-            double dx = Math.abs(chk - dbl[i]);
-            if (dbl[i] != 0) {
-                dx = dx / Math.abs(dbl[i]);
-            }
-            if (Double.isNaN(dbl[i])) {
-                assertEquals("Double check:" + i, true, Double.isNaN(chk));
-            } else if (Double.isInfinite(dbl[i])) {
-                assertEquals("Double check:" + i, dbl[i], chk, 0);
-            } else {
-                assertEquals("Double check:" + i, 0., dx, 1.e-14);
-            }
-
-            if ((i + 1) % 4 == 0) {
-                bp.skip(1);
-            }
-        }
-    }
-
-    @Test
-    public void testBoolean() throws Exception {
-
-        boolean[] btst = new boolean[100];
-        for (int i = 0; i < btst.length; i += 1) {
-            btst[i] = Math.random() > 0.5;
-        }
-        offset = 0;
-        for (int i = 0; i < btst.length; i += 1) {
-            offset = bf.format(btst[i], buffer, offset, 1);
-            offset = bf.format(" ", buffer, offset, 1);
-        }
-
-        bp.setOffset(0);
-        for (int i = 0; i < btst.length; i += 1) {
-            assertEquals("Boolean:" + i, btst[i], bp.getBoolean());
         }
     }
 
     @Test
     public void testString() throws Exception {
 
-        offset = 0;
+        this.offset = 0;
         String bigStr = "abcdefghijklmnopqrstuvwxyz";
 
         for (int i = 0; i < 100; i += 1) {
-            offset = bf.format(bigStr.substring(i % 27), buffer, offset, 13);
-            offset = bf.format(" ", buffer, offset, 1);
+            this.offset = this.bf.format(bigStr.substring(i % 27), this.buffer, this.offset, 13);
+            this.offset = this.bf.format(" ", this.buffer, this.offset, 1);
         }
 
-        bp.setOffset(0);
+        this.bp.setOffset(0);
         for (int i = 0; i < 100; i += 1) {
             int ind = i % 27;
             if (ind > 13) {
@@ -393,9 +393,9 @@ public class ByteFormatParseTest {
             if (want.length() > 13) {
                 want = want.substring(0, 13);
             }
-            String s = bp.getString(want.length());
+            String s = this.bp.getString(want.length());
             assertEquals("String:" + i, want, s);
-            bp.skip(1);
+            this.bp.skip(1);
         }
     }
 }

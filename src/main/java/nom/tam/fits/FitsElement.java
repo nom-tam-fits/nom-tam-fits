@@ -43,6 +43,15 @@ import nom.tam.util.ArrayDataOutput;
 public interface FitsElement {
 
     /**
+     * Get the byte at which this element begins. This is only available if the
+     * data is originally read from a random access medium.
+     */
+    public long getFileOffset();
+
+    /** The size of this element in bytes */
+    public long getSize();
+
+    /**
      * Read the contents of the element from an input source.
      * 
      * @param in
@@ -51,12 +60,11 @@ public interface FitsElement {
     public void read(ArrayDataInput in) throws FitsException, IOException;
 
     /**
-     * Write the contents of the element to a data sink.
+     * Reset the input stream to point to the beginning of this element
      * 
-     * @param out
-     *            The data sink.
+     * @return True if the reset succeeded.
      */
-    public void write(ArrayDataOutput out) throws FitsException, IOException;
+    public boolean reset();
 
     /**
      * Rewrite the contents of the element in place. The data must have been
@@ -65,22 +73,14 @@ public interface FitsElement {
      */
     public void rewrite() throws FitsException, IOException;
 
-    /**
-     * Get the byte at which this element begins. This is only available if the
-     * data is originally read from a random access medium.
-     */
-    public long getFileOffset();
-
     /** Can this element be rewritten? */
     public boolean rewriteable();
 
-    /** The size of this element in bytes */
-    public long getSize();
-
     /**
-     * Reset the input stream to point to the beginning of this element
+     * Write the contents of the element to a data sink.
      * 
-     * @return True if the reset succeeded.
+     * @param out
+     *            The data sink.
      */
-    public boolean reset();
+    public void write(ArrayDataOutput out) throws FitsException, IOException;
 }

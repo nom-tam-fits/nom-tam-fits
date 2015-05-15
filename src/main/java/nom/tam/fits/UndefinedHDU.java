@@ -36,31 +36,9 @@ import nom.tam.util.ArrayFuncs;
 /** Holder for unknown data types. */
 public class UndefinedHDU extends BasicHDU {
 
-    /**
-     * Build an image HDU using the supplied data.
-     * 
-     * @param h
-     *            the header for this HDU
-     * @param d
-     *            the data used to build the image.
-     * @exception FitsException
-     *                if there was a problem with the data.
-     */
-    public UndefinedHDU(Header h, Data d) throws FitsException {
-        myData = d;
-        myHeader = h;
-
-    }
-
-    /*
-     * Check if we can find the length of the data for this header.
-     * @return <CODE>true</CODE> if this HDU has a valid header.
-     */
-    public static boolean isHeader(Header hdr) {
-        if (hdr.getStringValue("XTENSION") != null && hdr.getIntValue("NAXIS", -1) >= 0) {
-            return true;
-        }
-        return false;
+    /** Encapsulate an object as an ImageHDU. */
+    public static Data encapsulate(Object o) throws FitsException {
+        return new UndefinedData(o);
     }
 
     /**
@@ -75,17 +53,15 @@ public class UndefinedHDU extends BasicHDU {
         return ArrayFuncs.computeLSize(o) > 0;
     }
 
-    /**
-     * Create a Data object to correspond to the header description.
-     * 
-     * @return An unfilled Data object which can be used to read in the data for
-     *         this HDU.
-     * @exception FitsException
-     *                if the image extension could not be created.
+    /*
+     * Check if we can find the length of the data for this header.
+     * @return <CODE>true</CODE> if this HDU has a valid header.
      */
-    @Override
-    public Data manufactureData() throws FitsException {
-        return manufactureData(myHeader);
+    public static boolean isHeader(Header hdr) {
+        if (hdr.getStringValue("XTENSION") != null && hdr.getIntValue("NAXIS", -1) >= 0) {
+            return true;
+        }
+        return false;
     }
 
     public static Data manufactureData(Header hdr) throws FitsException {
@@ -108,9 +84,20 @@ public class UndefinedHDU extends BasicHDU {
         return h;
     }
 
-    /** Encapsulate an object as an ImageHDU. */
-    public static Data encapsulate(Object o) throws FitsException {
-        return new UndefinedData(o);
+    /**
+     * Build an image HDU using the supplied data.
+     * 
+     * @param h
+     *            the header for this HDU
+     * @param d
+     *            the data used to build the image.
+     * @exception FitsException
+     *                if there was a problem with the data.
+     */
+    public UndefinedHDU(Header h, Data d) throws FitsException {
+        this.myData = d;
+        this.myHeader = h;
+
     }
 
     /**
@@ -120,7 +107,20 @@ public class UndefinedHDU extends BasicHDU {
     public void info() {
 
         System.out.println("  Unhandled/Undefined/Unknown Type");
-        System.out.println("  XTENSION=" + myHeader.getStringValue("XTENSION").trim());
-        System.out.println("  Apparent size:" + myData.getTrueSize());
+        System.out.println("  XTENSION=" + this.myHeader.getStringValue("XTENSION").trim());
+        System.out.println("  Apparent size:" + this.myData.getTrueSize());
+    }
+
+    /**
+     * Create a Data object to correspond to the header description.
+     * 
+     * @return An unfilled Data object which can be used to read in the data for
+     *         this HDU.
+     * @exception FitsException
+     *                if the image extension could not be created.
+     */
+    @Override
+    public Data manufactureData() throws FitsException {
+        return manufactureData(this.myHeader);
     }
 }

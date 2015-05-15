@@ -35,6 +35,54 @@ import java.io.IOException;
 
 public interface ArrayDataInput extends java.io.DataInput {
 
+    /* Close the file. */
+    public void close() throws IOException;
+
+    /**
+     * See the general contract of the <code>mark</code> method of
+     * <code>InputStream</code>.
+     * 
+     * @param readlimit
+     *            the maximum limit of bytes that can be read before the mark
+     *            position becomes invalid.
+     * @see java.io.BufferedInputStream#reset()
+     */
+    public void mark(int readlimit) throws IOException;
+
+    public int read(boolean[] buf) throws IOException;
+
+    public int read(boolean[] buf, int offset, int size) throws IOException;
+
+    /* Read a complete primitive array */
+    public int read(byte[] buf) throws IOException;
+
+    /* Read a segment of a primitive array. */
+    public int read(byte[] buf, int offset, int size) throws IOException;
+
+    public int read(char[] buf) throws IOException;
+
+    public int read(char[] buf, int offset, int size) throws IOException;
+
+    public int read(double[] buf) throws IOException;
+
+    public int read(double[] buf, int offset, int size) throws IOException;
+
+    public int read(float[] buf) throws IOException;
+
+    public int read(float[] buf, int offset, int size) throws IOException;
+
+    public int read(int[] buf) throws IOException;
+
+    public int read(int[] buf, int offset, int size) throws IOException;
+
+    public int read(long[] buf) throws IOException;
+
+    public int read(long[] buf, int offset, int size) throws IOException;
+
+    public int read(short[] buf) throws IOException;
+
+    public int read(short[] buf, int offset, int size) throws IOException;
+
     /**
      * Read a generic (possibly multidimensional) primitive array. An Object[]
      * array is also a legal argument if each element of the array is a legal.
@@ -55,60 +103,6 @@ public interface ArrayDataInput extends java.io.DataInput {
      */
     public long readLArray(Object o) throws IOException;
 
-    /* Read a complete primitive array */
-    public int read(byte[] buf) throws IOException;
-
-    public int read(boolean[] buf) throws IOException;
-
-    public int read(short[] buf) throws IOException;
-
-    public int read(char[] buf) throws IOException;
-
-    public int read(int[] buf) throws IOException;
-
-    public int read(long[] buf) throws IOException;
-
-    public int read(float[] buf) throws IOException;
-
-    public int read(double[] buf) throws IOException;
-
-    /* Read a segment of a primitive array. */
-    public int read(byte[] buf, int offset, int size) throws IOException;
-
-    public int read(boolean[] buf, int offset, int size) throws IOException;
-
-    public int read(char[] buf, int offset, int size) throws IOException;
-
-    public int read(short[] buf, int offset, int size) throws IOException;
-
-    public int read(int[] buf, int offset, int size) throws IOException;
-
-    public int read(long[] buf, int offset, int size) throws IOException;
-
-    public int read(float[] buf, int offset, int size) throws IOException;
-
-    public int read(double[] buf, int offset, int size) throws IOException;
-
-    /* Skip (forward) in a file */
-    public long skip(long distance) throws IOException;
-
-    /* Skip and require that the data be there. */
-    public long skipBytes(long toSkip) throws IOException;
-
-    /* Close the file. */
-    public void close() throws IOException;
-
-    /**
-     * See the general contract of the <code>mark</code> method of
-     * <code>InputStream</code>.
-     * 
-     * @param readlimit
-     *            the maximum limit of bytes that can be read before the mark
-     *            position becomes invalid.
-     * @see java.io.BufferedInputStream#reset()
-     */
-    public void mark(int readlimit) throws IOException;
-
     /**
      * See the general contract of the <code>reset</code> method of
      * <code>InputStream</code>.
@@ -125,4 +119,10 @@ public interface ArrayDataInput extends java.io.DataInput {
      * @see java.io.BufferedInputStream#mark(int)
      */
     public void reset() throws IOException;
+
+    /* Skip (forward) in a file */
+    public long skip(long distance) throws IOException;
+
+    /* Skip and require that the data be there. */
+    public long skipBytes(long toSkip) throws IOException;
 }

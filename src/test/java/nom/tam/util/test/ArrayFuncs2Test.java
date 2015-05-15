@@ -140,7 +140,7 @@ public class ArrayFuncs2Test {
         byte[][][] xtest1 = (byte[][][]) ArrayFuncs.convertArray(test1, byte.class);
 
         assertEquals("convertArray(toByte)", byte.class, ArrayFuncs.getBaseClass(xtest1));
-        assertEquals("convertArray(tobyte)", test1[3][3][3], (int) xtest1[3][3][3]);
+        assertEquals("convertArray(tobyte)", test1[3][3][3], xtest1[3][3][3]);
 
         double[][][] xtest2 = (double[][][]) ArrayFuncs.convertArray(test1, double.class);
         assertEquals("convertArray(toByte)", double.class, ArrayFuncs.getBaseClass(xtest2));
@@ -167,8 +167,8 @@ public class ArrayFuncs2Test {
 
         ArrayFuncs.testPattern(xtest4, (byte) -1);
 
-        assertEquals("testPattern()", (double) -1, xtest4[0][0][0][0], 0);
-        assertEquals("testPattern()", (double) 118, xtest4[4][3][2][1], 0);
+        assertEquals("testPattern()", -1, xtest4[0][0][0][0], 0);
+        assertEquals("testPattern()", 118, xtest4[4][3][2][1], 0);
         double[] xtest4x = (double[]) ArrayFuncs.getBaseArray(xtest4);
 
         assertEquals("getBaseArray()", 2, xtest4x.length);

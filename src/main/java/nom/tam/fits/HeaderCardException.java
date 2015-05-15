@@ -35,7 +35,7 @@ package nom.tam.fits;
 public class HeaderCardException extends FitsException {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 

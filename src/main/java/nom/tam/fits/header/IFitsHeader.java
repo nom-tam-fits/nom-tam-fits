@@ -124,12 +124,12 @@ public interface IFitsHeader {
 
         private final String url;
 
-        public String url() {
-            return url;
-        }
-
         private SOURCE(String url) {
             this.url = url;
+        }
+
+        public String url() {
+            return this.url;
         }
 
     }

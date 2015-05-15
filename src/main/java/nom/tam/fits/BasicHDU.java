@@ -56,25 +56,28 @@ public abstract class BasicHDU implements FitsElement {
 
     public static final int BITPIX_DOUBLE = -64;
 
-    /** The associated header. */
-    protected Header myHeader = null;
-
-    /** The associated data unit. */
-    protected Data myData = null;
-
-    /** Is this the first HDU in a FITS file? */
-    protected boolean isPrimary = false;
+    /** Get an HDU without content */
+    public static BasicHDU getDummyHDU() {
+        try {
+            // Update suggested by Laurent Bourges
+            ImageData img = new ImageData((Object) null);
+            return FitsFactory.HDUFactory(ImageHDU.manufactureHeader(img), img);
+        } catch (FitsException e) {
+            System.err.println("Impossible exception in getDummyHDU");
+            return null;
+        }
+    }
 
     /**
-     * Create a Data object to correspond to the header description.
+     * Check that this is a valid header for the HDU.
      * 
-     * @return An unfilled Data object which can be used to read in the data for
-     *         this HDU.
-     * @exception FitsException
-     *                if the Data object could not be created from this HDU's
-     *                Header
+     * @param header
+     *            to validate.
+     * @return <CODE>true</CODE> if this is a valid header.
      */
-    abstract Data manufactureData() throws FitsException;
+    public static boolean isHeader(Header header) {
+        return false;
+    }
 
     /**
      * Skip the Data object immediately after the given Header object on the
@@ -91,102 +94,55 @@ public abstract class BasicHDU implements FitsElement {
         stream.skipBytes(hdr.getDataSize());
     }
 
-    /**
-     * Skip the Data object for this HDU.
-     * 
-     * @param stream
-     *            the stream which contains the data.
-     * @exception IOException
-     *                if the Data object could not be skipped.
-     */
-    public void skipData(ArrayDataInput stream) throws IOException {
-        skipData(stream, myHeader);
+    /** The associated header. */
+    protected Header myHeader = null;
+
+    /** The associated data unit. */
+    protected Data myData = null;
+
+    /** Is this the first HDU in a FITS file? */
+    protected boolean isPrimary = false;
+
+    public void addValue(IFitsHeader key, boolean val) throws HeaderCardException {
+        this.myHeader.addValue(key.key(), val, key.comment());
+    }
+
+    public void addValue(IFitsHeader key, double val) throws HeaderCardException {
+        this.myHeader.addValue(key.key(), val, key.comment());
+    }
+
+    public void addValue(IFitsHeader key, int val) throws HeaderCardException {
+        this.myHeader.addValue(key.key(), val, key.comment());
+    }
+
+    public void addValue(IFitsHeader key, String val) throws HeaderCardException {
+        this.myHeader.addValue(key.key(), val, key.comment());
+    }
+
+    /** Add information to the header */
+    public void addValue(String key, boolean val, String comment) throws HeaderCardException {
+        this.myHeader.addValue(key, val, comment);
+    }
+
+    public void addValue(String key, double val, String comment) throws HeaderCardException {
+        this.myHeader.addValue(key, val, comment);
+    }
+
+    public void addValue(String key, int val, String comment) throws HeaderCardException {
+        this.myHeader.addValue(key, val, comment);
+    }
+
+    public void addValue(String key, String val, String comment) throws HeaderCardException {
+        this.myHeader.addValue(key, val, comment);
     }
 
     /**
-     * Read in the Data object for this HDU.
-     * 
-     * @param stream
-     *            the stream from which the data is read.
-     * @exception FitsException
-     *                if the Data object could not be created from this HDU's
-     *                Header
+     * Indicate whether HDU can be primary HDU. This method must be overriden in
+     * HDU types which can appear at the beginning of a FITS file.
      */
-    public void readData(ArrayDataInput stream) throws FitsException {
-        myData = null;
-        try {
-            myData = manufactureData();
-        } finally {
-            // if we cannot build a Data object, skip this section
-            if (myData == null) {
-                try {
-                    skipData(stream, myHeader);
-                } catch (Exception e) {
-                }
-            }
-        }
-
-        myData.read(stream);
-    }
-
-    /** Get the associated header */
-    public Header getHeader() {
-        return myHeader;
-    }
-
-    /** Get the starting offset of the HDU */
-    @Override
-    public long getFileOffset() {
-        return myHeader.getFileOffset();
-    }
-
-    /** Get the associated Data object */
-    public Data getData() {
-        return myData;
-    }
-
-    /** Get the non-FITS data object */
-    public Object getKernel() {
-        try {
-            return myData.getKernel();
-        } catch (FitsException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Get the total size in bytes of the HDU.
-     * 
-     * @return The size in bytes.
-     */
-    @Override
-    public long getSize() {
-        int size = 0;
-
-        if (myHeader != null) {
-            size += myHeader.getSize();
-        }
-        if (myData != null) {
-            size += myData.getSize();
-        }
-        return size;
-    }
-
-    /**
-     * Check that this is a valid header for the HDU.
-     * 
-     * @param header
-     *            to validate.
-     * @return <CODE>true</CODE> if this is a valid header.
-     */
-    public static boolean isHeader(Header header) {
+    boolean canBePrimary() {
         return false;
     }
-
-    /**
-     * Print out some information about this HDU.
-     */
-    public abstract void info();
 
     /**
      * Check if a field is present and if so print it out.
@@ -197,7 +153,7 @@ public abstract class BasicHDU implements FitsElement {
      *            it found in the header?
      */
     boolean checkField(String name) {
-        String value = myHeader.getStringValue(name);
+        String value = this.myHeader.getStringValue(name);
         if (value == null) {
             return false;
         }
@@ -205,72 +161,39 @@ public abstract class BasicHDU implements FitsElement {
         return true;
     }
 
-    /*
-     * Read out the HDU from the data stream. This will overwrite any existing
-     * header and data components.
-     */
-    @Override
-    public void read(ArrayDataInput stream) throws FitsException, IOException {
-        myHeader = Header.readHeader(stream);
-        myData = myHeader.makeData();
-        myData.read(stream);
-    }
-
-    /*
-     * Write out the HDU
-     * @param stream The data stream to be written to.
-     */
-    @Override
-    public void write(ArrayDataOutput stream) throws FitsException {
-        if (myHeader != null) {
-            myHeader.write(stream);
-        }
-        if (myData != null) {
-            myData.write(stream);
-        }
-        try {
-            stream.flush();
-        } catch (java.io.IOException e) {
-            throw new FitsException("Error flushing at end of HDU: " + e.getMessage());
-        }
-    }
-
-    /** Is the HDU rewriteable */
-    @Override
-    public boolean rewriteable() {
-        return myHeader.rewriteable() && myData.rewriteable();
-    }
-
-    /** Rewrite the HDU */
-    @Override
-    public void rewrite() throws FitsException, IOException {
-
-        if (rewriteable()) {
-            myHeader.rewrite();
-            myData.rewrite();
-        } else {
-            throw new FitsException("Invalid attempt to rewrite HDU");
-        }
-    }
-
     /**
-     * Get the String value associated with <CODE>keyword</CODE>.
+     * Return the name of the person who compiled the information in the data
+     * associated with this header.
      * 
-     * @param keyword
-     *            the FITS keyword
-     * @return either <CODE>null</CODE> or a String with leading/trailing blanks
-     *         stripped.
+     * @return either <CODE>null</CODE> or a String object
      */
-    public String getTrimmedString(String keyword) {
-        String s = myHeader.getStringValue(keyword);
-        if (s != null) {
-            s = s.trim();
+    public String getAuthor() {
+        return getTrimmedString("AUTHOR");
+    }
+
+    public int[] getAxes() throws FitsException {
+        int nAxis = this.myHeader.getIntValue("NAXIS", 0);
+        if (nAxis < 0) {
+            throw new FitsException("Negative NAXIS value " + nAxis);
         }
-        return s;
+        if (nAxis > 999) {
+            throw new FitsException("NAXIS value " + nAxis + " too large");
+        }
+
+        if (nAxis == 0) {
+            return null;
+        }
+
+        int[] axes = new int[nAxis];
+        for (int i = 1; i <= nAxis; i++) {
+            axes[nAxis - i] = this.myHeader.getIntValue("NAXIS" + i, 0);
+        }
+
+        return axes;
     }
 
     public int getBitPix() throws FitsException {
-        int bitpix = myHeader.getIntValue("BITPIX", -1);
+        int bitpix = this.myHeader.getIntValue("BITPIX", -1);
         switch (bitpix) {
             case BITPIX_BYTE:
             case BITPIX_SHORT:
@@ -285,52 +208,23 @@ public abstract class BasicHDU implements FitsElement {
         return bitpix;
     }
 
-    public int[] getAxes() throws FitsException {
-        int nAxis = myHeader.getIntValue("NAXIS", 0);
-        if (nAxis < 0) {
-            throw new FitsException("Negative NAXIS value " + nAxis);
+    public int getBlankValue() throws FitsException {
+        if (!this.myHeader.containsKey("BLANK")) {
+            throw new FitsException("BLANK undefined");
         }
-        if (nAxis > 999) {
-            throw new FitsException("NAXIS value " + nAxis + " too large");
-        }
-
-        if (nAxis == 0) {
-            return null;
-        }
-
-        int[] axes = new int[nAxis];
-        for (int i = 1; i <= nAxis; i++) {
-            axes[nAxis - i] = myHeader.getIntValue("NAXIS" + i, 0);
-        }
-
-        return axes;
-    }
-
-    public int getParameterCount() {
-        return myHeader.getIntValue("PCOUNT", 0);
-    }
-
-    public int getGroupCount() {
-        return myHeader.getIntValue("GCOUNT", 1);
+        return this.myHeader.getIntValue("BLANK");
     }
 
     public double getBScale() {
-        return myHeader.getDoubleValue("BSCALE", 1.0);
-    }
-
-    public double getBZero() {
-        return myHeader.getDoubleValue("BZERO", 0.0);
+        return this.myHeader.getDoubleValue("BSCALE", 1.0);
     }
 
     public String getBUnit() {
         return getTrimmedString("BUNIT");
     }
 
-    public int getBlankValue() throws FitsException {
-        if (!myHeader.containsKey("BLANK")) {
-            throw new FitsException("BLANK undefined");
-        }
-        return myHeader.getIntValue("BLANK");
+    public double getBZero() {
+        return this.myHeader.getDoubleValue("BZERO", 0.0);
     }
 
     /**
@@ -340,80 +234,15 @@ public abstract class BasicHDU implements FitsElement {
      */
     public Date getCreationDate() {
         try {
-            return new FitsDate(myHeader.getStringValue("DATE")).toDate();
+            return new FitsDate(this.myHeader.getStringValue("DATE")).toDate();
         } catch (FitsException e) {
             return null;
         }
     }
 
-    /**
-     * Get the FITS file observation date as a <CODE>Date</CODE> object.
-     * 
-     * @return either <CODE>null</CODE> or a Date object
-     */
-    public Date getObservationDate() {
-        try {
-            return new FitsDate(myHeader.getStringValue("DATE-OBS")).toDate();
-        } catch (FitsException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Get the name of the organization which created this FITS file.
-     * 
-     * @return either <CODE>null</CODE> or a String object
-     */
-    public String getOrigin() {
-        return getTrimmedString("ORIGIN");
-    }
-
-    /**
-     * Get the name of the telescope which was used to acquire the data in this
-     * FITS file.
-     * 
-     * @return either <CODE>null</CODE> or a String object
-     */
-    public String getTelescope() {
-        return getTrimmedString("TELESCOP");
-    }
-
-    /**
-     * Get the name of the instrument which was used to acquire the data in this
-     * FITS file.
-     * 
-     * @return either <CODE>null</CODE> or a String object
-     */
-    public String getInstrument() {
-        return getTrimmedString("INSTRUME");
-    }
-
-    /**
-     * Get the name of the person who acquired the data in this FITS file.
-     * 
-     * @return either <CODE>null</CODE> or a String object
-     */
-    public String getObserver() {
-        return getTrimmedString("OBSERVER");
-    }
-
-    /**
-     * Get the name of the observed object in this FITS file.
-     * 
-     * @return either <CODE>null</CODE> or a String object
-     */
-    public String getObject() {
-        return getTrimmedString("OBJECT");
-    }
-
-    /**
-     * Get the equinox in years for the celestial coordinate system in which
-     * positions given in either the header or data are expressed.
-     * 
-     * @return either <CODE>null</CODE> or a String object
-     */
-    public double getEquinox() {
-        return myHeader.getDoubleValue("EQUINOX", -1.0);
+    /** Get the associated Data object */
+    public Data getData() {
+        return this.myData;
     }
 
     /**
@@ -426,17 +255,113 @@ public abstract class BasicHDU implements FitsElement {
      */
     @Deprecated
     public double getEpoch() {
-        return myHeader.getDoubleValue("EPOCH", -1.0);
+        return this.myHeader.getDoubleValue("EPOCH", -1.0);
     }
 
     /**
-     * Return the name of the person who compiled the information in the data
-     * associated with this header.
+     * Get the equinox in years for the celestial coordinate system in which
+     * positions given in either the header or data are expressed.
      * 
      * @return either <CODE>null</CODE> or a String object
      */
-    public String getAuthor() {
-        return getTrimmedString("AUTHOR");
+    public double getEquinox() {
+        return this.myHeader.getDoubleValue("EQUINOX", -1.0);
+    }
+
+    /** Get the starting offset of the HDU */
+    @Override
+    public long getFileOffset() {
+        return this.myHeader.getFileOffset();
+    }
+
+    public int getGroupCount() {
+        return this.myHeader.getIntValue("GCOUNT", 1);
+    }
+
+    /** Get the associated header */
+    public Header getHeader() {
+        return this.myHeader;
+    }
+
+    /**
+     * Get the name of the instrument which was used to acquire the data in this
+     * FITS file.
+     * 
+     * @return either <CODE>null</CODE> or a String object
+     */
+    public String getInstrument() {
+        return getTrimmedString("INSTRUME");
+    }
+
+    /** Get the non-FITS data object */
+    public Object getKernel() {
+        try {
+            return this.myData.getKernel();
+        } catch (FitsException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Return the minimum valid value in the array.
+     * 
+     * @return minimum value.
+     */
+    public double getMaximumValue() {
+        return this.myHeader.getDoubleValue("DATAMAX");
+    }
+
+    /**
+     * Return the minimum valid value in the array.
+     * 
+     * @return minimum value.
+     */
+    public double getMinimumValue() {
+        return this.myHeader.getDoubleValue("DATAMIN");
+    }
+
+    /**
+     * Get the name of the observed object in this FITS file.
+     * 
+     * @return either <CODE>null</CODE> or a String object
+     */
+    public String getObject() {
+        return getTrimmedString("OBJECT");
+    }
+
+    /**
+     * Get the FITS file observation date as a <CODE>Date</CODE> object.
+     * 
+     * @return either <CODE>null</CODE> or a Date object
+     */
+    public Date getObservationDate() {
+        try {
+            return new FitsDate(this.myHeader.getStringValue("DATE-OBS")).toDate();
+        } catch (FitsException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Get the name of the person who acquired the data in this FITS file.
+     * 
+     * @return either <CODE>null</CODE> or a String object
+     */
+    public String getObserver() {
+        return getTrimmedString("OBSERVER");
+    }
+
+    /**
+     * Get the name of the organization which created this FITS file.
+     * 
+     * @return either <CODE>null</CODE> or a String object
+     */
+    public String getOrigin() {
+        return getTrimmedString("ORIGIN");
+    }
+
+    public int getParameterCount() {
+        return this.myHeader.getIntValue("PCOUNT", 0);
     }
 
     /**
@@ -450,29 +375,100 @@ public abstract class BasicHDU implements FitsElement {
     }
 
     /**
-     * Return the minimum valid value in the array.
+     * Get the total size in bytes of the HDU.
      * 
-     * @return minimum value.
+     * @return The size in bytes.
      */
-    public double getMaximumValue() {
-        return myHeader.getDoubleValue("DATAMAX");
+    @Override
+    public long getSize() {
+        int size = 0;
+
+        if (this.myHeader != null) {
+            size += this.myHeader.getSize();
+        }
+        if (this.myData != null) {
+            size += this.myData.getSize();
+        }
+        return size;
     }
 
     /**
-     * Return the minimum valid value in the array.
+     * Get the name of the telescope which was used to acquire the data in this
+     * FITS file.
      * 
-     * @return minimum value.
+     * @return either <CODE>null</CODE> or a String object
      */
-    public double getMinimumValue() {
-        return myHeader.getDoubleValue("DATAMIN");
+    public String getTelescope() {
+        return getTrimmedString("TELESCOP");
     }
 
     /**
-     * Indicate whether HDU can be primary HDU. This method must be overriden in
-     * HDU types which can appear at the beginning of a FITS file.
+     * Get the String value associated with <CODE>keyword</CODE>.
+     * 
+     * @param keyword
+     *            the FITS keyword
+     * @return either <CODE>null</CODE> or a String with leading/trailing blanks
+     *         stripped.
      */
-    boolean canBePrimary() {
-        return false;
+    public String getTrimmedString(String keyword) {
+        String s = this.myHeader.getStringValue(keyword);
+        if (s != null) {
+            s = s.trim();
+        }
+        return s;
+    }
+
+    /**
+     * Print out some information about this HDU.
+     */
+    public abstract void info();
+
+    /**
+     * Create a Data object to correspond to the header description.
+     * 
+     * @return An unfilled Data object which can be used to read in the data for
+     *         this HDU.
+     * @exception FitsException
+     *                if the Data object could not be created from this HDU's
+     *                Header
+     */
+    abstract Data manufactureData() throws FitsException;
+
+    /*
+     * Read out the HDU from the data stream. This will overwrite any existing
+     * header and data components.
+     */
+    @Override
+    public void read(ArrayDataInput stream) throws FitsException, IOException {
+        this.myHeader = Header.readHeader(stream);
+        this.myData = this.myHeader.makeData();
+        this.myData.read(stream);
+    }
+
+    /**
+     * Read in the Data object for this HDU.
+     * 
+     * @param stream
+     *            the stream from which the data is read.
+     * @exception FitsException
+     *                if the Data object could not be created from this HDU's
+     *                Header
+     */
+    public void readData(ArrayDataInput stream) throws FitsException {
+        this.myData = null;
+        try {
+            this.myData = manufactureData();
+        } finally {
+            // if we cannot build a Data object, skip this section
+            if (this.myData == null) {
+                try {
+                    skipData(stream, this.myHeader);
+                } catch (Exception e) {
+                }
+            }
+        }
+
+        this.myData.read(stream);
     }
 
     /**
@@ -481,7 +477,25 @@ public abstract class BasicHDU implements FitsElement {
      */
     @Override
     public boolean reset() {
-        return myHeader.reset();
+        return this.myHeader.reset();
+    }
+
+    /** Rewrite the HDU */
+    @Override
+    public void rewrite() throws FitsException, IOException {
+
+        if (rewriteable()) {
+            this.myHeader.rewrite();
+            this.myData.rewrite();
+        } else {
+            throw new FitsException("Invalid attempt to rewrite HDU");
+        }
+    }
+
+    /** Is the HDU rewriteable */
+    @Override
+    public boolean rewriteable() {
+        return this.myHeader.rewriteable() && this.myData.rewriteable();
     }
 
     /** Indicate that an HDU is the first element of a FITS file. */
@@ -490,92 +504,78 @@ public abstract class BasicHDU implements FitsElement {
         if (newPrimary && !canBePrimary()) {
             throw new FitsException("Invalid attempt to make HDU of type:" + this.getClass().getName() + " primary.");
         } else {
-            isPrimary = newPrimary;
+            this.isPrimary = newPrimary;
         }
 
         // Some FITS readers don't like the PCOUNT and GCOUNT keywords
         // in a primary array or they EXTEND keyword in extensions.
 
-        if (isPrimary && !myHeader.getBooleanValue("GROUPS", false)) {
-            myHeader.deleteKey("PCOUNT");
-            myHeader.deleteKey("GCOUNT");
+        if (this.isPrimary && !this.myHeader.getBooleanValue("GROUPS", false)) {
+            this.myHeader.deleteKey("PCOUNT");
+            this.myHeader.deleteKey("GCOUNT");
         }
 
-        if (isPrimary) {
-            HeaderCard card = myHeader.findCard("EXTEND");
+        if (this.isPrimary) {
+            HeaderCard card = this.myHeader.findCard("EXTEND");
             if (card == null) {
                 getAxes(); // Leaves the iterator pointing to the last NAXISn
                            // card.
-                myHeader.nextCard();
-                myHeader.addValue("EXTEND", true, "ntf::basichdu:extend:1");
+                this.myHeader.nextCard();
+                this.myHeader.addValue("EXTEND", true, "ntf::basichdu:extend:1");
             }
         }
 
-        if (!isPrimary) {
+        if (!this.isPrimary) {
 
-            myHeader.iterator();
+            this.myHeader.iterator();
 
-            int pcount = myHeader.getIntValue("PCOUNT", 0);
-            int gcount = myHeader.getIntValue("GCOUNT", 1);
-            int naxis = myHeader.getIntValue("NAXIS", 0);
-            myHeader.deleteKey("EXTEND");
-            HeaderCard pcard = myHeader.findCard("PCOUNT");
-            HeaderCard gcard = myHeader.findCard("GCOUNT");
+            int pcount = this.myHeader.getIntValue("PCOUNT", 0);
+            int gcount = this.myHeader.getIntValue("GCOUNT", 1);
+            int naxis = this.myHeader.getIntValue("NAXIS", 0);
+            this.myHeader.deleteKey("EXTEND");
+            HeaderCard pcard = this.myHeader.findCard("PCOUNT");
+            HeaderCard gcard = this.myHeader.findCard("GCOUNT");
 
-            myHeader.getCard(2 + naxis);
+            this.myHeader.getCard(2 + naxis);
             if (pcard == null) {
-                myHeader.addValue("PCOUNT", pcount, "ntf::basichdu:pcount:1");
+                this.myHeader.addValue("PCOUNT", pcount, "ntf::basichdu:pcount:1");
             }
             if (gcard == null) {
-                myHeader.addValue("GCOUNT", gcount, "ntf::basichdu:gcount:1");
+                this.myHeader.addValue("GCOUNT", gcount, "ntf::basichdu:gcount:1");
             }
-            myHeader.iterator();
+            this.myHeader.iterator();
         }
 
     }
 
-    /** Add information to the header */
-    public void addValue(String key, boolean val, String comment) throws HeaderCardException {
-        myHeader.addValue(key, val, comment);
+    /**
+     * Skip the Data object for this HDU.
+     * 
+     * @param stream
+     *            the stream which contains the data.
+     * @exception IOException
+     *                if the Data object could not be skipped.
+     */
+    public void skipData(ArrayDataInput stream) throws IOException {
+        skipData(stream, this.myHeader);
     }
 
-    public void addValue(String key, int val, String comment) throws HeaderCardException {
-        myHeader.addValue(key, val, comment);
-    }
-
-    public void addValue(String key, double val, String comment) throws HeaderCardException {
-        myHeader.addValue(key, val, comment);
-    }
-
-    public void addValue(String key, String val, String comment) throws HeaderCardException {
-        myHeader.addValue(key, val, comment);
-    }
-
-    public void addValue(IFitsHeader key, boolean val) throws HeaderCardException {
-        myHeader.addValue(key.key(), val, key.comment());
-    }
-
-    public void addValue(IFitsHeader key, int val) throws HeaderCardException {
-        myHeader.addValue(key.key(), val, key.comment());
-    }
-
-    public void addValue(IFitsHeader key, double val) throws HeaderCardException {
-        myHeader.addValue(key.key(), val, key.comment());
-    }
-
-    public void addValue(IFitsHeader key, String val) throws HeaderCardException {
-        myHeader.addValue(key.key(), val, key.comment());
-    }
-
-    /** Get an HDU without content */
-    public static BasicHDU getDummyHDU() {
+    /*
+     * Write out the HDU
+     * @param stream The data stream to be written to.
+     */
+    @Override
+    public void write(ArrayDataOutput stream) throws FitsException {
+        if (this.myHeader != null) {
+            this.myHeader.write(stream);
+        }
+        if (this.myData != null) {
+            this.myData.write(stream);
+        }
         try {
-            // Update suggested by Laurent Bourges
-            ImageData img = new ImageData((Object) null);
-            return FitsFactory.HDUFactory(ImageHDU.manufactureHeader(img), img);
-        } catch (FitsException e) {
-            System.err.println("Impossible exception in getDummyHDU");
-            return null;
+            stream.flush();
+        } catch (java.io.IOException e) {
+            throw new FitsException("Error flushing at end of HDU: " + e.getMessage());
         }
     }
 }

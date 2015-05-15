@@ -61,7 +61,7 @@ public class FitsLineAppender {
      * line.
      */
     public FitsLineAppender() {
-        buffer = new StringBuffer(80);
+        this.buffer = new StringBuffer(80);
     }
 
     /**
@@ -71,8 +71,8 @@ public class FitsLineAppender {
      *            the character to append to the line.
      */
     public void append(char character) {
-        buffer.append(character);
-        charCount++;
+        this.buffer.append(character);
+        this.charCount++;
     }
 
     /**
@@ -82,8 +82,8 @@ public class FitsLineAppender {
      *            the sub string to append.
      */
     public void append(FitsSubString stringValue) {
-        stringValue.appendTo(buffer);
-        charCount += stringValue.length();
+        stringValue.appendTo(this.buffer);
+        this.charCount += stringValue.length();
     }
 
     /**
@@ -94,14 +94,14 @@ public class FitsLineAppender {
      *            the string to append
      */
     public void append(String string) {
-        charCount = charCount % 80;
-        int newLength = charCount + string.length();
+        this.charCount = this.charCount % 80;
+        int newLength = this.charCount + string.length();
         if (newLength > 80) {
-            buffer.append(string, 0, 80 - charCount);
-            charCount = 0;
+            this.buffer.append(string, 0, 80 - this.charCount);
+            this.charCount = 0;
         } else {
-            charCount = newLength;
-            buffer.append(string);
+            this.charCount = newLength;
+            this.buffer.append(string);
         }
     }
 
@@ -116,13 +116,13 @@ public class FitsLineAppender {
      */
     public void append(String string, int offset) {
 
-        int newLength = charCount + string.length() - offset;
+        int newLength = this.charCount + string.length() - offset;
         if (newLength > 80) {
-            buffer.append(string, offset, offset + 80 - charCount);
-            charCount = 0;
+            this.buffer.append(string, offset, offset + 80 - this.charCount);
+            this.charCount = 0;
         } else {
-            charCount = newLength;
-            buffer.append(string, offset, string.length());
+            this.charCount = newLength;
+            this.buffer.append(string, offset, string.length());
         }
 
     }
@@ -143,12 +143,12 @@ public class FitsLineAppender {
         for (int index = 0; index < size; index++) {
             char character = key.charAt(index);
             if (character == toReplace) {
-                buffer.append(with);
+                this.buffer.append(with);
             } else {
-                buffer.append(character);
+                this.buffer.append(character);
             }
         }
-        charCount += size;
+        this.charCount += size;
     }
 
     /**
@@ -158,12 +158,12 @@ public class FitsLineAppender {
      *            the number of spaces to write.
      */
     public void appendSpacesTo(int count) {
-        charCount = charCount % 80;
-        if (charCount != 0) {
-            int spaces = count - charCount;
+        this.charCount = this.charCount % 80;
+        if (this.charCount != 0) {
+            int spaces = count - this.charCount;
             if (spaces > 0) {
-                buffer.append(_80_SPACES, 0, spaces);
-                charCount += spaces;
+                this.buffer.append(FitsLineAppender._80_SPACES, 0, spaces);
+                this.charCount += spaces;
             }
         }
     }
@@ -172,20 +172,20 @@ public class FitsLineAppender {
      * fill the rest of current line with spaces and start a new fits line.
      */
     public void completeLine() {
-        int count = 80 - charCount % 80;
+        int count = 80 - this.charCount % 80;
         if (count < 80) {
-            buffer.append(_80_SPACES, 0, count);
+            this.buffer.append(FitsLineAppender._80_SPACES, 0, count);
         }
         // line completed start with 0;
-        charCount = 0;
+        this.charCount = 0;
     }
 
     /**
      * @return the character position in the current line.
      */
     public int length() {
-        charCount = charCount % 80;
-        return charCount;
+        this.charCount = this.charCount % 80;
+        return this.charCount;
     }
 
     /**
@@ -193,12 +193,12 @@ public class FitsLineAppender {
      *         line.
      */
     public int spaceLeftInLine() {
-        charCount = charCount % 80;
-        return 80 - charCount;
+        this.charCount = this.charCount % 80;
+        return 80 - this.charCount;
     }
 
     @Override
     public String toString() {
-        return buffer.toString();
+        return this.buffer.toString();
     }
 }

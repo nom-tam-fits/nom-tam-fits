@@ -38,7 +38,7 @@ package nom.tam.fits;
 public class BadHeaderException extends FitsException {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 

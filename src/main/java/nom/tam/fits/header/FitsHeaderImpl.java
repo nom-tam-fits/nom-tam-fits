@@ -44,7 +44,7 @@ public class FitsHeaderImpl implements IFitsHeader {
     private final VALUE valueType;
 
     public FitsHeaderImpl(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        key = headerName;
+        this.key = headerName;
         this.status = status;
         this.hdu = hdu;
         this.valueType = valueType;
@@ -53,36 +53,36 @@ public class FitsHeaderImpl implements IFitsHeader {
 
     @Override
     public String comment() {
-        return comment;
+        return this.comment;
     }
 
     @Override
     public HDU hdu() {
-        return hdu;
+        return this.hdu;
     }
 
     @Override
     public String key() {
-        return key;
+        return this.key;
     }
 
     @Override
     public IFitsHeader n(int... numbers) {
-        StringBuffer headerName = new StringBuffer(key);
+        StringBuffer headerName = new StringBuffer(this.key);
         for (int number : numbers) {
             int indexOfN = headerName.indexOf("n");
             headerName.replace(indexOfN, indexOfN + 1, Integer.toString(number));
         }
-        return new FitsHeaderImpl(headerName.toString(), status, hdu, valueType, comment);
+        return new FitsHeaderImpl(headerName.toString(), this.status, this.hdu, this.valueType, this.comment);
     }
 
     @Override
     public SOURCE status() {
-        return status;
+        return this.status;
     }
 
     @Override
     public VALUE valueType() {
-        return valueType;
+        return this.valueType;
     }
 }

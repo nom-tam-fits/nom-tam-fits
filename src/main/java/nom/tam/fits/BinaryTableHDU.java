@@ -37,61 +37,6 @@ import nom.tam.util.ArrayFuncs;
 /** FITS binary table header/data unit */
 public class BinaryTableHDU extends TableHDU {
 
-    private BinaryTable table;
-
-    /** The standard column keywords for a binary table. */
-    private String[] keyStems = {
-        "TTYPE",
-        "TFORM",
-        "TUNIT",
-        "TNULL",
-        "TSCAL",
-        "TZERO",
-        "TDISP",
-        "TDIM"
-    };
-
-    public BinaryTableHDU(Header hdr, Data datum) {
-
-        super((TableData) datum);
-        myHeader = hdr;
-        myData = datum;
-        table = (BinaryTable) datum;
-
-    }
-
-    /**
-     * Create data from a binary table header.
-     * 
-     * @param header
-     *            the template specifying the binary table.
-     * @exception FitsException
-     *                if there was a problem with the header.
-     */
-    public static Data manufactureData(Header header) throws FitsException {
-        return new BinaryTable(header);
-    }
-
-    @Override
-    public Data manufactureData() throws FitsException {
-        return manufactureData(myHeader);
-    }
-
-    /**
-     * Build a binary table HDU from the supplied data.
-     * 
-     * @param data
-     *            the data used to build the binary table. This is typically
-     *            some kind of array of objects.
-     * @exception FitsException
-     *                if there was a problem with the data.
-     */
-    public static Header manufactureHeader(Data data) throws FitsException {
-        Header hdr = new Header();
-        data.fillHeader(hdr);
-        return hdr;
-    }
-
     /** Encapsulate data in a BinaryTable data type */
     public static Data encapsulate(Object o) throws FitsException {
 
@@ -103,6 +48,21 @@ public class BinaryTableHDU extends TableHDU {
             return new BinaryTable((Object[]) o);
         } else {
             throw new FitsException("Unable to encapsulate object of type:" + o.getClass().getName() + " as BinaryTable");
+        }
+    }
+
+    /*
+     * Check if this data object is consistent with a binary table. There are
+     * three options: a column table object, an Object[][], or an Object[]. This
+     * routine doesn't check that the dimensions of arrays are properly
+     * consistent.
+     */
+    public static boolean isData(Object o) {
+
+        if (o instanceof nom.tam.util.ColumnTable || o instanceof Object[][] || o instanceof Object[]) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -127,27 +87,53 @@ public class BinaryTableHDU extends TableHDU {
     }
 
     /**
-     * Check that this HDU has a valid header.
+     * Create data from a binary table header.
      * 
-     * @return <CODE>true</CODE> if this HDU has a valid header.
+     * @param header
+     *            the template specifying the binary table.
+     * @exception FitsException
+     *                if there was a problem with the header.
      */
-    public boolean isHeader() {
-        return isHeader(myHeader);
+    public static Data manufactureData(Header header) throws FitsException {
+        return new BinaryTable(header);
     }
 
-    /*
-     * Check if this data object is consistent with a binary table. There are
-     * three options: a column table object, an Object[][], or an Object[]. This
-     * routine doesn't check that the dimensions of arrays are properly
-     * consistent.
+    /**
+     * Build a binary table HDU from the supplied data.
+     * 
+     * @param data
+     *            the data used to build the binary table. This is typically
+     *            some kind of array of objects.
+     * @exception FitsException
+     *                if there was a problem with the data.
      */
-    public static boolean isData(Object o) {
+    public static Header manufactureHeader(Data data) throws FitsException {
+        Header hdr = new Header();
+        data.fillHeader(hdr);
+        return hdr;
+    }
 
-        if (o instanceof nom.tam.util.ColumnTable || o instanceof Object[][] || o instanceof Object[]) {
-            return true;
-        } else {
-            return false;
-        }
+    private final BinaryTable table;
+
+    /** The standard column keywords for a binary table. */
+    private final String[] keyStems = {
+        "TTYPE",
+        "TFORM",
+        "TUNIT",
+        "TNULL",
+        "TSCAL",
+        "TZERO",
+        "TDISP",
+        "TDIM"
+    };
+
+    public BinaryTableHDU(Header hdr, Data datum) {
+
+        super((TableData) datum);
+        this.myHeader = hdr;
+        this.myData = datum;
+        this.table = (BinaryTable) datum;
+
     }
 
     /**
@@ -169,29 +155,84 @@ public class BinaryTableHDU extends TableHDU {
     @Override
     public int addColumn(Object data) throws FitsException {
 
-        int col = table.addColumn(data);
-        table.pointToColumn(getNCols() - 1, myHeader);
+        int col = this.table.addColumn(data);
+        this.table.pointToColumn(getNCols() - 1, this.myHeader);
         return col;
     }
 
-    // Need to tell header about the Heap before writing.
+    /**
+     * What are the standard column stems for a binary table?
+     */
     @Override
-    public void write(ArrayDataOutput ado) throws FitsException {
+    public String[] columnKeyStems() {
+        return this.keyStems;
+    }
 
-        int oldSize = myHeader.getIntValue("PCOUNT");
-        if (oldSize != table.getHeapSize()) {
-            myHeader.addValue("PCOUNT", table.getHeapSize(), "ntf::binarytablehdu:pcount:1");
+    /**
+     * Print out some information about this HDU.
+     */
+    @Override
+    public void info() {
+
+        BinaryTable myData = (BinaryTable) this.myData;
+
+        System.out.println("  Binary Table");
+        System.out.println("      Header Information:");
+
+        int nhcol = this.myHeader.getIntValue("TFIELDS", -1);
+        int nrow = this.myHeader.getIntValue("NAXIS2", -1);
+        int rowsize = this.myHeader.getIntValue("NAXIS1", -1);
+
+        System.out.print("          " + nhcol + " fields");
+        System.out.println(", " + nrow + " rows of length " + rowsize);
+
+        for (int i = 1; i <= nhcol; i += 1) {
+            System.out.print("           " + i + ":");
+            prtField("Name", "TTYPE" + i);
+            prtField("Format", "TFORM" + i);
+            prtField("Dimens", "TDIM" + i);
+            System.out.println("");
         }
 
-        if (myHeader.getIntValue("PCOUNT") == 0) {
-            myHeader.deleteKey("THEAP");
+        System.out.println("      Data Information:");
+        if (myData == null || this.table.getNRows() == 0 || this.table.getNCols() == 0) {
+            System.out.println("         No data present");
+            if (this.table.getHeapSize() > 0) {
+                System.out.println("         Heap size is: " + this.table.getHeapSize() + " bytes");
+            }
         } else {
-            myHeader.getIntValue("TFIELDS");
-            int offset = myHeader.getIntValue("NAXIS1") * myHeader.getIntValue("NAXIS2") + table.getHeapOffset();
-            myHeader.addValue("THEAP", offset, "ntf::binarytablehdu:theap:1");
-        }
 
-        super.write(ado);
+            System.out.println("          Number of rows=" + this.table.getNRows());
+            System.out.println("          Number of columns=" + this.table.getNCols());
+            if (this.table.getHeapSize() > 0) {
+                System.out.println("          Heap size is: " + this.table.getHeapSize() + " bytes");
+            }
+            Object[] cols = this.table.getFlatColumns();
+            for (int i = 0; i < cols.length; i += 1) {
+                System.out.println("           " + i + ":" + ArrayFuncs.arrayDescription(cols[i]));
+            }
+        }
+    }
+
+    /**
+     * Check that this HDU has a valid header.
+     * 
+     * @return <CODE>true</CODE> if this HDU has a valid header.
+     */
+    public boolean isHeader() {
+        return isHeader(this.myHeader);
+    }
+
+    @Override
+    public Data manufactureData() throws FitsException {
+        return manufactureData(this.myHeader);
+    }
+
+    private void prtField(String type, String field) {
+        String val = this.myHeader.getStringValue(field);
+        if (val != null) {
+            System.out.print(type + '=' + val + "; ");
+        }
     }
 
     /**
@@ -206,13 +247,13 @@ public class BinaryTableHDU extends TableHDU {
      */
     public boolean setComplexColumn(int index) throws FitsException {
         boolean status = false;
-        if (table.setComplexColumn(index)) {
+        if (this.table.setComplexColumn(index)) {
 
             // No problem with the data. Make sure the header
             // is right.
 
-            int[] dimens = table.getDimens()[index];
-            Class base = table.getBases()[index];
+            int[] dimens = this.table.getDimens()[index];
+            Class base = this.table.getBases()[index];
 
             int dim = 1;
             String tdim = "";
@@ -232,92 +273,51 @@ public class BinaryTableHDU extends TableHDU {
 
             // Worry about variable length columns.
             String prefix = "";
-            if (table.isVarCol(index)) {
+            if (this.table.isVarCol(index)) {
                 prefix = "P";
                 dim = 1;
-                if (table.isLongVary(index)) {
+                if (this.table.isLongVary(index)) {
                     prefix = "Q";
                 }
             }
 
             // Now update the header.
-            myHeader.findCard("TFORM" + (index + 1));
-            HeaderCard hc = myHeader.nextCard();
+            this.myHeader.findCard("TFORM" + (index + 1));
+            HeaderCard hc = this.myHeader.nextCard();
             String oldComment = hc.getComment();
             if (oldComment == null) {
                 oldComment = "Column converted to complex";
             }
-            myHeader.addValue("TFORM" + (index + 1), dim + prefix + suffix, oldComment);
+            this.myHeader.addValue("TFORM" + (index + 1), dim + prefix + suffix, oldComment);
             if (tdim.length() > 0) {
-                myHeader.addValue("TDIM" + (index + 1), "(" + tdim + ")", "ntf::binarytablehdu:tdimN:1");
+                this.myHeader.addValue("TDIM" + (index + 1), "(" + tdim + ")", "ntf::binarytablehdu:tdimN:1");
             } else {
                 // Just in case there used to be a TDIM card that's no longer
                 // needed.
-                myHeader.removeCard("TDIM" + (index + 1));
+                this.myHeader.removeCard("TDIM" + (index + 1));
             }
             status = true;
         }
         return status;
     }
 
-    private void prtField(String type, String field) {
-        String val = myHeader.getStringValue(field);
-        if (val != null) {
-            System.out.print(type + '=' + val + "; ");
-        }
-    }
-
-    /**
-     * Print out some information about this HDU.
-     */
+    // Need to tell header about the Heap before writing.
     @Override
-    public void info() {
+    public void write(ArrayDataOutput ado) throws FitsException {
 
-        BinaryTable myData = (BinaryTable) this.myData;
-
-        System.out.println("  Binary Table");
-        System.out.println("      Header Information:");
-
-        int nhcol = myHeader.getIntValue("TFIELDS", -1);
-        int nrow = myHeader.getIntValue("NAXIS2", -1);
-        int rowsize = myHeader.getIntValue("NAXIS1", -1);
-
-        System.out.print("          " + nhcol + " fields");
-        System.out.println(", " + nrow + " rows of length " + rowsize);
-
-        for (int i = 1; i <= nhcol; i += 1) {
-            System.out.print("           " + i + ":");
-            prtField("Name", "TTYPE" + i);
-            prtField("Format", "TFORM" + i);
-            prtField("Dimens", "TDIM" + i);
-            System.out.println("");
+        int oldSize = this.myHeader.getIntValue("PCOUNT");
+        if (oldSize != this.table.getHeapSize()) {
+            this.myHeader.addValue("PCOUNT", this.table.getHeapSize(), "ntf::binarytablehdu:pcount:1");
         }
 
-        System.out.println("      Data Information:");
-        if (myData == null || table.getNRows() == 0 || table.getNCols() == 0) {
-            System.out.println("         No data present");
-            if (table.getHeapSize() > 0) {
-                System.out.println("         Heap size is: " + table.getHeapSize() + " bytes");
-            }
+        if (this.myHeader.getIntValue("PCOUNT") == 0) {
+            this.myHeader.deleteKey("THEAP");
         } else {
-
-            System.out.println("          Number of rows=" + table.getNRows());
-            System.out.println("          Number of columns=" + table.getNCols());
-            if (table.getHeapSize() > 0) {
-                System.out.println("          Heap size is: " + table.getHeapSize() + " bytes");
-            }
-            Object[] cols = table.getFlatColumns();
-            for (int i = 0; i < cols.length; i += 1) {
-                System.out.println("           " + i + ":" + ArrayFuncs.arrayDescription(cols[i]));
-            }
+            this.myHeader.getIntValue("TFIELDS");
+            int offset = this.myHeader.getIntValue("NAXIS1") * this.myHeader.getIntValue("NAXIS2") + this.table.getHeapOffset();
+            this.myHeader.addValue("THEAP", offset, "ntf::binarytablehdu:theap:1");
         }
-    }
 
-    /**
-     * What are the standard column stems for a binary table?
-     */
-    @Override
-    public String[] columnKeyStems() {
-        return keyStems;
+        super.write(ado);
     }
 }

@@ -64,8 +64,8 @@ public class FitsSubString {
      */
     public FitsSubString(String originalString) {
         this.originalString = originalString == null ? "" : originalString;
-        offset = 0;
-        length = this.originalString.length();
+        this.offset = 0;
+        this.length = this.originalString.length();
     }
 
     /**
@@ -75,7 +75,7 @@ public class FitsSubString {
      *            the buffer to append to.
      */
     public void appendTo(StringBuffer buffer) {
-        buffer.append(originalString, offset, offset + length);
+        buffer.append(this.originalString, this.offset, this.offset + this.length);
     }
 
     /**
@@ -86,14 +86,14 @@ public class FitsSubString {
      * @return the character at the specified position
      */
     public char charAt(int pos) {
-        return originalString.charAt(pos + offset);
+        return this.originalString.charAt(pos + this.offset);
     }
 
     /**
      * @return get the length of the orginal string from the current offset.
      */
     public int fullLength() {
-        return originalString.length() - offset;
+        return this.originalString.length() - this.offset;
     }
 
     /**
@@ -106,15 +106,15 @@ public class FitsSubString {
      */
     public void getAdjustedLength(int max) {
         if (max <= 0) {
-            length = 0;
-        } else if (length > max) {
+            this.length = 0;
+        } else if (this.length > max) {
             int pos = max - 1;
             while (charAt(pos) == '\'') {
                 pos--;
             }
             // now we are at the start of the quotes step forward in steps of 2
             pos += (max - 1 - pos) / 2 * 2;
-            length = pos + 1;
+            this.length = pos + 1;
         }
     }
 
@@ -122,7 +122,7 @@ public class FitsSubString {
      * @return the string length of this String.
      */
     public int length() {
-        return length;
+        return this.length;
     }
 
     /**
@@ -131,8 +131,8 @@ public class FitsSubString {
      * represents.
      */
     public void rest() {
-        offset += length;
-        length = originalString.length() - offset;
+        this.offset += this.length;
+        this.length = this.originalString.length() - this.offset;
     }
 
     /**
@@ -141,7 +141,7 @@ public class FitsSubString {
      * @param count
      */
     public void skip(int count) {
-        offset += count;
+        this.offset += count;
     }
 
     /**
@@ -150,6 +150,6 @@ public class FitsSubString {
      * @return true if the current string starts with the specified string.
      */
     public boolean startsWith(String string) {
-        return originalString.regionMatches(offset, string, 0, string.length());
+        return this.originalString.regionMatches(this.offset, string, 0, string.length());
     }
 }

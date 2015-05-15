@@ -47,13 +47,13 @@ import nom.tam.util.ArrayFuncs;
  */
 public class RandomGroupsData extends Data {
 
-    private Object[][] dataArray;
+    private final Object[][] dataArray;
 
     /**
      * Create the equivalent of a null data element.
      */
     public RandomGroupsData() {
-        dataArray = new Object[0][];
+        this.dataArray = new Object[0][];
     }
 
     /**
@@ -65,61 +65,18 @@ public class RandomGroupsData extends Data {
      *            as described above.
      */
     public RandomGroupsData(Object[][] x) {
-        dataArray = x;
-    }
-
-    /** Get the size of the actual data element. */
-    @Override
-    protected long getTrueSize() {
-
-        if (dataArray != null && dataArray.length > 0) {
-            return (ArrayFuncs.computeLSize(dataArray[0][0]) + ArrayFuncs.computeLSize(dataArray[0][1])) * dataArray.length;
-        } else {
-            return 0;
-        }
-    }
-
-    /** Read the RandomGroupsData */
-    @Override
-    public void read(ArrayDataInput str) throws FitsException {
-
-        setFileOffset(str);
-
-        try {
-            str.readLArray(dataArray);
-        } catch (IOException e) {
-            throw new FitsException("IO error reading Random Groups data " + e);
-        }
-        int pad = FitsUtil.padding(getTrueSize());
-        try {
-            str.skipBytes(pad);
-        } catch (EOFException e) {
-            throw new PaddingException("EOF reading padding after random groups", this);
-        } catch (IOException e) {
-            throw new FitsException("IO error reading padding after random groups");
-        }
-    }
-
-    /** Write the RandomGroupsData */
-    @Override
-    public void write(ArrayDataOutput str) throws FitsException {
-        try {
-            str.writeArray(dataArray);
-            FitsUtil.pad(str, getTrueSize());
-        } catch (IOException e) {
-            throw new FitsException("IO error writing random groups data " + e);
-        }
+        this.dataArray = x;
     }
 
     @Override
     protected void fillHeader(Header h) throws FitsException {
 
-        if (dataArray.length <= 0 || dataArray[0].length != 2) {
+        if (this.dataArray.length <= 0 || this.dataArray[0].length != 2) {
             throw new FitsException("Data not conformable to Random Groups");
         }
 
-        Object paraSamp = dataArray[0][0];
-        Object dataSamp = dataArray[0][1];
+        Object paraSamp = this.dataArray[0][0];
+        Object dataSamp = this.dataArray[0][1];
 
         Class pbase = nom.tam.util.ArrayFuncs.getBaseClass(paraSamp);
         Class dbase = nom.tam.util.ArrayFuncs.getBaseClass(dataSamp);
@@ -161,13 +118,56 @@ public class RandomGroupsData extends Data {
         }
 
         h.addValue("GROUPS", true, "ntf::randomgroupsdata:groups:1");
-        h.addValue("GCOUNT", dataArray.length, "ntf::randomgroupsdata:gcount:1");
+        h.addValue("GCOUNT", this.dataArray.length, "ntf::randomgroupsdata:gcount:1");
         h.addValue("PCOUNT", pdims[0], "ntf::randomgroupsdata:pcount:1");
     }
 
     @Override
     public Object getData() {
-        return dataArray;
+        return this.dataArray;
+    }
+
+    /** Get the size of the actual data element. */
+    @Override
+    protected long getTrueSize() {
+
+        if (this.dataArray != null && this.dataArray.length > 0) {
+            return (ArrayFuncs.computeLSize(this.dataArray[0][0]) + ArrayFuncs.computeLSize(this.dataArray[0][1])) * this.dataArray.length;
+        } else {
+            return 0;
+        }
+    }
+
+    /** Read the RandomGroupsData */
+    @Override
+    public void read(ArrayDataInput str) throws FitsException {
+
+        setFileOffset(str);
+
+        try {
+            str.readLArray(this.dataArray);
+        } catch (IOException e) {
+            throw new FitsException("IO error reading Random Groups data " + e);
+        }
+        int pad = FitsUtil.padding(getTrueSize());
+        try {
+            str.skipBytes(pad);
+        } catch (EOFException e) {
+            throw new PaddingException("EOF reading padding after random groups", this);
+        } catch (IOException e) {
+            throw new FitsException("IO error reading padding after random groups");
+        }
+    }
+
+    /** Write the RandomGroupsData */
+    @Override
+    public void write(ArrayDataOutput str) throws FitsException {
+        try {
+            str.writeArray(this.dataArray);
+            FitsUtil.pad(str, getTrueSize());
+        } catch (IOException e) {
+            throw new FitsException("IO error writing random groups data " + e);
+        }
     }
 
 }

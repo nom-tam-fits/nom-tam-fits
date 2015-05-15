@@ -64,29 +64,34 @@ public abstract class Data implements FitsElement {
     /** The inputstream used. */
     protected RandomAccess input;
 
+    /**
+     * Modify a header to point to this data
+     */
+    abstract void fillHeader(Header head) throws FitsException;
+
+    /**
+     * Return the data array object.
+     */
+    public abstract Object getData() throws FitsException;
+
     /** Get the file offset */
     @Override
     public long getFileOffset() {
-        return fileOffset;
+        return this.fileOffset;
     }
 
-    /** Set the fields needed for a re-read */
-    protected void setFileOffset(Object o) {
-        if (o instanceof RandomAccess) {
-            fileOffset = FitsUtil.findOffset(o);
-            dataSize = getTrueSize();
-            input = (RandomAccess) o;
-        }
+    /** Return the non-FITS data object */
+    public Object getKernel() throws FitsException {
+        return getData();
     }
 
-    /**
-     * Write the data -- including any buffering needed
-     * 
-     * @param o
-     *            The output stream on which to write the data.
-     */
+    /** Get the size of the data element in bytes */
     @Override
-    public abstract void write(ArrayDataOutput o) throws FitsException;
+    public long getSize() {
+        return FitsUtil.addPadding(getTrueSize());
+    }
+
+    abstract long getTrueSize();
 
     /**
      * Read a data array into the current object and if needed position to the
@@ -99,25 +104,9 @@ public abstract class Data implements FitsElement {
     public abstract void read(ArrayDataInput i) throws FitsException;
 
     @Override
-    public void rewrite() throws FitsException {
-
-        if (!rewriteable()) {
-            throw new FitsException("Illegal attempt to rewrite data");
-        }
-
-        FitsUtil.reposition(input, fileOffset);
-        write((ArrayDataOutput) input);
-        try {
-            ((ArrayDataOutput) input).flush();
-        } catch (IOException e) {
-            throw new FitsException("Error in rewrite flush: " + e);
-        }
-    }
-
-    @Override
     public boolean reset() {
         try {
-            FitsUtil.reposition(input, fileOffset);
+            FitsUtil.reposition(this.input, this.fileOffset);
             return true;
         } catch (Exception e) {
             return false;
@@ -125,34 +114,45 @@ public abstract class Data implements FitsElement {
     }
 
     @Override
+    public void rewrite() throws FitsException {
+
+        if (!rewriteable()) {
+            throw new FitsException("Illegal attempt to rewrite data");
+        }
+
+        FitsUtil.reposition(this.input, this.fileOffset);
+        write((ArrayDataOutput) this.input);
+        try {
+            ((ArrayDataOutput) this.input).flush();
+        } catch (IOException e) {
+            throw new FitsException("Error in rewrite flush: " + e);
+        }
+    }
+
+    @Override
     public boolean rewriteable() {
-        if (input == null || fileOffset < 0 || (getTrueSize() + 2879) / 2880 != (dataSize + 2879) / 2880) {
+        if (this.input == null || this.fileOffset < 0 || (getTrueSize() + 2879) / 2880 != (this.dataSize + 2879) / 2880) {
             return false;
         } else {
             return true;
         }
     }
 
-    abstract long getTrueSize();
+    /** Set the fields needed for a re-read */
+    protected void setFileOffset(Object o) {
+        if (o instanceof RandomAccess) {
+            this.fileOffset = FitsUtil.findOffset(o);
+            this.dataSize = getTrueSize();
+            this.input = (RandomAccess) o;
+        }
+    }
 
-    /** Get the size of the data element in bytes */
+    /**
+     * Write the data -- including any buffering needed
+     * 
+     * @param o
+     *            The output stream on which to write the data.
+     */
     @Override
-    public long getSize() {
-        return FitsUtil.addPadding(getTrueSize());
-    }
-
-    /**
-     * Return the data array object.
-     */
-    public abstract Object getData() throws FitsException;
-
-    /** Return the non-FITS data object */
-    public Object getKernel() throws FitsException {
-        return getData();
-    }
-
-    /**
-     * Modify a header to point to this data
-     */
-    abstract void fillHeader(Header head) throws FitsException;
+    public abstract void write(ArrayDataOutput o) throws FitsException;
 }

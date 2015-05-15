@@ -79,37 +79,37 @@ public enum Checksum implements IFitsHeader {
     private IFitsHeader key;
 
     private Checksum(HDU hdu, VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CHECKSUM, hdu, valueType, comment);
+        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CHECKSUM, hdu, valueType, comment);
     }
 
     @Override
     public String comment() {
-        return key.comment();
+        return this.key.comment();
     }
 
     @Override
     public HDU hdu() {
-        return key.hdu();
+        return this.key.hdu();
     }
 
     @Override
     public String key() {
-        return key.key();
+        return this.key.key();
     }
 
     @Override
     public IFitsHeader n(int... number) {
-        return key.n(number);
+        return this.key.n(number);
     }
 
     @Override
     public SOURCE status() {
-        return key.status();
+        return this.key.status();
     }
 
     @Override
     public VALUE valueType() {
-        return key.valueType();
+        return this.key.valueType();
     }
 
 }

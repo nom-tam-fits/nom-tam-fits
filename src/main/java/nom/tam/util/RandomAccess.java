@@ -38,9 +38,9 @@ package nom.tam.util;
  */
 public interface RandomAccess extends ArrayDataInput {
 
-    /** Move to a specified location in the stream. */
-    public void seek(long offsetFromStart) throws java.io.IOException;
-
     /** Get the current position in the stream */
     public long getFilePointer();
+
+    /** Move to a specified location in the stream. */
+    public void seek(long offsetFromStart) throws java.io.IOException;
 }

@@ -51,6 +51,44 @@ import org.junit.Test;
 public class ImageTest {
 
     @Test
+    public void fileTest() throws Exception {
+        test();
+        byte[][] bimg = new byte[40][40];
+        for (int i = 10; i < 30; i += 1) {
+            for (int j = 10; j < 30; j += 1) {
+                bimg[i][j] = (byte) (i + j);
+            }
+        }
+
+        short[][] simg = (short[][]) ArrayFuncs.convertArray(bimg, short.class);
+        int[][] iimg = (int[][]) ArrayFuncs.convertArray(bimg, int.class);
+        long[][] limg = (long[][]) ArrayFuncs.convertArray(bimg, long.class);
+        float[][] fimg = (float[][]) ArrayFuncs.convertArray(bimg, float.class);
+        double[][] dimg = (double[][]) ArrayFuncs.convertArray(bimg, double.class);
+        int[][][] img3 = new int[10][20][30];
+        for (int i = 0; i < 10; i += 1) {
+            for (int j = 0; j < 20; j += 1) {
+                for (int k = 0; k < 30; k += 1) {
+                    img3[i][j][k] = i + j + k;
+                }
+            }
+        }
+        double[] img1 = (double[]) ArrayFuncs.flatten(dimg);
+
+        Fits f = new Fits(new File("target/image1.fits"));
+        BasicHDU[] hdus = f.read();
+
+        assertEquals("fbyte image", true, ArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
+        assertEquals("fshort image", true, ArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
+        assertEquals("fint image", true, ArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
+        assertEquals("flong image", true, ArrayFuncs.arrayEquals(limg, hdus[3].getData().getKernel()));
+        assertEquals("ffloat image", true, ArrayFuncs.arrayEquals(fimg, hdus[4].getData().getKernel()));
+        assertEquals("fdouble image", true, ArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
+        assertEquals("fint3 image", true, ArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
+        assertEquals("fdouble1 image", true, ArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
+    }
+
+    @Test
     public void test() throws Exception {
 
         Fits f = new Fits();
@@ -115,43 +153,5 @@ public class ImageTest {
         assertEquals("double image", true, ArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
         assertEquals("int3 image", true, ArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
         assertEquals("double1 image", true, ArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
-    }
-
-    @Test
-    public void fileTest() throws Exception {
-        test();
-        byte[][] bimg = new byte[40][40];
-        for (int i = 10; i < 30; i += 1) {
-            for (int j = 10; j < 30; j += 1) {
-                bimg[i][j] = (byte) (i + j);
-            }
-        }
-
-        short[][] simg = (short[][]) ArrayFuncs.convertArray(bimg, short.class);
-        int[][] iimg = (int[][]) ArrayFuncs.convertArray(bimg, int.class);
-        long[][] limg = (long[][]) ArrayFuncs.convertArray(bimg, long.class);
-        float[][] fimg = (float[][]) ArrayFuncs.convertArray(bimg, float.class);
-        double[][] dimg = (double[][]) ArrayFuncs.convertArray(bimg, double.class);
-        int[][][] img3 = new int[10][20][30];
-        for (int i = 0; i < 10; i += 1) {
-            for (int j = 0; j < 20; j += 1) {
-                for (int k = 0; k < 30; k += 1) {
-                    img3[i][j][k] = i + j + k;
-                }
-            }
-        }
-        double[] img1 = (double[]) ArrayFuncs.flatten(dimg);
-
-        Fits f = new Fits(new File("target/image1.fits"));
-        BasicHDU[] hdus = f.read();
-
-        assertEquals("fbyte image", true, ArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
-        assertEquals("fshort image", true, ArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
-        assertEquals("fint image", true, ArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
-        assertEquals("flong image", true, ArrayFuncs.arrayEquals(limg, hdus[3].getData().getKernel()));
-        assertEquals("ffloat image", true, ArrayFuncs.arrayEquals(fimg, hdus[4].getData().getKernel()));
-        assertEquals("fdouble image", true, ArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
-        assertEquals("fint3 image", true, ArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
-        assertEquals("fdouble1 image", true, ArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
     }
 }

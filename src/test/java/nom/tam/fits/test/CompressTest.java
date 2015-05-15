@@ -48,6 +48,67 @@ import org.junit.Test;
  */
 public class CompressTest {
 
+    int fileRead(File is, boolean comp, boolean useComp) throws Exception {
+        Fits f;
+        if (useComp) {
+            f = new Fits(is, comp);
+        } else {
+            f = new Fits(is);
+        }
+        short[][] data = (short[][]) f.readHDU().getKernel();
+
+        return total(data);
+    }
+
+    int streamRead(InputStream is, boolean comp, boolean useComp) throws Exception {
+        Fits f;
+        if (useComp) {
+            f = new Fits(is, comp);
+        } else {
+            f = new Fits(is);
+        }
+        short[][] data = (short[][]) f.readHDU().getKernel();
+        is.close();
+
+        return total(data);
+    }
+
+    int stringRead(String is, boolean comp, boolean useComp) throws Exception {
+        Fits f;
+        if (useComp) {
+            f = new Fits(is, comp);
+        } else {
+            f = new Fits(is);
+        }
+        short[][] data = (short[][]) f.readHDU().getKernel();
+
+        return total(data);
+    }
+
+    @Test
+    public void testFile() throws Exception {
+        File is = new File("src/test/resources/nom/tam/fits/test/test.fits");
+        assertEquals("File1", 300, fileRead(is, false, false));
+
+        is = new File("src/test/resources/nom/tam/fits/test/test.fits.Z");
+        assertEquals("File2", 300, fileRead(is, false, false));
+
+        is = new File("src/test/resources/nom/tam/fits/test/test.fits.gz");
+        assertEquals("File3", 300, fileRead(is, false, false));
+
+        is = new File("src/test/resources/nom/tam/fits/test/test.fits");
+        assertEquals("File4", 300, fileRead(is, false, true));
+
+        is = new File("src/test/resources/nom/tam/fits/test/test.fits.Z");
+        assertEquals("File7", 300, fileRead(is, true, true));
+
+        is = new File("src/test/resources/nom/tam/fits/test/test.fits.gz");
+        assertEquals("File8", 300, fileRead(is, true, true));
+
+        is = new File("src/test/resources/nom/tam/fits/test/test.fits.bz2");
+        assertEquals("File9", 300, fileRead(is, true, true));
+    }
+
     @Test
     public void testgz() throws Exception {
 
@@ -58,28 +119,12 @@ public class CompressTest {
         BasicHDU h = f.readHDU();
         int[][] data = (int[][]) h.getKernel();
         double sum = 0;
-        for (int i = 0; i < data.length; i += 1) {
-            for (int j = 0; j < data[i].length; j += 1) {
-                sum += data[i][j];
+        for (int[] element : data) {
+            for (int j = 0; j < element.length; j += 1) {
+                sum += element[j];
             }
         }
         assertEquals("ZCompress", sum, 296915., 0);
-    }
-
-    @Test
-    public void testZ() throws Exception {
-
-        Fits f = new Fits("http://heasarc.gsfc.nasa.gov/FTP/rosat/data/pspc/processed_data/600000/rp600245n00/rp600245n00_im1.fits.Z");
-
-        BasicHDU h = f.readHDU();
-        short[][] data = (short[][]) h.getKernel();
-        double sum = 0;
-        for (int i = 0; i < data.length; i += 1) {
-            for (int j = 0; j < data[i].length; j += 1) {
-                sum += data[i][j];
-            }
-        }
-        assertEquals("ZCompress", sum, 91806., 0);
     }
 
     @Test
@@ -112,30 +157,6 @@ public class CompressTest {
 
         is = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits.bz2");
         assertEquals("Stream9", 300, streamRead(is, true, true));
-    }
-
-    @Test
-    public void testFile() throws Exception {
-        File is = new File("src/test/resources/nom/tam/fits/test/test.fits");
-        assertEquals("File1", 300, fileRead(is, false, false));
-
-        is = new File("src/test/resources/nom/tam/fits/test/test.fits.Z");
-        assertEquals("File2", 300, fileRead(is, false, false));
-
-        is = new File("src/test/resources/nom/tam/fits/test/test.fits.gz");
-        assertEquals("File3", 300, fileRead(is, false, false));
-
-        is = new File("src/test/resources/nom/tam/fits/test/test.fits");
-        assertEquals("File4", 300, fileRead(is, false, true));
-
-        is = new File("src/test/resources/nom/tam/fits/test/test.fits.Z");
-        assertEquals("File7", 300, fileRead(is, true, true));
-
-        is = new File("src/test/resources/nom/tam/fits/test/test.fits.gz");
-        assertEquals("File8", 300, fileRead(is, true, true));
-
-        is = new File("src/test/resources/nom/tam/fits/test/test.fits.bz2");
-        assertEquals("File9", 300, fileRead(is, true, true));
     }
 
     @Test
@@ -187,6 +208,32 @@ public class CompressTest {
         assertEquals("String8", 300, urlRead(is, true, true));
     }
 
+    @Test
+    public void testZ() throws Exception {
+
+        Fits f = new Fits("http://heasarc.gsfc.nasa.gov/FTP/rosat/data/pspc/processed_data/600000/rp600245n00/rp600245n00_im1.fits.Z");
+
+        BasicHDU h = f.readHDU();
+        short[][] data = (short[][]) h.getKernel();
+        double sum = 0;
+        for (short[] element : data) {
+            for (int j = 0; j < element.length; j += 1) {
+                sum += element[j];
+            }
+        }
+        assertEquals("ZCompress", sum, 91806., 0);
+    }
+
+    int total(short[][] data) {
+        int total = 0;
+        for (short[] element : data) {
+            for (int j = 0; j < element.length; j += 1) {
+                total += element[j];
+            }
+        }
+        return total;
+    }
+
     int urlRead(String is, boolean comp, boolean useComp) throws Exception {
         File fil = new File(is);
 
@@ -202,52 +249,5 @@ public class CompressTest {
         short[][] data = (short[][]) f.readHDU().getKernel();
 
         return total(data);
-    }
-
-    int streamRead(InputStream is, boolean comp, boolean useComp) throws Exception {
-        Fits f;
-        if (useComp) {
-            f = new Fits(is, comp);
-        } else {
-            f = new Fits(is);
-        }
-        short[][] data = (short[][]) f.readHDU().getKernel();
-        is.close();
-
-        return total(data);
-    }
-
-    int fileRead(File is, boolean comp, boolean useComp) throws Exception {
-        Fits f;
-        if (useComp) {
-            f = new Fits(is, comp);
-        } else {
-            f = new Fits(is);
-        }
-        short[][] data = (short[][]) f.readHDU().getKernel();
-
-        return total(data);
-    }
-
-    int stringRead(String is, boolean comp, boolean useComp) throws Exception {
-        Fits f;
-        if (useComp) {
-            f = new Fits(is, comp);
-        } else {
-            f = new Fits(is);
-        }
-        short[][] data = (short[][]) f.readHDU().getKernel();
-
-        return total(data);
-    }
-
-    int total(short[][] data) {
-        int total = 0;
-        for (int i = 0; i < data.length; i += 1) {
-            for (int j = 0; j < data[i].length; j += 1) {
-                total += data[i][j];
-            }
-        }
-        return total;
     }
 }

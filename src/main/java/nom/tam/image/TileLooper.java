@@ -43,20 +43,6 @@ import java.util.Iterator;
 
 public class TileLooper implements Iterable<TileDescriptor> {
 
-    private int[] tileIndices;
-
-    private int[] imageSize;
-
-    private int[] tileSize;
-
-    private int[] nTiles;
-
-    private int[] tilesCorner;
-
-    private int[] tilesCount;
-
-    private int dim;
-
     private class TileIterator implements Iterator<TileDescriptor> {
 
         boolean first = true;
@@ -66,46 +52,20 @@ public class TileLooper implements Iterable<TileDescriptor> {
             return nextCandidate() != null;
         }
 
-        private int[] nextCandidate() {
-
-            if (first) {
-                return tilesCorner.clone();
-            }
-
-            int[] candidate = tileIndices.clone();
-            boolean found = false;
-            for (int i = 0; i < dim; i += 1) {
-                int lastIndex = tileIndices[i] + 1;
-                if (lastIndex < tilesCorner[i] + tilesCount[i]) {
-                    candidate[i] = lastIndex;
-                    found = true;
-                    break;
-                } else {
-                    candidate[i] = tilesCorner[i];
-                }
-            }
-
-            if (found) {
-                return candidate;
-            } else {
-                return null;
-            }
-        }
-
         @Override
         public TileDescriptor next() {
             int[] cand = nextCandidate();
             if (cand == null) {
                 return null;
             }
-            tileIndices = cand.clone();
-            first = false;
+            TileLooper.this.tileIndices = cand.clone();
+            this.first = false;
 
-            int[] corner = new int[dim];
-            int[] size = new int[dim];
-            for (int i = 0; i < dim; i += 1) {
-                int offset = cand[i] * tileSize[i];
-                int len = Math.min(imageSize[i] - offset, tileSize[i]);
+            int[] corner = new int[TileLooper.this.dim];
+            int[] size = new int[TileLooper.this.dim];
+            for (int i = 0; i < TileLooper.this.dim; i += 1) {
+                int offset = cand[i] * TileLooper.this.tileSize[i];
+                int len = Math.min(TileLooper.this.imageSize[i] - offset, TileLooper.this.tileSize[i]);
                 corner[i] = offset;
                 size[i] = len;
             }
@@ -117,14 +77,40 @@ public class TileLooper implements Iterable<TileDescriptor> {
             // Compute the index of the tile. Note that we
             // are using FITS indexing, so that first element
             // changes fastest.
-            for (int i = dim - 1; i >= 0; i -= 1) {
+            for (int i = TileLooper.this.dim - 1; i >= 0; i -= 1) {
                 if (notFirst) {
-                    t.count *= nTiles[i];
+                    t.count *= TileLooper.this.nTiles[i];
                 }
-                t.count += tileIndices[i];
+                t.count += TileLooper.this.tileIndices[i];
                 notFirst = true;
             }
             return t;
+        }
+
+        private int[] nextCandidate() {
+
+            if (this.first) {
+                return TileLooper.this.tilesCorner.clone();
+            }
+
+            int[] candidate = TileLooper.this.tileIndices.clone();
+            boolean found = false;
+            for (int i = 0; i < TileLooper.this.dim; i += 1) {
+                int lastIndex = TileLooper.this.tileIndices[i] + 1;
+                if (lastIndex < TileLooper.this.tilesCorner[i] + TileLooper.this.tilesCount[i]) {
+                    candidate[i] = lastIndex;
+                    found = true;
+                    break;
+                } else {
+                    candidate[i] = TileLooper.this.tilesCorner[i];
+                }
+            }
+
+            if (found) {
+                return candidate;
+            } else {
+                return null;
+            }
         }
 
         @Override
@@ -132,6 +118,48 @@ public class TileLooper implements Iterable<TileDescriptor> {
             throw new UnsupportedOperationException("Can't delete tile descriptors.");
         }
     }
+
+    public static void main(String[] args) {
+        if (args.length == 0) {
+            args = new String[]{
+                "512",
+                "600",
+                "100",
+                "50"
+            };
+        }
+        int nx = Integer.parseInt(args[0]);
+        int ny = Integer.parseInt(args[1]);
+        int tx = Integer.parseInt(args[2]);
+        int ty = Integer.parseInt(args[3]);
+        int[] img = new int[]{
+            nx,
+            ny
+        };
+        int[] tile = new int[]{
+            tx,
+            ty
+        };
+        TileLooper tl = new TileLooper(img, tile);
+        for (TileDescriptor td : tl) {
+            System.err.println("Corner:" + td.corner[0] + "," + td.corner[1]);
+            System.err.println("  Size:" + td.size[0] + "," + td.size[1]);
+        }
+    }
+
+    private int[] tileIndices;
+
+    private final int[] imageSize;
+
+    private final int[] tileSize;
+
+    private final int[] nTiles;
+
+    private final int[] tilesCorner;
+
+    private final int[] tilesCount;
+
+    private final int dim;
 
     /**
      * Loop over tiles.
@@ -166,7 +194,7 @@ public class TileLooper implements Iterable<TileDescriptor> {
 
         this.imageSize = imageSize.clone();
         this.tileSize = tileSize.clone();
-        nTiles = new int[imageSize.length];
+        this.nTiles = new int[imageSize.length];
 
         if (imageSize == null || tileSize == null) {
             throw new IllegalArgumentException("Invalid null argument");
@@ -176,28 +204,28 @@ public class TileLooper implements Iterable<TileDescriptor> {
             throw new IllegalArgumentException("Image and tiles must have same dimensionality");
         }
 
-        dim = imageSize.length;
-        for (int i = 0; i < dim; i += 1) {
+        this.dim = imageSize.length;
+        for (int i = 0; i < this.dim; i += 1) {
             if (imageSize[i] <= 0 || tileSize[i] <= 0) {
                 throw new IllegalArgumentException("Negative or 0 dimension specified");
             }
-            nTiles[i] = (imageSize[i] + tileSize[i] - 1) / tileSize[i];
+            this.nTiles[i] = (imageSize[i] + tileSize[i] - 1) / tileSize[i];
         }
         // This initializes tileIndices to 0.
         if (tilesCorner == null) {
             tilesCorner = new int[tileSize.length];
         } else {
             for (int i = 0; i < tilesCorner.length; i += 1) {
-                if (tilesCorner[i] >= nTiles[i]) {
+                if (tilesCorner[i] >= this.nTiles[i]) {
                     throw new IllegalArgumentException("Tile corner outside tile array");
                 }
             }
         }
         if (tilesCount == null) {
-            tilesCount = nTiles.clone();
+            tilesCount = this.nTiles.clone();
         } else {
             for (int i = 0; i < tilesCount.length; i += 1) {
-                if (tilesCorner[i] + tilesCount[i] > nTiles[i]) {
+                if (tilesCorner[i] + tilesCount[i] > this.nTiles[i]) {
                     throw new IllegalArgumentException("Tile range extends outside tile array");
                 }
             }
@@ -208,39 +236,11 @@ public class TileLooper implements Iterable<TileDescriptor> {
         // The first tile is at the specified corner (which is 0,0... if
         // the user didn't specify it.
 
-        tileIndices = tilesCorner.clone();
+        this.tileIndices = tilesCorner.clone();
     }
 
     @Override
     public Iterator<TileDescriptor> iterator() {
         return new TileIterator();
-    }
-
-    public static void main(String[] args) {
-        if (args.length == 0) {
-            args = new String[]{
-                "512",
-                "600",
-                "100",
-                "50"
-            };
-        }
-        int nx = Integer.parseInt(args[0]);
-        int ny = Integer.parseInt(args[1]);
-        int tx = Integer.parseInt(args[2]);
-        int ty = Integer.parseInt(args[3]);
-        int[] img = new int[]{
-            nx,
-            ny
-        };
-        int[] tile = new int[]{
-            tx,
-            ty
-        };
-        TileLooper tl = new TileLooper(img, tile);
-        for (TileDescriptor td : tl) {
-            System.err.println("Corner:" + td.corner[0] + "," + td.corner[1]);
-            System.err.println("  Size:" + td.size[0] + "," + td.size[1]);
-        }
     }
 }

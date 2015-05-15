@@ -90,84 +90,37 @@ public class FitsHeap implements FitsElement {
      * Create a heap of a given size.
      */
     FitsHeap(int size) {
-        heapSize = size;
+        this.heapSize = size;
         if (size < 0) {
             throw new IllegalArgumentException("Illegal size for FITS heap:" + size);
         }
     }
 
-    /**
-     * Read the heap
-     */
-    @Override
-    public void read(ArrayDataInput str) throws FitsException {
-
-        if (str instanceof RandomAccess) {
-            fileOffset = FitsUtil.findOffset(str);
-            input = str;
-        }
-
-        if (heapSize > 0) {
-            allocate();
-            try {
-                str.read(heap, 0, heapSize);
-            } catch (IOException e) {
-                throw new FitsException("Error reading heap:" + e);
-            }
-        }
-
-        bstr = null;
-    }
-
     private void allocate() {
-        if (heap == null) {
-            heap = new byte[heapSize];
+        if (this.heap == null) {
+            this.heap = new byte[this.heapSize];
         }
     }
 
     /**
-     * Write the heap
+     * Check if the Heap can accommodate a given requirement. If not expand the
+     * heap.
      */
-    @Override
-    public void write(ArrayDataOutput str) throws FitsException {
+    void expandHeap(int need) {
+
+        // Invalidate any existing input stream to the heap.
+        this.bstr = null;
         allocate();
-        try {
-            str.write(heap, 0, heapSize);
-        } catch (IOException e) {
-            throw new FitsException("Error writing heap:" + e);
-        }
-    }
 
-    @Override
-    public boolean rewriteable() {
-        return fileOffset >= 0 && input instanceof ArrayDataOutput && !expanded;
-    }
-
-    /**
-     * Attempt to rewrite the heap with the current contents. Note that no
-     * checking is done to make sure that the heap does not extend past its
-     * prior boundaries.
-     */
-    @Override
-    public void rewrite() throws IOException, FitsException {
-        allocate();
-        if (rewriteable()) {
-            ArrayDataOutput str = (ArrayDataOutput) input;
-            FitsUtil.reposition(str, fileOffset);
-            write(str);
-        } else {
-            throw new FitsException("Invalid attempt to rewrite FitsHeap");
-        }
-
-    }
-
-    @Override
-    public boolean reset() {
-        try {
-            FitsUtil.reposition(input, fileOffset);
-            return true;
-        } catch (Exception e) {
-            return false;
+        if (this.heapSize + need > this.heap.length) {
+            this.expanded = true;
+            int newlen = (this.heapSize + need) * 2;
+            if (newlen < 16384) {
+                newlen = 16384;
+            }
+            byte[] newHeap = new byte[newlen];
+            System.arraycopy(this.heap, 0, newHeap, 0, this.heapSize);
+            this.heap = newHeap;
         }
     }
 
@@ -184,14 +137,14 @@ public class FitsHeap implements FitsElement {
         allocate();
         try {
             // Can we reuse the existing byte stream?
-            if (bstr == null || heapOffset > offset) {
-                heapOffset = 0;
-                bstr = new BufferedDataInputStream(new ByteArrayInputStream(heap));
+            if (this.bstr == null || this.heapOffset > offset) {
+                this.heapOffset = 0;
+                this.bstr = new BufferedDataInputStream(new ByteArrayInputStream(this.heap));
             }
 
-            bstr.skipBytes(offset - heapOffset);
-            heapOffset = offset;
-            heapOffset += bstr.readLArray(array);
+            this.bstr.skipBytes(offset - this.heapOffset);
+            this.heapOffset = offset;
+            this.heapOffset += this.bstr.readLArray(array);
 
         } catch (IOException e) {
             throw new FitsException("Error decoding heap area at offset=" + offset + ".  Exception: Exception " + e);
@@ -199,25 +152,19 @@ public class FitsHeap implements FitsElement {
     }
 
     /**
-     * Check if the Heap can accommodate a given requirement. If not expand the
-     * heap.
+     * Get the file offset of the heap
      */
-    void expandHeap(int need) {
+    @Override
+    public long getFileOffset() {
+        return this.fileOffset;
+    }
 
-        // Invalidate any existing input stream to the heap.
-        bstr = null;
-        allocate();
-
-        if (heapSize + need > heap.length) {
-            expanded = true;
-            int newlen = (heapSize + need) * 2;
-            if (newlen < 16384) {
-                newlen = 16384;
-            }
-            byte[] newHeap = new byte[newlen];
-            System.arraycopy(heap, 0, newHeap, 0, heapSize);
-            heap = newHeap;
-        }
+    /**
+     * Return the size of the heap using the more bean compatible format
+     */
+    @Override
+    public long getSize() {
+        return size();
     }
 
     /**
@@ -242,33 +189,86 @@ public class FitsHeap implements FitsElement {
             throw new FitsException("Unable to write variable column length data");
         }
 
-        System.arraycopy(bo.toByteArray(), 0, heap, heapSize, size);
-        int oldOffset = heapSize;
-        heapSize += size;
+        System.arraycopy(bo.toByteArray(), 0, this.heap, this.heapSize, size);
+        int oldOffset = this.heapSize;
+        this.heapSize += size;
 
         return oldOffset;
+    }
+
+    /**
+     * Read the heap
+     */
+    @Override
+    public void read(ArrayDataInput str) throws FitsException {
+
+        if (str instanceof RandomAccess) {
+            this.fileOffset = FitsUtil.findOffset(str);
+            this.input = str;
+        }
+
+        if (this.heapSize > 0) {
+            allocate();
+            try {
+                str.read(this.heap, 0, this.heapSize);
+            } catch (IOException e) {
+                throw new FitsException("Error reading heap:" + e);
+            }
+        }
+
+        this.bstr = null;
+    }
+
+    @Override
+    public boolean reset() {
+        try {
+            FitsUtil.reposition(this.input, this.fileOffset);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Attempt to rewrite the heap with the current contents. Note that no
+     * checking is done to make sure that the heap does not extend past its
+     * prior boundaries.
+     */
+    @Override
+    public void rewrite() throws IOException, FitsException {
+        allocate();
+        if (rewriteable()) {
+            ArrayDataOutput str = (ArrayDataOutput) this.input;
+            FitsUtil.reposition(str, this.fileOffset);
+            write(str);
+        } else {
+            throw new FitsException("Invalid attempt to rewrite FitsHeap");
+        }
+
+    }
+
+    @Override
+    public boolean rewriteable() {
+        return this.fileOffset >= 0 && this.input instanceof ArrayDataOutput && !this.expanded;
     }
 
     /**
      * Return the size of the Heap
      */
     public int size() {
-        return heapSize;
+        return this.heapSize;
     }
 
     /**
-     * Return the size of the heap using the more bean compatible format
+     * Write the heap
      */
     @Override
-    public long getSize() {
-        return size();
-    }
-
-    /**
-     * Get the file offset of the heap
-     */
-    @Override
-    public long getFileOffset() {
-        return fileOffset;
+    public void write(ArrayDataOutput str) throws FitsException {
+        allocate();
+        try {
+            str.write(this.heap, 0, this.heapSize);
+        } catch (IOException e) {
+            throw new FitsException("Error writing heap:" + e);
+        }
     }
 }

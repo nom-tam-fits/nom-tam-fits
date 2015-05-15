@@ -40,57 +40,18 @@ import nom.tam.util.Cursor;
  */
 public class AsciiTableHDU extends TableHDU {
 
-    /** Just a copy of myData with the correct type */
-    AsciiTable data;
-
     /**
-     * The standard column stems for an ASCII table. Note that TBCOL is not
-     * included here -- it needs to be handled specially since it does not
-     * simply shift.
+     * Create a ASCII table data structure from an array of objects representing
+     * the columns.
      */
-    private String[] keyStems = {
-        "TFORM",
-        "TZERO",
-        "TNULL",
-        "TTYPE",
-        "TUNIT"
-    };
+    public static Data encapsulate(Object o) throws FitsException {
 
-    /**
-     * Create an ascii table header/data unit.
-     * 
-     * @param h
-     *            the template specifying the ascii table.
-     * @param d
-     *            the FITS data structure containing the table data.
-     * @exception FitsException
-     *                if there was a problem with the header.
-     */
-    public AsciiTableHDU(Header h, Data d) {
-        super((TableData) d);
-        myHeader = h;
-        data = (AsciiTable) d;
-        myData = d;
-    }
-
-    /**
-     * Check that this is a valid ascii table header.
-     * 
-     * @param header
-     *            to validate.
-     * @return <CODE>true</CODE> if this is an ascii table header.
-     */
-    public static boolean isHeader(Header header) {
-        return header.getStringValue("XTENSION").trim().equals("TABLE");
-    }
-
-    /**
-     * Check that this HDU has a valid header.
-     * 
-     * @return <CODE>true</CODE> if this HDU has a valid header.
-     */
-    public boolean isHeader() {
-        return isHeader(myHeader);
+        Object[] oo = (Object[]) o;
+        AsciiTable d = new AsciiTable();
+        for (Object element : oo) {
+            d.addColumn(element);
+        }
+        return d;
     }
 
     /**
@@ -113,6 +74,17 @@ public class AsciiTableHDU extends TableHDU {
     }
 
     /**
+     * Check that this is a valid ascii table header.
+     * 
+     * @param header
+     *            to validate.
+     * @return <CODE>true</CODE> if this is an ascii table header.
+     */
+    public static boolean isHeader(Header header) {
+        return header.getStringValue("XTENSION").trim().equals("TABLE");
+    }
+
+    /**
      * Create a Data object to correspond to the header description.
      * 
      * @return An unfilled Data object which can be used to read in the data for
@@ -125,14 +97,6 @@ public class AsciiTableHDU extends TableHDU {
         return new AsciiTable(hdr);
     }
 
-    /**
-     * Create an empty data structure corresponding to the input header.
-     */
-    @Override
-    public Data manufactureData() throws FitsException {
-        return manufactureData(myHeader);
-    }
-
     /** Create a header to match the input data. */
     public static Header manufactureHeader(Data d) throws FitsException {
         Header hdr = new Header();
@@ -141,18 +105,116 @@ public class AsciiTableHDU extends TableHDU {
         return hdr;
     }
 
-    /**
-     * Create a ASCII table data structure from an array of objects representing
-     * the columns.
-     */
-    public static Data encapsulate(Object o) throws FitsException {
+    /** Just a copy of myData with the correct type */
+    AsciiTable data;
 
-        Object[] oo = (Object[]) o;
-        AsciiTable d = new AsciiTable();
-        for (Object element : oo) {
-            d.addColumn(element);
+    /**
+     * The standard column stems for an ASCII table. Note that TBCOL is not
+     * included here -- it needs to be handled specially since it does not
+     * simply shift.
+     */
+    private final String[] keyStems = {
+        "TFORM",
+        "TZERO",
+        "TNULL",
+        "TTYPE",
+        "TUNIT"
+    };
+
+    /**
+     * Create an ascii table header/data unit.
+     * 
+     * @param h
+     *            the template specifying the ascii table.
+     * @param d
+     *            the FITS data structure containing the table data.
+     * @exception FitsException
+     *                if there was a problem with the header.
+     */
+    public AsciiTableHDU(Header h, Data d) {
+        super((TableData) d);
+        this.myHeader = h;
+        this.data = (AsciiTable) d;
+        this.myData = d;
+    }
+
+    /** Add a column */
+    @Override
+    public int addColumn(Object newCol) throws FitsException {
+
+        this.data.addColumn(newCol);
+
+        // Move the iterator to point after all the data describing
+        // the previous column.
+
+        Cursor iter = this.myHeader.positionAfterIndex("TBCOL", this.data.getNCols());
+
+        int rowlen = this.data.addColInfo(getNCols(), iter);
+        int oldRowlen = this.myHeader.getIntValue("NAXIS1");
+        this.myHeader.setNaxis(1, rowlen + oldRowlen);
+
+        int oldTfields = this.myHeader.getIntValue("TFIELDS");
+        try {
+            this.myHeader.addValue("TFIELDS", oldTfields + 1, "ntf::asciitablehdu:tfields:1");
+        } catch (Exception e) {
+            System.err.println("Impossible exception at addColumn:" + e);
         }
-        return d;
+        return getNCols();
+    }
+
+    /**
+     * Return the keyword column stems for an ASCII table.
+     */
+    @Override
+    public String[] columnKeyStems() {
+        return this.keyStems;
+    }
+
+    /**
+     * Return the FITS data structure associated with this HDU.
+     */
+    @Override
+    public Data getData() {
+        return this.data;
+    }
+
+    /**
+     * Print a little information about the data set.
+     */
+    @Override
+    public void info() {
+        System.out.println("ASCII Table:");
+        System.out.println("  Header:");
+        System.out.println("    Number of fields:" + this.myHeader.getIntValue("TFIELDS"));
+        System.out.println("    Number of rows:  " + this.myHeader.getIntValue("NAXIS2"));
+        System.out.println("    Length of row:   " + this.myHeader.getIntValue("NAXIS1"));
+        System.out.println("  Data:");
+        Object[] data = (Object[]) getKernel();
+        for (int i = 0; i < getNCols(); i += 1) {
+            System.out.println("      " + i + ":" + ArrayFuncs.arrayDescription(data[i]));
+        }
+    }
+
+    /**
+     * Check that this HDU has a valid header.
+     * 
+     * @return <CODE>true</CODE> if this HDU has a valid header.
+     */
+    public boolean isHeader() {
+        return isHeader(this.myHeader);
+    }
+
+    /** See if an element is null */
+    public boolean isNull(int row, int col) {
+        return this.data.isNull(row, col);
+    }
+
+    /**
+     * Create an empty data structure corresponding to the input header.
+     */
+    @Override
+    public Data manufactureData() throws FitsException {
+        return manufactureData(this.myHeader);
     }
 
     /**
@@ -163,7 +225,7 @@ public class AsciiTableHDU extends TableHDU {
      */
     @Override
     public void readData(ArrayDataInput stream) throws FitsException {
-        myData.read(stream);
+        this.myData.read(stream);
     }
 
     /**
@@ -172,84 +234,22 @@ public class AsciiTableHDU extends TableHDU {
     public void setNull(int row, int col, boolean flag) {
 
         if (flag) {
-            String nullStr = myHeader.getStringValue("TNULL" + (col + 1));
+            String nullStr = this.myHeader.getStringValue("TNULL" + (col + 1));
             if (nullStr == null) {
                 setNullString(col, "NULL");
             }
         }
-        data.setNull(row, col, flag);
-    }
-
-    /** See if an element is null */
-    public boolean isNull(int row, int col) {
-        return data.isNull(row, col);
+        this.data.setNull(row, col, flag);
     }
 
     /** Set the null string for a column */
     public void setNullString(int col, String newNull) {
-        myHeader.positionAfterIndex("TBCOL", col + 1);
+        this.myHeader.positionAfterIndex("TBCOL", col + 1);
         try {
-            myHeader.addValue("TNULL" + (col + 1), newNull, "ntf::asciitablehdu:tnullN:1");
+            this.myHeader.addValue("TNULL" + (col + 1), newNull, "ntf::asciitablehdu:tnullN:1");
         } catch (HeaderCardException e) {
             System.err.println("Impossible exception in setNullString" + e);
         }
-        data.setNullString(col, newNull);
-    }
-
-    /** Add a column */
-    @Override
-    public int addColumn(Object newCol) throws FitsException {
-
-        data.addColumn(newCol);
-
-        // Move the iterator to point after all the data describing
-        // the previous column.
-
-        Cursor iter = myHeader.positionAfterIndex("TBCOL", data.getNCols());
-
-        int rowlen = data.addColInfo(getNCols(), iter);
-        int oldRowlen = myHeader.getIntValue("NAXIS1");
-        myHeader.setNaxis(1, rowlen + oldRowlen);
-
-        int oldTfields = myHeader.getIntValue("TFIELDS");
-        try {
-            myHeader.addValue("TFIELDS", oldTfields + 1, "ntf::asciitablehdu:tfields:1");
-        } catch (Exception e) {
-            System.err.println("Impossible exception at addColumn:" + e);
-        }
-        return getNCols();
-    }
-
-    /**
-     * Print a little information about the data set.
-     */
-    @Override
-    public void info() {
-        System.out.println("ASCII Table:");
-        System.out.println("  Header:");
-        System.out.println("    Number of fields:" + myHeader.getIntValue("TFIELDS"));
-        System.out.println("    Number of rows:  " + myHeader.getIntValue("NAXIS2"));
-        System.out.println("    Length of row:   " + myHeader.getIntValue("NAXIS1"));
-        System.out.println("  Data:");
-        Object[] data = (Object[]) getKernel();
-        for (int i = 0; i < getNCols(); i += 1) {
-            System.out.println("      " + i + ":" + ArrayFuncs.arrayDescription(data[i]));
-        }
-    }
-
-    /**
-     * Return the FITS data structure associated with this HDU.
-     */
-    @Override
-    public Data getData() {
-        return data;
-    }
-
-    /**
-     * Return the keyword column stems for an ASCII table.
-     */
-    @Override
-    public String[] columnKeyStems() {
-        return keyStems;
+        this.data.setNullString(col, newNull);
     }
 }

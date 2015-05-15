@@ -46,6 +46,41 @@ import org.junit.Test;
 
 public class MiscTest {
 
+    private String extractComment(String string, int end) {
+        int startOfComment = string.indexOf('/', end);
+        int endOfComment = string.length() - 1;
+        if (startOfComment > 0 && endOfComment > startOfComment) {
+            startOfComment++;
+            if (Character.isWhitespace(string.charAt(startOfComment))) {
+                startOfComment++;
+            }
+            while (Character.isWhitespace(string.charAt(endOfComment))) {
+                endOfComment--;
+            }
+            if (!Character.isWhitespace(string.charAt(endOfComment))) {
+                endOfComment++;
+            }
+            if (endOfComment > startOfComment) {
+                return string.substring(startOfComment, endOfComment);
+            }
+        }
+        return null;
+    }
+
+    private String replaceAll(Pattern doubleQuotePattern, String quotedString) {
+        Matcher doubleQuoteMatcher = doubleQuotePattern.matcher(quotedString);
+        StringBuffer sb = new StringBuffer();
+        if (doubleQuoteMatcher.find(1)) {
+            do {
+                doubleQuoteMatcher.appendReplacement(sb, "'");
+            } while (doubleQuoteMatcher.find());
+        }
+        doubleQuoteMatcher.appendTail(sb);
+        sb.deleteCharAt(0);
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
+    }
+
     @Test
     public void testLibVersion() throws Exception {
         Properties props = new Properties();
@@ -91,40 +126,5 @@ public class MiscTest {
                 e.printStackTrace();
             }
         }
-    }
-
-    private String extractComment(String string, int end) {
-        int startOfComment = string.indexOf('/', end);
-        int endOfComment = string.length() - 1;
-        if (startOfComment > 0 && endOfComment > startOfComment) {
-            startOfComment++;
-            if (Character.isWhitespace(string.charAt(startOfComment))) {
-                startOfComment++;
-            }
-            while (Character.isWhitespace(string.charAt(endOfComment))) {
-                endOfComment--;
-            }
-            if (!Character.isWhitespace(string.charAt(endOfComment))) {
-                endOfComment++;
-            }
-            if (endOfComment > startOfComment) {
-                return string.substring(startOfComment, endOfComment);
-            }
-        }
-        return null;
-    }
-
-    private String replaceAll(Pattern doubleQuotePattern, String quotedString) {
-        Matcher doubleQuoteMatcher = doubleQuotePattern.matcher(quotedString);
-        StringBuffer sb = new StringBuffer();
-        if (doubleQuoteMatcher.find(1)) {
-            do {
-                doubleQuoteMatcher.appendReplacement(sb, "'");
-            } while (doubleQuoteMatcher.find());
-        }
-        doubleQuoteMatcher.appendTail(sb);
-        sb.deleteCharAt(0);
-        sb.deleteCharAt(sb.length() - 1);
-        return sb.toString();
     }
 }

@@ -52,67 +52,6 @@ public class FitsFactory {
     private static boolean longStringsEnabled = false;
 
     /**
-     * Indicate whether ASCII tables should be used where feasible.
-     */
-    public static void setUseAsciiTables(boolean flag) {
-        useAsciiTables = flag;
-    }
-
-    /** Get the current status of ASCII table writing */
-    static boolean getUseAsciiTables() {
-        return useAsciiTables;
-    }
-
-    /** Enable/Disable hierarchical keyword processing. */
-    public static void setUseHierarch(boolean flag) {
-        useHierarch = flag;
-    }
-
-    /** Enable/Disable longstring support. */
-    public static void setLongStringsEnabled(boolean flag) {
-        longStringsEnabled = flag;
-    }
-
-    /**
-     * Enable/Disable checking of strings values used in tables to ensure that
-     * they are within the range specified by the FITS standard. The standard
-     * only allows the values 0x20 - 0x7E with null bytes allowed in one limited
-     * context. Disabled by default.
-     */
-    public static void setCheckAsciiStrings(boolean flag) {
-        checkAsciiStrings = flag;
-    }
-
-    /** Get the current status for string checking. */
-    static boolean getCheckAsciiStrings() {
-        return checkAsciiStrings;
-    }
-
-    /** Are we processing HIERARCH style keywords */
-    public static boolean getUseHierarch() {
-        return useHierarch;
-    }
-
-    /** Do we allow junk after a valid FITS file? */
-    public static void setAllowTerminalJunk(boolean flag) {
-        allowTerminalJunk = flag;
-    }
-
-    /**
-     * Is terminal junk (i.e., non-FITS data following a valid HDU) allowed.
-     */
-    public static boolean getAllowTerminalJunk() {
-        return allowTerminalJunk;
-    }
-
-    /**
-     * Is long string support enabled.
-     */
-    public static boolean isLongStringsEnabled() {
-        return longStringsEnabled;
-    }
-
-    /**
      * Given a Header return an appropriate datum.
      */
     public static Data dataFactory(Header hdr) throws FitsException {
@@ -123,7 +62,7 @@ public class FitsFactory {
             return d;
         } else if (RandomGroupsHDU.isHeader(hdr)) {
             return RandomGroupsHDU.manufactureData(hdr);
-        } else if (useAsciiTables && AsciiTableHDU.isHeader(hdr)) {
+        } else if (FitsFactory.useAsciiTables && AsciiTableHDU.isHeader(hdr)) {
             return AsciiTableHDU.manufactureData(hdr);
         } else if (BinaryTableHDU.isHeader(hdr)) {
             return BinaryTableHDU.manufactureData(hdr);
@@ -133,6 +72,48 @@ public class FitsFactory {
             throw new FitsException("Unrecognizable header in dataFactory");
         }
 
+    }
+
+    /**
+     * Is terminal junk (i.e., non-FITS data following a valid HDU) allowed.
+     */
+    public static boolean getAllowTerminalJunk() {
+        return FitsFactory.allowTerminalJunk;
+    }
+
+    /** Get the current status for string checking. */
+    static boolean getCheckAsciiStrings() {
+        return FitsFactory.checkAsciiStrings;
+    }
+
+    /** Get the current status of ASCII table writing */
+    static boolean getUseAsciiTables() {
+        return FitsFactory.useAsciiTables;
+    }
+
+    /** Are we processing HIERARCH style keywords */
+    public static boolean getUseHierarch() {
+        return FitsFactory.useHierarch;
+    }
+
+    /**
+     * Given Header and data objects return the appropriate type of HDU.
+     */
+    public static BasicHDU HDUFactory(Header hdr, Data d) throws FitsException {
+
+        if (d instanceof ImageData) {
+            return new ImageHDU(hdr, d);
+        } else if (d instanceof RandomGroupsData) {
+            return new RandomGroupsHDU(hdr, d);
+        } else if (d instanceof AsciiTable) {
+            return new AsciiTableHDU(hdr, d);
+        } else if (d instanceof BinaryTable) {
+            return new BinaryTableHDU(hdr, d);
+        } else if (d instanceof UndefinedData) {
+            return new UndefinedHDU(hdr, d);
+        }
+
+        return null;
     }
 
     /**
@@ -155,7 +136,7 @@ public class FitsFactory {
         } else if (RandomGroupsHDU.isData(o)) {
             d = RandomGroupsHDU.encapsulate(o);
             h = RandomGroupsHDU.manufactureHeader(d);
-        } else if (useAsciiTables && AsciiTableHDU.isData(o)) {
+        } else if (FitsFactory.useAsciiTables && AsciiTableHDU.isData(o)) {
             d = AsciiTableHDU.encapsulate(o);
             h = AsciiTableHDU.manufactureHeader(d);
         } else if (BinaryTableHDU.isData(o)) {
@@ -173,22 +154,41 @@ public class FitsFactory {
     }
 
     /**
-     * Given Header and data objects return the appropriate type of HDU.
+     * Is long string support enabled.
      */
-    public static BasicHDU HDUFactory(Header hdr, Data d) throws FitsException {
+    public static boolean isLongStringsEnabled() {
+        return FitsFactory.longStringsEnabled;
+    }
 
-        if (d instanceof ImageData) {
-            return new ImageHDU(hdr, d);
-        } else if (d instanceof RandomGroupsData) {
-            return new RandomGroupsHDU(hdr, d);
-        } else if (d instanceof AsciiTable) {
-            return new AsciiTableHDU(hdr, d);
-        } else if (d instanceof BinaryTable) {
-            return new BinaryTableHDU(hdr, d);
-        } else if (d instanceof UndefinedData) {
-            return new UndefinedHDU(hdr, d);
-        }
+    /** Do we allow junk after a valid FITS file? */
+    public static void setAllowTerminalJunk(boolean flag) {
+        FitsFactory.allowTerminalJunk = flag;
+    }
 
-        return null;
+    /**
+     * Enable/Disable checking of strings values used in tables to ensure that
+     * they are within the range specified by the FITS standard. The standard
+     * only allows the values 0x20 - 0x7E with null bytes allowed in one limited
+     * context. Disabled by default.
+     */
+    public static void setCheckAsciiStrings(boolean flag) {
+        FitsFactory.checkAsciiStrings = flag;
+    }
+
+    /** Enable/Disable longstring support. */
+    public static void setLongStringsEnabled(boolean flag) {
+        FitsFactory.longStringsEnabled = flag;
+    }
+
+    /**
+     * Indicate whether ASCII tables should be used where feasible.
+     */
+    public static void setUseAsciiTables(boolean flag) {
+        FitsFactory.useAsciiTables = flag;
+    }
+
+    /** Enable/Disable hierarchical keyword processing. */
+    public static void setUseHierarch(boolean flag) {
+        FitsFactory.useHierarch = flag;
     }
 }

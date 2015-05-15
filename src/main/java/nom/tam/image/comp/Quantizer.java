@@ -49,9 +49,9 @@ import nom.tam.util.ArrayFuncs;
  */
 public class Quantizer {
 
-    private double scale;
+    private final double scale;
 
-    private double offset;
+    private final double offset;
 
     private int[] corner;
 
@@ -61,7 +61,7 @@ public class Quantizer {
 
     private boolean isFloat = false;
 
-    private QuantizeRandoms qr = new QuantizeRandoms();
+    private final QuantizeRandoms qr = new QuantizeRandoms();
 
     /**
      * Create a quantizer that will transform data to/from integer values using
@@ -72,6 +72,90 @@ public class Quantizer {
 
         this.scale = scale;
         this.offset = offset;
+    }
+
+    /**
+     * Restore a tile of the original data using the input byte array as input.
+     * The method calls recurseIn to descend to the bottom level of the array
+     * which calls the input method when it reaches the bottom level of the
+     * array to actually read and convert the data values.
+     * 
+     * @param tileData
+     *            The data array to be filled.
+     * @param data
+     *            The source of the data.
+     * @param td
+     *            The corners and size of the tile.
+     */
+    public void fill(byte[] tileData, Object data, TileDescriptor td) {
+        this.corner = td.corner;
+        this.size = td.size;
+        this.ndim = this.size.length;
+        ByteArrayInputStream bi = new ByteArrayInputStream(tileData);
+        DataInputStream ds = new DataInputStream(bi);
+
+        this.qr.computeOffset(td.count);
+
+        recurseIn(data, ds, 1);
+    }
+
+    private void input(double[] data, DataInputStream ds, int cs) {
+        try {
+            for (int i = 0; i < cs; i += 1) {
+                int val = ds.readInt();
+                double dither = this.qr.next();
+                data[i] = (val - dither) * this.scale + this.offset;
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to read from array", e);
+        }
+    }
+
+    private void input(float[] data, DataInputStream ds, int cs) {
+        try {
+            for (int i = 0; i < cs; i += 1) {
+                int val = ds.readInt();
+                double dither = this.qr.next();
+                float fval = (float) ((val - dither) * this.scale + this.offset);
+
+                data[i] = fval;
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to read from array", e);
+        }
+    }
+
+    private void process(double[] input, DataOutputStream ds, int start, int len) {
+        try {
+            for (int i = 0; i < len; i += 1) {
+                double val = input[i + start];
+                if (Double.isNaN(val)) {
+                    ds.writeInt(0);
+                } else {
+                    int v = (int) Math.round((val - this.offset) / this.scale + this.qr.next());
+                    ds.writeInt(v);
+                }
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Unexpected IO error writing to array", e);
+        }
+    }
+
+    private void process(float[] input, DataOutputStream ds, int start, int len) {
+        try {
+            for (int i = 0; i < len; i += 1) {
+                float val = input[i + start];
+                if (Float.isNaN(val)) {
+                    ds.writeInt(0);
+                } else {
+                    double dither = this.qr.next();
+                    int v = (int) Math.round((val - this.offset) / this.scale + dither);
+                    ds.writeInt(v);
+                }
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Unexpected IO error writing to array", e);
+        }
     }
 
     /**
@@ -93,25 +177,25 @@ public class Quantizer {
     public byte[] quantize(Object input, TileDescriptor td, int tileIndex) {
         Class cs = ArrayFuncs.getBaseClass(input);
         if (cs == float.class) {
-            isFloat = true;
+            this.isFloat = true;
         } else {
             if (cs != double.class) {
                 throw new IllegalArgumentException("Only real arrays supported");
             }
         }
         // Extract info from the tile descriptor.
-        corner = td.corner;
-        size = td.size;
-        ndim = size.length;
+        this.corner = td.corner;
+        this.size = td.size;
+        this.ndim = this.size.length;
         int n = 1;
-        for (int i = 0; i < ndim; i += 1) {
-            n *= size[i];
+        for (int i = 0; i < this.ndim; i += 1) {
+            n *= this.size[i];
         }
 
         ByteArrayOutputStream bo = new ByteArrayOutputStream(n);
         DataOutputStream ds = new DataOutputStream(bo);
 
-        qr.computeOffset(tileIndex);
+        this.qr.computeOffset(tileIndex);
         // Now recurse over the dimensionalities of the input.
         recurseOut(input, ds, 1);
 
@@ -125,89 +209,15 @@ public class Quantizer {
 
     }
 
-    private void recurseOut(Object input, DataOutputStream ds, int level) {
-        // Note we start level at 1.
-
-        int cc = corner[ndim - level];
-        int cs = size[ndim - level];
-        if (level < ndim) {
-            recurseOut(((Object[]) input)[cc], ds, level + 1);
-        } else {
-            if (isFloat) {
-                process((float[]) input, ds, cc, cs);
-            } else {
-                process((double[]) input, ds, cc, cs);
-            }
-        }
-    }
-
-    private void process(float[] input, DataOutputStream ds, int start, int len) {
-        try {
-            for (int i = 0; i < len; i += 1) {
-                float val = input[i + start];
-                if (Float.isNaN(val)) {
-                    ds.writeInt(0);
-                } else {
-                    double dither = qr.next();
-                    int v = (int) Math.round((val - offset) / scale + dither);
-                    ds.writeInt(v);
-                }
-            }
-        } catch (IOException e) {
-            throw new IllegalStateException("Unexpected IO error writing to array", e);
-        }
-    }
-
-    private void process(double[] input, DataOutputStream ds, int start, int len) {
-        try {
-            for (int i = 0; i < len; i += 1) {
-                double val = input[i + start];
-                if (Double.isNaN(val)) {
-                    ds.writeInt(0);
-                } else {
-                    int v = (int) Math.round((val - offset) / scale + qr.next());
-                    ds.writeInt(v);
-                }
-            }
-        } catch (IOException e) {
-            throw new IllegalStateException("Unexpected IO error writing to array", e);
-        }
-    }
-
-    /**
-     * Restore a tile of the original data using the input byte array as input.
-     * The method calls recurseIn to descend to the bottom level of the array
-     * which calls the input method when it reaches the bottom level of the
-     * array to actually read and convert the data values.
-     * 
-     * @param tileData
-     *            The data array to be filled.
-     * @param data
-     *            The source of the data.
-     * @param td
-     *            The corners and size of the tile.
-     */
-    public void fill(byte[] tileData, Object data, TileDescriptor td) {
-        corner = td.corner;
-        size = td.size;
-        ndim = size.length;
-        ByteArrayInputStream bi = new ByteArrayInputStream(tileData);
-        DataInputStream ds = new DataInputStream(bi);
-
-        qr.computeOffset(td.count);
-
-        recurseIn(data, ds, 1);
-    }
-
     private void recurseIn(Object data, DataInputStream ds, int level) {
 
-        int cs = size[ndim - level];
-        if (level < ndim) {
+        int cs = this.size[this.ndim - level];
+        if (level < this.ndim) {
             for (int i = 0; i < cs; i += 1) {
                 recurseIn(((Object[]) data)[i], ds, level + 1);
             }
         } else {
-            if (isFloat) {
+            if (this.isFloat) {
                 input((float[]) data, ds, cs);
             } else {
                 input((double[]) data, ds, cs);
@@ -215,29 +225,19 @@ public class Quantizer {
         }
     }
 
-    private void input(float[] data, DataInputStream ds, int cs) {
-        try {
-            for (int i = 0; i < cs; i += 1) {
-                int val = ds.readInt();
-                double dither = qr.next();
-                float fval = (float) ((val - dither) * scale + offset);
+    private void recurseOut(Object input, DataOutputStream ds, int level) {
+        // Note we start level at 1.
 
-                data[i] = fval;
+        int cc = this.corner[this.ndim - level];
+        int cs = this.size[this.ndim - level];
+        if (level < this.ndim) {
+            recurseOut(((Object[]) input)[cc], ds, level + 1);
+        } else {
+            if (this.isFloat) {
+                process((float[]) input, ds, cc, cs);
+            } else {
+                process((double[]) input, ds, cc, cs);
             }
-        } catch (IOException e) {
-            throw new IllegalStateException("Unable to read from array", e);
-        }
-    }
-
-    private void input(double[] data, DataInputStream ds, int cs) {
-        try {
-            for (int i = 0; i < cs; i += 1) {
-                int val = ds.readInt();
-                double dither = qr.next();
-                data[i] = (val - dither) * scale + offset;
-            }
-        } catch (IOException e) {
-            throw new IllegalStateException("Unable to read from array", e);
         }
     }
 }

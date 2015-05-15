@@ -36,7 +36,6 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.BufferedFile;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -46,6 +45,16 @@ import org.junit.Test;
  * succeed after FitsFactory.setAllowTerminalJunk(true).
  */
 public class JunkTest {
+
+    boolean readSuccess(String file) {
+        try {
+            Fits f = new Fits(file);
+            f.read();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     @Test
     public void test() throws Exception {
@@ -112,15 +121,5 @@ public class JunkTest {
         assertTrue("Junk Test: Invalid File Fails, No junk", !readSuccess("target/j2.fits"));
         assertTrue("Junk Test: Short junk fails, No junk", !readSuccess("target/j3.fits"));
         assertTrue("Junk Test: Long junk fails, No junk", !readSuccess("target/j4.fits"));
-    }
-
-    boolean readSuccess(String file) {
-        try {
-            Fits f = new Fits(file);
-            f.read();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 }

@@ -56,31 +56,7 @@ package nom.tam.util;
  */
 public final class ByteFormatter {
 
-    /** Internal buffers used in formatting fields */
-    private byte[] tbuf1 = new byte[32];
-
-    private byte[] tbuf2 = new byte[32];
-
     private static final double ilog10 = 1. / Math.log(10);
-
-    /** Should we truncate overflows or just run over limit */
-    private boolean truncateOnOverflow = true;
-
-    /** What do we use to fill when we cannot print the number? */
-    private byte truncationFill = (byte) '*'; // Default is often used in
-                                              // Fortran
-
-    /** Throw exception on truncations */
-    private boolean truncationThrow = true;
-
-    /** Should we right align? */
-    private boolean align = false;
-
-    /** Minimum magnitude to print in non-scientific notation. */
-    double simpleMin = 1.e-3;
-
-    /** Maximum magnitude to print in non-scientific notation. */
-    double simpleMax = 1.e6;
 
     /**
      * Powers of 10. We overextend on both sides. These should perhaps be
@@ -94,14 +70,14 @@ public final class ByteFormatter {
 
     static { // Static initializer
 
-        int min = (int) Math.floor((int) (Math.log(Double.MIN_VALUE) * ilog10));
-        int max = (int) Math.floor((int) (Math.log(Double.MAX_VALUE) * ilog10));
+        int min = (int) Math.floor((int) (Math.log(Double.MIN_VALUE) * ByteFormatter.ilog10));
+        int max = (int) Math.floor((int) (Math.log(Double.MAX_VALUE) * ByteFormatter.ilog10));
         max += 1;
 
         tenpow = new double[max - min + 1];
 
-        for (int i = 0; i < tenpow.length; i += 1) {
-            tenpow[i] = Math.pow(10, i + min);
+        for (int i = 0; i < ByteFormatter.tenpow.length; i += 1) {
+            ByteFormatter.tenpow[i] = Math.pow(10, i + min);
         }
         zeropow = -min;
     }
@@ -123,245 +99,162 @@ public final class ByteFormatter {
         (byte) '9'
     };
 
+    /** Internal buffers used in formatting fields */
+    private final byte[] tbuf1 = new byte[32];
+
+    private final byte[] tbuf2 = new byte[32];
+
+    /** Should we truncate overflows or just run over limit */
+    private boolean truncateOnOverflow = true;
+
+    /** What do we use to fill when we cannot print the number? */
+    private byte truncationFill = (byte) '*'; // Default is often used in
+                                              // Fortran
+
+    /** Throw exception on truncations */
+    private boolean truncationThrow = true;
+
+    /** Should we right align? */
+    private boolean align = false;
+
+    /** Minimum magnitude to print in non-scientific notation. */
+    double simpleMin = 1.e-3;
+
+    /** Maximum magnitude to print in non-scientific notation. */
+    double simpleMax = 1.e6;
+
     /**
-     * Set the truncation behavior.
+     * Fill the buffer with blanks to align a field.
+     */
+    public int alignFill(byte[] buffer, int offset, int len) {
+        for (int i = offset; i < offset + len; i += 1) {
+            buffer[i] = (byte) ' ';
+        }
+        return offset + len;
+    }
+
+    /**
+     * This method formats a double given a decimal mantissa and exponent
+     * information.
      * 
      * @param val
-     *            If set to true (the default) then do not exceed the requested
-     *            length. If a number cannot be sensibly formatted, the
-     *            truncation fill character may be inserted.
-     */
-    public void setTruncateOnOverflow(boolean val) {
-        truncateOnOverflow = val;
-    }
-
-    /** Should truncations cause a truncation overflow? */
-    public void setTruncationThrow(boolean throwException) {
-        truncationThrow = throwException;
-    }
-
-    /**
-     * Set the truncation fill character.
-     * 
-     * @param val
-     *            The character to be used in subsequent truncations.
-     */
-    public void setTruncationFill(char val) {
-        truncationFill = (byte) val;
-    }
-
-    /**
-     * Set the alignment flag.
-     * 
-     * @param val
-     *            Should numbers be right aligned?
-     */
-    public void setAlign(boolean val) {
-        align = val;
-    }
-
-    /**
-     * Set the range of real numbers that will be formatted in non-scientific
-     * notation, i.e., .00001 rather than 1.0e-5. The sign of the number is
-     * ignored.
-     * 
-     * @param min
-     *            The minimum value for non-scientific notation.
-     * @param max
-     *            The maximum value for non-scientific notation.
-     */
-    public void setSimpleRange(double min, double max) {
-        simpleMin = min;
-        simpleMax = max;
-    }
-
-    /**
-     * Format an int into an array.
-     * 
-     * @param val
-     *            The int to be formatted.
-     * @param array
-     *            The array in which to place the result.
-     * @return The number of characters used.
-     */
-    public int format(int val, byte[] array) throws TruncationException {
-        return format(val, array, 0, array.length);
-    }
-
-    /**
-     * Format an int into an existing array.
-     * 
-     * @param val
-     *            Integer to be formatted
+     *            The original number
      * @param buf
-     *            Buffer in which result is to be stored
+     *            Output buffer
      * @param off
-     *            Offset within buffer
+     *            Offset into buffer
      * @param len
-     *            Maximum length of integer
-     * @return offset of next unused character in input buffer.
+     *            Maximum number of characters to use in buffer.
+     * @param mant
+     *            A decimal mantissa for the number.
+     * @param lmant
+     *            The number of characters in the mantissa
+     * @param shift
+     *            The exponent of the power of 10 that we shifted val to get the
+     *            given mantissa.
+     * @return Offset of next available character in buffer.
      */
-    public int format(int val, byte[] buf, int off, int len) throws TruncationException {
+    int combineReal(double val, byte[] buf, int off, int len, byte[] mant, int lmant, int shift) throws TruncationException {
 
-        // Special case
-        if (val == Integer.MIN_VALUE) {
-            if (len > 10 || !truncateOnOverflow && buf.length - off > 10) {
-                return format("-2147483648", buf, off, len);
-            } else {
-                truncationFiller(buf, off, len);
-                return off + len;
-            }
+        // First get the minimum size for the number
+
+        double pos = Math.abs(val);
+        boolean simple = false;
+        int minSize;
+        int maxSize;
+
+        if (pos >= this.simpleMin && pos <= this.simpleMax) {
+            simple = true;
         }
 
-        int pos = Math.abs(val);
+        int exp = lmant - shift - 1;
+        int lexp = 0;
 
-        // First count the number of characters in the result.
-        // Otherwise we need to use an intermediary buffer.
+        if (!simple) {
 
-        int ndig = 1;
-        int dmax = 10;
+            boolean oldAlign = this.align;
+            this.align = false;
+            lexp = format(exp, this.tbuf2, 0, 32);
+            this.align = oldAlign;
 
-        while (ndig < 10 && pos >= dmax) {
-            ndig += 1;
-            dmax *= 10;
-        }
+            minSize = lexp + 2; // e.g., 2e-12
+            maxSize = lexp + lmant + 2; // add in "." and e
+        } else {
+            if (exp >= 0) {
+                minSize = exp + 1; // e.g. 32
 
-        if (val < 0) {
-            ndig += 1;
-        }
-
-        // Truncate if necessary.
-        if (truncateOnOverflow && ndig > len || ndig > buf.length - off) {
-            truncationFiller(buf, off, len);
-            return off + len;
-        }
-
-        // Right justify if requested.
-        if (align) {
-            off = alignFill(buf, off, len - ndig);
-        }
-
-        // Now insert the actual characters we want -- backwards
-        // We use a do{} while() to handle the case of 0.
-
-        off += ndig;
-
-        int xoff = off - 1;
-        do {
-            buf[xoff] = digits[pos % 10];
-            xoff -= 1;
-            pos /= 10;
-        } while (pos > 0);
-
-        if (val < 0) {
-            buf[xoff] = (byte) '-';
-        }
-
-        return off;
-    }
-
-    /**
-     * Format a long into an array.
-     * 
-     * @param val
-     *            The long to be formatted.
-     * @param array
-     *            The array in which to place the result.
-     * @return The number of characters used.
-     */
-    public int format(long val, byte[] array) throws TruncationException {
-        return format(val, array, 0, array.length);
-    }
-
-    /**
-     * Format a long into an existing array.
-     * 
-     * @param val
-     *            Long to be formatted
-     * @param buf
-     *            Buffer in which result is to be stored
-     * @param off
-     *            Offset within buffer
-     * @param len
-     *            Maximum length of integer
-     * @return offset of next unused character in input buffer.
-     */
-    public int format(long val, byte[] buf, int off, int len) throws TruncationException {
-
-        // Special case
-        if (val == Long.MIN_VALUE) {
-            if (len > 19 || !truncateOnOverflow && buf.length - off > 19) {
-                return format("-9223372036854775808", buf, off, len);
-            } else {
-                truncationFiller(buf, off, len);
-                return off + len;
-            }
-        }
-
-        long pos = Math.abs(val);
-
-        // First count the number of characters in the result.
-        // Otherwise we need to use an intermediary buffer.
-
-        int ndig = 1;
-        long dmax = 10;
-
-        // Might be faster to try to do this partially in ints
-        while (ndig < 19 && pos >= dmax) {
-
-            ndig += 1;
-            dmax *= 10;
-        }
-
-        if (val < 0) {
-            ndig += 1;
-        }
-
-        // Truncate if necessary.
-
-        if (truncateOnOverflow && ndig > len || ndig > buf.length - off) {
-            truncationFiller(buf, off, len);
-            return off + len;
-        }
-
-        // Right justify if requested.
-        if (align) {
-            off = alignFill(buf, off, len - ndig);
-        }
-
-        // Now insert the actual characters we want -- backwards.
-
-        off += ndig;
-        int xoff = off - 1;
-
-        buf[xoff] = (byte) '0';
-        boolean last = pos == 0;
-
-        while (!last) {
-
-            // Work on ints rather than longs.
-
-            int giga = (int) (pos % 1000000000L);
-            pos /= 1000000000L;
-
-            last = pos == 0;
-
-            for (int i = 0; i < 9; i += 1) {
-
-                buf[xoff] = digits[giga % 10];
-                xoff -= 1;
-                giga /= 10;
-                if (last && giga == 0) {
-                    break;
+                // Special case. E.g., 99.9 has
+                // minumum size of 3.
+                int i;
+                for (i = 0; i < lmant && i <= exp; i += 1) {
+                    if (mant[i] != (byte) '9') {
+                        break;
+                    }
                 }
+                if (i > exp && i < lmant && mant[i] >= (byte) '5') {
+                    minSize += 1;
+                }
+
+                maxSize = lmant + 1; // Add in "."
+                if (maxSize <= minSize) { // Very large numbers.
+                    maxSize = minSize + 1;
+                }
+            } else {
+                minSize = 2;
+                maxSize = 1 + Math.abs(exp) + lmant;
             }
         }
-
         if (val < 0) {
-            buf[xoff] = (byte) '-';
+            minSize += 1;
+            maxSize += 1;
         }
 
-        return off;
+        // Can the number fit?
+        if (this.truncateOnOverflow && minSize > len || minSize > buf.length - off) {
+            truncationFiller(buf, off, len);
+            return off + len;
+        }
+
+        // Do we need to align it?
+        if (maxSize < len && this.align) {
+            int nal = len - maxSize;
+            off = alignFill(buf, off, nal);
+            len -= nal;
+        }
+
+        // Now begin filling in the buffer.
+        if (val < 0) {
+            buf[off] = (byte) '-';
+            off += 1;
+            len -= 1;
+        }
+
+        if (simple) {
+            return Math.abs(mantissa(mant, lmant, exp, simple, buf, off, len));
+        } else {
+            off = mantissa(mant, lmant, 0, simple, buf, off, len - lexp - 1);
+            if (off < 0) {
+                off = -off;
+                len -= off;
+                // Handle the expanded exponent by filling
+                if (exp == 9 || exp == 99) {
+                    // Cannot fit...
+                    if (off + len == minSize) {
+                        truncationFiller(buf, off, len);
+                        return off + len;
+                    } else {
+                        // Steal a character from the mantissa.
+                        off -= 1;
+                    }
+                }
+                exp += 1;
+                lexp = format(exp, this.tbuf2, 0, 32);
+            }
+            buf[off] = (byte) 'E';
+            off += 1;
+            System.arraycopy(this.tbuf2, 0, buf, off, lexp);
+            return off + lexp;
+        }
     }
 
     /**
@@ -386,7 +279,7 @@ public final class ByteFormatter {
      * @return Offset of next available character in buffer.
      */
     public int format(boolean val, byte[] array, int off, int len) {
-        if (align && len > 1) {
+        if (this.align && len > 1) {
             off = alignFill(array, off, len - 1);
         }
 
@@ -399,162 +292,6 @@ public final class ByteFormatter {
             off += 1;
         }
         return off;
-    }
-
-    /** Insert a string at the beginning of an array */
-    public int format(String val, byte[] array) {
-        return format(val, array, 0, array.length);
-    }
-
-    /**
-     * Insert a String into an existing character array. If the String is longer
-     * than len, then only the the initial len characters will be inserted.
-     * 
-     * @param val
-     *            The string to be inserted. A null string will insert len
-     *            spaces.
-     * @param array
-     *            The buffer in which to insert the string.
-     * @param off
-     *            The starting offset to insert the string.
-     * @param len
-     *            The maximum number of characters to insert.
-     * @return Offset of next available character in buffer.
-     */
-    public int format(String val, byte[] array, int off, int len) {
-
-        if (val == null) {
-            for (int i = 0; i < len; i += 1) {
-                array[off + i] = (byte) ' ';
-            }
-            return off + len;
-        }
-
-        int slen = val.length();
-
-        if (truncateOnOverflow && slen > len || slen > array.length - off) {
-            val = val.substring(0, len);
-            slen = len;
-        }
-
-        if (align && len > slen) {
-            off = alignFill(array, off, len - slen);
-        }
-
-        System.arraycopy(AsciiFuncs.getBytes(val), 0, array, off, slen);
-        return off + slen;
-    }
-
-    /**
-     * Format a float into an array.
-     * 
-     * @param val
-     *            The float to be formatted.
-     * @param array
-     *            The array in which to place the result.
-     * @return The number of characters used.
-     */
-    public int format(float val, byte[] array) throws TruncationException {
-        return format(val, array, 0, array.length);
-    }
-
-    /**
-     * Format a float into an existing byteacter array.
-     * <p>
-     * This is hard to do exactly right... The JDK code does stuff with rational
-     * arithmetic and so forth. We use a much simpler algorithm which may give
-     * an answer off in the lowest order bit. Since this is pure Java, it should
-     * still be consistent from machine to machine.
-     * <p>
-     * Recall that the binary representation of the float is of the form
-     * <tt>d = 0.bbbbbbbb x 2<sup>n</sup></tt> where there are up to 24 binary
-     * digits in the binary fraction (including the assumed leading 1 bit for
-     * normalized numbers). We find a value m such that <tt>10<sup>m</su> d</tt>
-     * is between <tt>2<sup>24</sup></tt> and <tt>>2<sup>32</sup></tt>. This
-     * product will be exactly convertible to an int with no loss of precision.
-     * Getting the decimal representation for that is trivial (see
-     * formatInteger). This is a decimal mantissa and we have an exponent (
-     * <tt>-m</tt>). All we have to do is manipulate the decimal point to where
-     * we want to see it. Errors can arise due to roundoff in the scaling
-     * multiplication, but should be very small.
-     * 
-     * @param val
-     *            Float to be formatted
-     * @param buf
-     *            Buffer in which result is to be stored
-     * @param off
-     *            Offset within buffer
-     * @param len
-     *            Maximum length of field
-     * @return Offset of next character in buffer.
-     */
-    public int format(float val, byte[] buf, int off, int len) throws TruncationException {
-
-        float pos = Math.abs(val);
-
-        // Special cases
-        if (pos == 0.) {
-            return format("0.0", buf, off, len);
-        } else if (Float.isNaN(val)) {
-            return format("NaN", buf, off, len);
-        } else if (Float.isInfinite(val)) {
-            if (val > 0) {
-                return format("Infinity", buf, off, len);
-            } else {
-                return format("-Infinity", buf, off, len);
-            }
-        }
-
-        int power = (int) Math.floor(Math.log(pos) * ilog10);
-        int shift = 8 - power;
-        float scale;
-        float scale2 = 1;
-
-        // Scale the number so that we get a number ~ n x 10^8.
-        if (shift < 30) {
-            scale = (float) tenpow[shift + zeropow];
-        } else {
-            // Can get overflow if the original number is
-            // very small, so we break out the shift
-            // into two multipliers.
-            scale2 = (float) tenpow[30 + zeropow];
-            scale = (float) tenpow[shift - 30 + zeropow];
-        }
-
-        pos = pos * scale * scale2;
-
-        // Parse the float bits.
-
-        int bits = Float.floatToIntBits(pos);
-
-        // The exponent should be a little more than 23
-        int exp = ((bits & 0x7F800000) >> 23) - 127;
-
-        int numb = bits & 0x007FFFFF;
-
-        if (exp > -127) {
-            // Normalized....
-            numb |= 0x00800000;
-        } else {
-            // Denormalized
-            exp += 1;
-        }
-
-        // Multiple this number by the excess of the exponent
-        // over 24. This completes the conversion of float to int
-        // (<<= did not work on Alpha TruUnix)
-
-        numb = numb << exp - 23L;
-
-        // Get a decimal mantissa.
-        boolean oldAlign = align;
-        align = false;
-        int ndig = format(numb, tbuf1, 0, 32);
-        align = oldAlign;
-
-        // Now format the float.
-
-        return combineReal(val, buf, off, len, tbuf1, ndig, shift);
     }
 
     /**
@@ -617,20 +354,20 @@ public final class ByteFormatter {
             }
         }
 
-        int power = (int) (Math.log(pos) * ilog10);
+        int power = (int) (Math.log(pos) * ByteFormatter.ilog10);
         int shift = 17 - power;
         double scale;
         double scale2 = 1;
 
         // Scale the number so that we get a number ~ n x 10^17.
         if (shift < 200) {
-            scale = tenpow[shift + zeropow];
+            scale = ByteFormatter.tenpow[shift + ByteFormatter.zeropow];
         } else {
             // Can get overflow if the original number is
             // very small, so we break out the shift
             // into two multipliers.
-            scale2 = tenpow[200 + zeropow];
-            scale = tenpow[shift - 200 + zeropow];
+            scale2 = ByteFormatter.tenpow[200 + ByteFormatter.zeropow];
+            scale = ByteFormatter.tenpow[shift - 200 + ByteFormatter.zeropow];
         }
 
         pos = pos * scale * scale2;
@@ -657,138 +394,359 @@ public final class ByteFormatter {
         numb = numb << exp - 52;
 
         // Get a decimal mantissa.
-        boolean oldAlign = align;
-        align = false;
-        int ndig = format(numb, tbuf1, 0, 32);
-        align = oldAlign;
+        boolean oldAlign = this.align;
+        this.align = false;
+        int ndig = format(numb, this.tbuf1, 0, 32);
+        this.align = oldAlign;
 
         // Now format the double.
 
-        return combineReal(val, buf, off, len, tbuf1, ndig, shift);
+        return combineReal(val, buf, off, len, this.tbuf1, ndig, shift);
     }
 
     /**
-     * This method formats a double given a decimal mantissa and exponent
-     * information.
+     * Format a float into an array.
      * 
      * @param val
-     *            The original number
-     * @param buf
-     *            Output buffer
-     * @param off
-     *            Offset into buffer
-     * @param len
-     *            Maximum number of characters to use in buffer.
-     * @param mant
-     *            A decimal mantissa for the number.
-     * @param lmant
-     *            The number of characters in the mantissa
-     * @param shift
-     *            The exponent of the power of 10 that we shifted val to get the
-     *            given mantissa.
-     * @return Offset of next available character in buffer.
+     *            The float to be formatted.
+     * @param array
+     *            The array in which to place the result.
+     * @return The number of characters used.
      */
-    int combineReal(double val, byte[] buf, int off, int len, byte[] mant, int lmant, int shift) throws TruncationException {
+    public int format(float val, byte[] array) throws TruncationException {
+        return format(val, array, 0, array.length);
+    }
 
-        // First get the minimum size for the number
+    /**
+     * Format a float into an existing byteacter array.
+     * <p>
+     * This is hard to do exactly right... The JDK code does stuff with rational
+     * arithmetic and so forth. We use a much simpler algorithm which may give
+     * an answer off in the lowest order bit. Since this is pure Java, it should
+     * still be consistent from machine to machine.
+     * <p>
+     * Recall that the binary representation of the float is of the form
+     * <tt>d = 0.bbbbbbbb x 2<sup>n</sup></tt> where there are up to 24 binary
+     * digits in the binary fraction (including the assumed leading 1 bit for
+     * normalized numbers). We find a value m such that <tt>10<sup>m</su> d</tt>
+     * is between <tt>2<sup>24</sup></tt> and <tt>>2<sup>32</sup></tt>. This
+     * product will be exactly convertible to an int with no loss of precision.
+     * Getting the decimal representation for that is trivial (see
+     * formatInteger). This is a decimal mantissa and we have an exponent (
+     * <tt>-m</tt>). All we have to do is manipulate the decimal point to where
+     * we want to see it. Errors can arise due to roundoff in the scaling
+     * multiplication, but should be very small.
+     * 
+     * @param val
+     *            Float to be formatted
+     * @param buf
+     *            Buffer in which result is to be stored
+     * @param off
+     *            Offset within buffer
+     * @param len
+     *            Maximum length of field
+     * @return Offset of next character in buffer.
+     */
+    public int format(float val, byte[] buf, int off, int len) throws TruncationException {
 
-        double pos = Math.abs(val);
-        boolean simple = false;
-        int minSize;
-        int maxSize;
+        float pos = Math.abs(val);
 
-        if (pos >= simpleMin && pos <= simpleMax) {
-            simple = true;
-        }
-
-        int exp = lmant - shift - 1;
-        int lexp = 0;
-
-        if (!simple) {
-
-            boolean oldAlign = align;
-            align = false;
-            lexp = format(exp, tbuf2, 0, 32);
-            align = oldAlign;
-
-            minSize = lexp + 2; // e.g., 2e-12
-            maxSize = lexp + lmant + 2; // add in "." and e
-        } else {
-            if (exp >= 0) {
-                minSize = exp + 1; // e.g. 32
-
-                // Special case. E.g., 99.9 has
-                // minumum size of 3.
-                int i;
-                for (i = 0; i < lmant && i <= exp; i += 1) {
-                    if (mant[i] != (byte) '9') {
-                        break;
-                    }
-                }
-                if (i > exp && i < lmant && mant[i] >= (byte) '5') {
-                    minSize += 1;
-                }
-
-                maxSize = lmant + 1; // Add in "."
-                if (maxSize <= minSize) { // Very large numbers.
-                    maxSize = minSize + 1;
-                }
+        // Special cases
+        if (pos == 0.) {
+            return format("0.0", buf, off, len);
+        } else if (Float.isNaN(val)) {
+            return format("NaN", buf, off, len);
+        } else if (Float.isInfinite(val)) {
+            if (val > 0) {
+                return format("Infinity", buf, off, len);
             } else {
-                minSize = 2;
-                maxSize = 1 + Math.abs(exp) + lmant;
+                return format("-Infinity", buf, off, len);
             }
         }
-        if (val < 0) {
-            minSize += 1;
-            maxSize += 1;
+
+        int power = (int) Math.floor(Math.log(pos) * ByteFormatter.ilog10);
+        int shift = 8 - power;
+        float scale;
+        float scale2 = 1;
+
+        // Scale the number so that we get a number ~ n x 10^8.
+        if (shift < 30) {
+            scale = (float) ByteFormatter.tenpow[shift + ByteFormatter.zeropow];
+        } else {
+            // Can get overflow if the original number is
+            // very small, so we break out the shift
+            // into two multipliers.
+            scale2 = (float) ByteFormatter.tenpow[30 + ByteFormatter.zeropow];
+            scale = (float) ByteFormatter.tenpow[shift - 30 + ByteFormatter.zeropow];
         }
 
-        // Can the number fit?
-        if (truncateOnOverflow && minSize > len || minSize > buf.length - off) {
+        pos = pos * scale * scale2;
+
+        // Parse the float bits.
+
+        int bits = Float.floatToIntBits(pos);
+
+        // The exponent should be a little more than 23
+        int exp = ((bits & 0x7F800000) >> 23) - 127;
+
+        int numb = bits & 0x007FFFFF;
+
+        if (exp > -127) {
+            // Normalized....
+            numb |= 0x00800000;
+        } else {
+            // Denormalized
+            exp += 1;
+        }
+
+        // Multiple this number by the excess of the exponent
+        // over 24. This completes the conversion of float to int
+        // (<<= did not work on Alpha TruUnix)
+
+        numb = numb << exp - 23L;
+
+        // Get a decimal mantissa.
+        boolean oldAlign = this.align;
+        this.align = false;
+        int ndig = format(numb, this.tbuf1, 0, 32);
+        this.align = oldAlign;
+
+        // Now format the float.
+
+        return combineReal(val, buf, off, len, this.tbuf1, ndig, shift);
+    }
+
+    /**
+     * Format an int into an array.
+     * 
+     * @param val
+     *            The int to be formatted.
+     * @param array
+     *            The array in which to place the result.
+     * @return The number of characters used.
+     */
+    public int format(int val, byte[] array) throws TruncationException {
+        return format(val, array, 0, array.length);
+    }
+
+    /**
+     * Format an int into an existing array.
+     * 
+     * @param val
+     *            Integer to be formatted
+     * @param buf
+     *            Buffer in which result is to be stored
+     * @param off
+     *            Offset within buffer
+     * @param len
+     *            Maximum length of integer
+     * @return offset of next unused character in input buffer.
+     */
+    public int format(int val, byte[] buf, int off, int len) throws TruncationException {
+
+        // Special case
+        if (val == Integer.MIN_VALUE) {
+            if (len > 10 || !this.truncateOnOverflow && buf.length - off > 10) {
+                return format("-2147483648", buf, off, len);
+            } else {
+                truncationFiller(buf, off, len);
+                return off + len;
+            }
+        }
+
+        int pos = Math.abs(val);
+
+        // First count the number of characters in the result.
+        // Otherwise we need to use an intermediary buffer.
+
+        int ndig = 1;
+        int dmax = 10;
+
+        while (ndig < 10 && pos >= dmax) {
+            ndig += 1;
+            dmax *= 10;
+        }
+
+        if (val < 0) {
+            ndig += 1;
+        }
+
+        // Truncate if necessary.
+        if (this.truncateOnOverflow && ndig > len || ndig > buf.length - off) {
             truncationFiller(buf, off, len);
             return off + len;
         }
 
-        // Do we need to align it?
-        if (maxSize < len && align) {
-            int nal = len - maxSize;
-            off = alignFill(buf, off, nal);
-            len -= nal;
+        // Right justify if requested.
+        if (this.align) {
+            off = alignFill(buf, off, len - ndig);
         }
 
-        // Now begin filling in the buffer.
+        // Now insert the actual characters we want -- backwards
+        // We use a do{} while() to handle the case of 0.
+
+        off += ndig;
+
+        int xoff = off - 1;
+        do {
+            buf[xoff] = ByteFormatter.digits[pos % 10];
+            xoff -= 1;
+            pos /= 10;
+        } while (pos > 0);
+
         if (val < 0) {
-            buf[off] = (byte) '-';
-            off += 1;
-            len -= 1;
+            buf[xoff] = (byte) '-';
         }
 
-        if (simple) {
-            return Math.abs(mantissa(mant, lmant, exp, simple, buf, off, len));
-        } else {
-            off = mantissa(mant, lmant, 0, simple, buf, off, len - lexp - 1);
-            if (off < 0) {
-                off = -off;
-                len -= off;
-                // Handle the expanded exponent by filling
-                if (exp == 9 || exp == 99) {
-                    // Cannot fit...
-                    if (off + len == minSize) {
-                        truncationFiller(buf, off, len);
-                        return off + len;
-                    } else {
-                        // Steal a character from the mantissa.
-                        off -= 1;
-                    }
-                }
-                exp += 1;
-                lexp = format(exp, tbuf2, 0, 32);
+        return off;
+    }
+
+    /**
+     * Format a long into an array.
+     * 
+     * @param val
+     *            The long to be formatted.
+     * @param array
+     *            The array in which to place the result.
+     * @return The number of characters used.
+     */
+    public int format(long val, byte[] array) throws TruncationException {
+        return format(val, array, 0, array.length);
+    }
+
+    /**
+     * Format a long into an existing array.
+     * 
+     * @param val
+     *            Long to be formatted
+     * @param buf
+     *            Buffer in which result is to be stored
+     * @param off
+     *            Offset within buffer
+     * @param len
+     *            Maximum length of integer
+     * @return offset of next unused character in input buffer.
+     */
+    public int format(long val, byte[] buf, int off, int len) throws TruncationException {
+
+        // Special case
+        if (val == Long.MIN_VALUE) {
+            if (len > 19 || !this.truncateOnOverflow && buf.length - off > 19) {
+                return format("-9223372036854775808", buf, off, len);
+            } else {
+                truncationFiller(buf, off, len);
+                return off + len;
             }
-            buf[off] = (byte) 'E';
-            off += 1;
-            System.arraycopy(tbuf2, 0, buf, off, lexp);
-            return off + lexp;
         }
+
+        long pos = Math.abs(val);
+
+        // First count the number of characters in the result.
+        // Otherwise we need to use an intermediary buffer.
+
+        int ndig = 1;
+        long dmax = 10;
+
+        // Might be faster to try to do this partially in ints
+        while (ndig < 19 && pos >= dmax) {
+
+            ndig += 1;
+            dmax *= 10;
+        }
+
+        if (val < 0) {
+            ndig += 1;
+        }
+
+        // Truncate if necessary.
+
+        if (this.truncateOnOverflow && ndig > len || ndig > buf.length - off) {
+            truncationFiller(buf, off, len);
+            return off + len;
+        }
+
+        // Right justify if requested.
+        if (this.align) {
+            off = alignFill(buf, off, len - ndig);
+        }
+
+        // Now insert the actual characters we want -- backwards.
+
+        off += ndig;
+        int xoff = off - 1;
+
+        buf[xoff] = (byte) '0';
+        boolean last = pos == 0;
+
+        while (!last) {
+
+            // Work on ints rather than longs.
+
+            int giga = (int) (pos % 1000000000L);
+            pos /= 1000000000L;
+
+            last = pos == 0;
+
+            for (int i = 0; i < 9; i += 1) {
+
+                buf[xoff] = ByteFormatter.digits[giga % 10];
+                xoff -= 1;
+                giga /= 10;
+                if (last && giga == 0) {
+                    break;
+                }
+            }
+        }
+
+        if (val < 0) {
+            buf[xoff] = (byte) '-';
+        }
+
+        return off;
+    }
+
+    /** Insert a string at the beginning of an array */
+    public int format(String val, byte[] array) {
+        return format(val, array, 0, array.length);
+    }
+
+    /**
+     * Insert a String into an existing character array. If the String is longer
+     * than len, then only the the initial len characters will be inserted.
+     * 
+     * @param val
+     *            The string to be inserted. A null string will insert len
+     *            spaces.
+     * @param array
+     *            The buffer in which to insert the string.
+     * @param off
+     *            The starting offset to insert the string.
+     * @param len
+     *            The maximum number of characters to insert.
+     * @return Offset of next available character in buffer.
+     */
+    public int format(String val, byte[] array, int off, int len) {
+
+        if (val == null) {
+            for (int i = 0; i < len; i += 1) {
+                array[off + i] = (byte) ' ';
+            }
+            return off + len;
+        }
+
+        int slen = val.length();
+
+        if (this.truncateOnOverflow && slen > len || slen > array.length - off) {
+            val = val.substring(0, len);
+            slen = len;
+        }
+
+        if (this.align && len > slen) {
+            off = alignFill(array, off, len - slen);
+        }
+
+        System.arraycopy(AsciiFuncs.getBytes(val), 0, array, off, slen);
+        return off + slen;
     }
 
     /**
@@ -921,27 +879,69 @@ public final class ByteFormatter {
     }
 
     /**
+     * Set the alignment flag.
+     * 
+     * @param val
+     *            Should numbers be right aligned?
+     */
+    public void setAlign(boolean val) {
+        this.align = val;
+    }
+
+    /**
+     * Set the range of real numbers that will be formatted in non-scientific
+     * notation, i.e., .00001 rather than 1.0e-5. The sign of the number is
+     * ignored.
+     * 
+     * @param min
+     *            The minimum value for non-scientific notation.
+     * @param max
+     *            The maximum value for non-scientific notation.
+     */
+    public void setSimpleRange(double min, double max) {
+        this.simpleMin = min;
+        this.simpleMax = max;
+    }
+
+    /**
+     * Set the truncation behavior.
+     * 
+     * @param val
+     *            If set to true (the default) then do not exceed the requested
+     *            length. If a number cannot be sensibly formatted, the
+     *            truncation fill character may be inserted.
+     */
+    public void setTruncateOnOverflow(boolean val) {
+        this.truncateOnOverflow = val;
+    }
+
+    /**
+     * Set the truncation fill character.
+     * 
+     * @param val
+     *            The character to be used in subsequent truncations.
+     */
+    public void setTruncationFill(char val) {
+        this.truncationFill = (byte) val;
+    }
+
+    /** Should truncations cause a truncation overflow? */
+    public void setTruncationThrow(boolean throwException) {
+        this.truncationThrow = throwException;
+    }
+
+    /**
      * Fill the buffer with truncation characters. After filling the buffer, a
      * TruncationException will be thrown if the appropriate flag is set.
      */
     void truncationFiller(byte[] buffer, int offset, int length) throws TruncationException {
 
         for (int i = offset; i < offset + length; i += 1) {
-            buffer[i] = truncationFill;
+            buffer[i] = this.truncationFill;
         }
-        if (truncationThrow) {
+        if (this.truncationThrow) {
             throw new TruncationException();
         }
         return;
-    }
-
-    /**
-     * Fill the buffer with blanks to align a field.
-     */
-    public int alignFill(byte[] buffer, int offset, int len) {
-        for (int i = offset; i < offset + len; i += 1) {
-            buffer[i] = (byte) ' ';
-        }
-        return offset + len;
     }
 }

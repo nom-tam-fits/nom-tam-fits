@@ -68,8 +68,8 @@ public class UndefinedData extends Data {
         }
         size *= Math.abs(h.getIntValue("BITPIX") / 8);
 
-        data = new byte[size];
-        byteSize = size;
+        this.data = new byte[size];
+        this.byteSize = size;
     }
 
     /**
@@ -77,8 +77,8 @@ public class UndefinedData extends Data {
      */
     public UndefinedData(Object x) {
 
-        byteSize = ArrayFuncs.computeLSize(x);
-        data = new byte[(int) byteSize];
+        this.byteSize = ArrayFuncs.computeLSize(x);
+        this.data = new byte[(int) this.byteSize];
     }
 
     /**
@@ -94,7 +94,7 @@ public class UndefinedData extends Data {
             head.setXtension("UNKNOWN");
             head.setBitpix(8);
             head.setNaxes(1);
-            head.addValue("NAXIS1", byteSize, "ntf::undefineddata:naxis1:1");
+            head.addValue("NAXIS1", this.byteSize, "ntf::undefineddata:naxis1:1");
             head.addValue("PCOUNT", 0, "ntf::undefineddata:pcount:1");
             head.addValue("GCOUNT", 1, "ntf::undefineddata:gcount:1");
             head.addValue("EXTEND", true, "ntf::undefineddata:extend:1"); // Just
@@ -106,20 +106,48 @@ public class UndefinedData extends Data {
 
     }
 
+    /**
+     * Return the actual data. Note that this may return a null when the data is
+     * not readable. It might be better to throw a FitsException, but this is a
+     * very commonly called method and we prefered not to change how users must
+     * invoke it.
+     */
+    @Override
+    public Object getData() {
+
+        if (this.data == null) {
+
+            try {
+                FitsUtil.reposition(this.input, this.fileOffset);
+                this.input.read(this.data);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        return this.data;
+    }
+
+    /** Get the size in bytes of the data */
+    @Override
+    protected long getTrueSize() {
+        return this.byteSize;
+    }
+
     @Override
     public void read(ArrayDataInput i) throws FitsException {
         setFileOffset(i);
 
         if (i instanceof RandomAccess) {
             try {
-                i.skipBytes(byteSize);
+                i.skipBytes(this.byteSize);
             } catch (IOException e) {
                 throw new FitsException("Unable to skip over data:" + e);
             }
 
         } else {
             try {
-                i.readFully(data);
+                i.readFully(this.data);
             } catch (IOException e) {
                 throw new FitsException("Unable to read unknown data:" + e);
             }
@@ -139,49 +167,21 @@ public class UndefinedData extends Data {
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
 
-        if (data == null) {
+        if (this.data == null) {
             getData();
         }
 
-        if (data == null) {
+        if (this.data == null) {
             throw new FitsException("Null unknown data");
         }
 
         try {
-            o.write(data);
+            o.write(this.data);
         } catch (IOException e) {
             throw new FitsException("IO Error on unknown data write" + e);
         }
 
         FitsUtil.pad(o, getTrueSize());
 
-    }
-
-    /** Get the size in bytes of the data */
-    @Override
-    protected long getTrueSize() {
-        return byteSize;
-    }
-
-    /**
-     * Return the actual data. Note that this may return a null when the data is
-     * not readable. It might be better to throw a FitsException, but this is a
-     * very commonly called method and we prefered not to change how users must
-     * invoke it.
-     */
-    @Override
-    public Object getData() {
-
-        if (data == null) {
-
-            try {
-                FitsUtil.reposition(input, fileOffset);
-                input.read(data);
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
-        return data;
     }
 }

@@ -80,358 +80,29 @@ public class ByteParser {
      */
     public ByteParser(byte[] input) {
         this.input = input;
-        offset = 0;
-    }
-
-    /** Set the buffer for the parser */
-    public void setBuffer(byte[] buf) {
-        input = buf;
-        offset = 0;
-    }
-
-    /** Get the buffer being used by the parser */
-    public byte[] getBuffer() {
-        return input;
+        this.offset = 0;
     }
 
     /**
-     * Set the offset into the array.
-     * 
-     * @param offset
-     *            The desired offset from the beginning of the array.
+     * Find the sign for a number . This routine looks for a sign (+/-) at the
+     * current location and return +1/-1 if one is found, or +1 if not. The
+     * foundSign boolean is set if a sign is found and offset is incremented.
      */
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
+    private int checkSign() {
 
-    /**
-     * Do we require a field to completely fill up the specified length (with
-     * optional leading and trailing white space.
-     * 
-     * @param flag
-     *            Is filling required?
-     */
-    public void setFillFields(boolean flag) {
-        fillFields = flag;
-    }
+        this.foundSign = false;
 
-    /**
-     * Get the current offset
-     * 
-     * @return The current offset within the buffer.
-     */
-    public int getOffset() {
-        return offset;
-    }
-
-    /**
-     * Get the number of characters used to parse the previous number (or the
-     * length of the previous String returned).
-     */
-    public int getNumberLength() {
-        return numberLength;
-    }
-
-    /**
-     * Read in the buffer until a double is read. This will read the entire
-     * buffer if fillFields is set.
-     * 
-     * @return The value found.
-     */
-    public double getDouble() throws FormatException {
-        return getDouble(input.length - offset);
-    }
-
-    /**
-     * Look for a double in the buffer. Leading spaces are ignored.
-     * 
-     * @param length
-     *            The maximum number of characters used to parse this number. If
-     *            fillFields is specified then exactly only whitespace may
-     *            follow a valid double value.
-     */
-    public double getDouble(int length) throws FormatException {
-
-        int startOffset = offset;
-
-        boolean error = true;
-
-        double number = 0;
-        // Skip initial blanks.
-        length -= skipWhite(length);
-
-        if (length == 0) {
-            numberLength = offset - startOffset;
-            return 0;
+        if (this.input[this.offset] == '+') {
+            this.foundSign = true;
+            this.offset += 1;
+            return 1;
+        } else if (this.input[this.offset] == '-') {
+            this.foundSign = true;
+            this.offset += 1;
+            return -1;
         }
 
-        double mantissaSign = checkSign();
-        if (foundSign) {
-            length -= 1;
-        }
-
-        // Look for the special strings NaN, Inf,
-        if (length >= 3 && (input[offset] == 'n' || input[offset] == 'N') && (input[offset + 1] == 'a' || input[offset + 1] == 'A')
-                && (input[offset + 2] == 'n' || input[offset + 2] == 'N')) {
-
-            number = Double.NaN;
-            length -= 3;
-            offset += 3;
-
-            // Look for the longer string first then try the shorter.
-        } else if (length >= 8 && (input[offset] == 'i' || input[offset] == 'I') && (input[offset + 1] == 'n' || input[offset + 1] == 'N')
-                && (input[offset + 2] == 'f' || input[offset + 2] == 'F') && (input[offset + 3] == 'i' || input[offset + 3] == 'I')
-                && (input[offset + 4] == 'n' || input[offset + 4] == 'N') && (input[offset + 5] == 'i' || input[offset + 5] == 'I')
-                && (input[offset + 6] == 't' || input[offset + 6] == 'T') && (input[offset + 7] == 'y' || input[offset + 7] == 'Y')) {
-            number = Double.POSITIVE_INFINITY;
-            length -= 8;
-            offset += 8;
-
-        } else if (length >= 3 && (input[offset] == 'i' || input[offset] == 'I') && (input[offset + 1] == 'n' || input[offset + 1] == 'N')
-                && (input[offset + 2] == 'f' || input[offset + 2] == 'F')) {
-            number = Double.POSITIVE_INFINITY;
-            length -= 3;
-            offset += 3;
-
-        } else {
-
-            number = getBareInteger(length); // This will update offset
-            length -= numberLength; // Set by getBareInteger
-
-            if (numberLength > 0) {
-                error = false;
-            }
-
-            // Check for fractional values after decimal
-            if (length > 0 && input[offset] == '.') {
-
-                offset += 1;
-                length -= 1;
-
-                double numerator = getBareInteger(length);
-                if (numerator > 0) {
-                    number += numerator / Math.pow(10., numberLength);
-                }
-                length -= numberLength;
-                if (numberLength > 0) {
-                    error = false;
-                }
-            }
-
-            if (error) {
-                offset = startOffset;
-                numberLength = 0;
-                throw new FormatException("Invalid real field");
-            }
-
-            // Look for an exponent
-            if (length > 0) {
-
-                // Our Fortran heritage means that we allow 'D' for the exponent
-                // indicator.
-                if (input[offset] == 'e' || input[offset] == 'E' || input[offset] == 'd' || input[offset] == 'D') {
-
-                    offset += 1;
-                    length -= 1;
-                    if (length > 0) {
-                        int sign = checkSign();
-                        if (foundSign) {
-                            length -= 1;
-                        }
-
-                        int exponent = (int) getBareInteger(length);
-
-                        // For very small numbers we try to miminize
-                        // effects of denormalization.
-                        if (exponent * sign > -300) {
-                            number *= Math.pow(10., exponent * sign);
-                        } else {
-                            number = 1.e-300 * (number * Math.pow(10., exponent * sign + 300));
-                        }
-                        length -= numberLength;
-                    }
-                }
-            }
-        }
-
-        if (fillFields && length > 0) {
-
-            if (isWhite(length)) {
-                offset += length;
-            } else {
-                numberLength = 0;
-                offset = startOffset;
-                throw new FormatException("Non-blanks following real.");
-            }
-        }
-
-        numberLength = offset - startOffset;
-        return mantissaSign * number;
-    }
-
-    /**
-     * Get a floating point value from the buffer. (see getDouble(int())
-     */
-    public float getFloat() throws FormatException {
-        return (float) getDouble(input.length - offset);
-    }
-
-    /** Get a floating point value in a region of the buffer */
-    public float getFloat(int length) throws FormatException {
-        return (float) getDouble(length);
-    }
-
-    /** Convert a region of the buffer to an integer */
-    public int getInt(int length) throws FormatException {
-        int startOffset = offset;
-
-        length -= skipWhite(length);
-        if (length == 0) {
-            numberLength = offset - startOffset;
-            return 0;
-        }
-
-        int number = 0;
-        boolean error = true;
-
-        int sign = checkSign();
-        if (foundSign) {
-            length -= 1;
-        }
-
-        while (length > 0 && input[offset] >= '0' && input[offset] <= '9') {
-            number = number * 10 + input[offset] - '0';
-            offset += 1;
-            length -= 1;
-            error = false;
-        }
-
-        if (error) {
-            numberLength = 0;
-            offset = startOffset;
-            throw new FormatException("Invalid Integer");
-        }
-
-        if (length > 0 && fillFields) {
-            if (isWhite(length)) {
-                offset += length;
-            } else {
-                numberLength = 0;
-                offset = startOffset;
-                throw new FormatException("Non-white following integer");
-            }
-        }
-
-        numberLength = offset - startOffset;
-        return sign * number;
-    }
-
-    /** Look for an integer at the beginning of the buffer */
-    public int getInt() throws FormatException {
-        return getInt(input.length - offset);
-    }
-
-    /** Look for a long in a specified region of the buffer */
-    public long getLong(int length) throws FormatException {
-
-        int startOffset = offset;
-
-        // Skip white space.
-        length -= skipWhite(length);
-        if (length == 0) {
-            numberLength = offset - startOffset;
-            return 0;
-        }
-
-        long number = 0;
-        boolean error = true;
-
-        long sign = checkSign();
-        if (foundSign) {
-            length -= 1;
-        }
-
-        while (length > 0 && input[offset] >= '0' && input[offset] <= '9') {
-            number = number * 10 + input[offset] - '0';
-            error = false;
-            offset += 1;
-            length -= 1;
-        }
-
-        if (error) {
-            numberLength = 0;
-            offset = startOffset;
-            throw new FormatException("Invalid long number");
-        }
-
-        if (length > 0 && fillFields) {
-            if (isWhite(length)) {
-                offset += length;
-            } else {
-                offset = startOffset;
-                numberLength = 0;
-                throw new FormatException("Non-white following long");
-            }
-        }
-        numberLength = offset - startOffset;
-        return sign * number;
-    }
-
-    /**
-     * Get a string
-     * 
-     * @param length
-     *            The length of the string.
-     */
-    public String getString(int length) {
-
-        String s = AsciiFuncs.asciiString(input, offset, length);
-        offset += length;
-        numberLength = length;
-        return s;
-    }
-
-    /** Get a boolean value from the beginning of the buffer */
-    public boolean getBoolean() throws FormatException {
-        return getBoolean(input.length - offset);
-    }
-
-    /** Get a boolean value from a specified region of the buffer */
-    public boolean getBoolean(int length) throws FormatException {
-
-        int startOffset = offset;
-        length -= skipWhite(length);
-        if (length == 0) {
-            throw new FormatException("Blank boolean field");
-        }
-
-        boolean value = false;
-        if (input[offset] == 'T' || input[offset] == 't') {
-            value = true;
-        } else if (input[offset] != 'F' && input[offset] != 'f') {
-            numberLength = 0;
-            offset = startOffset;
-            throw new FormatException("Invalid boolean value");
-        }
-        offset += 1;
-        length -= 1;
-
-        if (fillFields && length > 0) {
-            if (isWhite(length)) {
-                offset += length;
-            } else {
-                numberLength = 0;
-                offset = startOffset;
-                throw new FormatException("Non-white following boolean");
-            }
-        }
-        numberLength = offset - startOffset;
-        return value;
-    }
-
-    /** Skip bytes in the buffer */
-    public void skip(int nBytes) {
-        offset += nBytes;
+        return 1;
     }
 
     /**
@@ -446,18 +117,383 @@ public class ByteParser {
      */
     private double getBareInteger(int length) {
 
-        int startOffset = offset;
+        int startOffset = this.offset;
         double number = 0;
 
-        while (length > 0 && input[offset] >= '0' && input[offset] <= '9') {
+        while (length > 0 && this.input[this.offset] >= '0' && this.input[this.offset] <= '9') {
 
             number *= 10;
-            number += input[offset] - '0';
-            offset += 1;
+            number += this.input[this.offset] - '0';
+            this.offset += 1;
             length -= 1;
         }
-        numberLength = offset - startOffset;
+        this.numberLength = this.offset - startOffset;
         return number;
+    }
+
+    /** Get a boolean value from the beginning of the buffer */
+    public boolean getBoolean() throws FormatException {
+        return getBoolean(this.input.length - this.offset);
+    }
+
+    /** Get a boolean value from a specified region of the buffer */
+    public boolean getBoolean(int length) throws FormatException {
+
+        int startOffset = this.offset;
+        length -= skipWhite(length);
+        if (length == 0) {
+            throw new FormatException("Blank boolean field");
+        }
+
+        boolean value = false;
+        if (this.input[this.offset] == 'T' || this.input[this.offset] == 't') {
+            value = true;
+        } else if (this.input[this.offset] != 'F' && this.input[this.offset] != 'f') {
+            this.numberLength = 0;
+            this.offset = startOffset;
+            throw new FormatException("Invalid boolean value");
+        }
+        this.offset += 1;
+        length -= 1;
+
+        if (this.fillFields && length > 0) {
+            if (isWhite(length)) {
+                this.offset += length;
+            } else {
+                this.numberLength = 0;
+                this.offset = startOffset;
+                throw new FormatException("Non-white following boolean");
+            }
+        }
+        this.numberLength = this.offset - startOffset;
+        return value;
+    }
+
+    /** Get the buffer being used by the parser */
+    public byte[] getBuffer() {
+        return this.input;
+    }
+
+    /**
+     * Read in the buffer until a double is read. This will read the entire
+     * buffer if fillFields is set.
+     * 
+     * @return The value found.
+     */
+    public double getDouble() throws FormatException {
+        return getDouble(this.input.length - this.offset);
+    }
+
+    /**
+     * Look for a double in the buffer. Leading spaces are ignored.
+     * 
+     * @param length
+     *            The maximum number of characters used to parse this number. If
+     *            fillFields is specified then exactly only whitespace may
+     *            follow a valid double value.
+     */
+    public double getDouble(int length) throws FormatException {
+
+        int startOffset = this.offset;
+
+        boolean error = true;
+
+        double number = 0;
+        // Skip initial blanks.
+        length -= skipWhite(length);
+
+        if (length == 0) {
+            this.numberLength = this.offset - startOffset;
+            return 0;
+        }
+
+        double mantissaSign = checkSign();
+        if (this.foundSign) {
+            length -= 1;
+        }
+
+        // Look for the special strings NaN, Inf,
+        if (length >= 3 && (this.input[this.offset] == 'n' || this.input[this.offset] == 'N') && (this.input[this.offset + 1] == 'a' || this.input[this.offset + 1] == 'A')
+                && (this.input[this.offset + 2] == 'n' || this.input[this.offset + 2] == 'N')) {
+
+            number = Double.NaN;
+            length -= 3;
+            this.offset += 3;
+
+            // Look for the longer string first then try the shorter.
+        } else if (length >= 8 && (this.input[this.offset] == 'i' || this.input[this.offset] == 'I')
+                && (this.input[this.offset + 1] == 'n' || this.input[this.offset + 1] == 'N') && (this.input[this.offset + 2] == 'f' || this.input[this.offset + 2] == 'F')
+                && (this.input[this.offset + 3] == 'i' || this.input[this.offset + 3] == 'I') && (this.input[this.offset + 4] == 'n' || this.input[this.offset + 4] == 'N')
+                && (this.input[this.offset + 5] == 'i' || this.input[this.offset + 5] == 'I') && (this.input[this.offset + 6] == 't' || this.input[this.offset + 6] == 'T')
+                && (this.input[this.offset + 7] == 'y' || this.input[this.offset + 7] == 'Y')) {
+            number = Double.POSITIVE_INFINITY;
+            length -= 8;
+            this.offset += 8;
+
+        } else if (length >= 3 && (this.input[this.offset] == 'i' || this.input[this.offset] == 'I')
+                && (this.input[this.offset + 1] == 'n' || this.input[this.offset + 1] == 'N') && (this.input[this.offset + 2] == 'f' || this.input[this.offset + 2] == 'F')) {
+            number = Double.POSITIVE_INFINITY;
+            length -= 3;
+            this.offset += 3;
+
+        } else {
+
+            number = getBareInteger(length); // This will update offset
+            length -= this.numberLength; // Set by getBareInteger
+
+            if (this.numberLength > 0) {
+                error = false;
+            }
+
+            // Check for fractional values after decimal
+            if (length > 0 && this.input[this.offset] == '.') {
+
+                this.offset += 1;
+                length -= 1;
+
+                double numerator = getBareInteger(length);
+                if (numerator > 0) {
+                    number += numerator / Math.pow(10., this.numberLength);
+                }
+                length -= this.numberLength;
+                if (this.numberLength > 0) {
+                    error = false;
+                }
+            }
+
+            if (error) {
+                this.offset = startOffset;
+                this.numberLength = 0;
+                throw new FormatException("Invalid real field");
+            }
+
+            // Look for an exponent
+            if (length > 0) {
+
+                // Our Fortran heritage means that we allow 'D' for the exponent
+                // indicator.
+                if (this.input[this.offset] == 'e' || this.input[this.offset] == 'E' || this.input[this.offset] == 'd' || this.input[this.offset] == 'D') {
+
+                    this.offset += 1;
+                    length -= 1;
+                    if (length > 0) {
+                        int sign = checkSign();
+                        if (this.foundSign) {
+                            length -= 1;
+                        }
+
+                        int exponent = (int) getBareInteger(length);
+
+                        // For very small numbers we try to miminize
+                        // effects of denormalization.
+                        if (exponent * sign > -300) {
+                            number *= Math.pow(10., exponent * sign);
+                        } else {
+                            number = 1.e-300 * (number * Math.pow(10., exponent * sign + 300));
+                        }
+                        length -= this.numberLength;
+                    }
+                }
+            }
+        }
+
+        if (this.fillFields && length > 0) {
+
+            if (isWhite(length)) {
+                this.offset += length;
+            } else {
+                this.numberLength = 0;
+                this.offset = startOffset;
+                throw new FormatException("Non-blanks following real.");
+            }
+        }
+
+        this.numberLength = this.offset - startOffset;
+        return mantissaSign * number;
+    }
+
+    /**
+     * Get a floating point value from the buffer. (see getDouble(int())
+     */
+    public float getFloat() throws FormatException {
+        return (float) getDouble(this.input.length - this.offset);
+    }
+
+    /** Get a floating point value in a region of the buffer */
+    public float getFloat(int length) throws FormatException {
+        return (float) getDouble(length);
+    }
+
+    /** Look for an integer at the beginning of the buffer */
+    public int getInt() throws FormatException {
+        return getInt(this.input.length - this.offset);
+    }
+
+    /** Convert a region of the buffer to an integer */
+    public int getInt(int length) throws FormatException {
+        int startOffset = this.offset;
+
+        length -= skipWhite(length);
+        if (length == 0) {
+            this.numberLength = this.offset - startOffset;
+            return 0;
+        }
+
+        int number = 0;
+        boolean error = true;
+
+        int sign = checkSign();
+        if (this.foundSign) {
+            length -= 1;
+        }
+
+        while (length > 0 && this.input[this.offset] >= '0' && this.input[this.offset] <= '9') {
+            number = number * 10 + this.input[this.offset] - '0';
+            this.offset += 1;
+            length -= 1;
+            error = false;
+        }
+
+        if (error) {
+            this.numberLength = 0;
+            this.offset = startOffset;
+            throw new FormatException("Invalid Integer");
+        }
+
+        if (length > 0 && this.fillFields) {
+            if (isWhite(length)) {
+                this.offset += length;
+            } else {
+                this.numberLength = 0;
+                this.offset = startOffset;
+                throw new FormatException("Non-white following integer");
+            }
+        }
+
+        this.numberLength = this.offset - startOffset;
+        return sign * number;
+    }
+
+    /** Look for a long in a specified region of the buffer */
+    public long getLong(int length) throws FormatException {
+
+        int startOffset = this.offset;
+
+        // Skip white space.
+        length -= skipWhite(length);
+        if (length == 0) {
+            this.numberLength = this.offset - startOffset;
+            return 0;
+        }
+
+        long number = 0;
+        boolean error = true;
+
+        long sign = checkSign();
+        if (this.foundSign) {
+            length -= 1;
+        }
+
+        while (length > 0 && this.input[this.offset] >= '0' && this.input[this.offset] <= '9') {
+            number = number * 10 + this.input[this.offset] - '0';
+            error = false;
+            this.offset += 1;
+            length -= 1;
+        }
+
+        if (error) {
+            this.numberLength = 0;
+            this.offset = startOffset;
+            throw new FormatException("Invalid long number");
+        }
+
+        if (length > 0 && this.fillFields) {
+            if (isWhite(length)) {
+                this.offset += length;
+            } else {
+                this.offset = startOffset;
+                this.numberLength = 0;
+                throw new FormatException("Non-white following long");
+            }
+        }
+        this.numberLength = this.offset - startOffset;
+        return sign * number;
+    }
+
+    /**
+     * Get the number of characters used to parse the previous number (or the
+     * length of the previous String returned).
+     */
+    public int getNumberLength() {
+        return this.numberLength;
+    }
+
+    /**
+     * Get the current offset
+     * 
+     * @return The current offset within the buffer.
+     */
+    public int getOffset() {
+        return this.offset;
+    }
+
+    /**
+     * Get a string
+     * 
+     * @param length
+     *            The length of the string.
+     */
+    public String getString(int length) {
+
+        String s = AsciiFuncs.asciiString(this.input, this.offset, length);
+        this.offset += length;
+        this.numberLength = length;
+        return s;
+    }
+
+    /**
+     * Is a region blank?
+     * 
+     * @param length
+     *            The length of the region to be tested
+     */
+    private boolean isWhite(int length) {
+        int oldOffset = this.offset;
+        boolean value = skipWhite(length) == length;
+        this.offset = oldOffset;
+        return value;
+    }
+
+    /** Set the buffer for the parser */
+    public void setBuffer(byte[] buf) {
+        this.input = buf;
+        this.offset = 0;
+    }
+
+    /**
+     * Do we require a field to completely fill up the specified length (with
+     * optional leading and trailing white space.
+     * 
+     * @param flag
+     *            Is filling required?
+     */
+    public void setFillFields(boolean flag) {
+        this.fillFields = flag;
+    }
+
+    /**
+     * Set the offset into the array.
+     * 
+     * @param offset
+     *            The desired offset from the beginning of the array.
+     */
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    /** Skip bytes in the buffer */
+    public void skip(int nBytes) {
+        this.offset += nBytes;
     }
 
     /**
@@ -472,48 +508,13 @@ public class ByteParser {
 
         int i;
         for (i = 0; i < length; i += 1) {
-            if (input[offset + i] != ' ' && input[offset + i] != '\t' && input[offset + i] != '\n' && input[offset + i] != '\r') {
+            if (this.input[this.offset + i] != ' ' && this.input[this.offset + i] != '\t' && this.input[this.offset + i] != '\n' && this.input[this.offset + i] != '\r') {
                 break;
             }
         }
 
-        offset += i;
+        this.offset += i;
         return i;
 
-    }
-
-    /**
-     * Find the sign for a number . This routine looks for a sign (+/-) at the
-     * current location and return +1/-1 if one is found, or +1 if not. The
-     * foundSign boolean is set if a sign is found and offset is incremented.
-     */
-    private int checkSign() {
-
-        foundSign = false;
-
-        if (input[offset] == '+') {
-            foundSign = true;
-            offset += 1;
-            return 1;
-        } else if (input[offset] == '-') {
-            foundSign = true;
-            offset += 1;
-            return -1;
-        }
-
-        return 1;
-    }
-
-    /**
-     * Is a region blank?
-     * 
-     * @param length
-     *            The length of the region to be tested
-     */
-    private boolean isWhite(int length) {
-        int oldOffset = offset;
-        boolean value = skipWhite(length) == length;
-        offset = oldOffset;
-        return value;
     }
 }

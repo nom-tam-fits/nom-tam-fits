@@ -47,6 +47,18 @@ package nom.tam.image;
  */
 public class QuantizeRandoms {
 
+    public static void main(String[] args) {
+        System.out.println("Starting");
+        QuantizeRandoms r = new QuantizeRandoms();
+        r.computeOffset(0);
+        for (int i = 0; i < 10000; i += 1) {
+            for (int j = 0; j < 100; j += 1) {
+                r.next();
+            }
+            System.out.println("Got:" + r.next());
+        }
+    }
+
     /** The set of 10,000 random numbers used */
     private double[] values;
 
@@ -60,13 +72,52 @@ public class QuantizeRandoms {
     private boolean ready = false;
 
     /** The number of values to be generated */
-    private int NVAL = 10000;
+    private final int NVAL = 10000;
 
     /**
      * The multiplier we use when trying to get a randomish starting location in
      * the array.
      */
-    private int MULT = 500;
+    private final int MULT = 500;
+
+    /**
+     * Generally we try to start at a random location in the first MULT entries
+     * within the array using an integer we increment for each new tile.
+     * location in the array.
+     */
+    public void computeOffset(int n) {
+        if (!this.ready) {
+            initialize();
+        }
+        while (n < 0) {
+            n += this.NVAL;
+        }
+        while (n >= this.NVAL) {
+            n -= this.NVAL;
+        }
+        this.nextIndex = (int) (this.MULT * (this.values[n] + 0.5));
+    }
+
+    /** Initialize the sequence of NVAL random numbers */
+    private void initialize() {
+
+        this.values = new double[this.NVAL];
+
+        double a = 16807;
+        double m = 2147483647;
+        double seed = 1;
+        double temp;
+
+        for (int ii = 0; ii < this.NVAL; ii += 1) {
+            temp = a * seed;
+            seed = temp - m * Math.floor(temp / m);
+            this.values[ii] = seed / m - 0.5;
+        }
+        this.ready = true;
+        if (seed != 1043618065) {
+            throw new IllegalStateException("Final seed has unexpected value");
+        }
+    }
 
     /**
      * Get the next number in the fixed sequence. This may be called any number
@@ -76,70 +127,19 @@ public class QuantizeRandoms {
      */
     public double next() {
 
-        if (lastStart < 0) {
+        if (this.lastStart < 0) {
             computeOffset(0);
-            lastStart = 0;
+            this.lastStart = 0;
         }
-        if (nextIndex >= NVAL) {
-            lastStart += 1;
-            if (lastStart >= NVAL) {
-                lastStart = 0;
+        if (this.nextIndex >= this.NVAL) {
+            this.lastStart += 1;
+            if (this.lastStart >= this.NVAL) {
+                this.lastStart = 0;
             }
-            computeOffset(lastStart);
+            computeOffset(this.lastStart);
         }
-        int currIndex = nextIndex;
-        nextIndex += 1;
-        return values[currIndex];
-    }
-
-    /** Initialize the sequence of NVAL random numbers */
-    private void initialize() {
-
-        values = new double[NVAL];
-
-        double a = 16807;
-        double m = 2147483647;
-        double seed = 1;
-        double temp;
-
-        for (int ii = 0; ii < NVAL; ii += 1) {
-            temp = a * seed;
-            seed = temp - m * Math.floor(temp / m);
-            values[ii] = seed / m - 0.5;
-        }
-        ready = true;
-        if (seed != 1043618065) {
-            throw new IllegalStateException("Final seed has unexpected value");
-        }
-    }
-
-    /**
-     * Generally we try to start at a random location in the first MULT entries
-     * within the array using an integer we increment for each new tile.
-     * location in the array.
-     */
-    public void computeOffset(int n) {
-        if (!ready) {
-            initialize();
-        }
-        while (n < 0) {
-            n += NVAL;
-        }
-        while (n >= NVAL) {
-            n -= NVAL;
-        }
-        nextIndex = (int) (MULT * (values[n] + 0.5));
-    }
-
-    public static void main(String[] args) {
-        System.out.println("Starting");
-        QuantizeRandoms r = new QuantizeRandoms();
-        r.computeOffset(0);
-        for (int i = 0; i < 10000; i += 1) {
-            for (int j = 0; j < 100; j += 1) {
-                r.next();
-            }
-            System.out.println("Got:" + r.next());
-        }
+        int currIndex = this.nextIndex;
+        this.nextIndex += 1;
+        return this.values[currIndex];
     }
 }

@@ -75,6 +75,74 @@ public class HeaderCard {
      */
     private static final int MAX_LONG_STRING_SIZE = Long.valueOf(Long.MAX_VALUE).toString().length() - 1;
 
+    /** Maximum length of a FITS keyword field */
+    public static final int MAX_KEYWORD_LENGTH = 8;
+
+    /**
+     * Maximum length of a FITS value field
+     */
+    public static final int MAX_VALUE_LENGTH = 70;
+
+    /**
+     * Maximum length of a FITS string value field
+     */
+    public static final int MAX_STRING_VALUE_LENGTH = HeaderCard.MAX_VALUE_LENGTH - 2;
+
+    /**
+     * Create a HeaderCard from a FITS card image
+     * 
+     * @param card
+     *            the 80 character card image
+     * @throws IOException
+     * @throws TruncatedFileException
+     */
+    public static HeaderCard create(String card) {
+        try {
+            return new HeaderCard(stringToArrayInputStream(card));
+        } catch (Exception e) {
+            throw new IllegalArgumentException("card not legal", e);
+        }
+    }
+
+    /**
+     * Create a string from a BigDecimal making sure that it's not more than 20
+     * characters long. Probably would be better if we had a way to override
+     * this since we can loose precision for some doubles.
+     */
+    private static String dblString(BigDecimal input) {
+        String value = input.toString();
+        BigDecimal decimal = input;
+        while (value.length() > 20) {
+            decimal = input.setScale(decimal.scale() - 1, BigDecimal.ROUND_HALF_UP);
+            value = decimal.toString();
+        }
+        return value;
+    }
+
+    /**
+     * Create a string from a double making sure that it's not more than 20
+     * characters long. Probably would be better if we had a way to override
+     * this since we can loose precision for some doubles.
+     */
+    private static String dblString(double input) {
+        String value = Double.toString(input);
+        if (value.length() > 20) {
+            return dblString(BigDecimal.valueOf(input));
+        }
+        return value;
+    }
+
+    private static ArrayDataInput stringToArrayInputStream(String card) {
+        byte[] bytes = AsciiFuncs.getBytes(card);
+        if (bytes.length % 80 != 0) {
+            byte[] newBytes = new byte[bytes.length + 80 - bytes.length % 80];
+            System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
+            Arrays.fill(newBytes, bytes.length, newBytes.length, (byte) ' ');
+            bytes = newBytes;
+        }
+        return new BufferedDataInputStream(new ByteArrayInputStream(bytes));
+    }
+
     /** The keyword part of the card (set to null if there's no keyword) */
     private String key;
 
@@ -90,52 +158,57 @@ public class HeaderCard {
     /** A flag indicating whether or not this is a string value */
     private boolean isString;
 
-    /** Maximum length of a FITS keyword field */
-    public static final int MAX_KEYWORD_LENGTH = 8;
+    public HeaderCard(ArrayDataInput dis) throws TruncatedFileException, IOException {
+        this.key = null;
+        this.value = null;
+        this.comment = null;
+        this.isString = false;
 
-    /**
-     * Maximum length of a FITS value field
-     */
-    public static final int MAX_VALUE_LENGTH = 70;
+        String card = readOneHeaderLine(dis);
 
-    /**
-     * Maximum length of a FITS string value field
-     */
-    public static final int MAX_STRING_VALUE_LENGTH = MAX_VALUE_LENGTH - 2;
+        if (FitsFactory.getUseHierarch() && card.length() > 9 && card.substring(0, 9).equals("HIERARCH ")) {
+            hierarchCard(card, dis);
+            return;
+        }
 
-    /** padding for building card images */
-    private static String space80 = "                                                                                ";
+        // We are going to assume that the value has no blanks in
+        // it unless it is enclosed in quotes. Also, we assume that
+        // a / terminates the string (except inside quotes)
 
-    /**
-     * Create a HeaderCard from its component parts
-     * 
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
-     */
-    public HeaderCard(String key, double value, String comment) throws HeaderCardException {
-        this(key, dblString(value), comment, false, false);
-    }
+        // treat short lines as special keywords
+        if (card.length() < 9) {
+            this.key = card;
+            return;
+        }
 
-    /**
-     * Create a HeaderCard from its component parts
-     * 
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
-     */
-    public HeaderCard(String key, float value, String comment) throws HeaderCardException {
-        this(key, dblString(value), comment, false, false);
+        // extract the key
+        this.key = card.substring(0, 8).trim();
+
+        // if it is an empty key, assume the remainder of the card is a comment
+        if (this.key.length() == 0) {
+            this.key = "";
+            this.comment = card.substring(8);
+            return;
+        }
+
+        // Non-key/value pair lines are treated as keyed comments
+        if (this.key.equals("COMMENT") || this.key.equals("HISTORY") || !card.substring(8, 10).equals("= ")) {
+            this.comment = card.substring(8).trim();
+            return;
+        }
+        // extract the value/comment part of the string
+        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
+
+        if (FitsFactory.isLongStringsEnabled() && parsedValue.isString() && parsedValue.getValue().endsWith("&")) {
+            longStringCard(dis, parsedValue);
+        } else {
+            this.value = parsedValue.getValue();
+            this.isString = parsedValue.isString();
+            this.comment = parsedValue.getComment();
+            if (!this.isString && this.value.indexOf('\'') >= 0) {
+                throw new IllegalArgumentException("no single quotes allowed in values");
+            }
+        }
     }
 
     /**
@@ -198,6 +271,38 @@ public class HeaderCard {
      * @exception HeaderCardException
      *                for any invalid keyword
      */
+    public HeaderCard(String key, double value, String comment) throws HeaderCardException {
+        this(key, dblString(value), comment, false, false);
+    }
+
+    /**
+     * Create a HeaderCard from its component parts
+     * 
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword
+     */
+    public HeaderCard(String key, float value, String comment) throws HeaderCardException {
+        this(key, dblString(value), comment, false, false);
+    }
+
+    /**
+     * Create a HeaderCard from its component parts
+     * 
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword
+     */
     public HeaderCard(String key, int value, String comment) throws HeaderCardException {
         this(key, String.valueOf(value), comment, false, false);
     }
@@ -219,22 +324,6 @@ public class HeaderCard {
     }
 
     /**
-     * Create a HeaderCard from its component parts
-     * 
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword or value
-     */
-    public HeaderCard(String key, String value, String comment) throws HeaderCardException {
-        this(key, value, comment, false, true);
-    }
-
-    /**
      * Create a comment style card. This constructor builds a card which has no
      * value. This may be either a comment style card in which case the nullable
      * field should be false, or a value field which has a null value, in which
@@ -252,31 +341,19 @@ public class HeaderCard {
     }
 
     /**
-     * Create a string from a double making sure that it's not more than 20
-     * characters long. Probably would be better if we had a way to override
-     * this since we can loose precision for some doubles.
+     * Create a HeaderCard from its component parts
+     * 
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword or value
      */
-    private static String dblString(double input) {
-        String value = Double.toString(input);
-        if (value.length() > 20) {
-            return dblString(BigDecimal.valueOf(input));
-        }
-        return value;
-    }
-
-    /**
-     * Create a string from a BigDecimal making sure that it's not more than 20
-     * characters long. Probably would be better if we had a way to override
-     * this since we can loose precision for some doubles.
-     */
-    private static String dblString(BigDecimal input) {
-        String value = input.toString();
-        BigDecimal decimal = input;
-        while (value.length() > 20) {
-            decimal = input.setScale(decimal.scale() - 1, BigDecimal.ROUND_HALF_UP);
-            value = decimal.toString();
-        }
-        return value;
+    public HeaderCard(String key, String value, String comment) throws HeaderCardException {
+        this(key, value, comment, false, true);
     }
 
     /**
@@ -321,7 +398,7 @@ public class HeaderCard {
             throw new HeaderCardException("Null keyword with non-null value");
         }
 
-        if (key != null && key.length() > MAX_KEYWORD_LENGTH) {
+        if (key != null && key.length() > HeaderCard.MAX_KEYWORD_LENGTH) {
             if (!FitsFactory.getUseHierarch() || !key.substring(0, 9).equals("HIERARCH.")) {
                 throw new HeaderCardException("Keyword too long");
             }
@@ -337,7 +414,7 @@ public class HeaderCard {
                 value = value.substring(1, value.length() - 1).trim();
             }
             // Remember that quotes get doubled in the value...
-            if (!FitsFactory.isLongStringsEnabled() && value.replace("'", "''").length() > (this.isString ? MAX_STRING_VALUE_LENGTH : MAX_VALUE_LENGTH)) {
+            if (!FitsFactory.isLongStringsEnabled() && value.replace("'", "''").length() > (this.isString ? HeaderCard.MAX_STRING_VALUE_LENGTH : HeaderCard.MAX_VALUE_LENGTH)) {
                 throw new HeaderCardException("Value too long");
             }
 
@@ -350,202 +427,68 @@ public class HeaderCard {
     }
 
     /**
-     * Create a HeaderCard from a FITS card image
-     * 
-     * @param card
-     *            the 80 character card image
-     * @throws IOException
-     * @throws TruncatedFileException
+     * @return the size of the card in blocks of 80 bytes. So normally every
+     *         card will return 1. only long stings can return more than one.
      */
-    public static HeaderCard create(String card) {
-        try {
-            return new HeaderCard(stringToArrayInputStream(card));
-        } catch (Exception e) {
-            throw new IllegalArgumentException("card not legal", e);
-        }
-    }
-
-    private static ArrayDataInput stringToArrayInputStream(String card) {
-        byte[] bytes = AsciiFuncs.getBytes(card);
-        if ((bytes.length % 80) != 0) {
-            byte[] newBytes = new byte[bytes.length + 80 - (bytes.length % 80)];
-            System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
-            Arrays.fill(newBytes, bytes.length, newBytes.length, (byte) ' ');
-            bytes = newBytes;
-        }
-        return new BufferedDataInputStream(new ByteArrayInputStream(bytes));
-    }
-
-    private String readOneHeaderLine(ArrayDataInput dis) throws IOException, TruncatedFileException, EOFException {
-        byte[] buffer = new byte[80];
-        int len;
-        int need = 80;
-        try {
-
-            while (need > 0) {
-                len = dis.read(buffer, 80 - need, need);
-                if (len == 0) {
-                    throw new TruncatedFileException();
-                }
-                need -= len;
+    public int cardSize() {
+        if (this.isString && this.value != null && FitsFactory.isLongStringsEnabled()) {
+            int spaceInFirstCard = HeaderCard.MAX_VALUE_LENGTH;
+            if (FitsFactory.getUseHierarch() && this.key.startsWith("HIERARCH")) {
+                // the hierach eats space from the value.
+                spaceInFirstCard -= this.key.length() - HeaderCard.MAX_KEYWORD_LENGTH;
             }
-        } catch (EOFException e) {
-            if (need == 80) {
-                throw e;
-            }
-            throw new TruncatedFileException(e.getMessage());
-        }
-        return AsciiFuncs.asciiString(buffer);
-    }
-
-    public HeaderCard(ArrayDataInput dis) throws TruncatedFileException, IOException {
-        key = null;
-        value = null;
-        comment = null;
-        isString = false;
-
-        String card = readOneHeaderLine(dis);
-
-        if (FitsFactory.getUseHierarch() && card.length() > 9 && card.substring(0, 9).equals("HIERARCH ")) {
-            hierarchCard(card, dis);
-            return;
-        }
-
-        // We are going to assume that the value has no blanks in
-        // it unless it is enclosed in quotes. Also, we assume that
-        // a / terminates the string (except inside quotes)
-
-        // treat short lines as special keywords
-        if (card.length() < 9) {
-            key = card;
-            return;
-        }
-
-        // extract the key
-        key = card.substring(0, 8).trim();
-
-        // if it is an empty key, assume the remainder of the card is a comment
-        if (key.length() == 0) {
-            key = "";
-            comment = card.substring(8);
-            return;
-        }
-
-        // Non-key/value pair lines are treated as keyed comments
-        if (key.equals("COMMENT") || key.equals("HISTORY") || !card.substring(8, 10).equals("= ")) {
-            comment = card.substring(8).trim();
-            return;
-        }
-        // extract the value/comment part of the string
-        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
-
-        if (FitsFactory.isLongStringsEnabled() && parsedValue.isString() && parsedValue.getValue().endsWith("&")) {
-            longStringCard(dis, parsedValue);
-        } else {
-            this.value = parsedValue.getValue();
-            this.isString = parsedValue.isString();
-            this.comment = parsedValue.getComment();
-            if (!this.isString && this.value.indexOf('\'') >= 0) {
-                throw new IllegalArgumentException("no single quotes allowed in values");
-            }
-        }
-    }
-
-    private void longStringCard(ArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException {
-        // ok this is a longString now read over all continues.
-        StringBuilder longValue = new StringBuilder();
-        StringBuilder longComment = new StringBuilder();
-        ParsedValue continueCard = parsedValue;
-        do {
-            if (continueCard.getValue() != null) {
-                longValue.append(continueCard.getValue());
-            }
-            if (continueCard.getComment() != null) {
-                if (longComment.length() != 0) {
-                    longComment.append(' ');
-                }
-                longComment.append(continueCard.getComment());
-            }
-            continueCard = null;
-            if (longValue.charAt(longValue.length() - 1) == '&') {
-                longValue.setLength(longValue.length() - 1);
-                dis.mark(80);
-                String card = readOneHeaderLine(dis);
-                if (card.startsWith("CONTINUE")) {
-                    // extract the value/comment part of the string
-                    continueCard = FitsHeaderCardParser.parseCardValue(card);
+            int charSize = 2;
+            for (int index = this.value.length() - 1; index >= 0; index--) {
+                if (this.value.charAt(index) == '\'') {
+                    charSize += 2;
                 } else {
-                    // the & was part of the string put it back.
-                    longValue.append('&');
-                    // ok move the imputstream one card back.
-                    dis.reset();
+                    charSize += 1;
                 }
             }
-        } while (continueCard != null);
-        this.comment = longComment.toString();
-        this.value = longValue.toString();
-        this.isString = true;
-    }
-
-    /**
-     * Process HIERARCH style cards... HIERARCH LEV1 LEV2 ... = value / comment
-     * The keyword for the card will be "HIERARCH.LEV1.LEV2..." A '/' is assumed
-     * to start a comment.
-     * 
-     * @param dis
-     */
-    private void hierarchCard(String card, ArrayDataInput dis) throws IOException, TruncatedFileException {
-
-        key = FitsHeaderCardParser.parseCardKey(card);
-
-        // extract the value/comment part of the string
-        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
-
-        if (FitsFactory.isLongStringsEnabled() && parsedValue.isString() && parsedValue.getValue().endsWith("&")) {
-            longStringCard(dis, parsedValue);
-        } else {
-            this.value = parsedValue.getValue();
-            this.isString = parsedValue.isString();
-            this.comment = parsedValue.getComment();
-            if (!this.isString && this.value.indexOf('\'') >= 0) {
-                throw new IllegalArgumentException("no single quotes allowed in values");
+            // substract the space available in
+            charSize = charSize - spaceInFirstCard;
+            if (charSize > 0) {
+                // ok the string will be spaced out over multiple cards. so take
+                // space in the first card for the &
+                charSize++;
+                // every card has an overhead of 3 chars
+                int cards = charSize / (HeaderCard.MAX_VALUE_LENGTH - 3);
+                int spaceUsedInLastCard = charSize % (HeaderCard.MAX_VALUE_LENGTH - 3);
+                if (spaceUsedInLastCard != 0) {
+                    cards++;
+                }
+                // now check if the comment will trigger an other card
+                if (this.comment != null) {
+                    int spaceLeftInLastCard = charSize - HeaderCard.MAX_VALUE_LENGTH * cards;
+                    if (this.comment.length() > spaceLeftInLastCard) {
+                        cards++;
+                    }
+                }
+                return cards;
             }
         }
+        return 1;
     }
 
     /**
-     * Does this card contain a string value?
+     * Return the comment from this card
      */
-    public boolean isStringValue() {
-        return isString;
-    }
-
-    /**
-     * Is this a key/value card?
-     */
-    public boolean isKeyValuePair() {
-        return key != null && value != null;
-    }
-
-    /**
-     * Set the key.
-     */
-    void setKey(String newKey) {
-        key = newKey;
+    public String getComment() {
+        return this.comment;
     }
 
     /**
      * Return the keyword from this card
      */
     public String getKey() {
-        return key;
+        return this.key;
     }
 
     /**
      * Return the value from this card
      */
     public String getValue() {
-        return value;
+        return this.value;
     }
 
     /**
@@ -586,17 +529,115 @@ public class HeaderCard {
     }
 
     /**
-     * Set the value for this card.
+     * Process HIERARCH style cards... HIERARCH LEV1 LEV2 ... = value / comment
+     * The keyword for the card will be "HIERARCH.LEV1.LEV2..." A '/' is assumed
+     * to start a comment.
+     * 
+     * @param dis
      */
-    public void setValue(String update) {
-        value = update;
+    private void hierarchCard(String card, ArrayDataInput dis) throws IOException, TruncatedFileException {
+
+        this.key = FitsHeaderCardParser.parseCardKey(card);
+
+        // extract the value/comment part of the string
+        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
+
+        if (FitsFactory.isLongStringsEnabled() && parsedValue.isString() && parsedValue.getValue().endsWith("&")) {
+            longStringCard(dis, parsedValue);
+        } else {
+            this.value = parsedValue.getValue();
+            this.isString = parsedValue.isString();
+            this.comment = parsedValue.getComment();
+            if (!this.isString && this.value.indexOf('\'') >= 0) {
+                throw new IllegalArgumentException("no single quotes allowed in values");
+            }
+        }
     }
 
     /**
-     * Return the comment from this card
+     * Is this a key/value card?
      */
-    public String getComment() {
-        return comment;
+    public boolean isKeyValuePair() {
+        return this.key != null && this.value != null;
+    }
+
+    /**
+     * Does this card contain a string value?
+     */
+    public boolean isStringValue() {
+        return this.isString;
+    }
+
+    private void longStringCard(ArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException {
+        // ok this is a longString now read over all continues.
+        StringBuilder longValue = new StringBuilder();
+        StringBuilder longComment = new StringBuilder();
+        ParsedValue continueCard = parsedValue;
+        do {
+            if (continueCard.getValue() != null) {
+                longValue.append(continueCard.getValue());
+            }
+            if (continueCard.getComment() != null) {
+                if (longComment.length() != 0) {
+                    longComment.append(' ');
+                }
+                longComment.append(continueCard.getComment());
+            }
+            continueCard = null;
+            if (longValue.charAt(longValue.length() - 1) == '&') {
+                longValue.setLength(longValue.length() - 1);
+                dis.mark(80);
+                String card = readOneHeaderLine(dis);
+                if (card.startsWith("CONTINUE")) {
+                    // extract the value/comment part of the string
+                    continueCard = FitsHeaderCardParser.parseCardValue(card);
+                } else {
+                    // the & was part of the string put it back.
+                    longValue.append('&');
+                    // ok move the imputstream one card back.
+                    dis.reset();
+                }
+            }
+        } while (continueCard != null);
+        this.comment = longComment.toString();
+        this.value = longValue.toString();
+        this.isString = true;
+    }
+
+    private String readOneHeaderLine(ArrayDataInput dis) throws IOException, TruncatedFileException, EOFException {
+        byte[] buffer = new byte[80];
+        int len;
+        int need = 80;
+        try {
+
+            while (need > 0) {
+                len = dis.read(buffer, 80 - need, need);
+                if (len == 0) {
+                    throw new TruncatedFileException();
+                }
+                need -= len;
+            }
+        } catch (EOFException e) {
+            if (need == 80) {
+                throw e;
+            }
+            throw new TruncatedFileException(e.getMessage());
+        }
+        return AsciiFuncs.asciiString(buffer);
+    }
+
+    /**
+     * Set the key.
+     */
+    void setKey(String newKey) {
+        this.key = newKey;
+    }
+
+    /**
+     * Set the value for this card.
+     */
+    public void setValue(String update) {
+        this.value = update;
     }
 
     /**
@@ -608,30 +649,30 @@ public class HeaderCard {
         int alignPosition = 30;
         FitsLineAppender buf = new FitsLineAppender();
         // start with the keyword, if there is one
-        if (key != null) {
-            if (key.length() > 9 && key.substring(0, 9).equals("HIERARCH.")) {
-                buf.appendRepacing(key, '.', ' ');
+        if (this.key != null) {
+            if (this.key.length() > 9 && this.key.substring(0, 9).equals("HIERARCH.")) {
+                buf.appendRepacing(this.key, '.', ' ');
                 alignSmallString = 29;
                 alignPosition = 39;
             } else {
-                buf.append(key);
+                buf.append(this.key);
                 buf.appendSpacesTo(8);
             }
         }
         FitsSubString comment = new FitsSubString(this.comment);
-        if ((80 - alignPosition - 3) < comment.length()) {
+        if (80 - alignPosition - 3 < comment.length()) {
             // with alignment the comment would not fit so lets make more space
             alignPosition = Math.max(buf.length(), 80 - 3 - comment.length());
             alignSmallString = buf.length();
         }
         boolean commentHandled = false;
-        if (value != null || nullable) {
+        if (this.value != null || this.nullable) {
             buf.append("= ");
 
-            if (value != null) {
+            if (this.value != null) {
 
-                if (isString) {
-                    String stringValue = value.replace("'", "''");
+                if (this.isString) {
+                    String stringValue = this.value.replace("'", "''");
                     if (FitsFactory.isLongStringsEnabled() && stringValue.length() > HeaderCard.MAX_STRING_VALUE_LENGTH) {
                         writeLongStringValue(buf, stringValue);
                         commentHandled = true;
@@ -646,8 +687,8 @@ public class HeaderCard {
                         buf.appendSpacesTo(alignPosition);
                     }
                 } else {
-                    buf.appendSpacesTo(alignPosition - value.length());
-                    buf.append(value);
+                    buf.appendSpacesTo(alignPosition - this.value.length());
+                    buf.append(this.value);
                 }
             } else {
                 // Pad out a null value.
@@ -674,9 +715,52 @@ public class HeaderCard {
         return buf.toString();
     }
 
+    /**
+     * @return the type of the value.
+     */
+    public Class<?> valueType() {
+        if (this.isString) {
+            return String.class;
+        } else if (this.value != null) {
+            String trimedValue = this.value.trim();
+            if (trimedValue.equals("T") || trimedValue.equals("F")) {
+                return Boolean.class;
+            } else if (HeaderCard.LONG_REGEX.matcher(trimedValue).matches()) {
+                int length = trimedValue.length();
+                if (trimedValue.charAt(0) == '-' || trimedValue.charAt(0) == '+') {
+                    length--;
+                }
+                if (length <= HeaderCard.MAX_INTEGER_STRING_SIZE) {
+                    return Integer.class;
+                } else if (length <= HeaderCard.MAX_LONG_STRING_SIZE) {
+                    return Long.class;
+                } else {
+                    return BigInteger.class;
+                }
+            } else if (HeaderCard.IEEE_REGEX.matcher(trimedValue).find()) {
+                // We should detect if we are loosing precision here
+                BigDecimal bigDecimal = null;
+
+                try {
+                    bigDecimal = new BigDecimal(this.value);
+                } catch (Exception e) {
+                    throw new NumberFormatException("could not parse " + this.value);
+                }
+                if (bigDecimal.abs().compareTo(HeaderCard.LONG_MAX_VALUE_AS_BIG_DECIMAL) > 0 && bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
+                    return BigInteger.class;
+                } else if (bigDecimal.doubleValue() == Double.valueOf(trimedValue)) {
+                    return Double.class;
+                } else {
+                    return BigDecimal.class;
+                }
+            }
+        }
+        return null;
+    }
+
     private void writeLongStringValue(FitsLineAppender buf, String stringValueString) {
         FitsSubString stringValue = new FitsSubString(stringValueString);
-        FitsSubString commentValue = new FitsSubString(comment);
+        FitsSubString commentValue = new FitsSubString(this.comment);
         // We assume that we've made the test so that
         // we need to write a long string.
         // We also need to be careful that single quotes don't
@@ -701,7 +785,7 @@ public class HeaderCard {
                 buf.append("&'");
                 stringValue.rest();
             } else {
-                if (commentValue.length() > (65 - stringValue.length())) {
+                if (commentValue.length() > 65 - stringValue.length()) {
                     // ok comment does not fit lets give it a little more room
                     stringValue.getAdjustedLength(35);
                     if (stringValue.fullLength() > stringValue.length()) {
@@ -729,92 +813,5 @@ public class HeaderCard {
                 stringValue.rest();
             }
         }
-    }
-
-    /**
-     * @return the type of the value.
-     */
-    public Class<?> valueType() {
-        if (isString) {
-            return String.class;
-        } else if (value != null) {
-            String trimedValue = value.trim();
-            if (trimedValue.equals("T") || trimedValue.equals("F")) {
-                return Boolean.class;
-            } else if (LONG_REGEX.matcher(trimedValue).matches()) {
-                int length = trimedValue.length();
-                if (trimedValue.charAt(0) == '-' || trimedValue.charAt(0) == '+') {
-                    length--;
-                }
-                if (length <= MAX_INTEGER_STRING_SIZE) {
-                    return Integer.class;
-                } else if (length <= MAX_LONG_STRING_SIZE) {
-                    return Long.class;
-                } else {
-                    return BigInteger.class;
-                }
-            } else if (IEEE_REGEX.matcher(trimedValue).find()) {
-                // We should detect if we are loosing precision here
-                BigDecimal bigDecimal = null;
-
-                try {
-                    bigDecimal = new BigDecimal(this.value);
-                } catch (Exception e) {
-                    throw new NumberFormatException("could not parse " + this.value);
-                }
-                if (bigDecimal.abs().compareTo(LONG_MAX_VALUE_AS_BIG_DECIMAL) > 0 && bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
-                    return BigInteger.class;
-                } else if (bigDecimal.doubleValue() == Double.valueOf(trimedValue)) {
-                    return Double.class;
-                } else {
-                    return BigDecimal.class;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @return the size of the card in blocks of 80 bytes. So normally every
-     *         card will return 1. only long stings can return more than one.
-     */
-    public int cardSize() {
-        if (isString && this.value != null && FitsFactory.isLongStringsEnabled()) {
-            int spaceInFirstCard = MAX_VALUE_LENGTH;
-            if (FitsFactory.getUseHierarch() && key.startsWith("HIERARCH")) {
-                // the hierach eats space from the value.
-                spaceInFirstCard -= key.length() - MAX_KEYWORD_LENGTH;
-            }
-            int charSize = 2;
-            for (int index = this.value.length() - 1; index >= 0; index--) {
-                if (this.value.charAt(index) == '\'') {
-                    charSize += 2;
-                } else {
-                    charSize += 1;
-                }
-            }
-            // substract the space available in
-            charSize = charSize - spaceInFirstCard;
-            if (charSize > 0) {
-                // ok the string will be spaced out over multiple cards. so take
-                // space in the first card for the &
-                charSize++;
-                // every card has an overhead of 3 chars
-                int cards = charSize / (MAX_VALUE_LENGTH - 3);
-                int spaceUsedInLastCard = charSize % (MAX_VALUE_LENGTH - 3);
-                if (spaceUsedInLastCard != 0) {
-                    cards++;
-                }
-                // now check if the comment will trigger an other card
-                if (comment != null) {
-                    int spaceLeftInLastCard = charSize - (MAX_VALUE_LENGTH * cards);
-                    if (comment.length() > spaceLeftInLastCard) {
-                        cards++;
-                    }
-                }
-                return cards;
-            }
-        }
-        return 1;
     }
 }

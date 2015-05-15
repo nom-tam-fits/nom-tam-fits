@@ -37,11 +37,6 @@ package nom.tam.fits;
  */
 public class HeaderOrder implements java.util.Comparator<String> {
 
-    /** Can two cards be exchanged when being written out? */
-    public boolean equals(String a, String b) {
-        return compare(a, b) == 0;
-    }
-
     /**
      * Which order should the cards indexed by these keys be written out? This
      * method assumes that the arguments are either the FITS Header keywords as
@@ -157,6 +152,11 @@ public class HeaderOrder implements java.util.Comparator<String> {
 
         // All other cards can be in any order.
         return 0;
+    }
+
+    /** Can two cards be exchanged when being written out? */
+    public boolean equals(String a, String b) {
+        return compare(a, b) == 0;
     }
 
     /** Find the index for NAXISn keywords */

@@ -58,6 +58,14 @@ import org.junit.Test;
  */
 public class HashedListTest {
 
+    void show(HashedList h, String msg) {
+        Iterator t = h.iterator();
+        System.out.println("\n Looking at list:" + msg);
+        while (t.hasNext()) {
+            System.out.println("Has element:" + t.next());
+        }
+    }
+
     @Test
     public void testCollection() {
 
@@ -167,6 +175,60 @@ public class HashedListTest {
     }
 
     @Test
+    public void testCursor() {
+        HashedList<Object, Object> h1 = new HashedList<Object, Object>() {
+
+            @Override
+            public Object keyOfValue(Object value) {
+                return value;
+            }
+        };
+
+        h1.add("key 1", "Row 1");
+        h1.add("Row 3");
+        h1.add("key 4", "Row 4");
+        h1.add("Row 5");
+
+        Cursor j = h1.iterator(0);
+        assertEquals("n1x", true, j.hasNext());
+        assertEquals("n1xv", "Row 1", j.next());
+        assertEquals("n1xv", "Row 3", j.next());
+
+        assertEquals("No Row 2", false, h1.containsKey("key 2"));
+        assertEquals("No Row 2", false, h1.contains("Row 2"));
+        j.setKey("key 1");
+        assertEquals("setKey()", "Row 1", j.next());
+        j.add("key 2", "Row 2");
+        assertEquals("has Row 2", true, h1.contains("Row 2"));
+        assertEquals("after add", "Row 3", j.next());
+
+        j.setKey("key 4");
+        assertEquals("setKey(1)", "Row 4", j.next());
+        assertEquals("setKey(2)", "Row 5", j.next());
+        assertEquals("setKey(3)", false, j.hasNext());
+
+        j.setKey("key 2");
+        assertEquals("setKey(4)", "Row 2", j.next());
+        assertEquals("setKey(5)", "Row 3", j.next());
+        j.add("Row 3.5");
+        j.add("Row 3.6");
+        assertEquals("After add", 7, h1.size());
+
+        j = h1.iterator("key 2");
+        j.add("Row 1.5");
+        j.add("key 1.7", "Row 1.7");
+        j.add("Row 1.9");
+        assertEquals("next() after adds", "Row 2", j.next());
+        j.setKey("key 1.7");
+        assertEquals("next() after adds", "Row 1.7", j.next());
+        assertEquals("prev(1)", "Row 1.7", j.prev());
+        assertEquals("prev(2)", "Row 1.5", j.prev());
+        assertEquals("prev(3)", true, j.hasPrev());
+        assertEquals("prev(4)", "Row 1", j.prev());
+        assertEquals("prev(5)", false, j.hasPrev());
+    }
+
+    @Test
     public void testIterator() {
 
         HashedList<Object, Object> h1 = new HashedList<Object, Object>() {
@@ -182,9 +244,9 @@ public class HashedListTest {
 
         Iterator j = h1.iterator();
         assertEquals("next1", true, j.hasNext());
-        assertEquals("TestIter1", "Row 4", (String) j.next());
+        assertEquals("TestIter1", "Row 4", j.next());
         assertEquals("next2", true, j.hasNext());
-        assertEquals("TestIter2", "Row 5", (String) j.next());
+        assertEquals("TestIter2", "Row 5", j.next());
         assertEquals("next3", false, j.hasNext());
 
         h1.clear();
@@ -202,73 +264,11 @@ public class HashedListTest {
         j.remove(); // Should get rid of second row
         assertEquals("After remove", false, h1.contains("Row 2"));
         assertEquals("n3", true, j.hasNext());
-        assertEquals("n3v", "Row 3", (String) j.next());
+        assertEquals("n3v", "Row 3", j.next());
         assertEquals("n4", true, j.hasNext());
-        assertEquals("n4v", "Row 4", (String) j.next());
+        assertEquals("n4v", "Row 4", j.next());
         assertEquals("n5", true, j.hasNext());
-        assertEquals("n5v", "Row 5", (String) j.next());
+        assertEquals("n5v", "Row 5", j.next());
         assertEquals("n6", false, j.hasNext());
-    }
-
-    @Test
-    public void testCursor() {
-        HashedList<Object, Object> h1 = new HashedList<Object, Object>() {
-
-            @Override
-            public Object keyOfValue(Object value) {
-                return value;
-            }
-        };
-
-        h1.add("key 1", "Row 1");
-        h1.add("Row 3");
-        h1.add("key 4", "Row 4");
-        h1.add("Row 5");
-
-        Cursor j = (Cursor) h1.iterator(0);
-        assertEquals("n1x", true, j.hasNext());
-        assertEquals("n1xv", "Row 1", (String) j.next());
-        assertEquals("n1xv", "Row 3", (String) j.next());
-
-        assertEquals("No Row 2", false, h1.containsKey("key 2"));
-        assertEquals("No Row 2", false, h1.contains("Row 2"));
-        j.setKey("key 1");
-        assertEquals("setKey()", "Row 1", (String) j.next());
-        j.add("key 2", "Row 2");
-        assertEquals("has Row 2", true, h1.contains("Row 2"));
-        assertEquals("after add", "Row 3", (String) j.next());
-
-        j.setKey("key 4");
-        assertEquals("setKey(1)", "Row 4", (String) j.next());
-        assertEquals("setKey(2)", "Row 5", (String) j.next());
-        assertEquals("setKey(3)", false, j.hasNext());
-
-        j.setKey("key 2");
-        assertEquals("setKey(4)", "Row 2", (String) j.next());
-        assertEquals("setKey(5)", "Row 3", (String) j.next());
-        j.add("Row 3.5");
-        j.add("Row 3.6");
-        assertEquals("After add", 7, h1.size());
-
-        j = h1.iterator("key 2");
-        j.add("Row 1.5");
-        j.add("key 1.7", "Row 1.7");
-        j.add("Row 1.9");
-        assertEquals("next() after adds", "Row 2", (String) j.next());
-        j.setKey("key 1.7");
-        assertEquals("next() after adds", "Row 1.7", (String) j.next());
-        assertEquals("prev(1)", "Row 1.7", (String) j.prev());
-        assertEquals("prev(2)", "Row 1.5", (String) j.prev());
-        assertEquals("prev(3)", true, j.hasPrev());
-        assertEquals("prev(4)", "Row 1", (String) j.prev());
-        assertEquals("prev(5)", false, j.hasPrev());
-    }
-
-    void show(HashedList h, String msg) {
-        Iterator t = h.iterator();
-        System.out.println("\n Looking at list:" + msg);
-        while (t.hasNext()) {
-            System.out.println("Has element:" + t.next());
-        }
     }
 }
