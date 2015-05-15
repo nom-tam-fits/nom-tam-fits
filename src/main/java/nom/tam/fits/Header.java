@@ -111,13 +111,7 @@ public class Header implements FitsElement {
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
      */
-    private final HashedList<String, HeaderCard> cards = new HashedList<String, HeaderCard>() {
-
-        @Override
-        public String keyOfValue(HeaderCard value) {
-            return value.getKey();
-        }
-    };
+    private final HashedList<String, HeaderCard> cards = new HashedList<String, HeaderCard>();
 
     /**
      * This iterator allows one to run through the list.
@@ -173,15 +167,8 @@ public class Header implements FitsElement {
      *            Card images to be placed in the header.
      */
     public Header(String[] newCards) {
-
         for (String newCard : newCards) {
-            HeaderCard card = HeaderCard.create(newCard);
-            if (card.getValue() == null) {
-                this.cards.add(card);
-            } else {
-                this.cards.add(card.getKey(), card);
-            }
-
+            this.cards.add(HeaderCard.create(newCard));
         }
     }
 

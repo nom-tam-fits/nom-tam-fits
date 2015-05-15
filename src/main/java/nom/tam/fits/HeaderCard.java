@@ -15,6 +15,7 @@ import nom.tam.fits.utilities.FitsSubString;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
+import nom.tam.util.CursorValue;
 
 /*
  * #%L
@@ -51,7 +52,7 @@ import nom.tam.util.BufferedDataInputStream;
  * This class describes methods to access and manipulate the individual cards
  * for a FITS Header.
  */
-public class HeaderCard {
+public class HeaderCard implements CursorValue<String> {
 
     private static final BigDecimal LONG_MAX_VALUE_AS_BIG_DECIMAL = BigDecimal.valueOf(Long.MAX_VALUE);
 
