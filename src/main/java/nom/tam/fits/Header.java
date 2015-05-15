@@ -173,10 +173,13 @@ public class Header implements FitsElement {
     }
 
     private void addDuplicate(HeaderCard dup) {
-        if (this.duplicates == null) {
-            this.duplicates = new ArrayList<HeaderCard>();
+        if (!"COMMENT".equals(dup.getKey()) && !"HISTORY".equals(dup.getKey())) {
+            System.err.println("Warning: multiple occurrences of key:" + dup.getKey());
+            if (this.duplicates == null) {
+                this.duplicates = new ArrayList<HeaderCard>();
+            }
+            this.duplicates.add(dup);
         }
-        this.duplicates.add(dup);
     }
 
     /**
@@ -1254,7 +1257,6 @@ public class Header implements FitsElement {
 
                 String key = fcard.getKey();
                 if (key != null && this.cards.containsKey(key)) {
-                    System.err.println("Warning: multiple occurrences of key:" + key);
                     addDuplicate((HeaderCard) this.cards.get(key));
                 }
 
