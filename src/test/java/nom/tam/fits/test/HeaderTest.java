@@ -56,6 +56,7 @@ import nom.tam.fits.utilities.FitsHeaderCardParser;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class HeaderTest {
@@ -299,7 +300,7 @@ public class HeaderTest {
         while (hdr.rewriteable()) {
             int nbx = (hdr.getNumberOfCards() - 1) / 36;
             assertEquals("Rewrite:" + nbx, nb == nbx, hdr.rewriteable());
-            c.add(new HeaderCard("DUMMY" + nbx, (String) null, null));
+            c.add(new HeaderCard("DUMMY" + hdr.getNumberOfCards(), (String) null, null));
         }
     }
 

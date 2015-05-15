@@ -49,11 +49,13 @@ package nom.tam.util;
  * referenced objects.
  *
  */
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -66,16 +68,55 @@ import java.util.NoSuchElementException;
  */
 public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
 
+    private static final class EntryComparator<KEY, VALUE> implements Comparator<Entry<KEY, VALUE>> {
+
+        private final Comparator<KEY> comp;
+
+        private EntryComparator(Comparator<KEY> comp) {
+            this.comp = comp;
+        }
+
+        @Override
+        public int compare(Entry<KEY, VALUE> o1, Entry<KEY, VALUE> o2) {
+            return comp.compare(o1.key, o2.key);
+        }
+    }
+
+    private static class Entry<KEY, VALUE> {
+
+        KEY key;
+
+        VALUE value;
+
+        public Entry(KEY key, VALUE value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        @Override
+        public int hashCode() {
+            return key.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Entry) {
+                return key.equals(((Entry) obj).key);
+            }
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return "" + value;
+        }
+    }
+
     /** An ordered list of the keys */
-    private ArrayList<KEY> ordered = new ArrayList<>();
+    private ArrayList<Entry<KEY, VALUE>> ordered = new ArrayList<>();
 
     /** The key value pairs */
-    private HashMap<KEY, VALUE> keyed = new HashMap<>();
-
-    /**
-     * This is used to generate unique keys for elements entered without an key.
-     */
-    private int unkeyedIndex = 0;
+    private HashMap<KEY, Entry<KEY, VALUE>> keyed = new HashMap<>();
 
     private class HashedListIterator implements Cursor<KEY, VALUE> {
 
@@ -109,9 +150,9 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
                 throw new NoSuchElementException("Outside list");
 
             } else {
-                Object key = ordered.get(current);
+                Entry<KEY, VALUE> entry = ordered.get(current);
                 current += 1;
-                return keyed.get(key);
+                return entry.value;
             }
         }
 
@@ -122,8 +163,8 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
                 throw new NoSuchElementException("Before beginning of list");
             }
             current -= 1;
-            Object key = ordered.get(current);
-            return keyed.get(key);
+            Entry<KEY, VALUE> entry = ordered.get(current);
+            return entry.value;
         }
 
         /**
@@ -145,17 +186,6 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
         }
 
         /**
-         * Add an entry at the current location. The new entry goes before the
-         * entry that would be returned in the next 'next' call, and that call
-         * will not be affected by the insertion. Note: this method is not in
-         * the Iterator interface.
-         */
-        @Override
-        public void add(VALUE ref) {
-            HashedList.this.add(current++, createUnindexedKey(), ref);
-        }
-
-        /**
          * Add a keyed entry at the current location. The new entry is inserted
          * before the entry that would be returned in the next invocation of
          * 'next'. The return value for that call is unaffected. Note: this
@@ -174,8 +204,9 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
          */
         @Override
         public void setKey(KEY key) {
-            if (keyed.containsKey(key)) {
-                current = ordered.indexOf(key);
+            Entry<KEY, VALUE> entry = keyed.get(key);
+            if (entry != null) {
+                current = ordered.indexOf(entry);
             } else {
                 current = ordered.size();
             }
@@ -195,14 +226,11 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
             current = Math.max(0, ordered.size() - 1);
             return next();
         }
-    }
 
-    /** Add an element to the end of the list. */
-    @Override
-    public boolean add(VALUE reference) {
-        HashedList.this.add(ordered.size(), createUnindexedKey(), reference);
-        return true;
-
+        @Override
+        public void add(VALUE reference) {
+            add(keyOfValue(reference), reference);
+        }
     }
 
     /** Add a keyed element to the end of the list. */
@@ -224,23 +252,21 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
      *            The actual object being stored.
      */
     public boolean add(int pos, KEY key, VALUE reference) {
-
+        Entry<KEY, VALUE> entry = new Entry<>(key, reference);
         if (keyed.containsKey(key)) {
-            int oldPos = ordered.indexOf(key);
-            removeKey(key);
+            int oldPos = ordered.indexOf(entry);
+            keyed.remove(key);
+            ordered.remove(oldPos);
             if (oldPos < pos) {
                 pos -= 1;
             }
         }
-
-        keyed.put(key, reference);
+        keyed.put(key, entry);
         if (pos >= ordered.size()) {
-            ordered.add(key);
-
+            ordered.add(entry);
         } else {
-            ordered.add(pos, key);
+            ordered.add(pos, entry);
         }
-
         return true;
     }
 
@@ -249,8 +275,9 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
      * the list using a HashedListIterator or using the remove(Object) method.
      */
     public boolean removeKey(Object key) {
-        if (keyed.containsKey(key)) {
-            int index = ordered.indexOf(key);
+        Entry<KEY, VALUE> entry = keyed.get(key);
+        if (entry != null) {
+            int index = ordered.indexOf(entry);
             keyed.remove(key);
             ordered.remove(index);
             return true;
@@ -263,12 +290,10 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
      */
     @Override
     public boolean remove(Object o) {
-
-        if (keyed.containsValue(o)) {
-            for (int i = 0; i < ordered.size(); i += 1) {
-                if (keyed.get(ordered.get(i)).equals(o)) {
-                    return removeKey(ordered.get(i));
-                }
+        for (int i = 0; i < ordered.size(); i += 1) {
+            Entry<KEY, VALUE> entry = ordered.get(i);
+            if (o.equals(entry.value)) {
+                return remove(i);
             }
         }
         return false;
@@ -277,8 +302,10 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
     /** Remove an object from the list giving the object index.. */
     public boolean remove(int index) {
         if (index >= 0 && index < ordered.size()) {
-            Object key = ordered.get(index);
-            return removeKey(key);
+            Entry<KEY, VALUE> entry = ordered.get(index);
+            this.keyed.remove(entry.key);
+            ordered.remove(index);
+            return true;
         }
         return false;
     }
@@ -299,8 +326,9 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
      * key.
      */
     public HashedListIterator iterator(KEY key) throws NoSuchElementException {
-        if (keyed.containsKey(key)) {
-            return new HashedListIterator(ordered.indexOf(key));
+        Entry<KEY, VALUE> entry = keyed.get(key);
+        if (entry != null) {
+            return new HashedListIterator(ordered.indexOf(entry));
         } else {
             throw new NoSuchElementException("Unknown key for iterator:" + key);
         }
@@ -322,12 +350,13 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
      * requesting an iterator.
      */
     public Object get(Object key) {
-        return keyed.get(key);
+        Entry<KEY, VALUE> entry = keyed.get(key);
+        return entry == null ? null : entry.value;
     }
 
     /** Return the n'th entry from the beginning. */
-    public Object get(int n) throws NoSuchElementException {
-        return keyed.get(ordered.get(n));
+    public VALUE get(int n) throws NoSuchElementException {
+        return ordered.get(n).value;
     }
 
     /**
@@ -344,12 +373,12 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
         if (!keyed.containsKey(oldKey) || keyed.containsKey(newKey)) {
             return false;
         }
-
-        VALUE oldVal = keyed.get(oldKey);
-        int index = ordered.indexOf(oldKey);
-        remove(index);
-        return add(index, newKey, oldVal);
-
+        Entry<KEY, VALUE> oldVal = keyed.get(oldKey);
+        // same entry in hashmap and orderd son only one change.
+        oldVal.key = newKey;
+        keyed.remove(oldKey);
+        keyed.put(newKey, oldVal);
+        return true;
     }
 
     /** Check if the key is included in the list */
@@ -385,7 +414,12 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
     /** Does the HashedList contain this element? */
     @Override
     public boolean contains(Object o) {
-        return keyed.containsValue(o);
+        for (Entry<KEY, VALUE> entry : ordered) {
+            if (o.equals(entry.value)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -393,21 +427,24 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
      */
     @Override
     public boolean containsAll(Collection<?> c) {
-        return keyed.values().containsAll(c);
+        List<?> values = new ArrayList<>(c);
+        for (Entry<KEY, VALUE> entry : ordered) {
+            values.remove(entry.value);
+        }
+        return values.isEmpty();
     }
 
     /** Is the HashedList empty? */
     @Override
     public boolean isEmpty() {
-        return keyed.isEmpty();
+        return ordered.isEmpty();
     }
 
     /** Remove all the elements that are found in another collection. */
     @Override
     public boolean removeAll(Collection<?> c) {
-        Object[] o = c.toArray();
         boolean result = false;
-        for (Object element : o) {
+        for (Object element : c.toArray()) {
             result = result | remove(element);
         }
         return result;
@@ -441,23 +478,32 @@ public abstract class HashedList<KEY, VALUE> implements Collection<VALUE> {
      */
     @Override
     public <T> T[] toArray(T[] o) {
-        return keyed.values().toArray(o);
+        if (o.length < size()) {
+            o = (T[]) Array.newInstance(o.getClass().getComponentType(), size());
+        }
+        for (int index = 0; index < o.length; index++) {
+            o[index] = (T) ordered.get(index).value;
+        }
+        return o;
     }
 
     /**
      * Sort the keys into some desired order.
      */
-    public void sort(Comparator<KEY> comp) {
-        java.util.Collections.sort(ordered, comp);
+    public void sort(final Comparator<KEY> comp) {
+        Comparator<Entry<KEY, VALUE>> entryComparator = new EntryComparator<KEY, VALUE>(comp);
+        java.util.Collections.sort(ordered, entryComparator);
     }
 
-    /**
-     * @return create the next unindexed key.
-     */
-    @SuppressWarnings("unchecked")
-    private KEY createUnindexedKey() {
-        return intToKey(unkeyedIndex++);
+    public abstract KEY keyOfValue(VALUE value);
+
+    @Override
+    public boolean add(VALUE e) {
+        return add(keyOfValue(e), e);
     }
 
-    protected abstract KEY intToKey(int i);
+    @Override
+    public String toString() {
+        return ordered.toString();
+    }
 }

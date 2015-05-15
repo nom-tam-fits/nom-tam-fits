@@ -64,15 +64,15 @@ public class HashedListTest {
         HashedList<Object, Object> h1 = new HashedList<Object, Object>() {
 
             @Override
-            protected Object intToKey(int i) {
-                return Integer.valueOf(i);
+            public Object keyOfValue(Object value) {
+                return value;
             }
         };
         HashedList<Object, Object> h2 = new HashedList<Object, Object>() {
 
             @Override
-            protected Object intToKey(int i) {
-                return Integer.valueOf(i);
+            public Object keyOfValue(Object value) {
+                return value;
             }
 
         };
@@ -172,8 +172,8 @@ public class HashedListTest {
         HashedList<Object, Object> h1 = new HashedList<Object, Object>() {
 
             @Override
-            protected Object intToKey(int i) {
-                return Integer.valueOf(i);
+            public Object keyOfValue(Object value) {
+                return value;
             }
         };
 
@@ -211,12 +211,12 @@ public class HashedListTest {
     }
 
     @Test
-    public void TestCursor() {
+    public void testCursor() {
         HashedList<Object, Object> h1 = new HashedList<Object, Object>() {
 
             @Override
-            protected Object intToKey(int i) {
-                return Integer.valueOf(i);
+            public Object keyOfValue(Object value) {
+                return value;
             }
         };
 

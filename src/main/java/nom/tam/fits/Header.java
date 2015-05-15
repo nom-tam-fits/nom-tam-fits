@@ -79,10 +79,9 @@ public class Header implements FitsElement {
     private HashedList<String, HeaderCard> cards = new HashedList<String, HeaderCard>() {
 
         @Override
-        protected String intToKey(int i) {
-            return Integer.toString(i);
+        public String keyOfValue(HeaderCard value) {
+            return value.getKey();
         }
-
     };
 
     /**
