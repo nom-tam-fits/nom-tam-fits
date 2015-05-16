@@ -1,5 +1,36 @@
 package nom.tam.fits.compress;
 
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,7 +39,7 @@ import nom.tam.fits.FitsException;
 
 public class ExternalBZip2CompressionProvider implements ICompressProvider {
 
-    static InputStream bunzipper(final InputStream pb) throws FitsException {
+    static InputStream bunzipper(final InputStream compressed) throws FitsException {
         String cmd = System.getenv("BZIP_DECOMPRESSOR");
         // Allow the user to have already specified the - option.
         if (cmd.indexOf(" -") < 0) {
@@ -16,43 +47,14 @@ public class ExternalBZip2CompressionProvider implements ICompressProvider {
         }
         final OutputStream out;
         String[] flds = cmd.split(" +");
-        Thread t;
-        Process p;
+        Process proc;
         try {
-            p = new ProcessBuilder(flds).start();
-            out = p.getOutputStream();
-
-            t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        byte[] buf = new byte[16384];
-                        int len;
-                        while ((len = pb.read(buf)) > 0) {
-                            try {
-                                out.write(buf, 0, len);
-                            } catch (Exception e) {
-                                // Skip this. It can happen when we
-                                // stop reading the compressed file in mid
-                                // stream.
-                                break;
-                            }
-                        }
-                        pb.close();
-                        out.close();
-
-                    } catch (IOException e) {
-                        throw new Error("Error reading BZIP compression using: " + System.getenv("BZIP_DECOMPRESSOR"), e);
-                    }
-                }
-            });
+            proc = new ProcessBuilder(flds).start();
+            return new CloseIS(proc, compressed);
 
         } catch (Exception e) {
             throw new FitsException("Error initiating BZIP decompression: " + e);
         }
-        t.start();
-        return new CloseIS(p.getInputStream(), pb, out);
     }
 
     @Override

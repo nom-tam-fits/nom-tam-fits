@@ -127,10 +127,10 @@ public class EnumHeaderTest {
             STScIExt.class
         };
         for (Class<?> class1 : classes) {
-            for (Object enumConst :class1.getEnumConstants()) {
-                ((IFitsHeader)enumConst).comment();
-                ((IFitsHeader)enumConst).key();
-                ((IFitsHeader)enumConst).status();
+            for (Object enumConst : class1.getEnumConstants()) {
+                ((IFitsHeader) enumConst).comment();
+                ((IFitsHeader) enumConst).key();
+                ((IFitsHeader) enumConst).status();
             }
         }
 
