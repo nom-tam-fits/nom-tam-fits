@@ -618,7 +618,10 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * Return the modulo 80 character card image
+     * Return the modulo 80 character card image, the toString tries to preserve
+     * as much as possible of the comment value by reducing the alignment of the
+     * Strings if the comment is longer and if longString is enabled the string
+     * can be splittet into one more card to have more space for the comment.
      */
     @Override
     public String toString() {
