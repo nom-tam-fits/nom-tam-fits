@@ -239,10 +239,10 @@ public class HeaderTest {
         // LONG1
         hdr.removeCard("LONG1");
         assertEquals("deltest", cnt - 1, hdr.getNumberOfCards());
-        assertEquals("deltest", pcnt - 3, hdr.getNumberOfPhysicalCards());
+        assertEquals("deltest", pcnt - 4, hdr.getNumberOfPhysicalCards());
 
         hdr.removeCard("LONG2");
-        assertEquals("deltest2", pcnt - 7, hdr.getNumberOfPhysicalCards());
+        assertEquals("deltest2", pcnt - 8, hdr.getNumberOfPhysicalCards());
         assertEquals("deltest2", cnt - 2, hdr.getNumberOfCards());
     }
 
