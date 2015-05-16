@@ -44,6 +44,7 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Vector;
 
+import nom.tam.fits.compress.CompressionManager;
 import nom.tam.fits.header.Checksum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -398,7 +399,7 @@ public class Fits {
      *            The File object.
      */
     public Fits(File myFile) throws FitsException {
-        this(myFile, FitsUtil.isCompressed(myFile));
+        this(myFile, CompressionManager.isCompressed(myFile));
     }
 
     /**
@@ -451,7 +452,7 @@ public class Fits {
      *                string given.
      **/
     public Fits(String filename) throws FitsException {
-        this(filename, FitsUtil.isCompressed(filename));
+        this(filename, CompressionManager.isCompressed(filename));
     }
 
     /**
@@ -911,7 +912,7 @@ public class Fits {
      * @throws FitsException
      */
     protected void streamInit(InputStream str) throws FitsException {
-        str = FitsUtil.decompress(str);
+        str = CompressionManager.decompress(str);
         if (str instanceof ArrayDataInput) {
             this.dataStr = (ArrayDataInput) str;
         } else {

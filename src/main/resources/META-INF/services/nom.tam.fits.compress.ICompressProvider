@@ -1,0 +1,4 @@
+nom.tam.fits.compress.BasicCompressProvider
+nom.tam.fits.compress.BZip2CompressionProvider
+nom.tam.fits.compress.ExternalBZip2CompressionProvider
+nom.tam.fits.compress.GZipCompressionProvider
