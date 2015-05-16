@@ -433,39 +433,15 @@ public class HeaderCard implements CursorValue<String> {
      */
     public int cardSize() {
         if (this.isString && this.value != null && FitsFactory.isLongStringsEnabled()) {
-            int spaceInFirstCard = HeaderCard.MAX_VALUE_LENGTH;
-            if (FitsFactory.getUseHierarch() && this.key.startsWith("HIERARCH")) {
-                // the hierach eats space from the value.
-                spaceInFirstCard -= this.key.length() - HeaderCard.MAX_KEYWORD_LENGTH;
+            int maxStringValueLength = HeaderCard.MAX_STRING_VALUE_LENGTH;
+            if (FitsFactory.getUseHierarch() && getKey().length() > MAX_KEYWORD_LENGTH) {
+                maxStringValueLength -= getKey().length() - MAX_KEYWORD_LENGTH;
             }
-            int charSize = 2;
-            for (int index = this.value.length() - 1; index >= 0; index--) {
-                if (this.value.charAt(index) == '\'') {
-                    charSize += 2;
-                } else {
-                    charSize += 1;
-                }
-            }
-            // substract the space available in
-            charSize = charSize - spaceInFirstCard;
-            if (charSize > 0) {
-                // ok the string will be spaced out over multiple cards. so take
-                // space in the first card for the &
-                charSize++;
-                // every card has an overhead of 3 chars
-                int cards = charSize / (HeaderCard.MAX_VALUE_LENGTH - 3);
-                int spaceUsedInLastCard = charSize % (HeaderCard.MAX_VALUE_LENGTH - 3);
-                if (spaceUsedInLastCard != 0) {
-                    cards++;
-                }
-                // now check if the comment will trigger an other card
-                if (this.comment != null) {
-                    int spaceLeftInLastCard = charSize - HeaderCard.MAX_VALUE_LENGTH * cards;
-                    if (this.comment.length() > spaceLeftInLastCard) {
-                        cards++;
-                    }
-                }
-                return cards;
+            String stringValue = this.value.replace("'", "''");
+            if (stringValue.length() > maxStringValueLength) {
+                // this is very bad for performance but it is to difficult to
+                // keep the cardSize and the toString compatible at all times
+                return toString().length() / 80;
             }
         }
         return 1;
@@ -642,7 +618,7 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * Return the 80 character card image
+     * Return the modulo 80 character card image
      */
     @Override
     public String toString() {
@@ -695,12 +671,12 @@ public class HeaderCard implements CursorValue<String> {
                 // Pad out a null value.
                 buf.appendSpacesTo(alignPosition);
             }
-            comment.getAdjustedLength(80 - buf.length() - 3);
+            // is there space left for a comment?
+            comment.getAdjustedLength(((80 - buf.length()) % 80) - 3);
             // if there is a comment, add a comment delimiter
             if (!commentHandled && comment.length() > 0) {
                 buf.append(" / ");
             }
-
         } else if (comment.startsWith("= ")) {
             buf.append("  ");
         }

@@ -43,7 +43,13 @@ import static nom.tam.fits.header.extra.NOAOExt.CRVAL2;
 import static nom.tam.fits.header.extra.NOAOExt.CTYPE1;
 import static nom.tam.fits.header.extra.NOAOExt.CTYPE2;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Arrays;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
@@ -52,7 +58,10 @@ import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.TruncatedFileException;
 import nom.tam.fits.utilities.FitsHeaderCardParser;
+import nom.tam.util.AsciiFuncs;
+import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 
@@ -266,6 +275,58 @@ public class HeaderTest {
                 "CONTINUE  'card'                                                                ", card.toString());
 
         FitsFactory.setLongStringsEnabled(false);
+    }
+
+    @Test
+    public void longStringTestAny() throws Exception {
+        try {
+            String value = "0";
+            String comment = "0";
+
+            for (int valueSize = 0; valueSize < 250; valueSize++) {
+                for (int commentSize = 0; commentSize < 50; commentSize++) {
+                    String cardValue = value.substring(0, valueSize);
+                    String cardComment = comment.substring(0, commentSize);
+
+                    FitsFactory.setLongStringsEnabled(false);
+                    checkOneCombination(cardValue, cardComment);
+                    FitsFactory.setLongStringsEnabled(true);
+                    checkOneCombination(cardValue, cardComment);
+
+                    comment = comment + ((Integer.parseInt(comment.substring(comment.length() - 1)) + 1) % 10);
+                }
+                value = value + ((Integer.parseInt(value.substring(value.length() - 1)) + 1) % 10);
+            }
+        } finally {
+            FitsFactory.setLongStringsEnabled(false);
+        }
+
+    }
+
+    /**
+     * splitted in own method, for debugging (drop to frame)
+     * 
+     * @param cardValue
+     * @param cardComment
+     * @throws Exception
+     */
+    private void checkOneCombination(String cardValue, String cardComment) throws Exception {
+        try {
+            HeaderCard headerCard = new HeaderCard("CARD", cardValue, cardComment);
+            String cardString = headerCard.toString();
+            assertEquals(cardString.length(), headerCard.cardSize() * 80);
+            byte[] bytes = new byte[cardString.length() + 160];
+            Arrays.fill(bytes, (byte) ' ');
+            System.arraycopy(AsciiFuncs.getBytes(cardString), 0, bytes, 0, cardString.length());
+            HeaderCard rereadCard = new HeaderCard(new BufferedDataInputStream(new ByteArrayInputStream(bytes)));
+
+            assertEquals(cardValue, rereadCard.getValue());
+            assertEquals(headerCard.getValue(), rereadCard.getValue());
+            assertEquals(cardComment, headerCard.getComment());
+            assertTrue(cardComment.startsWith(rereadCard.getComment() == null ? "" : rereadCard.getComment().replaceAll(" ", "")));
+        } catch (HeaderCardException e) {
+            assertTrue(!FitsFactory.isLongStringsEnabled() && cardValue.length() > 68);
+        }
     }
 
     /**

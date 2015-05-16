@@ -39,6 +39,21 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
+import nom.tam.fits.header.Checksum;
+import nom.tam.fits.header.DataDescription;
+import nom.tam.fits.header.HierarchicalGrouping;
+import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.InstrumentDescription;
+import nom.tam.fits.header.NonStandard;
+import nom.tam.fits.header.ObservationDescription;
+import nom.tam.fits.header.ObservationDurationDescription;
+import nom.tam.fits.header.Standard;
+import nom.tam.fits.header.extra.CXCExt;
+import nom.tam.fits.header.extra.CXCStclSharedExt;
+import nom.tam.fits.header.extra.MaxImDLExt;
+import nom.tam.fits.header.extra.NOAOExt;
+import nom.tam.fits.header.extra.SBFitsExt;
+import nom.tam.fits.header.extra.STScIExt;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -92,4 +107,33 @@ public class EnumHeaderTest {
         Assert.assertEquals(10, hdr.getIntValue("NAXIS1"));
         Assert.assertEquals(20, hdr.getIntValue("NAXIS2"));
     }
+
+    @Test
+    public void testAllHeaders() {
+        Class<?>[] classes = new Class<?>[]{
+            Checksum.class,
+            CXCExt.class,
+            CXCStclSharedExt.class,
+            DataDescription.class,
+            HierarchicalGrouping.class,
+            InstrumentDescription.class,
+            MaxImDLExt.class,
+            NOAOExt.class,
+            NonStandard.class,
+            ObservationDescription.class,
+            ObservationDurationDescription.class,
+            SBFitsExt.class,
+            Standard.class,
+            STScIExt.class
+        };
+        for (Class<?> class1 : classes) {
+            for (Object enumConst :class1.getEnumConstants()) {
+                ((IFitsHeader)enumConst).comment();
+                ((IFitsHeader)enumConst).key();
+                ((IFitsHeader)enumConst).status();
+            }
+        }
+
+    }
+
 }
