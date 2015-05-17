@@ -118,5 +118,4 @@ public class HCompTest {
         bf.write(cmp);
         bf.close();
     }
-
 }
