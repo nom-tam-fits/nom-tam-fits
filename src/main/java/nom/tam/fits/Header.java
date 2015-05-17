@@ -473,45 +473,6 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Look for the continuation part of a COMMENT. The comment may also include
-     * a 'real' comment, e.g.,
-     * 
-     * <pre>
-     *  X = 'AB&'
-     *  CONTINUE 'CDEF' / ABC
-     * </pre>
-     * 
-     * Here we are looking for just the 'CDEF' part of the CONTINUE card.
-     */
-    private String continueString(String input) {
-        if (input == null) {
-            return null;
-        }
-
-        input = input.trim();
-        if (input.length() < 2 || input.charAt(0) != '\'') {
-            return null;
-        }
-
-        for (int i = 1; i < input.length(); i += 1) {
-            char c = input.charAt(i);
-            if (c == '\'') {
-                if (i < input.length() - 1 && input.charAt(i + 1) == c) {
-                    // consecutive quotes -> escaped single quote
-                    // Get rid of the extra quote.
-                    input = input.substring(0, i) + input.substring(i + 1);
-                    continue; // Check the next character.
-                } else {
-                    // Found closing apostrophe
-                    return input.substring(0, i + 1);
-                }
-            }
-        }
-        // Never found a closing apostrophe.
-        return null;
-    }
-
-    /**
      * Delete the card associated with the given key. Nothing occurs if the key
      * is not found.
      * 
@@ -1308,33 +1269,11 @@ public class Header implements FitsElement {
      *            The header key.
      */
     public void removeCard(String key) throws HeaderCardException {
-
         if (this.cards.containsKey(key)) {
             this.iter.setKey(key);
             if (this.iter.hasNext()) {
-                HeaderCard hc = this.iter.next();
-                String val = hc.getValue();
-                boolean delExtensions = FitsFactory.isLongStringsEnabled() && val != null && val.endsWith("&");
+                this.iter.next();
                 this.iter.remove();
-                while (delExtensions) {
-                    hc = this.iter.next();
-                    if (hc == null) {
-                        delExtensions = false;
-                    } else {
-                        if (hc.getKey().equals("CONTINUE")) {
-                            String more = hc.getComment();
-                            more = continueString(more);
-                            if (more != null) {
-                                this.iter.remove();
-                                delExtensions = more.endsWith("&'");
-                            } else {
-                                delExtensions = false;
-                            }
-                        } else {
-                            delExtensions = false;
-                        }
-                    }
-                }
             }
         }
     }

@@ -43,6 +43,7 @@ public class FitsDateTests {
         } else {
             new FitsDateTests().testArgs(args);
         }
+        System.out.println("now=" + FitsDate.getFitsDateString());
     }
 
     @Test
