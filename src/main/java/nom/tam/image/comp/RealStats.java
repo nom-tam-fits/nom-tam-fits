@@ -42,38 +42,6 @@ import nom.tam.util.ArrayFuncs;
  */
 public class RealStats {
 
-    public static void main(String[] args) {
-        java.util.Random r = new java.util.Random(123451);
-
-        double[][] img = new double[100][100];
-        for (int i = 0; i < 100; i += 1) {
-            for (int j = 0; j < 100; j += 1) {
-                double g = r.nextGaussian();
-                img[i][j] = 1000 + .0001 * i + 0.01 * i * j + .1 * j + g;
-            }
-        }
-        RealStats rs = new RealStats(img);
-        System.err.println("N:    " + rs.n);
-        System.err.println("NaNs: " + rs.nNaN);
-        System.err.print("Naxis:" + rs.naxis);
-        if (rs.naxes == null) {
-            System.err.println("  Not rectangular");
-        } else {
-            System.err.print(" [");
-            for (int naxe : rs.naxes) {
-                System.err.print(" " + naxe);
-            }
-            System.err.println("]");
-        }
-        System.err.println("Min:  " + rs.min);
-        System.err.println("Max:  " + rs.max);
-        System.err.println("Sum:  " + rs.sum);
-        System.err.println("Var:  " + rs.var);
-        System.err.println("Avg:  " + rs.avg);
-        System.err.println("Std:  " + rs.std);
-        System.err.println("Noise:" + rs.noise3);
-    }
-
     public boolean flt; // Float versus double
 
     public int n; // Total number of pixels.

@@ -203,25 +203,6 @@ public class TiledImageHDU extends BinaryTableHDU {
         return hdr;
     }
 
-    public static void main(String[] args) throws Exception {
-        Fits f = new Fits(args[0]);
-        ImageHDU im = (ImageHDU) f.readHDU();
-        Fits g = new Fits();
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("compression", "RICE_1");
-        TiledImageHDU tHdu = new TiledImageHDU(im, params);
-        g.addHDU(tHdu);
-        BufferedFile bf = new BufferedFile(args[1], "rw");
-        g.write(bf);
-        bf.close();
-        ImageHDU reconv = tHdu.getImageHDU();
-        bf = new BufferedFile(args[2], "rw");
-        f = new Fits();
-        f.addHDU(reconv);
-        f.write(bf);
-        bf.close();
-    }
-
     /**
      * Create a nil data segment for a basic tiled image.
      * 

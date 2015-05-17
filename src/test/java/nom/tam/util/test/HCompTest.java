@@ -1,4 +1,4 @@
-package nom.tam.image.comp;
+package nom.tam.util.test;
 
 /*
  * #%L
@@ -40,19 +40,30 @@ import java.util.Map;
 
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
+import nom.tam.image.comp.HCompress;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 
+import org.junit.Ignore;
+import org.junit.Test;
+
 /**
  * @author tmcglynn
  */
-public class HCompTester {
+public class HCompTest {
 
-    public static void main(String[] args) throws Exception {
-        File f = new File(args[0]);
+    @Test
+    @Ignore
+    public void testHcompression() throws Exception {
+
+        String hcompressedFile = "";
+        String writeFile = "";
+        String writeFile2 = "";
+
+        File f = new File(hcompressedFile);
         long len = f.length();
-        FileInputStream fs = new FileInputStream(args[0]);
+        FileInputStream fs = new FileInputStream(hcompressedFile);
         byte[] input = new byte[(int) len];
         int need = (int) len;
         int have = 0;
@@ -76,7 +87,7 @@ public class HCompTester {
         int[][] img = (int[][]) ArrayFuncs.curl(a, dims);
         Fits ff = new Fits();
         ff.addHDU(FitsFactory.HDUFactory(img));
-        BufferedFile bf = new BufferedFile(args[1], "rw");
+        BufferedFile bf = new BufferedFile(writeFile, "rw");
         ff.write(bf);
         bf.close();
 
@@ -103,7 +114,7 @@ public class HCompTester {
             sum += element & 0xff;
         }
         System.out.println("Sum is:" + sum);
-        bf = new BufferedFile(args[2], "rw");
+        bf = new BufferedFile(writeFile2, "rw");
         bf.write(cmp);
         bf.close();
     }
