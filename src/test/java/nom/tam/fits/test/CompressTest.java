@@ -295,11 +295,20 @@ public class CompressTest {
         });
         List<URL> classpath = new ArrayList<>();
         for (URL url : ((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs()) {
+            if (url.toString().indexOf("jacoco") >= 0) {
+                // stop the test, not possible with jacoco active.
+                return;
+            }
             if (url.toString().indexOf("compress") < 0) {
+                System.out.println("adding:" + url);
                 classpath.add(url);
             } else {
+                System.out.println("removing:" + url);
                 url.toString();// ignored compression lib
             }
+        }
+        for (URL url : ((URLClassLoader) ClassLoader.getSystemClassLoader()).getURLs()) {
+            System.out.println("system:" + url);
         }
         URLClassLoader cl = new URLClassLoader(classpath.toArray(new URL[classpath.size()]), ClassLoader.getSystemClassLoader());
         thread.setContextClassLoader(cl);
