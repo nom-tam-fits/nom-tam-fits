@@ -305,6 +305,7 @@ public class CompressTest {
         thread.setContextClassLoader(cl);
         thread.start();
         thread.join();
+        System.out.println(assertions);
         assertEquals(assertions.get(0), "ok");
         assertTrue(assertions.get(1) instanceof InvocationTargetException);
         assertEquals(((InvocationTargetException) assertions.get(1)).getCause().getMessage(), "Unable to analyze input stream");
