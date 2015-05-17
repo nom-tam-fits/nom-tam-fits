@@ -34,27 +34,19 @@ package nom.tam.fits.compress;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class BZip2CompressionProvider implements ICompressProvider {
+/**
+ * Indirect apache compresseion access. This indirection keeps the classes
+ * loadable.
+ * 
+ * @author Richard van Nieuwenhoven
+ */
+public class CompressionLibLoaderProtection {
 
-    @Override
-    public InputStream decompress(InputStream in) throws IOException {
-        try {
-            return CompressionLibLoaderProtection.createBZip2Stream(in);
-        } catch (IOException e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new IOException(e);
-        }
+    public static InputStream createBZip2Stream(InputStream in) throws IOException {
+        return new org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream(in);
     }
 
-    @Override
-    public int priority() {
-        return 5;
+    public static InputStream createZStream(InputStream in) throws IOException {
+        return new org.apache.commons.compress.compressors.z.ZCompressorInputStream(in);
     }
-
-    @Override
-    public boolean provides(int mag1, int mag2) {
-        return mag1 == 'B' && mag2 == 'Z';
-    }
-
 }

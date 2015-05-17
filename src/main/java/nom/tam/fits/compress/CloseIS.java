@@ -50,12 +50,15 @@ public class CloseIS extends FilterInputStream {
 
     private IOException exception;
 
-    Thread stdError;
+    private final Thread stdError;
 
-    Thread copier;
+    private final Thread copier;
+
+    private final Process proc;
 
     public CloseIS(Process proc, final InputStream compressed) {
         super(new BufferedInputStream(proc.getInputStream(), CompressionManager.ONE_MEGABYTE));
+        this.proc = proc;
         final InputStream error = proc.getErrorStream();
         this.output = proc.getInputStream();
         this.input = proc.getOutputStream();
@@ -73,7 +76,7 @@ public class CloseIS extends FilterInputStream {
                     error.close();
                     errorText = new String(bytes.toByteArray());
                 } catch (IOException e) {
-                    return;
+                    exception = e;
                 }
             }
         });
@@ -118,19 +121,26 @@ public class CloseIS extends FilterInputStream {
     }
 
     private void handledOccuredException(int result) throws IOException {
+        int exitValue = 0;
         if (result < 0) {
             try {
-                copier.join();
                 stdError.join();
-            } catch (InterruptedException e) {
+                copier.join();
+                exitValue = proc.exitValue();
+            } catch (Exception e) {
+                "".toString();
                 // ignore
             }
         }
-        if (exception != null || errorText != null) {
-            if (errorText != null) {
+        if (exception != null || exitValue != 0) {
+            if (errorText != null && !errorText.trim().isEmpty()) {
                 throw new IOException(errorText, exception);
             } else {
-                throw exception;
+                if (exception == null) {
+                    throw new IOException("exit value was " + exitValue);
+                } else {
+                    throw exception;
+                }
             }
         }
     }

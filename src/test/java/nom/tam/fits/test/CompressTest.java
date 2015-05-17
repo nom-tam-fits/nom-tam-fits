@@ -32,14 +32,25 @@ package nom.tam.fits.test;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsElement;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.compress.CompressionManager;
 
 import org.junit.Test;
 
@@ -224,7 +235,7 @@ public class CompressTest {
         assertEquals("ZCompress", sum, 91806., 0);
     }
 
-    int total(short[][] data) {
+    private int total(short[][] data) {
         int total = 0;
         for (short[] element : data) {
             for (int j = 0; j < element.length; j += 1) {
@@ -234,7 +245,7 @@ public class CompressTest {
         return total;
     }
 
-    int urlRead(String is, boolean comp, boolean useComp) throws Exception {
+    private int urlRead(String is, boolean comp, boolean useComp) throws Exception {
         File fil = new File(is);
 
         String path = fil.getCanonicalPath();
@@ -249,5 +260,54 @@ public class CompressTest {
         short[][] data = (short[][]) f.readHDU().getKernel();
 
         return total(data);
+    }
+
+    @Test
+    public void testWthoutApacheCompression() throws Exception {
+        final List<Object> assertions = new ArrayList<>();
+        Thread thread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                Class<?> clazz;
+                Method method;
+                FileInputStream in1;
+                FileInputStream in2;
+                try {
+                    clazz = Thread.currentThread().getContextClassLoader().loadClass(CompressionManager.class.getName());
+                    method = clazz.getMethod("decompress", InputStream.class);
+                    in1 = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits");
+                    in2 = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits.bz2");
+                } catch (Exception e) {
+                    assertions.add(e);
+                    return;
+                }
+                try {
+                    // first do a normal fits file without compression
+                    method.invoke(clazz, in1);
+                    assertions.add("ok");
+                    // now use the not available compression lib
+                    method.invoke(clazz, in2);
+                } catch (Exception e) {
+                    assertions.add(e);
+                }
+            }
+        });
+        List<URL> classpath = new ArrayList<>();
+        for (URL url : ((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs()) {
+            if (url.toString().indexOf("compress") < 0) {
+                classpath.add(url);
+            } else {
+                url.toString();// ignored compression lib
+            }
+        }
+        URLClassLoader cl = new URLClassLoader(classpath.toArray(new URL[classpath.size()]), Thread.currentThread().getContextClassLoader().getParent());
+        thread.setContextClassLoader(cl);
+        thread.start();
+        thread.join();
+        assertEquals(assertions.get(0), "ok");
+        assertTrue(assertions.get(1) instanceof InvocationTargetException);
+        assertEquals(((InvocationTargetException) assertions.get(1)).getCause().getMessage(), "Unable to analyze input stream");
+
     }
 }

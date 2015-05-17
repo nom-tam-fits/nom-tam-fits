@@ -125,16 +125,24 @@ public class CompressionManager {
     }
 
     private static ICompressProvider selectCompressionProvider(int mag1, int mag2) {
+        return nextCompressionProvider(mag1, mag2, null);
+    }
+
+    protected static ICompressProvider nextCompressionProvider(int mag1, int mag2, ICompressProvider old) {
         ICompressProvider selectedProvider = null;
-        int priority = Integer.MIN_VALUE;
-        ServiceLoader<ICompressProvider> compressionProviders = ServiceLoader.load(ICompressProvider.class);
+        int priority = 0;
+        int maxPriority = Integer.MAX_VALUE;
+        if (old != null) {
+            maxPriority = old.priority();
+        }
+        ServiceLoader<ICompressProvider> compressionProviders = ServiceLoader.load(ICompressProvider.class, Thread.currentThread().getContextClassLoader());
         for (ICompressProvider provider : compressionProviders) {
-            if (provider.priority() > priority && provider.provides(mag1, mag2)) {
+            if (provider.priority() > 0 && provider.priority() > priority && provider.priority() < maxPriority && //
+                    provider != old && provider.provides(mag1, mag2)) {
                 priority = provider.priority();
                 selectedProvider = provider;
             }
         }
         return selectedProvider;
     }
-
 }

@@ -33,17 +33,24 @@ package nom.tam.fits.compress;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Logger;
 
 import nom.tam.fits.FitsException;
 
 public class BasicCompressProvider implements ICompressProvider {
 
-    static InputStream compressInputStream(final InputStream compressed) throws FitsException {
+    private static final Logger LOG = Logger.getLogger(BasicCompressProvider.class.getName());
+
+    private InputStream compressInputStream(final InputStream compressed) throws IOException, FitsException {
         try {
             Process proc = new ProcessBuilder("uncompress", "-c").start();
-
             return new CloseIS(proc, compressed);
         } catch (Exception e) {
+            ICompressProvider next = CompressionManager.nextCompressionProvider(0x1f, 0x9d, this);
+            if (next != null) {
+                LOG.warning("Error initiating .Z decompression: " + e.getMessage() + " trieing alternative decompressor");
+                return next.decompress(compressed);
+            }
             throw new FitsException("Unable to read .Z compressed stream.\nIs `uncompress' in the path?\n:" + e);
         }
     }
@@ -55,7 +62,7 @@ public class BasicCompressProvider implements ICompressProvider {
 
     @Override
     public int priority() {
-        return 5;
+        return 10;
     }
 
     @Override

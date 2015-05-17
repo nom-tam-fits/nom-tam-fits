@@ -34,12 +34,12 @@ package nom.tam.fits.compress;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class BZip2CompressionProvider implements ICompressProvider {
+public class ZCompressionProvider implements ICompressProvider {
 
     @Override
     public InputStream decompress(InputStream in) throws IOException {
         try {
-            return CompressionLibLoaderProtection.createBZip2Stream(in);
+            return CompressionLibLoaderProtection.createZStream(in);
         } catch (IOException e) {
             throw e;
         } catch (Throwable e) {
@@ -54,7 +54,7 @@ public class BZip2CompressionProvider implements ICompressProvider {
 
     @Override
     public boolean provides(int mag1, int mag2) {
-        return mag1 == 'B' && mag2 == 'Z';
+        return mag1 == 0x1f && mag2 == 0x9d;
     }
 
 }

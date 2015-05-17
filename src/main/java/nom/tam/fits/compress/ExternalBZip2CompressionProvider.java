@@ -34,12 +34,15 @@ package nom.tam.fits.compress;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Logger;
 
 import nom.tam.fits.FitsException;
 
 public class ExternalBZip2CompressionProvider implements ICompressProvider {
 
-    static InputStream bunzipper(final InputStream compressed) throws FitsException {
+    private static final Logger LOG = Logger.getLogger(ExternalBZip2CompressionProvider.class.getName());
+
+    private InputStream bunzipper(final InputStream compressed) throws IOException, FitsException {
         String cmd = System.getenv("BZIP_DECOMPRESSOR");
         // Allow the user to have already specified the - option.
         if (cmd.indexOf(" -") < 0) {
@@ -51,8 +54,12 @@ public class ExternalBZip2CompressionProvider implements ICompressProvider {
         try {
             proc = new ProcessBuilder(flds).start();
             return new CloseIS(proc, compressed);
-
         } catch (Exception e) {
+            ICompressProvider next = CompressionManager.nextCompressionProvider('B', 'Z', this);
+            if (next != null) {
+                LOG.warning("Error initiating BZIP decompression: " + e.getMessage() + " trieing alternative decompressor");
+                return next.decompress(compressed);
+            }
             throw new FitsException("Error initiating BZIP decompression: " + e);
         }
     }
