@@ -930,13 +930,16 @@ public class HCompress implements CompressionScheme {
     @Override
     public void initialize(Map<String, String> params) {
         try {
-            System.err.println("NX");
-            this.nx = Integer.parseInt(params.get("nx"));
-            System.err.println("Ny");
-            this.ny = Integer.parseInt(params.get("ny"));
+
+            String nxString = params.get("nx");
+            this.nx = nxString == null ? 1 : Integer.parseInt(nxString);
+
+            String nyString = params.get("ny");
+            this.ny = nyString == null ? 1 : Integer.parseInt(nyString);
             // The scale parameter is supposed to be integer, but FITSIO writes
             // the wrong value here and it can be float. This value is not used.
-            this.inScale = Double.parseDouble(params.get("scale"));
+            String scaleString = params.get("scale");
+            this.inScale = nyString == null ? 0 : Double.parseDouble(scaleString);
 
         } catch (Exception e) {
             throw new IllegalArgumentException("Required HCompress parameters not found:" + e, e);

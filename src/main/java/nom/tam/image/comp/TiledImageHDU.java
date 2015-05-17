@@ -245,7 +245,7 @@ public class TiledImageHDU extends BinaryTableHDU {
 
     private final CompressionScheme cs;
 
-    private Class baseClass;
+    private final Class baseClass;
 
     /**
      * The tile widths in each dimension
@@ -366,6 +366,7 @@ public class TiledImageHDU extends BinaryTableHDU {
 
         int bitpix = old.getIntValue("BITPIX");
         this.zbitpix = bitpix;
+        this.baseClass = TiledImageHDU.bitpixClasses.get(this.zbitpix);
         if (bitpix < 0) {
             RealStats rs = new RealStats(kern);
             double offset = rs.min;
@@ -465,6 +466,7 @@ public class TiledImageHDU extends BinaryTableHDU {
 
         int[] axes = new int[this.hdr.getIntValue("ZNAXIS")];
         this.hdr.getIntValue("ZBITPIX");
+
         int[] tiles = new int[axes.length];
         getDimens(axes, tiles);
 
