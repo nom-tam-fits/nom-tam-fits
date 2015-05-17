@@ -301,7 +301,7 @@ public class CompressTest {
                 url.toString();// ignored compression lib
             }
         }
-        URLClassLoader cl = new URLClassLoader(classpath.toArray(new URL[classpath.size()]), Thread.currentThread().getContextClassLoader().getParent());
+        URLClassLoader cl = new URLClassLoader(classpath.toArray(new URL[classpath.size()]), ClassLoader.getSystemClassLoader());
         thread.setContextClassLoader(cl);
         thread.start();
         thread.join();
