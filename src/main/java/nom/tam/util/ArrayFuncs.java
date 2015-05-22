@@ -338,8 +338,8 @@ public class ArrayFuncs implements PrimitiveInfo {
             if (x.length != y.length) {
                 return;
             }
-            for (Object element : x) {
-                copyArray(x, y);
+            for (int index = 0; index < x.length; index++) {
+                copyArray(x[index], y[index]);
             }
         }
         int len = Array.getLength(original);
