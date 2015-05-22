@@ -268,6 +268,15 @@ public class ArrayFuncs2Test {
             }
         }
         {
+            char[][] copy = new char[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals(deepArray[index1][index2], copy[index1][index2]);
+                }
+            }
+        }
+        {
             short[][] copy = new short[3][3];
             ArrayFuncs.copyInto(deepArray, copy);
             for (int index1 = 0; index1 < copy.length; index1++) {
@@ -326,6 +335,15 @@ public class ArrayFuncs2Test {
         };
         {
             byte[][] copy = new byte[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals(deepArray[index1][index2], copy[index1][index2]);
+                }
+            }
+        }
+        {
+            char[][] copy = new char[3][3];
             ArrayFuncs.copyInto(deepArray, copy);
             for (int index1 = 0; index1 < copy.length; index1++) {
                 for (int index2 = 0; index2 < copy[index1].length; index2++) {
@@ -400,6 +418,15 @@ public class ArrayFuncs2Test {
             }
         }
         {
+            char[][] copy = new char[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals(deepArray[index1][index2], copy[index1][index2]);
+                }
+            }
+        }
+        {
             short[][] copy = new short[3][3];
             ArrayFuncs.copyInto(deepArray, copy);
             for (int index1 = 0; index1 < copy.length; index1++) {
@@ -466,6 +493,15 @@ public class ArrayFuncs2Test {
             }
         }
         {
+            char[][] copy = new char[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals(deepArray[index1][index2], copy[index1][index2], 0.000001);
+                }
+            }
+        }
+        {
             short[][] copy = new short[3][3];
             ArrayFuncs.copyInto(deepArray, copy);
             for (int index1 = 0; index1 < copy.length; index1++) {
@@ -524,6 +560,15 @@ public class ArrayFuncs2Test {
         };
         {
             byte[][] copy = new byte[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals(deepArray[index1][index2], copy[index1][index2], 0.000001);
+                }
+            }
+        }
+        {
+            char[][] copy = new char[3][3];
             ArrayFuncs.copyInto(deepArray, copy);
             for (int index1 = 0; index1 < copy.length; index1++) {
                 for (int index2 = 0; index2 < copy[index1].length; index2++) {
