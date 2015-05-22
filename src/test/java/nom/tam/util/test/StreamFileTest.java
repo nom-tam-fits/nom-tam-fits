@@ -31,12 +31,6 @@ package nom.tam.util.test;
  * #L%
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-
-import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 
 import org.junit.After;
@@ -368,24 +362,6 @@ public class StreamFileTest {
         Assert.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
             Assert.assertEquals("short[" + index + "]", expectedValues[index], values[index], 0);
-        }
-
-    }
-
-    @Test
-    public void testReadFully() throws Exception {
-        PipedInputStream pipeInput = new PipedInputStream(1024);
-        BufferedDataOutputStream out = new BufferedDataOutputStream(new PipedOutputStream(pipeInput));
-        BufferedDataInputStream in = new BufferedDataInputStream(pipeInput);
-        for (int index = 0; index < 255; index++) {
-            out.writeByte(index);
-        }
-        out.close();
-        byte[] readBytes = new byte[255];
-        in.readFully(readBytes);
-        in = new BufferedDataInputStream(new ByteArrayInputStream(readBytes));
-        for (int index = 0; index < readBytes.length; index++) {
-            Assert.assertEquals(index, in.readUnsignedByte());
         }
 
     }
