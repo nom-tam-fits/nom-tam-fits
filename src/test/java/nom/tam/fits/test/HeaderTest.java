@@ -48,6 +48,8 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 
 import nom.tam.fits.BasicHDU;
@@ -87,7 +89,7 @@ public class HeaderTest {
         c.setKey(CTYPE1.key()); // Just practicing moving around!!
         c.add(new HeaderCard(CRPIX1.key(), 150.0, "Reference Pixel X"));
         c.setKey(CTYPE2.key());
-        c.add(new HeaderCard(CRPIX2.key(), 0., "Reference pixel Y"));
+        c.add(new HeaderCard(CRPIX2.key(), BigDecimal.valueOf(0.), "Reference pixel Y"));
         c.add(new HeaderCard("INV2", true, "Invertible axis"));
         c.add(new HeaderCard("SYM2", "YZ SYMMETRIC", "Symmetries..."));
 
@@ -140,6 +142,7 @@ public class HeaderTest {
         c.next();
         c.remove();
         assertEquals("FLT1", 0., hdr.getDoubleValue("FLT1", 0), 0);
+        assertEquals("FLT1", BigDecimal.valueOf(0.).doubleValue(), hdr.getBigDecimalValue("FLT1").doubleValue(), 0.00000000001);
         c.setKey("LOGB1");
         hc = (HeaderCard) c.next();
         assertEquals("AftDel1", "LOGB1", hc.getKey());
@@ -354,7 +357,7 @@ public class HeaderTest {
         assertEquals("NAXIS2a", 300, hdr.getIntValue(NAXISn.n(2), -1));
         assertEquals("NAXIS3", -1, hdr.getIntValue(NAXISn.n(3), -1));
 
-        assertEquals("BITPIX", -32, hdr.getIntValue(BITPIX));
+        assertEquals("BITPIX", BigInteger.valueOf(-32), hdr.getBigIntegerValue(BITPIX.name()));
 
         Cursor c = hdr.iterator();
         HeaderCard hc = (HeaderCard) c.next();
