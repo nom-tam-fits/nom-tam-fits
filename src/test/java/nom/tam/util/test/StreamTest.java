@@ -1,5 +1,37 @@
 package nom.tam.util.test;
 
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.io.ByteArrayInputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
@@ -18,7 +50,7 @@ public class StreamTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        PipedInputStream pipeInput = new PipedInputStream(1024);
+        PipedInputStream pipeInput = new PipedInputStream(10240);
         out = new BufferedDataOutputStream(new PipedOutputStream(pipeInput));
         in = new BufferedDataInputStream(pipeInput);
     }
@@ -47,6 +79,7 @@ public class StreamTest {
         for (int index = 0; index < expectedBools.length; index++) {
             Assert.assertEquals("boolean[" + index + "]", expectedBools[index], bools[index]);
         }
+        Assert.assertEquals(0, in.available());
     }
 
     @Test
@@ -69,10 +102,12 @@ public class StreamTest {
         for (int index = 0; index < expectedChars.length; index++) {
             Assert.assertEquals("char[" + index + "]", expectedChars[index], chars[index]);
         }
+        Assert.assertEquals(0, in.available());
     }
 
     @Test
     public void testDoubleArray() throws Exception {
+        Assert.assertEquals(0, in.available());
         double[] doubles = new double[10];
         double[] expectedDoubles = new double[10];
         for (int index = 0; index < expectedDoubles.length; index++) {
@@ -91,6 +126,7 @@ public class StreamTest {
         for (int index = 0; index < expectedDoubles.length; index++) {
             Assert.assertEquals("double[" + index + "]", expectedDoubles[index], doubles[index], 0);
         }
+        Assert.assertEquals(0, in.available());
     }
 
     @Test
@@ -113,6 +149,7 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             Assert.assertEquals("float[" + index + "]", expectedValues[index], values[index], 0);
         }
+        Assert.assertEquals(0, in.available());
     }
 
     @Test
@@ -135,6 +172,7 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             Assert.assertEquals("int[" + index + "]", expectedValues[index], values[index], 0);
         }
+        Assert.assertEquals(0, in.available());
     }
 
     @Test
@@ -157,6 +195,7 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             Assert.assertEquals("long[" + index + "]", expectedValues[index], values[index], 0);
         }
+        Assert.assertEquals(0, in.available());
     }
 
     @Test
@@ -179,6 +218,7 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             Assert.assertEquals("short[" + index + "]", expectedValues[index], values[index], 0);
         }
+        Assert.assertEquals(0, in.available());
     }
 
     @Test
@@ -201,6 +241,7 @@ public class StreamTest {
         for (int index = 0; index < expectedValue.length; index++) {
             Assert.assertEquals("boolean[" + index + "]", expectedValue[index], value[index]);
         }
+        Assert.assertEquals(0, in.available());
     }
 
     @Test
@@ -219,6 +260,7 @@ public class StreamTest {
         for (int index = 0; index < expectedValue.length; index++) {
             Assert.assertEquals("boolean[" + index + "]", expectedValue[index], value[index]);
         }
+        Assert.assertEquals(0, in.available());
     }
 
     @Test
@@ -229,7 +271,6 @@ public class StreamTest {
             expectedDoubles[index] = (double) index * 3.1415d;
             out.writeDouble(expectedDoubles[index]);
         }
-        out.write(expectedDoubles);
         out.flush();
         for (int index = 0; index < expectedDoubles.length; index++) {
             doubles[index] = in.readDouble();
@@ -238,6 +279,7 @@ public class StreamTest {
         for (int index = 0; index < expectedDoubles.length; index++) {
             Assert.assertEquals("double[" + index + "]", expectedDoubles[index], doubles[index], 0);
         }
+        Assert.assertEquals(0, in.available());
     }
 
     @Test
@@ -256,6 +298,7 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             Assert.assertEquals("float[" + index + "]", expectedValues[index], values[index], 0);
         }
+        Assert.assertEquals(0, in.available());
     }
 
     @Test
@@ -274,6 +317,7 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             Assert.assertEquals("int[" + index + "]", expectedValues[index], values[index], 0);
         }
+        Assert.assertEquals(0, in.available());
     }
 
     @Test
@@ -292,6 +336,7 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             Assert.assertEquals("long[" + index + "]", expectedValues[index], values[index], 0);
         }
+        Assert.assertEquals(0, in.available());
     }
 
     @Test
@@ -310,6 +355,69 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             Assert.assertEquals("short[" + index + "]", expectedValues[index], values[index], 0);
         }
+        Assert.assertEquals(0, in.available());
     }
 
+    @Test
+    public void testReadFully() throws Exception {
+        PipedInputStream pipeInput = new PipedInputStream(1024);
+        BufferedDataOutputStream out = new BufferedDataOutputStream(new PipedOutputStream(pipeInput));
+        BufferedDataInputStream in = new BufferedDataInputStream(pipeInput);
+        for (int index = 0; index < 255; index++) {
+            out.writeByte(index);
+        }
+        out.close();
+        byte[] readBytes = new byte[255];
+        in.readFully(readBytes);
+        in = new BufferedDataInputStream(new ByteArrayInputStream(readBytes));
+        for (int index = 0; index < readBytes.length; index++) {
+            Assert.assertEquals(index, in.readUnsignedByte());
+        }
+        Assert.assertEquals(0, in.available());
+    }
+
+    @Test
+    public void testIntArrayArray() throws Exception {
+        int[][] values = new int[10][10];
+        int[][] expectedValues = new int[10][10];
+        for (int index = 0; index < expectedValues.length; index++) {
+            for (int index2 = 0; index2 < expectedValues[index].length; index2++) {
+                expectedValues[index][index2] = (int) index * 3;
+            }
+        }
+        out.writePrimitiveArray(expectedValues);
+        out.writeArray(expectedValues);
+        out.flush();
+        in.readArray(values);
+        Assert.assertEquals(expectedValues.length, values.length);
+        for (int index = 0; index < expectedValues.length; index++) {
+            for (int index2 = 0; index2 < expectedValues[index].length; index2++) {
+                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2], values[index][index2]);
+                values[index][index2] = 0;
+            }
+        }
+        in.readPrimitiveArray(values);
+        for (int index = 0; index < expectedValues.length; index++) {
+            for (int index2 = 0; index2 < expectedValues[index].length; index2++) {
+                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2], values[index][index2]);
+            }
+        }
+        Assert.assertEquals(0, in.available());
+    }
+
+    @Test
+    public void testString() throws Exception {
+        out.writeUTF("Ein test string");
+        out.flush();
+        Assert.assertEquals("Ein test string", in.readUTF());
+        Assert.assertEquals(0, in.available());
+    }
+
+    @Test
+    public void testWriteUnsignedShort() throws Exception {
+        out.writeShort(0xFFEE);
+        out.flush();
+        Assert.assertEquals(0xFFEE, in.readUnsignedShort());
+        Assert.assertEquals(0, in.available());
+    }
 }

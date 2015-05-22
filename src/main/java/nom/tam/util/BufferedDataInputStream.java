@@ -72,6 +72,9 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     private long primitiveArrayCount;
 
+    /**
+     * reused byte array to read primitives.
+     */
     private final byte[] bb = new byte[8];
 
     /**
@@ -513,15 +516,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
      */
     @Override
     public double readDouble() throws IOException {
-
-        if (read(this.bb, 0, 8) < 8) {
-            throw new EOFException();
-        }
-
-        int i1 = this.bb[0] << 24 | (this.bb[1] & 0xFF) << 16 | (this.bb[2] & 0xFF) << 8 | this.bb[3] & 0xFF;
-        int i2 = this.bb[4] << 24 | (this.bb[5] & 0xFF) << 16 | (this.bb[6] & 0xFF) << 8 | this.bb[7] & 0xFF;
-
-        return Double.longBitsToDouble((long) i1 << 32 | i2 & 0x00000000ffffffffL);
+        return Double.longBitsToDouble(readLong());
     }
 
     /**
@@ -701,7 +696,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
      */
     @Override
     public int readUnsignedByte() throws IOException {
-        return read() | 0x00ff;
+        return read() & 0x00ff;
     }
 
     /**
