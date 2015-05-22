@@ -707,7 +707,7 @@ public class BufferedFileTest {
 
         bf.close();
 
-        bf = new BufferedFile("jtest.fil", "r");
+        bf = new BufferedFile("jtest.fil");
 
         boolean thrown = false;
 
