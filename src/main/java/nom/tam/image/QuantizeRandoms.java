@@ -47,18 +47,6 @@ package nom.tam.image;
  */
 public class QuantizeRandoms {
 
-    public static void main(String[] args) {
-        System.out.println("Starting");
-        QuantizeRandoms r = new QuantizeRandoms();
-        r.computeOffset(0);
-        for (int i = 0; i < 10000; i += 1) {
-            for (int j = 0; j < 100; j += 1) {
-                r.next();
-            }
-            System.out.println("Got:" + r.next());
-        }
-    }
-
     /** The set of 10,000 random numbers used */
     private double[] values;
 

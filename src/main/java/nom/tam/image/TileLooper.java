@@ -119,34 +119,6 @@ public class TileLooper implements Iterable<TileDescriptor> {
         }
     }
 
-    public static void main(String[] args) {
-        if (args.length == 0) {
-            args = new String[]{
-                "512",
-                "600",
-                "100",
-                "50"
-            };
-        }
-        int nx = Integer.parseInt(args[0]);
-        int ny = Integer.parseInt(args[1]);
-        int tx = Integer.parseInt(args[2]);
-        int ty = Integer.parseInt(args[3]);
-        int[] img = new int[]{
-            nx,
-            ny
-        };
-        int[] tile = new int[]{
-            tx,
-            ty
-        };
-        TileLooper tl = new TileLooper(img, tile);
-        for (TileDescriptor td : tl) {
-            System.err.println("Corner:" + td.corner[0] + "," + td.corner[1]);
-            System.err.println("  Size:" + td.size[0] + "," + td.size[1]);
-        }
-    }
-
     private int[] tileIndices;
 
     private final int[] imageSize;

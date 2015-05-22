@@ -104,40 +104,6 @@ import nom.tam.util.BufferedDataOutputStream;
  */
 public class Rice implements CompressionScheme {
 
-    public static void main(String[] args) throws Exception {
-        int[] test = new int[100];
-        for (int i = 0; i < test.length; i += 1) {
-            if (i % 2 != 0) {
-                test[i] = 1000 - 2 * i;
-            } else {
-                test[i] = 1000 + 2 * i;
-            }
-        }
-        Rice comp = new Rice();
-        Map<String, String> init = new HashMap<String, String>();
-        init.put("bitpix", "32");
-        init.put("block", "32");
-        init.put("length", "100");
-        comp.initialize(init);
-
-        ByteArrayOutputStream bo = new ByteArrayOutputStream();
-        BufferedDataOutputStream d = new BufferedDataOutputStream(bo);
-        d.write(test);
-        d.close();
-        byte[] input = bo.toByteArray();
-        byte[] result = comp.compress(input);
-        System.out.println("Result len:" + result.length);
-        for (int i = 0; i < result.length; i += 1) {
-            System.out.printf("%d: %3d %2x\n", i, result[i], result[i]);
-        }
-
-        result = comp.decompress(result, 100);
-        DataInputStream bi = new DataInputStream(new ByteArrayInputStream(result));
-        for (int i = 0; i < 100; i += 1) {
-            System.out.println(i + ": " + bi.readInt());
-        }
-    }
-
     private int block;
 
     private int bitpix;
