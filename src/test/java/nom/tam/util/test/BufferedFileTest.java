@@ -32,6 +32,8 @@ package nom.tam.util.test;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -60,11 +62,11 @@ import org.junit.Test;
  * BufferedDataXPUT classes using the methods of DataXput, the traditional I/O
  * classes, or any combination thereof.
  */
-public class BufferedFileTester {
+public class BufferedFileTest {
 
-    static long lastTime;
+    private long lastTime;
 
-    public static void bufferedFileTest(String filename, int iter, double[] db, double[] db2, float[] fl, float[] fl2, long[] ln, long[] ln2, int[] in, int[] in2, short[] sh,
+    public void bufferedFileTest(String filename, int iter, double[] db, double[] db2, float[] fl, float[] fl2, long[] ln, long[] ln2, int[] in, int[] in2, short[] sh,
             short[] sh2, char[] ch, char[] ch2, byte[] by, byte[] by2, boolean[] bl, boolean[] bl2, int[][][][] multi, int[][][][] multi2) throws Exception {
 
         int dim = db.length;
@@ -189,73 +191,48 @@ public class BufferedFileTester {
         }
 
         System.out.println("BufferedFile Verification:");
-        System.out.println("  An error should be reported for double and float NaN's");
         System.out.println("  Arrays:");
 
         for (int i = 0; i < dim; i += 1) {
-
-            if (db[i] != db2[i]) {
-                System.out.println("     Double error at " + i + " " + db[i] + " " + db2[i]);
+            if (!Double.isNaN(db[i])) {
+                assertFalse("Double error at " + i, db[i] != db2[i]);
             }
-            if (fl[i] != fl2[i]) {
-                System.out.println("     Float error at " + i + " " + fl[i] + " " + fl2[i]);
+            if (!Float.isNaN(fl[i])) {
+                assertFalse("Float error at " + i, fl[i] != fl2[i]);
             }
-            if (in[i] != in2[i]) {
-                System.out.println("     Int error at " + i + " " + in[i] + " " + in2[i]);
-            }
-            if (ln[i] != ln2[i]) {
-                System.out.println("     Long error at " + i + " " + ln[i] + " " + ln2[i]);
-            }
-            if (sh[i] != sh2[i]) {
-                System.out.println("     Short error at " + i + " " + sh[i] + " " + sh2[i]);
-            }
-            if (ch[i] != ch2[i]) {
-                System.out.println("     Char error at " + i + " " + (int) ch[i] + " " + (int) ch2[i]);
-            }
-            if (by[i] != by2[i]) {
-                System.out.println("     Byte error at " + i + " " + by[i] + " " + by2[i]);
-            }
-            if (bl[i] != bl2[i]) {
-                System.out.println("     Bool error at " + i + " " + bl[i] + " " + bl2[i]);
-            }
+            assertFalse("Int error at " + i, in[i] != in2[i]);
+            assertFalse("Long error at " + i, ln[i] != ln2[i]);
+            assertFalse("Short error at " + i, sh[i] != sh2[i]);
+            assertFalse("Char error at " + i, ch[i] != ch2[i]);
+            assertFalse("Byte error at " + i, by[i] != by2[i]);
+            assertFalse("Bool error at " + i, bl[i] != bl2[i]);
         }
 
         System.out.println("  Scalars:");
         // Check the scalars.
-        if (bls != bls2) {
-            System.out.println("     Bool Scalar mismatch:" + bls + " " + bls2);
-        }
-        if (bs != bs2) {
-            System.out.println("     Byte Scalar mismatch:" + bs + " " + bs2);
-        }
-        if (cs != cs2) {
-            System.out.println("     Char Scalar mismatch:" + (int) cs + " " + (int) cs2);
-        }
-        if (ss != ss2) {
-            System.out.println("     Short Scalar mismatch:" + ss + " " + ss2);
-        }
-        if (is != is2) {
-            System.out.println("     Int Scalar mismatch:" + is + " " + is2);
-        }
-        if (ls != ls2) {
-            System.out.println("     Long Scalar mismatch:" + ls + " " + ls2);
-        }
-        if (fs != fs2) {
-            System.out.println("     Float Scalar mismatch:" + fs + " " + fs2);
-        }
-        if (ds != ds2) {
-            System.out.println("     Double Scalar mismatch:" + ds + " " + ds2);
-        }
+
+        assertTrue("mismatch", bls == bls2);
+        assertTrue("mismatch", bs == bs2);
+        assertTrue("mismatch", cs == cs2);
+        assertTrue("mismatch", ss == ss2);
+        assertTrue("mismatch", is == is2);
+        assertTrue("mismatch", ls == ls2);
+        assertTrue("mismatch", fs == fs2);
+        assertTrue("mismatch", ds == ds2);
 
         System.out.println("  Multi: odd rows should match");
         for (int i = 0; i < 10; i += 1) {
             System.out.println("      " + i + " " + multi[i][i][i][i] + " " + multi2[i][i][i][i]);
+            if (i % 2 == 1) {
+                assertEquals(i, multi[i][i][i][i]);
+                assertEquals(i, multi2[i][i][i][i]);
+            }
         }
         System.out.println("Done BufferedFile Tests");
     }
 
-    public static void bufferedStreamTest(String filename, int iter, double[] db, double[] db2, float[] fl, float[] fl2, long[] ln, long[] ln2, int[] in, int[] in2,
-            short[] sh, short[] sh2, char[] ch, char[] ch2, byte[] by, byte[] by2, boolean[] bl, boolean[] bl2, int[][][][] multi, int[][][][] multi2) throws Exception {
+    public void bufferedStreamTest(String filename, int iter, double[] db, double[] db2, float[] fl, float[] fl2, long[] ln, long[] ln2, int[] in, int[] in2, short[] sh,
+            short[] sh2, char[] ch, char[] ch2, byte[] by, byte[] by2, boolean[] bl, boolean[] bl2, int[][][][] multi, int[][][][] multi2) throws Exception {
 
         int dim = db.length;
 
@@ -391,63 +368,36 @@ public class BufferedFileTester {
         }
 
         System.out.println("Stream Verification:");
-        System.out.println("  An error should be reported for double and float NaN's");
         System.out.println("  Arrays:");
 
         for (int i = 0; i < dim; i += 1) {
 
-            if (db[i] != db2[i]) {
-                System.out.println("     Double error at " + i + " " + db[i] + " " + db2[i]);
+            if (!Double.isNaN(db[i])) {
+                assertFalse("Double error at " + i, db[i] != db2[i]);
             }
-            if (fl[i] != fl2[i]) {
-                System.out.println("     Float error at " + i + " " + fl[i] + " " + fl2[i]);
+            if (!Float.isNaN(fl[i])) {
+                assertFalse("Float error at " + i, fl[i] != fl2[i]);
             }
-            if (in[i] != in2[i]) {
-                System.out.println("     Int error at " + i + " " + in[i] + " " + in2[i]);
-            }
-            if (ln[i] != ln2[i]) {
-                System.out.println("     Long error at " + i + " " + ln[i] + " " + ln2[i]);
-            }
-            if (sh[i] != sh2[i]) {
-                System.out.println("     Short error at " + i + " " + sh[i] + " " + sh2[i]);
-            }
-            if (ch[i] != ch2[i]) {
-                System.out.println("     Char error at " + i + " " + (int) ch[i] + " " + (int) ch2[i]);
-            }
-            if (by[i] != by2[i]) {
-                System.out.println("     Byte error at " + i + " " + by[i] + " " + by2[i]);
-            }
-            if (bl[i] != bl2[i]) {
-                System.out.println("     Bool error at " + i + " " + bl[i] + " " + bl2[i]);
-            }
+            assertFalse("Int error at " + i, in[i] != in2[i]);
+            assertFalse("Long error at " + i, ln[i] != ln2[i]);
+            assertFalse("Short error at " + i, sh[i] != sh2[i]);
+            assertFalse("Char error at " + i, ch[i] != ch2[i]);
+            assertFalse("Byte error at " + i, by[i] != by2[i]);
+            assertFalse("Bool error at " + i, bl[i] != bl2[i]);
+
         }
 
         System.out.println("  Scalars:");
         // Check the scalars.
-        if (bls != bls2) {
-            System.out.println("     Bool Scalar mismatch:" + bls + " " + bls2);
-        }
-        if (bs != bs2) {
-            System.out.println("     Byte Scalar mismatch:" + bs + " " + bs2);
-        }
-        if (cs != cs2) {
-            System.out.println("     Char Scalar mismatch:" + (int) cs + " " + (int) cs2);
-        }
-        if (ss != ss2) {
-            System.out.println("     Short Scalar mismatch:" + ss + " " + ss2);
-        }
-        if (is != is2) {
-            System.out.println("     Int Scalar mismatch:" + is + " " + is2);
-        }
-        if (ls != ls2) {
-            System.out.println("     Long Scalar mismatch:" + ls + " " + ls2);
-        }
-        if (fs != fs2) {
-            System.out.println("     Float Scalar mismatch:" + fs + " " + fs2);
-        }
-        if (ds != ds2) {
-            System.out.println("     Double Scalar mismatch:" + ds + " " + ds2);
-        }
+
+        assertTrue("mismatch", bls == bls2);
+        assertTrue("mismatch", bs == bs2);
+        assertTrue("mismatch", cs == cs2);
+        assertTrue("mismatch", ss == ss2);
+        assertTrue("mismatch", is == is2);
+        assertTrue("mismatch", ls == ls2);
+        assertTrue("mismatch", fs == fs2);
+        assertTrue("mismatch", ds == ds2);
 
         System.out.println("  Multi: odd rows should match");
         for (int i = 0; i < 10; i += 1) {
@@ -456,7 +406,7 @@ public class BufferedFileTester {
         System.out.println("Done BufferedStream Tests");
     }
 
-    public static void buffStreamSimpleTest(String filename, int iter, int[] in, int[] in2) throws Exception {
+    public void buffStreamSimpleTest(String filename, int iter, int[] in, int[] in2) throws Exception {
 
         System.out.println("New libraries:  nom.tam.BufferedDataXXputStream");
         System.out.println("                Using non-array I/O");
@@ -482,10 +432,20 @@ public class BufferedFileTester {
         System.out.println("  BDS Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
     }
 
-    static double deltaTime() {
-        long time = BufferedFileTester.lastTime;
-        BufferedFileTester.lastTime = new java.util.Date().getTime();
-        return (BufferedFileTester.lastTime - time) / 1000.;
+    private double deltaTime() {
+        long time = lastTime;
+        lastTime = new java.util.Date().getTime();
+        return (lastTime - time) / 1000.;
+    }
+
+    @Test
+    public void datailTest() throws Exception {
+        doTest("target/bufferedFile.test", 1000, 1);
+    }
+
+    @Test
+    public void datailTest2() throws Exception {
+        doTest("target/bufferedFile2.test", 2000, 4);
     }
 
     /**
@@ -497,18 +457,7 @@ public class BufferedFileTester {
      * random access) S -- BufferedDataXPutStream X -- BufferedDataXPutStream
      * using standard methods
      */
-    public static void main(String[] args) throws Exception {
-
-        String filename = args[0];
-        int dim = 1000;
-        if (args.length > 1) {
-            dim = Integer.parseInt(args[1]);
-        }
-        int iter = 1;
-        if (args.length > 2) {
-            iter = Integer.parseInt(args[2]);
-        }
-
+    public void doTest(String filename, int dim, int iter) throws Exception {
         System.out.println("Allocating arrays.");
         double[] db = new double[dim];
         float[] fl = new float[dim];
@@ -586,29 +535,22 @@ public class BufferedFileTester {
             multi[i][i][i][i] = i;
         }
 
-        if (args.length < 4 || args[3].indexOf('O') >= 0) {
-            standardFileTest(filename, iter, in, in2);
-            standardStreamTest(filename, iter, in, in2);
-        }
+        standardFileTest(filename, iter, in, in2);
+        standardStreamTest(filename, iter, in, in2);
 
-        if (args.length < 4 || args[3].indexOf('X') >= 0) {
-            buffStreamSimpleTest(filename, iter, in, in2);
-        }
+        buffStreamSimpleTest(filename, iter, in, in2);
 
-        if (args.length < 4 || args[3].indexOf('R') >= 0) {
-            bufferedFileTest(filename, iter, db, db2, fl, fl2, ln, ln2, in, in2, sh, sh2, ch, ch2, by, by2, bl, bl2, multi, multi2);
-        }
+        bufferedFileTest(filename, iter, db, db2, fl, fl2, ln, ln2, in, in2, sh, sh2, ch, ch2, by, by2, bl, bl2, multi, multi2);
 
-        if (args.length < 4 || args[3].indexOf('S') >= 0) {
-            bufferedStreamTest(filename, iter, db, db2, fl, fl2, ln, ln2, in, in2, sh, sh2, ch, ch2, by, by2, bl, bl2, multi, multi2);
-        }
+        bufferedStreamTest(filename, iter, db, db2, fl, fl2, ln, ln2, in, in2, sh, sh2, ch, ch2, by, by2, bl, bl2, multi, multi2);
+
     }
 
-    static void resetTime() {
-        BufferedFileTester.lastTime = new java.util.Date().getTime();
+    private void resetTime() {
+        lastTime = new java.util.Date().getTime();
     }
 
-    public static void standardFileTest(String filename, int iter, int[] in, int[] in2) throws Exception {
+    public void standardFileTest(String filename, int iter, int[] in, int[] in2) throws Exception {
         System.out.println("Standard I/O library: java.io.RandomAccessFile");
 
         RandomAccessFile f = new RandomAccessFile(filename, "rw");
@@ -649,7 +591,7 @@ public class BufferedFileTester {
         System.out.println("  SyncRAF Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
     }
 
-    public static void standardStreamTest(String filename, int iter, int[] in, int[] in2) throws Exception {
+    public void standardStreamTest(String filename, int iter, int[] in, int[] in2) throws Exception {
         System.out.println("Standard I/O library: java.io.DataXXputStream");
         System.out.println("                      layered atop a BufferedXXputStream");
 
