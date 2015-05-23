@@ -47,7 +47,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -60,7 +59,6 @@ import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.ImageHDU;
-import nom.tam.fits.TruncatedFileException;
 import nom.tam.fits.utilities.FitsHeaderCardParser;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
@@ -505,4 +503,5 @@ public class HeaderTest {
         c1 = f.getHDU(0).getHeader().findCard(BITPIX.key());
         assertEquals("tuhc2", c1.getComment(), "A byte array");
     }
+
 }

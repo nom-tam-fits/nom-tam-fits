@@ -355,7 +355,9 @@ public class TiledImageHDU extends BinaryTableHDU {
             double bits = Math.log((rs.max - rs.min) / scale) / Math.log(2);
             insertQuantizerKeywords(offset, scale);
             if (bits > 30) {
-                throw new IllegalStateException("Cannot quantize image, noise too large");
+                bits = 30;
+                // throw new
+                // IllegalStateException("Cannot quantize image, noise too large");
             }
 
             this.quant = new Quantizer(scale, offset);
@@ -729,7 +731,7 @@ public class TiledImageHDU extends BinaryTableHDU {
                 }
                 break;
             }
-            case 'L': {
+            case 'J': {
                 long[] temp = (long[]) data;
                 for (int i = pix; i < pix + sz; i += 1) {
                     output.writeLong(temp[i]);

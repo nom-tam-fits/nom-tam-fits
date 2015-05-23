@@ -33,10 +33,14 @@ package nom.tam.fits.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import nom.tam.fits.Data;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.image.comp.TiledImageHDU;
 import nom.tam.util.ArrayFuncs;
@@ -53,17 +57,12 @@ public class TiledTableTest {
         Fits f = new Fits(fileName);
         ImageHDU im = (ImageHDU) f.readHDU();
         Fits g = new Fits();
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("compression", "RICE_1");
-        TiledImageHDU tHdu = new TiledImageHDU(im, params);
-        g.addHDU(tHdu);
         BufferedFile bf = new BufferedFile("target/tiled-test-rice.fits", "rw");
         g.write(bf);
         bf.close();
-        ImageHDU reconv = tHdu.getImageHDU();
         bf = new BufferedFile("target/tiled-test2-rice.fits", "rw");
         f = new Fits();
-        f.addHDU(reconv);
+        f.addHDU(im);
         f.write(bf);
         bf.close();
     }
@@ -74,17 +73,12 @@ public class TiledTableTest {
         Fits f = new Fits(fileName);
         ImageHDU im = (ImageHDU) f.readHDU();
         Fits g = new Fits();
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("compression", "gzip_1");
-        TiledImageHDU tHdu = new TiledImageHDU(im, params);
-        g.addHDU(tHdu);
         BufferedFile bf = new BufferedFile("target/tiled-test-gzip.fits", "rw");
         g.write(bf);
         bf.close();
-        ImageHDU reconv = tHdu.getImageHDU();
         bf = new BufferedFile("target/tiled-test2-gzip.fits", "rw");
         f = new Fits();
-        f.addHDU(reconv);
+        f.addHDU(im);
         f.write(bf);
         bf.close();
     }
@@ -96,23 +90,19 @@ public class TiledTableTest {
         Fits f = new Fits(fileName);
         ImageHDU im = (ImageHDU) f.readHDU();
         Fits g = new Fits();
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("compression", "hcompress");
-        TiledImageHDU tHdu = new TiledImageHDU(im, params);
-        g.addHDU(tHdu);
         BufferedFile bf = new BufferedFile("target/tiled-test-hcompress.fits", "rw");
         g.write(bf);
         bf.close();
-        ImageHDU reconv = tHdu.getImageHDU();
         bf = new BufferedFile("target/tiled-test2-hcompress.fits", "rw");
         f = new Fits();
-        f.addHDU(reconv);
+        f.addHDU(im);
         f.write(bf);
         bf.close();
     }
 
     private String createImage(String ext) throws Exception {
-
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("compression", ext);
         Fits f = new Fits();
 
         byte[][] bimg = new byte[40][40];
@@ -127,28 +117,29 @@ public class TiledTableTest {
         long[][] limg = (long[][]) ArrayFuncs.convertArray(bimg, long.class);
         float[][] fimg = (float[][]) ArrayFuncs.convertArray(bimg, float.class);
         double[][] dimg = (double[][]) ArrayFuncs.convertArray(bimg, double.class);
-        int[][][] img3 = new int[10][20][30];
         for (int i = 0; i < 10; i += 1) {
             for (int j = 0; j < 20; j += 1) {
-                for (int k = 0; k < 30; k += 1) {
-                    img3[i][j][k] = i + j + k;
-                }
+                simg[i][j] = (short) (i + j);
+                iimg[i][j] = i + j;
+                limg[i][j] = i + j;
+                fimg[i][j] = i + j;
+                dimg[i][j] = i + j;
             }
         }
 
-        double[] img1 = (double[]) ArrayFuncs.flatten(dimg);
-
         // Make HDUs of various types.
-        f.addHDU(Fits.makeHDU(bimg));
-        f.addHDU(Fits.makeHDU(simg));
-        f.addHDU(Fits.makeHDU(iimg));
-        f.addHDU(Fits.makeHDU(limg));
-        f.addHDU(Fits.makeHDU(fimg));
-        f.addHDU(Fits.makeHDU(dimg));
-        f.addHDU(Fits.makeHDU(img3));
-        f.addHDU(Fits.makeHDU(img1));
-
-        assertEquals("HDU count before", f.getNumberOfHDUs(), 8);
+        f.addHDU(tiledImageHdu(bimg, params));
+        f.addHDU(tiledImageHdu(simg, params));
+        f.addHDU(tiledImageHdu(iimg, params));
+        f.addHDU(tiledImageHdu(fimg, params));
+        // only 32 bit supported in rice
+        if (!ext.equals("rice")) {
+            f.addHDU(tiledImageHdu(limg, params));
+            f.addHDU(tiledImageHdu(dimg, params));
+            assertEquals("HDU count before", f.getNumberOfHDUs(), 7);
+        } else {
+            assertEquals("HDU count before", f.getNumberOfHDUs(), 5);
+        }
 
         // Write a FITS file.
 
@@ -158,5 +149,10 @@ public class TiledTableTest {
         bf.flush();
         bf.close();
         return filename;
+    }
+
+    private TiledImageHDU tiledImageHdu(Object bimg, Map<String, String> params) throws FitsException, IOException {
+        Data data = ImageHDU.encapsulate(bimg);
+        return new TiledImageHDU(new ImageHDU(ImageHDU.manufactureHeader(data), data), params);
     }
 }

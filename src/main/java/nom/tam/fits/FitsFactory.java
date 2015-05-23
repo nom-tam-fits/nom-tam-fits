@@ -150,7 +150,6 @@ public class FitsFactory {
         }
 
         return HDUFactory(h, d);
-
     }
 
     /**

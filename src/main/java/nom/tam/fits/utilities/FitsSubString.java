@@ -142,6 +142,7 @@ public class FitsSubString {
      */
     public void skip(int count) {
         this.offset += count;
+        this.length -= count;
     }
 
     /**

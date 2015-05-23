@@ -459,6 +459,9 @@ public class Rice implements CompressionScheme {
             } else if (this.bitpix == 32) {
                 this.fsbits = 5;
                 this.fsmax = 25;
+            } else if (this.bitpix == 64) {
+                this.fsbits = 6;
+                this.fsmax = 58;
             } else {
                 throw new IllegalArgumentException("Invalid bitpix for Rice compression");
             }
