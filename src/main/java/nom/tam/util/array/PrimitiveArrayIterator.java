@@ -32,14 +32,14 @@ package nom.tam.util.array;
  */
 
 import java.lang.reflect.Array;
-import java.util.LinkedList;
-import java.util.List;
 
 public class PrimitiveArrayIterator {
 
     private final Object baseArray;
 
     private int[] indexes;
+
+    boolean endOfBaseArray = false;
 
     public PrimitiveArrayIterator(Object baseArray) {
         this.baseArray = baseArray;
@@ -49,10 +49,20 @@ public class PrimitiveArrayIterator {
         if (indexes == null) {
             reset();
         }
-        return getNextLevel(baseArray, indexes, 0);
+        if (indexes.length == 0) {
+            if (endOfBaseArray) {
+                return null;
+            } else {
+                endOfBaseArray = true;
+                return baseArray;
+            }
+        } else {
+            return getNextLevel(baseArray, indexes, 0);
+        }
     }
 
     public void reset() {
+        endOfBaseArray = false;
         int indexSize = 0;
         Class<?> startClass = baseArray.getClass();
         while (startClass.isArray()) {
@@ -96,4 +106,12 @@ public class PrimitiveArrayIterator {
         return clazz;
     }
 
+    public int size() {
+        int size = 0;
+        Object next;
+        while ((next = next()) != null) {
+            size += Array.getLength(next);
+        }
+        return size;
+    }
 }

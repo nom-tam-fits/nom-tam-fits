@@ -91,6 +91,14 @@ public class ArrayManipulationTests {
     }
 
     @Test
+    public void testSize() {
+        Assert.assertEquals(16, new PrimitiveArrayIterator(testArray).size());
+        double[][] testTargetArray = new double[2][8];
+        PrimitiveArrayCopier.copyInto(testArray, testTargetArray);
+        Assert.assertEquals(16, new PrimitiveArrayIterator(testTargetArray).size());
+    }
+
+    @Test
     public void testArrayCopy() {
         double[][] testTargetArray = new double[2][8];
         PrimitiveArrayCopier.copyInto(testArray, testTargetArray);
@@ -124,7 +132,7 @@ public class ArrayManipulationTests {
     }
 
     @Test
-    // @Ignore
+    @Ignore
     public void testEqualArrayCopyPerf() {
 
         int[][] testArray = new int[2000][2000];
