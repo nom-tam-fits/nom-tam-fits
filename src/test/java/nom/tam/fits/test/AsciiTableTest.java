@@ -41,6 +41,7 @@ import nom.tam.fits.Header;
 import nom.tam.fits.TableHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.TestArrayFuncs;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -72,7 +73,7 @@ public class AsciiTableTest {
         }
 
         for (int j = 0; j < 5; j += 1) {
-            assertEquals("ByCol:" + j, true, ArrayFuncs.arrayEquals(inputs[j], outputs[j], 1.e-6, 1.e-14));
+            assertEquals("ByCol:" + j, true, TestArrayFuncs.arrayEquals(inputs[j], outputs[j], 1.e-6, 1.e-14));
         }
 
     }
@@ -111,7 +112,7 @@ public class AsciiTableTest {
         }
 
         for (int j = 0; j < 3; j += 1) {
-            assertEquals("ByRow:" + j, true, ArrayFuncs.arrayEquals(input[j], output[j], 1.e-6, 1.e-14));
+            assertEquals("ByRow:" + j, true, TestArrayFuncs.arrayEquals(input[j], output[j], 1.e-6, 1.e-14));
         }
     }
 
@@ -293,7 +294,7 @@ public class AsciiTableTest {
         Object[] r5 = data.getRow(5);
         String[] st = (String[]) r5[4];
         st[0] = st[0].trim();
-        assertEquals("row5", true, ArrayFuncs.arrayEquals(row, r5, 1.e-6, 1.e-14));
+        assertEquals("row5", true, TestArrayFuncs.arrayEquals(row, r5, 1.e-6, 1.e-14));
     }
 
     // Make sure that null ASCII strings still
@@ -362,7 +363,7 @@ public class AsciiTableTest {
                     st[i] = st[i].trim();
                 }
             }
-            assertEquals("Ascii Columns:" + j, true, ArrayFuncs.arrayEquals(cols[j], col, 1.e-6, 1.e-14));
+            assertEquals("Ascii Columns:" + j, true, TestArrayFuncs.arrayEquals(cols[j], col, 1.e-6, 1.e-14));
         }
     }
 
@@ -376,7 +377,7 @@ public class AsciiTableTest {
             Object[] row = data.getRow(i);
             for (int j = 0; j < data.getNCols(); j += 1) {
                 Object val = data.getElement(i, j);
-                assertEquals("Ascii readElement", true, ArrayFuncs.arrayEquals(val, row[j]));
+                assertEquals("Ascii readElement", true, TestArrayFuncs.arrayEquals(val, row[j]));
             }
         }
     }

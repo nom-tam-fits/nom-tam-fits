@@ -48,6 +48,7 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.TestArrayFuncs;
 
 import org.junit.Test;
 
@@ -643,7 +644,7 @@ public class BufferedFileTest {
     void testArray(ArrayDataInput bf, String label, Object array) throws Exception {
         Object newArray = ArrayFuncs.mimicArray(array, ArrayFuncs.getBaseClass(array));
         bf.readLArray(newArray);
-        boolean state = ArrayFuncs.arrayEquals(array, newArray);
+        boolean state = TestArrayFuncs.arrayEquals(array, newArray);
         assertEquals(label, true, state);
     }
 

@@ -39,6 +39,7 @@ package nom.tam.util.test;
 
 import junit.framework.TestCase;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.TestArrayFuncs;
 
 /**
  * @author Thomas McGlynn
@@ -136,12 +137,12 @@ public class ArrayFuncsTest extends TestCase {
             }
         };
 
-        assertTrue(ArrayFuncs.arrayEquals(null, null));
-        assertFalse(ArrayFuncs.arrayEquals(null, new int[2]));
-        assertTrue(ArrayFuncs.arrayEquals(x, y));
-        assertFalse(ArrayFuncs.arrayEquals(x, z));
-        assertFalse(ArrayFuncs.arrayEquals(x, t));
-        assertTrue(ArrayFuncs.arrayEquals(x[0], z[0]));
+        assertTrue(TestArrayFuncs.arrayEquals(null, null));
+        assertFalse(TestArrayFuncs.arrayEquals(null, new int[2]));
+        assertTrue(TestArrayFuncs.arrayEquals(x, y));
+        assertFalse(TestArrayFuncs.arrayEquals(x, z));
+        assertFalse(TestArrayFuncs.arrayEquals(x, t));
+        assertTrue(TestArrayFuncs.arrayEquals(x[0], z[0]));
     }
 
     /**
@@ -209,7 +210,7 @@ public class ArrayFuncsTest extends TestCase {
 
         ires = (int[][]) ArrayFuncs.convertArray(array, newType, false);
         assertNotSame(array, ires);
-        assertTrue(ArrayFuncs.arrayEquals(array, ires));
+        assertTrue(TestArrayFuncs.arrayEquals(array, ires));
     }
 
     /**
@@ -228,7 +229,7 @@ public class ArrayFuncsTest extends TestCase {
         };
         double[] finish = new double[6];
         ArrayFuncs.copyArray(start, finish);
-        assertTrue(ArrayFuncs.arrayEquals(start, finish));
+        assertTrue(TestArrayFuncs.arrayEquals(start, finish));
     }
 
     /**
@@ -350,11 +351,11 @@ public class ArrayFuncsTest extends TestCase {
 
         double tol = 0.0;
 
-        assertTrue(ArrayFuncs.doubleArrayEquals(x, y, tol));
+        assertTrue(TestArrayFuncs.doubleArrayEquals(x, y, tol));
         x[0] += 1.e-14;
-        assertFalse(ArrayFuncs.doubleArrayEquals(x, y, tol));
+        assertFalse(TestArrayFuncs.doubleArrayEquals(x, y, tol));
         tol = 1.e-13;
-        assertTrue(ArrayFuncs.doubleArrayEquals(x, y, tol));
+        assertTrue(TestArrayFuncs.doubleArrayEquals(x, y, tol));
     }
 
     /**
@@ -386,11 +387,11 @@ public class ArrayFuncsTest extends TestCase {
         System.out.println("floatArrayEquals");
 
         float tol = 0.0F;
-        assertTrue(ArrayFuncs.floatArrayEquals(x, y, tol));
+        assertTrue(TestArrayFuncs.floatArrayEquals(x, y, tol));
         x[0] += 1.e-6f;
-        assertFalse(ArrayFuncs.floatArrayEquals(x, y, tol));
+        assertFalse(TestArrayFuncs.floatArrayEquals(x, y, tol));
         tol = 1.e-5f;
-        assertTrue(ArrayFuncs.floatArrayEquals(x, y, tol));
+        assertTrue(TestArrayFuncs.floatArrayEquals(x, y, tol));
     }
 
     /**
@@ -406,7 +407,7 @@ public class ArrayFuncsTest extends TestCase {
             4
         };
 
-        Object result = nom.tam.util.ArrayFuncs.generateArray(baseType, dims);
+        Object result = nom.tam.util.TestArrayFuncs.generateArray(baseType, dims);
         assertEquals(result.getClass(), int[][][].class);
         int[][][] x = (int[][][]) result;
         assertEquals(x.length, 2);
@@ -448,7 +449,7 @@ public class ArrayFuncsTest extends TestCase {
 
         int[][][] test = new int[2][3][4];
         byte b = 0;
-        ArrayFuncs.testPattern(test, b);
+        TestArrayFuncs.testPattern(test, b);
 
         assertEquals(ArrayFuncs.getBaseArray(test), test[0][0]);
     }
@@ -536,7 +537,7 @@ public class ArrayFuncsTest extends TestCase {
         int[] arr = new int[8];
 
         byte expResult = 0;
-        byte result = nom.tam.util.ArrayFuncs.testPattern(arr, start);
+        byte result = nom.tam.util.TestArrayFuncs.testPattern(arr, start);
         assertEquals(result, (byte) (start + arr.length));
         assertEquals(start, arr[0]);
         assertEquals(start + arr.length - 1, arr[arr.length - 1]);

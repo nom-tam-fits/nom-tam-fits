@@ -39,6 +39,7 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.TestArrayFuncs;
 
 import org.junit.Test;
 
@@ -78,14 +79,14 @@ public class ImageTest {
         Fits f = new Fits(new File("target/image1.fits"));
         BasicHDU[] hdus = f.read();
 
-        assertEquals("fbyte image", true, ArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
-        assertEquals("fshort image", true, ArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
-        assertEquals("fint image", true, ArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
-        assertEquals("flong image", true, ArrayFuncs.arrayEquals(limg, hdus[3].getData().getKernel()));
-        assertEquals("ffloat image", true, ArrayFuncs.arrayEquals(fimg, hdus[4].getData().getKernel()));
-        assertEquals("fdouble image", true, ArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
-        assertEquals("fint3 image", true, ArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
-        assertEquals("fdouble1 image", true, ArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
+        assertEquals("fbyte image", true, TestArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
+        assertEquals("fshort image", true, TestArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
+        assertEquals("fint image", true, TestArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
+        assertEquals("flong image", true, TestArrayFuncs.arrayEquals(limg, hdus[3].getData().getKernel()));
+        assertEquals("ffloat image", true, TestArrayFuncs.arrayEquals(fimg, hdus[4].getData().getKernel()));
+        assertEquals("fdouble image", true, TestArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
+        assertEquals("fint3 image", true, TestArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
+        assertEquals("fdouble1 image", true, TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
     }
 
     @Test
@@ -145,13 +146,13 @@ public class ImageTest {
         BasicHDU[] hdus = f.read();
 
         assertEquals("HDU count after", 8, f.getNumberOfHDUs());
-        assertEquals("byte image", true, ArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
-        assertEquals("short image", true, ArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
-        assertEquals("int image", true, ArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
-        assertEquals("long image", true, ArrayFuncs.arrayEquals(limg, hdus[3].getData().getKernel()));
-        assertEquals("float image", true, ArrayFuncs.arrayEquals(fimg, hdus[4].getData().getKernel()));
-        assertEquals("double image", true, ArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
-        assertEquals("int3 image", true, ArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
-        assertEquals("double1 image", true, ArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
+        assertEquals("byte image", true, TestArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
+        assertEquals("short image", true, TestArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
+        assertEquals("int image", true, TestArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
+        assertEquals("long image", true, TestArrayFuncs.arrayEquals(limg, hdus[3].getData().getKernel()));
+        assertEquals("float image", true, TestArrayFuncs.arrayEquals(fimg, hdus[4].getData().getKernel()));
+        assertEquals("double image", true, TestArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
+        assertEquals("int3 image", true, TestArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
+        assertEquals("double1 image", true, TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
     }
 }

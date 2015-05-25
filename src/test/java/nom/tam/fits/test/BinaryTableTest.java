@@ -43,9 +43,9 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.TestArrayFuncs;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -135,19 +135,19 @@ public class BinaryTableTest {
         BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
         btab = (BinaryTable) bhdu.getData();
 
-        assertEquals("col1", true, ArrayFuncs.arrayEquals(this.floats, bhdu.getColumn(0)));
-        assertEquals("col2", true, ArrayFuncs.arrayEquals(this.vf, bhdu.getColumn(1)));
-        assertEquals("col6", true, ArrayFuncs.arrayEquals(this.vc, bhdu.getColumn(5)));
-        assertEquals("col7", true, ArrayFuncs.arrayEquals(this.complex, bhdu.getColumn(6)));
+        assertEquals("col1", true, TestArrayFuncs.arrayEquals(this.floats, bhdu.getColumn(0)));
+        assertEquals("col2", true, TestArrayFuncs.arrayEquals(this.vf, bhdu.getColumn(1)));
+        assertEquals("col6", true, TestArrayFuncs.arrayEquals(this.vc, bhdu.getColumn(5)));
+        assertEquals("col7", true, TestArrayFuncs.arrayEquals(this.complex, bhdu.getColumn(6)));
 
         String[] col = (String[]) bhdu.getColumn(2);
         for (int i = 0; i < col.length; i += 1) {
             col[i] = col[i].trim();
         }
-        assertEquals("coi3", true, ArrayFuncs.arrayEquals(this.strings, col));
+        assertEquals("coi3", true, TestArrayFuncs.arrayEquals(this.strings, col));
 
-        assertEquals("col4", true, ArrayFuncs.arrayEquals(this.vbool, bhdu.getColumn(3)));
-        assertEquals("col5", true, ArrayFuncs.arrayEquals(this.ints, bhdu.getColumn(4)));
+        assertEquals("col4", true, TestArrayFuncs.arrayEquals(this.vbool, bhdu.getColumn(3)));
+        assertEquals("col5", true, TestArrayFuncs.arrayEquals(this.ints, bhdu.getColumn(4)));
     }
 
     @Test
@@ -192,14 +192,14 @@ public class BinaryTableTest {
 
             int trow = i % 50;
 
-            assertEquals("row4", true, ArrayFuncs.arrayEquals(ba, this.vbool[trow]));
-            assertEquals("row6", true, ArrayFuncs.arrayEquals(fx, this.vf[trow]));
+            assertEquals("row4", true, TestArrayFuncs.arrayEquals(ba, this.vbool[trow]));
+            assertEquals("row6", true, TestArrayFuncs.arrayEquals(fx, this.vf[trow]));
 
         }
         float[][][] cmplx = (float[][][]) btab.getColumn(6);
         for (int i = 0; i < this.vc.length; i += 1) {
             for (int j = 0; j < this.vc[i].length; j += 1) {
-                assertEquals("rowvc" + i + "_" + j, true, ArrayFuncs.arrayEquals(this.vc[i][j], cmplx[i + this.vc.length][j]));
+                assertEquals("rowvc" + i + "_" + j, true, TestArrayFuncs.arrayEquals(this.vc[i][j], cmplx[i + this.vc.length][j]));
             }
         }
         // Fill the table.
@@ -216,8 +216,8 @@ public class BinaryTableTest {
 
             int trow = i % 50;
 
-            assertEquals("row9", true, ArrayFuncs.arrayEquals(ba, this.vbool[trow]));
-            assertEquals("row11", true, ArrayFuncs.arrayEquals(fx, this.vf[trow]));
+            assertEquals("row9", true, TestArrayFuncs.arrayEquals(ba, this.vbool[trow]));
+            assertEquals("row11", true, TestArrayFuncs.arrayEquals(fx, this.vf[trow]));
 
         }
     }
@@ -765,11 +765,11 @@ public class BinaryTableTest {
         bhdu = (BinaryTableHDU) f.getHDU(1);
         float[] xdta = (float[]) bhdu.getElement(4, 1);
 
-        assertEquals("ts1", true, ArrayFuncs.arrayEquals(dta, xdta));
-        assertEquals("ts2", true, ArrayFuncs.arrayEquals(bhdu.getElement(3, 1), this.vf[3]));
-        assertEquals("ts4", true, ArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
+        assertEquals("ts1", true, TestArrayFuncs.arrayEquals(dta, xdta));
+        assertEquals("ts2", true, TestArrayFuncs.arrayEquals(bhdu.getElement(3, 1), this.vf[3]));
+        assertEquals("ts4", true, TestArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
 
-        assertEquals("ts5", true, ArrayFuncs.arrayEquals(bhdu.getElement(4, 1), dta));
+        assertEquals("ts5", true, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), dta));
 
         float tvf[] = new float[]{
             101,
@@ -780,9 +780,9 @@ public class BinaryTableTest {
         this.vf[4] = tvf;
 
         bhdu.setColumn(1, this.vf);
-        assertEquals("ts6", true, ArrayFuncs.arrayEquals(bhdu.getElement(3, 1), this.vf[3]));
-        assertEquals("ts7", true, ArrayFuncs.arrayEquals(bhdu.getElement(4, 1), this.vf[4]));
-        assertEquals("ts8", true, ArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
+        assertEquals("ts6", true, TestArrayFuncs.arrayEquals(bhdu.getElement(3, 1), this.vf[3]));
+        assertEquals("ts7", true, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), this.vf[4]));
+        assertEquals("ts8", true, TestArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
 
         bdos = new BufferedDataOutputStream(new FileOutputStream("target/bt2b.fits"));
         f.write(bdos);
@@ -790,9 +790,9 @@ public class BinaryTableTest {
 
         f = new Fits("target/bt2b.fits");
         bhdu = (BinaryTableHDU) f.getHDU(1);
-        assertEquals("ts9", true, ArrayFuncs.arrayEquals(bhdu.getElement(3, 1), this.vf[3]));
-        assertEquals("ts10", true, ArrayFuncs.arrayEquals(bhdu.getElement(4, 1), this.vf[4]));
-        assertEquals("ts11", true, ArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
+        assertEquals("ts9", true, TestArrayFuncs.arrayEquals(bhdu.getElement(3, 1), this.vf[3]));
+        assertEquals("ts10", true, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), this.vf[4]));
+        assertEquals("ts11", true, TestArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
 
         Object[] rw = bhdu.getRow(4);
 
@@ -807,10 +807,10 @@ public class BinaryTableTest {
         rw[1] = trw;
 
         bhdu.setRow(4, rw);
-        assertEquals("ts12", true, ArrayFuncs.arrayEquals(bhdu.getElement(3, 1), this.vf[3]));
-        assertEquals("ts13", false, ArrayFuncs.arrayEquals(bhdu.getElement(4, 1), this.vf[4]));
-        assertEquals("ts14", true, ArrayFuncs.arrayEquals(bhdu.getElement(4, 1), trw));
-        assertEquals("ts15", true, ArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
+        assertEquals("ts12", true, TestArrayFuncs.arrayEquals(bhdu.getElement(3, 1), this.vf[3]));
+        assertEquals("ts13", false, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), this.vf[4]));
+        assertEquals("ts14", true, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), trw));
+        assertEquals("ts15", true, TestArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
 
         bdos = new BufferedDataOutputStream(new FileOutputStream("target/bt2c.fits"));
         f.write(bdos);
@@ -818,10 +818,10 @@ public class BinaryTableTest {
 
         f = new Fits("target/bt2c.fits");
         bhdu = (BinaryTableHDU) f.getHDU(1);
-        assertEquals("ts16", true, ArrayFuncs.arrayEquals(bhdu.getElement(3, 1), this.vf[3]));
-        assertEquals("ts17", false, ArrayFuncs.arrayEquals(bhdu.getElement(4, 1), this.vf[4]));
-        assertEquals("ts18", true, ArrayFuncs.arrayEquals(bhdu.getElement(4, 1), trw));
-        assertEquals("ts19", true, ArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
+        assertEquals("ts16", true, TestArrayFuncs.arrayEquals(bhdu.getElement(3, 1), this.vf[3]));
+        assertEquals("ts17", false, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), this.vf[4]));
+        assertEquals("ts18", true, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), trw));
+        assertEquals("ts19", true, TestArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
     }
 
     @Test
@@ -881,7 +881,7 @@ public class BinaryTableTest {
                 }
                 int n = Array.getLength(data[i]);
 
-                assertEquals("DataC" + i, true, ArrayFuncs.arrayEquals(data[i], col));
+                assertEquals("DataC" + i, true, TestArrayFuncs.arrayEquals(data[i], col));
             }
 
         } catch (Exception e) {
@@ -949,7 +949,7 @@ public class BinaryTableTest {
                     st[j] = st[j].trim();
                 }
             }
-            assertEquals("Data" + i, true, ArrayFuncs.arrayEquals(data[i], col));
+            assertEquals("Data" + i, true, TestArrayFuncs.arrayEquals(data[i], col));
         }
     }
 
@@ -982,7 +982,7 @@ public class BinaryTableTest {
             assertEquals("var2", data.length, hdr.getIntValue("TFIELDS"));
 
             for (int i = 0; i < data.length; i += 1) {
-                assertEquals("vardata" + i, true, ArrayFuncs.arrayEquals(data[i], bhdu.getColumn(i)));
+                assertEquals("vardata" + i, true, TestArrayFuncs.arrayEquals(data[i], bhdu.getColumn(i)));
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);
