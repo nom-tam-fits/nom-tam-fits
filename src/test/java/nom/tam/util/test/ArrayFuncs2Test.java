@@ -32,6 +32,9 @@ package nom.tam.util.test;
  */
 
 import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.TestArrayFuncs;
 
@@ -690,4 +693,20 @@ public class ArrayFuncs2Test {
         }
     }
 
+    @Test
+    public void testReverse() {
+        int[] data = {
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+        };
+        int[] dataReversed = ArrayFuncs.reverseIndices(data);
+        assertEquals("[9, 8, 7, 6, 5, 4, 3, 2, 1]", Arrays.toString(dataReversed));
+    }
 }

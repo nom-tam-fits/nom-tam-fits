@@ -31,6 +31,8 @@ package nom.tam.fits;
  * #L%
  */
 
+import java.io.PrintStream;
+
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 
@@ -172,44 +174,44 @@ public class BinaryTableHDU extends TableHDU {
      * Print out some information about this HDU.
      */
     @Override
-    public void info() {
+    public void info(PrintStream stream) {
 
         BinaryTable myData = (BinaryTable) this.myData;
 
-        System.out.println("  Binary Table");
-        System.out.println("      Header Information:");
+        stream.println("  Binary Table");
+        stream.println("      Header Information:");
 
         int nhcol = this.myHeader.getIntValue("TFIELDS", -1);
         int nrow = this.myHeader.getIntValue("NAXIS2", -1);
         int rowsize = this.myHeader.getIntValue("NAXIS1", -1);
 
-        System.out.print("          " + nhcol + " fields");
-        System.out.println(", " + nrow + " rows of length " + rowsize);
+        stream.print("          " + nhcol + " fields");
+        stream.println(", " + nrow + " rows of length " + rowsize);
 
         for (int i = 1; i <= nhcol; i += 1) {
-            System.out.print("           " + i + ":");
-            prtField("Name", "TTYPE" + i);
-            prtField("Format", "TFORM" + i);
-            prtField("Dimens", "TDIM" + i);
-            System.out.println("");
+            stream.print("           " + i + ":");
+            prtField(stream, "Name", "TTYPE" + i);
+            prtField(stream, "Format", "TFORM" + i);
+            prtField(stream, "Dimens", "TDIM" + i);
+            stream.println("");
         }
 
-        System.out.println("      Data Information:");
+        stream.println("      Data Information:");
         if (myData == null || this.table.getNRows() == 0 || this.table.getNCols() == 0) {
-            System.out.println("         No data present");
+            stream.println("         No data present");
             if (this.table.getHeapSize() > 0) {
-                System.out.println("         Heap size is: " + this.table.getHeapSize() + " bytes");
+                stream.println("         Heap size is: " + this.table.getHeapSize() + " bytes");
             }
         } else {
 
-            System.out.println("          Number of rows=" + this.table.getNRows());
-            System.out.println("          Number of columns=" + this.table.getNCols());
+            stream.println("          Number of rows=" + this.table.getNRows());
+            stream.println("          Number of columns=" + this.table.getNCols());
             if (this.table.getHeapSize() > 0) {
-                System.out.println("          Heap size is: " + this.table.getHeapSize() + " bytes");
+                stream.println("          Heap size is: " + this.table.getHeapSize() + " bytes");
             }
             Object[] cols = this.table.getFlatColumns();
             for (int i = 0; i < cols.length; i += 1) {
-                System.out.println("           " + i + ":" + ArrayFuncs.arrayDescription(cols[i]));
+                stream.println("           " + i + ":" + ArrayFuncs.arrayDescription(cols[i]));
             }
         }
     }
@@ -228,10 +230,10 @@ public class BinaryTableHDU extends TableHDU {
         return manufactureData(this.myHeader);
     }
 
-    private void prtField(String type, String field) {
+    private void prtField(PrintStream stream, String type, String field) {
         String val = this.myHeader.getStringValue(field);
         if (val != null) {
-            System.out.print(type + '=' + val + "; ");
+            stream.print(type + '=' + val + "; ");
         }
     }
 

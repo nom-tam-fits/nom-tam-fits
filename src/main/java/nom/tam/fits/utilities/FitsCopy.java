@@ -54,7 +54,7 @@ public class FitsCopy {
                     System.out.println("\n\nExtension " + i + ":\n");
                 }
                 i += 1;
-                h.info();
+                h.info(System.out);
             }
         } while (h != null);
         BufferedFile bf = new BufferedFile(args[1], "rw");

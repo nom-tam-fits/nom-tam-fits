@@ -32,6 +32,7 @@ package nom.tam.fits;
  */
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Date;
 
 import nom.tam.fits.header.IFitsHeader;
@@ -421,7 +422,7 @@ public abstract class BasicHDU implements FitsElement {
     /**
      * Print out some information about this HDU.
      */
-    public abstract void info();
+    public abstract void info(PrintStream stream);
 
     /**
      * Create a Data object to correspond to the header description.

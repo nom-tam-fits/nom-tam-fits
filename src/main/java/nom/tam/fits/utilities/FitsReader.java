@@ -53,7 +53,7 @@ public class FitsReader {
                     System.out.println("\n\nExtension " + i + ":\n");
                 }
                 i += 1;
-                h.info();
+                h.info(System.out);
             }
         } while (h != null);
 

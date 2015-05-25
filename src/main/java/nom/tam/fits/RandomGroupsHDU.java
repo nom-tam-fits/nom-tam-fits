@@ -31,6 +31,8 @@ package nom.tam.fits;
  * #L%
  */
 
+import java.io.PrintStream;
+
 import nom.tam.util.ArrayFuncs;
 
 /**
@@ -216,20 +218,20 @@ public class RandomGroupsHDU extends BasicHDU {
      * Display structural information about the current HDU.
      */
     @Override
-    public void info() {
+    public void info(PrintStream stream) {
 
-        System.out.println("Random Groups HDU");
+        stream.println("Random Groups HDU");
         if (this.myHeader != null) {
-            System.out.println("   HeaderInformation:");
-            System.out.println("     Ngroups:" + this.myHeader.getIntValue("GCOUNT"));
-            System.out.println("     Npar:   " + this.myHeader.getIntValue("PCOUNT"));
-            System.out.println("     BITPIX: " + this.myHeader.getIntValue("BITPIX"));
-            System.out.println("     NAXIS:  " + this.myHeader.getIntValue("NAXIS"));
+            stream.println("   HeaderInformation:");
+            stream.println("     Ngroups:" + this.myHeader.getIntValue("GCOUNT"));
+            stream.println("     Npar:   " + this.myHeader.getIntValue("PCOUNT"));
+            stream.println("     BITPIX: " + this.myHeader.getIntValue("BITPIX"));
+            stream.println("     NAXIS:  " + this.myHeader.getIntValue("NAXIS"));
             for (int i = 0; i < this.myHeader.getIntValue("NAXIS"); i += 1) {
-                System.out.println("      NAXIS" + (i + 1) + "= " + this.myHeader.getIntValue("NAXIS" + (i + 1)));
+                stream.println("      NAXIS" + (i + 1) + "= " + this.myHeader.getIntValue("NAXIS" + (i + 1)));
             }
         } else {
-            System.out.println("    No Header Information");
+            stream.println("    No Header Information");
         }
 
         Object[][] data = null;
@@ -242,11 +244,11 @@ public class RandomGroupsHDU extends BasicHDU {
         }
 
         if (data == null || data.length < 1 || data[0].length != 2) {
-            System.out.println("    Invalid/unreadable data");
+            stream.println("    Invalid/unreadable data");
         } else {
-            System.out.println("    Number of groups:" + data.length);
-            System.out.println("    Parameters: " + nom.tam.util.ArrayFuncs.arrayDescription(data[0][0]));
-            System.out.println("    Data:" + nom.tam.util.ArrayFuncs.arrayDescription(data[0][1]));
+            stream.println("    Number of groups:" + data.length);
+            stream.println("    Parameters: " + nom.tam.util.ArrayFuncs.arrayDescription(data[0][0]));
+            stream.println("    Data:" + nom.tam.util.ArrayFuncs.arrayDescription(data[0][1]));
         }
     }
 

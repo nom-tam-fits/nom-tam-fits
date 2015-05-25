@@ -34,6 +34,8 @@ package nom.tam.fits;
 import java.io.EOFException;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -47,6 +49,8 @@ import nom.tam.util.TableException;
  * This class defines the methods for accessing FITS binary table data.
  */
 public class BinaryTable extends Data implements TableData {
+
+    private static final Logger LOG = Logger.getLogger(BinaryTable.class.getName());
 
     final static int COL_CONSTANT = 0;
 
@@ -523,11 +527,7 @@ public class BinaryTable extends Data implements TableData {
      */
     @Override
     public int addRow(Object[] o) throws FitsException {
-
-        if (this.table == null) {
-            getData();
-        }
-
+        ensureData();
         if (this.nCol == 0 && this.nRow == 0) {
             for (Object element : o) {
                 addColumn(o);
@@ -873,7 +873,7 @@ public class BinaryTable extends Data implements TableData {
      */
     @Override
     public void deleteColumns(int start, int len) throws FitsException {
-        getData();
+        ensureData();
         try {
             this.rowLen = this.table.deleteColumns(start, len);
             this.nCol -= len;
@@ -893,7 +893,7 @@ public class BinaryTable extends Data implements TableData {
     @Override
     public void deleteRows(int row, int len) throws FitsException {
         try {
-            getData();
+            ensureData();
             this.table.deleteRows(row, len);
             this.nRow -= len;
         } catch (TableException e) {
@@ -1080,21 +1080,27 @@ public class BinaryTable extends Data implements TableData {
      */
     @Override
     public Object getColumn(int col) throws FitsException {
-
-        if (this.table == null) {
-            getData();
-        }
-
+        ensureData();
         Object res = getFlattenedColumn(col);
         res = encurl(res, col, this.nRow);
         return res;
     }
 
+    private void ensureData() throws FitsException {
+        getData();
+    }
+
+    private void ensureDataSilent() {
+        try {
+            getData();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "reading data of binary table failed!", e);
+        }
+    }
+
     @Override
     public Object getData() throws FitsException {
-
         if (this.table == null) {
-
             if (this.currInput == null) {
                 throw new FitsException("Cannot find input for deferred read");
             }
@@ -1130,9 +1136,9 @@ public class BinaryTable extends Data implements TableData {
         }
 
         Object ele;
-        if (isVarCol(j) && this.table == null) {
+        if (isVarCol(j)) {
             // Have to read in entire data set.
-            getData();
+            ensureData();
         }
 
         if (this.table == null) {
@@ -1184,12 +1190,7 @@ public class BinaryTable extends Data implements TableData {
     }
 
     public Object[] getFlatColumns() {
-        if (this.table == null) {
-            try {
-                getData();
-            } catch (FitsException e) {
-            }
-        }
+        ensureDataSilent();
         return this.table.getColumns();
     }
 
@@ -1202,15 +1203,10 @@ public class BinaryTable extends Data implements TableData {
      * @param col
      */
     public Object getFlattenedColumn(int col) throws FitsException {
-
-        if (this.table == null) {
-            getData();
-        }
-
+        ensureData();
         if (!validColumn(col)) {
             throw new FitsException("Invalid column");
         }
-
         Object res = this.table.getColumn(col);
         return columnToArray(col, res, this.nRow);
     }
@@ -1281,10 +1277,7 @@ public class BinaryTable extends Data implements TableData {
      *            The column of the element.
      */
     public Object getRawElement(int i, int j) throws FitsException {
-
-        if (this.table == null) {
-            getData();
-        }
+        ensureData();
         return this.table.getElement(i, j);
     }
 
@@ -1367,12 +1360,7 @@ public class BinaryTable extends Data implements TableData {
     }
 
     public char[] getTypes() {
-        if (this.table == null) {
-            try {
-                getData();
-            } catch (FitsException e) {
-            }
-        }
+        ensureDataSilent();
         return this.table.getTypes();
     }
 
@@ -1783,9 +1771,7 @@ public class BinaryTable extends Data implements TableData {
      */
     @Override
     public void setElement(int i, int j, Object o) throws FitsException {
-
-        getData();
-
+        ensureData();
         try {
             if (isVarCol(j)) {
 
@@ -1826,10 +1812,7 @@ public class BinaryTable extends Data implements TableData {
      *                differs from the original.
      */
     public void setFlattenedColumn(int col, Object data) throws FitsException {
-
-        if (this.table == null) {
-            getData();
-        }
+        ensureData();
 
         Object oldCol = this.table.getColumn(col);
         if (data.getClass() != oldCol.getClass() || Array.getLength(data) != Array.getLength(oldCol)) {
@@ -1854,11 +1837,7 @@ public class BinaryTable extends Data implements TableData {
      */
     @Override
     public void setRow(int row, Object data[]) throws FitsException {
-
-        if (this.table == null) {
-            getData();
-        }
-
+        ensureData();
         if (data.length != getNCols()) {
             throw new FitsException("Updated row size does not agree with table");
         }
@@ -1911,8 +1890,7 @@ public class BinaryTable extends Data implements TableData {
     /** Write the table, heap and padding */
     @Override
     public void write(ArrayDataOutput os) throws FitsException {
-
-        getData();
+        ensureData();
         try {
 
             this.table.write(os);

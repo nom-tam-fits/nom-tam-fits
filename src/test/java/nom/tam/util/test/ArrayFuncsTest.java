@@ -1,9 +1,3 @@
-/*
- * ArrayFuncsTest.java
- * JUnit based test
- *
- * Created on December 2, 2007, 7:19 PM
- */
 package nom.tam.util.test;
 
 /*
@@ -542,4 +536,5 @@ public class ArrayFuncsTest extends TestCase {
         assertEquals(start, arr[0]);
         assertEquals(start + arr.length - 1, arr[arr.length - 1]);
     }
+
 }

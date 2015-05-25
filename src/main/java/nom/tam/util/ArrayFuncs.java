@@ -728,7 +728,7 @@ public class ArrayFuncs implements PrimitiveInfo {
      * an array of indices in FITS order that you wish to have in Java order.
      */
     public static int[] reverseIndices(int[] indices) {
-        int[] result = indices.clone();
+        int[] result = new int[indices.length];
         int len = indices.length;
         for (int i = 0; i < indices.length; i += 1) {
             result[len - i - 1] = indices[i];

@@ -37,10 +37,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Data;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
-import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.image.comp.TiledImageHDU;
 import nom.tam.util.ArrayFuncs;
@@ -72,6 +72,8 @@ public class TiledTableTest {
         String fileName = createImage("gzip");
         Fits f = new Fits(fileName);
         ImageHDU im = (ImageHDU) f.readHDU();
+        BinaryTableHDU hdu = (BinaryTableHDU) f.readHDU();
+        Data data = new TiledImageHDU(hdu).getImageHDU().getData();
         Fits g = new Fits();
         BufferedFile bf = new BufferedFile("target/tiled-test-gzip.fits", "rw");
         g.write(bf);

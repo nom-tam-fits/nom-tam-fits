@@ -31,6 +31,8 @@ package nom.tam.fits;
  * #L%
  */
 
+import java.io.PrintStream;
+
 import nom.tam.util.ArrayFuncs;
 
 /** Holder for unknown data types. */
@@ -104,11 +106,10 @@ public class UndefinedHDU extends BasicHDU {
      * Print out some information about this HDU.
      */
     @Override
-    public void info() {
-
-        System.out.println("  Unhandled/Undefined/Unknown Type");
-        System.out.println("  XTENSION=" + this.myHeader.getStringValue("XTENSION").trim());
-        System.out.println("  Apparent size:" + this.myData.getTrueSize());
+    public void info(PrintStream stream) {
+        stream.println("  Unhandled/Undefined/Unknown Type");
+        stream.println("  XTENSION=" + this.myHeader.getStringValue("XTENSION").trim());
+        stream.println("  Apparent size:" + this.myData.getTrueSize());
     }
 
     /**

@@ -31,6 +31,8 @@ package nom.tam.fits;
  * #L%
  */
 
+import java.io.PrintStream;
+
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
 
@@ -143,30 +145,30 @@ public class ImageHDU extends BasicHDU {
      * Print out some information about this HDU.
      */
     @Override
-    public void info() {
+    public void info(PrintStream stream) {
         if (isHeader(this.myHeader)) {
-            System.out.println("  Image");
+            stream.println("  Image");
         } else {
-            System.out.println("  Image (bad header)");
+            stream.println("  Image (bad header)");
         }
 
-        System.out.println("      Header Information:");
-        System.out.println("         BITPIX=" + this.myHeader.getIntValue("BITPIX", -1));
+        stream.println("      Header Information:");
+        stream.println("         BITPIX=" + this.myHeader.getIntValue("BITPIX", -1));
         int naxis = this.myHeader.getIntValue("NAXIS", -1);
-        System.out.println("         NAXIS=" + naxis);
+        stream.println("         NAXIS=" + naxis);
         for (int i = 1; i <= naxis; i += 1) {
-            System.out.println("         NAXIS" + i + "=" + this.myHeader.getIntValue("NAXIS" + i, -1));
+            stream.println("         NAXIS" + i + "=" + this.myHeader.getIntValue("NAXIS" + i, -1));
         }
 
-        System.out.println("      Data information:");
+        stream.println("      Data information:");
         try {
             if (this.myData.getData() == null) {
-                System.out.println("        No Data");
+                stream.println("        No Data");
             } else {
-                System.out.println("         " + ArrayFuncs.arrayDescription(this.myData.getData()));
+                stream.println("         " + ArrayFuncs.arrayDescription(this.myData.getData()));
             }
         } catch (Exception e) {
-            System.out.println("      Unable to get data");
+            stream.println("      Unable to get data");
         }
     }
 

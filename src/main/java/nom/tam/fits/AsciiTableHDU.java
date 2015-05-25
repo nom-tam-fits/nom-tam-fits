@@ -31,6 +31,8 @@ package nom.tam.fits;
  * #L%
  */
 
+import java.io.PrintStream;
+
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.Cursor;
@@ -182,16 +184,16 @@ public class AsciiTableHDU extends TableHDU {
      * Print a little information about the data set.
      */
     @Override
-    public void info() {
-        System.out.println("ASCII Table:");
-        System.out.println("  Header:");
-        System.out.println("    Number of fields:" + this.myHeader.getIntValue("TFIELDS"));
-        System.out.println("    Number of rows:  " + this.myHeader.getIntValue("NAXIS2"));
-        System.out.println("    Length of row:   " + this.myHeader.getIntValue("NAXIS1"));
-        System.out.println("  Data:");
+    public void info(PrintStream stream) {
+        stream.println("ASCII Table:");
+        stream.println("  Header:");
+        stream.println("    Number of fields:" + this.myHeader.getIntValue("TFIELDS"));
+        stream.println("    Number of rows:  " + this.myHeader.getIntValue("NAXIS2"));
+        stream.println("    Length of row:   " + this.myHeader.getIntValue("NAXIS1"));
+        stream.println("  Data:");
         Object[] data = (Object[]) getKernel();
         for (int i = 0; i < getNCols(); i += 1) {
-            System.out.println("      " + i + ":" + ArrayFuncs.arrayDescription(data[i]));
+            stream.println("      " + i + ":" + ArrayFuncs.arrayDescription(data[i]));
         }
     }
 
