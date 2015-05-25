@@ -31,12 +31,24 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.AUTHOR;
+import static nom.tam.fits.header.Standard.DATAMAX;
+import static nom.tam.fits.header.Standard.DATAMIN;
+import static nom.tam.fits.header.Standard.DATE;
+import static nom.tam.fits.header.Standard.DATE_OBS;
+import static nom.tam.fits.header.Standard.INSTRUME;
+import static nom.tam.fits.header.Standard.OBSERVER;
+import static nom.tam.fits.header.Standard.ORIGIN;
+import static nom.tam.fits.header.Standard.REFERENC;
+import static nom.tam.fits.header.Standard.TELESCOP;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.Arrays;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.TestArrayFuncs;
@@ -118,7 +130,7 @@ public class ImageTest {
         double[] img1 = (double[]) ArrayFuncs.flatten(dimg);
 
         // Make HDUs of various types.
-        f.addHDU(Fits.makeHDU(bimg));
+        f.addHDU(makeHDU(bimg));
         f.addHDU(Fits.makeHDU(simg));
         f.addHDU(Fits.makeHDU(iimg));
         f.addHDU(Fits.makeHDU(limg));
@@ -147,6 +159,26 @@ public class ImageTest {
 
         assertEquals("HDU count after", 8, f.getNumberOfHDUs());
         assertEquals("byte image", true, TestArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
+        assertEquals("[40, 40]", Arrays.toString(hdus[0].getAxes()));
+        assertEquals("he was it", hdus[0].getAuthor());
+        assertEquals(8, hdus[0].getBitPix());
+        assertEquals(1.0, hdus[0].getBScale(), 0.000001);
+        assertEquals(0.0, hdus[0].getBZero(), 0.000001);
+        assertEquals(115, hdus[0].getCreationDate().getYear());
+        assertEquals(2, hdus[0].getCreationDate().getMonth());
+        assertEquals(22, hdus[0].getCreationDate().getDate());
+        assertEquals(2000.0, hdus[0].getEquinox(), 0.000001);
+        assertEquals("the biggest ever", hdus[0].getInstrument());
+        assertEquals(0.0, hdus[0].getMinimumValue(), 0.00001);
+        assertEquals(60.0, hdus[0].getMaximumValue(), 0.00001);
+        assertEquals(115, hdus[0].getObservationDate().getYear());
+        assertEquals(2, hdus[0].getObservationDate().getMonth());
+        assertEquals(22, hdus[0].getObservationDate().getDate());
+        assertEquals("he was it again", hdus[0].getObserver());
+        assertEquals("thats us", hdus[0].getOrigin());
+        assertEquals("over there", hdus[0].getReference());
+        assertEquals("the biggest ever scope", hdus[0].getTelescope());
+
         assertEquals("short image", true, TestArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
         assertEquals("int image", true, TestArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
         assertEquals("long image", true, TestArrayFuncs.arrayEquals(limg, hdus[3].getData().getKernel()));
@@ -154,5 +186,21 @@ public class ImageTest {
         assertEquals("double image", true, TestArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
         assertEquals("int3 image", true, TestArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
         assertEquals("double1 image", true, TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
+    }
+
+    private BasicHDU makeHDU(Object data) throws FitsException {
+        BasicHDU hdu = Fits.makeHDU(data);
+        hdu.addValue(AUTHOR, "he was it");
+        hdu.addValue(DATE, "2015-03-22");
+        hdu.addValue("EQUINOX", 2000.0, null);
+        hdu.addValue(INSTRUME, "the biggest ever");
+        hdu.addValue(DATAMIN, 0.0);
+        hdu.addValue(DATAMAX, 30 + 30);
+        hdu.addValue(DATE_OBS, "2015-03-22");
+        hdu.addValue(OBSERVER, "he was it again");
+        hdu.addValue(ORIGIN, "thats us");
+        hdu.addValue(REFERENC, "over there");
+        hdu.addValue(TELESCOP, "the biggest ever scope");
+        return hdu;
     }
 }

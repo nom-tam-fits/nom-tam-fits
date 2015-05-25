@@ -45,6 +45,7 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.ColumnTable;
 import nom.tam.util.TestArrayFuncs;
 
 import org.junit.Before;
@@ -166,6 +167,8 @@ public class BinaryTableTest {
             p[0][0] = (float) (i * Math.sin(i));
             btab.addRow(row);
         }
+        // TODO: should this not result in the same thing?
+        BinaryTable xx = new BinaryTable((ColumnTable) btab.getData());
 
         f = new Fits();
         f.addHDU(Fits.makeHDU(btab));
