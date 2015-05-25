@@ -51,8 +51,6 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageHDU;
 import nom.tam.image.ImageTiler;
-import nom.tam.image.TileDescriptor;
-import nom.tam.image.TileLooper;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedFile;

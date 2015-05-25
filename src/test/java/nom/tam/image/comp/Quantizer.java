@@ -37,8 +37,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import nom.tam.image.QuantizeRandoms;
-import nom.tam.image.TileDescriptor;
 import nom.tam.util.ArrayFuncs;
 
 /**

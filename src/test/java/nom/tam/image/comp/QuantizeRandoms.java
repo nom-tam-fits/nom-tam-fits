@@ -1,4 +1,4 @@
-package nom.tam.image;
+package nom.tam.image.comp;
 
 /*
  * #%L

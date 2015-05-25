@@ -37,10 +37,10 @@ import java.io.DataInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import nom.tam.image.QuantizeRandoms;
-import nom.tam.image.TileDescriptor;
-import nom.tam.image.TileLooper;
+import nom.tam.image.comp.QuantizeRandoms;
 import nom.tam.image.comp.Rice;
+import nom.tam.image.comp.TileDescriptor;
+import nom.tam.image.comp.TileLooper;
 import nom.tam.util.BufferedDataOutputStream;
 
 import org.junit.Ignore;

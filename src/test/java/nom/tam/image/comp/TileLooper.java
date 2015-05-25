@@ -2,7 +2,7 @@
  *  an iterator where each call gives the tile offsets for the next tile.
  */
 
-package nom.tam.image;
+package nom.tam.image.comp;
 
 /*
  * #%L
