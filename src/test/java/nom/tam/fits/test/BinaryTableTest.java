@@ -49,6 +49,7 @@ import nom.tam.util.ColumnTable;
 import nom.tam.util.TestArrayFuncs;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -149,6 +150,81 @@ public class BinaryTableTest {
 
         assertEquals("col4", true, TestArrayFuncs.arrayEquals(this.vbool, bhdu.getColumn(3)));
         assertEquals("col5", true, TestArrayFuncs.arrayEquals(this.ints, bhdu.getColumn(4)));
+    }
+
+    @Test @Ignore
+    public void buildByRowAfterCopyBinaryTableByTheColumnTable() throws Exception {
+
+        Fits f = new Fits("target/bt2.fits");
+        f.read();
+        BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
+        Header hdr = bhdu.getHeader();
+        BinaryTable btab = (BinaryTable) bhdu.getData();
+        for (int i = 0; i < 50; i += 1) {
+
+            Object[] row = btab.getRow(i);
+            float[] qx = (float[]) row[1];
+            float[][] p = (float[][]) row[0];
+            p[0][0] = (float) (i * Math.sin(i));
+            btab.addRow(row);
+        }
+        // Tom -> here the table is replaced by a copy that is not the same but
+        // should be?
+        btab = new BinaryTable((ColumnTable) btab.getData());
+
+        f = new Fits();
+        f.addHDU(Fits.makeHDU(btab));
+        BufferedFile bf = new BufferedFile("target/bt4.fits", "rw");
+        f.write(bf);
+        bf.flush();
+        bf.close();
+
+        f = new Fits("target/bt4.fits");
+
+        btab = (BinaryTable) f.getHDU(1).getData();
+        assertEquals("row1", 100, btab.getNRows());
+
+        // Try getting data before we read in the table.
+
+        float[][][] xf = (float[][][]) btab.getColumn(0);
+        assertEquals("row2", (float) 0., xf[50][0][0], 0);
+        assertEquals("row3", (float) (49 * Math.sin(49)), xf[99][0][0], 0);
+
+        for (int i = 0; i < xf.length; i += 3) {
+
+            boolean[] ba = (boolean[]) btab.getElement(i, 5);
+            float[] fx = (float[]) btab.getElement(i, 1);
+
+            int trow = i % 50;
+
+            assertEquals("row4", true, TestArrayFuncs.arrayEquals(ba, this.vbool[trow]));
+            assertEquals("row6", true, TestArrayFuncs.arrayEquals(fx, this.vf[trow]));
+
+        }
+        float[][][] cmplx = (float[][][]) btab.getColumn(6);
+        for (int i = 0; i < this.vc.length; i += 1) {
+            for (int j = 0; j < this.vc[i].length; j += 1) {
+                assertEquals("rowvc" + i + "_" + j, true, TestArrayFuncs.arrayEquals(this.vc[i][j], cmplx[i + this.vc.length][j]));
+            }
+        }
+        // Fill the table.
+        f.getHDU(1).getData();
+
+        xf = (float[][][]) btab.getColumn(0);
+        assertEquals("row7", 0.F, xf[50][0][0], 0);
+        assertEquals("row8", (float) (49 * Math.sin(49)), xf[99][0][0], 0);
+
+        for (int i = 0; i < xf.length; i += 3) {
+
+            boolean[] ba = (boolean[]) btab.getElement(i, 5);
+            float[] fx = (float[]) btab.getElement(i, 1);
+
+            int trow = i % 50;
+
+            assertEquals("row9", true, TestArrayFuncs.arrayEquals(ba, this.vbool[trow]));
+            assertEquals("row11", true, TestArrayFuncs.arrayEquals(fx, this.vf[trow]));
+
+        }
     }
 
     @Test
