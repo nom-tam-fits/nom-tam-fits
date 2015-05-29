@@ -496,6 +496,8 @@ public class HeaderCard implements CursorValue<String> {
             return clazz.cast(parsedValue.longValueExact());
         } else if (Double.class.isAssignableFrom(clazz)) {
             return clazz.cast(parsedValue.doubleValue());
+        } else if (Float.class.isAssignableFrom(clazz)) {
+            return clazz.cast(parsedValue.floatValue());
         } else if (BigDecimal.class.isAssignableFrom(clazz)) {
             return clazz.cast(parsedValue);
         } else if (BigInteger.class.isAssignableFrom(clazz)) {

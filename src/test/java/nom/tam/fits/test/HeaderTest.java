@@ -47,6 +47,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -504,4 +506,53 @@ public class HeaderTest {
         assertEquals("tuhc2", c1.getComment(), "A byte array");
     }
 
+    @Test
+    public void addValueTests() throws Exception {
+        Header hdr = new Fits("target/ht1.fits").getHDU(0).getHeader();
+        hdr.addValue(CTYPE2, true);
+        assertEquals(hdr.getBooleanValue(CTYPE2.name()), true);
+        assertEquals(hdr.getBooleanValue(CTYPE2), true);
+
+        hdr.addValue(CTYPE2, 5.0);
+        assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
+        assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
+
+        hdr.addValue(CTYPE2.name(), BigDecimal.valueOf(5.0), "nothing special");
+        assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
+        assertEquals(hdr.getDoubleValue(CTYPE2, -1d), 5.0, 0.000001);
+        assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
+        assertEquals(hdr.getBigDecimalValue(CTYPE2.name()), BigDecimal.valueOf(5.0));
+        assertEquals(hdr.getBigDecimalValue(CTYPE2), BigDecimal.valueOf(5.0));
+
+        hdr.addValue(CTYPE2.name(), 5.0f, "nothing special");
+        assertEquals(hdr.getFloatValue(CTYPE2.name()), 5.0f, 0.000001);
+        assertEquals(hdr.getFloatValue(CTYPE2), 5.0f, 0.000001);
+        assertEquals(hdr.getFloatValue(CTYPE2.name(), -1f), 5.0f, 0.000001);
+        assertEquals(hdr.getFloatValue(CTYPE2, -1f), 5.0f, 0.000001);
+
+        hdr.addValue(CTYPE2.name(), BigInteger.valueOf(5), "nothing special");
+        assertEquals(hdr.getIntValue(CTYPE2.name()), 5);
+        assertEquals(hdr.getIntValue(CTYPE2), 5);
+        assertEquals(hdr.getBigIntegerValue(CTYPE2.name()), BigInteger.valueOf(5));
+        assertEquals(hdr.getBigIntegerValue(CTYPE2.name(), BigInteger.valueOf(-1)), BigInteger.valueOf(5));
+        assertEquals(hdr.getBigIntegerValue(CTYPE2, BigInteger.valueOf(-1)), BigInteger.valueOf(5));
+
+    }
+
+    @Test
+    public void dumpHeaderTests() throws Exception {
+        Header hdr = new Fits("target/ht1.fits").getHDU(0).getHeader();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        hdr.dumpHeader(new PrintStream(out));
+        String result = new String(out.toByteArray());
+        assertTrue(result.indexOf("NAXIS   =                    2") >= 0);
+        assertTrue(result.indexOf("NAXIS1  =                  300") >= 0);
+        assertTrue(result.indexOf("NAXIS2  =                  300") >= 0);
+
+        assertEquals("NAXIS1  =                  300", hdr.findKey("NAXIS1").trim());
+
+        assertEquals("SIMPLE", hdr.getKey(0));
+        assertEquals(7, hdr.size());
+
+    }
 }
