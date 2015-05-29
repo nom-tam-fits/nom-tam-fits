@@ -308,6 +308,15 @@ public class ArrayFuncs2Test {
             }
         }
         {
+            long[][] copy = new long[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals((long) deepArray[index1][index2], copy[index1][index2], 0.00000001);
+                }
+            }
+        }
+        {
             double[][] copy = new double[3][3];
             ArrayFuncs.copyInto(deepArray, copy);
             for (int index1 = 0; index1 < copy.length; index1++) {
@@ -379,6 +388,15 @@ public class ArrayFuncs2Test {
             for (int index1 = 0; index1 < copy.length; index1++) {
                 for (int index2 = 0; index2 < copy[index1].length; index2++) {
                     assertEquals((float) deepArray[index1][index2], copy[index1][index2], 0.00000001);
+                }
+            }
+        }
+        {
+            long[][] copy = new long[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals((long) deepArray[index1][index2], copy[index1][index2], 0.00000001);
                 }
             }
         }
@@ -458,6 +476,15 @@ public class ArrayFuncs2Test {
             }
         }
         {
+            long[][] copy = new long[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals((long) deepArray[index1][index2], copy[index1][index2], 0.00000001);
+                }
+            }
+        }
+        {
             double[][] copy = new double[3][3];
             ArrayFuncs.copyInto(deepArray, copy);
             for (int index1 = 0; index1 < copy.length; index1++) {
@@ -529,6 +556,15 @@ public class ArrayFuncs2Test {
             for (int index1 = 0; index1 < copy.length; index1++) {
                 for (int index2 = 0; index2 < copy[index1].length; index2++) {
                     assertEquals((float) deepArray[index1][index2], copy[index1][index2], 0.00000001);
+                }
+            }
+        }
+        {
+            long[][] copy = new long[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals((long) deepArray[index1][index2], copy[index1][index2], 0.00000001);
                 }
             }
         }
@@ -608,6 +644,15 @@ public class ArrayFuncs2Test {
             }
         }
         {
+            long[][] copy = new long[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals((long) deepArray[index1][index2], copy[index1][index2], 0.00000001);
+                }
+            }
+        }
+        {
             double[][] copy = new double[3][3];
             ArrayFuncs.copyInto(deepArray, copy);
             for (int index1 = 0; index1 < copy.length; index1++) {
@@ -679,6 +724,99 @@ public class ArrayFuncs2Test {
             for (int index1 = 0; index1 < copy.length; index1++) {
                 for (int index2 = 0; index2 < copy[index1].length; index2++) {
                     assertEquals((float) deepArray[index1][index2], copy[index1][index2], 0.00000001);
+                }
+            }
+        }
+        {
+            long[][] copy = new long[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals((long) deepArray[index1][index2], copy[index1][index2], 0.00000001);
+                }
+            }
+        }
+        {
+            double[][] copy = new double[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals((float) deepArray[index1][index2], copy[index1][index2], 0.00000001);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void copyLongInto() {
+        long[][] deepArray = new long[][]{
+            {
+                1,
+                2,
+                3
+            },
+            {
+                4,
+                5,
+                6
+            },
+            {
+                7,
+                8,
+                9
+            }
+        };
+        {
+            byte[][] copy = new byte[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals(deepArray[index1][index2], copy[index1][index2]);
+                }
+            }
+        }
+        {
+            char[][] copy = new char[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals(deepArray[index1][index2], copy[index1][index2]);
+                }
+            }
+        }
+        {
+            short[][] copy = new short[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals(deepArray[index1][index2], copy[index1][index2]);
+                }
+            }
+        }
+        {
+            int[][] copy = new int[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals(deepArray[index1][index2], copy[index1][index2]);
+                }
+            }
+        }
+        {
+            float[][] copy = new float[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals((float) deepArray[index1][index2], copy[index1][index2], 0.00000001);
+                }
+            }
+        }
+        {
+            long[][] copy = new long[3][3];
+            ArrayFuncs.copyInto(deepArray, copy);
+            for (int index1 = 0; index1 < copy.length; index1++) {
+                for (int index2 = 0; index2 < copy[index1].length; index2++) {
+                    assertEquals((long) deepArray[index1][index2], copy[index1][index2], 0.00000001);
                 }
             }
         }

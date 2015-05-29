@@ -34,6 +34,8 @@ package nom.tam.fits.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
 import java.util.List;
 
 import nom.tam.fits.Fits;
@@ -63,8 +65,10 @@ public class DupTest {
         System.out.println("Number of duplicates:" + dups.size());
         assertTrue("Has dups:", dups != null && dups.size() > 0);
         assertTrue("Not rewriteable:", !hdr.rewriteable());
-        BufferedFile bf = new BufferedFile("target/created_dup.fits", "rw");
+        DataOutputStream bf = new DataOutputStream(new FileOutputStream("target/created_dup.fits"));
         f.write(bf);
+        bf.flush();
+        bf.close();
         hdr.resetOriginalSize();
         assertEquals("External size, after reset", hdr.getOriginalSize(), 2880);
         Fits g = new Fits("target/created_dup.fits");

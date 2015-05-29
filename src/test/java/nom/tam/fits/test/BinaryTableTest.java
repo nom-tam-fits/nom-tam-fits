@@ -152,7 +152,8 @@ public class BinaryTableTest {
         assertEquals("col5", true, TestArrayFuncs.arrayEquals(this.ints, bhdu.getColumn(4)));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void buildByRowAfterCopyBinaryTableByTheColumnTable() throws Exception {
 
         Fits f = new Fits("target/bt2.fits");

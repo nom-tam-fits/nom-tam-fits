@@ -1,10 +1,10 @@
-package nom.tam.fits.test;
+package nom.tam.util.test;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -36,44 +36,56 @@ import nom.tam.fits.FitsDate;
 
 import org.junit.Test;
 
-/**
- * Test the FITS date class. This class is derived from the internal testing
- * utilities in FitsDate written by David Glowacki.
- */
-public class DateTester {
+public class FitsDateTest {
 
     @Test
-    public void test() {
-
-        assertEquals("t1", true, testArg("20/09/79"));
-        assertEquals("t1", true, testArg("1997-07-25"));
-        assertEquals("t1", true, testArg("1987-06-05T04:03:02.01"));
-        assertEquals("t1", true, testArg("1998-03-10T16:58:34"));
-        assertEquals("t1", true, testArg(null));
-        assertEquals("t1", true, testArg("        "));
-
-        assertEquals("t1", false, testArg("20/09/"));
-        assertEquals("t1", false, testArg("/09/79"));
-        assertEquals("t1", false, testArg("09//79"));
-        assertEquals("t1", false, testArg("20/09/79/"));
-
-        assertEquals("t1", false, testArg("1997-07"));
-        assertEquals("t1", false, testArg("-07-25"));
-        assertEquals("t1", false, testArg("1997--07-25"));
-        assertEquals("t1", false, testArg("1997-07-25-"));
-
-        assertEquals("t1", false, testArg("5-Aug-1992"));
-        assertEquals("t1", false, testArg("28/02/91 16:32:00"));
-        assertEquals("t1", false, testArg("18-Feb-1993"));
-        assertEquals("t1", false, testArg("nn/nn/nn"));
+    public void miscBad() {
+        assertEquals("EX", testArg("5-Aug-1992"));
+        assertEquals("EX", testArg("28/02/91 16:32:00"));
+        assertEquals("EX", testArg("18-Feb-1993"));
+        assertEquals("EX", testArg("nn/nn/nn"));
     }
 
-    boolean testArg(String arg) {
+    @Test
+    public void badNew() {
+        assertEquals("EX", testArg("1997-07"));
+        assertEquals("EX", testArg("-07-25"));
+        assertEquals("EX", testArg("1997--07-25"));
+        assertEquals("EX", testArg("1997-07-25-"));
+    }
+
+    @Test
+    public void badOld() {
+        assertEquals("EX", testArg("20/09/"));
+        assertEquals("EX", testArg("/09/79"));
+        assertEquals("EX", testArg("09//79"));
+        assertEquals("EX", testArg("20/09/79/"));
+    }
+
+    @Test
+    public void goodEmpty() {
+        assertEquals("", testArg(null));
+        assertEquals("", testArg("        "));
+    }
+
+    @Test
+    public void goodNew() {
+        assertEquals("1997-07-25", testArg("1997-07-25"));
+        assertEquals("1987-06-05T04:03:02.010", testArg("1987-06-05T04:03:02.01"));
+        assertEquals("1998-03-10T16:58:34", testArg("1998-03-10T16:58:34"));
+    }
+
+    @Test
+    public void goodOld() {
+        assertEquals("1979-09-20", testArg("20/09/79"));
+    }
+
+    private String testArg(String arg) {
         try {
-            FitsDate fd = new FitsDate(arg);
-            return true;
+            return new FitsDate(arg).toString();
         } catch (Exception e) {
-            return false;
+            return "EX";
         }
     }
+
 }
