@@ -40,7 +40,9 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import nom.tam.fits.AsciiTableHDU;
 import nom.tam.fits.Fits;
+import nom.tam.util.TestArrayFuncs;
 
 import org.junit.Test;
 
@@ -127,4 +129,5 @@ public class MiscTest {
             }
         }
     }
+
 }

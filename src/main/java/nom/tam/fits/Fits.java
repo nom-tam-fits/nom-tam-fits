@@ -52,6 +52,7 @@ import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.RandomAccess;
 
 /**
  * This class provides access to routines to allow users to read and write FITS
@@ -617,8 +618,7 @@ public class Fits {
         int size = getNumberOfHDUs();
 
         for (int i = size; i <= n; i += 1) {
-            BasicHDU hdu;
-            hdu = readHDU();
+            BasicHDU hdu = readHDU();
             if (hdu == null) {
                 return null;
             }
@@ -886,6 +886,9 @@ public class Fits {
             }
             int dataSize = (int) hdr.getDataSize();
             this.dataStr.skip(dataSize);
+            if (this.dataStr instanceof nom.tam.util.RandomAccess) {
+                this.lastFileOffset = ((RandomAccess) this.dataStr).getFilePointer();
+            }
         }
     }
 
@@ -930,21 +933,6 @@ public class Fits {
      *            ignored
      */
     protected void streamInit(InputStream str, boolean seekable) throws FitsException {
-        streamInit(str);
-    }
-
-    /**
-     * Do the stream initialization.
-     * 
-     * @param str
-     *            The input stream.
-     * @param compressed
-     *            Is this data compressed? This flag is ignored. The compression
-     *            is determined from the stream content.
-     * @param seekable
-     *            Can one seek on the stream. This parameter is ignored.
-     */
-    protected void streamInit(InputStream str, boolean compressed, boolean seekable) throws FitsException {
         streamInit(str);
     }
 

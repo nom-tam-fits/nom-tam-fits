@@ -171,7 +171,7 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            The desired output type. This should be one of the class
      *            descriptors for primitive numeric data, e.g., double.type.
      */
-    public static Object convertArray(Object array, Class newType) {
+    public static Object convertArray(Object array, Class<?> newType) {
 
         /*
          * We break this up into two steps so that users can reuse an array many
@@ -592,16 +592,11 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            The desired output type. This should be one of the class
      *            descriptors for primitive numeric data, e.g., double.type.
      */
-    public static Object mimicArray(Object array, Class newType) {
-
-        String classname = array.getClass().getName();
-        if (classname.charAt(0) != '[') {
-            return null;
-        }
-
-        int dims = 1;
-
-        while (classname.charAt(dims) == '[') {
+    public static Object mimicArray(Object array, Class<?> newType) {
+        int dims = 0;
+        Class<?> arrayClass = array.getClass();
+        while (arrayClass != null && arrayClass.isArray()) {
+            arrayClass = arrayClass.getComponentType();
             dims += 1;
         }
 
