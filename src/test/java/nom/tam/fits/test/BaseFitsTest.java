@@ -44,6 +44,17 @@ import org.junit.Test;
 
 public class BaseFitsTest {
 
+    private static final String TARGET_BASIC_FITS_TEST_FITS = "target/basicFitsTest.fits";
+
+    @Test
+    public void setup() {
+        try {
+            new File(TARGET_BASIC_FITS_TEST_FITS).delete();
+        } catch (Exception e) {
+            // ignore
+        }
+    }
+
     @Test
     public void testFits() throws Exception {
         Fits fits1 = makeAsciiTable();
@@ -71,9 +82,9 @@ public class BaseFitsTest {
         f.addHDU(Fits.makeHDU(getSampleCols(30f)));
         f.addHDU(Fits.makeHDU(getSampleCols(40f)));
 
-        writeFile(f, "target/basicFitsTest.fits");
+        writeFile(f, TARGET_BASIC_FITS_TEST_FITS);
 
-        return new Fits(new File("target/basicFitsTest.fits"));
+        return new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
     }
 
     private void writeFile(Fits f, String name) throws Exception {
