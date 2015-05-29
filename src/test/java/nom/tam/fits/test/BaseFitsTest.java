@@ -31,11 +31,13 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import java.io.DataOutputStream;
 import java.io.File;
 
 import nom.tam.fits.AsciiTable;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsFactory;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 
@@ -49,6 +51,7 @@ public class BaseFitsTest {
 
     @Before
     public void setup() {
+        FitsFactory.setUseAsciiTables(true);
         try {
             new File(TARGET_BASIC_FITS_TEST_FITS).delete();
         } catch (Exception e) {
@@ -57,27 +60,46 @@ public class BaseFitsTest {
     }
 
     @Test
-    public void testFits() throws Exception {
+    public void testFitsSkipHdu() throws Exception {
         Fits fits1 = makeAsciiTable();
 
         BasicHDU image = fits1.readHDU();
         BasicHDU hdu2 = fits1.readHDU();
         fits1.skipHDU(2);
         BasicHDU hdu3 = fits1.readHDU();
-        try {
-            hdu2.info(System.out);
-            hdu3.info(System.out);
-            Assert.assertArrayEquals(new int[]{
-                11
-            }, (int[]) ((AsciiTable) hdu2.getData()).getElement(1, 1));
-            Assert.assertArrayEquals(new int[]{
-                41
-            }, (int[]) ((AsciiTable) hdu3.getData()).getElement(1, 1));
-            hdu3.getData();
-        } catch (Exception e) {
-            // very stange this fails on travis ...
-            // lets print
-        }
+
+        hdu2.info(System.out);
+        hdu3.info(System.out);
+        Assert.assertArrayEquals(new int[]{
+            11
+        }, (int[]) ((AsciiTable) hdu2.getData()).getElement(1, 1));
+        Assert.assertArrayEquals(new int[]{
+            41
+        }, (int[]) ((AsciiTable) hdu3.getData()).getElement(1, 1));
+        hdu3.getData();
+
+    }
+
+    @Test
+    public void testFitsDeleteHdu() throws Exception {
+        Fits fits1 = makeAsciiTable();
+        fits1.read();
+        fits1.deleteHDU(2);
+        fits1.deleteHDU(2);
+        writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
+
+        fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
+        BasicHDU image = fits1.readHDU();
+        BasicHDU hdu2 = fits1.readHDU();
+        BasicHDU hdu3 = fits1.readHDU();
+        Assert.assertArrayEquals(new int[]{
+            11
+        }, (int[]) ((AsciiTable) hdu2.getData()).getElement(1, 1));
+        Assert.assertArrayEquals(new int[]{
+            41
+        }, (int[]) ((AsciiTable) hdu3.getData()).getElement(1, 1));
+        hdu3.getData();
+
     }
 
     private Fits makeAsciiTable() throws Exception {
