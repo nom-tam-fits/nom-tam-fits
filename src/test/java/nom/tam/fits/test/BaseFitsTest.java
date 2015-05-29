@@ -31,11 +31,11 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import java.io.DataOutputStream;
 import java.io.File;
 
 import nom.tam.fits.AsciiTable;
 import nom.tam.fits.BasicHDU;
+import nom.tam.fits.BinaryTable;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.ArrayFuncs;
@@ -146,5 +146,28 @@ public class BaseFitsTest {
             doubleCol,
             strCol
         };
+    }
+
+    @Test
+    public void convertAsciiToBinaryTable() throws Exception {
+        FitsFactory.setUseAsciiTables(false);
+
+        Fits fits1 = makeAsciiTable();
+
+        BasicHDU image = fits1.readHDU();
+        BasicHDU hdu2 = fits1.readHDU();
+        fits1.skipHDU(2);
+        BasicHDU hdu3 = fits1.readHDU();
+
+        hdu2.info(System.out);
+        hdu3.info(System.out);
+        Assert.assertArrayEquals(new int[]{
+            11
+        }, (int[]) ((BinaryTable) hdu2.getData()).getElement(1, 1));
+        Assert.assertArrayEquals(new int[]{
+            41
+        }, (int[]) ((BinaryTable) hdu3.getData()).getElement(1, 1));
+        hdu3.getData();
+
     }
 }
