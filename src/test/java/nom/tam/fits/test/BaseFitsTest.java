@@ -40,13 +40,14 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class BaseFitsTest {
 
     private static final String TARGET_BASIC_FITS_TEST_FITS = "target/basicFitsTest.fits";
 
-    @Test
+    @Before
     public void setup() {
         try {
             new File(TARGET_BASIC_FITS_TEST_FITS).delete();
