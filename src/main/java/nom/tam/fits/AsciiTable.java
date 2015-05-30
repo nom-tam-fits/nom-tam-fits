@@ -343,8 +343,7 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public void deleteColumns(int start, int len) throws FitsException {
-
-        getData();
+        ensureData();
 
         Object[] newData = new Object[this.nFields - len];
         int[] newOffsets = new int[this.nFields - len];
@@ -424,7 +423,7 @@ public class AsciiTable extends AbstractTableData {
         if (start + len > this.nRows) {
             len = this.nRows - start;
         }
-        getData();
+        ensureData();
         try {
             for (int i = 0; i < this.nFields; i += 1) {
                 Object o = ArrayFuncs.newInstance(this.types[i], this.nRows - len);
@@ -547,10 +546,16 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public Object getColumn(int col) throws FitsException {
-        if (this.data == null) {
-            getData();
-        }
+        ensureData();
         return this.data[col];
+    }
+
+    /**
+     * be sure that the data is filled. because the getData already tests null
+     * the getData is called without check.
+     */
+    private void ensureData() throws FitsException {
+        getData();
     }
 
     /**
@@ -810,9 +815,7 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public void setColumn(int col, Object newData) throws FitsException {
-        if (this.data == null) {
-            getData();
-        }
+        ensureData();
         if (col < 0 || col >= this.nFields || newData.getClass() != this.data[col].getClass() || Array.getLength(newData) != Array.getLength(this.data[col])) {
             throw new FitsException("Invalid column/column mismatch:" + col);
         }
@@ -837,10 +840,7 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public void setElement(int row, int col, Object newData) throws FitsException {
-
-        if (this.data == null) {
-            getData();
-        }
+        ensureData();
         try {
             System.arraycopy(newData, 0, this.data[col], row, 1);
         } catch (Exception e) {
@@ -907,10 +907,7 @@ public class AsciiTable extends AbstractTableData {
         if (row < 0 || row > this.nRows) {
             throw new FitsException("Invalid row in setRow");
         }
-
-        if (this.data == null) {
-            getData();
-        }
+        ensureData();
         for (int i = 0; i < this.nFields; i += 1) {
             try {
                 System.arraycopy(newData[i], 0, this.data[i], row, 1);
@@ -993,10 +990,8 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public void write(ArrayDataOutput str) throws FitsException {
-
         // Make sure we have the data in hand.
-
-        getData();
+        ensureData();
         // If buffer is still around we can just reuse it,
         // since nothing we've done has invalidated it.
 
