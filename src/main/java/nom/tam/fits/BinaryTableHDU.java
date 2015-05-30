@@ -37,7 +37,19 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 
 /** FITS binary table header/data unit */
-public class BinaryTableHDU extends TableHDU {
+public class BinaryTableHDU extends TableHDU<BinaryTable> {
+
+    /** The standard column keywords for a binary table. */
+    private static final String[] KEY_STEMS = {
+        "TTYPE",
+        "TFORM",
+        "TUNIT",
+        "TNULL",
+        "TSCAL",
+        "TZERO",
+        "TDISP",
+        "TDIM"
+    };
 
     /** Encapsulate data in a BinaryTable data type */
     public static Data encapsulate(Object o) throws FitsException {
@@ -115,26 +127,10 @@ public class BinaryTableHDU extends TableHDU {
         return hdr;
     }
 
-    private final BinaryTable table;
-
-    /** The standard column keywords for a binary table. */
-    private final String[] keyStems = {
-        "TTYPE",
-        "TFORM",
-        "TUNIT",
-        "TNULL",
-        "TSCAL",
-        "TZERO",
-        "TDISP",
-        "TDIM"
-    };
-
     public BinaryTableHDU(Header hdr, Data datum) {
-
-        super((TableData) datum);
+        super((BinaryTable) datum);
         this.myHeader = hdr;
-        this.myData = datum;
-        this.table = (BinaryTable) datum;
+        this.myData = (BinaryTable) datum;
 
     }
 
@@ -157,8 +153,8 @@ public class BinaryTableHDU extends TableHDU {
     @Override
     public int addColumn(Object data) throws FitsException {
 
-        int col = this.table.addColumn(data);
-        this.table.pointToColumn(getNCols() - 1, this.myHeader);
+        int col = this.myData.addColumn(data);
+        this.myData.pointToColumn(getNCols() - 1, this.myHeader);
         return col;
     }
 
@@ -167,7 +163,7 @@ public class BinaryTableHDU extends TableHDU {
      */
     @Override
     public String[] columnKeyStems() {
-        return this.keyStems;
+        return KEY_STEMS;
     }
 
     /**
@@ -197,19 +193,19 @@ public class BinaryTableHDU extends TableHDU {
         }
 
         stream.println("      Data Information:");
-        if (myData == null || this.table.getNRows() == 0 || this.table.getNCols() == 0) {
+        if (myData == null || this.myData.getNRows() == 0 || this.myData.getNCols() == 0) {
             stream.println("         No data present");
-            if (this.table.getHeapSize() > 0) {
-                stream.println("         Heap size is: " + this.table.getHeapSize() + " bytes");
+            if (this.myData.getHeapSize() > 0) {
+                stream.println("         Heap size is: " + this.myData.getHeapSize() + " bytes");
             }
         } else {
 
-            stream.println("          Number of rows=" + this.table.getNRows());
-            stream.println("          Number of columns=" + this.table.getNCols());
-            if (this.table.getHeapSize() > 0) {
-                stream.println("          Heap size is: " + this.table.getHeapSize() + " bytes");
+            stream.println("          Number of rows=" + this.myData.getNRows());
+            stream.println("          Number of columns=" + this.myData.getNCols());
+            if (this.myData.getHeapSize() > 0) {
+                stream.println("          Heap size is: " + this.myData.getHeapSize() + " bytes");
             }
-            Object[] cols = this.table.getFlatColumns();
+            Object[] cols = this.myData.getFlatColumns();
             for (int i = 0; i < cols.length; i += 1) {
                 stream.println("           " + i + ":" + ArrayFuncs.arrayDescription(cols[i]));
             }
@@ -249,13 +245,13 @@ public class BinaryTableHDU extends TableHDU {
      */
     public boolean setComplexColumn(int index) throws FitsException {
         boolean status = false;
-        if (this.table.setComplexColumn(index)) {
+        if (this.myData.setComplexColumn(index)) {
 
             // No problem with the data. Make sure the header
             // is right.
 
-            int[] dimens = this.table.getDimens()[index];
-            Class base = this.table.getBases()[index];
+            int[] dimens = this.myData.getDimens()[index];
+            Class base = this.myData.getBases()[index];
 
             int dim = 1;
             String tdim = "";
@@ -275,10 +271,10 @@ public class BinaryTableHDU extends TableHDU {
 
             // Worry about variable length columns.
             String prefix = "";
-            if (this.table.isVarCol(index)) {
+            if (this.myData.isVarCol(index)) {
                 prefix = "P";
                 dim = 1;
-                if (this.table.isLongVary(index)) {
+                if (this.myData.isLongVary(index)) {
                     prefix = "Q";
                 }
             }
@@ -308,15 +304,15 @@ public class BinaryTableHDU extends TableHDU {
     public void write(ArrayDataOutput ado) throws FitsException {
 
         int oldSize = this.myHeader.getIntValue("PCOUNT");
-        if (oldSize != this.table.getHeapSize()) {
-            this.myHeader.addValue("PCOUNT", this.table.getHeapSize(), "ntf::binarytablehdu:pcount:1");
+        if (oldSize != this.myData.getHeapSize()) {
+            this.myHeader.addValue("PCOUNT", this.myData.getHeapSize(), "ntf::binarytablehdu:pcount:1");
         }
 
         if (this.myHeader.getIntValue("PCOUNT") == 0) {
             this.myHeader.deleteKey("THEAP");
         } else {
             this.myHeader.getIntValue("TFIELDS");
-            int offset = this.myHeader.getIntValue("NAXIS1") * this.myHeader.getIntValue("NAXIS2") + this.table.getHeapOffset();
+            int offset = this.myHeader.getIntValue("NAXIS1") * this.myHeader.getIntValue("NAXIS2") + this.myData.getHeapOffset();
             this.myHeader.addValue("THEAP", offset, "ntf::binarytablehdu:theap:1");
         }
 

@@ -32,6 +32,8 @@ package nom.tam.fits;
  */
 
 import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.Cursor;
@@ -39,7 +41,22 @@ import nom.tam.util.Cursor;
 /**
  * FITS ASCII table header/data unit
  */
-public class AsciiTableHDU extends TableHDU {
+public class AsciiTableHDU extends TableHDU<AsciiTable> {
+
+    private static Logger LOG = Logger.getLogger(AsciiTableHDU.class.getName());
+
+    /**
+     * The standard column stems for an ASCII table. Note that TBCOL is not
+     * included here -- it needs to be handled specially since it does not
+     * simply shift.
+     */
+    private static final String[] KEY_STEMS = {
+        "TFORM",
+        "TZERO",
+        "TNULL",
+        "TTYPE",
+        "TUNIT"
+    };
 
     /**
      * Create a ASCII table data structure from an array of objects representing
@@ -106,22 +123,6 @@ public class AsciiTableHDU extends TableHDU {
         return hdr;
     }
 
-    /** Just a copy of myData with the correct type */
-    AsciiTable data;
-
-    /**
-     * The standard column stems for an ASCII table. Note that TBCOL is not
-     * included here -- it needs to be handled specially since it does not
-     * simply shift.
-     */
-    private final String[] keyStems = {
-        "TFORM",
-        "TZERO",
-        "TNULL",
-        "TTYPE",
-        "TUNIT"
-    };
-
     /**
      * Create an ascii table header/data unit.
      * 
@@ -133,24 +134,23 @@ public class AsciiTableHDU extends TableHDU {
      *                if there was a problem with the header.
      */
     public AsciiTableHDU(Header h, Data d) {
-        super((TableData) d);
+        super((AsciiTable) d);
         this.myHeader = h;
-        this.data = (AsciiTable) d;
-        this.myData = d;
+        this.myData = (AsciiTable) d;
     }
 
     /** Add a column */
     @Override
     public int addColumn(Object newCol) throws FitsException {
 
-        this.data.addColumn(newCol);
+        this.myData.addColumn(newCol);
 
         // Move the iterator to point after all the data describing
         // the previous column.
 
-        Cursor iter = this.myHeader.positionAfterIndex("TBCOL", this.data.getNCols());
+        Cursor<String, HeaderCard> iter = this.myHeader.positionAfterIndex("TBCOL", this.myData.getNCols());
 
-        int rowlen = this.data.addColInfo(getNCols(), iter);
+        int rowlen = this.myData.addColInfo(getNCols(), iter);
         int oldRowlen = this.myHeader.getIntValue("NAXIS1");
         this.myHeader.setNaxis(1, rowlen + oldRowlen);
 
@@ -158,7 +158,7 @@ public class AsciiTableHDU extends TableHDU {
         try {
             this.myHeader.addValue("TFIELDS", oldTfields + 1, "ntf::asciitablehdu:tfields:1");
         } catch (Exception e) {
-            System.err.println("Impossible exception at addColumn:" + e);
+            LOG.log(Level.SEVERE, "Impossible exception at addColumn", e);
         }
         return getNCols();
     }
@@ -168,7 +168,7 @@ public class AsciiTableHDU extends TableHDU {
      */
     @Override
     public String[] columnKeyStems() {
-        return this.keyStems;
+        return KEY_STEMS;
     }
 
     /**
@@ -176,7 +176,7 @@ public class AsciiTableHDU extends TableHDU {
      */
     @Override
     public Data getData() {
-        return this.data;
+        return this.myData;
     }
 
     /**
@@ -207,7 +207,7 @@ public class AsciiTableHDU extends TableHDU {
 
     /** See if an element is null */
     public boolean isNull(int row, int col) {
-        return this.data.isNull(row, col);
+        return this.myData.isNull(row, col);
     }
 
     /**
@@ -229,7 +229,7 @@ public class AsciiTableHDU extends TableHDU {
                 setNullString(col, "NULL");
             }
         }
-        this.data.setNull(row, col, flag);
+        this.myData.setNull(row, col, flag);
     }
 
     /** Set the null string for a column */
@@ -240,6 +240,6 @@ public class AsciiTableHDU extends TableHDU {
         } catch (HeaderCardException e) {
             System.err.println("Impossible exception in setNullString" + e);
         }
-        this.data.setNullString(col, newNull);
+        this.myData.setNullString(col, newNull);
     }
 }

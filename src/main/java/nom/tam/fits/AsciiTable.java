@@ -46,7 +46,7 @@ import nom.tam.util.RandomAccess;
 import nom.tam.util.TruncationException;
 
 /** This class represents the data in an ASCII table */
-public class AsciiTable extends Data implements TableData {
+public class AsciiTable extends AbstractTableData {
 
     /** The number of rows in the table */
     private int nRows;

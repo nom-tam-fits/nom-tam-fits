@@ -36,7 +36,7 @@ import java.io.PrintStream;
 import nom.tam.util.ArrayFuncs;
 
 /** Holder for unknown data types. */
-public class UndefinedHDU extends BasicHDU {
+public class UndefinedHDU extends BasicHDU<UndefinedData> {
 
     /** Encapsulate an object as an ImageHDU. */
     public static Data encapsulate(Object o) throws FitsException {
@@ -97,7 +97,7 @@ public class UndefinedHDU extends BasicHDU {
      *                if there was a problem with the data.
      */
     public UndefinedHDU(Header h, Data d) throws FitsException {
-        this.myData = d;
+        this.myData = (UndefinedData) d;
         this.myHeader = h;
 
     }

@@ -37,7 +37,7 @@ import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
 
 /** FITS image header/data unit */
-public class ImageHDU extends BasicHDU {
+public class ImageHDU extends BasicHDU<ImageData> {
 
     /** Encapsulate an object as an ImageHDU. */
     public static Data encapsulate(Object o) throws FitsException {
@@ -126,7 +126,7 @@ public class ImageHDU extends BasicHDU {
      *                if there was a problem with the data.
      */
     public ImageHDU(Header h, Data d) throws FitsException {
-        this.myData = d;
+        this.myData = (ImageData) d;
         this.myHeader = h;
 
     }

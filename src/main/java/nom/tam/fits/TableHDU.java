@@ -35,9 +35,7 @@ package nom.tam.fits;
  * This class allows FITS binary and ASCII tables to be accessed via a common
  * interface. Bug Fix: 3/28/01 to findColumn.
  */
-public abstract class TableHDU extends BasicHDU {
-
-    private final TableData table;
+public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> {
 
     /**
      * Create the TableHDU. Note that this will normally only be invoked by
@@ -46,8 +44,8 @@ public abstract class TableHDU extends BasicHDU {
      * @param td
      *            The data for the table.
      */
-    TableHDU(TableData td) {
-        this.table = td;
+    protected TableHDU(T td) {
+        this.myData = td;
     }
 
     /** Add a column to the table. */
@@ -59,7 +57,7 @@ public abstract class TableHDU extends BasicHDU {
      */
     public int addRow(Object[] newRow) throws FitsException {
 
-        int row = this.table.addRow(newRow);
+        int row = this.myData.addRow(newRow);
         this.myHeader.addValue("NAXIS2", row, "ntf::tablehdu:naxis2:1");
         return row;
     }
@@ -120,7 +118,7 @@ public abstract class TableHDU extends BasicHDU {
         }
 
         int ncol = getNCols();
-        this.table.deleteColumns(column, len);
+        this.myData.deleteColumns(column, len);
 
         // Get rid of the keywords for the deleted columns
         for (int col = column; col < column + len; col += 1) {
@@ -144,7 +142,7 @@ public abstract class TableHDU extends BasicHDU {
         this.myHeader.addValue("TFIELDS", getNCols(), "ntf::tablehdu:tfields:1");
 
         // Give the data sections a chance to update the header too.
-        this.table.updateAfterDelete(ncol, this.myHeader);
+        this.myData.updateAfterDelete(ncol, this.myHeader);
     }
 
     /**
@@ -188,7 +186,7 @@ public abstract class TableHDU extends BasicHDU {
             nRow = getNRows() - firstRow;
         }
 
-        this.table.deleteRows(firstRow, nRow);
+        this.myData.deleteRows(firstRow, nRow);
         this.myHeader.setNaxis(2, getNRows());
     }
 
@@ -211,7 +209,7 @@ public abstract class TableHDU extends BasicHDU {
      * Get a specific column from the table using 0-based column indexing.
      */
     public Object getColumn(int col) throws FitsException {
-        return this.table.getColumn(col);
+        return this.myData.getColumn(col);
     }
 
     /**
@@ -286,7 +284,7 @@ public abstract class TableHDU extends BasicHDU {
      * Get a specific element of the table using 0-based indices.
      */
     public Object getElement(int row, int col) throws FitsException {
-        return this.table.getElement(row, col);
+        return this.myData.getElement(row, col);
     }
 
     /**
@@ -295,7 +293,7 @@ public abstract class TableHDU extends BasicHDU {
      * @return The number of columns in the table.
      */
     public int getNCols() {
-        return this.table.getNCols();
+        return this.myData.getNCols();
     }
 
     /**
@@ -304,12 +302,12 @@ public abstract class TableHDU extends BasicHDU {
      * @return The number of rows in the table.
      */
     public int getNRows() {
-        return this.table.getNRows();
+        return this.myData.getNRows();
     }
 
     /** Get a specific row of the table */
     public Object[] getRow(int row) throws FitsException {
-        return this.table.getRow(row);
+        return this.myData.getRow(row);
     }
 
     /**
@@ -317,7 +315,7 @@ public abstract class TableHDU extends BasicHDU {
      * format ast the column being replaced.
      */
     public void setColumn(int col, Object newCol) throws FitsException {
-        this.table.setColumn(col, newCol);
+        this.myData.setColumn(col, newCol);
     }
 
     /**
@@ -409,13 +407,13 @@ public abstract class TableHDU extends BasicHDU {
      * Update a single element within the table.
      */
     public void setElement(int row, int col, Object element) throws FitsException {
-        this.table.setElement(row, col, element);
+        this.myData.setElement(row, col, element);
     }
 
     /**
      * Update a row within a table.
      */
     public void setRow(int row, Object[] newRow) throws FitsException {
-        this.table.setRow(row, newRow);
+        this.myData.setRow(row, newRow);
     }
 }

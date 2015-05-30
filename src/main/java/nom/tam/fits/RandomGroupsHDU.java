@@ -44,7 +44,7 @@ import nom.tam.util.ArrayFuncs;
  * type. When analyzing group data structure only the first group is examined,
  * but for a valid FITS file all groups must have the same structure.
  */
-public class RandomGroupsHDU extends BasicHDU {
+public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
     public static Data encapsulate(Object o) throws FitsException {
         if (o instanceof Object[][]) {
@@ -61,7 +61,7 @@ public class RandomGroupsHDU extends BasicHDU {
 
         int bitpix = h.getIntValue("BITPIX", 0);
 
-        Class baseClass;
+        Class<?> baseClass;
 
         switch (bitpix) {
             case 8:
@@ -198,12 +198,10 @@ public class RandomGroupsHDU extends BasicHDU {
 
     }
 
-    Object dataArray;
-
     /** Create an HDU from the given header and data */
     public RandomGroupsHDU(Header h, Data d) {
         this.myHeader = h;
-        this.myData = d;
+        this.myData = (RandomGroupsData) d;
     }
 
     /**
@@ -236,11 +234,7 @@ public class RandomGroupsHDU extends BasicHDU {
 
         Object[][] data = null;
         if (this.myData != null) {
-            try {
-                data = (Object[][]) this.myData.getData();
-            } catch (FitsException e) {
-                data = null;
-            }
+            data = (Object[][]) this.myData.getData();
         }
 
         if (data == null || data.length < 1 || data[0].length != 2) {

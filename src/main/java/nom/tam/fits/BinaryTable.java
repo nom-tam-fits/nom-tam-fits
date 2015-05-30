@@ -48,7 +48,7 @@ import nom.tam.util.TableException;
 /**
  * This class defines the methods for accessing FITS binary table data.
  */
-public class BinaryTable extends Data implements TableData {
+public class BinaryTable extends AbstractTableData {
 
     private static final Logger LOG = Logger.getLogger(BinaryTable.class.getName());
 

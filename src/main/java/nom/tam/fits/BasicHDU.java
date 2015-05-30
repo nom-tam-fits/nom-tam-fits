@@ -45,7 +45,7 @@ import nom.tam.util.ArrayDataOutput;
  * This abstract class is the parent of all HDU types. It provides basic
  * functionality for an HDU.
  */
-public abstract class BasicHDU implements FitsElement {
+public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     private static Logger LOG = Logger.getLogger(BasicHDU.class.getName());
 
@@ -103,7 +103,7 @@ public abstract class BasicHDU implements FitsElement {
     protected Header myHeader = null;
 
     /** The associated data unit. */
-    protected Data myData = null;
+    protected DataClass myData = null;
 
     /** Is this the first HDU in a FITS file? */
     protected boolean isPrimary = false;
@@ -429,7 +429,7 @@ public abstract class BasicHDU implements FitsElement {
     @Override
     public void read(ArrayDataInput stream) throws FitsException, IOException {
         this.myHeader = Header.readHeader(stream);
-        this.myData = this.myHeader.makeData();
+        this.myData = (DataClass) this.myHeader.makeData();
         this.myData.read(stream);
     }
 
