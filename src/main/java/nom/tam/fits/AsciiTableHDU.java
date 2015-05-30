@@ -33,7 +33,6 @@ package nom.tam.fits;
 
 import java.io.PrintStream;
 
-import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.Cursor;
 
@@ -215,19 +214,8 @@ public class AsciiTableHDU extends TableHDU {
      * Create an empty data structure corresponding to the input header.
      */
     @Override
-    public Data manufactureData() throws FitsException {
+    protected Data manufactureData() throws FitsException {
         return manufactureData(this.myHeader);
-    }
-
-    /**
-     * Skip the ASCII table and throw an exception.
-     * 
-     * @param stream
-     *            the stream from which the data is read.
-     */
-    @Override
-    public void readData(ArrayDataInput stream) throws FitsException {
-        this.myData.read(stream);
     }
 
     /**

@@ -121,7 +121,7 @@ public class UndefinedHDU extends BasicHDU {
      *                if the image extension could not be created.
      */
     @Override
-    public Data manufactureData() throws FitsException {
+    protected Data manufactureData() throws FitsException {
         return manufactureData(this.myHeader);
     }
 }

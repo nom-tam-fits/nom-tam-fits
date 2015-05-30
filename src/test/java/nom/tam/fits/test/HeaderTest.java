@@ -44,6 +44,7 @@ import static nom.tam.fits.header.extra.NOAOExt.CTYPE1;
 import static nom.tam.fits.header.extra.NOAOExt.CTYPE2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
@@ -553,6 +554,11 @@ public class HeaderTest {
 
         assertEquals("SIMPLE", hdr.getKey(0));
         assertEquals(7, hdr.size());
+    }
 
+    @Test
+    public void dumpDefaultStatics() throws Exception {
+        assertFalse(BasicHDU.isData(null));
+        assertFalse(BasicHDU.isHeader(null));
     }
 }

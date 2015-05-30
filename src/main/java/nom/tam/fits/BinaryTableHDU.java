@@ -226,7 +226,7 @@ public class BinaryTableHDU extends TableHDU {
     }
 
     @Override
-    public Data manufactureData() throws FitsException {
+    protected Data manufactureData() throws FitsException {
         return manufactureData(this.myHeader);
     }
 

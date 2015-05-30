@@ -34,6 +34,8 @@ package nom.tam.fits;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.util.ArrayDataInput;
@@ -44,6 +46,8 @@ import nom.tam.util.ArrayDataOutput;
  * functionality for an HDU.
  */
 public abstract class BasicHDU implements FitsElement {
+
+    private static Logger LOG = Logger.getLogger(BasicHDU.class.getName());
 
     public static final int BITPIX_BYTE = 8;
 
@@ -70,7 +74,9 @@ public abstract class BasicHDU implements FitsElement {
     }
 
     /**
-     * Check that this is a valid header for the HDU.
+     * Check that this is a valid header for the HDU. This method is static but
+     * should be implemented by all subclasses. TODO: refactor this to be in a
+     * meta object so it can inherit normally also see {@link #isData(Object)}
      * 
      * @param header
      *            to validate.
@@ -81,18 +87,16 @@ public abstract class BasicHDU implements FitsElement {
     }
 
     /**
-     * Skip the Data object immediately after the given Header object on the
-     * given stream object.
+     * Check if this object can be described as a FITS image. This method is
+     * static but should be implemented by all subclasses. TODO: refactor this
+     * to be in a meta object so it can inherit normally also see
+     * {@link #isHeader(Header)}
      * 
-     * @param stream
-     *            the stream which contains the data.
-     * @param hdr
-     *            template indicating length of Data section
-     * @exception IOException
-     *                if the Data object could not be skipped.
+     * @param o
+     *            The Object being tested.
      */
-    public static void skipData(ArrayDataInput stream, Header hdr) throws IOException {
-        stream.skipBytes(hdr.getDataSize());
+    public static boolean isData(Object o) {
+        return false;
     }
 
     /** The associated header. */
@@ -433,7 +437,7 @@ public abstract class BasicHDU implements FitsElement {
      *                if the Data object could not be created from this HDU's
      *                Header
      */
-    abstract Data manufactureData() throws FitsException;
+    protected abstract Data manufactureData() throws FitsException;
 
     /*
      * Read out the HDU from the data stream. This will overwrite any existing
@@ -443,32 +447,6 @@ public abstract class BasicHDU implements FitsElement {
     public void read(ArrayDataInput stream) throws FitsException, IOException {
         this.myHeader = Header.readHeader(stream);
         this.myData = this.myHeader.makeData();
-        this.myData.read(stream);
-    }
-
-    /**
-     * Read in the Data object for this HDU.
-     * 
-     * @param stream
-     *            the stream from which the data is read.
-     * @exception FitsException
-     *                if the Data object could not be created from this HDU's
-     *                Header
-     */
-    public void readData(ArrayDataInput stream) throws FitsException {
-        this.myData = null;
-        try {
-            this.myData = manufactureData();
-        } finally {
-            // if we cannot build a Data object, skip this section
-            if (this.myData == null) {
-                try {
-                    skipData(stream, this.myHeader);
-                } catch (Exception e) {
-                }
-            }
-        }
-
         this.myData.read(stream);
     }
 
@@ -547,18 +525,6 @@ public abstract class BasicHDU implements FitsElement {
             this.myHeader.iterator();
         }
 
-    }
-
-    /**
-     * Skip the Data object for this HDU.
-     * 
-     * @param stream
-     *            the stream which contains the data.
-     * @exception IOException
-     *                if the Data object could not be skipped.
-     */
-    public void skipData(ArrayDataInput stream) throws IOException {
-        skipData(stream, this.myHeader);
     }
 
     /*

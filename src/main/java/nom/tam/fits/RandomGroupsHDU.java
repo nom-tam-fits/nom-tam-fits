@@ -265,7 +265,7 @@ public class RandomGroupsHDU extends BasicHDU {
      * Create a FITS Data object corresponding to this HDU header.
      */
     @Override
-    public Data manufactureData() throws FitsException {
+    protected Data manufactureData() throws FitsException {
         return manufactureData(this.myHeader);
     }
 
