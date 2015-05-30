@@ -41,6 +41,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import nom.tam.util.ArrayDataInput;
@@ -795,9 +796,23 @@ public class BufferedFileTest {
         bf.writeArray(tl1);
         bf.writeArray(ts);
 
+        for (int index = 0; index < 10000; index++) {
+            bf.write('X');
+        }
+        bf.write('Y');
+
         bf.close();
 
-        BufferedDataInputStream bi = new BufferedDataInputStream(new FileInputStream("jtest.fil"));
+        // do not allow the use of the skip method to simulate streams that do
+        // not support it.
+        FileInputStream fileInput = new FileInputStream("jtest.fil") {
+
+            @Override
+            public long skip(long n) throws IOException {
+                throw new IOException("not supported");
+            }
+        };
+        BufferedDataInputStream bi = new BufferedDataInputStream(fileInput);
 
         testArray(bi, "sdouble", td);
         testArray(bi, "sfloat", tf);
@@ -809,5 +824,7 @@ public class BufferedFileTest {
         testArray(bi, "slong1", tl0);
         testArray(bi, "slongnull", tl1);
         testArray(bi, "sshort2", ts);
+        bi.skipBytes(10000);
+        assertEquals('Y', bi.read());
     }
 }
