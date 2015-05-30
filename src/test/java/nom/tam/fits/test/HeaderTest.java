@@ -509,7 +509,25 @@ public class HeaderTest {
 
     @Test
     public void addValueTests() throws Exception {
-        Header hdr = new Fits("target/ht1.fits").getHDU(0).getHeader();
+        BasicHDU hdu = new Fits("target/ht1.fits").getHDU(0);
+        Header hdr = hdu.getHeader();
+
+        hdu.addValue(CTYPE1, true);
+        assertEquals(hdr.getBooleanValue(CTYPE1.name()), true);
+        assertEquals(hdr.getBooleanValue(CTYPE1), true);
+
+        hdu.addValue(CTYPE1.name(), false, "bla");
+        assertEquals(hdr.getBooleanValue(CTYPE1.name()), false);
+        assertEquals(hdr.getBooleanValue(CTYPE1), false);
+
+        hdu.addValue(CTYPE1.name(), 5, "bla");
+        assertEquals(hdr.getIntValue(CTYPE1.name()), 5);
+        assertEquals(hdr.getIntValue(CTYPE1), 5);
+
+        hdu.addValue(CTYPE1.name(), "XX", "bla");
+        assertEquals(hdr.getStringValue(CTYPE1.name()), "XX");
+        assertEquals(hdr.getStringValue(CTYPE1), "XX");
+
         hdr.addValue(CTYPE2, true);
         assertEquals(hdr.getBooleanValue(CTYPE2.name()), true);
         assertEquals(hdr.getBooleanValue(CTYPE2), true);
@@ -542,7 +560,8 @@ public class HeaderTest {
 
     @Test
     public void dumpHeaderTests() throws Exception {
-        Header hdr = new Fits("target/ht1.fits").getHDU(0).getHeader();
+        BasicHDU hdu = new Fits("target/ht1.fits").getHDU(0);
+        Header hdr = hdu.getHeader();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         hdr.dumpHeader(new PrintStream(out));
         String result = new String(out.toByteArray());
@@ -554,6 +573,8 @@ public class HeaderTest {
 
         assertEquals("SIMPLE", hdr.getKey(0));
         assertEquals(7, hdr.size());
+        assertEquals(362880, hdu.getSize());
+
     }
 
     @Test

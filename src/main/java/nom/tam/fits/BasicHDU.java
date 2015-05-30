@@ -150,23 +150,6 @@ public abstract class BasicHDU implements FitsElement {
     }
 
     /**
-     * Check if a field is present and if so print it out.
-     * 
-     * @param The
-     *            header keyword.
-     * @param Was
-     *            it found in the header?
-     */
-    boolean checkField(String name) {
-        String value = this.myHeader.getStringValue(name);
-        if (value == null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Return the name of the person who compiled the information in the data
      * associated with this header.
      * 

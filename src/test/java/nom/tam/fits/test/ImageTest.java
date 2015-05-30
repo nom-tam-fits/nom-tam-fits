@@ -49,6 +49,7 @@ import java.util.Arrays;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.TestArrayFuncs;
@@ -178,6 +179,7 @@ public class ImageTest {
         assertEquals("thats us", hdus[0].getOrigin());
         assertEquals("over there", hdus[0].getReference());
         assertEquals("the biggest ever scope", hdus[0].getTelescope());
+        assertEquals("wow object", hdus[0].getObject());
 
         assertEquals("short image", true, TestArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
         assertEquals("int image", true, TestArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
@@ -186,6 +188,7 @@ public class ImageTest {
         assertEquals("double image", true, TestArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
         assertEquals("int3 image", true, TestArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
         assertEquals("double1 image", true, TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
+
     }
 
     private BasicHDU makeHDU(Object data) throws FitsException {
@@ -201,6 +204,7 @@ public class ImageTest {
         hdu.addValue(ORIGIN, "thats us");
         hdu.addValue(REFERENC, "over there");
         hdu.addValue(TELESCOP, "the biggest ever scope");
+        hdu.addValue(Standard.OBJECT, "wow object");
         return hdu;
     }
 }
