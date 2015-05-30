@@ -34,12 +34,15 @@ package nom.tam.fits.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
+import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -80,4 +83,26 @@ public class ChecksumTest {
         assertEquals("CheckSum test", -1, val);
     }
 
+    @Test
+    public void testCheckSumBasic() throws Exception {
+        FileInputStream in = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits");
+        Fits fits = new Fits();
+        fits.setStream(new BufferedDataInputStream(in));
+        fits.read();
+        in.close();
+        fits.setChecksum();
+    }
+
+    @Test
+    @Ignore
+    public void testCheckSum2() throws Exception {
+        FileInputStream in = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits");
+        Fits fits = new Fits();
+        fits.setStream(new BufferedDataInputStream(in));
+        fits.read();
+        in.close();
+        fits.setChecksum();
+
+        assertEquals("98RWE5OV95OVE5OV", fits.getHDU(0).getHeader().getStringValue("CHECKSUM"));
+    }
 }

@@ -10,3 +10,4 @@ release.properties
 /.settings/
 /jtest.fil
 /.travis.yml~
+/target/
