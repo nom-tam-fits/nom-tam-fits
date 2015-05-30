@@ -32,13 +32,16 @@ package nom.tam.fits.test;
  */
 
 import java.io.File;
+import java.io.FileOutputStream;
 
 import nom.tam.fits.AsciiTable;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
+import nom.tam.fits.UndefinedData;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 
 import org.junit.Assert;
@@ -169,5 +172,25 @@ public class BaseFitsTest {
         }, (int[]) ((BinaryTable) hdu3.getData()).getElement(1, 1));
         hdu3.getData();
 
+    }
+
+    @Test
+    public void testFitsUndefinedHdu() throws Exception {
+        Fits fits1 = makeAsciiTable();
+        fits1.read();
+        byte[] undefinedData = new byte[1000];
+        for (int index = 0; index < undefinedData.length; index++) {
+            undefinedData[index] = (byte) index;
+        }
+        fits1.addHDU(Fits.makeHDU(new UndefinedData(undefinedData)));
+        BufferedDataOutputStream os = new BufferedDataOutputStream(new FileOutputStream("target/UndefindedHDU.fits"));
+        fits1.write(os);
+        os.close();
+
+        Fits fits2 = new Fits("target/UndefindedHDU.fits");
+        BasicHDU[] hdus = fits2.read();
+
+        byte[] rereadUndefinedData = (byte[]) ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
+        Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
     }
 }

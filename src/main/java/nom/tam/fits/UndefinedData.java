@@ -76,9 +76,9 @@ public class UndefinedData extends Data {
      * Create an UndefinedData object using the specified object.
      */
     public UndefinedData(Object x) {
-
         this.byteSize = ArrayFuncs.computeLSize(x);
         this.data = new byte[(int) this.byteSize];
+        ArrayFuncs.copyInto(x, this.data);
     }
 
     /**
@@ -137,21 +137,10 @@ public class UndefinedData extends Data {
     @Override
     public void read(ArrayDataInput i) throws FitsException {
         setFileOffset(i);
-
-        if (i instanceof RandomAccess) {
-            try {
-                i.skipBytes(this.byteSize);
-            } catch (IOException e) {
-                throw new FitsException("Unable to skip over data:" + e);
-            }
-
-        } else {
-            try {
-                i.readFully(this.data);
-            } catch (IOException e) {
-                throw new FitsException("Unable to read unknown data:" + e);
-            }
-
+        try {
+            i.readFully(this.data);
+        } catch (IOException e) {
+            throw new FitsException("Unable to read unknown data:" + e);
         }
 
         int pad = FitsUtil.padding(getTrueSize());
