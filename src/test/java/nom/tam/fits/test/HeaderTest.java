@@ -49,6 +49,7 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -509,7 +510,12 @@ public class HeaderTest {
 
     @Test
     public void addValueTests() throws Exception {
-        BasicHDU hdu = new Fits("target/ht1.fits").getHDU(0);
+        FileInputStream in = new FileInputStream("target/ht1.fits");
+        Fits fits = new Fits();
+        fits.read(in);
+        in.close();
+
+        BasicHDU hdu = fits.getHDU(0);
         Header hdr = hdu.getHeader();
 
         hdu.addValue(CTYPE1, true);

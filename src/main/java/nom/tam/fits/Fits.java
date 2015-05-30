@@ -754,22 +754,12 @@ public class Fits {
      *            The InputStream stream whence the FITS information is found.
      */
     public void read(InputStream is) throws FitsException, IOException {
-
-        boolean newIS = false;
-
         if (is instanceof ArrayDataInput) {
             this.dataStr = (ArrayDataInput) is;
         } else {
             this.dataStr = new BufferedDataInputStream(is);
         }
-
         read();
-
-        if (newIS) {
-            this.dataStr.close();
-            this.dataStr = null;
-        }
-
     }
 
     /**
