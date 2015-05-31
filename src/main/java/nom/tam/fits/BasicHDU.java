@@ -62,13 +62,13 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     public static final int BITPIX_DOUBLE = -64;
 
     /** Get an HDU without content */
-    public static BasicHDU getDummyHDU() {
+    public static BasicHDU<?> getDummyHDU() {
         try {
             // Update suggested by Laurent Bourges
             ImageData img = new ImageData((Object) null);
             return FitsFactory.HDUFactory(ImageHDU.manufactureHeader(img), img);
         } catch (FitsException e) {
-            System.err.println("Impossible exception in getDummyHDU");
+            LOG.log(Level.SEVERE, "Impossible exception in getDummyHDU", e);
             return null;
         }
     }

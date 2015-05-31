@@ -37,9 +37,12 @@ import java.io.FileOutputStream;
 import nom.tam.fits.AsciiTable;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTable;
+import nom.tam.fits.Data;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
+import nom.tam.fits.Header;
 import nom.tam.fits.UndefinedData;
+import nom.tam.fits.UndefinedHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
@@ -103,6 +106,25 @@ public class BaseFitsTest {
         }, (int[]) ((AsciiTable) hdu3.getData()).getElement(1, 1));
         hdu3.getData();
 
+    }
+
+    @Test
+    public void testFitsDeleteHduNewPrimary() throws Exception {
+        Fits fits1 = makeAsciiTable();
+        fits1.read();
+        fits1.deleteHDU(0);
+        for (int index = 0; index < 4; index++) {
+            fits1.deleteHDU(1);
+        }
+        BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
+        dummyHDU.addValue("TEST", "XYZ", null);
+        fits1.addHDU(dummyHDU);
+        fits1.deleteHDU(0);
+        writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
+
+        fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
+        Assert.assertEquals(1, fits1.read().length);
+        Assert.assertEquals("XYZ", fits1.getHDU(0).getHeader().getStringValue("TEST"));
     }
 
     private Fits makeAsciiTable() throws Exception {
@@ -193,4 +215,28 @@ public class BaseFitsTest {
         byte[] rereadUndefinedData = (byte[]) ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
         Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
     }
+
+    @Test
+    public void testFitsUndefinedHdu2() throws Exception {
+        Fits fits1 = makeAsciiTable();
+        fits1.read();
+        byte[] undefinedData = new byte[1000];
+        for (int index = 0; index < undefinedData.length; index++) {
+            undefinedData[index] = (byte) index;
+        }
+        Data data = UndefinedHDU.encapsulate(undefinedData);
+        Header header = UndefinedHDU.manufactureHeader(data);
+
+        fits1.addHDU(FitsFactory.HDUFactory(header, data));
+        BufferedDataOutputStream os = new BufferedDataOutputStream(new FileOutputStream("target/UndefindedHDU2.fits"));
+        fits1.write(os);
+        os.close();
+
+        Fits fits2 = new Fits("target/UndefindedHDU2.fits");
+        BasicHDU[] hdus = fits2.read();
+
+        byte[] rereadUndefinedData = (byte[]) ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
+        Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
+    }
+
 }
