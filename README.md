@@ -14,7 +14,7 @@ visit our documentation at:
 
 current build status at https://travis-ci.org [![Build Status](https://travis-ci.org/nom-tam-fits/nom-tam-fits.png)](https://travis-ci.org/nom-tam-fits/nom-tam-fits)
 
-Test Coverage Status [![Coverage Status](https://coveralls.io/repos/nom-tam-fits/nom-tam-fits/badge.svg?branch=master)](https://coveralls.io/r/nom-tam-fits/nom-tam-fits?branch=master)
+Test Coverage status at http://coveralls.io [![Coverage Status](https://coveralls.io/repos/nom-tam-fits/nom-tam-fits/badge.svg?branch=master)](https://coveralls.io/r/nom-tam-fits/nom-tam-fits?branch=master)
 
 
 
