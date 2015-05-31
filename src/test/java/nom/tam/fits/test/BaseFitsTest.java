@@ -31,6 +31,7 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,6 +48,7 @@ import nom.tam.fits.HeaderCard;
 import nom.tam.fits.UndefinedData;
 import nom.tam.fits.UndefinedHDU;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
@@ -314,5 +316,32 @@ public class BaseFitsTest {
 
         Assert.assertTrue(undefinedInfo.indexOf("Apparent size:1000") >= 0);
 
+    }
+
+    @Test
+    public void testreadWriteHdu() throws Exception {
+        byte[] undefinedData = new byte[1000];
+        for (int index = 0; index < undefinedData.length; index++) {
+            undefinedData[index] = (byte) index;
+        }
+        Data data = UndefinedHDU.encapsulate(undefinedData);
+        Header header = new Header();
+        header.pointToData(data);
+        UndefinedHDU hdu = new UndefinedHDU(header, data);
+
+        hdu.getHeader().deleteKey("EXTEND");
+
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        BufferedDataOutputStream stream = new BufferedDataOutputStream(bytes);
+        hdu.write(stream);
+        // TODO: hdu.rewrite();
+        stream.close();
+
+        data = UndefinedHDU.encapsulate(new byte[0]);
+        hdu = new UndefinedHDU(new Header(data), data);
+        hdu.read(new BufferedDataInputStream(new ByteArrayInputStream(bytes.toByteArray())));
+
+        byte[] rereadUndefinedData = (byte[]) hdu.getData().getData();
+        Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
     }
 }

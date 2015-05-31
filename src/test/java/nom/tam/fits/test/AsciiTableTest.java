@@ -36,6 +36,7 @@ import nom.tam.fits.AsciiTable;
 import nom.tam.fits.AsciiTableHDU;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.TableHDU;
@@ -43,6 +44,7 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.TestArrayFuncs;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -295,6 +297,23 @@ public class AsciiTableTest {
         String[] st = (String[]) r5[4];
         st[0] = st[0].trim();
         assertEquals("row5", true, TestArrayFuncs.arrayEquals(row, r5, 1.e-6, 1.e-14));
+
+        addDeleteColumn(tab);
+    }
+
+    private void addDeleteColumn(AsciiTable tab) throws FitsException {
+        String[] col4 = (String[]) tab.getColumn(4);
+        int[] newCol = new int[50];
+        for (int index = 0; index < newCol.length; index++) {
+            newCol[index] = index;
+        }
+        tab.addColumn(newCol);
+        int[] newColAdded = (int[]) tab.getColumn(5);
+        Assert.assertArrayEquals(newCol, newColAdded);
+        tab.deleteColumns(5, 1);
+        String[] colAfter4 = (String[]) tab.getColumn(4);
+        Assert.assertArrayEquals(col4, colAfter4);
+
     }
 
     // Make sure that null ASCII strings still

@@ -135,6 +135,8 @@ public class RandomGroupsTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         groupHDU.info(new PrintStream(out));
         String groupInfo = new String(out.toByteArray());
+        Assert.assertEquals(20, groupHDU.getGroupCount());
+        Assert.assertEquals(3, groupHDU.getParameterCount());
 
         Assert.assertTrue(groupInfo.indexOf("Number of groups:20") >= 0);
         Assert.assertTrue(groupInfo.indexOf("Parameters: float[3]") >= 0);

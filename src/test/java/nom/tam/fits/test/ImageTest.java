@@ -180,6 +180,9 @@ public class ImageTest {
         assertEquals("over there", hdus[0].getReference());
         assertEquals("the biggest ever scope", hdus[0].getTelescope());
         assertEquals("wow object", hdus[0].getObject());
+        assertEquals(32, hdus[0].getBlankValue());
+        assertEquals("deg", hdus[0].getBUnit());
+        assertEquals(-2000., hdus[0].getEpoch(), 0.0001);
 
         assertEquals("short image", true, TestArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
         assertEquals("int image", true, TestArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
@@ -205,6 +208,10 @@ public class ImageTest {
         hdu.addValue(REFERENC, "over there");
         hdu.addValue(TELESCOP, "the biggest ever scope");
         hdu.addValue(Standard.OBJECT, "wow object");
+        hdu.addValue(Standard.BLANK, 32);
+        hdu.addValue(Standard.BUNIT, "deg");
+        hdu.addValue(Standard.EPOCH, -2000.);
+
         return hdu;
     }
 }
