@@ -54,7 +54,9 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.jar.Attributes.Name;
 
+import junit.framework.Assert;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
@@ -587,5 +589,76 @@ public class HeaderTest {
     public void dumpDefaultStatics() throws Exception {
         assertFalse(BasicHDU.isData(null));
         assertFalse(BasicHDU.isHeader(null));
+    }
+
+    @Test
+    public void notExistentKeys() throws Exception {
+        BasicHDU hdu = new Fits("target/ht1.fits").getHDU(0);
+        Header hdr = hdu.getHeader();
+        Assert.assertNull(hdr.getCard(10000));
+        Assert.assertNull(hdr.getKey(10000));
+        Assert.assertNull(hdr.findKey("BBBB"));
+        Assert.assertEquals(BigInteger.valueOf(-100), hdr.getBigIntegerValue("BBBB", BigInteger.valueOf(-100)));
+        Assert.assertEquals(-100f, hdr.getFloatValue("BBBB", -100f), 0.00001);
+    }
+
+    @Test
+    public void invalidHeader() throws Exception {
+        invalidHeaderTests();
+    }
+
+    @Test
+    public void headerFunktionsAndComments() throws Exception {
+        Header header = invalidHeaderTests();
+        // should have no effect because it is illegal!
+        header.setNaxis(-1, 3);
+        Assert.assertEquals(1, header.getIntValue(NAXIS.name()));
+
+        header.addLine(new HeaderCard("COMMENT", (String) null, "bla bla"));
+        header.insertComment("blu blu");
+        header.addLine(new HeaderCard("HISTORY", (String) null, "blab blab"));
+        header.insertHistory("blub blub");
+        Header header2 = new Header();
+        boolean blaComment = false;
+        boolean bluComment = false;
+        boolean blabHistory = false;
+        boolean blubHistory = false;
+        boolean yzPressent = false;
+        header2.updateLines(header);
+        Cursor<String, HeaderCard> iter = header2.iterator();
+        while (iter.hasNext()) {
+            HeaderCard headerCard = iter.next();
+            blaComment = blaComment || headerCard.getComment().equals("bla bla");
+            bluComment = bluComment || headerCard.getComment().equals("bla bla");
+            blabHistory = blabHistory || headerCard.getComment().equals("blab blab");
+            blubHistory = blubHistory || headerCard.getComment().equals("blub blub");
+            yzPressent = yzPressent || headerCard.getKey().equals("YZ");
+        }
+        assertTrue(blaComment);
+        assertTrue(bluComment);
+        assertTrue(blabHistory);
+        assertTrue(blubHistory);
+        assertTrue(yzPressent);
+    }
+
+    private Header invalidHeaderTests() throws HeaderCardException {
+        Header header = new Header();
+        Assert.assertEquals(0, header.getSize());
+        header.addValue("XX", "XX", "XYZ");
+        header.addValue("XY", "XX", "XYZ");
+        header.addValue("XZ", "XX", "XYZ");
+        header.addValue("YZ", "XX", "XYZ");
+        Assert.assertEquals(0, header.getSize());
+
+        Cursor<String, HeaderCard> iterator = header.iterator(0);
+        iterator.add(new HeaderCard(SIMPLE.name(), "", ""));
+        Assert.assertEquals(0, header.getSize());
+        iterator.add(new HeaderCard(BITPIX.name(), 8, ""));
+        Assert.assertEquals(0, header.getSize());
+        iterator.add(new HeaderCard(NAXIS.name(), 1, ""));
+        Assert.assertEquals(0, header.getSize());
+        header.addValue("END", "", "");
+        Assert.assertEquals(2880, header.getSize());
+        return header;
     }
 }

@@ -39,6 +39,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import nom.tam.fits.FitsFactory;
+import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 
 import org.junit.Test;
@@ -111,7 +112,7 @@ public class HeaderCardTest {
         thrown = false;
         String lng = "00000000001111111111222222222233333333334444444444555555555566666666667777777777";
         try {
-            FitsFactory.setLongStringsEnabled(false);
+            Header.setLongStringsEnabled(false);
             p = new HeaderCard("KEY", lng, "COMMENT");
         } catch (Exception e) {
             thrown = true;

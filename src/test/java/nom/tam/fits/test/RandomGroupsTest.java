@@ -32,6 +32,10 @@ package nom.tam.fits.test;
  */
 
 import static org.junit.Assert.assertEquals;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsUtil;
@@ -39,6 +43,7 @@ import nom.tam.fits.Header;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -114,7 +119,8 @@ public class RandomGroupsTest {
         bf.close();
 
         f = new Fits("target/rg2.fits");
-        data = (Object[][]) f.read()[0].getKernel();
+        BasicHDU groupHDU = f.read()[0];
+        data = (Object[][]) groupHDU.getKernel();
         for (int i = 0; i < data.length; i += 1) {
 
             pa = (float[]) data[i][0];
@@ -126,5 +132,12 @@ public class RandomGroupsTest {
                 assertEquals("dataTest:" + i + " " + j, i * j, fa[j][j], 0);
             }
         }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        groupHDU.info(new PrintStream(out));
+        String groupInfo = new String(out.toByteArray());
+
+        Assert.assertTrue(groupInfo.indexOf("Number of groups:20") >= 0);
+        Assert.assertTrue(groupInfo.indexOf("Parameters: float[3]") >= 0);
+        Assert.assertTrue(groupInfo.indexOf("Data:float[20][20]") >= 0);
     }
 }

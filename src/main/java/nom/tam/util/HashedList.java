@@ -218,7 +218,7 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
     public boolean add(int pos, VALUE reference) {
         VALUE entry = reference;
         KEY key = entry.getKey();
-        if (this.keyed.containsKey(key)) {
+        if (this.keyed.containsKey(key) && !unkeyedKey(key)) {
             int oldPos = indexOf(entry);
             if (oldPos == -1) {
                 "".toString();
@@ -236,6 +236,10 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
             this.ordered.add(pos, entry);
         }
         return true;
+    }
+
+    private boolean unkeyedKey(KEY key) {
+        return "COMMENT".equals(key) || "HISTORY".equals(key);
     }
 
     @Override

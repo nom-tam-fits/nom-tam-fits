@@ -38,6 +38,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.util.ArrayDataInput;
@@ -72,6 +74,8 @@ import nom.tam.util.RandomAccess;
  * the FITS header, but this is not done automatically for the user.
  */
 public class Header implements FitsElement {
+
+    private static Logger LOG = Logger.getLogger(Header.class.getName());
 
     /**
      * Create a header by reading the information from the input stream.
@@ -669,9 +673,7 @@ public class Header implements FitsElement {
     @Deprecated
     public String getCard(int n) {
         if (n >= 0 && n < this.cards.size()) {
-            this.iter = this.cards.iterator(n);
-            HeaderCard c = this.iter.next();
-            return c.toString();
+            return this.cards.get(n).toString();
         }
         return null;
     }
@@ -865,21 +867,11 @@ public class Header implements FitsElement {
      */
     @Deprecated
     public String getKey(int n) {
-
-        String card = getCard(n);
-        if (card == null) {
-            return null;
+        if (n >= 0 && n < this.cards.size()) {
+            return this.cards.get(n).getKey();
         }
+        return null;
 
-        String key = card.substring(0, 8);
-        if (key.charAt(0) == ' ') {
-            return "";
-        }
-
-        if (key.indexOf(' ') >= 1) {
-            key = key.substring(0, key.indexOf(' '));
-        }
-        return key;
     }
 
     /**
@@ -1407,6 +1399,7 @@ public class Header implements FitsElement {
     public void setNaxis(int axis, int dim) {
 
         if (axis <= 0) {
+            LOG.warning("setNaxis ignored because axis less than 0");
             return;
         }
         if (axis == 1) {
@@ -1419,9 +1412,8 @@ public class Header implements FitsElement {
         }
         try {
             this.iter.add(new HeaderCard("NAXIS" + axis, dim, "ntf::header:naxisN:1"));
-
         } catch (HeaderCardException e) {
-            System.err.println("Impossible exception at setNaxis " + e);
+            LOG.log(Level.SEVERE, "Impossible exception at setNaxis", e);
         }
     }
 
@@ -1449,17 +1441,16 @@ public class Header implements FitsElement {
                 try {
                     removeCard("EXTEND");
                     this.iter.add(new HeaderCard("EXTEND", true, "ntf::header:extend:1"));
-                } catch (Exception e) { // Ignore the exception
+                } catch (Exception e) {
+                    LOG.log(Level.FINE, "exception ignored in setSimple", e);
                 }
-                ;
             }
         }
-
         this.iter = iterator();
         try {
             this.iter.add(new HeaderCard("SIMPLE", val, "ntf::header:simple:1"));
         } catch (HeaderCardException e) {
-            System.err.println("Impossible exception at setSimple " + e);
+            LOG.log(Level.FINE, "Impossible exception at setSimple ", e);
         }
     }
 
@@ -1575,10 +1566,12 @@ public class Header implements FitsElement {
 
         while (j.hasNext()) {
             HeaderCard nextHCard = j.next();
-            // updateLine() doesn't work with COMMENTs because
+            // updateLine() doesn't work with COMMENT and HISTORYs because
             // this would allow only one COMMENT in total in each header
-            if (nextHCard.getKey().startsWith("COMMENT")) {
+            if (nextHCard.getKey().equals("COMMENT")) {
                 insertComment(nextHCard.getComment());
+            } else if (nextHCard.getKey().equals("HISTORY")) {
+                insertHistory(nextHCard.getComment());
             } else {
                 updateLine(nextHCard.getKey(), nextHCard);
             }

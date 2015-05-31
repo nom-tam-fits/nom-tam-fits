@@ -31,8 +31,10 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 import nom.tam.fits.AsciiTable;
 import nom.tam.fits.BasicHDU;
@@ -41,11 +43,13 @@ import nom.tam.fits.Data;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
 import nom.tam.fits.UndefinedData;
 import nom.tam.fits.UndefinedHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.Cursor;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -239,4 +243,76 @@ public class BaseFitsTest {
         Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
     }
 
+    @Test
+    public void testFitsUndefinedHdu3() throws Exception {
+        Fits fits1 = makeAsciiTable();
+        fits1.read();
+        byte[] undefinedData = new byte[1000];
+        for (int index = 0; index < undefinedData.length; index++) {
+            undefinedData[index] = (byte) index;
+        }
+        Data data = UndefinedHDU.encapsulate(undefinedData);
+        Header header = new Header(data);
+
+        Cursor<String, HeaderCard> iter = header.iterator();
+
+        String[] headers = new String[header.getNumberOfCards() - 1];
+        int index = 0;
+        while (iter.hasNext()) {
+            HeaderCard headerCard = iter.next();
+            // the EXTEND key will be deleted later on because the header is no
+            // primary header so don't use it
+            if (!headerCard.getKey().equals("EXTEND")) {
+                headers[index++] = headerCard.toString();
+            }
+        }
+        Header newHeader = new Header(headers);
+        for (index = 0; index < headers.length; index++) {
+            Assert.assertEquals(header.getCard(index), newHeader.getCard(index));
+        }
+
+        fits1.addHDU(FitsFactory.HDUFactory(newHeader, data));
+        BufferedDataOutputStream os = new BufferedDataOutputStream(new FileOutputStream("target/UndefindedHDU3.fits"));
+        fits1.write(os);
+        os.close();
+
+        Fits fits2 = new Fits("target/UndefindedHDU3.fits");
+        BasicHDU[] hdus = fits2.read();
+
+        for (index = 0; index < headers.length; index++) {
+            Assert.assertEquals(header.getCard(index), hdus[5].getHeader().getCard(index));
+        }
+
+    }
+
+    @Test
+    public void testFitsUndefinedHdu4() throws Exception {
+        Fits fits1 = makeAsciiTable();
+        fits1.read();
+        byte[] undefinedData = new byte[1000];
+        for (int index = 0; index < undefinedData.length; index++) {
+            undefinedData[index] = (byte) index;
+        }
+        Data data = UndefinedHDU.encapsulate(undefinedData);
+        Header header = new Header();
+        header.pointToData(data);
+
+        fits1.addHDU(FitsFactory.HDUFactory(header, data));
+        BufferedDataOutputStream os = new BufferedDataOutputStream(new FileOutputStream("target/UndefindedHDU4.fits"));
+        fits1.write(os);
+        os.close();
+
+        Fits fits2 = new Fits("target/UndefindedHDU4.fits");
+        BasicHDU[] hdus = fits2.read();
+
+        byte[] rereadUndefinedData = (byte[]) ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
+        Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        hdus[hdus.length - 1].info(new PrintStream(out));
+        String undefinedInfo = new String(out.toByteArray());
+
+        Assert.assertTrue(undefinedInfo.indexOf("Apparent size:1000") >= 0);
+
+    }
 }
