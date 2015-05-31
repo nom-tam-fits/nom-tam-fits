@@ -34,15 +34,8 @@ package nom.tam.util;
 public class TruncationException extends Exception {
 
     /**
-     *
+     * serial version id.
      */
     private static final long serialVersionUID = 1L;
 
-    public TruncationException() {
-        super();
-    }
-
-    public TruncationException(String msg) {
-        super(msg);
-    }
 }

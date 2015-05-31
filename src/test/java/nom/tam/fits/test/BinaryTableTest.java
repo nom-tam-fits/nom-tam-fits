@@ -36,16 +36,19 @@ import static org.junit.Assert.assertEquals;
 import java.io.FileOutputStream;
 import java.lang.reflect.Array;
 
+import junit.framework.Assert;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.ColumnTable;
+import nom.tam.util.TableException;
 import nom.tam.util.TestArrayFuncs;
 
 import org.junit.Before;
@@ -722,10 +725,14 @@ public class BinaryTableTest {
         f = new Fits("target/bt9.fits");
 
         f.readHDU();
+        BinaryTableHDU firstHdu = null;
         BinaryTableHDU hdu;
         // This would fail before...
         int count = 0;
         while ((hdu = (BinaryTableHDU) f.readHDU()) != null) {
+            if (firstHdu == null) {
+                firstHdu = hdu;
+            }
             int nrow = hdu.getHeader().getIntValue("NAXIS2");
             count += 1;
             assertEquals(nrow, 50);
@@ -734,6 +741,17 @@ public class BinaryTableTest {
             }
         }
         assertEquals(count, 2);
+        tryDeleteNonExcistingColumn(firstHdu);
+    }
+
+    private void tryDeleteNonExcistingColumn(BinaryTableHDU firstHdu) {
+        TableException tableException = null;
+        try {
+            ((BinaryTable) firstHdu.getData()).deleteColumns(1000000000, 1);
+        } catch (FitsException ex) {
+            tableException = (TableException) ex.getCause();
+        }
+        Assert.assertNotNull(tableException);
     }
 
     @Test

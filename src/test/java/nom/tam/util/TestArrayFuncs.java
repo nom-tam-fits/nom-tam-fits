@@ -33,6 +33,8 @@ package nom.tam.util;
 
 import java.util.Arrays;
 
+import org.junit.Test;
+
 public class TestArrayFuncs {
 
     /** Compare two double arrays using a given tolerance */
@@ -206,4 +208,5 @@ public class TestArrayFuncs {
         testPattern(x, (byte) 0);
         return x;
     }
+
 }

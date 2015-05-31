@@ -34,13 +34,9 @@ package nom.tam.util;
 public class TableException extends Exception {
 
     /**
-     *
+     * serial version id.
      */
     private static final long serialVersionUID = 1L;
-
-    public TableException() {
-        super();
-    }
 
     public TableException(String msg) {
         super(msg);

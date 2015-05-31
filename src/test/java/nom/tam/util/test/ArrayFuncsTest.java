@@ -410,6 +410,20 @@ public class ArrayFuncsTest extends TestCase {
 
     }
 
+    public void testOutOfMemory() {
+        OutOfMemoryError error = null;
+        try {
+            Object result = nom.tam.util.TestArrayFuncs.generateArray(long.class, new int[]{
+                Integer.MAX_VALUE,
+                Integer.MAX_VALUE,
+                Integer.MAX_VALUE
+            });
+        } catch (OutOfMemoryError error2) {
+            error = error2;
+        }
+        assertNotNull(error);
+    }
+
     /**
      * Test of genericClone method, of class nom.tam.util.ArrayFuncs.
      */

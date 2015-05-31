@@ -878,7 +878,7 @@ public class BinaryTable extends AbstractTableData {
             this.rowLen = this.table.deleteColumns(start, len);
             this.nCol -= len;
         } catch (Exception e) {
-            throw new FitsException("Error deleting columns from BinaryTable:" + e);
+            throw new FitsException("Error deleting columns from BinaryTable", e);
         }
     }
 

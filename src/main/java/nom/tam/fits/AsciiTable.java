@@ -34,6 +34,8 @@ package nom.tam.fits;
 import java.io.EOFException;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -47,6 +49,8 @@ import nom.tam.util.TruncationException;
 
 /** This class represents the data in an ASCII table */
 public class AsciiTable extends AbstractTableData {
+
+    private static Logger LOG = Logger.getLogger(AsciiTable.class.getName());
 
     /** The number of rows in the table */
     private int nRows;
@@ -1047,7 +1051,7 @@ public class AsciiTable extends AbstractTableData {
                             }
                         }
                     } catch (TruncationException e) {
-                        System.err.println("Ignoring truncation error:" + i + "," + j);
+                        LOG.log(Level.WARNING, "Ignoring truncation error:" + i + "," + j);
                     }
                 }
             }

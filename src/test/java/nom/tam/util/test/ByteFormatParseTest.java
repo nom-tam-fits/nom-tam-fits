@@ -33,15 +33,18 @@ package nom.tam.util.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.beans.Transient;
 import java.util.Arrays;
 
 /** This class tests the ByteFormatter and ByteParser classes.
  */
 import nom.tam.util.ByteFormatter;
 import nom.tam.util.ByteParser;
+import nom.tam.util.FormatException;
 import nom.tam.util.TruncationException;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Categories.ExcludeCategory;
 
 public class ByteFormatParseTest {
 
@@ -72,6 +75,11 @@ public class ByteFormatParseTest {
         for (int i = 0; i < btst.length; i += 1) {
             assertEquals("Boolean:" + i, btst[i], this.bp.getBoolean());
         }
+    }
+
+    @Test(expected = FormatException.class)
+    public void testFailingBoolean() throws Exception {
+        new ByteParser(new byte[0]).getBoolean();
     }
 
     @Test
@@ -106,7 +114,7 @@ public class ByteFormatParseTest {
                 this.offset = this.bf.format("\n", this.buffer, this.offset, 1);
             }
         }
-
+        this.bf.format(99.9, this.bp.getBuffer(), this.offset, 25);
         this.bp.setOffset(0);
         for (int i = 0; i < dbl.length; i += 1) {
 
@@ -128,6 +136,7 @@ public class ByteFormatParseTest {
                 this.bp.skip(1);
             }
         }
+        assertEquals(99.9, this.bp.getDouble(), 1.e-14);
     }
 
     @Test
@@ -165,6 +174,7 @@ public class ByteFormatParseTest {
             }
         }
 
+        this.bf.format(99.9f, this.bp.getBuffer(), this.offset, 24);
         this.bp.setOffset(0);
 
         for (int i = 0; i < flt.length; i += 1) {
@@ -186,6 +196,7 @@ public class ByteFormatParseTest {
                 this.bp.skip(1);
             }
         }
+        assertEquals(99.9f, this.bp.getFloat(), 1.e-14);
     }
 
     @Test
@@ -194,6 +205,8 @@ public class ByteFormatParseTest {
         for (int i = 0; i < 10; i += 1) {
             this.buffer[i] = (byte) ' ';
         }
+        // this should change nothing
+        this.bp.setBuffer(this.buffer);
         this.bp.setOffset(0);
         assertEquals("IntBlank", 0, this.bp.getInt(10));
 
@@ -220,6 +233,7 @@ public class ByteFormatParseTest {
             }
         }
 
+        this.bf.format(Integer.MIN_VALUE, this.bp.getBuffer(), this.offset, 12);
         // Now see if we can get them back
         this.bp.setOffset(0);
         for (int i = 0; i < tint.length; i += 1) {
@@ -232,6 +246,7 @@ public class ByteFormatParseTest {
             }
         }
 
+        assertEquals(Integer.MIN_VALUE, this.bp.getInt());
         // Now do it with left-aligned numbers.
         this.bf.setAlign(false);
         this.bp.setFillFields(true);
@@ -331,6 +346,22 @@ public class ByteFormatParseTest {
             }
             val *= 10;
         }
+    }
+
+    @Test(expected = TruncationException.class)
+    public void testIntTruncate() throws Exception {
+
+        for (int i = 0; i < 10; i += 1) {
+            this.buffer[i] = (byte) ' ';
+        }
+        this.bp.setOffset(0);
+        assertEquals("IntBlank", 0, this.bp.getInt(10));
+
+        this.bf.setAlign(true);
+        this.bf.setTruncationThrow(true);
+        this.bf.setTruncateOnOverflow(false);
+
+        this.bf.format(555555555, new byte[2]);
     }
 
     @Test

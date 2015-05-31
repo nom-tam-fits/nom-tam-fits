@@ -40,9 +40,15 @@ import java.io.UnsupportedEncodingException;
 /**
  * @author tmcglynn
  */
-public class AsciiFuncs {
+public final class AsciiFuncs {
 
     public final static String ASCII = "US-ASCII";
+
+    /**
+     * utility class not to be instanciated.
+     */
+    private AsciiFuncs() {
+    }
 
     /** Convert to ASCII or return null if not compatible */
     public static String asciiString(byte[] buf) {
@@ -53,10 +59,8 @@ public class AsciiFuncs {
     public static String asciiString(byte[] buf, int start, int len) {
         try {
             return new String(buf, start, len, AsciiFuncs.ASCII);
-        } catch (java.io.UnsupportedEncodingException e) {
-            // Shouldn't happen
-            System.err.println("AsciiFuncs.asciiString error finding ASCII encoding");
-            return null;
+        } catch (java.io.UnsupportedEncodingException ex) {
+            throw new IllegalStateException("AsciiFuncs.asciiString error finding ASCII encoding", ex);
         }
     }
 
@@ -65,8 +69,7 @@ public class AsciiFuncs {
         try {
             return in.getBytes(AsciiFuncs.ASCII);
         } catch (UnsupportedEncodingException ex) {
-            System.err.println("Unable to find ASCII encoding");
-            return null;
+            throw new IllegalStateException("AsciiFuncs.asciiString error finding ASCII encoding", ex);
         }
     }
 }
