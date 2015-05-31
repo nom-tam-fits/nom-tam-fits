@@ -46,6 +46,7 @@ import java.io.RandomAccessFile;
 
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
@@ -694,7 +695,7 @@ public class BufferedFileTest {
         long[][][] tl0 = new long[1][1][1];
         long[][][] tl1 = new long[1][1][0];
 
-        BufferedFile bf = new BufferedFile("jtest.fil", "rw");
+        BufferedFile bf = new BufferedFile("jtest.fil", "rw", 64);
 
         bf.writeArray(td);
         bf.writeArray(tf);
@@ -708,8 +709,8 @@ public class BufferedFileTest {
         bf.writeArray(ts);
 
         bf.close();
-
-        bf = new BufferedFile("jtest.fil");
+        // extra small buffer to get into special cases
+        bf = new BufferedFile("jtest.fil", "r", 64);
 
         boolean thrown = false;
 
@@ -718,13 +719,15 @@ public class BufferedFileTest {
         } catch (Exception e) {
             thrown = true;
         }
+
         assertEquals("BufferedFile protections", true, thrown);
         try {
             bf.close();
         } catch (Exception e) {
         }
 
-        bf = new BufferedFile("jtest.fil", "r");
+        // extra small buffer to get into special cases
+        bf = new BufferedFile("jtest.fil", "r", 64);
 
         testArray(bf, "double", td);
         testArray(bf, "float", tf);
@@ -827,4 +830,45 @@ public class BufferedFileTest {
         bi.skipBytes(10000);
         assertEquals('Y', bi.read());
     }
+
+    @Test
+    public void testSomePrimitives() throws Exception {
+        BufferedFile bf = new BufferedFile("target/bufferedFilePrim.test", "rw");
+        bf.writeByte(120);
+        bf.writeByte(255);
+        String[] testStrings = {
+            "string 1",
+            "string 2",
+            "string 3",
+            "string 4",
+            "string 5",
+        };
+        bf.write(testStrings);
+        bf.write(testStrings, 1, 3);
+        bf.writeChars("abc");
+        bf.writeBytes("test\n");
+        assertEquals(77, bf.length());
+        bf.close();
+
+        bf = new BufferedFile("target/bufferedFilePrim.test");
+        assertEquals(120, bf.read());
+        assertEquals(255, bf.readUnsignedByte());
+
+        byte[] bytes = new byte[8 * 5];
+        bf.readFully(bytes);
+        assertEquals("string 1string 2string 3string 4string 5", AsciiFuncs.asciiString(bytes));
+
+        byte[] bytes2 = new byte[8 * 3];
+        bf.read(bytes2);
+        assertEquals("string 2string 3string 4", AsciiFuncs.asciiString(bytes2));
+
+        assertEquals('a', bf.readChar());
+        assertEquals('b', bf.readChar());
+        assertEquals('c', bf.readChar());
+        assertEquals("test", bf.readLine());
+
+        bf.close();
+
+    }
+
 }

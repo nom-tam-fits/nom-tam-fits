@@ -864,7 +864,7 @@ public class BufferedFile implements ArrayDataInput, ArrayDataOutput, RandomAcce
     public int readUnsignedByte() throws IOException {
         checkBuffer(1);
         this.bufferOffset += 1;
-        return this.buffer[this.bufferOffset - 1] | 0x00ff;
+        return this.buffer[this.bufferOffset - 1] & 0x00ff;
     }
 
     /**

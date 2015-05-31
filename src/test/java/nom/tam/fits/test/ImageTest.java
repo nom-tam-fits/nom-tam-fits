@@ -152,7 +152,7 @@ public class ImageTest {
 
         f = null;
 
-        bf = new BufferedFile("target/image1.fits");
+        bf = new BufferedFile(new File("target/image1.fits"));
 
         // Read a FITS file
         f = new Fits("target/image1.fits");
