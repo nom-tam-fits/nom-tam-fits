@@ -331,15 +331,19 @@ public class BaseFitsTest {
 
         hdu.getHeader().deleteKey("EXTEND");
 
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        BufferedDataOutputStream stream = new BufferedDataOutputStream(bytes);
+        BufferedFile stream = new BufferedFile("target/rewriteHduTest.bin", "rw");
         hdu.write(stream);
-        // TODO: hdu.rewrite();
         stream.close();
 
+        stream = new BufferedFile("target/rewriteHduTest.bin", "rw");
         data = UndefinedHDU.encapsulate(new byte[0]);
         hdu = new UndefinedHDU(new Header(data), data);
-        hdu.read(new BufferedDataInputStream(new ByteArrayInputStream(bytes.toByteArray())));
+        hdu.read(stream);
+        hdu.addValue("TESTER", "WRITE", null);
+        hdu.rewrite();
+        hdu.reset();
+        hdu.read(stream);
+        hdu.getHeader().getStringValue("TESTER");
 
         byte[] rereadUndefinedData = (byte[]) hdu.getData().getData();
         Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
