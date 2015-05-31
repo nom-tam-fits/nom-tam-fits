@@ -106,28 +106,6 @@ public class FitsLineAppender {
     }
 
     /**
-     * append a part of a string starting at the offset. Limit the append to the
-     * line length. rest of the string will be silently truncated.
-     * 
-     * @param string
-     *            the sting to append.
-     * @param offset
-     *            the ofsset in the sting to append.
-     */
-    public void append(String string, int offset) {
-
-        int newLength = this.charCount + string.length() - offset;
-        if (newLength > 80) {
-            this.buffer.append(string, offset, offset + 80 - this.charCount);
-            this.charCount = 0;
-        } else {
-            this.charCount = newLength;
-            this.buffer.append(string, offset, string.length());
-        }
-
-    }
-
-    /**
      * append a string to the buffer but replace all occurrences of a character
      * with an other.
      * 
