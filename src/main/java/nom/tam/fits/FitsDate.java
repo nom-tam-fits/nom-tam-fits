@@ -192,6 +192,7 @@ public class FitsDate {
                 this.year = Integer.parseInt(dStr.substring(0, first));
                 this.month = Integer.parseInt(dStr.substring(first + 1, middle));
                 this.mday = Integer.parseInt(dStr.substring(middle + 1, len));
+                System.out.println("New format:" + this.year + " " + this.month + " " + this.mday);
 
             } catch (NumberFormatException e) {
 
@@ -210,6 +211,8 @@ public class FitsDate {
                 this.year = Integer.parseInt(dStr.substring(middle + 1)) + 1900;
                 this.month = Integer.parseInt(dStr.substring(first + 1, middle));
                 this.mday = Integer.parseInt(dStr.substring(0, first));
+
+                System.out.println("Old Format:" + this.year + " " + this.month + " " + this.mday);
 
             } catch (NumberFormatException e) {
 
@@ -260,12 +263,15 @@ public class FitsDate {
             cal.set(Calendar.MONTH, this.month - 1);
             cal.set(Calendar.DAY_OF_MONTH, this.mday);
 
+            System.out.println("At this point:" + cal.getTime());
+
             if (this.hour == -1) {
 
                 cal.set(Calendar.HOUR_OF_DAY, 0);
                 cal.set(Calendar.MINUTE, 0);
                 cal.set(Calendar.SECOND, 0);
                 cal.set(Calendar.MILLISECOND, 0);
+                System.out.println("2At this point:" + cal.getTime());
 
             } else {
 
@@ -277,10 +283,18 @@ public class FitsDate {
                 } else {
                     cal.set(Calendar.MILLISECOND, this.millisecond);
                 }
+                System.out.println("3At this point:" + cal.getTime());
             }
 
             this.date = cal.getTime();
         }
+
+        System.out.println("  date:" + this.date);
+        System.out.println("  year:" + this.year);
+        System.out.println("  month:" + this.month);
+        System.out.println("  mday:" + this.mday);
+        System.out.println("  hour:" + this.hour);
+        System.out.println("  Got the day of month:" + date.getDate());
 
         return this.date;
     }

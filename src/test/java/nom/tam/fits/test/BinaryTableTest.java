@@ -156,7 +156,6 @@ public class BinaryTableTest {
     }
 
     @Test
-    @Ignore
     public void buildByRowAfterCopyBinaryTableByTheColumnTable() throws Exception {
 
         Fits f = new Fits("target/bt2.fits");

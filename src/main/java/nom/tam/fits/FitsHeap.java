@@ -96,6 +96,21 @@ public class FitsHeap implements FitsElement {
         }
     }
 
+    /**
+     * Add a copy constructor to allow us to duplicate a heap. This would be
+     * necessary if we wanted to copy an HDU that included variable length
+     * columns.
+     */
+    FitsHeap copy() {
+        FitsHeap copy = new FitsHeap(0);
+        if (this.heap != null) {
+            copy.heap = this.heap.clone();
+        }
+        copy.heapSize = this.heapSize;
+        copy.heapOffset = this.heapOffset;
+        return copy;
+    }
+
     private void allocate() {
         if (this.heap == null) {
             this.heap = new byte[this.heapSize];
@@ -133,6 +148,7 @@ public class FitsHeap implements FitsElement {
      *            The array to be extracted.
      */
     public void getData(int offset, Object array) throws FitsException {
+        // System.out.println("FitsHeap getting at:"+offset+" to "+array+" "+heapOffset);
 
         allocate();
         try {

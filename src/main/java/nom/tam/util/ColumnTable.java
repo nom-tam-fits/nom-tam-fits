@@ -46,7 +46,9 @@ import java.lang.reflect.Array;
  * read and written using the BufferedDataXputStream classes. The table is
  * represented entirely as a set of one-dimensional primitive arrays. For a
  * given column, a row consists of some number of contiguous elements of the
- * array. Each column is required to have the same number of rows.
+ * array. Each column is required to have the same number of rows. Information
+ * regarding the dimensionality of columns and possible data pointers is
+ * retained for use by clients which can understand them.
  */
 public class ColumnTable implements DataTable {
 
@@ -90,6 +92,11 @@ public class ColumnTable implements DataTable {
     private boolean[][] booleanPointers;
 
     /**
+     * Allow the client to provide opaque data.
+     */
+    private Object extraState;
+
+    /**
      * Create the object after checking consistency.
      * 
      * @param arrays
@@ -100,6 +107,23 @@ public class ColumnTable implements DataTable {
      */
     public ColumnTable(Object[] arrays, int[] sizes) throws TableException {
         setup(arrays, sizes);
+    }
+
+    /**
+     * Store additional information that may be needed by the client to
+     * regenerate initial arrays.
+     */
+    public void setExtraState(Object opaque) {
+        extraState = opaque;
+    }
+
+    /** Get the pointer state */
+    public Object getExtraState() {
+        return extraState;
+    }
+
+    public ColumnTable copy() throws TableException {
+        return new ColumnTable((Object[]) ArrayFuncs.deepClone(arrays), sizes.clone());
     }
 
     /** Add a column */

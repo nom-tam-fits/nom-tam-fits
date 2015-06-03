@@ -271,10 +271,10 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
             // Worry about variable length columns.
             String prefix = "";
-            if (this.myData.isVarCol(index)) {
+            if (this.myData.getDescriptor(index).isVarying) {
                 prefix = "P";
                 dim = 1;
-                if (this.myData.isLongVary(index)) {
+                if (this.myData.getDescriptor(index).isLongVary) {
                     prefix = "Q";
                 }
             }

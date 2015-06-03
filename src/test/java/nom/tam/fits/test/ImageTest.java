@@ -45,6 +45,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -167,14 +170,22 @@ public class ImageTest {
         assertEquals(0.0, hdus[0].getBZero(), 0.000001);
         assertEquals(115, hdus[0].getCreationDate().getYear());
         assertEquals(2, hdus[0].getCreationDate().getMonth());
-        assertEquals(22, hdus[0].getCreationDate().getDate());
+        // Date works in the local time zone which won't cause
+        // issues with the year or month, but may give us an
+        // off by one with the day. So we create a Calendar
+        // object to handle that more uniformly.
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+        cal.setTime(hdus[0].getCreationDate());
+        assertEquals(22, cal.get(Calendar.DAY_OF_MONTH));
         assertEquals(2000.0, hdus[0].getEquinox(), 0.000001);
         assertEquals("the biggest ever", hdus[0].getInstrument());
         assertEquals(0.0, hdus[0].getMinimumValue(), 0.00001);
         assertEquals(60.0, hdus[0].getMaximumValue(), 0.00001);
         assertEquals(115, hdus[0].getObservationDate().getYear());
         assertEquals(2, hdus[0].getObservationDate().getMonth());
-        assertEquals(22, hdus[0].getObservationDate().getDate());
+        cal.setTime(hdus[0].getObservationDate());
+        assertEquals(22, cal.get(Calendar.DAY_OF_MONTH));
         assertEquals("he was it again", hdus[0].getObserver());
         assertEquals("thats us", hdus[0].getOrigin());
         assertEquals("over there", hdus[0].getReference());
