@@ -65,7 +65,7 @@ public class AsciiTable extends AbstractTableData {
     private String[] nulls;
 
     /** The type of data in the field */
-    private Class[] types;
+    private Class<?>[] types;
 
     /** The offset from the beginning of the row at which the field starts */
     private int[] offsets;
@@ -165,7 +165,7 @@ public class AsciiTable extends AbstractTableData {
         }
     }
 
-    int addColInfo(int col, Cursor iter) throws HeaderCardException {
+    int addColInfo(int col, Cursor<String, HeaderCard> iter) throws HeaderCardException {
 
         String tform = null;
         if (this.types[col] == String.class) {
@@ -252,7 +252,7 @@ public class AsciiTable extends AbstractTableData {
         Object[] newData = new Object[this.nFields + 1];
         int[] newOffsets = new int[this.nFields + 1];
         int[] newLengths = new int[this.nFields + 1];
-        Class[] newTypes = new Class[this.nFields + 1];
+        Class<?>[] newTypes = new Class[this.nFields + 1];
         String[] newNulls = new String[this.nFields + 1];
 
         System.arraycopy(this.data, 0, newData, 0, this.nFields);
@@ -352,7 +352,7 @@ public class AsciiTable extends AbstractTableData {
         Object[] newData = new Object[this.nFields - len];
         int[] newOffsets = new int[this.nFields - len];
         int[] newLengths = new int[this.nFields - len];
-        Class[] newTypes = new Class[this.nFields - len];
+        Class<?>[] newTypes = new Class[this.nFields - len];
         String[] newNulls = new String[this.nFields - len];
 
         // Copy in the initial stuff...
@@ -505,7 +505,7 @@ public class AsciiTable extends AbstractTableData {
             hdr.setNaxes(2);
             hdr.setNaxis(1, this.rowLen);
             hdr.setNaxis(2, this.nRows);
-            Cursor iter = hdr.iterator();
+            Cursor<String, HeaderCard> iter = hdr.iterator();
             iter.setKey("NAXIS2");
             iter.next();
             iter.add(new HeaderCard("PCOUNT", 0, "ntf::asciitable:pcount:1"));

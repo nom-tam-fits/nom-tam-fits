@@ -43,6 +43,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.reflect.Constructor;
+
+import javax.swing.SpringLayout.Constraints;
 
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;
@@ -871,4 +874,12 @@ public class BufferedFileTest {
 
     }
 
+    @Test
+    public void testAsciiFuncs() throws Exception {
+        Constructor<?>[] constrs = AsciiFuncs.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
 }

@@ -59,11 +59,6 @@ public class FitsHeap implements FitsElement {
     private int heapSize;
 
     /**
-     * The offset within a file where the heap begins
-     */
-    private long fileOffset = -1;
-
-    /**
      * Has the heap ever been expanded?
      */
     private boolean expanded = false;
@@ -172,7 +167,7 @@ public class FitsHeap implements FitsElement {
      */
     @Override
     public long getFileOffset() {
-        return this.fileOffset;
+        throw new IllegalStateException("FitsHeap should only be reset from inside its parent, never alone");
     }
 
     /**
@@ -219,7 +214,6 @@ public class FitsHeap implements FitsElement {
     public void read(ArrayDataInput str) throws FitsException {
 
         if (str instanceof RandomAccess) {
-            this.fileOffset = FitsUtil.findOffset(str);
             this.input = str;
         }
 
@@ -247,7 +241,7 @@ public class FitsHeap implements FitsElement {
 
     @Override
     public boolean rewriteable() {
-        return this.fileOffset >= 0 && this.input instanceof ArrayDataOutput && !this.expanded;
+        return false;
     }
 
     /**

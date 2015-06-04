@@ -426,6 +426,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * Read out the HDU from the data stream. This will overwrite any existing
      * header and data components.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void read(ArrayDataInput stream) throws FitsException, IOException {
         this.myHeader = Header.readHeader(stream);

@@ -35,14 +35,16 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.FileOutputStream;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
-import junit.framework.Assert;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
+import nom.tam.fits.FitsHeap;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.util.BufferedDataOutputStream;
@@ -51,6 +53,7 @@ import nom.tam.util.ColumnTable;
 import nom.tam.util.TableException;
 import nom.tam.util.TestArrayFuncs;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -1086,5 +1089,34 @@ public class BinaryTableTest {
             e.printStackTrace(System.err);
             throw e;
         }
+    }
+
+    @Test
+    public void testFitsHeap() throws Exception {
+        Constructor<FitsHeap> declaredConstructor = FitsHeap.class.getDeclaredConstructor(int.class);
+        declaredConstructor.setAccessible(true);
+        FitsHeap fitsHeap = declaredConstructor.newInstance(10);
+        Exception ex = null;
+        try {
+            fitsHeap.reset();
+        } catch (Exception e) {
+            ex = e;
+        }
+        Assert.assertNotNull(ex);
+        Assert.assertEquals(IllegalStateException.class, ex.getClass());
+        try {
+            fitsHeap.rewrite();
+        } catch (Exception e) {
+            ex = e;
+        }
+        Assert.assertNotNull(ex);
+        Assert.assertEquals(FitsException.class, ex.getClass());
+        try {
+            fitsHeap.getFileOffset();
+        } catch (Exception e) {
+            ex = e;
+        }
+        Assert.assertNotNull(ex);
+        Assert.assertEquals(IllegalStateException.class, ex.getClass());
     }
 }
