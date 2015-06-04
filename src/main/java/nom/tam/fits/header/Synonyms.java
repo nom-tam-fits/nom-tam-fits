@@ -64,4 +64,25 @@ public enum Synonyms {
         return this.primaryKeyword;
     }
 
+    public static IFitsHeader primaryKeyword(IFitsHeader header) {
+        for (Synonyms synonym : values()) {
+            for (IFitsHeader synHeader : synonym.synonyms) {
+                if (synHeader.equals(header)) {
+                    return synonym.primaryKeyword();
+                }
+            }
+        }
+        return header;
+    }
+
+    public static String primaryKeyword(String header) {
+        for (Synonyms synonym : values()) {
+            for (IFitsHeader synHeader : synonym.synonyms) {
+                if (synHeader.key().equals(header)) {
+                    return synonym.primaryKeyword().key();
+                }
+            }
+        }
+        return header;
+    }
 }

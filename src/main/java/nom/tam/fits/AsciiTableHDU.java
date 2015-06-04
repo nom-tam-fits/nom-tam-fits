@@ -142,15 +142,13 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     /** Add a column */
     @Override
     public int addColumn(Object newCol) throws FitsException {
-
         this.myData.addColumn(newCol);
-
         // Move the iterator to point after all the data describing
         // the previous column.
 
         Cursor<String, HeaderCard> iter = this.myHeader.positionAfterIndex("TBCOL", this.myData.getNCols());
 
-        int rowlen = this.myData.addColInfo(getNCols(), iter);
+        int rowlen = this.myData.addColInfo(getNCols() - 1, iter);
         int oldRowlen = this.myHeader.getIntValue("NAXIS1");
         this.myHeader.setNaxis(1, rowlen + oldRowlen);
 
@@ -169,14 +167,6 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     @Override
     public String[] columnKeyStems() {
         return KEY_STEMS;
-    }
-
-    /**
-     * Return the FITS data structure associated with this HDU.
-     */
-    @Override
-    public Data getData() {
-        return this.myData;
     }
 
     /**

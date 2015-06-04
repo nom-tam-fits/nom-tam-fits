@@ -48,6 +48,7 @@ import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.header.ObservationDescription;
 import nom.tam.fits.header.ObservationDurationDescription;
 import nom.tam.fits.header.Standard;
+import nom.tam.fits.header.Synonyms;
 import nom.tam.fits.header.extra.CXCExt;
 import nom.tam.fits.header.extra.CXCStclSharedExt;
 import nom.tam.fits.header.extra.MaxImDLExt;
@@ -136,4 +137,9 @@ public class EnumHeaderTest {
 
     }
 
+    @Test
+    public void testSynonyms() {
+        Assert.assertEquals(Standard.EQUINOX, Synonyms.primaryKeyword(Standard.EPOCH));
+        Assert.assertEquals("EQUINOX", Synonyms.primaryKeyword("EPOCH"));
+    }
 }

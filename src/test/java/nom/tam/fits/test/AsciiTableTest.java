@@ -231,7 +231,7 @@ public class AsciiTableTest {
 
         hdu.setNullString(0, "**INVALID**");
         data.setNull(5, 0, true);
-        data.setNull(6, 0, true);
+        hdu.setNull(6, 0, true);
 
         Object[] row = new Object[5];
         row[0] = new float[]{
@@ -260,7 +260,8 @@ public class AsciiTableTest {
         f.write(bf);
 
         f = new Fits("target/at1x.fits");
-        AsciiTable tab = (AsciiTable) f.getHDU(1).getData();
+        AsciiTableHDU asciiHdu = (AsciiTableHDU) f.getHDU(1);
+        AsciiTable tab = asciiHdu.getData();
         Object[] kern = (Object[]) tab.getKernel();
 
         float[] fx = (float[]) kern[0];
@@ -277,6 +278,8 @@ public class AsciiTableTest {
 
         assertEquals("Null", true, tab.isNull(6, 0));
         assertEquals("Null2", false, tab.isNull(5, 0));
+        assertEquals("Null", true, hdu.isNull(6, 0));
+        assertEquals("Null2", false, hdu.isNull(5, 0));
 
         for (int i = 0; i < data.getNRows(); i += 1) {
             if (i != 5) {
@@ -298,16 +301,19 @@ public class AsciiTableTest {
         st[0] = st[0].trim();
         assertEquals("row5", true, TestArrayFuncs.arrayEquals(row, r5, 1.e-6, 1.e-14));
 
-        addDeleteColumn(tab);
+        addDeleteColumn(asciiHdu);
     }
 
-    private void addDeleteColumn(AsciiTable tab) throws FitsException {
+    private void addDeleteColumn(AsciiTableHDU asciiHdu) throws FitsException {
+        AsciiTable tab = asciiHdu.getData();
+        tab.fillHeader(asciiHdu.getHeader());
+
         String[] col4 = (String[]) tab.getColumn(4);
         int[] newCol = new int[50];
         for (int index = 0; index < newCol.length; index++) {
             newCol[index] = index;
         }
-        tab.addColumn(newCol);
+        asciiHdu.addColumn(newCol);
         int[] newColAdded = (int[]) tab.getColumn(5);
         Assert.assertArrayEquals(newCol, newColAdded);
         tab.deleteColumns(5, 1);
