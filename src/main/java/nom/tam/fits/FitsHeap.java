@@ -237,30 +237,12 @@ public class FitsHeap implements FitsElement {
 
     @Override
     public boolean reset() {
-        try {
-            FitsUtil.reposition(this.input, this.fileOffset);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        throw new IllegalStateException("FitsHeap should only be reset from inside its parent, never alone");
     }
 
-    /**
-     * Attempt to rewrite the heap with the current contents. Note that no
-     * checking is done to make sure that the heap does not extend past its
-     * prior boundaries.
-     */
     @Override
     public void rewrite() throws IOException, FitsException {
-        allocate();
-        if (rewriteable()) {
-            ArrayDataOutput str = (ArrayDataOutput) this.input;
-            FitsUtil.reposition(str, this.fileOffset);
-            write(str);
-        } else {
-            throw new FitsException("Invalid attempt to rewrite FitsHeap");
-        }
-
+        throw new FitsException("FitsHeap should only be rewritten from inside its parent, never alone");
     }
 
     @Override
