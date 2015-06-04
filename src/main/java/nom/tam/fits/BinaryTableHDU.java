@@ -53,9 +53,8 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     /** Encapsulate data in a BinaryTable data type */
     public static Data encapsulate(Object o) throws FitsException {
-
         if (o instanceof nom.tam.util.ColumnTable) {
-            return new BinaryTable((nom.tam.util.ColumnTable) o);
+            return new BinaryTable((nom.tam.util.ColumnTable<?>) o);
         } else if (o instanceof Object[][]) {
             return new BinaryTable((Object[][]) o);
         } else if (o instanceof Object[]) {
@@ -163,7 +162,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      */
     @Override
     public String[] columnKeyStems() {
-        return KEY_STEMS;
+        return BinaryTableHDU.KEY_STEMS;
     }
 
     /**
@@ -172,7 +171,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     @Override
     public void info(PrintStream stream) {
 
-        BinaryTable myData = (BinaryTable) this.myData;
+        BinaryTable myData = this.myData;
 
         stream.println("  Binary Table");
         stream.println("      Header Information:");
@@ -251,7 +250,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
             // is right.
 
             int[] dimens = this.myData.getDimens()[index];
-            Class base = this.myData.getBases()[index];
+            Class<?> base = this.myData.getBases()[index];
 
             int dim = 1;
             String tdim = "";
@@ -271,10 +270,10 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
             // Worry about variable length columns.
             String prefix = "";
-            if (this.myData.getDescriptor(index).isVarying) {
+            if (this.myData.getDescriptor(index).isVarying()) {
                 prefix = "P";
                 dim = 1;
-                if (this.myData.getDescriptor(index).isLongVary) {
+                if (this.myData.getDescriptor(index).isLongVary()) {
                     prefix = "Q";
                 }
             }

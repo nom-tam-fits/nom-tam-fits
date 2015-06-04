@@ -34,13 +34,18 @@ package nom.tam.fits;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author D. Glowacki
  */
 public class FitsDate {
+
+    private static final TimeZone GMT = TimeZone.getTimeZone("GMT");
+
+    private static Logger LOG = Logger.getLogger(FitsDate.class.getName());
 
     /** Return the current date in FITS date format */
     public static String getFitsDateString() {
@@ -68,7 +73,7 @@ public class FitsDate {
     public static String getFitsDateString(Date epoch, boolean timeOfDay) {
 
         try {
-            GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+            Calendar cal = Calendar.getInstance(FitsDate.GMT);
 
             cal.setTime(epoch);
 
@@ -171,31 +176,26 @@ public class FitsDate {
         // find the middle separator
         int middle = dStr.indexOf('-', first + 1);
         if (middle > first + 2 && middle < len) {
-
             try {
-
                 // if this date string includes a time...
                 if (middle + 3 < len && dStr.charAt(middle + 3) == 'T') {
-
                     // ... try to parse the time
                     try {
                         parseTime(dStr.substring(middle + 4));
                     } catch (FitsException e) {
                         throw new FitsException("Bad time in FITS date string \"" + dStr + "\"");
                     }
-
                     // we got the time; mark the end of the date string
                     len = middle + 3;
                 }
-
                 // parse date string
                 this.year = Integer.parseInt(dStr.substring(0, first));
                 this.month = Integer.parseInt(dStr.substring(first + 1, middle));
                 this.mday = Integer.parseInt(dStr.substring(middle + 1, len));
-                System.out.println("New format:" + this.year + " " + this.month + " " + this.mday);
-
+                if (FitsDate.LOG.isLoggable(Level.FINEST)) {
+                    FitsDate.LOG.log(Level.FINEST, "New format:" + this.year + " " + this.month + " " + this.mday);
+                }
             } catch (NumberFormatException e) {
-
                 // yikes, something failed; reset everything
                 this.year = this.month = this.mday = this.hour = this.minute = this.second = this.millisecond = -1;
             }
@@ -205,17 +205,14 @@ public class FitsDate {
     private void buildOldDate(String dStr, int first, int len) {
         int middle = dStr.indexOf('/', first + 1);
         if (middle > first + 2 && middle < len) {
-
             try {
-
                 this.year = Integer.parseInt(dStr.substring(middle + 1)) + 1900;
                 this.month = Integer.parseInt(dStr.substring(first + 1, middle));
                 this.mday = Integer.parseInt(dStr.substring(0, first));
-
-                System.out.println("Old Format:" + this.year + " " + this.month + " " + this.mday);
-
+                if (FitsDate.LOG.isLoggable(Level.FINEST)) {
+                    FitsDate.LOG.log(Level.FINEST, "Old Format:" + this.year + " " + this.month + " " + this.mday);
+                }
             } catch (NumberFormatException e) {
-
                 this.year = this.month = this.mday = -1;
             }
         }
@@ -256,14 +253,14 @@ public class FitsDate {
      */
     public Date toDate() {
         if (this.date == null && this.year != -1) {
-            TimeZone tz = TimeZone.getTimeZone("GMT");
-            GregorianCalendar cal = new GregorianCalendar(tz);
+            Calendar cal = Calendar.getInstance(FitsDate.GMT);
 
             cal.set(Calendar.YEAR, this.year);
             cal.set(Calendar.MONTH, this.month - 1);
             cal.set(Calendar.DAY_OF_MONTH, this.mday);
-
-            System.out.println("At this point:" + cal.getTime());
+            if (FitsDate.LOG.isLoggable(Level.FINEST)) {
+                FitsDate.LOG.log(Level.FINEST, "At this point:" + cal.getTime());
+            }
 
             if (this.hour == -1) {
 
@@ -271,8 +268,9 @@ public class FitsDate {
                 cal.set(Calendar.MINUTE, 0);
                 cal.set(Calendar.SECOND, 0);
                 cal.set(Calendar.MILLISECOND, 0);
-                System.out.println("2At this point:" + cal.getTime());
-
+                if (FitsDate.LOG.isLoggable(Level.FINEST)) {
+                    FitsDate.LOG.log(Level.FINEST, "2At this point:" + cal.getTime());
+                }
             } else {
 
                 cal.set(Calendar.HOUR_OF_DAY, this.hour);
@@ -283,19 +281,21 @@ public class FitsDate {
                 } else {
                     cal.set(Calendar.MILLISECOND, this.millisecond);
                 }
-                System.out.println("3At this point:" + cal.getTime());
+                if (FitsDate.LOG.isLoggable(Level.FINEST)) {
+                    FitsDate.LOG.log(Level.FINEST, "3At this point:" + cal.getTime());
+                }
             }
 
             this.date = cal.getTime();
         }
-
-        System.out.println("  date:" + this.date);
-        System.out.println("  year:" + this.year);
-        System.out.println("  month:" + this.month);
-        System.out.println("  mday:" + this.mday);
-        System.out.println("  hour:" + this.hour);
-        System.out.println("  Got the day of month:" + date.getDate());
-
+        if (FitsDate.LOG.isLoggable(Level.FINEST)) {
+            FitsDate.LOG.log(Level.FINEST, "  date:" + this.date);
+            FitsDate.LOG.log(Level.FINEST, "  year:" + this.year);
+            FitsDate.LOG.log(Level.FINEST, "  month:" + this.month);
+            FitsDate.LOG.log(Level.FINEST, "  mday:" + this.mday);
+            FitsDate.LOG.log(Level.FINEST, "  hour:" + this.hour);
+            FitsDate.LOG.log(Level.FINEST, "  Got the day of month:" + this.date.getDate());
+        }
         return this.date;
     }
 

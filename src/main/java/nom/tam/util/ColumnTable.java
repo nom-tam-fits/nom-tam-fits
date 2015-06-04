@@ -50,7 +50,7 @@ import java.lang.reflect.Array;
  * regarding the dimensionality of columns and possible data pointers is
  * retained for use by clients which can understand them.
  */
-public class ColumnTable implements DataTable {
+public class ColumnTable<T> implements DataTable {
 
     /** The columns to be read/written */
     private Object[] arrays;
@@ -70,7 +70,7 @@ public class ColumnTable implements DataTable {
      */
     private char[] types;
 
-    private Class[] bases;
+    private Class<?>[] bases;
 
     // The following arrays are used to avoid having to check
     // casts during the I/O loops.
@@ -94,7 +94,7 @@ public class ColumnTable implements DataTable {
     /**
      * Allow the client to provide opaque data.
      */
-    private Object extraState;
+    private T extraState;
 
     /**
      * Create the object after checking consistency.
@@ -107,23 +107,6 @@ public class ColumnTable implements DataTable {
      */
     public ColumnTable(Object[] arrays, int[] sizes) throws TableException {
         setup(arrays, sizes);
-    }
-
-    /**
-     * Store additional information that may be needed by the client to
-     * regenerate initial arrays.
-     */
-    public void setExtraState(Object opaque) {
-        extraState = opaque;
-    }
-
-    /** Get the pointer state */
-    public Object getExtraState() {
-        return extraState;
-    }
-
-    public ColumnTable copy() throws TableException {
-        return new ColumnTable((Object[]) ArrayFuncs.deepClone(arrays), sizes.clone());
     }
 
     /** Add a column */
@@ -140,7 +123,7 @@ public class ColumnTable implements DataTable {
 
         Object[] newArrays = new Object[ncol + 1];
         int[] newSizes = new int[ncol + 1];
-        Class[] newBases = new Class[ncol + 1];
+        Class<?>[] newBases = new Class[ncol + 1];
         char[] newTypes = new char[ncol + 1];
 
         System.arraycopy(this.arrays, 0, newArrays, 0, ncol);
@@ -341,6 +324,10 @@ public class ColumnTable implements DataTable {
 
     }
 
+    public ColumnTable<T> copy() throws TableException {
+        return new ColumnTable<T>((Object[]) ArrayFuncs.deepClone(this.arrays), this.sizes.clone());
+    }
+
     /**
      * Delete a contiguous set of columns from the table.
      * 
@@ -373,7 +360,7 @@ public class ColumnTable implements DataTable {
 
         Object[] newArrays = new Object[ncol];
         int[] newSizes = new int[ncol];
-        Class[] newBases = new Class[ncol];
+        Class<?>[] newBases = new Class<?>[ncol];
         char[] newTypes = new char[ncol];
 
         System.arraycopy(this.arrays, 0, newArrays, 0, start);
@@ -450,7 +437,7 @@ public class ColumnTable implements DataTable {
      * 
      * @return An array of Class objects, one for each column.
      */
-    public Class[] getBases() {
+    public Class<?>[] getBases() {
         return this.bases;
     }
 
@@ -488,6 +475,11 @@ public class ColumnTable implements DataTable {
         Object x = ArrayFuncs.newInstance(this.bases[col], this.sizes[col]);
         System.arraycopy(this.arrays[col], this.sizes[col] * row, x, 0, this.sizes[col]);
         return x;
+    }
+
+    /** Get the pointer state */
+    public T getExtraState() {
+        return this.extraState;
     }
 
     /**
@@ -803,6 +795,14 @@ public class ColumnTable implements DataTable {
         }
 
         System.arraycopy(x, 0, this.arrays[col], this.sizes[col] * row, this.sizes[col]);
+    }
+
+    /**
+     * Store additional information that may be needed by the client to
+     * regenerate initial arrays.
+     */
+    public void setExtraState(T opaque) {
+        this.extraState = opaque;
     }
 
     /**

@@ -96,6 +96,12 @@ public class FitsHeap implements FitsElement {
         }
     }
 
+    private void allocate() {
+        if (this.heap == null) {
+            this.heap = new byte[this.heapSize];
+        }
+    }
+
     /**
      * Add a copy constructor to allow us to duplicate a heap. This would be
      * necessary if we wanted to copy an HDU that included variable length
@@ -109,12 +115,6 @@ public class FitsHeap implements FitsElement {
         copy.heapSize = this.heapSize;
         copy.heapOffset = this.heapOffset;
         return copy;
-    }
-
-    private void allocate() {
-        if (this.heap == null) {
-            this.heap = new byte[this.heapSize];
-        }
     }
 
     /**
