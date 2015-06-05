@@ -1,6 +1,3 @@
-// Member of the utility package.
-// Modified July 20, 2009 to handle very large arrays
-// in some contexts.
 package nom.tam.util;
 
 /*
@@ -151,21 +148,17 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            descriptors for primitive numeric data, e.g., double.type.
      */
     public static Object convertArray(Object array, Class<?> newType) {
-
         /*
          * We break this up into two steps so that users can reuse an array many
          * times and only allocate a new array when needed.
          */
-
         /* First create the full new array. */
         Object mimic = mimicArray(array, newType);
         if (mimic == null) {
             return mimic;
         }
-
         /* Now copy the info into the new array */
         copyInto(array, mimic);
-
         return mimic;
     }
 
@@ -182,8 +175,7 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            If set, and the requested type is the same as the original,
      *            then the original is returned.
      */
-    public static Object convertArray(Object array, Class newType, boolean reuse) {
-
+    public static Object convertArray(Object array, Class<?> newType, boolean reuse) {
         if (getBaseClass(array) == newType && reuse) {
             return array;
         } else {
@@ -434,9 +426,8 @@ public class ArrayFuncs implements PrimitiveInfo {
      * not guaranteed to be rectangular, so this returns o[0][0]....
      */
     public static Object getBaseArray(Object o) {
-        String cname = o.getClass().getName();
-        if (cname.charAt(1) == '[') {
-            return getBaseArray(((Object[]) o)[0]);
+        if (o.getClass().getComponentType().isArray()) {
+            return getBaseArray(Array.get(o, 0));
         } else {
             return o;
         }
@@ -446,38 +437,15 @@ public class ArrayFuncs implements PrimitiveInfo {
      * This routine returns the base class of an object. This is just the class
      * of the object for non-arrays.
      */
-    public static Class getBaseClass(Object o) {
-
+    public static Class<?> getBaseClass(Object o) {
         if (o == null) {
             return Void.TYPE;
         }
-
-        String className = o.getClass().getName();
-
-        int dims = 0;
-        while (className.charAt(dims) == '[') {
-            dims += 1;
+        Class<?> clazz = o.getClass();
+        while (clazz.isArray()) {
+            clazz = clazz.getComponentType();
         }
-
-        if (dims == 0) {
-            return o.getClass();
-        }
-
-        char c = className.charAt(dims);
-        for (int i = 0; i < PrimitiveInfo.suffixes.length; i += 1) {
-            if (c == PrimitiveInfo.suffixes[i]) {
-                return PrimitiveInfo.classes[i];
-            }
-        }
-
-        if (c == 'L') {
-            try {
-                return Class.forName(className.substring(dims + 1, className.length() - 1));
-            } catch (ClassNotFoundException e) {
-                return null;
-            }
-        }
-        return null;
+        return clazz;
     }
 
     /**
@@ -489,28 +457,12 @@ public class ArrayFuncs implements PrimitiveInfo {
      *         primitive array.
      */
     public static int getBaseLength(Object o) {
-
         if (o == null) {
             return 0;
         }
-
-        String className = o.getClass().getName();
-
-        int dims = 0;
-
-        while (className.charAt(dims) == '[') {
-            dims += 1;
-        }
-
-        if (dims == 0) {
-            return -1;
-        }
-
-        char c = className.charAt(dims);
-        for (int i = 0; i < PrimitiveInfo.suffixes.length; i += 1) {
-            if (c == PrimitiveInfo.suffixes[i]) {
-                return PrimitiveInfo.sizes[i];
-            }
+        PrimitiveTypeEnum type = PrimitiveTypeEnum.valueOf(getBaseClass(o));
+        if (type != null && type.size() != 0) {
+            return type.size();
         }
         return -1;
     }
@@ -621,11 +573,9 @@ public class ArrayFuncs implements PrimitiveInfo {
      *             OutOfMemoryError if insufficient space is available.
      */
     public static Object newInstance(Class<?> cl, int dim) {
-
         Object o = Array.newInstance(cl, dim);
         if (o == null) {
-            String desc = cl + "[" + dim + "]";
-            throw new OutOfMemoryError("Unable to allocate array: " + desc);
+            throw new OutOfMemoryError("Unable to allocate array: " + cl + "[" + dim + "]");
         }
         return o;
     }
