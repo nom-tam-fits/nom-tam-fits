@@ -36,7 +36,7 @@ package nom.tam.util;
 
 import java.lang.reflect.Array;
 
-import nom.tam.util.array.PrimitiveArrayCopier;
+import nom.tam.util.array.MultyArrayCopier;
 
 /**
  * This is a package of static functions which perform computations on arrays.
@@ -260,7 +260,7 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            The array mimicking the original.
      */
     public static void copyInto(Object array, Object mimic) {
-        PrimitiveArrayCopier.copyInto(array, mimic);
+        MultyArrayCopier.copyInto(array, mimic);
     }
 
     /**
@@ -294,7 +294,7 @@ public class ArrayFuncs implements PrimitiveInfo {
         }
 
         Object newArray = ArrayFuncs.newInstance(getBaseClass(input), dimens);
-        PrimitiveArrayCopier.copyInto(input, newArray);
+        MultyArrayCopier.copyInto(input, newArray);
         return newArray;
 
     }
@@ -409,7 +409,7 @@ public class ArrayFuncs implements PrimitiveInfo {
         }
 
         Object flat = ArrayFuncs.newInstance(getBaseClass(input), size);
-        PrimitiveArrayCopier.copyInto(input, flat);
+        MultyArrayCopier.copyInto(input, flat);
         return flat;
     }
 

@@ -33,11 +33,11 @@ package nom.tam.util.array;
 
 import java.lang.reflect.Array;
 
-public class PrimitiveArrayCopier {
+public class MultyArrayCopier {
 
-    private final PrimitiveArrayIterator from;
+    private final MultyArrayIterator from;
 
-    private final PrimitiveArrayIterator to;
+    private final MultyArrayIterator to;
 
     private Object currentToArray;
 
@@ -45,16 +45,16 @@ public class PrimitiveArrayCopier {
 
     private int currentToArrayLength;
 
-    private final PrimitiveArrayCopyFactory copyFacrory;
+    private final MultyArrayCopyFactory copyFacrory;
 
-    private PrimitiveArrayCopier(Object fromArray, Object toArray) {
-        from = new PrimitiveArrayIterator(fromArray);
-        to = new PrimitiveArrayIterator(toArray);
-        copyFacrory = PrimitiveArrayCopyFactory.select(from.primitiveType(), to.primitiveType());
+    private MultyArrayCopier(Object fromArray, Object toArray) {
+        from = new MultyArrayIterator(fromArray);
+        to = new MultyArrayIterator(toArray);
+        copyFacrory = MultyArrayCopyFactory.select(from.primitiveType(), to.primitiveType());
     }
 
     public static final void copyInto(Object fromArray, Object toArray) {
-        new PrimitiveArrayCopier(fromArray, toArray).copyInto();
+        new MultyArrayCopier(fromArray, toArray).copyInto();
 
     }
 

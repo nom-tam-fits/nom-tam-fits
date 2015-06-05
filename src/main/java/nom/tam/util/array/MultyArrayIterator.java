@@ -33,7 +33,7 @@ package nom.tam.util.array;
 
 import java.lang.reflect.Array;
 
-public class PrimitiveArrayIterator {
+public class MultyArrayIterator {
 
     private final Object baseArray;
 
@@ -41,7 +41,7 @@ public class PrimitiveArrayIterator {
 
     boolean endOfBaseArray = false;
 
-    public PrimitiveArrayIterator(Object baseArray) {
+    public MultyArrayIterator(Object baseArray) {
         this.baseArray = baseArray;
     }
 
@@ -67,7 +67,7 @@ public class PrimitiveArrayIterator {
         Class<?> startClass = baseArray.getClass();
         while (startClass.isArray()) {
             startClass = startClass.getComponentType();
-            if (!startClass.isPrimitive()) {
+            if (startClass.isArray()) {
                 indexSize++;
             }
         }
