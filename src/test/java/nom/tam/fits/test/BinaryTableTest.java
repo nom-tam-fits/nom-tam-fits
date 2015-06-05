@@ -119,6 +119,9 @@ public class BinaryTableTest {
     double[][] dcomplex = new double[50][2];
 
     double[][][] dcomplex_arr = new double[50][4][2];
+    double[][][] vcomplex = new double[50][][];
+    
+    String[][] multiString = new String[50][3];
 
     @Test
     public void buildByColumn() throws Exception {
@@ -132,6 +135,7 @@ public class BinaryTableTest {
         btab.addColumn(this.ints);
         btab.addColumn(this.vc);
         btab.addColumn(this.complex);
+        btab.addColumn(this.multiString);
 
         Fits f = new Fits();
         f.addHDU(Fits.makeHDU(btab));
@@ -147,6 +151,7 @@ public class BinaryTableTest {
         assertEquals("col2", true, TestArrayFuncs.arrayEquals(this.vf, bhdu.getColumn(1)));
         assertEquals("col6", true, TestArrayFuncs.arrayEquals(this.vc, bhdu.getColumn(5)));
         assertEquals("col7", true, TestArrayFuncs.arrayEquals(this.complex, bhdu.getColumn(6)));
+        assertEquals("col8", true, TestArrayFuncs.arrayEquals(this.multiString, bhdu.getColumn(7)));
 
         String[] col = (String[]) bhdu.getColumn(2);
         for (int i = 0; i < col.length; i += 1) {
@@ -156,7 +161,78 @@ public class BinaryTableTest {
 
         assertEquals("col4", true, TestArrayFuncs.arrayEquals(this.vbool, bhdu.getColumn(3)));
         assertEquals("col5", true, TestArrayFuncs.arrayEquals(this.ints, bhdu.getColumn(4)));
+        
+        char[] types = btab.getTypes();
+        int[] sizes = btab.getSizes();
+        assertEquals("t0", types[0], 'F');
+        assertEquals("t1", types[1], 'I'); // Pointers
+        assertEquals("s0", sizes[0], 16);  // 4x4 array
+        assertEquals("s1", sizes[1], 2);   // size,offset
+        assertEquals("dims", types.length, sizes.length);
+        assertEquals("dims2", types.length, btab.getNCols());
     }
+    
+    @Test
+    public void buildFromEmptyBinaryTable () throws Exception {
+        BinaryTable tab = new BinaryTable();
+        // Not allowed to include variable length arrays in this
+        // mode since we only check for variability when
+        // we first create the column.
+        String oldString = strings[0];
+        // Ensure that the first string is long...
+        strings[0] = "abcdefghijklmnopqrstuvwxyz";
+        for (int i = 0; i < 50; i += 1) {
+            tab.addRow(new Object[]{
+                strings[i], shorts[i], floats[i], new double[]{doubles[i]}, multiString[i]
+            });
+        }
+        Header hdr = new Header();
+        tab.fillHeader(hdr);
+        BasicHDU hdu = FitsFactory.HDUFactory(hdr, tab);
+        Fits f = new Fits();
+        f.addHDU(hdu);
+        BufferedFile bf = new BufferedFile("target/bt12.fits", "rw");
+        f.write(bf);
+        bf.close();
+        System.out.println("Wrote file bt12.fits");
+        
+        f = new Fits("target/bt12.fits");
+        
+        
+        BinaryTableHDU btu = (BinaryTableHDU) f.getHDU(1);
+        // In the first column the first string is the longest so all strings
+        // should fit.
+        String[] res = (String[])btu.getColumn(0);
+        
+        for (int i=0; i<50; i += 1) {
+            System.out.println(i+"  "+res[i]+" :: "+strings[i]+ " "+strings[i].equals(res[i]));
+        }
+        assertEquals("bfe0", true, TestArrayFuncs.arrayEquals(btu.getColumn(0), strings)); 
+        assertEquals("bfe1", true, TestArrayFuncs.arrayEquals(btu.getColumn(1), shorts));
+        assertEquals("bfe2", true, TestArrayFuncs.arrayEquals(btu.getColumn(2), floats));
+        assertEquals("bfe3", true, TestArrayFuncs.arrayEquals(btu.getColumn(3), doubles));
+        // The strings will be truncated to the length of the longest string in the first row.
+        String[][] results = (String[][]) btu.getColumn(4);
+        assertEquals("bfe4", false, TestArrayFuncs.arrayEquals(results, multiString));
+        int max = 0;
+        for (int i=0; i<3; i += 1) {
+            if (multiString[0][i].length() > max) max = multiString[0][i].length();
+        }
+        // Now check that within the truncation limit the strings are identical.
+        for (int i=0; i<50; i += 1) {
+            for (int j=0; j<3; j += 1) {
+                String test = multiString[i][j];
+                if (test.length() > max) {
+                    test = test.substring(0,max);                    
+                }
+                assertEquals("cmp"+i+","+j, test.trim(), results[i][j].trim());
+            }
+        }
+        // Cleanup...
+        strings[0] = oldString;
+        
+    }
+    
 
     @Test
     public void buildByRowAfterCopyBinaryTableByTheColumnTable() throws Exception {
@@ -428,6 +504,15 @@ public class BinaryTableTest {
                 this.complex_arr[i][j][1] = (j + 1) * this.complex[i][1];
                 this.dcomplex_arr[i][j][0] = (j + 1) * this.complex[i][0];
                 this.dcomplex_arr[i][j][1] = (j + 1) * this.complex[i][1];
+            }
+            int vcl = i%3 + 1;
+            vcomplex[i] = new double[vcl][2];
+            for (int j=0; j<vcl; j += 1) {
+                vcomplex[i][j][0] = i+j;
+                vcomplex[i][j][1] = i-j;
+            }
+            for (int j=0; j<3; j += 1) {
+                this.multiString[i][j] = i + " "+"xxxxxx".substring(j)+" "+j;
             }
         }
     }
@@ -944,20 +1029,26 @@ public class BinaryTableTest {
                 this.complex,
                 this.dcomplex,
                 this.complex_arr,
-                this.dcomplex_arr
+                this.dcomplex_arr,
+                this.vcomplex
             };
             BinaryTableHDU bhdu = (BinaryTableHDU) Fits.makeHDU(data);
+            System.out.println("Initially:"+bhdu.getHeader().getStringValue("TFORM14"));
 
             bhdu.setComplexColumn(9);
             bhdu.setComplexColumn(10);
             bhdu.setComplexColumn(11);
             bhdu.setComplexColumn(12);
+            bhdu.setComplexColumn(13);
+            System.out.println("Then:"+bhdu.getHeader().getStringValue("TFORM14"));
 
             f.addHDU(bhdu);
             bhdu.setColumnName(9, "Complex1", null);
+            System.out.println("finally:"+bhdu.getHeader().getStringValue("TFORM14"));
 
             BufferedFile bf = new BufferedFile("target/bt1c.fits", "rw");
             f.write(bf);
+            System.out.println("after write:"+bhdu.getHeader().getStringValue("TFORM14"));
             bf.flush();
             bf.close();
 
@@ -981,6 +1072,8 @@ public class BinaryTableTest {
                     }
                 }
                 int n = Array.getLength(data[i]);
+                
+                System.out.println("Col is:"+i+" "+col);
 
                 assertEquals("DataC" + i, true, TestArrayFuncs.arrayEquals(data[i], col));
             }

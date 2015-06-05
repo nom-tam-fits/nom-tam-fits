@@ -71,26 +71,26 @@ public class BinaryTable extends AbstractTableData {
     protected static class ColumnDesc implements Cloneable {
 
         /** The size of the column in the type of the column */
-        private int size;
+        int size;
 
         /** The dimensions of the column (or just [1] if a scalar) */
-        private int[] dimens;
+        int[] dimens;
 
         /** The underlying class associated with the column. */
-        private Class<?> base;
+        Class<?> base;
 
         /**
          * An example of the kind of data that should be read/written in one row
          */
-        private Object model;
+        Object model;
 
         /** Is this a variable length column ? */
-        private boolean isVarying;
+        boolean isVarying;
 
         /**
          * @returnIs this a variable length column ?
          */
-        public boolean isVarying() {
+        boolean isVarying() {
             return isVarying;
         }
 
@@ -98,13 +98,13 @@ public class BinaryTable extends AbstractTableData {
          * Is this a variable length column using longs? [Must have isVarying
          * true too]
          */
-        private boolean isLongVary;
+        boolean isLongVary;
 
         /**
          * @return Is this a variable length column using longs? [Must have
          *         isVarying true too]
          */
-        public boolean isLongVary() {
+        boolean isLongVary() {
             return isLongVary;
         }
 
@@ -112,25 +112,25 @@ public class BinaryTable extends AbstractTableData {
          * Is this a complex column. Each entry will be associated with a
          * float[2]/double[2]
          */
-        private boolean isComplex;
+        boolean isComplex;
 
         /**
          * Is this a string column. Strings will normally be converted to fixed
          * length byte arrays with the length given by the longest string.
          */
-        private boolean isString;
+        boolean isString;
 
         /**
          * Is this a boolean column? Booleans are stored as bytes with the value
          * 'T'/'F'
          */
-        private boolean isBoolean;
+        boolean isBoolean;
 
         /**
          * The flattened column data. This should be nulled when the data is
          * copied into the ColumnTable
          */
-        private Object column;
+        Object column;
 
         @Override
         public Object clone() {
@@ -541,6 +541,17 @@ public class BinaryTable extends AbstractTableData {
 
         return this.columnList.size();
     }
+    
+    private Object encapsulate(Object o) {
+        if (o.getClass().isArray() && 
+            ArrayFuncs.getDimensions(o).length == 1 && ArrayFuncs.getDimensions(o)[0] == 1) {
+            return o;
+        }
+            
+        Object[] array = (Object[]) Array.newInstance(o.getClass(), 1);
+        array[0] = o;        
+        return array;
+    }
 
     /**
      * Add a row at the end of the table. Given the way the table is structured
@@ -555,12 +566,13 @@ public class BinaryTable extends AbstractTableData {
         ensureData();
         if (this.columnList.size() == 0 && this.nRow == 0) {
             for (Object element : o) {
-                //TODO: Tom should this be element instead of 'o'?
-                addColumn(o);
+                if (element == null) {
+                    throw new FitsException("Cannot add initial rows with nulls");
+                }
+                addColumn(encapsulate(element));
             }
             createTable();
 
-            // /// Added handlingof many columns here.
         } else {
 
             Object[] flatRow = new Object[getNCols()];
@@ -841,6 +853,7 @@ public class BinaryTable extends AbstractTableData {
             o = res;
 
         } else { // Fixed length columns
+            
 
             // Need to convert String byte arrays to appropriate Strings.
             if (colDesc.isString) {
@@ -958,14 +971,13 @@ public class BinaryTable extends AbstractTableData {
             }
 
         } else {
-
             // Handle Strings. Remember the last element
             // in dimens is the length of the Strings and
             // we already used that when we converted from
             // byte arrays to strings. So we need to ignore
             // the last element of dimens, and add the row count
             // at the beginning to curl.
-            if (colDesc.dimens.length > 2) {
+            if (colDesc.dimens.length > 1) {
                 int[] dims = new int[colDesc.dimens.length];
 
                 System.arraycopy(colDesc.dimens, 0, dims, 1, colDesc.dimens.length - 1);
@@ -1748,6 +1760,9 @@ public class BinaryTable extends AbstractTableData {
         // the most rapidly changing index in the array has dimension 2.
         if (index >= 0 && index < this.columnList.size()) {
             ColumnDesc colDesc = this.columnList.get(index);
+            if (colDesc.isComplex) {
+                return true;
+            }
 
             if ((colDesc.base == float.class || colDesc.base == double.class) && colDesc.dimens[colDesc.dimens.length - 1] == 2) {
 

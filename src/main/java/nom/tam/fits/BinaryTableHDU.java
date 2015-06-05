@@ -249,7 +249,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
             // No problem with the data. Make sure the header
             // is right.
 
-            int[] dimens = this.myData.getDimens()[index];
+            BinaryTable.ColumnDesc colDesc = this.myData.getDescriptor(index);
             Class<?> base = this.myData.getBases()[index];
 
             int dim = 1;
@@ -257,14 +257,15 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
             String sep = "";
             // Don't loop over all values.
             // The last is the [2] for the complex data.
-            for (int i = 0; i < dimens.length - 1; i += 1) {
-                dim *= dimens[i];
-                tdim = dimens[i] + sep + tdim;
+            for (int i = 0; i < colDesc.dimens.length - 1; i += 1) {
+                dim *= colDesc.dimens[i];
+                tdim = colDesc.dimens[i] + sep + tdim;
                 sep = ",";
             }
             String suffix = "C"; // For complex
             // Update the TFORMn keyword.
-            if (base == double.class) {
+                    
+            if (colDesc.base == double.class) {
                 suffix = "M";
             }
 
