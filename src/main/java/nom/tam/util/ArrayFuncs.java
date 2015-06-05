@@ -33,6 +33,8 @@ package nom.tam.util;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.util.array.MultyArrayCopier;
 import nom.tam.util.array.MultyArrayIterator;
@@ -42,7 +44,9 @@ import nom.tam.util.array.MultyArrayIterator;
  * Generally these routines attempt to complete without throwing errors by
  * ignoring data they cannot understand.
  */
-public class ArrayFuncs implements PrimitiveInfo {
+public class ArrayFuncs {
+
+    private static Logger LOG = Logger.getLogger(ArrayFuncs.class.getName());
 
     /**
      * Generate a description of an array (presumed rectangular).
@@ -51,43 +55,13 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            The array to be described.
      */
     public static String arrayDescription(Object o) {
-
         Class<?> base = getBaseClass(o);
         if (base == Void.TYPE) {
             return "NULL";
         }
-
-        int[] dims = getDimensions(o);
-
-        StringBuffer desc = new StringBuffer();
-
-        // Note that all instances Class describing a given class are
-        // the same so we can use == here.
-        boolean found = false;
-
-        for (int i = 0; i < PrimitiveInfo.classes.length; i += 1) {
-            if (base == PrimitiveInfo.classes[i]) {
-                found = true;
-                desc.append(PrimitiveInfo.types[i]);
-                break;
-            }
-        }
-
-        if (!found) {
-            desc.append(base.getName());
-        }
-
-        if (dims != null) {
-            desc.append("[");
-            for (int i = 0; i < dims.length; i += 1) {
-                desc.append("" + dims[i]);
-                if (i < dims.length - 1) {
-                    desc.append("][");
-                }
-            }
-            desc.append("]");
-        }
-        return new String(desc);
+        return new StringBuffer(base.getSimpleName())//
+                .append(Arrays.toString(getDimensions(o)))//
+                .toString();
     }
 
     public static long computeLSize(Object o) {
@@ -300,7 +274,6 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            The input array.
      */
     public static Object flatten(Object input) {
-
         int[] dimens = getDimensions(input);
         if (dimens.length <= 1) {
             return input;
@@ -309,7 +282,6 @@ public class ArrayFuncs implements PrimitiveInfo {
         for (int dimen : dimens) {
             size *= dimen;
         }
-
         Object flat = ArrayFuncs.newInstance(getBaseClass(input), size);
         MultyArrayCopier.copyInto(input, flat);
         return flat;
@@ -330,23 +302,17 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            The object to be cloned.
      */
     public static Object genericClone(Object o) {
-
+        if (o.getClass().isArray()) {
+            return deepClone(o);
+        }
         if (!(o instanceof Cloneable)) {
+            LOG.log(Level.SEVERE, "generic clone called on a non clonable type");
             return null;
         }
-
-        Class[] argTypes = new Class[0];
-        Object[] args = new Object[0];
-        Class type = o.getClass();
-
         try {
-            return type.getMethod("clone", argTypes).invoke(o, args);
+            return o.getClass().getMethod("clone").invoke(o);
         } catch (Exception e) {
-            if (type.isArray()) {
-                return deepClone(o);
-            }
-            // Implements cloneable, but does not
-            // apparently make clone public.
+            LOG.log(Level.WARNING, "Implements cloneable, but does not apparently make clone public.", e);
             return null;
         }
     }

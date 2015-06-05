@@ -65,7 +65,7 @@ public class TestMain {
                     "         NAXIS1=5\n" + //
                     "         NAXIS2=5\n" + //
                     "      Data information:\n" + //
-                    "         short[5][5]\n", new String(sysout.toByteArray()));
+                    "         short[5, 5]\n", new String(sysout.toByteArray()));
         } finally {
             System.setOut(out);
         }
@@ -95,7 +95,7 @@ public class TestMain {
                     "         NAXIS1=5\n" + //
                     "         NAXIS2=5\n" + //
                     "      Data information:\n" + //
-                    "         short[5][5]\n", new String(sysout.toByteArray()));
+                    "         short[5, 5]\n", new String(sysout.toByteArray()));
             Assert.assertEquals(new File("src/test/resources/nom/tam/fits/test/test.fits").length(),//
                     new File("target/test-copy.fits").length());
         } finally {
