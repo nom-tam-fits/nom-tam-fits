@@ -35,8 +35,10 @@ package nom.tam.util;
  */
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 
 import nom.tam.util.array.MultyArrayCopier;
+import nom.tam.util.array.MultyArrayIterator;
 
 /**
  * This is a package of static functions which perform computations on arrays.
@@ -53,7 +55,7 @@ public class ArrayFuncs implements PrimitiveInfo {
      */
     public static String arrayDescription(Object o) {
 
-        Class base = getBaseClass(o);
+        Class<?> base = getBaseClass(o);
         if (base == Void.TYPE) {
             return "NULL";
         }
@@ -92,59 +94,36 @@ public class ArrayFuncs implements PrimitiveInfo {
     }
 
     public static long computeLSize(Object o) {
-
         if (o == null) {
             return 0;
         }
-
-        long size = 0;
-        String classname = o.getClass().getName();
-        if (classname.substring(0, 2).equals("[[")) {
-
-            for (int i = 0; i < ((Object[]) o).length; i += 1) {
-                size += computeLSize(((Object[]) o)[i]);
-            }
-            return size;
-        }
-
-        if (classname.charAt(0) == '[' && classname.charAt(1) != 'L') {
-            char c = classname.charAt(1);
-
-            for (int i = 0; i < PrimitiveInfo.suffixes.length; i += 1) {
-                if (c == PrimitiveInfo.suffixes[i]) {
-                    return (long) Array.getLength(o) * PrimitiveInfo.sizes[i];
+        if (o.getClass().isArray()) {
+            long size = 0;
+            MultyArrayIterator iter = new MultyArrayIterator(o);
+            Object array;
+            while ((array = iter.next()) != null) {
+                long length = Array.getLength(array);
+                if (length > 0) {
+                    Class<?> componentType = array.getClass().getComponentType();
+                    PrimitiveTypeEnum primType = PrimitiveTypeEnum.valueOf(componentType);
+                    if (componentType.isPrimitive()) {
+                        size += length * primType.size();
+                    } else {
+                        for (int index = 0; index < length; index++) {
+                            size += primType.size(Array.get(array, index));
+                        }
+                    }
                 }
             }
-            return 0;
-        }
-
-        // Do we have a non-primitive array?
-        if (classname.charAt(0) == '[') {
-            int len = 0;
-            for (int i = 0; i < Array.getLength(o); i += 1) {
-                len += computeLSize(Array.get(o, i));
-            }
-            return len;
-        }
-
-        // Now a few special scalar objects.
-        if (classname.substring(0, 10).equals("java.lang.")) {
-            classname = classname.substring(10, classname.length());
-            if (classname.equals("Integer") || classname.equals("Float")) {
-                return 4;
-            } else if (classname.equals("Double") || classname.equals("Long")) {
-                return 8;
-            } else if (classname.equals("Short") || classname.equals("Char")) {
-                return 2;
-            } else if (classname.equals("Byte") || classname.equals("Boolean")) {
-                return 1;
-            } else if (classname.equals("String")) {
-                return ((String) o).length();
+            return size;
+        } else {
+            PrimitiveTypeEnum primType = PrimitiveTypeEnum.valueOf(o.getClass());
+            if (primType.individualSize) {
+                return primType.size(o);
             } else {
-                return 0;
+                return primType.size();
             }
         }
-        return 0;
     }
 
     /**
@@ -547,37 +526,33 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            The object to get the dimensions of.
      */
     public static int[] getDimensions(Object o) {
-
         if (o == null) {
             return null;
         }
-
-        String classname = o.getClass().getName();
-
+        Object object = o;
+        Class<?> clazz = o.getClass();
         int ndim = 0;
-
-        while (classname.charAt(ndim) == '[') {
-            ndim += 1;
+        while (clazz.isArray()) {
+            clazz = clazz.getComponentType();
+            ndim++;
         }
-
+        clazz = o.getClass();
         int[] dimens = new int[ndim];
-
-        for (int i = 0; i < ndim; i += 1) {
-            dimens[i] = -1; // So that we can distinguish a null from a 0
-                            // length.
-        }
-
-        for (int i = 0; i < ndim; i += 1) {
-            dimens[i] = java.lang.reflect.Array.getLength(o);
-            if (dimens[i] == 0) {
-                return dimens;
-            }
-            if (i != ndim - 1) {
-                o = ((Object[]) o)[0];
-                if (o == null) {
-                    return dimens;
+        ndim = 0;
+        while (clazz.isArray()) {
+            dimens[ndim] = -1;
+            if (object != null) {
+                int length = Array.getLength(object);
+                if (length > 0) {
+                    dimens[ndim] = length;
+                    object = Array.get(object, 0);
+                } else {
+                    dimens[ndim] = 0;
+                    object = null;
                 }
             }
+            clazz = clazz.getComponentType();
+            ndim++;
         }
         return dimens;
     }
@@ -645,7 +620,7 @@ public class ArrayFuncs implements PrimitiveInfo {
      * @throws An
      *             OutOfMemoryError if insufficient space is available.
      */
-    public static Object newInstance(Class cl, int dim) {
+    public static Object newInstance(Class<?> cl, int dim) {
 
         Object o = Array.newInstance(cl, dim);
         if (o == null) {
@@ -667,25 +642,16 @@ public class ArrayFuncs implements PrimitiveInfo {
      * @throws An
      *             OutOfMemoryError if insufficient space is available.
      */
-    public static Object newInstance(Class cl, int[] dims) {
-
+    public static Object newInstance(Class<?> cl, int[] dims) {
         if (dims.length == 0) {
             // Treat a scalar as a 1-d array of length 1
             dims = new int[]{
                 1
             };
         }
-
         Object o = Array.newInstance(cl, dims);
         if (o == null) {
-            String desc = cl + "[";
-            String comma = "";
-            for (int dim : dims) {
-                desc += comma + dim;
-                comma = ",";
-            }
-            desc += "]";
-            throw new OutOfMemoryError("Unable to allocate array: " + desc);
+            throw new OutOfMemoryError("Unable to allocate array: " + cl + Arrays.toString(dims));
         }
         return o;
     }

@@ -35,6 +35,11 @@ import java.lang.reflect.Array;
 
 public class MultyArrayCopier {
 
+    public static final void copyInto(Object fromArray, Object toArray) {
+        new MultyArrayCopier(fromArray, toArray).copyInto();
+
+    }
+
     private final MultyArrayIterator from;
 
     private final MultyArrayIterator to;
@@ -48,21 +53,16 @@ public class MultyArrayCopier {
     private final MultyArrayCopyFactory copyFacrory;
 
     private MultyArrayCopier(Object fromArray, Object toArray) {
-        from = new MultyArrayIterator(fromArray);
-        to = new MultyArrayIterator(toArray);
-        copyFacrory = MultyArrayCopyFactory.select(from.primitiveType(), to.primitiveType());
-    }
-
-    public static final void copyInto(Object fromArray, Object toArray) {
-        new MultyArrayCopier(fromArray, toArray).copyInto();
-
+        this.from = new MultyArrayIterator(fromArray);
+        this.to = new MultyArrayIterator(toArray);
+        this.copyFacrory = MultyArrayCopyFactory.select(this.from.deepComponentType(), this.to.deepComponentType());
     }
 
     private void copyInto() {
-        Object current = from.next();
+        Object current = this.from.next();
         while (current != null) {
             copyInto(current);
-            current = from.next();
+            current = this.from.next();
         }
     }
 
@@ -70,15 +70,15 @@ public class MultyArrayCopier {
         int currentFromArrayOffset = 0;
         int currentFromArrayLength = Array.getLength(currentFromArray);
         while (currentFromArrayOffset < currentFromArrayLength) {
-            if (currentToArray == null || currentToArrayOffset >= currentToArrayLength) {
-                currentToArray = to.next();
-                currentToArrayOffset = 0;
-                currentToArrayLength = Array.getLength(currentToArray);
+            if (this.currentToArray == null || this.currentToArrayOffset >= this.currentToArrayLength) {
+                this.currentToArray = this.to.next();
+                this.currentToArrayOffset = 0;
+                this.currentToArrayLength = Array.getLength(this.currentToArray);
             }
-            int length = Math.min(currentToArrayLength - currentToArrayOffset, currentFromArrayLength - currentFromArrayOffset);
-            copyFacrory.arraycopy(currentFromArray, currentFromArrayOffset, currentToArray, currentToArrayOffset, length);
+            int length = Math.min(this.currentToArrayLength - this.currentToArrayOffset, currentFromArrayLength - currentFromArrayOffset);
+            this.copyFacrory.arraycopy(currentFromArray, currentFromArrayOffset, this.currentToArray, this.currentToArrayOffset, length);
             currentFromArrayOffset += length;
-            currentToArrayOffset += length;
+            this.currentToArrayOffset += length;
         }
 
     }

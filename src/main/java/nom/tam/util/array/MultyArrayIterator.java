@@ -37,73 +37,52 @@ public class MultyArrayIterator {
 
     private final Object baseArray;
 
-    private int[] indexes;
+    private final boolean baseIsNoSubArray;
 
-    boolean endOfBaseArray = false;
+    private boolean baseNextCalled = false;
+
+    private final MultyArrayPointer pointer;
 
     public MultyArrayIterator(Object baseArray) {
         this.baseArray = baseArray;
+        this.baseIsNoSubArray = !MultyArrayPointer.isSubArray(this.baseArray);
+        this.pointer = new MultyArrayPointer(this.baseArray);
     }
 
-    public Object next() {
-        if (indexes == null) {
-            reset();
-        }
-        if (indexes.length == 0) {
-            if (endOfBaseArray) {
-                return null;
-            } else {
-                endOfBaseArray = true;
-                return baseArray;
-            }
-        } else {
-            return getNextLevel(baseArray, indexes, 0);
-        }
-    }
-
-    public void reset() {
-        endOfBaseArray = false;
-        int indexSize = 0;
-        Class<?> startClass = baseArray.getClass();
-        while (startClass.isArray()) {
-            startClass = startClass.getComponentType();
-            if (startClass.isArray()) {
-                indexSize++;
-            }
-        }
-        indexes = new int[indexSize];
-    }
-
-    private Object getNextLevel(final Object start, final int[] indexes, final int indexInIndex) {
-        if (start == null || Array.getLength(start) == 0) {
-            return null;
-        } else if (indexes.length <= indexInIndex) {
-            return start;
-        }
-        Object result = null;
-        while (result == null) {
-            int currentArrayNode = indexes[indexInIndex];
-            if (Array.getLength(start) > currentArrayNode) {
-                result = getNextLevel(Array.get(start, currentArrayNode), indexes, indexInIndex + 1);
-                if (result == null || indexInIndex == (indexes.length - 1)) {
-                    indexes[indexInIndex]++;
-                    for (int resetIndex = indexInIndex + 1; resetIndex < indexes.length; resetIndex++) {
-                        indexes[resetIndex] = 0;
-                    }
-                }
-            } else {
-                return null;
-            }
-        }
-        return result;
-    }
-
-    public Class<?> primitiveType() {
-        Class<?> clazz = baseArray.getClass();
+    public Class<?> deepComponentType() {
+        Class<?> clazz = this.baseArray.getClass();
         while (clazz.isArray()) {
             clazz = clazz.getComponentType();
         }
         return clazz;
+    }
+
+    public Object next() {
+        if (this.baseIsNoSubArray) {
+            if (this.baseNextCalled) {
+                return null;
+            } else {
+                this.baseNextCalled = true;
+                return this.baseArray;
+            }
+        } else {
+            Object result = null;
+            while (result == null || Array.getLength(result) == 0) {
+                result = this.pointer.next();
+                if (result == MultyArrayPointer.END) {
+                    return null;
+                }
+            }
+            return result;
+        }
+    }
+
+    public void reset() {
+        if (this.baseIsNoSubArray) {
+            this.baseNextCalled = false;
+        } else {
+            this.pointer.reset();
+        }
     }
 
     public int size() {
