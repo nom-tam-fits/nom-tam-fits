@@ -32,6 +32,8 @@ package nom.tam.util.test;
  */
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
+import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
@@ -419,5 +421,69 @@ public class StreamTest {
         out.flush();
         Assert.assertEquals(0xFFEE, in.readUnsignedShort());
         Assert.assertEquals(0, in.available());
+    }
+
+    @Test
+    public void testEofHandlingCharArray() throws Exception {
+        Assert.assertEquals(8, create8ByteInput().read(new char[10]));
+        Assert.assertEquals(8, create8ByteInput().readArray(new char[10]));
+    }
+
+    @Test
+    public void testEofHandlingBooleanArray() throws Exception {
+        Assert.assertEquals(8, create8ByteInput().read(new boolean[10]));
+        Assert.assertEquals(8, create8ByteInput().readArray(new boolean[10]));
+    }
+
+    @Test
+    public void testEofHandlingDoubleArray() throws Exception {
+        Assert.assertEquals(8, create8ByteInput().read(new double[10]));
+        Assert.assertEquals(8, create8ByteInput().readArray(new double[10]));
+    }
+
+    @Test
+    public void testEofHandlingFloatArray() throws Exception {
+        Assert.assertEquals(8, create8ByteInput().read(new float[10]));
+        Assert.assertEquals(8, create8ByteInput().readArray(new float[10]));
+    }
+
+    @Test
+    public void testEofHandlingIntArray() throws Exception {
+        Assert.assertEquals(8, create8ByteInput().read(new int[10]));
+        Assert.assertEquals(8, create8ByteInput().readArray(new int[10]));
+    }
+
+    @Test
+    public void testEofHandlingLongArray() throws Exception {
+        Assert.assertEquals(8, create8ByteInput().read(new long[10]));
+        Assert.assertEquals(8, create8ByteInput().readArray(new long[10]));
+    }
+
+    @Test
+    public void testEofHandlingShortArray() throws Exception {
+        Assert.assertEquals(8, create8ByteInput().read(new short[10]));
+        Assert.assertEquals(8, create8ByteInput().readArray(new short[10]));
+    }
+
+    private BufferedDataInputStream create8ByteInput() {
+        InputStream fileInput = new ByteArrayInputStream(new byte[1000]) {
+
+            int count = 0;
+
+            @Override
+            public int read(byte[] obuf, int offset, int len) {
+                if (count == 0) {
+                    return count = 8;
+                }
+                StreamTest.<RuntimeException> throwAny(new EOFException("all is broken"));
+                return 1;
+            }
+        };
+        BufferedDataInputStream bi = new BufferedDataInputStream(fileInput);
+        return bi;
+    }
+
+    private static <E extends Throwable> void throwAny(Throwable e) throws E {
+        throw (E) e;
     }
 }

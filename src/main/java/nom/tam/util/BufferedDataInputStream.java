@@ -91,7 +91,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
      * Use the BufferedInputStream constructor
      */
     public BufferedDataInputStream(InputStream o) {
-        super(o, 32768);
+        this(o, 32768);
     }
 
     /**
