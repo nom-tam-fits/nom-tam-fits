@@ -1392,6 +1392,69 @@ public class BinaryTableTest {
     }
 
     @Test
+    public void testReadExceptionsBufferedFile() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        setFieldNull(btab, "table");
+        Exception actual = null;
+        try {
+            btab.read(new BufferedFile("target/testReadExceptions2", "rw") {
+
+                @Override
+                public long skipBytes(long toSkip) throws IOException {
+                    throw new IOException("all went wrong ;-)");
+                }
+            });
+        } catch (Exception ex) {
+            actual = ex;
+        }
+        assertNotNull(actual);
+        assertEquals(FitsException.class, actual.getClass());
+        assertEquals("all went wrong ;-)", actual.getCause().getMessage());
+
+        actual = null;
+        try {
+            btab.read(new BufferedFile("target/testReadExceptions2") {
+
+                int pass = 0;
+
+                @Override
+                public long skipBytes(long toSkip) throws IOException {
+                    if (pass++ == 1) {
+                        throw new IOException("all went wrong ;-)");
+                    }
+                    return toSkip;
+                }
+            });
+        } catch (Exception ex) {
+            actual = ex;
+        }
+        assertNotNull(actual);
+        assertEquals(FitsException.class, actual.getClass());
+        assertEquals("all went wrong ;-)", actual.getCause().getMessage());
+
+        actual = null;
+        try {
+            btab.read(new BufferedFile("target/testReadExceptions2") {
+
+                int pass = 0;
+
+                @Override
+                public long skipBytes(long toSkip) throws IOException {
+                    if (pass++ == 1) {
+                        throw new EOFException("all went wrong ;-)");
+                    }
+                    return toSkip;
+                }
+            });
+        } catch (Exception ex) {
+            actual = ex;
+        }
+        assertNotNull(actual);
+        assertEquals(PaddingException.class, actual.getClass());
+
+    }
+
+    @Test
     public void testWriteExceptions() throws Exception {
         BinaryTable btab = new BinaryTable();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -1399,6 +1462,8 @@ public class BinaryTableTest {
         Field field = BinaryTable.class.getDeclaredField("heapOffset");
         field.setAccessible(true);
         field.set(btab, 10);
+
+        btab.write(new BufferedDataOutputStream(out));
 
         Exception actual = null;
         try {

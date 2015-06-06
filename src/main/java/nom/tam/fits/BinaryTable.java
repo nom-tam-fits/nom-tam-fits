@@ -1648,14 +1648,14 @@ public class BinaryTable extends AbstractTableData {
                 i.skipBytes(getTrueSize());
                 this.heapReadFromStream = false;
             } catch (IOException e) {
-                throw new FitsException("Unable to skip binary table HDU:" + e);
+                throw new FitsException("Unable to skip binary table HDU:" + e, e);
             }
             try {
                 i.skipBytes(FitsUtil.padding(getTrueSize()));
             } catch (EOFException e) {
                 throw new PaddingException("Missing padding after binary table:" + e, this);
             } catch (IOException e) {
-                throw new FitsException("Error skipping padding after binary table:" + e);
+                throw new FitsException("Error skipping padding after binary table:" + e, e);
             }
 
         } else {
