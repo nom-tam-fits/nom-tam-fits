@@ -32,6 +32,7 @@ package nom.tam.fits;
  */
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -102,7 +103,7 @@ import nom.tam.util.RandomAccess;
  * 
  * @version 1.11
  */
-public class Fits {
+public class Fits implements Closeable {
 
     /**
      * Calculate the Seaman-Pence 32-bit 1's complement checksum over the byte
@@ -972,5 +973,12 @@ public class Fits {
             // Ignore problems...
         }
 
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (dataStr != null) {
+            this.dataStr.close();
+        }
     }
 }
