@@ -1698,14 +1698,14 @@ public class BinaryTable extends AbstractTableData {
             this.heapReadFromStream = true;
 
         } catch (IOException e) {
-            throw new FitsException("Error reading binary table data:" + e);
+            throw new FitsException("Error reading binary table data:" + e, e);
         }
         try {
             i.skipBytes(FitsUtil.padding(getTrueSize()));
         } catch (EOFException e) {
             throw new PaddingException("Error skipping padding after binary table", this);
         } catch (IOException e) {
-            throw new FitsException("Error reading binary table data padding:" + e);
+            throw new FitsException("Error reading binary table data padding:" + e, e);
         }
     }
 
@@ -1957,7 +1957,7 @@ public class BinaryTable extends AbstractTableData {
             FitsUtil.pad(os, getTrueSize());
 
         } catch (IOException e) {
-            throw new FitsException("Unable to write table:" + e);
+            throw new FitsException("Unable to write table:" + e, e);
         }
     }
 };
