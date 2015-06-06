@@ -32,11 +32,19 @@ package nom.tam.fits.test;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertArrayEquals;
 
 import java.io.FileOutputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTable;
@@ -47,6 +55,7 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.fits.FitsHeap;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.ColumnTable;
@@ -1015,6 +1024,30 @@ public class BinaryTableTest {
         assertEquals("ts17", false, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), this.vf[4]));
         assertEquals("ts18", true, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), trw));
         assertEquals("ts19", true, TestArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
+
+        assertArrayEquals(new int[]{
+            4,
+            4,
+            50,
+            2,
+            50,
+            2,
+            50,
+            2,
+            3,
+            50,
+            2,
+            50,
+            2,
+            50,
+            2,
+            0
+        }, (int[]) ArrayFuncs.flatten(bhdu.getData().getDimens()));
+
+        assertArrayEquals(new int[]{
+            2,
+            8516
+        }, (int[]) bhdu.getData().getRawElement(1, 1));
     }
 
     @Test
@@ -1212,5 +1245,81 @@ public class BinaryTableTest {
         }
         Assert.assertNotNull(ex);
         Assert.assertEquals(IllegalStateException.class, ex.getClass());
+    }
+
+    @Test
+    public void testBadCase1() throws Exception {
+        Header header = new Header();
+        header.addValue("PCOUNT", Long.MAX_VALUE, "");
+        Exception actual = null;
+        try {
+            new BinaryTable(header);
+        } catch (Exception e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertEquals(FitsException.class, actual.getClass());
+        actual = null;
+        header = new Header();
+        header.addValue("THEAP", Long.MAX_VALUE, "");
+        try {
+            new BinaryTable(header);
+        } catch (Exception e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertEquals(FitsException.class, actual.getClass());
+        actual = null;
+        header = new Header();
+        header.addValue("THEAP", 1000L, "");
+        header.addValue("PCOUNT", 500L, "");
+        try {
+            new BinaryTable(header);
+        } catch (Exception e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertEquals(FitsException.class, actual.getClass());
+    }
+
+    @Test
+    public void testBadCase2() throws Exception {
+        BinaryTable btab = new BinaryTable();
+
+        btab.addColumn(this.floats);
+
+        setFieldNull(btab, "table");
+        setFieldNull(btab, "currInput");
+        Exception actual = null;
+        final List<LogRecord> logs = new ArrayList<>();
+        Logger.getLogger(BinaryTable.class.getName()).addHandler(new Handler() {
+
+            @Override
+            public void publish(LogRecord record) {
+                logs.add(record);
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() throws SecurityException {
+            }
+        });
+        try {
+            btab.getFlatColumns();
+        } catch (NullPointerException exception) {
+            actual = exception;
+        }
+        assertNotNull(actual);
+        assertEquals("reading data of binary table failed!", logs.get(0).getMessage());
+
+    }
+
+    private void setFieldNull(Object data, String fieldName) throws Exception {
+        Field field = data.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(data, null);
     }
 }
