@@ -32,6 +32,7 @@ package nom.tam.util.test;
  */
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
@@ -46,14 +47,14 @@ import org.junit.Test;
 
 public class StreamTest {
 
-    private static BufferedDataOutputStream out;
+    private static BufferedDataOutputStream ou;
 
     private static BufferedDataInputStream in;
 
     @BeforeClass
     public static void setup() throws Exception {
         PipedInputStream pipeInput = new PipedInputStream(10240);
-        out = new BufferedDataOutputStream(new PipedOutputStream(pipeInput));
+        ou = new BufferedDataOutputStream(new PipedOutputStream(pipeInput));
         in = new BufferedDataInputStream(pipeInput);
     }
 
@@ -68,9 +69,9 @@ public class StreamTest {
                 expectedBools[index] = true;
             }
         }
-        out.writePrimitiveArray(expectedBools);
-        out.write(expectedBools);
-        out.flush();
+        ou.writePrimitiveArray(expectedBools);
+        ou.write(expectedBools);
+        ou.flush();
         in.read(bools);
         Assert.assertEquals(expectedBools.length, bools.length);
         for (int index = 0; index < expectedBools.length; index++) {
@@ -91,9 +92,9 @@ public class StreamTest {
         for (int index = 0; index < expectedChars.length; index++) {
             expectedChars[index] = (char) ('A' + index);
         }
-        out.writePrimitiveArray(expectedChars);
-        out.write(expectedChars);
-        out.flush();
+        ou.writePrimitiveArray(expectedChars);
+        ou.write(expectedChars);
+        ou.flush();
         in.read(chars);
         Assert.assertEquals(expectedChars.length, chars.length);
         for (int index = 0; index < expectedChars.length; index++) {
@@ -115,9 +116,9 @@ public class StreamTest {
         for (int index = 0; index < expectedDoubles.length; index++) {
             expectedDoubles[index] = (double) index * 3.1415d;
         }
-        out.writePrimitiveArray(expectedDoubles);
-        out.write(expectedDoubles);
-        out.flush();
+        ou.writePrimitiveArray(expectedDoubles);
+        ou.write(expectedDoubles);
+        ou.flush();
         in.read(doubles);
         Assert.assertEquals(expectedDoubles.length, doubles.length);
         for (int index = 0; index < expectedDoubles.length; index++) {
@@ -138,9 +139,9 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             expectedValues[index] = (float) index * 3.1415f;
         }
-        out.writePrimitiveArray(expectedValues);
-        out.write(expectedValues);
-        out.flush();
+        ou.writePrimitiveArray(expectedValues);
+        ou.write(expectedValues);
+        ou.flush();
         in.read(values);
         Assert.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
@@ -161,9 +162,9 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             expectedValues[index] = (int) index * 3;
         }
-        out.writePrimitiveArray(expectedValues);
-        out.write(expectedValues);
-        out.flush();
+        ou.writePrimitiveArray(expectedValues);
+        ou.write(expectedValues);
+        ou.flush();
         in.read(values);
         Assert.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
@@ -184,9 +185,9 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             expectedValues[index] = (long) index * (long) Integer.MAX_VALUE;
         }
-        out.writePrimitiveArray(expectedValues);
-        out.write(expectedValues);
-        out.flush();
+        ou.writePrimitiveArray(expectedValues);
+        ou.write(expectedValues);
+        ou.flush();
         in.read(values);
         Assert.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
@@ -207,9 +208,9 @@ public class StreamTest {
         for (int index = 0; index < expectedValues.length; index++) {
             expectedValues[index] = (short) index;
         }
-        out.writePrimitiveArray(expectedValues);
-        out.write(expectedValues);
-        out.flush();
+        ou.writePrimitiveArray(expectedValues);
+        ou.write(expectedValues);
+        ou.flush();
         in.read(values);
         Assert.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
@@ -233,9 +234,9 @@ public class StreamTest {
             } else {
                 expectedValue[index] = true;
             }
-            out.writeBoolean(expectedValue[index]);
+            ou.writeBoolean(expectedValue[index]);
         }
-        out.flush();
+        ou.flush();
         for (int index = 0; index < expectedValue.length; index++) {
             value[index] = in.readBoolean();
         }
@@ -252,9 +253,9 @@ public class StreamTest {
         char[] expectedValue = new char[10];
         for (int index = 0; index < expectedValue.length; index++) {
             expectedValue[index] = (char) ('A' + index);
-            out.writeChar(expectedValue[index]);
+            ou.writeChar(expectedValue[index]);
         }
-        out.flush();
+        ou.flush();
         for (int index = 0; index < expectedValue.length; index++) {
             value[index] = in.readChar();
         }
@@ -271,9 +272,9 @@ public class StreamTest {
         double[] expectedDoubles = new double[10];
         for (int index = 0; index < expectedDoubles.length; index++) {
             expectedDoubles[index] = (double) index * 3.1415d;
-            out.writeDouble(expectedDoubles[index]);
+            ou.writeDouble(expectedDoubles[index]);
         }
-        out.flush();
+        ou.flush();
         for (int index = 0; index < expectedDoubles.length; index++) {
             doubles[index] = in.readDouble();
         }
@@ -290,9 +291,9 @@ public class StreamTest {
         float[] expectedValues = new float[10];
         for (int index = 0; index < expectedValues.length; index++) {
             expectedValues[index] = (float) index * 3.1415f;
-            out.writeFloat(expectedValues[index]);
+            ou.writeFloat(expectedValues[index]);
         }
-        out.flush();
+        ou.flush();
         for (int index = 0; index < expectedValues.length; index++) {
             values[index] = in.readFloat();
         }
@@ -309,9 +310,9 @@ public class StreamTest {
         int[] expectedValues = new int[10];
         for (int index = 0; index < expectedValues.length; index++) {
             expectedValues[index] = (int) index * 3;
-            out.writeInt(expectedValues[index]);
+            ou.writeInt(expectedValues[index]);
         }
-        out.flush();
+        ou.flush();
         for (int index = 0; index < expectedValues.length; index++) {
             values[index] = in.readInt();
         }
@@ -328,9 +329,9 @@ public class StreamTest {
         long[] expectedValues = new long[10];
         for (int index = 0; index < expectedValues.length; index++) {
             expectedValues[index] = (long) index * (long) Integer.MAX_VALUE;
-            out.writeLong(expectedValues[index]);
+            ou.writeLong(expectedValues[index]);
         }
-        out.flush();
+        ou.flush();
         for (int index = 0; index < expectedValues.length; index++) {
             values[index] = in.readLong();
         }
@@ -347,9 +348,9 @@ public class StreamTest {
         short[] expectedValues = new short[10];
         for (int index = 0; index < expectedValues.length; index++) {
             expectedValues[index] = (short) index;
-            out.writeShort(expectedValues[index]);
+            ou.writeShort(expectedValues[index]);
         }
-        out.flush();
+        ou.flush();
         for (int index = 0; index < expectedValues.length; index++) {
             values[index] = in.readShort();
         }
@@ -387,9 +388,9 @@ public class StreamTest {
                 expectedValues[index][index2] = (int) index * 3;
             }
         }
-        out.writePrimitiveArray(expectedValues);
-        out.writeArray(expectedValues);
-        out.flush();
+        ou.writePrimitiveArray(expectedValues);
+        ou.writeArray(expectedValues);
+        ou.flush();
         in.readArray(values);
         Assert.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
@@ -409,16 +410,16 @@ public class StreamTest {
 
     @Test
     public void testString() throws Exception {
-        out.writeUTF("Ein test string");
-        out.flush();
+        ou.writeUTF("Ein test string");
+        ou.flush();
         Assert.assertEquals("Ein test string", in.readUTF());
         Assert.assertEquals(0, in.available());
     }
 
     @Test
     public void testWriteUnsignedShort() throws Exception {
-        out.writeShort(0xFFEE);
-        out.flush();
+        ou.writeShort(0xFFEE);
+        ou.flush();
         Assert.assertEquals(0xFFEE, in.readUnsignedShort());
         Assert.assertEquals(0, in.available());
     }
@@ -463,6 +464,16 @@ public class StreamTest {
     public void testEofHandlingShortArray() throws Exception {
         Assert.assertEquals(8, create8ByteInput().read(new short[10]));
         Assert.assertEquals(8, create8ByteInput().readArray(new short[10]));
+    }
+
+    @Test
+    public void testReadWriteLine() throws Exception {
+        ByteArrayOutputStream o = new ByteArrayOutputStream();
+        BufferedDataOutputStream out = new BufferedDataOutputStream(o);
+        out.writeBytes("bla bla\n");
+        out.close();
+        String line = new BufferedDataInputStream(new ByteArrayInputStream(o.toByteArray())).readLine();
+        Assert.assertEquals("bla bla", line);
     }
 
     private BufferedDataInputStream create8ByteInput() {
