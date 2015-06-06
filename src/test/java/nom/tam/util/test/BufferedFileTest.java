@@ -89,6 +89,12 @@ public class BufferedFileTest {
         }
 
         @Override
+        public int read() {
+            waitAndThrow();
+            return super.read();
+        }
+
+        @Override
         public int read(byte[] b) throws IOException {
             waitAndThrow();
             return super.read(b);
@@ -106,7 +112,7 @@ public class BufferedFileTest {
                 sleep();
             }
             if (exception) {
-                BufferedFileTest.<RuntimeException> throwAny(new IOException());
+                BufferedFileTest.<RuntimeException> throwAny(new IOException("" + hashCode()));
             }
         }
 
@@ -147,7 +153,7 @@ public class BufferedFileTest {
                 sleep();
             }
             if (exception) {
-                BufferedFileTest.<RuntimeException> throwAny(new IOException());
+                BufferedFileTest.<RuntimeException> throwAny(new IOException("" + hashCode()));
             }
         }
     }
@@ -1029,6 +1035,7 @@ public class BufferedFileTest {
             }
         }
         compressed.exception = true;
+        proc.in.exception = true;
         compressed.block = proc.err.block = proc.in.block = proc.out.block = false;
         start = System.currentTimeMillis();
         while (!compressed.closed) {
@@ -1042,9 +1049,10 @@ public class BufferedFileTest {
             closeIs.read();
         } catch (IOException e) {
             expected = e;
-            ;
         }
         Assert.assertNotNull(expected);
+        // check if this was the original exception of the compressed stream.
+        Assert.assertEquals("" + compressed.hashCode(), expected.getMessage());
         closeIs.close();
         start = System.currentTimeMillis();
         while (!proc.in.closed || !proc.err.closed || !proc.out.closed || !compressed.closed) {
