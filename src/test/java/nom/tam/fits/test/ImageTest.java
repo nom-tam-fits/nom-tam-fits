@@ -46,9 +46,9 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.TimeZone;
 
+import junit.framework.Assert;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
@@ -134,7 +134,15 @@ public class ImageTest {
         double[] img1 = (double[]) ArrayFuncs.flatten(dimg);
 
         // Make HDUs of various types.
-        f.addHDU(makeHDU(bimg));
+        Exception actual = null;
+        try {
+            f.insertHDU(makeHDU(bimg), f.getNumberOfHDUs() + 1);
+        } catch (Exception ex) {
+            actual = ex;
+        }
+        Assert.assertNotNull(actual);
+        f.insertHDU(makeHDU(bimg), f.getNumberOfHDUs());
+
         f.addHDU(Fits.makeHDU(simg));
         f.addHDU(Fits.makeHDU(iimg));
         f.addHDU(Fits.makeHDU(limg));
