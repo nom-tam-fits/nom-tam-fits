@@ -306,33 +306,31 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public int addRow(Object[] newRow) throws FitsException {
-
-        // If there are no fields, then this is the
-        // first row. We need to add in each of the columns
-        // to get the descriptors set up.
-
-        if (this.nFields == 0) {
-            for (Object element : newRow) {
-                addColumn(element);
-            }
-        } else {
-            for (int i = 0; i < this.nFields; i += 1) {
-                try {
+        try {
+            // If there are no fields, then this is the
+            // first row. We need to add in each of the columns
+            // to get the descriptors set up.
+            if (this.nFields == 0) {
+                for (Object element : newRow) {
+                    addColumn(element);
+                }
+            } else {
+                for (int i = 0; i < this.nFields; i += 1) {
                     Object o = ArrayFuncs.newInstance(this.types[i], this.nRows + 1);
                     System.arraycopy(this.data[i], 0, o, 0, this.nRows);
                     System.arraycopy(newRow[i], 0, o, this.nRows, 1);
                     this.data[i] = o;
-                } catch (Exception e) {
-                    throw new FitsException("Error adding row:" + e);
                 }
+                this.nRows += 1;
             }
-            this.nRows += 1;
+            // Invalidate the buffer
+            this.buffer = null;
+            return this.nRows;
+        } catch (FitsException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new FitsException("Error deleting row:" + e.getMessage(), e);
         }
-
-        // Invalidate the buffer
-        this.buffer = null;
-
-        return this.nRows;
     }
 
     /**
@@ -420,15 +418,14 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public void deleteRows(int start, int len) throws FitsException {
-
-        if (this.nRows == 0 || start < 0 || start >= this.nRows || len <= 0) {
-            return;
-        }
-        if (start + len > this.nRows) {
-            len = this.nRows - start;
-        }
-        ensureData();
         try {
+            if (this.nRows == 0 || start < 0 || start >= this.nRows || len <= 0) {
+                return;
+            }
+            if (start + len > this.nRows) {
+                len = this.nRows - start;
+            }
+            ensureData();
             for (int i = 0; i < this.nFields; i += 1) {
                 Object o = ArrayFuncs.newInstance(this.types[i], this.nRows - len);
                 System.arraycopy(this.data[i], 0, o, 0, start);
@@ -436,8 +433,10 @@ public class AsciiTable extends AbstractTableData {
                 this.data[i] = o;
             }
             this.nRows -= len;
+        } catch (FitsException e) {
+            throw e;
         } catch (Exception e) {
-            throw new FitsException("Error deleting row:" + e);
+            throw new FitsException("Error deleting row:" + e.getMessage(), e);
         }
     }
 
@@ -498,7 +497,6 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public void fillHeader(Header hdr) {
-
         try {
             hdr.setXtension("TABLE");
             hdr.setBitpix(8);
@@ -515,11 +513,9 @@ public class AsciiTable extends AbstractTableData {
             for (int i = 0; i < this.nFields; i += 1) {
                 addColInfo(i, iter);
             }
-
         } catch (HeaderCardException e) {
-            System.err.println("ImpossibleException in fillHeader:" + e);
+            LOG.log(Level.SEVERE, "ImpossibleException in fillHeader:" + e.getMessage(), e);
         }
-
     }
 
     /**
@@ -587,7 +583,7 @@ public class AsciiTable extends AbstractTableData {
                     getBuffer(this.nRows * this.rowLen, this.fileOffset);
 
                 } catch (IOException e) {
-                    throw new FitsException("Error in deferred read -- file closed prematurely?:" + e);
+                    throw new FitsException("Error in deferred read -- file closed prematurely?:" + e.getMessage(), e);
                 }
                 FitsUtil.reposition(this.currInput, newOffset);
             }
@@ -775,35 +771,22 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public void read(ArrayDataInput str) throws FitsException {
-
-        setFileOffset(str);
-        this.currInput = str;
-
-        if (str instanceof RandomAccess) {
-
-            try {
+        try {
+            setFileOffset(str);
+            this.currInput = str;
+            if (str instanceof RandomAccess) {
                 str.skipBytes((long) this.nRows * this.rowLen);
-            } catch (IOException e) {
-                throw new FitsException("Error skipping data: " + e);
-            }
-
-        } else {
-            try {
+            } else {
                 if ((long) this.rowLen * this.nRows > Integer.MAX_VALUE) {
                     throw new FitsException("Cannot read ASCII table > 2 GB");
                 }
                 getBuffer(this.rowLen * this.nRows, 0);
-            } catch (IOException e) {
-                throw new FitsException("Error reading ASCII table:" + e);
             }
-        }
-
-        try {
             str.skipBytes(FitsUtil.padding(this.nRows * this.rowLen));
         } catch (EOFException e) {
             throw new PaddingException("EOF skipping padding after ASCII Table:" + e, this);
         } catch (IOException e) {
-            throw new FitsException("Error skipping padding after ASCII Table:" + e);
+            throw new FitsException("Error skipping padding after ASCII Table:" + e.getMessage(), e);
         }
     }
 
