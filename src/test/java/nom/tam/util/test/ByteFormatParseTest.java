@@ -31,9 +31,9 @@ package nom.tam.util.test;
  * #L%
  */
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-import java.beans.Transient;
 import java.util.Arrays;
 
 /** This class tests the ByteFormatter and ByteParser classes.
@@ -44,7 +44,6 @@ import nom.tam.util.FormatException;
 import nom.tam.util.TruncationException;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Categories.ExcludeCategory;
 
 public class ByteFormatParseTest {
 
@@ -67,7 +66,11 @@ public class ByteFormatParseTest {
         }
         this.offset = 0;
         for (boolean element : btst) {
-            this.offset = this.bf.format(element, this.buffer, this.offset, 1);
+            if (this.offset == 0) {
+                this.offset = this.bf.format(element, this.buffer);
+            } else {
+                this.offset = this.bf.format(element, this.buffer, this.offset, 1);
+            }
             this.offset = this.bf.format(" ", this.buffer, this.offset, 1);
         }
 
@@ -428,5 +431,39 @@ public class ByteFormatParseTest {
             assertEquals("String:" + i, want, s);
             this.bp.skip(1);
         }
+    }
+
+    @Test
+    public void testBasics() throws TruncationException {
+        this.bf.setSimpleRange(-100000, 100000);
+        this.bf.setTruncationFill('*');
+
+        byte[] data = new byte[20];
+        this.bf.format(true, data);
+        assertArrayEquals(createArray(20, 84), data);
+        Arrays.fill(data, (byte) 0);
+        this.bf.format(99.99d, data);
+        assertArrayEquals(createArray(20, 57, 57, 46, 57, 57, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48), data);
+        Arrays.fill(data, (byte) 0);
+        this.bf.format(99.99f, data);
+        assertArrayEquals(createArray(20, 57, 57, 46, 57, 56, 57, 57, 57, 54, 56), data);
+        Arrays.fill(data, (byte) 0);
+        this.bf.format(99, data);
+        assertArrayEquals(createArray(20, 57, 57), data);
+        Arrays.fill(data, (byte) 0);
+        this.bf.format(99L, data);
+        assertArrayEquals(createArray(20, 57, 57), data);
+
+        Arrays.fill(data, (byte) 0);
+        this.bf.format(9.9E+3, data);
+        assertArrayEquals(createArray(20, 57, 57, 48, 48, 46, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48), data);
+    }
+
+    private byte[] createArray(int size, int... values) {
+        byte[] result = new byte[size];
+        for (int index = 0; index < values.length; index++) {
+            result[index] = (byte) values[index];
+        }
+        return result;
     }
 }
