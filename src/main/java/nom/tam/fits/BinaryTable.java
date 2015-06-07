@@ -1117,7 +1117,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     @Override
-    public Object getData() throws FitsException {
+    public ColumnTable<SaveState> getData() throws FitsException {
         if (this.table == null) {
             if (this.currInput == null) {
                 throw new FitsException("Cannot find input for deferred read");

@@ -154,6 +154,18 @@ public class BinaryTableTest {
         Fits f = new Fits();
         f.addHDU(Fits.makeHDU(btab));
 
+        assertEquals(32, ((byte[]) ((Object[]) btab.getData().getRow(1))[2])[4]);
+        assertArrayEquals(new int[]{
+            16,
+            2,
+            19,
+            2,
+            1,
+            2,
+            2,
+            33
+        }, btab.getData().getSizes());
+
         BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/bt3.fits"));
         f.write(bdos);
 
