@@ -99,20 +99,19 @@ public class FitsFactory {
     /**
      * Given Header and data objects return the appropriate type of HDU.
      */
-    public static BasicHDU HDUFactory(Header hdr, Data d) throws FitsException {
-
+    @SuppressWarnings("unchecked")
+    public static <DataClass extends Data> BasicHDU<DataClass> HDUFactory(Header hdr, DataClass d) throws FitsException {
         if (d instanceof ImageData) {
-            return new ImageHDU(hdr, d);
+            return (BasicHDU<DataClass>) new ImageHDU(hdr, d);
         } else if (d instanceof RandomGroupsData) {
-            return new RandomGroupsHDU(hdr, d);
+            return (BasicHDU<DataClass>) new RandomGroupsHDU(hdr, d);
         } else if (d instanceof AsciiTable) {
-            return new AsciiTableHDU(hdr, d);
+            return (BasicHDU<DataClass>) new AsciiTableHDU(hdr, d);
         } else if (d instanceof BinaryTable) {
-            return new BinaryTableHDU(hdr, d);
+            return (BasicHDU<DataClass>) new BinaryTableHDU(hdr, d);
         } else if (d instanceof UndefinedData) {
-            return new UndefinedHDU(hdr, d);
+            return (BasicHDU<DataClass>) new UndefinedHDU(hdr, d);
         }
-
         return null;
     }
 
@@ -122,7 +121,7 @@ public class FitsFactory {
      * @param o
      *            The object to be described.
      */
-    public static BasicHDU HDUFactory(Object o) throws FitsException {
+    public static BasicHDU<?> HDUFactory(Object o) throws FitsException {
         Data d;
         Header h;
 

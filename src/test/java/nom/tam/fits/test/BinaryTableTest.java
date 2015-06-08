@@ -31,12 +31,23 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTable;
@@ -47,6 +58,9 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.fits.FitsHeap;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.PaddingException;
+import nom.tam.util.ArrayFuncs;
+import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.ColumnTable;
@@ -55,7 +69,6 @@ import nom.tam.util.TestArrayFuncs;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -140,6 +153,18 @@ public class BinaryTableTest {
 
         Fits f = new Fits();
         f.addHDU(Fits.makeHDU(btab));
+
+        assertEquals(32, ((byte[]) ((Object[]) btab.getData().getRow(1))[2])[4]);
+        assertArrayEquals(new int[]{
+            16,
+            2,
+            19,
+            2,
+            1,
+            2,
+            2,
+            33
+        }, btab.getData().getSizes());
 
         BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/bt3.fits"));
         f.write(bdos);
@@ -1015,6 +1040,30 @@ public class BinaryTableTest {
         assertEquals("ts17", false, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), this.vf[4]));
         assertEquals("ts18", true, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), trw));
         assertEquals("ts19", true, TestArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
+
+        assertArrayEquals(new int[]{
+            4,
+            4,
+            50,
+            2,
+            50,
+            2,
+            50,
+            2,
+            3,
+            50,
+            2,
+            50,
+            2,
+            50,
+            2,
+            0
+        }, (int[]) ArrayFuncs.flatten(bhdu.getData().getDimens()));
+
+        assertArrayEquals(new int[]{
+            2,
+            8516
+        }, (int[]) bhdu.getData().getRawElement(1, 1));
     }
 
     @Test
@@ -1212,5 +1261,237 @@ public class BinaryTableTest {
         }
         Assert.assertNotNull(ex);
         Assert.assertEquals(IllegalStateException.class, ex.getClass());
+    }
+
+    @Test
+    public void testBadCase1() throws Exception {
+        Header header = new Header();
+        header.addValue("PCOUNT", Long.MAX_VALUE, "");
+        Exception actual = null;
+        try {
+            new BinaryTable(header);
+        } catch (Exception e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertEquals(FitsException.class, actual.getClass());
+        actual = null;
+        header = new Header();
+        header.addValue("THEAP", Long.MAX_VALUE, "");
+        try {
+            new BinaryTable(header);
+        } catch (Exception e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertEquals(FitsException.class, actual.getClass());
+        actual = null;
+        header = new Header();
+        header.addValue("THEAP", 1000L, "");
+        header.addValue("PCOUNT", 500L, "");
+        try {
+            new BinaryTable(header);
+        } catch (Exception e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertEquals(FitsException.class, actual.getClass());
+    }
+
+    @Test
+    public void testBadCase2() throws Exception {
+        BinaryTable btab = new BinaryTable();
+
+        btab.addColumn(this.floats);
+
+        setFieldNull(btab, "table");
+        setFieldNull(btab, "currInput");
+        Exception actual = null;
+        final List<LogRecord> logs = new ArrayList<>();
+        Logger.getLogger(BinaryTable.class.getName()).addHandler(new Handler() {
+
+            @Override
+            public void publish(LogRecord record) {
+                logs.add(record);
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() throws SecurityException {
+            }
+        });
+        try {
+            btab.getFlatColumns();
+        } catch (NullPointerException exception) {
+            actual = exception;
+        }
+        assertNotNull(actual);
+        assertEquals("reading data of binary table failed!", logs.get(0).getMessage());
+
+    }
+
+    private void setFieldNull(Object data, String fieldName) throws Exception {
+        Field field = data.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(data, null);
+    }
+
+    @Test
+    public void testReadExceptions() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        setFieldNull(btab, "table");
+        ByteArrayInputStream in = new ByteArrayInputStream(new byte[1000]);
+        Exception actual = null;
+        try {
+            btab.read(new BufferedDataInputStream(in) {
+
+                @Override
+                public long skipBytes(long toSkip) throws IOException {
+                    throw new IOException("all went wrong ;-)");
+                }
+            });
+        } catch (Exception ex) {
+            actual = ex;
+        }
+        assertNotNull(actual);
+        assertEquals(FitsException.class, actual.getClass());
+        assertEquals("all went wrong ;-)", actual.getCause().getMessage());
+
+        actual = null;
+        try {
+            btab.read(new BufferedDataInputStream(in) {
+
+                int pass = 0;
+
+                @Override
+                public long skipBytes(long toSkip) throws IOException {
+                    if (pass++ == 1) {
+                        throw new IOException("all went wrong ;-)");
+                    }
+                    return toSkip;
+                }
+            });
+        } catch (Exception ex) {
+            actual = ex;
+        }
+        assertNotNull(actual);
+        assertEquals(FitsException.class, actual.getClass());
+        assertEquals("all went wrong ;-)", actual.getCause().getMessage());
+
+        actual = null;
+        try {
+            btab.read(new BufferedDataInputStream(in) {
+
+                int pass = 0;
+
+                @Override
+                public long skipBytes(long toSkip) throws IOException {
+                    if (pass++ == 1) {
+                        throw new EOFException("all went wrong ;-)");
+                    }
+                    return toSkip;
+                }
+            });
+        } catch (Exception ex) {
+            actual = ex;
+        }
+        assertNotNull(actual);
+        assertEquals(PaddingException.class, actual.getClass());
+
+    }
+
+    @Test
+    public void testReadExceptionsBufferedFile() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        setFieldNull(btab, "table");
+        Exception actual = null;
+        try {
+            btab.read(new BufferedFile("target/testReadExceptions2", "rw") {
+
+                @Override
+                public long skipBytes(long toSkip) throws IOException {
+                    throw new IOException("all went wrong ;-)");
+                }
+            });
+        } catch (Exception ex) {
+            actual = ex;
+        }
+        assertNotNull(actual);
+        assertEquals(FitsException.class, actual.getClass());
+        assertEquals("all went wrong ;-)", actual.getCause().getMessage());
+
+        actual = null;
+        try {
+            btab.read(new BufferedFile("target/testReadExceptions2") {
+
+                int pass = 0;
+
+                @Override
+                public long skipBytes(long toSkip) throws IOException {
+                    if (pass++ == 1) {
+                        throw new IOException("all went wrong ;-)");
+                    }
+                    return toSkip;
+                }
+            });
+        } catch (Exception ex) {
+            actual = ex;
+        }
+        assertNotNull(actual);
+        assertEquals(FitsException.class, actual.getClass());
+        assertEquals("all went wrong ;-)", actual.getCause().getMessage());
+
+        actual = null;
+        try {
+            btab.read(new BufferedFile("target/testReadExceptions2") {
+
+                int pass = 0;
+
+                @Override
+                public long skipBytes(long toSkip) throws IOException {
+                    if (pass++ == 1) {
+                        throw new EOFException("all went wrong ;-)");
+                    }
+                    return toSkip;
+                }
+            });
+        } catch (Exception ex) {
+            actual = ex;
+        }
+        assertNotNull(actual);
+        assertEquals(PaddingException.class, actual.getClass());
+
+    }
+
+    @Test
+    public void testWriteExceptions() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        Field field = BinaryTable.class.getDeclaredField("heapOffset");
+        field.setAccessible(true);
+        field.set(btab, 10);
+
+        btab.write(new BufferedDataOutputStream(out));
+
+        Exception actual = null;
+        try {
+            btab.write(new BufferedDataOutputStream(out) {
+
+                @Override
+                public void write(byte[] b) throws IOException {
+                    throw new IOException("all went wrong ;-)");
+                }
+            });
+        } catch (Exception ex) {
+            actual = ex;
+        }
+        assertNotNull(actual);
+        assertEquals(FitsException.class, actual.getClass());
+        assertEquals("all went wrong ;-)", actual.getCause().getMessage());
+
     }
 }

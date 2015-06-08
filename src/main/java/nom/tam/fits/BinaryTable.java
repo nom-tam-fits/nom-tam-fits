@@ -142,8 +142,7 @@ public class BinaryTable extends AbstractTableData {
                 // Model should not be changed...
                 return copy;
             } catch (CloneNotSupportedException e) {
-                System.err.println("Unexpected clone exception");
-                return null;
+                throw new IllegalStateException("ColumnDesc is not clonable, but it must be!");
             }
         }
     }
@@ -286,13 +285,11 @@ public class BinaryTable extends AbstractTableData {
      * Create a null binary table data segment.
      */
     public BinaryTable() throws FitsException {
-
         try {
             this.table = new ColumnTable<SaveState>(new Object[0], new int[0]);
         } catch (TableException e) {
-            System.err.println("Impossible exception in BinaryTable() constructor" + e);
+            throw new IllegalStateException("Impossible exception in BinaryTable() constructor", e);
         }
-
         this.heap = new FitsHeap(0);
         saveExtraState();
         this.nRow = 0;
@@ -330,7 +327,6 @@ public class BinaryTable extends AbstractTableData {
      *            A header describing what the binary table should look like.
      */
     public BinaryTable(Header myHeader) throws FitsException {
-
         long heapSizeL = myHeader.getLongValue("PCOUNT");
         long heapOffsetL = myHeader.getLongValue("THEAP");
         if (heapOffsetL > Integer.MAX_VALUE) {
@@ -541,15 +537,14 @@ public class BinaryTable extends AbstractTableData {
 
         return this.columnList.size();
     }
-    
+
     private Object encapsulate(Object o) {
-        if (o.getClass().isArray() && 
-            ArrayFuncs.getDimensions(o).length == 1 && ArrayFuncs.getDimensions(o)[0] == 1) {
+        if (o.getClass().isArray() && ArrayFuncs.getDimensions(o).length == 1 && ArrayFuncs.getDimensions(o)[0] == 1) {
             return o;
         }
-            
+
         Object[] array = (Object[]) Array.newInstance(o.getClass(), 1);
-        array[0] = o;        
+        array[0] = o;
         return array;
     }
 
@@ -768,7 +763,7 @@ public class BinaryTable extends AbstractTableData {
             if (colDesc.isLongVary) {
                 // Convert longs to int's. This is dangerous.
                 if (!this.warnedOnVariableConversion) {
-                    System.err.println("Warning: converting long variable array pointers to int's");
+                    LOG.log(Level.WARNING, "Warning: converting long variable array pointers to int's");
                     this.warnedOnVariableConversion = true;
 
                 }
@@ -853,7 +848,6 @@ public class BinaryTable extends AbstractTableData {
             o = res;
 
         } else { // Fixed length columns
-            
 
             // Need to convert String byte arrays to appropriate Strings.
             if (colDesc.isString) {
@@ -1123,7 +1117,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     @Override
-    public Object getData() throws FitsException {
+    public ColumnTable<SaveState> getData() throws FitsException {
         if (this.table == null) {
             if (this.currInput == null) {
                 throw new FitsException("Cannot find input for deferred read");
@@ -1654,14 +1648,14 @@ public class BinaryTable extends AbstractTableData {
                 i.skipBytes(getTrueSize());
                 this.heapReadFromStream = false;
             } catch (IOException e) {
-                throw new FitsException("Unable to skip binary table HDU:" + e);
+                throw new FitsException("Unable to skip binary table HDU:" + e, e);
             }
             try {
                 i.skipBytes(FitsUtil.padding(getTrueSize()));
             } catch (EOFException e) {
                 throw new PaddingException("Missing padding after binary table:" + e, this);
             } catch (IOException e) {
-                throw new FitsException("Error skipping padding after binary table:" + e);
+                throw new FitsException("Error skipping padding after binary table:" + e, e);
             }
 
         } else {
@@ -1704,14 +1698,14 @@ public class BinaryTable extends AbstractTableData {
             this.heapReadFromStream = true;
 
         } catch (IOException e) {
-            throw new FitsException("Error reading binary table data:" + e);
+            throw new FitsException("Error reading binary table data:" + e, e);
         }
         try {
             i.skipBytes(FitsUtil.padding(getTrueSize()));
         } catch (EOFException e) {
             throw new PaddingException("Error skipping padding after binary table", this);
         } catch (IOException e) {
-            throw new FitsException("Error reading binary table data padding:" + e);
+            throw new FitsException("Error reading binary table data padding:" + e, e);
         }
     }
 
@@ -1963,7 +1957,7 @@ public class BinaryTable extends AbstractTableData {
             FitsUtil.pad(os, getTrueSize());
 
         } catch (IOException e) {
-            throw new FitsException("Unable to write table:" + e);
+            throw new FitsException("Unable to write table:" + e, e);
         }
     }
 };

@@ -264,7 +264,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
             }
             String suffix = "C"; // For complex
             // Update the TFORMn keyword.
-                    
+
             if (colDesc.base == double.class) {
                 suffix = "M";
             }

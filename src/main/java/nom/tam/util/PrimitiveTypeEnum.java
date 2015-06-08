@@ -35,15 +35,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum PrimitiveTypeEnum {
-    BYTE(1, false, byte.class, Byte.class),
-    SHORT(2, false, short.class, Short.class),
-    CHAR(2, false, char.class, Character.class),
-    INT(4, false, int.class, Integer.class),
-    LONG(8, false, long.class, Long.class),
-    FLOAT(4, false, float.class, Float.class),
-    DOUBLE(8, false, double.class, Double.class),
-    BOOLEAN(1, false, boolean.class, Boolean.class),
-    STRING(0, true, CharSequence.class, String.class) {
+    BYTE(1, false, byte.class, Byte.class, 'B'),
+    SHORT(2, false, short.class, Short.class, 'S'),
+    CHAR(2, false, char.class, Character.class, 'C'),
+    INT(4, false, int.class, Integer.class, 'I'),
+    LONG(8, false, long.class, Long.class, 'J'),
+    FLOAT(4, false, float.class, Float.class, 'F'),
+    DOUBLE(8, false, double.class, Double.class, 'D'),
+    BOOLEAN(1, false, boolean.class, Boolean.class, 'Z'),
+    STRING(0, true, CharSequence.class, String.class, 'L') {
 
         @Override
         public int size(Object instance) {
@@ -53,7 +53,7 @@ public enum PrimitiveTypeEnum {
             return ((CharSequence) instance).length();
         }
     },
-    UNKNOWN(0, true, Object.class, Object.class) {
+    UNKNOWN(0, true, Object.class, Object.class, 'L') {
 
         @Override
         public int size(Object instance) {
@@ -69,6 +69,8 @@ public enum PrimitiveTypeEnum {
 
     public final Class<?> wrapperClass;
 
+    public final char type;
+
     private static Map<Class<?>, PrimitiveTypeEnum> lookup;
 
     private static Map<Class<?>, PrimitiveTypeEnum> getLookup() {
@@ -82,11 +84,12 @@ public enum PrimitiveTypeEnum {
         return lookup;
     }
 
-    private PrimitiveTypeEnum(int size, boolean individualSize, Class<?> primitiveClass, Class<?> wrapperClass) {
+    private PrimitiveTypeEnum(int size, boolean individualSize, Class<?> primitiveClass, Class<?> wrapperClass, char type) {
         this.size = size;
         this.individualSize = individualSize;
         this.primitiveClass = primitiveClass;
         this.wrapperClass = wrapperClass;
+        this.type = type;
     }
 
     public static PrimitiveTypeEnum valueOf(Class<?> clazz) {

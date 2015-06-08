@@ -32,6 +32,7 @@ package nom.tam.fits;
  */
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -40,9 +41,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Properties;
-import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.fits.compress.CompressionManager;
 import nom.tam.fits.header.Checksum;
@@ -121,7 +125,9 @@ import nom.tam.util.RandomAccess;
  * 
  * @version 1.12
  */
-public class Fits {
+public class Fits implements Closeable {
+
+    private static Logger LOG = Logger.getLogger(Fits.class.getName());
 
     /**
      * Calculate the Seaman-Pence 32-bit 1's complement checksum over the byte
@@ -258,28 +264,21 @@ public class Fits {
                 asc[4 * j + i] = (byte) ch[j];
             }
         }
-
         // shift the bytes 1 to the right circularly.
-        try {
-            String resul = AsciiFuncs.asciiString(asc, 15, 1);
-            return resul.concat(AsciiFuncs.asciiString(asc, 0, 15));
-        } catch (Exception e) {
-            // Impossible I hope
-            System.err.println("CheckSum Error finding ASCII encoding");
-            return null;
-        }
+        String resul = AsciiFuncs.asciiString(asc, 15, 1);
+        return resul.concat(AsciiFuncs.asciiString(asc, 0, 15));
     }
 
     /**
      * Create an HDU from the given Data.
      * 
-     * @param datum
+     * @param data
      *            The data to be described in this HDU.
      */
-    public static BasicHDU makeHDU(Data datum) throws FitsException {
+    public static <DataClass extends Data> BasicHDU<DataClass> makeHDU(DataClass data) throws FitsException {
         Header hdr = new Header();
-        datum.fillHeader(hdr);
-        return FitsFactory.HDUFactory(hdr, datum);
+        data.fillHeader(hdr);
+        return FitsFactory.HDUFactory(hdr, data);
     }
 
     /**
@@ -288,7 +287,7 @@ public class Fits {
      * @param h
      *            The header which describes the FITS extension
      */
-    public static BasicHDU makeHDU(Header h) throws FitsException {
+    public static BasicHDU<?> makeHDU(Header h) throws FitsException {
         Data d = FitsFactory.dataFactory(h);
         return FitsFactory.HDUFactory(h, d);
     }
@@ -299,7 +298,7 @@ public class Fits {
      * @param o
      *            The data to be described in this HDU.
      */
-    public static BasicHDU makeHDU(Object o) throws FitsException {
+    public static BasicHDU<?> makeHDU(Object o) throws FitsException {
         return FitsFactory.HDUFactory(o);
     }
 
@@ -311,7 +310,7 @@ public class Fits {
      * @throws nom.tam.fits.HeaderCardException
      * @since 2005-10-05
      */
-    public static void setChecksum(BasicHDU hdu) throws nom.tam.fits.HeaderCardException, nom.tam.fits.FitsException, java.io.IOException {
+    public static void setChecksum(BasicHDU<?> hdu) throws nom.tam.fits.HeaderCardException, nom.tam.fits.FitsException, java.io.IOException {
         /*
          * the next line with the delete is needed to avoid some unexpected
          * problems with non.tam.fits.Header.checkCard() which otherwise says it
@@ -392,7 +391,7 @@ public class Fits {
     /**
      * A vector of HDUs that have been added to this Fits object.
      */
-    private final Vector hduList = new Vector();
+    private final List<BasicHDU<?>> hduList = new ArrayList<>();
 
     /**
      * Has the input stream reached the EOF?
@@ -502,35 +501,35 @@ public class Fits {
      *                string given.
      **/
     public Fits(String filename, boolean compressed) throws FitsException {
-
         if (filename == null) {
             throw new FitsException("Null FITS Identifier String");
         }
-
-        filename.length();
-        filename.toLowerCase();
         try {
-            new URL(filename);
+            File fil = new File(filename);
+            if (fil.exists()) {
+                fileInit(fil, compressed);
+                return;
+            }
+        } catch (Exception e) {
+            LOG.log(Level.FINE, "not a file " + filename, e);
+        }
+        try {
+            InputStream str = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
+            if (str != null) {
+                streamInit(str);
+                return;
+            }
+        } catch (Exception e) {
+            LOG.log(Level.FINE, "not a resource " + filename, e);
+        }
+        try {
             InputStream is = FitsUtil.getURLStream(new URL(filename), 0);
             streamInit(is);
             return;
         } catch (Exception e) {
-            // Just try it as a file
+            LOG.log(Level.FINE, "not a url " + filename, e);
         }
-
-        File fil = new File(filename);
-        if (fil.exists()) {
-            fileInit(fil, compressed);
-            return;
-        }
-
-        try {
-            InputStream str = ClassLoader.getSystemClassLoader().getResourceAsStream(filename);
-            streamInit(str);
-        } catch (Exception e) {
-            //
-        }
-
+        throw new FitsException("could not detect type of " + filename);
     }
 
     /**
@@ -576,7 +575,7 @@ public class Fits {
      * @param myHDU
      *            The HDU to be added to the end of the FITS object.
      */
-    public void addHDU(BasicHDU myHDU) throws FitsException {
+    public void addHDU(BasicHDU<?> myHDU) throws FitsException {
         insertHDU(myHDU, getNumberOfHDUs());
     }
 
@@ -605,18 +604,14 @@ public class Fits {
         if (n < 0 || n >= size) {
             throw new FitsException("Attempt to delete non-existent HDU:" + n);
         }
-        try {
-            this.hduList.removeElementAt(n);
-            if (n == 0 && size > 1) {
-                BasicHDU newFirst = (BasicHDU) this.hduList.elementAt(0);
-                if (newFirst.canBePrimary()) {
-                    newFirst.setPrimaryHDU(true);
-                } else {
-                    insertHDU(BasicHDU.getDummyHDU(), 0);
-                }
+        this.hduList.remove(n);
+        if (n == 0 && size > 1) {
+            BasicHDU<?> newFirst = this.hduList.get(0);
+            if (newFirst.canBePrimary()) {
+                newFirst.setPrimaryHDU(true);
+            } else {
+                insertHDU(BasicHDU.getDummyHDU(), 0);
             }
-        } catch (NoSuchElementException e) {
-            throw new FitsException("Internal Error: hduList Vector Inconsitency");
         }
     }
 
@@ -629,11 +624,9 @@ public class Fits {
      *            Is the data compressed?
      */
     protected void fileInit(File myFile, boolean compressed) throws FitsException {
-
         try {
             if (compressed) {
-                FileInputStream str = new FileInputStream(myFile);
-                streamInit(str);
+                streamInit(new FileInputStream(myFile));
             } else {
                 randomInit(myFile);
             }
@@ -651,22 +644,15 @@ public class Fits {
      *            The index of the HDU to be read. The primary HDU is index 0.
      * @return The n'th HDU or null if it could not be found.
      */
-    public BasicHDU getHDU(int n) throws FitsException, IOException {
-
+    public BasicHDU<?> getHDU(int n) throws FitsException, IOException {
         int size = getNumberOfHDUs();
-
         for (int i = size; i <= n; i += 1) {
-            BasicHDU hdu = readHDU();
+            BasicHDU<?> hdu = readHDU();
             if (hdu == null) {
                 return null;
             }
         }
-
-        try {
-            return (BasicHDU) this.hduList.elementAt(n);
-        } catch (NoSuchElementException e) {
-            throw new FitsException("Internal Error: hduList build failed");
-        }
+        return this.hduList.get(n);
     }
 
     /**
@@ -697,45 +683,37 @@ public class Fits {
      * @param n
      *            The location at which the HDU is to be inserted.
      */
-    public void insertHDU(BasicHDU myHDU, int n) throws FitsException {
-
+    public void insertHDU(BasicHDU<?> myHDU, int n) throws FitsException {
         if (myHDU == null) {
             return;
         }
-
         if (n < 0 || n > getNumberOfHDUs()) {
             throw new FitsException("Attempt to insert HDU at invalid location: " + n);
         }
-
         try {
-
             if (n == 0) {
-
                 // Note that the previous initial HDU is no longer the first.
                 // If we were to insert tables backwards from last to first,
                 // we could get a lot of extraneous DummyHDUs but we currently
                 // do not worry about that.
-
                 if (getNumberOfHDUs() > 0) {
-                    ((BasicHDU) this.hduList.elementAt(0)).setPrimaryHDU(false);
+                    this.hduList.get(0).setPrimaryHDU(false);
                 }
-
                 if (myHDU.canBePrimary()) {
                     myHDU.setPrimaryHDU(true);
-                    this.hduList.insertElementAt(myHDU, 0);
+                    this.hduList.add(0, myHDU);
                 } else {
                     insertHDU(BasicHDU.getDummyHDU(), 0);
                     myHDU.setPrimaryHDU(false);
-                    this.hduList.insertElementAt(myHDU, 1);
+                    this.hduList.add(1, myHDU);
                 }
             } else {
                 myHDU.setPrimaryHDU(false);
-                this.hduList.insertElementAt(myHDU, n);
+                this.hduList.add(n, myHDU);
             }
         } catch (NoSuchElementException e) {
             throw new FitsException("hduList inconsistency in insertHDU");
         }
-
     }
 
     /**
@@ -756,7 +734,6 @@ public class Fits {
         }
         try {
             this.dataStr = new BufferedFile(f, permissions);
-
             ((BufferedFile) this.dataStr).seek(0);
         } catch (IOException e) {
             throw new FitsException("Unable to open file " + f.getPath());
@@ -770,19 +747,13 @@ public class Fits {
      * @return an array of all HDUs in the Fits object. Returns null if there
      *         are no HDUs associated with this object.
      */
-    public BasicHDU[] read() throws FitsException {
-
+    public BasicHDU<?>[] read() throws FitsException {
         readToEnd();
-
         int size = getNumberOfHDUs();
-
         if (size == 0) {
             return null;
         }
-
-        BasicHDU[] hdus = new BasicHDU[size];
-        this.hduList.copyInto(hdus);
-        return hdus;
+        return this.hduList.toArray(new BasicHDU<?>[size]);
     }
 
     /**
@@ -807,34 +778,28 @@ public class Fits {
      *         only returned when the EOF is detected immediately at the
      *         beginning of reading the HDU.
      */
-    public BasicHDU readHDU() throws FitsException, IOException {
-
+    public BasicHDU<?> readHDU() throws FitsException, IOException {
         if (this.dataStr == null || this.atEOF) {
             return null;
         }
-
         if (this.dataStr instanceof nom.tam.util.RandomAccess && this.lastFileOffset > 0) {
             FitsUtil.reposition(this.dataStr, this.lastFileOffset);
         }
-
         Header hdr = Header.readHeader(this.dataStr);
         if (hdr == null) {
             this.atEOF = true;
             return null;
         }
-
-        Data datum = hdr.makeData();
+        Data data = hdr.makeData();
         try {
-            datum.read(this.dataStr);
+            data.read(this.dataStr);
         } catch (PaddingException e) {
             e.updateHeader(hdr);
             throw e;
         }
-
         this.lastFileOffset = FitsUtil.findOffset(this.dataStr);
-        BasicHDU nextHDU = FitsFactory.HDUFactory(hdr, datum);
-
-        this.hduList.addElement(nextHDU);
+        BasicHDU<?> nextHDU = FitsFactory.HDUFactory(hdr, data);
+        this.hduList.add(nextHDU);
         return nextHDU;
     }
 
@@ -912,15 +877,10 @@ public class Fits {
      * Skip the next HDU on the default input stream.
      */
     public void skipHDU() throws FitsException, IOException {
-
         if (this.atEOF) {
             return;
         } else {
             Header hdr = new Header(this.dataStr);
-            if (hdr == null) {
-                this.atEOF = true;
-                return;
-            }
             int dataSize = (int) hdr.getDataSize();
             this.dataStr.skip(dataSize);
             if (this.dataStr instanceof nom.tam.util.RandomAccess) {
@@ -993,10 +953,10 @@ public class Fits {
             throw new FitsException("Cannot create ArrayDataOutput from class " + os.getClass().getName());
         }
 
-        BasicHDU hh;
+        BasicHDU<?> hh;
         for (int i = 0; i < getNumberOfHDUs(); i += 1) {
             try {
-                hh = (BasicHDU) this.hduList.elementAt(i);
+                hh = this.hduList.get(i);
                 hh.write(obs);
             } catch (ArrayIndexOutOfBoundsException e) {
                 e.printStackTrace();
@@ -1019,5 +979,12 @@ public class Fits {
             // Ignore problems...
         }
 
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (dataStr != null) {
+            this.dataStr.close();
+        }
     }
 }
