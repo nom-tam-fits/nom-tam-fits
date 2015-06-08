@@ -79,7 +79,7 @@ import nom.tam.util.RandomAccess;
  * <p>
  * Note that this association is limited, it only specifies where
  * the various read methods should read data from.  It does not automatically
- * read the data content and store the results in the input file.  To ensure that
+ * read the data content and store the results.  To ensure that
  * the external content has been read and parsed the user may wish to invoke the
  * read() method after creating the Fits object associated with external data.  E.g.,
  * <pre>
@@ -95,7 +95,7 @@ import nom.tam.util.RandomAccess;
  * See the various read and addHDU methods.
  * 
  * 
- * <li>The HDU class is a factory class which is used to create HDUs. HDU's can
+ * <li>The FitsFactory class is a factory class which is used to create HDUs. HDU's can
  * be of a number of types derived from the abstract class BasicHDU. The
  * hierarchy of HDUs is:
  * <ul>
@@ -108,19 +108,23 @@ import nom.tam.util.RandomAccess;
  * <li>BinaryTableHDU
  * <li>AsciiTableHDU
  * </ul>
+ * <li>UndefinedHDU
  * </ul>
  * </ul>
  * <li>The Header class provides many functions to add, delete and read header
  * keywords in a variety of formats.
  * <li>The HeaderCard class provides access to the structure of a FITS header
  * card.
+ * <li>
+ * The header package defines sets of enumerations that allow users to create
+ * and access header keywords in a controlled way.
  * <li>The Data class is an abstract class which provides the basic methods for
- * reading and writing FITS data. Users will likely only be interested in the
- * getData method which returns that actual FITS data.
+ * reading and writing FITS data.  It provides methods to get the
+ * the actual underlying arrays and detailed methods for manipulation
+ * specific to the different data types.
  * <li>The TableHDU class provides a large number of methods to access and
  * modify information in tables.
- * <li>The Column class combines the Header information and Data corresponding
- * to a given column.
+ * <li> The utilities package includes simple tools to copy and list FITS files.
  * </ul>
  * 
  * @version 1.12
