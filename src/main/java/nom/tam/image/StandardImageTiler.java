@@ -43,8 +43,7 @@ import nom.tam.util.RandomAccess;
 public abstract class StandardImageTiler implements ImageTiler {
 
     /**
-     * Get the offset of a given position.
-     * 
+     * @return the offset of a given position.
      * @param dims
      *            The dimensions of the array.
      * @param pos
@@ -73,6 +72,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      *            The current offsets.
      * @param lengths
      *            The desired dimensions of the subset.
+     * @return <code>true</code> if the current array was changed
      */
     protected static boolean incrementPosition(int[] start, int[] current, int[] lengths) {
 

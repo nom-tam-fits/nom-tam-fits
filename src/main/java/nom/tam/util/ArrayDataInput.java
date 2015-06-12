@@ -96,6 +96,8 @@ public interface ArrayDataInput extends java.io.DataInput {
      *            A [multidimensional] primitive (or Object) array.
      * @deprecated See readLArray(Object o).
      * @return the number of bytes read
+     * @throws IOException
+     *             if the underlying stream failed
      */
     @Deprecated
     public int readArray(Object o) throws IOException;
@@ -103,6 +105,12 @@ public interface ArrayDataInput extends java.io.DataInput {
     /**
      * Read an array. This version works even if the underlying data is more
      * than 2 Gigabytes.
+     * 
+     * @param o
+     *            array to write the read data
+     * @return the number of bytes read
+     * @throws IOException
+     *             if the underlying stream failed
      */
     public long readLArray(Object o) throws IOException;
 

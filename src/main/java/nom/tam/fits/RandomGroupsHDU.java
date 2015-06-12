@@ -116,12 +116,14 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * base type and the first element being a simple primitive array. We do not
      * check anything but the first row.
      * 
+     * @param potentialData
+     *            data to check
      * @return is this data compatible with Random Groups structure
      */
-    public static boolean isData(Object oo) {
-        if (oo instanceof Object[][]) {
+    public static boolean isData(Object potentialData) {
+        if (potentialData instanceof Object[][]) {
 
-            Object[][] o = (Object[][]) oo;
+            Object[][] o = (Object[][]) potentialData;
 
             if (o.length > 0) {
                 if (o[0].length == 2) {

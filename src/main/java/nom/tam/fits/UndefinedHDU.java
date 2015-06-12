@@ -41,8 +41,9 @@ import nom.tam.util.ArrayFuncs;
 public class UndefinedHDU extends BasicHDU<UndefinedData> {
 
     /**
-     * Encapsulate an object as an ImageHDU.
-     * 
+     * @return Encapsulate an object as an ImageHDU.
+     * @param o
+     *            the object to encapsulate
      * @throws FitsException
      *             if the operation failed
      */

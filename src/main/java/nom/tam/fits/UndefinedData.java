@@ -73,6 +73,9 @@ public class UndefinedData extends Data {
 
     /**
      * Create an UndefinedData object using the specified object.
+     * 
+     * @param x
+     *            object to create the hdu from
      */
     public UndefinedData(Object x) {
         this.byteSize = ArrayFuncs.computeLSize(x);

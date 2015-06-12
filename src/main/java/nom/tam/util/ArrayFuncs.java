@@ -49,8 +49,7 @@ public class ArrayFuncs {
     private static Logger LOG = Logger.getLogger(ArrayFuncs.class.getName());
 
     /**
-     * Generate a description of an array (presumed rectangular).
-     * 
+     * @return a description of an array (presumed rectangular).
      * @param o
      *            The array to be described.
      */
@@ -98,10 +97,9 @@ public class ArrayFuncs {
     }
 
     /**
-     * Compute the size of an object. Note that this only handles arrays or
-     * scalars of the primitive objects and Strings. It returns 0 for any object
-     * array element it does not understand.
-     * 
+     * @return Compute the size of an object. Note that this only handles arrays
+     *         or scalars of the primitive objects and Strings. It returns 0 for
+     *         any object array element it does not understand.
      * @param o
      *            The object whose size is desired.
      * @deprecated May silently underestimate the size if the size &gt; 2 GB.
@@ -112,9 +110,8 @@ public class ArrayFuncs {
     }
 
     /**
-     * Convert an array to a specified type. This method supports conversions
-     * only among the primitive numeric types.
-     * 
+     * @return Convert an array to a specified type. This method supports
+     *         conversions only among the primitive numeric types.
      * @param array
      *            A possibly multidimensional array to be converted.
      * @param newType
@@ -137,9 +134,8 @@ public class ArrayFuncs {
     }
 
     /**
-     * Convert an array to a specified type. This method supports conversions
-     * only among the primitive numeric types.
-     * 
+     * @return Convert an array to a specified type. This method supports
+     *         conversions only among the primitive numeric types.
      * @param array
      *            A possibly multidimensional array to be converted.
      * @param newType
@@ -229,12 +225,11 @@ public class ArrayFuncs {
     }
 
     /**
-     * Try to create a deep clone of an Array or a standard clone of a scalar.
-     * The object may comprise arrays of any primitive type or any Object type
-     * which implements Cloneable. However, if the Object is some kind of
-     * collection, e.g., a Vector then only a shallow copy of that object is
-     * made. I.e., deep refers only to arrays.
-     * 
+     * @return a deep clone of an Array or a standard clone of a scalar. The
+     *         object may comprise arrays of any primitive type or any Object
+     *         type which implements Cloneable. However, if the Object is some
+     *         kind of collection, e.g., a Vector then only a shallow copy of
+     *         that object is made. I.e., deep refers only to arrays.
      * @param o
      *            The object to be copied.
      */
@@ -267,9 +262,9 @@ public class ArrayFuncs {
     }
 
     /**
-     * Given an array of arbitrary dimensionality return the array flattened
-     * into a single dimension.
+     * Given an array of arbitrary dimensionality .
      * 
+     * @return the array flattened into a single dimension.
      * @param input
      *            The input array.
      */
@@ -300,6 +295,7 @@ public class ArrayFuncs {
      * 
      * @param o
      *            The object to be cloned.
+     * @return the clone
      */
     public static Object genericClone(Object o) {
         if (o.getClass().isArray()) {
@@ -321,6 +317,10 @@ public class ArrayFuncs {
      * This routine returns the base array of a multi-dimensional array. I.e., a
      * one-d array of whatever the array is composed of. Note that arrays are
      * not guaranteed to be rectangular, so this returns o[0][0]....
+     * 
+     * @param o
+     *            the multi-dimensional array
+     * @return base array of a multi-dimensional array.
      */
     public static Object getBaseArray(Object o) {
         if (o.getClass().getComponentType().isArray()) {
@@ -333,6 +333,10 @@ public class ArrayFuncs {
     /**
      * This routine returns the base class of an object. This is just the class
      * of the object for non-arrays.
+     * 
+     * @param o
+     *            array to get the base class from
+     * @return the base class of an array
      */
     public static Class<?> getBaseClass(Object o) {
         if (o == null) {
@@ -368,11 +372,12 @@ public class ArrayFuncs {
      * Find the dimensions of an object. This method returns an integer array
      * with the dimensions of the object o which should usually be an array. It
      * returns an array of dimension 0 for scalar objects and it returns -1 for
-     * dimension which have not been allocated, e.g., int[][][] x = new
-     * int[100][][]; should return [100,-1,-1].
+     * dimension which have not been allocated, e.g., <code>int[][][] x = new
+     * int[100][][];</code> should return [100,-1,-1].
      * 
      * @param o
      *            The object to get the dimensions of.
+     * @return the dimensions of an object
      */
     public static int[] getDimensions(Object o) {
         if (o == null) {
@@ -447,8 +452,9 @@ public class ArrayFuncs {
     }
 
     /**
-     * Count the number of elements in an array.
-     * 
+     * @return Count the number of elements in an array.
+     * @param o
+     *            the array to count the elements
      * @deprecated May silently underestimate size if number is &gt; 2 G.
      */
     @Deprecated
@@ -501,8 +507,9 @@ public class ArrayFuncs {
     }
 
     /**
-     * Count the number of elements in an array.
-     * 
+     * @return Count the number of elements in an array.
+     * @param o
+     *            the array to count elements in
      * @deprecated May silently underestimate size if number is &gt; 2 G.
      */
     @Deprecated

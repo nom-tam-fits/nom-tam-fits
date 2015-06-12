@@ -154,7 +154,13 @@ public class HeaderOrder implements java.util.Comparator<String> {
         return 0;
     }
 
-    /** Can two cards be exchanged when being written out? */
+    /**
+     * @return Can two cards be exchanged when being written out?
+     * @param a
+     *            first card
+     * @param b
+     *            second card
+     */
     public boolean equals(String a, String b) {
         return compare(a, b) == 0;
     }
