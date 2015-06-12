@@ -52,7 +52,10 @@ public class FitsFactory {
     private static boolean longStringsEnabled = false;
 
     /**
-     * Given a Header return an appropriate datum.
+     * @return Given a Header construct an appropriate data.
+     * @param hdr
+     *            header to create the data from * @throws FitsException if the
+     *            operation failed
      */
     public static Data dataFactory(Header hdr) throws FitsException {
 
@@ -75,54 +78,70 @@ public class FitsFactory {
     }
 
     /**
-     * Is terminal junk (i.e., non-FITS data following a valid HDU) allowed.
+     * @return Is terminal junk (i.e., non-FITS data following a valid HDU)
+     *         allowed.
      */
     public static boolean getAllowTerminalJunk() {
         return FitsFactory.allowTerminalJunk;
     }
 
-    /** Get the current status for string checking. */
+    /**
+     * @return Get the current status for string checking.
+     */
     static boolean getCheckAsciiStrings() {
         return FitsFactory.checkAsciiStrings;
     }
 
-    /** Get the current status of ASCII table writing */
+    /**
+     * @return Get the current status of ASCII table writing
+     */
     static boolean getUseAsciiTables() {
         return FitsFactory.useAsciiTables;
     }
 
-    /** Are we processing HIERARCH style keywords */
+    /**
+     * @return <code>true</code> if we are processing HIERARCH style keywords
+     */
     public static boolean getUseHierarch() {
         return FitsFactory.useHierarch;
     }
 
     /**
-     * Given Header and data objects return the appropriate type of HDU.
+     * @return Given Header and data objects return the appropriate type of HDU.
+     * @param hdr
+     *            the header of the date
+     * @param d
+     *            the data
+     * @param <DataClass>
+     *            the class of the data
+     * @throws FitsException
+     *             if the operation failed
      */
-    public static BasicHDU HDUFactory(Header hdr, Data d) throws FitsException {
-
+    @SuppressWarnings("unchecked")
+    public static <DataClass extends Data> BasicHDU<DataClass> HDUFactory(Header hdr, DataClass d) throws FitsException {
         if (d instanceof ImageData) {
-            return new ImageHDU(hdr, d);
+            return (BasicHDU<DataClass>) new ImageHDU(hdr, d);
         } else if (d instanceof RandomGroupsData) {
-            return new RandomGroupsHDU(hdr, d);
+            return (BasicHDU<DataClass>) new RandomGroupsHDU(hdr, d);
         } else if (d instanceof AsciiTable) {
-            return new AsciiTableHDU(hdr, d);
+            return (BasicHDU<DataClass>) new AsciiTableHDU(hdr, d);
         } else if (d instanceof BinaryTable) {
-            return new BinaryTableHDU(hdr, d);
+            return (BasicHDU<DataClass>) new BinaryTableHDU(hdr, d);
         } else if (d instanceof UndefinedData) {
-            return new UndefinedHDU(hdr, d);
+            return (BasicHDU<DataClass>) new UndefinedHDU(hdr, d);
         }
-
         return null;
     }
 
     /**
-     * Given an object, create the appropriate FITS header to describe it.
-     * 
+     * @return Given an object, create the appropriate FITS header to describe
+     *         it.
      * @param o
      *            The object to be described.
+     * @throws FitsException
+     *             if the parameter could not be converted to a hdu.
      */
-    public static BasicHDU HDUFactory(Object o) throws FitsException {
+    public static BasicHDU<?> HDUFactory(Object o) throws FitsException {
         Data d;
         Header h;
 
@@ -153,15 +172,20 @@ public class FitsFactory {
     }
 
     /**
-     * Is long string support enabled.
+     * @return <code>true</code> If long string support is enabled.
      */
     public static boolean isLongStringsEnabled() {
         return FitsFactory.longStringsEnabled;
     }
 
-    /** Do we allow junk after a valid FITS file? */
-    public static void setAllowTerminalJunk(boolean flag) {
-        FitsFactory.allowTerminalJunk = flag;
+    /**
+     * Do we allow junk after a valid FITS file?
+     * 
+     * @param allowTerminalJunk
+     *            value to set
+     */
+    public static void setAllowTerminalJunk(boolean allowTerminalJunk) {
+        FitsFactory.allowTerminalJunk = allowTerminalJunk;
     }
 
     /**
@@ -169,25 +193,41 @@ public class FitsFactory {
      * they are within the range specified by the FITS standard. The standard
      * only allows the values 0x20 - 0x7E with null bytes allowed in one limited
      * context. Disabled by default.
+     * 
+     * @param checkAsciiStrings
+     *            value to set
      */
-    public static void setCheckAsciiStrings(boolean flag) {
-        FitsFactory.checkAsciiStrings = flag;
+    public static void setCheckAsciiStrings(boolean checkAsciiStrings) {
+        FitsFactory.checkAsciiStrings = checkAsciiStrings;
     }
 
-    /** Enable/Disable longstring support. */
-    public static void setLongStringsEnabled(boolean flag) {
-        FitsFactory.longStringsEnabled = flag;
+    /**
+     * Enable/Disable longstring support.
+     * 
+     * @param longStringsEnabled
+     *            value to set
+     */
+    public static void setLongStringsEnabled(boolean longStringsEnabled) {
+        FitsFactory.longStringsEnabled = longStringsEnabled;
     }
 
     /**
      * Indicate whether ASCII tables should be used where feasible.
+     * 
+     * @param useAsciiTables
+     *            value to set
      */
-    public static void setUseAsciiTables(boolean flag) {
-        FitsFactory.useAsciiTables = flag;
+    public static void setUseAsciiTables(boolean useAsciiTables) {
+        FitsFactory.useAsciiTables = useAsciiTables;
     }
 
-    /** Enable/Disable hierarchical keyword processing. */
-    public static void setUseHierarch(boolean flag) {
-        FitsFactory.useHierarch = flag;
+    /**
+     * Enable/Disable hierarchical keyword processing.
+     * 
+     * @param useHierarch
+     *            value to set
+     */
+    public static void setUseHierarch(boolean useHierarch) {
+        FitsFactory.useHierarch = useHierarch;
     }
 }

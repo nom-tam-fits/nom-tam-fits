@@ -31,24 +31,25 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.net.URL;
 
 import nom.tam.fits.AsciiTable;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.Data;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.ImageHDU;
 import nom.tam.fits.UndefinedData;
 import nom.tam.fits.UndefinedHDU;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
@@ -96,6 +97,17 @@ public class BaseFitsTest {
     public void testFitsDeleteHdu() throws Exception {
         Fits fits1 = makeAsciiTable();
         fits1.read();
+        Exception actual = null;
+        try {
+            fits1.deleteHDU(-2);
+        } catch (FitsException ex) {
+            actual = ex;
+        }
+        Assert.assertNotNull(actual);
+
+        Assert.assertNull(fits1.getHDU(99));
+        // will be ignored
+        fits1.insertHDU(null, 99);
         fits1.deleteHDU(2);
         fits1.deleteHDU(2);
         writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
@@ -347,5 +359,52 @@ public class BaseFitsTest {
 
         byte[] rereadUndefinedData = (byte[]) hdu.getData().getData();
         Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
+    }
+
+    @Test
+    public void testDifferentTypes() throws Exception {
+        FitsException actual = null;
+        try {
+            new Fits((String) null, false);
+        } catch (FitsException ex) {
+            actual = ex;
+        }
+        Assert.assertNotNull(actual);
+        try (Fits fits = new Fits("nom/tam/fits/test/test.fits", false)) {
+            Assert.assertNotNull(fits.readHDU());
+            Assert.assertEquals(1, fits.currentSize());
+        }
+        try (Fits fits = new Fits("file://" + new File("src/test/resources/nom/tam/fits/test/test.fits").getAbsolutePath(), false)) {
+            Assert.assertNotNull(fits.readHDU());
+        }
+        actual = null;
+        try {
+            new Fits("file://" + new File("src/test/resources/nom/tam/fits/test/test.fitsX").getAbsolutePath(), false);
+        } catch (FitsException ex) {
+            actual = ex;
+        }
+        Assert.assertNotNull(actual);
+        actual = null;
+        try {
+            new Fits(new URL("file://" + new File("src/test/resources/nom/tam/fits/test/test.fitsX").getAbsolutePath()), false);
+        } catch (FitsException ex) {
+            actual = ex;
+        }
+        Assert.assertNotNull(actual);
+        try (Fits fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits", false)) {
+            Assert.assertNotNull(fits.readHDU());
+        }
+    }
+
+    @Test
+    public void testHduFromHeader() throws Exception {
+        Header header = new Header();
+        header.addValue("SIMPLE", true, "");
+        header.addValue("BITPIX", 8, "");
+        header.addValue("NAXIS", 2, "");
+        header.addValue("NAXIS1", 4, "");
+        header.addValue("NAXIS3", 4, "");
+        ImageHDU hdu = (ImageHDU) Fits.makeHDU(header);
+        Assert.assertNotNull(hdu);
     }
 }

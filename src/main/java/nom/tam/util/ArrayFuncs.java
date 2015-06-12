@@ -1,6 +1,3 @@
-// Member of the utility package.
-// Modified July 20, 2009 to handle very large arrays
-// in some contexts.
 package nom.tam.util;
 
 /*
@@ -35,15 +32,21 @@ package nom.tam.util;
  */
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import nom.tam.util.array.PrimitiveArrayCopier;
+import nom.tam.util.array.MultyArrayCopier;
+import nom.tam.util.array.MultyArrayIterator;
 
 /**
  * This is a package of static functions which perform computations on arrays.
  * Generally these routines attempt to complete without throwing errors by
  * ignoring data they cannot understand.
  */
-public class ArrayFuncs implements PrimitiveInfo {
+public class ArrayFuncs {
+
+    private static Logger LOG = Logger.getLogger(ArrayFuncs.class.getName());
 
     /**
      * Generate a description of an array (presumed rectangular).
@@ -52,99 +55,46 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            The array to be described.
      */
     public static String arrayDescription(Object o) {
-
-        Class base = getBaseClass(o);
+        Class<?> base = getBaseClass(o);
         if (base == Void.TYPE) {
             return "NULL";
         }
-
-        int[] dims = getDimensions(o);
-
-        StringBuffer desc = new StringBuffer();
-
-        // Note that all instances Class describing a given class are
-        // the same so we can use == here.
-        boolean found = false;
-
-        for (int i = 0; i < PrimitiveInfo.classes.length; i += 1) {
-            if (base == PrimitiveInfo.classes[i]) {
-                found = true;
-                desc.append(PrimitiveInfo.types[i]);
-                break;
-            }
-        }
-
-        if (!found) {
-            desc.append(base.getName());
-        }
-
-        if (dims != null) {
-            desc.append("[");
-            for (int i = 0; i < dims.length; i += 1) {
-                desc.append("" + dims[i]);
-                if (i < dims.length - 1) {
-                    desc.append("][");
-                }
-            }
-            desc.append("]");
-        }
-        return new String(desc);
+        return new StringBuffer(base.getSimpleName())//
+                .append(Arrays.toString(getDimensions(o)))//
+                .toString();
     }
 
     public static long computeLSize(Object o) {
-
         if (o == null) {
             return 0;
         }
-
-        long size = 0;
-        String classname = o.getClass().getName();
-        if (classname.substring(0, 2).equals("[[")) {
-
-            for (int i = 0; i < ((Object[]) o).length; i += 1) {
-                size += computeLSize(((Object[]) o)[i]);
-            }
-            return size;
-        }
-
-        if (classname.charAt(0) == '[' && classname.charAt(1) != 'L') {
-            char c = classname.charAt(1);
-
-            for (int i = 0; i < PrimitiveInfo.suffixes.length; i += 1) {
-                if (c == PrimitiveInfo.suffixes[i]) {
-                    return (long) Array.getLength(o) * PrimitiveInfo.sizes[i];
+        if (o.getClass().isArray()) {
+            long size = 0;
+            MultyArrayIterator iter = new MultyArrayIterator(o);
+            Object array;
+            while ((array = iter.next()) != null) {
+                long length = Array.getLength(array);
+                if (length > 0) {
+                    Class<?> componentType = array.getClass().getComponentType();
+                    PrimitiveTypeEnum primType = PrimitiveTypeEnum.valueOf(componentType);
+                    if (componentType.isPrimitive()) {
+                        size += length * primType.size();
+                    } else {
+                        for (int index = 0; index < length; index++) {
+                            size += primType.size(Array.get(array, index));
+                        }
+                    }
                 }
             }
-            return 0;
-        }
-
-        // Do we have a non-primitive array?
-        if (classname.charAt(0) == '[') {
-            int len = 0;
-            for (int i = 0; i < Array.getLength(o); i += 1) {
-                len += computeLSize(Array.get(o, i));
-            }
-            return len;
-        }
-
-        // Now a few special scalar objects.
-        if (classname.substring(0, 10).equals("java.lang.")) {
-            classname = classname.substring(10, classname.length());
-            if (classname.equals("Integer") || classname.equals("Float")) {
-                return 4;
-            } else if (classname.equals("Double") || classname.equals("Long")) {
-                return 8;
-            } else if (classname.equals("Short") || classname.equals("Char")) {
-                return 2;
-            } else if (classname.equals("Byte") || classname.equals("Boolean")) {
-                return 1;
-            } else if (classname.equals("String")) {
-                return ((String) o).length();
+            return size;
+        } else {
+            PrimitiveTypeEnum primType = PrimitiveTypeEnum.valueOf(o.getClass());
+            if (primType.individualSize) {
+                return primType.size(o);
             } else {
-                return 0;
+                return primType.size();
             }
         }
-        return 0;
     }
 
     /**
@@ -154,7 +104,7 @@ public class ArrayFuncs implements PrimitiveInfo {
      * 
      * @param o
      *            The object whose size is desired.
-     * @deprecated May silently underestimate the size if the size > 2 GB.
+     * @deprecated May silently underestimate the size if the size &gt; 2 GB.
      */
     @Deprecated
     public static int computeSize(Object o) {
@@ -172,21 +122,17 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            descriptors for primitive numeric data, e.g., double.type.
      */
     public static Object convertArray(Object array, Class<?> newType) {
-
         /*
          * We break this up into two steps so that users can reuse an array many
          * times and only allocate a new array when needed.
          */
-
         /* First create the full new array. */
         Object mimic = mimicArray(array, newType);
         if (mimic == null) {
             return mimic;
         }
-
         /* Now copy the info into the new array */
         copyInto(array, mimic);
-
         return mimic;
     }
 
@@ -203,8 +149,7 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            If set, and the requested type is the same as the original,
      *            then the original is returned.
      */
-    public static Object convertArray(Object array, Class newType, boolean reuse) {
-
+    public static Object convertArray(Object array, Class<?> newType, boolean reuse) {
         if (getBaseClass(array) == newType && reuse) {
             return array;
         } else {
@@ -224,30 +169,20 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            allocated.
      */
     public static void copyArray(Object original, Object copy) {
-        String oname = original.getClass().getName();
-        String cname = copy.getClass().getName();
-
-        if (!oname.equals(cname)) {
+        Class<? extends Object> originalClass = original.getClass();
+        if (!originalClass.isArray()) {
             return;
         }
-
-        if (oname.charAt(0) != '[') {
-            return;
-        }
-
-        if (oname.charAt(1) == '[') {
-            Object[] x = (Object[]) original;
-            Object[] y = (Object[]) copy;
-            if (x.length != y.length) {
+        int length = Array.getLength(original);
+        if (originalClass.getComponentType().isArray()) {
+            if (length != Array.getLength(copy)) {
                 return;
             }
-            for (int index = 0; index < x.length; index++) {
-                copyArray(x[index], y[index]);
+            for (int index = 0; index < length; index++) {
+                copyArray(Array.get(original, index), Array.get(copy, index));
             }
         }
-        int len = Array.getLength(original);
-
-        System.arraycopy(original, 0, copy, 0, len);
+        System.arraycopy(original, 0, copy, 0, length);
     }
 
     /**
@@ -260,7 +195,7 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            The array mimicking the original.
      */
     public static void copyInto(Object array, Object mimic) {
-        PrimitiveArrayCopier.copyInto(array, mimic);
+        MultyArrayCopier.copyInto(array, mimic);
     }
 
     /**
@@ -273,28 +208,22 @@ public class ArrayFuncs implements PrimitiveInfo {
      * @return The curled array.
      */
     public static Object curl(Object input, int[] dimens) {
-
         if (input == null) {
             return null;
         }
-        String classname = input.getClass().getName();
-        if (classname.charAt(0) != '[' || classname.charAt(1) == '[') {
+        if (!input.getClass().isArray() || input.getClass().getComponentType().isArray()) {
             throw new RuntimeException("Attempt to curl non-1D array");
         }
-
         int size = Array.getLength(input);
-
         int test = 1;
         for (int dimen : dimens) {
             test *= dimen;
         }
-
         if (test != size) {
             throw new RuntimeException("Curled array does not fit desired dimensions");
         }
-
         Object newArray = ArrayFuncs.newInstance(getBaseClass(input), dimens);
-        PrimitiveArrayCopier.copyInto(input, newArray);
+        MultyArrayCopier.copyInto(input, newArray);
         return newArray;
 
     }
@@ -310,84 +239,31 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            The object to be copied.
      */
     public static Object deepClone(Object o) {
-
         if (o == null) {
             return null;
         }
-
-        String classname = o.getClass().getName();
-
-        // Is this an array?
-        if (classname.charAt(0) != '[') {
+        if (!o.getClass().isArray()) {
             return genericClone(o);
         }
-
         // Check if this is a 1D primitive array.
-        if (classname.charAt(1) != '[' && classname.charAt(1) != 'L') {
-            try {
-                // Some compilers (SuperCede, e.g.) still
-                // think you have to catch this...
-                if (false) {
-                    throw new CloneNotSupportedException();
-                }
-                switch (classname.charAt(1)) {
-                    case 'B':
-                        return ((byte[]) o).clone();
-                    case 'Z':
-                        return ((boolean[]) o).clone();
-                    case 'C':
-                        return ((char[]) o).clone();
-                    case 'S':
-                        return ((short[]) o).clone();
-                    case 'I':
-                        return ((int[]) o).clone();
-                    case 'J':
-                        return ((long[]) o).clone();
-                    case 'F':
-                        return ((float[]) o).clone();
-                    case 'D':
-                        return ((double[]) o).clone();
-                    default:
-                        System.err.println("Unknown primtive array class:" + classname);
-                        return null;
-
-                }
-            } catch (CloneNotSupportedException e) {
-            }
-        }
-
-        // Get the base type.
-        int ndim = 1;
-        while (classname.charAt(ndim) == '[') {
-            ndim += 1;
-        }
-        Class baseClass;
-        if (classname.charAt(ndim) != 'L') {
-            baseClass = getBaseClass(o);
+        if (o.getClass().getComponentType().isPrimitive()) {
+            int length = Array.getLength(o);
+            Object result = Array.newInstance(o.getClass().getComponentType(), length);
+            System.arraycopy(o, 0, result, 0, length);
+            return result;
         } else {
-            try {
-                baseClass = Class.forName(classname.substring(ndim + 1, classname.length() - 1));
-            } catch (ClassNotFoundException e) {
-                System.err.println("Internal error: class definition inconsistency: " + classname);
-                return null;
+            // Get the base type.
+            Class<?> baseClass = getBaseClass(o);
+            // Allocate the array but make all but the first dimension 0.
+            int[] dims = getDimensions(o);
+            Arrays.fill(dims, 1, dims.length, 0);
+            Object copy = ArrayFuncs.newInstance(baseClass, dims);
+            // Now fill in the next level down by recursion.
+            for (int i = 0; i < dims[0]; i++) {
+                Array.set(copy, i, deepClone(Array.get(o, i)));
             }
+            return copy;
         }
-
-        // Allocate the array but make all but the first dimension 0.
-        int[] dims = new int[ndim];
-        dims[0] = Array.getLength(o);
-        for (int i = 1; i < ndim; i += 1) {
-            dims[i] = 0;
-        }
-
-        Object copy = ArrayFuncs.newInstance(baseClass, dims);
-
-        // Now fill in the next level down by recursion.
-        for (int i = 0; i < dims[0]; i += 1) {
-            Array.set(copy, i, deepClone(Array.get(o, i)));
-        }
-
-        return copy;
     }
 
     /**
@@ -398,7 +274,6 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            The input array.
      */
     public static Object flatten(Object input) {
-
         int[] dimens = getDimensions(input);
         if (dimens.length <= 1) {
             return input;
@@ -407,9 +282,8 @@ public class ArrayFuncs implements PrimitiveInfo {
         for (int dimen : dimens) {
             size *= dimen;
         }
-
         Object flat = ArrayFuncs.newInstance(getBaseClass(input), size);
-        PrimitiveArrayCopier.copyInto(input, flat);
+        MultyArrayCopier.copyInto(input, flat);
         return flat;
     }
 
@@ -428,23 +302,17 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            The object to be cloned.
      */
     public static Object genericClone(Object o) {
-
+        if (o.getClass().isArray()) {
+            return deepClone(o);
+        }
         if (!(o instanceof Cloneable)) {
+            LOG.log(Level.SEVERE, "generic clone called on a non clonable type");
             return null;
         }
-
-        Class[] argTypes = new Class[0];
-        Object[] args = new Object[0];
-        Class type = o.getClass();
-
         try {
-            return type.getMethod("clone", argTypes).invoke(o, args);
+            return o.getClass().getMethod("clone").invoke(o);
         } catch (Exception e) {
-            if (type.isArray()) {
-                return deepClone(o);
-            }
-            // Implements cloneable, but does not
-            // apparently make clone public.
+            LOG.log(Level.WARNING, "Implements cloneable, but does not apparently make clone public.", e);
             return null;
         }
     }
@@ -455,9 +323,8 @@ public class ArrayFuncs implements PrimitiveInfo {
      * not guaranteed to be rectangular, so this returns o[0][0]....
      */
     public static Object getBaseArray(Object o) {
-        String cname = o.getClass().getName();
-        if (cname.charAt(1) == '[') {
-            return getBaseArray(((Object[]) o)[0]);
+        if (o.getClass().getComponentType().isArray()) {
+            return getBaseArray(Array.get(o, 0));
         } else {
             return o;
         }
@@ -467,38 +334,15 @@ public class ArrayFuncs implements PrimitiveInfo {
      * This routine returns the base class of an object. This is just the class
      * of the object for non-arrays.
      */
-    public static Class getBaseClass(Object o) {
-
+    public static Class<?> getBaseClass(Object o) {
         if (o == null) {
             return Void.TYPE;
         }
-
-        String className = o.getClass().getName();
-
-        int dims = 0;
-        while (className.charAt(dims) == '[') {
-            dims += 1;
+        Class<?> clazz = o.getClass();
+        while (clazz.isArray()) {
+            clazz = clazz.getComponentType();
         }
-
-        if (dims == 0) {
-            return o.getClass();
-        }
-
-        char c = className.charAt(dims);
-        for (int i = 0; i < PrimitiveInfo.suffixes.length; i += 1) {
-            if (c == PrimitiveInfo.suffixes[i]) {
-                return PrimitiveInfo.classes[i];
-            }
-        }
-
-        if (c == 'L') {
-            try {
-                return Class.forName(className.substring(dims + 1, className.length() - 1));
-            } catch (ClassNotFoundException e) {
-                return null;
-            }
-        }
-        return null;
+        return clazz;
     }
 
     /**
@@ -510,28 +354,12 @@ public class ArrayFuncs implements PrimitiveInfo {
      *         primitive array.
      */
     public static int getBaseLength(Object o) {
-
         if (o == null) {
             return 0;
         }
-
-        String className = o.getClass().getName();
-
-        int dims = 0;
-
-        while (className.charAt(dims) == '[') {
-            dims += 1;
-        }
-
-        if (dims == 0) {
-            return -1;
-        }
-
-        char c = className.charAt(dims);
-        for (int i = 0; i < PrimitiveInfo.suffixes.length; i += 1) {
-            if (c == PrimitiveInfo.suffixes[i]) {
-                return PrimitiveInfo.sizes[i];
-            }
+        PrimitiveTypeEnum type = PrimitiveTypeEnum.valueOf(getBaseClass(o));
+        if (type != null && type.size() != 0) {
+            return type.size();
         }
         return -1;
     }
@@ -547,37 +375,33 @@ public class ArrayFuncs implements PrimitiveInfo {
      *            The object to get the dimensions of.
      */
     public static int[] getDimensions(Object o) {
-
         if (o == null) {
             return null;
         }
-
-        String classname = o.getClass().getName();
-
+        Object object = o;
+        Class<?> clazz = o.getClass();
         int ndim = 0;
-
-        while (classname.charAt(ndim) == '[') {
-            ndim += 1;
+        while (clazz.isArray()) {
+            clazz = clazz.getComponentType();
+            ndim++;
         }
-
+        clazz = o.getClass();
         int[] dimens = new int[ndim];
-
-        for (int i = 0; i < ndim; i += 1) {
-            dimens[i] = -1; // So that we can distinguish a null from a 0
-                            // length.
-        }
-
-        for (int i = 0; i < ndim; i += 1) {
-            dimens[i] = java.lang.reflect.Array.getLength(o);
-            if (dimens[i] == 0) {
-                return dimens;
-            }
-            if (i != ndim - 1) {
-                o = ((Object[]) o)[0];
-                if (o == null) {
-                    return dimens;
+        ndim = 0;
+        while (clazz.isArray()) {
+            dimens[ndim] = -1;
+            if (object != null) {
+                int length = Array.getLength(object);
+                if (length > 0) {
+                    dimens[ndim] = length;
+                    object = Array.get(object, 0);
+                } else {
+                    dimens[ndim] = 0;
+                    object = null;
                 }
             }
+            clazz = clazz.getComponentType();
+            ndim++;
         }
         return dimens;
     }
@@ -625,7 +449,7 @@ public class ArrayFuncs implements PrimitiveInfo {
     /**
      * Count the number of elements in an array.
      * 
-     * @deprecated May silently underestimate size if number is > 2 G.
+     * @deprecated May silently underestimate size if number is &gt; 2 G.
      */
     @Deprecated
     public static int nElements(Object o) {
@@ -635,57 +459,43 @@ public class ArrayFuncs implements PrimitiveInfo {
     /**
      * Allocate an array dynamically. The Array.newInstance method does not
      * throw an error when there is insufficient memory and silently returns a
-     * null.
+     * null.throws an OutOfMemoryError if insufficient space is available.
      * 
      * @param cl
      *            The class of the array.
      * @param dim
      *            The dimension of the array.
      * @return The allocated array.
-     * @throws An
-     *             OutOfMemoryError if insufficient space is available.
      */
-    public static Object newInstance(Class cl, int dim) {
-
+    public static Object newInstance(Class<?> cl, int dim) {
         Object o = Array.newInstance(cl, dim);
         if (o == null) {
-            String desc = cl + "[" + dim + "]";
-            throw new OutOfMemoryError("Unable to allocate array: " + desc);
+            throw new OutOfMemoryError("Unable to allocate array: " + cl + "[" + dim + "]");
         }
         return o;
     }
 
     /**
      * Allocate an array dynamically. The Array.newInstance method does not
-     * throw an error and silently returns a null.
+     * throw an error and silently returns a null.throws an OutOfMemoryError if
+     * insufficient space is available.
      * 
      * @param cl
      *            The class of the array.
      * @param dims
      *            The dimensions of the array.
      * @return The allocated array.
-     * @throws An
-     *             OutOfMemoryError if insufficient space is available.
      */
-    public static Object newInstance(Class cl, int[] dims) {
-
+    public static Object newInstance(Class<?> cl, int[] dims) {
         if (dims.length == 0) {
             // Treat a scalar as a 1-d array of length 1
             dims = new int[]{
                 1
             };
         }
-
         Object o = Array.newInstance(cl, dims);
         if (o == null) {
-            String desc = cl + "[";
-            String comma = "";
-            for (int dim : dims) {
-                desc += comma + dim;
-                comma = ",";
-            }
-            desc += "]";
-            throw new OutOfMemoryError("Unable to allocate array: " + desc);
+            throw new OutOfMemoryError("Unable to allocate array: " + cl + Arrays.toString(dims));
         }
         return o;
     }
@@ -693,7 +503,7 @@ public class ArrayFuncs implements PrimitiveInfo {
     /**
      * Count the number of elements in an array.
      * 
-     * @deprecated May silently underestimate size if number is > 2 G.
+     * @deprecated May silently underestimate size if number is &gt; 2 G.
      */
     @Deprecated
     public static long nLElements(Object o) {

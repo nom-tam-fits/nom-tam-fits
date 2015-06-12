@@ -163,7 +163,7 @@ public enum CXCExt implements IFitsHeader {
     TIMEPIXR("Time stamp reference as bin fraction"),
 
     /**
-     * Telemetry revision number (IP&CL)
+     * Telemetry revision number (IP&amp;CL)
      */
     TLMVER("Telemetry revision number (IP&CL)"),
     /**

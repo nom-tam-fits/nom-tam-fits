@@ -221,10 +221,9 @@ public class CompressTest {
 
     @Test
     public void testZ() throws Exception {
-
         Fits f = new Fits("http://heasarc.gsfc.nasa.gov/FTP/rosat/data/pspc/processed_data/600000/rp600245n00/rp600245n00_im1.fits.Z");
 
-        BasicHDU h = f.readHDU();
+        BasicHDU<?> h = f.readHDU();
         short[][] data = (short[][]) h.getKernel();
         double sum = 0;
         for (short[] element : data) {
@@ -233,6 +232,7 @@ public class CompressTest {
             }
         }
         assertEquals("ZCompress", sum, 91806., 0);
+        f.close();
     }
 
     private int total(short[][] data) {

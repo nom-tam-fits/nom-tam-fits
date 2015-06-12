@@ -31,14 +31,21 @@ package nom.tam.util.test;
  * #L%
  */
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.TestArrayFuncs;
+
+import org.junit.Test;
 
 /**
  * @author Thomas McGlynn
  */
-public class ArrayFuncsTest extends TestCase {
+public class ArrayFuncsTest {
 
     public class CloneTest implements Cloneable {
 
@@ -59,21 +66,10 @@ public class ArrayFuncsTest extends TestCase {
         }
     }
 
-    public ArrayFuncsTest(String testName) {
-        super(testName);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-    }
-
     /**
      * Test of arrayEquals method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testArrayEquals() {
         System.out.println("arrayEquals");
 
@@ -142,6 +138,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of computeSize method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testComputeSize() {
         System.out.println("computeSize");
 
@@ -176,6 +173,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of convertArray method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testConvertArray() {
         System.out.println("convertArray");
 
@@ -210,6 +208,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of copyArray method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testCopyArray() {
         System.out.println("copyArray");
 
@@ -229,6 +228,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of copyInto method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testCopyInto() {
         System.out.println("copyInto");
 
@@ -248,13 +248,14 @@ public class ArrayFuncsTest extends TestCase {
 
         ArrayFuncs.copyInto(x, y);
 
-        assertEquals((double) x[0][0], y[0][0]);
-        assertEquals((double) x[1][2], y[1][2]);
+        assertEquals((double) x[0][0], y[0][0], 0.00001);
+        assertEquals((double) x[1][2], y[1][2], 0.00001);
     }
 
     /**
      * Test of curl method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testCurl() {
         System.out.println("curl");
 
@@ -302,6 +303,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of deepClone method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testDeepClone() {
         int[][] test = {
             {
@@ -329,6 +331,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of doubleArrayEquals method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testDoubleArrayEquals() {
 
         double x[] = {
@@ -355,18 +358,58 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of flatten method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testFlatten() {
-        System.out.println("flatten");
 
         int[][][] test = new int[2][3][4];
+        int[] expected = new int[24];
+        int count = 0;
+        for (int index1 = 0; index1 < test.length; index1++) {
+            for (int index2 = 0; index2 < test[index1].length; index2++) {
+                for (int index3 = 0; index3 < test[index1][index2].length; index3++) {
+                    expected[count] = count;
+                    test[index1][index2][index3] = count++;
+                }
+            }
+        }
 
         int[] result = (int[]) ArrayFuncs.flatten(test);
-        assertEquals(result.length, 24);
+        assertArrayEquals(expected, result);
+    }
+
+    static class Thing {
+
+        int count;
+
+        public Thing(int count) {
+            this.count = count;
+        }
+
+    }
+
+    @Test
+    public void testFlattenObject() {
+
+        Thing[][][] test = new Thing[2][3][4];
+        Thing[] expected = new Thing[24];
+        int count = 0;
+        for (int index1 = 0; index1 < test.length; index1++) {
+            for (int index2 = 0; index2 < test[index1].length; index2++) {
+                for (int index3 = 0; index3 < test[index1][index2].length; index3++) {
+                    expected[count] = new Thing(count);
+                    test[index1][index2][index3] = expected[count];
+                    count++;
+                }
+            }
+        }
+        Thing[] result = (Thing[]) ArrayFuncs.flatten(test);
+        assertArrayEquals(expected, result);
     }
 
     /**
      * Test of floatArrayEquals method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testFloatArrayEquals() {
         float x[] = {
             1f,
@@ -391,6 +434,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of generateArray method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testGenerateArray() {
         System.out.println("generateArray");
 
@@ -410,6 +454,7 @@ public class ArrayFuncsTest extends TestCase {
 
     }
 
+    @Test
     public void testOutOfMemory() {
         OutOfMemoryError error = null;
         try {
@@ -427,6 +472,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of genericClone method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testGenericClone() {
         System.out.println("genericClone");
 
@@ -453,6 +499,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of getBaseArray method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testGetBaseArray() {
 
         int[][][] test = new int[2][3][4];
@@ -465,6 +512,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of getBaseClass method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testGetBaseClass() {
         System.out.println("getBaseClass");
 
@@ -475,6 +523,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of getBaseLength method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testGetBaseLength() {
 
         assertEquals(ArrayFuncs.getBaseLength(new int[2][3]), 4);
@@ -491,6 +540,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of getDimensions method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testGetDimensions() {
         System.out.println("getDimensions");
 
@@ -510,6 +560,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of mimicArray method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testMimicArray() {
         System.out.println("mimicArray");
 
@@ -524,6 +575,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of nElements method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testNElements() {
         System.out.println("nElements");
 
@@ -538,6 +590,7 @@ public class ArrayFuncsTest extends TestCase {
     /**
      * Test of testPattern method, of class nom.tam.util.ArrayFuncs.
      */
+    @Test
     public void testTestPattern() {
         System.out.println("testPattern");
 

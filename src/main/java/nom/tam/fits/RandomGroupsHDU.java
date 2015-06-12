@@ -32,6 +32,8 @@ package nom.tam.fits;
  */
 
 import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.util.ArrayFuncs;
 
@@ -45,6 +47,8 @@ import nom.tam.util.ArrayFuncs;
  * but for a valid FITS file all groups must have the same structure.
  */
 public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
+
+    private static final Logger LOG = Logger.getLogger(RandomGroupsHDU.class.getName());
 
     public static Data encapsulate(Object o) throws FitsException {
         if (o instanceof Object[][]) {
@@ -111,6 +115,8 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * Object[ngr][2] structure with both elements of each group having the same
      * base type and the first element being a simple primitive array. We do not
      * check anything but the first row.
+     * 
+     * @return is this data compatible with Random Groups structure
      */
     public static boolean isData(Object oo) {
         if (oo instanceof Object[][]) {
@@ -132,8 +138,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * Is this a random groups header?
-     * 
+     * @return Is this a random groups header?
      * @param hdr
      *            The header to be tested.
      */
@@ -152,14 +157,18 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * Create FITS data object corresponding to a given header.
+     * @return Create FITS data object corresponding to a given header.
+     * @param header
+     *            header for the data creation
+     * @throws FitsException
+     *             if the operation failed
      */
-    public static Data manufactureData(Header hdr) throws FitsException {
+    public static Data manufactureData(Header header) throws FitsException {
 
-        int gcount = hdr.getIntValue("GCOUNT", -1);
-        int pcount = hdr.getIntValue("PCOUNT", -1);
+        int gcount = header.getIntValue("GCOUNT", -1);
+        int pcount = header.getIntValue("PCOUNT", -1);
 
-        if (!hdr.getBooleanValue("GROUPS") || hdr.getIntValue("NAXIS1", -1) != 0 || gcount < 0 || pcount < 0 || hdr.getIntValue("NAXIS") < 2) {
+        if (!header.getBooleanValue("GROUPS") || header.getIntValue("NAXIS1", -1) != 0 || gcount < 0 || pcount < 0 || header.getIntValue("NAXIS") < 2) {
             throw new FitsException("Invalid Random Groups Parameters");
         }
 
@@ -172,7 +181,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
             dataArray = new Object[0][];
         }
 
-        Object[] sampleRow = generateSampleRow(hdr);
+        Object[] sampleRow = generateSampleRow(header);
         for (int i = 0; i < gcount; i += 1) {
             dataArray[i][0] = ((Object[]) nom.tam.util.ArrayFuncs.deepClone(sampleRow))[0];
             dataArray[i][1] = ((Object[]) nom.tam.util.ArrayFuncs.deepClone(sampleRow))[1];
@@ -182,10 +191,11 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * Make a header point to the given object.
-     * 
+     * @return Make a header point to the given object.
      * @param odata
      *            The random groups data the header should describe.
+     * @throws FitsException
+     *             if the operation failed
      */
     static Header manufactureHeader(Data d) throws FitsException {
 
@@ -198,23 +208,24 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
     }
 
-    /** Create an HDU from the given header and data */
-    public RandomGroupsHDU(Header h, Data d) {
-        this.myHeader = h;
-        this.myData = (RandomGroupsData) d;
+    /**
+     * Create an HDU from the given header and data .
+     * 
+     * @param header
+     *            header to use
+     * @param data
+     *            data to use
+     */
+    public RandomGroupsHDU(Header header, Data data) {
+        this.myHeader = header;
+        this.myData = (RandomGroupsData) data;
     }
 
-    /**
-     * Indicate that a RandomGroupsHDU can come at the beginning of a FITS file.
-     */
     @Override
     protected boolean canBePrimary() {
         return true;
     }
 
-    /**
-     * Display structural information about the current HDU.
-     */
     @Override
     public void info(PrintStream stream) {
 
@@ -256,7 +267,9 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * Create a FITS Data object corresponding to this HDU header.
+     * @return Create a FITS Data object corresponding to this HDU header.
+     * @throws FitsException
+     *             if the operation failed
      */
     @Override
     protected Data manufactureData() throws FitsException {
@@ -267,13 +280,16 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * Move a RandomGroupsHDU to or from the beginning of a FITS file. Note that
      * the FITS standard only supports Random Groups data at the beginning of
      * the file, but we allow it within Image extensions.
+     * 
+     * @param status
+     *            <code>true</code> if the header should be primary
      */
     @Override
     protected void setPrimaryHDU(boolean status) {
         try {
             super.setPrimaryHDU(status);
         } catch (FitsException e) {
-            System.err.println("Unreachable catch in RandomGroupsHDU");
+            LOG.log(Level.SEVERE, "Unreachable catch in RandomGroupsHDU", e);
         }
         if (status) {
             this.myHeader.setSimple(true);

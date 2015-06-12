@@ -33,6 +33,10 @@ package nom.tam.util;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A data table is conventionally considered to consist of rows and columns,
@@ -46,9 +50,215 @@ import java.lang.reflect.Array;
  * read and written using the BufferedDataXputStream classes. The table is
  * represented entirely as a set of one-dimensional primitive arrays. For a
  * given column, a row consists of some number of contiguous elements of the
- * array. Each column is required to have the same number of rows.
+ * array. Each column is required to have the same number of rows. Information
+ * regarding the dimensionality of columns and possible data pointers is
+ * retained for use by clients which can understand them.
  */
-public class ColumnTable implements DataTable {
+public class ColumnTable<T> implements DataTable {
+
+    private static interface PointerAccess<X extends Object> {
+
+        void set(ColumnTable<?> table, X array);
+
+        X get(ColumnTable<?> table);
+
+        void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException;
+
+        void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException;
+
+    }
+
+    private static final Map<PrimitiveTypeEnum, PointerAccess<?>> POINTER_ACCESSORS;
+
+    private static final PointerAccess<?>[] POINTER_ACCESSORS_BY_TYPE = new PointerAccess<?>[256];
+    static {
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.BYTE.type] = new PointerAccess<byte[][]>() {
+
+            @Override
+            public byte[][] get(ColumnTable<?> table) {
+                return table.bytePointers;
+            }
+
+            @Override
+            public void set(ColumnTable<?> table, byte[][] array) {
+                table.bytePointers = array;
+            }
+
+            @Override
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+                os.write(table.bytePointers[index], arrOffset, size);
+            }
+
+            @Override
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+                is.read(table.bytePointers[index], arrOffset, size);
+            }
+        };
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.BOOLEAN.type] = new PointerAccess<boolean[][]>() {
+
+            @Override
+            public boolean[][] get(ColumnTable<?> table) {
+                return table.booleanPointers;
+            }
+
+            @Override
+            public void set(ColumnTable<?> table, boolean[][] array) {
+                table.booleanPointers = array;
+            }
+
+            @Override
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+                os.write(table.booleanPointers[index], arrOffset, size);
+            }
+
+            @Override
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+                is.read(table.booleanPointers[index], arrOffset, size);
+            }
+        };
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.SHORT.type] = new PointerAccess<short[][]>() {
+
+            @Override
+            public short[][] get(ColumnTable<?> table) {
+                return table.shortPointers;
+            }
+
+            @Override
+            public void set(ColumnTable<?> table, short[][] array) {
+                table.shortPointers = array;
+            }
+
+            @Override
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+                os.write(table.shortPointers[index], arrOffset, size);
+            }
+
+            @Override
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+                is.read(table.shortPointers[index], arrOffset, size);
+            }
+        };
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.CHAR.type] = new PointerAccess<char[][]>() {
+
+            @Override
+            public char[][] get(ColumnTable<?> table) {
+                return table.charPointers;
+            }
+
+            @Override
+            public void set(ColumnTable<?> table, char[][] array) {
+                table.charPointers = array;
+            }
+
+            @Override
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+                os.write(table.charPointers[index], arrOffset, size);
+            }
+
+            @Override
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+                is.read(table.charPointers[index], arrOffset, size);
+            }
+        };
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.INT.type] = new PointerAccess<int[][]>() {
+
+            @Override
+            public int[][] get(ColumnTable<?> table) {
+                return table.intPointers;
+            }
+
+            @Override
+            public void set(ColumnTable<?> table, int[][] array) {
+                table.intPointers = array;
+            }
+
+            @Override
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+                os.write(table.intPointers[index], arrOffset, size);
+            }
+
+            @Override
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+                is.read(table.intPointers[index], arrOffset, size);
+            }
+        };
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.LONG.type] = new PointerAccess<long[][]>() {
+
+            @Override
+            public long[][] get(ColumnTable<?> table) {
+                return table.longPointers;
+            }
+
+            @Override
+            public void set(ColumnTable<?> table, long[][] array) {
+                table.longPointers = array;
+            }
+
+            @Override
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+                os.write(table.longPointers[index], arrOffset, size);
+            }
+
+            @Override
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+                is.read(table.longPointers[index], arrOffset, size);
+            }
+        };
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.FLOAT.type] = new PointerAccess<float[][]>() {
+
+            @Override
+            public float[][] get(ColumnTable<?> table) {
+                return table.floatPointers;
+            }
+
+            @Override
+            public void set(ColumnTable<?> table, float[][] array) {
+                table.floatPointers = array;
+            }
+
+            @Override
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+                os.write(table.floatPointers[index], arrOffset, size);
+            }
+
+            @Override
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+                is.read(table.floatPointers[index], arrOffset, size);
+            }
+        };
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.DOUBLE.type] = new PointerAccess<double[][]>() {
+
+            @Override
+            public double[][] get(ColumnTable<?> table) {
+                return table.doublePointers;
+            }
+
+            @Override
+            public void set(ColumnTable<?> table, double[][] array) {
+                table.doublePointers = array;
+            }
+
+            @Override
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+                os.write(table.doublePointers[index], arrOffset, size);
+            }
+
+            @Override
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+                is.read(table.doublePointers[index], arrOffset, size);
+            }
+        };
+        Map<PrimitiveTypeEnum, PointerAccess<?>> pointerAccess = new HashMap<>();
+        pointerAccess.put(PrimitiveTypeEnum.BYTE, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.BYTE.type]);
+        pointerAccess.put(PrimitiveTypeEnum.BOOLEAN, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.BOOLEAN.type]);
+        pointerAccess.put(PrimitiveTypeEnum.CHAR, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.CHAR.type]);
+        pointerAccess.put(PrimitiveTypeEnum.SHORT, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.SHORT.type]);
+        pointerAccess.put(PrimitiveTypeEnum.INT, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.INT.type]);
+        pointerAccess.put(PrimitiveTypeEnum.LONG, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.LONG.type]);
+        pointerAccess.put(PrimitiveTypeEnum.FLOAT, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.FLOAT.type]);
+        pointerAccess.put(PrimitiveTypeEnum.DOUBLE, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.DOUBLE.type]);
+        POINTER_ACCESSORS = Collections.unmodifiableMap(pointerAccess);
+    }
 
     /** The columns to be read/written */
     private Object[] arrays;
@@ -68,7 +278,7 @@ public class ColumnTable implements DataTable {
      */
     private char[] types;
 
-    private Class[] bases;
+    private Class<?>[] bases;
 
     // The following arrays are used to avoid having to check
     // casts during the I/O loops.
@@ -88,6 +298,11 @@ public class ColumnTable implements DataTable {
     private char[][] charPointers;
 
     private boolean[][] booleanPointers;
+
+    /**
+     * Allow the client to provide opaque data.
+     */
+    private T extraState;
 
     /**
      * Create the object after checking consistency.
@@ -116,7 +331,7 @@ public class ColumnTable implements DataTable {
 
         Object[] newArrays = new Object[ncol + 1];
         int[] newSizes = new int[ncol + 1];
-        Class[] newBases = new Class[ncol + 1];
+        Class<?>[] newBases = new Class[ncol + 1];
         char[] newTypes = new char[ncol + 1];
 
         System.arraycopy(this.arrays, 0, newArrays, 0, ncol);
@@ -138,69 +353,26 @@ public class ColumnTable implements DataTable {
 
     // Add a pointer in the pointer lists.
     protected void addPointer(Object data) throws TableException {
-        String classname = data.getClass().getName();
-        char type = classname.charAt(1);
-
-        switch (type) {
-            case 'B': {
-                byte[][] xb = new byte[this.bytePointers.length + 1][];
-                System.arraycopy(this.bytePointers, 0, xb, 0, this.bytePointers.length);
-                xb[this.bytePointers.length] = (byte[]) data;
-                this.bytePointers = xb;
-                break;
-            }
-            case 'Z': {
-                boolean[][] xb = new boolean[this.booleanPointers.length + 1][];
-                System.arraycopy(this.booleanPointers, 0, xb, 0, this.booleanPointers.length);
-                xb[this.booleanPointers.length] = (boolean[]) data;
-                this.booleanPointers = xb;
-                break;
-            }
-            case 'S': {
-                short[][] xb = new short[this.shortPointers.length + 1][];
-                System.arraycopy(this.shortPointers, 0, xb, 0, this.shortPointers.length);
-                xb[this.shortPointers.length] = (short[]) data;
-                this.shortPointers = xb;
-                break;
-            }
-            case 'C': {
-                char[][] xb = new char[this.charPointers.length + 1][];
-                System.arraycopy(this.charPointers, 0, xb, 0, this.charPointers.length);
-                xb[this.charPointers.length] = (char[]) data;
-                this.charPointers = xb;
-                break;
-            }
-            case 'I': {
-                int[][] xb = new int[this.intPointers.length + 1][];
-                System.arraycopy(this.intPointers, 0, xb, 0, this.intPointers.length);
-                xb[this.intPointers.length] = (int[]) data;
-                this.intPointers = xb;
-                break;
-            }
-            case 'J': {
-                long[][] xb = new long[this.longPointers.length + 1][];
-                System.arraycopy(this.longPointers, 0, xb, 0, this.longPointers.length);
-                xb[this.longPointers.length] = (long[]) data;
-                this.longPointers = xb;
-                break;
-            }
-            case 'F': {
-                float[][] xb = new float[this.floatPointers.length + 1][];
-                System.arraycopy(this.floatPointers, 0, xb, 0, this.floatPointers.length);
-                xb[this.floatPointers.length] = (float[]) data;
-                this.floatPointers = xb;
-                break;
-            }
-            case 'D': {
-                double[][] xb = new double[this.doublePointers.length + 1][];
-                System.arraycopy(this.doublePointers, 0, xb, 0, this.doublePointers.length);
-                xb[this.doublePointers.length] = (double[]) data;
-                this.doublePointers = xb;
-                break;
-            }
-            default:
-                throw new TableException("Invalid type for added column:" + classname);
+        PointerAccess<Object> accessor = selectPointerAccessor(data);
+        if (accessor == null) {
+            throw new TableException("Invalid type for added column:" + data.getClass().getComponentType());
+        } else {
+            accessor.set(this, extendArray(accessor.get(this), data));
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private PointerAccess<Object> selectPointerAccessor(Object data) {
+        return (PointerAccess<Object>) POINTER_ACCESSORS.get(PrimitiveTypeEnum.valueOf(data.getClass().getComponentType()));
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T extendArray(T originalArray, Object data) {
+        int length = Array.getLength(originalArray);
+        Object xb = Array.newInstance(originalArray.getClass().getComponentType(), length + 1);
+        System.arraycopy(originalArray, 0, xb, 0, length);
+        Array.set(xb, length, data);
+        return (T) xb;
     }
 
     /**
@@ -317,6 +489,10 @@ public class ColumnTable implements DataTable {
 
     }
 
+    public ColumnTable<T> copy() throws TableException {
+        return new ColumnTable<T>((Object[]) ArrayFuncs.deepClone(this.arrays), this.sizes.clone());
+    }
+
     /**
      * Delete a contiguous set of columns from the table.
      * 
@@ -349,7 +525,7 @@ public class ColumnTable implements DataTable {
 
         Object[] newArrays = new Object[ncol];
         int[] newSizes = new int[ncol];
-        Class[] newBases = new Class[ncol];
+        Class<?>[] newBases = new Class<?>[ncol];
         char[] newTypes = new char[ncol];
 
         System.arraycopy(this.arrays, 0, newArrays, 0, start);
@@ -426,7 +602,7 @@ public class ColumnTable implements DataTable {
      * 
      * @return An array of Class objects, one for each column.
      */
-    public Class[] getBases() {
+    public Class<?>[] getBases() {
         return this.bases;
     }
 
@@ -464,6 +640,11 @@ public class ColumnTable implements DataTable {
         Object x = ArrayFuncs.newInstance(this.bases[col], this.sizes[col]);
         System.arraycopy(this.arrays[col], this.sizes[col] * row, x, 0, this.sizes[col]);
         return x;
+    }
+
+    /** Get the pointer state */
+    public T getExtraState() {
+        return this.extraState;
     }
 
     /**
@@ -536,107 +717,27 @@ public class ColumnTable implements DataTable {
      * appropriate elements of arrays.
      */
     protected void initializePointers() {
-
-        int nbyte, nshort, nint, nlong, nfloat, ndouble, nchar, nboolean;
-
-        // Count how many of each type we have.
-        nbyte = 0;
-        nshort = 0;
-        nint = 0;
-        nlong = 0;
-        nfloat = 0;
-        ndouble = 0;
-        nchar = 0;
-        nboolean = 0;
-
+        int[] columnIndex = new int[256];
         for (int col = 0; col < this.arrays.length; col += 1) {
-            switch (this.types[col]) {
-
-                case 'B':
-                    nbyte += 1;
-                    break;
-                case 'S':
-                    nshort += 1;
-                    break;
-                case 'I':
-                    nint += 1;
-                    break;
-                case 'J':
-                    nlong += 1;
-                    break;
-                case 'F':
-                    nfloat += 1;
-                    break;
-                case 'D':
-                    ndouble += 1;
-                    break;
-                case 'C':
-                    nchar += 1;
-                    break;
-                case 'Z':
-                    nboolean += 1;
-                    break;
-            }
+            columnIndex[this.types[col]]++;
         }
-
         // Allocate the pointer arrays. Note that many will be
         // zero-length.
-
-        this.bytePointers = new byte[nbyte][];
-        this.shortPointers = new short[nshort][];
-        this.intPointers = new int[nint][];
-        this.longPointers = new long[nlong][];
-        this.floatPointers = new float[nfloat][];
-        this.doublePointers = new double[ndouble][];
-        this.charPointers = new char[nchar][];
-        this.booleanPointers = new boolean[nboolean][];
-
+        this.bytePointers = new byte[columnIndex[PrimitiveTypeEnum.BYTE.type]][];
+        this.shortPointers = new short[columnIndex[PrimitiveTypeEnum.SHORT.type]][];
+        this.intPointers = new int[columnIndex[PrimitiveTypeEnum.INT.type]][];
+        this.longPointers = new long[columnIndex[PrimitiveTypeEnum.LONG.type]][];
+        this.floatPointers = new float[columnIndex[PrimitiveTypeEnum.FLOAT.type]][];
+        this.doublePointers = new double[columnIndex[PrimitiveTypeEnum.DOUBLE.type]][];
+        this.charPointers = new char[columnIndex[PrimitiveTypeEnum.CHAR.type]][];
+        this.booleanPointers = new boolean[columnIndex[PrimitiveTypeEnum.BOOLEAN.type]][];
         // Now set the pointers.
-        nbyte = 0;
-        nshort = 0;
-        nint = 0;
-        nlong = 0;
-        nfloat = 0;
-        ndouble = 0;
-        nchar = 0;
-        nboolean = 0;
-
+        Arrays.fill(columnIndex, 0);
         for (int col = 0; col < this.arrays.length; col += 1) {
-            switch (this.types[col]) {
-
-                case 'B':
-                    this.bytePointers[nbyte] = (byte[]) this.arrays[col];
-                    nbyte += 1;
-                    break;
-                case 'S':
-                    this.shortPointers[nshort] = (short[]) this.arrays[col];
-                    nshort += 1;
-                    break;
-                case 'I':
-                    this.intPointers[nint] = (int[]) this.arrays[col];
-                    nint += 1;
-                    break;
-                case 'J':
-                    this.longPointers[nlong] = (long[]) this.arrays[col];
-                    nlong += 1;
-                    break;
-                case 'F':
-                    this.floatPointers[nfloat] = (float[]) this.arrays[col];
-                    nfloat += 1;
-                    break;
-                case 'D':
-                    this.doublePointers[ndouble] = (double[]) this.arrays[col];
-                    ndouble += 1;
-                    break;
-                case 'C':
-                    this.charPointers[nchar] = (char[]) this.arrays[col];
-                    nchar += 1;
-                    break;
-                case 'Z':
-                    this.booleanPointers[nboolean] = (boolean[]) this.arrays[col];
-                    nboolean += 1;
-                    break;
-            }
+            char colType = this.types[col];
+            PointerAccess<?> accessor = POINTER_ACCESSORS_BY_TYPE[colType];
+            Array.set(accessor.get(this), columnIndex[colType], this.arrays[col]);
+            columnIndex[colType]++;
         }
     }
 
@@ -647,79 +748,20 @@ public class ColumnTable implements DataTable {
      *            The input stream to read from.
      */
     public int read(ArrayDataInput is) throws IOException {
-
+        int[] columnIndex = new int[256];
         // While we have not finished reading the table..
         for (int row = 0; row < this.nrow; row += 1) {
-
-            int ibyte = 0;
-            int ishort = 0;
-            int iint = 0;
-            int ilong = 0;
-            int ichar = 0;
-            int ifloat = 0;
-            int idouble = 0;
-            int iboolean = 0;
-
+            Arrays.fill(columnIndex, 0);
             // Loop over the columns within the row.
             for (int col = 0; col < this.arrays.length; col += 1) {
-
                 int arrOffset = this.sizes[col] * row;
                 int size = this.sizes[col];
-
-                switch (this.types[col]) {
-                // In anticpated order of use.
-                    case 'I':
-                        int[] ia = this.intPointers[iint];
-                        iint += 1;
-                        is.read(ia, arrOffset, size);
-                        break;
-
-                    case 'S':
-                        short[] s = this.shortPointers[ishort];
-                        ishort += 1;
-                        is.read(s, arrOffset, size);
-                        break;
-
-                    case 'B':
-                        byte[] b = this.bytePointers[ibyte];
-                        ibyte += 1;
-                        is.read(b, arrOffset, size);
-                        break;
-
-                    case 'F':
-                        float[] f = this.floatPointers[ifloat];
-                        ifloat += 1;
-                        is.read(f, arrOffset, size);
-                        break;
-
-                    case 'D':
-                        double[] d = this.doublePointers[idouble];
-                        idouble += 1;
-                        is.read(d, arrOffset, size);
-                        break;
-
-                    case 'C':
-                        char[] c = this.charPointers[ichar];
-                        ichar += 1;
-                        is.read(c, arrOffset, size);
-                        break;
-
-                    case 'J':
-                        long[] l = this.longPointers[ilong];
-                        ilong += 1;
-                        is.read(l, arrOffset, size);
-                        break;
-
-                    case 'Z':
-
-                        boolean[] bool = this.booleanPointers[iboolean];
-                        iboolean += 1;
-                        is.read(bool, arrOffset, size);
-                        break;
-                }
+                char colType = this.types[col];
+                PointerAccess<?> accessor = POINTER_ACCESSORS_BY_TYPE[colType];
+                accessor.read(this, is, columnIndex[colType], arrOffset, size);
+                columnIndex[colType] += 1;
             }
         }
-
         // All done if we get here...
         return this.rowSize * this.nrow;
     }
@@ -782,6 +824,14 @@ public class ColumnTable implements DataTable {
     }
 
     /**
+     * Store additional information that may be needed by the client to
+     * regenerate initial arrays.
+     */
+    public void setExtraState(T opaque) {
+        this.extraState = opaque;
+    }
+
+    /**
      * Modify a row of data.
      * 
      * @param row
@@ -822,83 +872,24 @@ public class ColumnTable implements DataTable {
      *            the output stream to write to.
      */
     public int write(ArrayDataOutput os) throws IOException {
-
         if (this.rowSize == 0) {
             return 0;
         }
-
+        int[] columnIndex = new int[256];
         for (int row = 0; row < this.nrow; row += 1) {
-
-            int ibyte = 0;
-            int ishort = 0;
-            int iint = 0;
-            int ilong = 0;
-            int ichar = 0;
-            int ifloat = 0;
-            int idouble = 0;
-            int iboolean = 0;
-
+            Arrays.fill(columnIndex, 0);
             // Loop over the columns within the row.
             for (int col = 0; col < this.arrays.length; col += 1) {
 
                 int arrOffset = this.sizes[col] * row;
                 int size = this.sizes[col];
 
-                switch (this.types[col]) {
-                // In anticpated order of use.
-                    case 'I':
-                        int[] ia = this.intPointers[iint];
-                        iint += 1;
-                        os.write(ia, arrOffset, size);
-                        break;
-
-                    case 'S':
-                        short[] s = this.shortPointers[ishort];
-                        ishort += 1;
-                        os.write(s, arrOffset, size);
-                        break;
-
-                    case 'B':
-                        byte[] b = this.bytePointers[ibyte];
-                        ibyte += 1;
-                        os.write(b, arrOffset, size);
-                        break;
-
-                    case 'F':
-                        float[] f = this.floatPointers[ifloat];
-                        ifloat += 1;
-                        os.write(f, arrOffset, size);
-                        break;
-
-                    case 'D':
-                        double[] d = this.doublePointers[idouble];
-                        idouble += 1;
-                        os.write(d, arrOffset, size);
-                        break;
-
-                    case 'C':
-                        char[] c = this.charPointers[ichar];
-                        ichar += 1;
-                        os.write(c, arrOffset, size);
-                        break;
-
-                    case 'J':
-                        long[] l = this.longPointers[ilong];
-                        ilong += 1;
-                        os.write(l, arrOffset, size);
-                        break;
-
-                    case 'Z':
-                        boolean[] bool = this.booleanPointers[iboolean];
-                        iboolean += 1;
-                        os.write(bool, arrOffset, size);
-                        break;
-                }
-
+                char colType = this.types[col];
+                PointerAccess<?> accessor = POINTER_ACCESSORS_BY_TYPE[colType];
+                accessor.write(this, os, columnIndex[colType], arrOffset, size);
+                columnIndex[colType] += 1;
             }
-
         }
-
         // All done if we get here...
         return this.rowSize * this.nrow;
     }

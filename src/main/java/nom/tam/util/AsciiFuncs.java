@@ -35,17 +35,15 @@ package nom.tam.util;
  * #L%
  */
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author tmcglynn
  */
 public final class AsciiFuncs {
 
-    public final static String ASCII = "US-ASCII";
-
     /**
-     * utility class not to be instanciated.
+     * utility class not to be instantiated.
      */
     private AsciiFuncs() {
     }
@@ -57,19 +55,11 @@ public final class AsciiFuncs {
 
     /** Convert to ASCII or return null if not compatible */
     public static String asciiString(byte[] buf, int start, int len) {
-        try {
-            return new String(buf, start, len, AsciiFuncs.ASCII);
-        } catch (java.io.UnsupportedEncodingException ex) {
-            throw new IllegalStateException("AsciiFuncs.asciiString error finding ASCII encoding", ex);
-        }
+        return new String(buf, start, len, StandardCharsets.US_ASCII);
     }
 
     /** Convert an ASCII string to bytes */
     public static byte[] getBytes(String in) {
-        try {
-            return in.getBytes(AsciiFuncs.ASCII);
-        } catch (UnsupportedEncodingException ex) {
-            throw new IllegalStateException("AsciiFuncs.asciiString error finding ASCII encoding", ex);
-        }
+        return in.getBytes(StandardCharsets.US_ASCII);
     }
 }

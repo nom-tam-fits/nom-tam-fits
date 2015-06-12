@@ -37,7 +37,6 @@ import java.io.IOException;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.RandomAccess;
 
 /**
  * This class provides a simple holder for data which is not handled by other

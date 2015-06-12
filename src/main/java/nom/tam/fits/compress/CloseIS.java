@@ -37,8 +37,12 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CloseIS extends FilterInputStream {
+
+    private static Logger LOG = Logger.getLogger(CloseIS.class.getName());
 
     private static final int COPY_BUFFER_SIZE = 64 * 1024;
 
@@ -114,6 +118,7 @@ public class CloseIS extends FilterInputStream {
         try {
             return (result = super.read());
         } catch (IOException e) {
+            result = -1;
             throw e;
         } finally {
             handledOccuredException(result);
@@ -128,8 +133,7 @@ public class CloseIS extends FilterInputStream {
                 copier.join();
                 exitValue = proc.exitValue();
             } catch (Exception e) {
-                "".toString();
-                // ignore
+                LOG.log(Level.WARNING, "could not join the stream processes", e);
             }
         }
         if (exception != null || exitValue != 0) {

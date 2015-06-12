@@ -107,9 +107,9 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      * 
      * @return An unfilled Data object which can be used to read in the data for
      *         this HDU.
-     * @exception FitsException
-     *                if the Data object could not be created from this HDU's
-     *                Header
+     * @throws FitsException
+     *             if the Data object could not be created from this HDU's
+     *             Header
      */
     public static Data manufactureData(Header hdr) throws FitsException {
         return new AsciiTable(hdr);
@@ -130,8 +130,6 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      *            the template specifying the ascii table.
      * @param d
      *            the FITS data structure containing the table data.
-     * @exception FitsException
-     *                if there was a problem with the header.
      */
     public AsciiTableHDU(Header h, Data d) {
         super((AsciiTable) d);
@@ -142,15 +140,13 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     /** Add a column */
     @Override
     public int addColumn(Object newCol) throws FitsException {
-
         this.myData.addColumn(newCol);
-
         // Move the iterator to point after all the data describing
         // the previous column.
 
         Cursor<String, HeaderCard> iter = this.myHeader.positionAfterIndex("TBCOL", this.myData.getNCols());
 
-        int rowlen = this.myData.addColInfo(getNCols(), iter);
+        int rowlen = this.myData.addColInfo(getNCols() - 1, iter);
         int oldRowlen = this.myHeader.getIntValue("NAXIS1");
         this.myHeader.setNaxis(1, rowlen + oldRowlen);
 
@@ -169,14 +165,6 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     @Override
     public String[] columnKeyStems() {
         return KEY_STEMS;
-    }
-
-    /**
-     * Return the FITS data structure associated with this HDU.
-     */
-    @Override
-    public Data getData() {
-        return this.myData;
     }
 
     /**

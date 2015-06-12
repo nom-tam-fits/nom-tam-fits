@@ -139,6 +139,7 @@ public class FitsSubString {
      * skip over the specified number of characters.
      * 
      * @param count
+     *            the number of chars to skip
      */
     public void skip(int count) {
         this.offset += count;

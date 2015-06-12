@@ -140,6 +140,6 @@ public class RandomGroupsTest {
 
         Assert.assertTrue(groupInfo.indexOf("Number of groups:20") >= 0);
         Assert.assertTrue(groupInfo.indexOf("Parameters: float[3]") >= 0);
-        Assert.assertTrue(groupInfo.indexOf("Data:float[20][20]") >= 0);
+        Assert.assertTrue(groupInfo.indexOf("Data:float[20, 20]") >= 0);
     }
 }

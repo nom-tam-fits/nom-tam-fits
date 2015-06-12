@@ -209,9 +209,6 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
      * @param pos
      *            The element before which the current element be placed. If pos
      *            is null put the element at the end of the list.
-     * @param key
-     *            The hash key for the new object. This may be null for an
-     *            unkeyed entry.
      * @param reference
      *            The actual object being stored.
      */

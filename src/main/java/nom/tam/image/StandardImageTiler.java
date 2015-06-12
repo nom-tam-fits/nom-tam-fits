@@ -88,13 +88,13 @@ public abstract class StandardImageTiler implements ImageTiler {
         return false;
     }
 
-    private final RandomAccess f;
+    private final RandomAccess randomAccessFile;
 
     private final long fileOffset;
 
     private final int[] dims;
 
-    private final Class base;
+    private final Class<?> base;
 
     /**
      * Create a tiler.
@@ -111,8 +111,8 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param base
      *            The base class (should be a primitive type) of the image.
      */
-    public StandardImageTiler(RandomAccess f, long fileOffset, int[] dims, Class base) {
-        this.f = f;
+    public StandardImageTiler(RandomAccess f, long fileOffset, int[] dims, Class<?> base) {
+        this.randomAccessFile = f;
         this.fileOffset = fileOffset;
         this.dims = dims;
         this.base = base;
@@ -129,25 +129,27 @@ public abstract class StandardImageTiler implements ImageTiler {
      *            The index into the output array.
      * @param segment
      *            The number of elements to be read for this segment.
+     * @throws IOException
+     *             if the underlying stream failed
      */
     protected void fillFileData(Object output, int delta, int outputOffset, int segment) throws IOException {
 
-        this.f.seek(this.fileOffset + delta);
+        this.randomAccessFile.seek(this.fileOffset + delta);
 
         if (this.base == float.class) {
-            this.f.read((float[]) output, outputOffset, segment);
+            this.randomAccessFile.read((float[]) output, outputOffset, segment);
         } else if (this.base == int.class) {
-            this.f.read((int[]) output, outputOffset, segment);
+            this.randomAccessFile.read((int[]) output, outputOffset, segment);
         } else if (this.base == short.class) {
-            this.f.read((short[]) output, outputOffset, segment);
+            this.randomAccessFile.read((short[]) output, outputOffset, segment);
         } else if (this.base == double.class) {
-            this.f.read((double[]) output, outputOffset, segment);
+            this.randomAccessFile.read((double[]) output, outputOffset, segment);
         } else if (this.base == byte.class) {
-            this.f.read((byte[]) output, outputOffset, segment);
+            this.randomAccessFile.read((byte[]) output, outputOffset, segment);
         } else if (this.base == char.class) {
-            this.f.read((char[]) output, outputOffset, segment);
+            this.randomAccessFile.read((char[]) output, outputOffset, segment);
         } else if (this.base == long.class) {
-            this.f.read((long[]) output, outputOffset, segment);
+            this.randomAccessFile.read((long[]) output, outputOffset, segment);
         } else {
             throw new IOException("Invalid type for tile array");
         }
@@ -214,6 +216,8 @@ public abstract class StandardImageTiler implements ImageTiler {
      *            The indices of the corner of the image.
      * @param lengths
      *            The dimensions of the subset.
+     * @throws IOException
+     *             if the underlying stream failed
      */
     protected void fillTile(Object data, Object o, int[] dims, int[] corners, int[] lengths) throws IOException {
 
@@ -225,7 +229,7 @@ public abstract class StandardImageTiler implements ImageTiler {
         System.arraycopy(corners, 0, posits, 0, n);
         long currentOffset = 0;
         if (data == null) {
-            currentOffset = this.f.getFilePointer();
+            currentOffset = this.randomAccessFile.getFilePointer();
         }
 
         int outputOffset = 0;
@@ -278,30 +282,35 @@ public abstract class StandardImageTiler implements ImageTiler {
 
         } while (incrementPosition(corners, posits, lengths));
         if (data == null) {
-            this.f.seek(currentOffset);
+            this.randomAccessFile.seek(currentOffset);
         }
     }
 
     /**
      * Read the entire image into a multidimensional array.
+     * 
+     * @throws IOException
+     *             if the underlying stream failed
      */
     @Override
     public Object getCompleteImage() throws IOException {
 
-        if (this.f == null) {
+        if (this.randomAccessFile == null) {
             throw new IOException("Attempt to read from null file");
         }
-        long currentOffset = this.f.getFilePointer();
+        long currentOffset = this.randomAccessFile.getFilePointer();
         Object o = ArrayFuncs.newInstance(this.base, this.dims);
-        this.f.seek(this.fileOffset);
-        this.f.readLArray(o);
-        this.f.seek(currentOffset);
+        this.randomAccessFile.seek(this.fileOffset);
+        this.randomAccessFile.readLArray(o);
+        this.randomAccessFile.seek(currentOffset);
         return o;
     }
 
     /**
-     * See if we can get the image data from memory. This may be overriden by
+     * See if we can get the image data from memory. This may be overridden by
      * other classes, notably in nom.tam.fits.ImageData.
+     * 
+     * @return the image data
      */
     protected abstract Object getMemoryImage();
 
@@ -313,6 +322,8 @@ public abstract class StandardImageTiler implements ImageTiler {
      *            The starting corner (using 0 as the start) for the image.
      * @param lengths
      *            The length requested in each dimension.
+     * @throws IOException
+     *             if the underlying stream failed
      */
     @Override
     public Object getTile(int[] corners, int[] lengths) throws IOException {
@@ -350,13 +361,15 @@ public abstract class StandardImageTiler implements ImageTiler {
      *            The corners of the tile.
      * @param lengths
      *            The dimensions of the tile.
+     * @throws IOException
+     *             if the underlying stream failed
      */
     @Override
     public void getTile(Object outArray, int[] corners, int[] lengths) throws IOException {
 
         Object data = getMemoryImage();
 
-        if (data == null && this.f == null) {
+        if (data == null && this.randomAccessFile == null) {
             throw new IOException("No data source for tile subset");
         }
         fillTile(data, outArray, this.dims, corners, lengths);

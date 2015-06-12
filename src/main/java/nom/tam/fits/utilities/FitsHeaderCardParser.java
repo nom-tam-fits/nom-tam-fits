@@ -150,7 +150,7 @@ public class FitsHeaderCardParser {
      * 
      * @param card
      *            the card to parse.
-     * @return
+     * @return dot separated key list
      */
     public static String parseCardKey(String card) {
         int indexOfEquals = card.indexOf('=');

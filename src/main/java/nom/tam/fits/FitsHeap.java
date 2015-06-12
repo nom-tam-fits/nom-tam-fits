@@ -40,7 +40,6 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
-import nom.tam.util.RandomAccess;
 
 /**
  * This class supports the FITS heap. This is currently used for variable length
@@ -57,21 +56,6 @@ public class FitsHeap implements FitsElement {
      * The current used size of the buffer <= heap.length
      */
     private int heapSize;
-
-    /**
-     * The offset within a file where the heap begins
-     */
-    private long fileOffset = -1;
-
-    /**
-     * Has the heap ever been expanded?
-     */
-    private boolean expanded = false;
-
-    /**
-     * The stream the last read used
-     */
-    private ArrayDataInput input;
 
     /**
      * Our current offset into the heap. When we read from the heap we use a
@@ -103,6 +87,21 @@ public class FitsHeap implements FitsElement {
     }
 
     /**
+     * Add a copy constructor to allow us to duplicate a heap. This would be
+     * necessary if we wanted to copy an HDU that included variable length
+     * columns.
+     */
+    FitsHeap copy() {
+        FitsHeap copy = new FitsHeap(0);
+        if (this.heap != null) {
+            copy.heap = this.heap.clone();
+        }
+        copy.heapSize = this.heapSize;
+        copy.heapOffset = this.heapOffset;
+        return copy;
+    }
+
+    /**
      * Check if the Heap can accommodate a given requirement. If not expand the
      * heap.
      */
@@ -113,7 +112,6 @@ public class FitsHeap implements FitsElement {
         allocate();
 
         if (this.heapSize + need > this.heap.length) {
-            this.expanded = true;
             int newlen = (this.heapSize + need) * 2;
             if (newlen < 16384) {
                 newlen = 16384;
@@ -131,8 +129,11 @@ public class FitsHeap implements FitsElement {
      *            The offset at which the data begins.
      * @param array
      *            The array to be extracted.
+     * @throws FitsException
+     *             if the operation failed
      */
     public void getData(int offset, Object array) throws FitsException {
+        // System.out.println("FitsHeap getting at:"+offset+" to "+array+" "+heapOffset);
 
         allocate();
         try {
@@ -156,7 +157,7 @@ public class FitsHeap implements FitsElement {
      */
     @Override
     public long getFileOffset() {
-        return this.fileOffset;
+        throw new IllegalStateException("FitsHeap should only be reset from inside its parent, never alone");
     }
 
     /**
@@ -201,12 +202,6 @@ public class FitsHeap implements FitsElement {
      */
     @Override
     public void read(ArrayDataInput str) throws FitsException {
-
-        if (str instanceof RandomAccess) {
-            this.fileOffset = FitsUtil.findOffset(str);
-            this.input = str;
-        }
-
         if (this.heapSize > 0) {
             allocate();
             try {
@@ -221,39 +216,21 @@ public class FitsHeap implements FitsElement {
 
     @Override
     public boolean reset() {
-        try {
-            FitsUtil.reposition(this.input, this.fileOffset);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        throw new IllegalStateException("FitsHeap should only be reset from inside its parent, never alone");
     }
 
-    /**
-     * Attempt to rewrite the heap with the current contents. Note that no
-     * checking is done to make sure that the heap does not extend past its
-     * prior boundaries.
-     */
     @Override
     public void rewrite() throws IOException, FitsException {
-        allocate();
-        if (rewriteable()) {
-            ArrayDataOutput str = (ArrayDataOutput) this.input;
-            FitsUtil.reposition(str, this.fileOffset);
-            write(str);
-        } else {
-            throw new FitsException("Invalid attempt to rewrite FitsHeap");
-        }
-
+        throw new FitsException("FitsHeap should only be rewritten from inside its parent, never alone");
     }
 
     @Override
     public boolean rewriteable() {
-        return this.fileOffset >= 0 && this.input instanceof ArrayDataOutput && !this.expanded;
+        return false;
     }
 
     /**
-     * Return the size of the Heap
+     * @return the size of the Heap
      */
     public int size() {
         return this.heapSize;

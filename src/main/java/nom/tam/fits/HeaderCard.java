@@ -94,8 +94,6 @@ public class HeaderCard implements CursorValue<String> {
      * 
      * @param card
      *            the 80 character card image
-     * @throws IOException
-     * @throws TruncatedFileException
      */
     public static HeaderCard create(String card) {
         try {
@@ -448,21 +446,21 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * Return the comment from this card
+     * @return the comment from this card
      */
     public String getComment() {
         return this.comment;
     }
 
     /**
-     * Return the keyword from this card
+     * @return the keyword from this card
      */
     public String getKey() {
         return this.key;
     }
 
     /**
-     * Return the value from this card
+     * @return the value from this card
      */
     public String getValue() {
         return this.value;

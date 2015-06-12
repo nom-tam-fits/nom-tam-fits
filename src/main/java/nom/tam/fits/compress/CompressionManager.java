@@ -53,6 +53,8 @@ public class CompressionManager {
      * @return A stream which wraps the input stream and decompresses it. If the
      *         input stream is not compressed, a pushback input stream wrapping
      *         the original stream is returned.
+     * @throws FitsException
+     *             when the stream could not be read or decompressed
      */
     public static InputStream decompress(InputStream compressed) throws FitsException {
 
@@ -81,12 +83,19 @@ public class CompressionManager {
         }
     }
 
-    /** Is a file compressed? */
-    public static boolean isCompressed(File test) {
+    /**
+     * Is a file compressed? (the magic number in the first 2 bytes is used to
+     * detect the compression.
+     * 
+     * @param file
+     *            file to test for compression algorithms
+     * @return true if the file is compressed
+     */
+    public static boolean isCompressed(File file) {
         InputStream fis = null;
         try {
-            if (test.exists()) {
-                fis = new FileInputStream(test);
+            if (file.exists()) {
+                fis = new FileInputStream(file);
                 int mag1 = fis.read();
                 int mag2 = fis.read();
                 fis.close();
@@ -109,7 +118,12 @@ public class CompressionManager {
     }
 
     /**
-     * Check if a file seems to be compressed.
+     * Is a file compressed? (the magic number in the first 2 bytes is used to
+     * detect the compression.
+     * 
+     * @param filename
+     *            of the file to test for compression algorithms
+     * @return true if the file is compressed
      */
     public static boolean isCompressed(String filename) {
         if (filename == null) {

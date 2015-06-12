@@ -35,10 +35,17 @@ import java.io.PrintStream;
 
 import nom.tam.util.ArrayFuncs;
 
-/** Holder for unknown data types. */
+/**
+ * Holder for unknown data types.
+ */
 public class UndefinedHDU extends BasicHDU<UndefinedData> {
 
-    /** Encapsulate an object as an ImageHDU. */
+    /**
+     * Encapsulate an object as an ImageHDU.
+     * 
+     * @throws FitsException
+     *             if the operation failed
+     */
     public static Data encapsulate(Object o) throws FitsException {
         return new UndefinedData(o);
     }
@@ -50,13 +57,17 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      * 
      * @param o
      *            The Object being tested.
+     * @return true if o can be an Undefined FITS block.
      */
     public static boolean isData(Object o) {
         return ArrayFuncs.computeLSize(o) > 0;
     }
 
-    /*
+    /**
      * Check if we can find the length of the data for this header.
+     * 
+     * @param hdr
+     *            header to check.
      * @return <CODE>true</CODE> if this HDU has a valid header.
      */
     public static boolean isHeader(Header hdr) {
@@ -71,12 +82,11 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     }
 
     /**
-     * Create a header that describes the given image data.
-     * 
+     * @return Create a header that describes the given image data.
      * @param d
      *            The image to be described.
-     * @exception FitsException
-     *                if the object does not contain valid image data.
+     * @throws FitsException
+     *             if the object does not contain valid image data.
      */
     public static Header manufactureHeader(Data d) throws FitsException {
 
@@ -93,8 +103,8 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      *            the header for this HDU
      * @param d
      *            the data used to build the image.
-     * @exception FitsException
-     *                if there was a problem with the data.
+     * @throws FitsException
+     *             if there was a problem with the data.
      */
     public UndefinedHDU(Header h, Data d) throws FitsException {
         this.myData = (UndefinedData) d;
@@ -102,9 +112,6 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
 
     }
 
-    /**
-     * Print out some information about this HDU.
-     */
     @Override
     public void info(PrintStream stream) {
         stream.println("  Unhandled/Undefined/Unknown Type");
@@ -112,14 +119,6 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
         stream.println("  Apparent size:" + this.myData.getTrueSize());
     }
 
-    /**
-     * Create a Data object to correspond to the header description.
-     * 
-     * @return An unfilled Data object which can be used to read in the data for
-     *         this HDU.
-     * @exception FitsException
-     *                if the image extension could not be created.
-     */
     @Override
     protected Data manufactureData() throws FitsException {
         return manufactureData(this.myHeader);

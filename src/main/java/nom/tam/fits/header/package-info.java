@@ -22,7 +22,7 @@
  * {@link nom.tam.fits.header} {@link nom.tam.fits.header.extra}
  *
  * Currently we include:
- *
+ * </p>
  * <pre>
  * Standard
  *    source: [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) |
@@ -49,7 +49,6 @@
  *   source: [http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)  |
  * </pre>
  *
- * </p>
  * <p>
  * All duplicates where eliminated from enumerations including the enumerations
  * that where already defined in one of the "parent" standards. So always use a

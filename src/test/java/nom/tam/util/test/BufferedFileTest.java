@@ -37,13 +37,20 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.lang.reflect.Constructor;
 
+import junit.framework.Assert;
+import nom.tam.fits.compress.CloseIS;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.AsciiFuncs;
@@ -66,6 +73,140 @@ import org.junit.Test;
  * classes, or any combination thereof.
  */
 public class BufferedFileTest {
+
+    private static final class InputStreamControl extends ByteArrayInputStream {
+
+        boolean started = false;
+
+        boolean closed = false;
+
+        boolean block = true;
+
+        boolean exception = false;
+
+        private InputStreamControl() {
+            super(new byte[5]);
+        }
+
+        @Override
+        public int read() {
+            waitAndThrow();
+            return super.read();
+        }
+
+        @Override
+        public int read(byte[] b) throws IOException {
+            waitAndThrow();
+            return super.read(b);
+        }
+
+        @Override
+        public synchronized int read(byte[] b, int off, int len) {
+            waitAndThrow();
+            return super.read(b, off, len);
+        }
+
+        private void waitAndThrow() {
+            started = true;
+            while (block) {
+                sleep();
+            }
+            if (exception) {
+                BufferedFileTest.<RuntimeException> throwAny(new IOException("" + hashCode()));
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            closed = true;
+        }
+    }
+
+    private static final class OutputStreamControl extends ByteArrayOutputStream {
+
+        boolean started = false;
+
+        boolean closed = false;
+
+        boolean block = true;
+
+        boolean exception = false;
+
+        public void close() throws IOException {
+            closed = true;
+        }
+
+        @Override
+        public void write(byte[] b) throws IOException {
+            waitAndThrow();
+            super.write(b);
+        }
+
+        public void write(byte[] b, int off, int len) {
+            waitAndThrow();
+            super.write(b, off, len);
+        }
+
+        private void waitAndThrow() {
+            started = true;
+            while (block) {
+                sleep();
+            }
+            if (exception) {
+                BufferedFileTest.<RuntimeException> throwAny(new IOException("" + hashCode()));
+            }
+        }
+    }
+
+    private static final class ProcessSimulator extends Process {
+
+        private OutputStreamControl out = new OutputStreamControl();
+
+        private InputStreamControl in = new InputStreamControl();
+
+        private InputStreamControl err = new InputStreamControl();
+
+        @Override
+        public int waitFor() throws InterruptedException {
+            return 0;
+        }
+
+        @Override
+        public OutputStream getOutputStream() {
+            return out;
+        }
+
+        @Override
+        public InputStream getInputStream() {
+            return in;
+        }
+
+        @Override
+        public InputStream getErrorStream() {
+            return err;
+        }
+
+        @Override
+        public int exitValue() {
+            return 0;
+        }
+
+        @Override
+        public void destroy() {
+        }
+    }
+
+    private static void sleep() {
+        try {
+            Thread.sleep(10L);
+        } catch (InterruptedException e) {
+            Assert.fail("thread interupted");
+        }
+    }
+
+    private static <E extends Throwable> void throwAny(Throwable e) throws E {
+        throw (E) e;
+    }
 
     private long lastTime;
 
@@ -871,4 +1012,54 @@ public class BufferedFileTest {
 
     }
 
+    @Test
+    public void testAsciiFuncs() throws Exception {
+        Constructor<?>[] constrs = AsciiFuncs.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+
+    @Test
+    public void testCloseIS() throws Exception {
+        final ProcessSimulator proc = new ProcessSimulator();
+
+        InputStreamControl compressed = new InputStreamControl();
+        CloseIS closeIs = new CloseIS(proc, compressed);
+        long start = System.currentTimeMillis();
+        while (!proc.err.started || !compressed.started) {
+            Thread.sleep(10L);
+            if (System.currentTimeMillis() - start > 2000) {
+                Assert.fail("not all streams started");
+            }
+        }
+        compressed.exception = true;
+        proc.in.exception = true;
+        compressed.block = proc.err.block = proc.in.block = proc.out.block = false;
+        start = System.currentTimeMillis();
+        while (!compressed.closed) {
+            Thread.sleep(10L);
+            if (System.currentTimeMillis() - start > 2000) {
+                Assert.fail("not all streams closed");
+            }
+        }
+        IOException expected = null;
+        try {
+            closeIs.read();
+        } catch (IOException e) {
+            expected = e;
+        }
+        Assert.assertNotNull(expected);
+        // check if this was the original exception of the compressed stream.
+        Assert.assertEquals("" + compressed.hashCode(), expected.getMessage());
+        closeIs.close();
+        start = System.currentTimeMillis();
+        while (!proc.in.closed || !proc.err.closed || !proc.out.closed || !compressed.closed) {
+            Thread.sleep(10L);
+            if (System.currentTimeMillis() - start > 2000) {
+                Assert.fail("not all streams closed");
+            }
+        }
+    }
 }

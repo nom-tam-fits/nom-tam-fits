@@ -115,8 +115,8 @@ public class ImageData extends Data {
      * 
      * @param h
      *            header to be used as a template.
-     * @exception FitsException
-     *                if there was a problem with the header description.
+     * @throws FitsException
+     *             if there was a problem with the header description.
      */
     public ImageData(Header h) throws FitsException {
 
@@ -141,8 +141,8 @@ public class ImageData extends Data {
      * 
      * @param head
      *            The FITS header
-     * @exception FitsException
-     *                if the object does not contain valid image data.
+     * @throws FitsException
+     *             if the object does not contain valid image data.
      */
     @Override
     protected void fillHeader(Header head) throws FitsException {

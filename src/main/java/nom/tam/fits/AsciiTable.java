@@ -65,7 +65,7 @@ public class AsciiTable extends AbstractTableData {
     private String[] nulls;
 
     /** The type of data in the field */
-    private Class[] types;
+    private Class<?>[] types;
 
     /** The offset from the beginning of the row at which the field starts */
     private int[] offsets;
@@ -112,6 +112,7 @@ public class AsciiTable extends AbstractTableData {
      * @param hdr
      *            The header describing the table
      * @throws FitsException
+     *             if the operation failed
      */
     public AsciiTable(Header hdr) throws FitsException {
 
@@ -165,7 +166,7 @@ public class AsciiTable extends AbstractTableData {
         }
     }
 
-    int addColInfo(int col, Cursor iter) throws HeaderCardException {
+    int addColInfo(int col, Cursor<String, HeaderCard> iter) throws HeaderCardException {
 
         String tform = null;
         if (this.types[col] == String.class) {
@@ -196,6 +197,7 @@ public class AsciiTable extends AbstractTableData {
      *            or String[n] array.
      * @return the number of fields in the table
      * @throws FitsException
+     *             if the operation failed
      */
 
     @Override
@@ -238,6 +240,7 @@ public class AsciiTable extends AbstractTableData {
      *            the requested length for the column
      * @return the number of columns after this one is added.
      * @throws FitsException
+     *             if the operation failed
      */
     public int addColumn(Object newCol, int length) throws FitsException {
 
@@ -252,7 +255,7 @@ public class AsciiTable extends AbstractTableData {
         Object[] newData = new Object[this.nFields + 1];
         int[] newOffsets = new int[this.nFields + 1];
         int[] newLengths = new int[this.nFields + 1];
-        Class[] newTypes = new Class[this.nFields + 1];
+        Class<?>[] newTypes = new Class[this.nFields + 1];
         String[] newNulls = new String[this.nFields + 1];
 
         System.arraycopy(this.data, 0, newData, 0, this.nFields);
@@ -302,37 +305,36 @@ public class AsciiTable extends AbstractTableData {
      *            The new row data.
      * @return The number of rows after this is added.
      * @throws FitsException
+     *             if the operation failed
      */
 
     @Override
     public int addRow(Object[] newRow) throws FitsException {
-
-        // If there are no fields, then this is the
-        // first row. We need to add in each of the columns
-        // to get the descriptors set up.
-
-        if (this.nFields == 0) {
-            for (Object element : newRow) {
-                addColumn(element);
-            }
-        } else {
-            for (int i = 0; i < this.nFields; i += 1) {
-                try {
+        try {
+            // If there are no fields, then this is the
+            // first row. We need to add in each of the columns
+            // to get the descriptors set up.
+            if (this.nFields == 0) {
+                for (Object element : newRow) {
+                    addColumn(element);
+                }
+            } else {
+                for (int i = 0; i < this.nFields; i += 1) {
                     Object o = ArrayFuncs.newInstance(this.types[i], this.nRows + 1);
                     System.arraycopy(this.data[i], 0, o, 0, this.nRows);
                     System.arraycopy(newRow[i], 0, o, this.nRows, 1);
                     this.data[i] = o;
-                } catch (Exception e) {
-                    throw new FitsException("Error adding row:" + e);
                 }
+                this.nRows += 1;
             }
-            this.nRows += 1;
+            // Invalidate the buffer
+            this.buffer = null;
+            return this.nRows;
+        } catch (FitsException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new FitsException("Error deleting row:" + e.getMessage(), e);
         }
-
-        // Invalidate the buffer
-        this.buffer = null;
-
-        return this.nRows;
     }
 
     /**
@@ -343,6 +345,7 @@ public class AsciiTable extends AbstractTableData {
      * @param len
      *            The number of columns to be deleted.
      * @throws FitsException
+     *             if the operation failed
      */
 
     @Override
@@ -352,7 +355,7 @@ public class AsciiTable extends AbstractTableData {
         Object[] newData = new Object[this.nFields - len];
         int[] newOffsets = new int[this.nFields - len];
         int[] newLengths = new int[this.nFields - len];
-        Class[] newTypes = new Class[this.nFields - len];
+        Class<?>[] newTypes = new Class[this.nFields - len];
         String[] newNulls = new String[this.nFields - len];
 
         // Copy in the initial stuff...
@@ -416,19 +419,19 @@ public class AsciiTable extends AbstractTableData {
      * @param len
      *            The number of rows to be deleted.
      * @throws FitsException
+     *             if the operation failed
      */
 
     @Override
     public void deleteRows(int start, int len) throws FitsException {
-
-        if (this.nRows == 0 || start < 0 || start >= this.nRows || len <= 0) {
-            return;
-        }
-        if (start + len > this.nRows) {
-            len = this.nRows - start;
-        }
-        ensureData();
         try {
+            if (this.nRows == 0 || start < 0 || start >= this.nRows || len <= 0) {
+                return;
+            }
+            if (start + len > this.nRows) {
+                len = this.nRows - start;
+            }
+            ensureData();
             for (int i = 0; i < this.nFields; i += 1) {
                 Object o = ArrayFuncs.newInstance(this.types[i], this.nRows - len);
                 System.arraycopy(this.data[i], 0, o, 0, start);
@@ -436,8 +439,10 @@ public class AsciiTable extends AbstractTableData {
                 this.data[i] = o;
             }
             this.nRows -= len;
+        } catch (FitsException e) {
+            throw e;
         } catch (Exception e) {
-            throw new FitsException("Error deleting row:" + e);
+            throw new FitsException("Error deleting row:" + e.getMessage(), e);
         }
     }
 
@@ -456,6 +461,8 @@ public class AsciiTable extends AbstractTableData {
      *            Which index into that element is to be modified?
      * @param nullFld
      *            What string signifies a null element?
+     * @throws FitsException
+     *             if the operation failed
      */
     private boolean extractElement(int offset, int length, Object[] array, int col, int row, String nullFld) throws FitsException {
 
@@ -498,14 +505,13 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public void fillHeader(Header hdr) {
-
         try {
             hdr.setXtension("TABLE");
             hdr.setBitpix(8);
             hdr.setNaxes(2);
             hdr.setNaxis(1, this.rowLen);
             hdr.setNaxis(2, this.nRows);
-            Cursor iter = hdr.iterator();
+            Cursor<String, HeaderCard> iter = hdr.iterator();
             iter.setKey("NAXIS2");
             iter.next();
             iter.add(new HeaderCard("PCOUNT", 0, "ntf::asciitable:pcount:1"));
@@ -515,11 +521,9 @@ public class AsciiTable extends AbstractTableData {
             for (int i = 0; i < this.nFields; i += 1) {
                 addColInfo(i, iter);
             }
-
         } catch (HeaderCardException e) {
-            System.err.println("ImpossibleException in fillHeader:" + e);
+            LOG.log(Level.SEVERE, "ImpossibleException in fillHeader:" + e.getMessage(), e);
         }
-
     }
 
     /**
@@ -546,6 +550,7 @@ public class AsciiTable extends AbstractTableData {
      *            The 0-indexed column to be returned.
      * @return The column object -- typically as a 1-d array.
      * @throws FitsException
+     *             if the operation failed
      */
 
     @Override
@@ -557,6 +562,9 @@ public class AsciiTable extends AbstractTableData {
     /**
      * be sure that the data is filled. because the getData already tests null
      * the getData is called without check.
+     * 
+     * @throws FitsException
+     *             if the operation failed
      */
     private void ensureData() throws FitsException {
         getData();
@@ -568,6 +576,7 @@ public class AsciiTable extends AbstractTableData {
      * 
      * @return The table data as an Object[] array.
      * @throws FitsException
+     *             if the operation failed
      */
 
     @Override
@@ -587,7 +596,7 @@ public class AsciiTable extends AbstractTableData {
                     getBuffer(this.nRows * this.rowLen, this.fileOffset);
 
                 } catch (IOException e) {
-                    throw new FitsException("Error in deferred read -- file closed prematurely?:" + e);
+                    throw new FitsException("Error in deferred read -- file closed prematurely?:" + e.getMessage(), e);
                 }
                 FitsUtil.reposition(this.currInput, newOffset);
             }
@@ -663,6 +672,7 @@ public class AsciiTable extends AbstractTableData {
      *            The 0-indexed row to be returned.
      * @return A row of data.
      * @throws FitsException
+     *             if the operation failed
      */
 
     @Override
@@ -716,6 +726,9 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Read a single element from the table. This returns an array of dimension
      * 1.
+     * 
+     * @throws FitsException
+     *             if the operation failed
      */
     private Object parseSingleElement(int row, int col) throws FitsException {
 
@@ -742,6 +755,9 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Read a single row from the table. This returns a set of arrays of
      * dimension 1.
+     * 
+     * @throws FitsException
+     *             if the operation failed
      */
     private Object[] parseSingleRow(int row) throws FitsException {
 
@@ -770,40 +786,29 @@ public class AsciiTable extends AbstractTableData {
      * random access device
      * 
      * @param str
+     *            the stream to read from
      * @throws FitsException
+     *             if the operation failed
      */
 
     @Override
     public void read(ArrayDataInput str) throws FitsException {
-
-        setFileOffset(str);
-        this.currInput = str;
-
-        if (str instanceof RandomAccess) {
-
-            try {
+        try {
+            setFileOffset(str);
+            this.currInput = str;
+            if (str instanceof RandomAccess) {
                 str.skipBytes((long) this.nRows * this.rowLen);
-            } catch (IOException e) {
-                throw new FitsException("Error skipping data: " + e);
-            }
-
-        } else {
-            try {
+            } else {
                 if ((long) this.rowLen * this.nRows > Integer.MAX_VALUE) {
                     throw new FitsException("Cannot read ASCII table > 2 GB");
                 }
                 getBuffer(this.rowLen * this.nRows, 0);
-            } catch (IOException e) {
-                throw new FitsException("Error reading ASCII table:" + e);
             }
-        }
-
-        try {
             str.skipBytes(FitsUtil.padding(this.nRows * this.rowLen));
         } catch (EOFException e) {
             throw new PaddingException("EOF skipping padding after ASCII Table:" + e, this);
         } catch (IOException e) {
-            throw new FitsException("Error skipping padding after ASCII Table:" + e);
+            throw new FitsException("Error skipping padding after ASCII Table:" + e.getMessage(), e);
         }
     }
 
@@ -815,6 +820,7 @@ public class AsciiTable extends AbstractTableData {
      * @param newData
      *            The column data. This is typically a 1-d array.
      * @throws FitsException
+     *             if the operation failed
      */
 
     @Override
@@ -840,6 +846,7 @@ public class AsciiTable extends AbstractTableData {
      * @param newData
      *            The new value for the column. Typically a primitive[1] array.
      * @throws FitsException
+     *             if the operation failed
      */
 
     @Override
@@ -904,6 +911,7 @@ public class AsciiTable extends AbstractTableData {
      *            The new data. Each element of this array is typically a
      *            primitive[1] array.
      * @throws FitsException
+     *             if the operation failed
      */
 
     @Override
@@ -962,8 +970,8 @@ public class AsciiTable extends AbstractTableData {
      * @param oldNCol
      *            The number of columns we had before deletion.
      * @param hdr
-     *            The associated header.
-     * @throws FitsException
+     *            The associated header. @throws FitsException if the operation
+     *            failed
      */
 
     @Override

@@ -32,6 +32,15 @@ package nom.tam.fits.test;
  */
 
 import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+
 import nom.tam.fits.AsciiTable;
 import nom.tam.fits.AsciiTableHDU;
 import nom.tam.fits.BasicHDU;
@@ -39,9 +48,12 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.TableHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.Cursor;
 import nom.tam.util.TestArrayFuncs;
 
 import org.junit.Assert;
@@ -92,6 +104,8 @@ public class AsciiTableTest {
         }
 
         f.addHDU(Fits.makeHDU(data));
+
+        assertEquals(33, data.getRowLen());
 
         writeFile(f, "target/at2.fits");
 
@@ -231,7 +245,7 @@ public class AsciiTableTest {
 
         hdu.setNullString(0, "**INVALID**");
         data.setNull(5, 0, true);
-        data.setNull(6, 0, true);
+        hdu.setNull(6, 0, true);
 
         Object[] row = new Object[5];
         row[0] = new float[]{
@@ -260,7 +274,8 @@ public class AsciiTableTest {
         f.write(bf);
 
         f = new Fits("target/at1x.fits");
-        AsciiTable tab = (AsciiTable) f.getHDU(1).getData();
+        AsciiTableHDU asciiHdu = (AsciiTableHDU) f.getHDU(1);
+        AsciiTable tab = asciiHdu.getData();
         Object[] kern = (Object[]) tab.getKernel();
 
         float[] fx = (float[]) kern[0];
@@ -277,6 +292,8 @@ public class AsciiTableTest {
 
         assertEquals("Null", true, tab.isNull(6, 0));
         assertEquals("Null2", false, tab.isNull(5, 0));
+        assertEquals("Null", true, hdu.isNull(6, 0));
+        assertEquals("Null2", false, hdu.isNull(5, 0));
 
         for (int i = 0; i < data.getNRows(); i += 1) {
             if (i != 5) {
@@ -298,16 +315,19 @@ public class AsciiTableTest {
         st[0] = st[0].trim();
         assertEquals("row5", true, TestArrayFuncs.arrayEquals(row, r5, 1.e-6, 1.e-14));
 
-        addDeleteColumn(tab);
+        addDeleteColumn(asciiHdu);
     }
 
-    private void addDeleteColumn(AsciiTable tab) throws FitsException {
+    private void addDeleteColumn(AsciiTableHDU asciiHdu) throws FitsException {
+        AsciiTable tab = asciiHdu.getData();
+        tab.fillHeader(asciiHdu.getHeader());
+
         String[] col4 = (String[]) tab.getColumn(4);
         int[] newCol = new int[50];
         for (int index = 0; index < newCol.length; index++) {
             newCol[index] = index;
         }
-        tab.addColumn(newCol);
+        asciiHdu.addColumn(newCol);
         int[] newColAdded = (int[]) tab.getColumn(5);
         Assert.assertArrayEquals(newCol, newColAdded);
         tab.deleteColumns(5, 1);
@@ -443,5 +463,133 @@ public class AsciiTableTest {
         f.write(bf);
         bf.flush();
         bf.close();
+    }
+
+    @Test
+    public void testBadCases() throws Exception {
+        // Create a table row by row .
+        Fits f = new Fits();
+        AsciiTable data = new AsciiTable();
+        Object[] row = new Object[4];
+
+        for (int i = 0; i < 50; i += 1) {
+            data.addRow(getRow(i));
+        }
+
+        f.addHDU(Fits.makeHDU(data));
+
+        Exception actual = null;
+        try {
+            data.addRow(null);
+        } catch (Exception e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual instanceof FitsException);
+        Assert.assertTrue(actual.getCause() instanceof NullPointerException);
+
+        setFieldNull(data, "data");
+        actual = null;
+        try {
+            data.deleteRows(1, 1);
+        } catch (Exception e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual instanceof FitsException);
+        Assert.assertTrue(actual.getCause() instanceof IOException);
+
+        setFieldNull(data, "types");
+        actual = null;
+        // nothing should happen.
+        data.deleteRows(1, -1);
+        try {
+            data.deleteRows(1, 1);
+        } catch (Exception e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual instanceof FitsException);
+        Assert.assertTrue(actual.getCause() instanceof NullPointerException);
+
+        actual = null;
+        try {
+            data.addRow(new Object[5]);
+        } catch (Exception e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual instanceof FitsException);
+        Assert.assertTrue(actual.getCause() instanceof NullPointerException);
+
+        final List<LogRecord> logs = new ArrayList<>();
+        Logger.getLogger(AsciiTable.class.getName()).addHandler(new Handler() {
+
+            @Override
+            public void publish(LogRecord record) {
+                logs.add(record);
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() throws SecurityException {
+            }
+        });
+        data.fillHeader(new Header() {
+
+            @Override
+            public Cursor<String, HeaderCard> iterator() {
+                AsciiTableTest.<RuntimeException> throwAny(new HeaderCardException("all is broken"));
+                return null;
+            }
+        });
+        Assert.assertEquals(1, logs.size());
+        Assert.assertEquals("all is broken", logs.get(0).getThrown().getMessage());
+    }
+
+    @Test
+    public void testBadCases2() throws Exception {
+        // Create a table row by row .
+        Fits f = new Fits();
+        AsciiTable data = new AsciiTable();
+        Object[] row = new Object[4];
+
+        for (int i = 0; i < 50; i += 1) {
+            data.addRow(getRow(i));
+        }
+
+        f.addHDU(Fits.makeHDU(data));
+
+        Exception actual = null;
+        try {
+            data.addColumn(null);
+        } catch (Exception e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual instanceof FitsException);
+
+        actual = null;
+        try {
+            data.addColumn(new int[10], 99);
+        } catch (Exception e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual instanceof FitsException);
+
+    }
+
+    private static <E extends Throwable> void throwAny(Throwable e) throws E {
+        throw (E) e;
+    }
+
+    private void setFieldNull(Object data, String fieldName) throws Exception {
+        Field field = data.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(data, null);
     }
 }

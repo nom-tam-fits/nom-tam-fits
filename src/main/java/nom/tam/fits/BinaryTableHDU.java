@@ -51,11 +51,16 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         "TDIM"
     };
 
-    /** Encapsulate data in a BinaryTable data type */
+    /**
+     * @return Encapsulate data in a BinaryTable data type
+     * @param o
+     *            data to encapsulate
+     * @throws FitsException
+     *             if the type of the data is not usable as data
+     */
     public static Data encapsulate(Object o) throws FitsException {
-
         if (o instanceof nom.tam.util.ColumnTable) {
-            return new BinaryTable((nom.tam.util.ColumnTable) o);
+            return new BinaryTable((nom.tam.util.ColumnTable<?>) o);
         } else if (o instanceof Object[][]) {
             return new BinaryTable((Object[][]) o);
         } else if (o instanceof Object[]) {
@@ -101,25 +106,23 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     }
 
     /**
-     * Create data from a binary table header.
-     * 
+     * @return a new created data from a binary table header.
      * @param header
      *            the template specifying the binary table.
-     * @exception FitsException
-     *                if there was a problem with the header.
+     * @throws FitsException
+     *             if there was a problem with the header.
      */
     public static Data manufactureData(Header header) throws FitsException {
         return new BinaryTable(header);
     }
 
     /**
-     * Build a binary table HDU from the supplied data.
-     * 
+     * @return a newly created binary table HDU from the supplied data.
      * @param data
      *            the data used to build the binary table. This is typically
      *            some kind of array of objects.
-     * @exception FitsException
-     *                if there was a problem with the data.
+     * @throws FitsException
+     *             if there was a problem with the data.
      */
     public static Header manufactureHeader(Data data) throws FitsException {
         Header hdr = new Header();
@@ -147,8 +150,8 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      *            number of rows in the table should be 30 and this column will
      *            have elements which are 2-d integer arrays with TDIM =
      *            (10,20).
-     * @exception FitsException
-     *                the column could not be added.
+     * @throws FitsException
+     *             the column could not be added.
      */
     @Override
     public int addColumn(Object data) throws FitsException {
@@ -163,7 +166,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      */
     @Override
     public String[] columnKeyStems() {
-        return KEY_STEMS;
+        return BinaryTableHDU.KEY_STEMS;
     }
 
     /**
@@ -172,7 +175,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     @Override
     public void info(PrintStream stream) {
 
-        BinaryTable myData = (BinaryTable) this.myData;
+        BinaryTable myData = this.myData;
 
         stream.println("  Binary Table");
         stream.println("      Header Information:");
@@ -242,6 +245,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      *            The 0-based index of the column to be converted.
      * @return Whether the column can be converted
      * @throws FitsException
+     *             if the header could not be adapted
      */
     public boolean setComplexColumn(int index) throws FitsException {
         boolean status = false;
@@ -250,31 +254,32 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
             // No problem with the data. Make sure the header
             // is right.
 
-            int[] dimens = this.myData.getDimens()[index];
-            Class base = this.myData.getBases()[index];
+            BinaryTable.ColumnDesc colDesc = this.myData.getDescriptor(index);
+            Class<?> base = this.myData.getBases()[index];
 
             int dim = 1;
             String tdim = "";
             String sep = "";
             // Don't loop over all values.
             // The last is the [2] for the complex data.
-            for (int i = 0; i < dimens.length - 1; i += 1) {
-                dim *= dimens[i];
-                tdim = dimens[i] + sep + tdim;
+            for (int i = 0; i < colDesc.dimens.length - 1; i += 1) {
+                dim *= colDesc.dimens[i];
+                tdim = colDesc.dimens[i] + sep + tdim;
                 sep = ",";
             }
             String suffix = "C"; // For complex
             // Update the TFORMn keyword.
-            if (base == double.class) {
+
+            if (colDesc.base == double.class) {
                 suffix = "M";
             }
 
             // Worry about variable length columns.
             String prefix = "";
-            if (this.myData.isVarCol(index)) {
+            if (this.myData.getDescriptor(index).isVarying()) {
                 prefix = "P";
                 dim = 1;
-                if (this.myData.isLongVary(index)) {
+                if (this.myData.getDescriptor(index).isLongVary()) {
                     prefix = "Q";
                 }
             }
