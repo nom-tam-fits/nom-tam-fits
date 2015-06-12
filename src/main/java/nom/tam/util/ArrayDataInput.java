@@ -286,8 +286,9 @@ public interface ArrayDataInput extends java.io.DataInput, Closeable {
      * @param o
      *            The object to be read. This object should be a primitive
      *            (possibly multi-dimensional) array.
-     * @return The number of bytes read. @throws IOException if the underlying
-     *         stream failed
+     * @return The number of bytes read.
+     * @throws IOException
+     *             if the underlying stream failed
      */
     long readLArray(Object o) throws IOException;
 
@@ -329,6 +330,8 @@ public interface ArrayDataInput extends java.io.DataInput, Closeable {
      * there is probably no operational difference). * @param distance the
      * number of bytes to skip
      * 
+     * @param toSkip
+     *            the number of bytes to skip
      * @return the number of bytes really skipped
      * @throws IOException
      *             if the underlying stream failed
@@ -341,7 +344,6 @@ public interface ArrayDataInput extends java.io.DataInput, Closeable {
      * of file unless no bytes can be read. However both of these routines will
      * attempt to fill their buffers completely.
      * 
-     * @return number of bytes read.
      * @param b
      *            The input buffer.
      * @param off

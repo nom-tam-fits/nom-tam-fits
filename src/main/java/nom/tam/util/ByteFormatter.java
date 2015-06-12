@@ -1,5 +1,7 @@
 package nom.tam.util;
 
+import java.util.Arrays;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -124,7 +126,15 @@ public final class ByteFormatter {
     double simpleMax = 1.e6;
 
     /**
-     * Fill the buffer with blanks to align a field.
+     * Fill the buffer with blank-bytes to align a field.
+     * 
+     * @return Offset of next available character in buffer.
+     * @param buffer
+     *            buffer to fill
+     * @param offset
+     *            the offset where to start
+     * @param len
+     *            the number of bytes to fill
      */
     public int alignFill(byte[] buffer, int offset, int len) {
         for (int i = offset; i < offset + len; i += 1) {
@@ -153,6 +163,8 @@ public final class ByteFormatter {
      *            The exponent of the power of 10 that we shifted val to get the
      *            given mantissa.
      * @return Offset of next available character in buffer.
+     * @throws TruncationException
+     *             if the value was truncated
      */
     int combineReal(double val, byte[] buf, int off, int len, byte[] mant, int lmant, int shift) throws TruncationException {
 
@@ -259,6 +271,12 @@ public final class ByteFormatter {
 
     /**
      * Format a boolean into an existing array.
+     * 
+     * @param val
+     *            value to write
+     * @param array
+     *            the array to fill
+     * @return Offset of next available character in buffer.
      */
     public int format(boolean val, byte[] array) {
         return format(val, array, 0, array.length);
@@ -302,6 +320,8 @@ public final class ByteFormatter {
      * @param array
      *            The array in which to place the result.
      * @return The number of characters used.
+     * @throws TruncationException
+     *             if the value was truncated
      */
     public int format(double val, byte[] array) throws TruncationException {
         return format(val, array, 0, array.length);
@@ -336,6 +356,8 @@ public final class ByteFormatter {
      * @param len
      *            Maximum length of integer
      * @return offset of next unused character in input buffer.
+     * @throws TruncationException
+     *             if the value was truncated
      */
     public int format(double val, byte[] buf, int off, int len) throws TruncationException {
 
@@ -412,6 +434,8 @@ public final class ByteFormatter {
      * @param array
      *            The array in which to place the result.
      * @return The number of characters used.
+     * @throws TruncationException
+     *             if the value was truncated
      */
     public int format(float val, byte[] array) throws TruncationException {
         return format(val, array, 0, array.length);
@@ -446,6 +470,8 @@ public final class ByteFormatter {
      * @param len
      *            Maximum length of field
      * @return Offset of next character in buffer.
+     * @throws TruncationException
+     *             if the value was truncated
      */
     public int format(float val, byte[] buf, int off, int len) throws TruncationException {
 
@@ -524,6 +550,8 @@ public final class ByteFormatter {
      * @param array
      *            The array in which to place the result.
      * @return The number of characters used.
+     * @throws TruncationException
+     *             if the value was truncated
      */
     public int format(int val, byte[] array) throws TruncationException {
         return format(val, array, 0, array.length);
@@ -541,6 +569,8 @@ public final class ByteFormatter {
      * @param len
      *            Maximum length of integer
      * @return offset of next unused character in input buffer.
+     * @throws TruncationException
+     *             if the value was truncated
      */
     public int format(int val, byte[] buf, int off, int len) throws TruncationException {
 
@@ -583,7 +613,7 @@ public final class ByteFormatter {
         }
 
         // Now insert the actual characters we want -- backwards
-        // We use a do{} while() to handle the case of 0.
+        // We use a do{} while() to handle the caByteFormatterse of 0.
 
         off += ndig;
 
@@ -609,6 +639,8 @@ public final class ByteFormatter {
      * @param array
      *            The array in which to place the result.
      * @return The number of characters used.
+     * @throws TruncationException
+     *             if the value was truncated
      */
     public int format(long val, byte[] array) throws TruncationException {
         return format(val, array, 0, array.length);
@@ -626,6 +658,8 @@ public final class ByteFormatter {
      * @param len
      *            Maximum length of integer
      * @return offset of next unused character in input buffer.
+     * @throws TruncationException
+     *             if the value was truncated
      */
     public int format(long val, byte[] buf, int off, int len) throws TruncationException {
 
@@ -705,7 +739,17 @@ public final class ByteFormatter {
         return off;
     }
 
-    /** Insert a string at the beginning of an array */
+    /**
+     * Insert a string at the beginning of an array. * @return Offset of next
+     * available character in buffer.
+     * 
+     * @param val
+     *            The string to be inserted. A null string will insert len
+     *            spaces.
+     * @param array
+     *            The buffer in which to insert the string.
+     * @return Offset of next available character in buffer.
+     */
     public int format(String val, byte[] array) {
         return format(val, array, 0, array.length);
     }
@@ -925,7 +969,12 @@ public final class ByteFormatter {
         this.truncationFill = (byte) val;
     }
 
-    /** Should truncations cause a truncation overflow? */
+    /**
+     * Should truncations cause a truncation overflow?
+     * 
+     * @param throwException
+     *            <code>true</code> if the trucation exceptions should be thrown
+     */
     public void setTruncationThrow(boolean throwException) {
         this.truncationThrow = throwException;
     }

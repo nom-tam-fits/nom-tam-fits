@@ -147,6 +147,8 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      * 
      * @param filename
      *            the name of the file to open
+     * @throws IOException
+     *             if the file could not be opened
      */
     public BufferedFile(String filename) throws IOException {
         this(filename, "r", 32768);
