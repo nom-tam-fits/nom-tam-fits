@@ -1496,8 +1496,8 @@ public class Header implements FitsElement {
 
     /**
      * @return the number of cards in the header
-     * @deprecated see numberOfCards(). The units of the size of the header may
-     *             be unclear.
+     * @see #getNumberOfCards() . The units of the size of the header may be
+     *      unclear.
      */
     @Deprecated
     public int size() {

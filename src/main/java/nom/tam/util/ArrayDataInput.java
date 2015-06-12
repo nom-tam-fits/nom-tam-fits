@@ -31,12 +31,10 @@ package nom.tam.util;
  * #L%
  */
 
+import java.io.Closeable;
 import java.io.IOException;
 
-public interface ArrayDataInput extends java.io.DataInput {
-
-    /* Close the file. */
-    public void close() throws IOException;
+public interface ArrayDataInput extends java.io.DataInput, Closeable {
 
     /**
      * See the general contract of the <code>mark</code> method of
@@ -49,41 +47,217 @@ public interface ArrayDataInput extends java.io.DataInput {
      * @throws IOException
      *             if the operation failed
      */
-    public void mark(int readlimit) throws IOException;
+    void mark(int readlimit) throws IOException;
 
-    public int read(boolean[] buf) throws IOException;
+    /**
+     * Read an array of byte's.
+     * 
+     * @return number of bytes read.
+     * @see #readFully(byte[])
+     * @param buf
+     *            array of byte's.
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(byte[] buf) throws IOException;
 
-    public int read(boolean[] buf, int offset, int size) throws IOException;
+    /**
+     * Read a segment of an array of byte's.
+     * 
+     * @return number of bytes read.
+     * @see #readFully(byte[], int, int)
+     * @param buf
+     *            array of byte's.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to read
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(byte[] buf, int offset, int size) throws IOException;
 
-    /* Read a complete primitive array */
-    public int read(byte[] buf) throws IOException;
+    /**
+     * Read an array of boolean's.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of boolean's.
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(boolean[] buf) throws IOException;
 
-    /* Read a segment of a primitive array. */
-    public int read(byte[] buf, int offset, int size) throws IOException;
+    /**
+     * Read a segment of an array of boolean's.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of boolean's.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to read
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(boolean[] buf, int offset, int size) throws IOException;
 
-    public int read(char[] buf) throws IOException;
+    /**
+     * Read an array of char's.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of char's.
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(char[] buf) throws IOException;
 
-    public int read(char[] buf, int offset, int size) throws IOException;
+    /**
+     * Read a segment of an array of char's.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of char's.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to read
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(char[] buf, int offset, int size) throws IOException;
 
-    public int read(double[] buf) throws IOException;
+    /**
+     * Read an array of double's.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of double's.
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(double[] buf) throws IOException;
 
-    public int read(double[] buf, int offset, int size) throws IOException;
+    /**
+     * Read a segment of an array of double's.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of double's.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to read
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(double[] buf, int offset, int size) throws IOException;
 
-    public int read(float[] buf) throws IOException;
+    /**
+     * Read an array of float's.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of float's.
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(float[] buf) throws IOException;
 
-    public int read(float[] buf, int offset, int size) throws IOException;
+    /**
+     * Read a segment of an array of float's.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of float's.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to read
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(float[] buf, int offset, int size) throws IOException;
 
-    public int read(int[] buf) throws IOException;
+    /**
+     * Read an array of int's.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of int's.
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(int[] buf) throws IOException;
 
-    public int read(int[] buf, int offset, int size) throws IOException;
+    /**
+     * Read a segment of an array of int's.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of int's.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to read
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(int[] buf, int offset, int size) throws IOException;
 
-    public int read(long[] buf) throws IOException;
+    /**
+     * Read a segment of an array of long's.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of long's.
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(long[] buf) throws IOException;
 
-    public int read(long[] buf, int offset, int size) throws IOException;
+    /**
+     * Read a segment of an array of long's.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of long's.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to read
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(long[] buf, int offset, int size) throws IOException;
 
-    public int read(short[] buf) throws IOException;
+    /**
+     * Read an array of short's.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of short's.
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(short[] buf) throws IOException;
 
-    public int read(short[] buf, int offset, int size) throws IOException;
+    /**
+     * Read a segment of an array of short's.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of short's.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to read
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(short[] buf, int offset, int size) throws IOException;
 
     /**
      * Read a generic (possibly multidimensional) primitive array. An Object[]
@@ -92,6 +266,7 @@ public interface ArrayDataInput extends java.io.DataInput {
      * The ArrayDataInput classes do not support String input since it is
      * unclear how one would read in an Array of strings.
      * 
+     * @return number of bytes read.
      * @param o
      *            A [multidimensional] primitive (or Object) array.
      * @deprecated See readLArray(Object o).
@@ -100,19 +275,21 @@ public interface ArrayDataInput extends java.io.DataInput {
      *             if the underlying stream failed
      */
     @Deprecated
-    public int readArray(Object o) throws IOException;
+    int readArray(Object o) throws IOException;
 
     /**
-     * Read an array. This version works even if the underlying data is more
-     * than 2 Gigabytes.
+     * Read an object. An EOF will be signaled if the object cannot be fully
+     * read. This version works even if the underlying data is more than 2
+     * Gigabytes.
      * 
+     * @return number of bytes read.
      * @param o
-     *            array to write the read data
-     * @return the number of bytes read
-     * @throws IOException
-     *             if the underlying stream failed
+     *            The object to be read. This object should be a primitive
+     *            (possibly multi-dimensional) array.
+     * @return The number of bytes read. @throws IOException if the underlying
+     *         stream failed
      */
-    public long readLArray(Object o) throws IOException;
+    long readLArray(Object o) throws IOException;
 
     /**
      * See the general contract of the <code>reset</code> method of
@@ -129,11 +306,49 @@ public interface ArrayDataInput extends java.io.DataInput {
      *                occurs.
      * @see java.io.BufferedInputStream#mark(int)
      */
-    public void reset() throws IOException;
+    void reset() throws IOException;
 
-    /* Skip (forward) in a file */
-    public long skip(long distance) throws IOException;
+    /**
+     * Skip the number of bytes. This differs from the skip method in that it
+     * will throw an EOF if a forward skip cannot be fully accomplished...
+     * (However that isn't supposed to happen with a random access file, so
+     * there is probably no operational difference).
+     * 
+     * @param distance
+     *            the number of bytes to skip
+     * @return the number of bytes really skipped
+     * @throws IOException
+     *             if the underlying stream failed
+     */
+    long skip(long distance) throws IOException;
 
-    /* Skip and require that the data be there. */
-    public long skipBytes(long toSkip) throws IOException;
+    /**
+     * Skip the number of bytes. This differs from the skip method in that it
+     * will throw an EOF if a forward skip cannot be fully accomplished...
+     * (However that isn't supposed to happen with a random access file, so
+     * there is probably no operational difference). * @param distance the
+     * number of bytes to skip
+     * 
+     * @return the number of bytes really skipped
+     * @throws IOException
+     *             if the underlying stream failed
+     */
+    long skipBytes(long toSkip) throws IOException;
+
+    /**
+     * Read a buffer and signal an EOF if the requested elements cannot be read.
+     * This differs from read(b,off,len) since that call will not signal and end
+     * of file unless no bytes can be read. However both of these routines will
+     * attempt to fill their buffers completely.
+     * 
+     * @return number of bytes read.
+     * @param b
+     *            The input buffer.
+     * @param off
+     *            The requested offset into the buffer.
+     * @param len
+     *            The number of bytes requested.
+     */
+    @Override
+    void readFully(byte[] b, int off, int len) throws IOException;
 }

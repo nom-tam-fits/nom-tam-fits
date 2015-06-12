@@ -604,7 +604,7 @@ public class Fits implements Closeable {
      * Get the current number of HDUs in the Fits object.
      * 
      * @return The number of HDU's in the object.
-     * @deprecated See getNumberOfHDUs()
+     * @see #getNumberOfHDUs()
      */
     @Deprecated
     public int currentSize() {

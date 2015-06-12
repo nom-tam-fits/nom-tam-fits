@@ -82,8 +82,13 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         super(o, bufLength);
     }
 
-    /*
+    /**
      * See if there is enough space to add something to the buffer.
+     * 
+     * @param need
+     *            the number of bytes that should be available in the buffer.
+     * @throws IOException
+     *             if the underlying write operation fails
      */
     protected void checkBuf(int need) throws IOException {
 
@@ -93,17 +98,11 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         }
     }
 
-    /**
-     * Write an array of booleans.
-     */
     @Override
     public void write(boolean[] b) throws IOException {
         write(b, 0, b.length);
     }
 
-    /**
-     * Write a segment of an array of booleans.
-     */
     @Override
     public void write(boolean[] b, int start, int len) throws IOException {
 
@@ -120,17 +119,11 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         }
     }
 
-    /**
-     * Write an array of char's.
-     */
     @Override
     public void write(char[] c) throws IOException {
         write(c, 0, c.length);
     }
 
-    /**
-     * Write a segment of an array of char's.
-     */
     @Override
     public void write(char[] c, int start, int len) throws IOException {
 
@@ -143,9 +136,6 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         }
     }
 
-    /**
-     * Write an array of doubles.
-     */
     @Override
     public void write(double[] d) throws IOException {
         write(d, 0, d.length);
@@ -177,9 +167,6 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 
     }
 
-    /**
-     * Write an array of floats.
-     */
     @Override
     public void write(float[] f) throws IOException {
         write(f, 0, f.length);
@@ -201,17 +188,11 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         }
     }
 
-    /**
-     * Write an array of int's.
-     */
     @Override
     public void write(int[] i) throws IOException {
         write(i, 0, i.length);
     }
 
-    /**
-     * Write a segment of an array of int's.
-     */
     @Override
     public void write(int[] i, int start, int len) throws IOException {
 
@@ -229,17 +210,11 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 
     }
 
-    /**
-     * Write an array of longs.
-     */
     @Override
     public void write(long[] l) throws IOException {
         write(l, 0, l.length);
     }
 
-    /**
-     * Write a segement of an array of longs.
-     */
     @Override
     public void write(long[] l, int start, int len) throws IOException {
 
@@ -263,17 +238,11 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         }
     }
 
-    /**
-     * Write an array of shorts.
-     */
     @Override
     public void write(short[] s) throws IOException {
         write(s, 0, s.length);
     }
 
-    /**
-     * Write a segment of an array of shorts.
-     */
     @Override
     public void write(short[] s, int start, int len) throws IOException {
 
@@ -286,19 +255,11 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         }
     }
 
-    /**
-     * Write an array of Strings -- equivalent to calling writeBytes for each
-     * string.
-     */
     @Override
     public void write(String[] s) throws IOException {
         write(s, 0, s.length);
     }
 
-    /**
-     * Write a segment of an array of Strings. Equivalent to calling writeBytes
-     * for the selected elements.
-     */
     @Override
     public void write(String[] s, int start, int len) throws IOException {
 
@@ -310,19 +271,6 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         }
     }
 
-    /**
-     * This routine provides efficient writing of arrays of any primitive type.
-     * The String class is also handled but it is an error to invoke this method
-     * with an object that is not an array of these types. If the array is
-     * multidimensional, then it calls itself recursively to write the entire
-     * array. Strings are written using the standard 1 byte format (i.e., as in
-     * writeBytes). If the array is an array of objects, then
-     * writePrimitiveArray will be called for each element of the array.
-     * 
-     * @param o
-     *            The object to be written. It must be an array of a primitive
-     *            type, Object, or String.
-     */
     @Override
     public void writeArray(Object o) throws IOException {
         if (!o.getClass().isArray()) {
@@ -361,13 +309,6 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         }
     }
 
-    /**
-     * Write a boolean value
-     * 
-     * @param b
-     *            The value to be written. Externally true is represented as a
-     *            byte of 1 and false as a byte value of 0.
-     */
     @Override
     public void writeBoolean(boolean b) throws IOException {
 
@@ -379,30 +320,17 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         }
     }
 
-    /**
-     * Write a byte value.
-     */
     @Override
     public void writeByte(int b) throws IOException {
         checkBuf(1);
         this.buf[this.count++] = (byte) b;
     }
 
-    /**
-     * Write a string using the local protocol to convert char's to bytes.
-     * Attention only ascii values will be written.
-     * 
-     * @param s
-     *            The string to be written.
-     */
     @Override
     public void writeBytes(String s) throws IOException {
         write(AsciiFuncs.getBytes(s), 0, s.length());
     }
 
-    /**
-     * Write a char value.
-     */
     @Override
     public void writeChar(int c) throws IOException {
 
@@ -411,9 +339,6 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         this.buf[this.count++] = (byte) c;
     }
 
-    /**
-     * Write a string as an array of chars.
-     */
     @Override
     public void writeChars(String s) throws IOException {
 
@@ -422,9 +347,6 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         }
     }
 
-    /**
-     * Write a double value.
-     */
     @Override
     public void writeDouble(double d) throws IOException {
 
@@ -442,9 +364,6 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 
     }
 
-    /**
-     * Write a float value.
-     */
     @Override
     public void writeFloat(float f) throws IOException {
 
@@ -459,9 +378,6 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 
     }
 
-    /**
-     * Write an integer value.
-     */
     @Override
     public void writeInt(int i) throws IOException {
 
@@ -472,9 +388,6 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         this.buf[this.count++] = (byte) i;
     }
 
-    /**
-     * Write a long value.
-     */
     @Override
     public void writeLong(long l) throws IOException {
 
@@ -491,18 +404,15 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     }
 
     /**
-     * This routine provides efficient writing of arrays of any primitive type.
-     * The String class is also handled but it is an error to invoke this method
-     * with an object that is not an array of these types. If the array is
-     * multidimensional, then it calls itself recursively to write the entire
-     * array. Strings are written using the standard 1 byte format (i.e., as in
-     * writeBytes). If the array is an array of objects, then
-     * writePrimitiveArray will be called for each element of the array.
+     * Deprecated use {@link #writeArray(Object)}.
      * 
      * @param o
-     *            The object to be written. It must be an array of a primitive
-     *            type, Object, or String.
+     *            The object to be written.
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     * @see #writeArray(Object)
      */
+    @Deprecated
     public void writePrimitiveArray(Object o) throws IOException {
         writeArray(o);
     }
@@ -519,11 +429,6 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 
     }
 
-    /**
-     * Write a string as a UTF. Note that this class does not handle this
-     * situation efficiently since it creates new DataOutputStream to handle
-     * each call.
-     */
     @Override
     public void writeUTF(String s) throws IOException {
         // Punt on this one and use standard routines.

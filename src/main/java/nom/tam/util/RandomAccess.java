@@ -1,5 +1,7 @@
 package nom.tam.util;
 
+import java.io.IOException;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -38,9 +40,18 @@ package nom.tam.util;
  */
 public interface RandomAccess extends ArrayDataInput {
 
-    /** Get the current position in the stream */
+    /**
+     * @return the current position in the stream.
+     */
     public long getFilePointer();
 
-    /** Move to a specified location in the stream. */
+    /**
+     * Move to a specified location in the stream.
+     * 
+     * @param offsetFromStart
+     *            set the offset messured from the start
+     * @throws IOException
+     *             if the operation fails
+     */
     public void seek(long offsetFromStart) throws java.io.IOException;
 }

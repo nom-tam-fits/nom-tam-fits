@@ -88,21 +88,43 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     private byte[] skipBuf = null;
 
     /**
-     * Use the BufferedInputStream constructor
+     * Use the BufferedInputStream constructor.
+     * 
+     * @param o
+     *            the input stream to use for reading.
      */
+    @Deprecated
     public BufferedDataInputStream(InputStream o) {
         this(o, 32768);
     }
 
     /**
      * Use the BufferedInputStream constructor
+     * 
+     * @param o
+     *            the input stream to use for reading.
+     * @param bufLength
+     *            the buffer length to use.
      */
+    @Deprecated
     public BufferedDataInputStream(InputStream o, int bufLength) {
         super(o, bufLength);
     }
 
     /**
      * For array reads return an EOF if unable to read any data.
+     * 
+     * @param e
+     *            the eof exception that happened.
+     * @param i
+     *            the current index
+     * @param start
+     *            the start index
+     * @param length
+     *            the element length
+     * @return the number of bytes read before the end of file exception.
+     * @throws EOFException
+     *             if no extra bytes could be read
      */
     private int eofCheck(EOFException e, int i, int start, int length) throws EOFException {
 
@@ -120,6 +142,8 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
      * 
      * @param The
      *            required number of bytes.
+     * @throws IOException
+     *             if the underlying read operation fails.
      */
     private void fillBuf(int need) throws IOException {
 
@@ -147,6 +171,10 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     /**
      * Read recursively over a multi-dimensional array.
      * 
+     * @param o
+     *            the primitive array to fill.
+     * @throws IOException
+     *             if the underlying read operation fails.
      * @return The number of bytes read.
      */
     protected long primitiveArrayRecurse(Object o) throws IOException {
@@ -218,15 +246,11 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         return this.primitiveArrayCount;
     }
 
-    /** Read a boolean array */
     @Override
     public int read(boolean[] b) throws IOException {
         return read(b, 0, b.length);
     }
 
-    /**
-     * Read a boolean array.
-     */
     @Override
     public int read(boolean[] b, int start, int len) throws IOException {
 
@@ -251,18 +275,6 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         return len;
     }
 
-    /**
-     * Read a byte array. This is the only method for reading arrays in the
-     * fundamental I/O classes.
-     * 
-     * @param obuf
-     *            The byte array.
-     * @param offset
-     *            The starting offset into the array.
-     * @param len
-     *            The number of bytes to read.
-     * @return The actual number of bytes read.
-     */
     @Override
     public int read(byte[] obuf, int offset, int len) throws IOException {
 
@@ -289,13 +301,11 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     }
 
-    /** Read a character array */
     @Override
     public int read(char[] c) throws IOException {
         return read(c, 0, c.length);
     }
 
-    /** Read a character array */
     @Override
     public int read(char[] c, int start, int len) throws IOException {
 
@@ -314,13 +324,11 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         return 2 * len;
     }
 
-    /** Read a double array */
     @Override
     public int read(double[] d) throws IOException {
         return read(d, 0, d.length);
     }
 
-    /** Read a double array */
     @Override
     public int read(double[] d, int start, int len) throws IOException {
 
@@ -342,13 +350,11 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         return 8 * len;
     }
 
-    /** Read a float array */
     @Override
     public int read(float[] f) throws IOException {
         return read(f, 0, f.length);
     }
 
-    /** Read a float array */
     @Override
     public int read(float[] f, int start, int len) throws IOException {
 
@@ -368,13 +374,11 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         return 4 * len;
     }
 
-    /** Read an integer array */
     @Override
     public int read(int[] i) throws IOException {
         return read(i, 0, i.length);
     }
 
-    /** Read an integer array */
     @Override
     public int read(int[] i, int start, int len) throws IOException {
 
@@ -395,13 +399,11 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         return i.length * 4;
     }
 
-    /** Read a long array */
     @Override
     public int read(long[] l) throws IOException {
         return read(l, 0, l.length);
     }
 
-    /** Read a long array */
     @Override
     public int read(long[] l, int start, int len) throws IOException {
 
@@ -423,13 +425,11 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         return 8 * len;
     }
 
-    /** Read a short array */
     @Override
     public int read(short[] s) throws IOException {
         return read(s, 0, s.length);
     }
 
-    /** Read a short array */
     @Override
     public int read(short[] s, int start, int len) throws IOException {
 
@@ -448,28 +448,12 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         return 2 * len;
     }
 
-    /**
-     * Read an object. An EOF will be signaled if the object cannot be fully
-     * read. The getPrimitiveArrayCount() method may then be used to get a
-     * minimum number of bytes read.
-     * 
-     * @param o
-     *            The object to be read. This object should be a primitive
-     *            (possibly multi-dimensional) array.
-     * @return The number of bytes read.
-     * @deprecated See readLArray(Object) which handles large arrays properly.
-     */
     @Deprecated
     @Override
     public int readArray(Object o) throws IOException {
         return (int) readLArray(o);
     }
 
-    /**
-     * Read a boolean value.
-     * 
-     * @return b The value read.
-     */
     @Override
     public boolean readBoolean() throws IOException {
 
@@ -481,22 +465,11 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         }
     }
 
-    /**
-     * Read a byte value in the range -128 to 127.
-     * 
-     * @return The byte value as a byte (see read() to return the value as an
-     *         integer.
-     */
     @Override
     public byte readByte() throws IOException {
         return (byte) read();
     }
 
-    /**
-     * Read a 2-byte value as a character.
-     * 
-     * @return The character read.
-     */
     @Override
     public char readChar() throws IOException {
         byte[] b = new byte[2];
@@ -509,21 +482,11 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         return c;
     }
 
-    /**
-     * Read an 8 byte real number.
-     * 
-     * @return The value as a double.
-     */
     @Override
     public double readDouble() throws IOException {
         return Double.longBitsToDouble(readLong());
     }
 
-    /**
-     * Read a 4 byte real number.
-     * 
-     * @return The value as a float.
-     */
     @Override
     public float readFloat() throws IOException {
 
@@ -536,30 +499,11 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     }
 
-    /**
-     * Read a buffer and signal an EOF if the buffer cannot be fully read.
-     * 
-     * @param b
-     *            The buffer to be read.
-     */
     @Override
     public void readFully(byte[] b) throws IOException {
         readFully(b, 0, b.length);
     }
 
-    /**
-     * Read a buffer and signal an EOF if the requested elements cannot be read.
-     * This differs from read(b,off,len) since that call will not signal and end
-     * of file unless no bytes can be read. However both of these routines will
-     * attempt to fill their buffers completely.
-     * 
-     * @param b
-     *            The input buffer.
-     * @param off
-     *            The requested offset into the buffer.
-     * @param len
-     *            The number of bytes requested.
-     */
     @Override
     public void readFully(byte[] b, int off, int len) throws IOException {
 
@@ -572,11 +516,6 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         }
     }
 
-    /**
-     * Read an integer.
-     * 
-     * @return The integer value.
-     */
     @Override
     public int readInt() throws IOException {
 
@@ -587,16 +526,6 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         return i;
     }
 
-    /**
-     * Read an object. An EOF will be signaled if the object cannot be fully
-     * read. The getPrimitiveArrayCount() method may then be used to get a
-     * minimum number of bytes read.
-     * 
-     * @param o
-     *            The object to be read. This object should be a primitive
-     *            (possibly multi-dimensional) array.
-     * @return The number of bytes read.
-     */
     @Override
     public long readLArray(Object o) throws IOException {
         this.primitiveArrayCount = 0;
@@ -631,11 +560,6 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         return b.toString();
     }
 
-    /**
-     * Read a long.
-     * 
-     * @return The value read.
-     */
     @Override
     public long readLong() throws IOException {
 
@@ -656,9 +580,12 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
      * writePrimitiveArray in BufferedDataOutputStream to read in an array of
      * Strings.
      * 
+     * @return number of bytes read.
      * @param o
      *            The object to be read. It must be an array of a primitive
      *            type, or an array of Object's.
+     * @throws IOException
+     *             if the underlying read operation fails
      * @deprecated See readLArray(Object o).
      */
     @Deprecated
@@ -673,11 +600,6 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         return (int) readLArray(o);
     }
 
-    /**
-     * Read a 2-byte value as a short (-32788 to 32767)
-     * 
-     * @return The short value.
-     */
     @Override
     public short readShort() throws IOException {
 
@@ -689,21 +611,11 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         return s;
     }
 
-    /**
-     * Read a byte value in the range 0-255.
-     * 
-     * @return The byte value as an integer.
-     */
     @Override
     public int readUnsignedByte() throws IOException {
         return read() & 0x00ff;
     }
 
-    /**
-     * Read a 2-byte value in the range 0-65536.
-     * 
-     * @return the value as an integer.
-     */
     @Override
     public int readUnsignedShort() throws IOException {
 
@@ -714,13 +626,6 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         return (this.bb[0] & 0xFF) << 8 | this.bb[1] & 0xFF;
     }
 
-    /**
-     * Read a String in the UTF format. The implementation of this is very
-     * inefficient and use of this class is not recommended for applications
-     * which will use this routine heavily.
-     * 
-     * @return The String that was read.
-     */
     @Override
     public String readUTF() throws IOException {
 
@@ -783,7 +688,6 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         }
     }
 
-    /** Represent the stream as a string */
     @Override
     public String toString() {
         return super.toString() + "[count=" + this.count + ",pos=" + this.pos + "]";

@@ -31,73 +31,231 @@ package nom.tam.util;
  * #L%
  */
 
+import java.io.Closeable;
 import java.io.IOException;
 
-public interface ArrayDataOutput extends java.io.DataOutput {
-
-    public void close() throws IOException;
-
-    /* Flush the output buffer */
-    public void flush() throws IOException;
-
-    public void write(boolean[] buf) throws IOException;
-
-    public void write(boolean[] buf, int offset, int size) throws IOException;
-
-    /* Write a complete array */
-    @Override
-    public void write(byte[] buf) throws IOException;
-
-    /* Write a segment of a primitive array. */
-    @Override
-    public void write(byte[] buf, int offset, int size) throws IOException;
-
-    public void write(char[] buf) throws IOException;
-
-    public void write(char[] buf, int offset, int size) throws IOException;
-
-    public void write(double[] buf) throws IOException;
-
-    public void write(double[] buf, int offset, int size) throws IOException;
-
-    public void write(float[] buf) throws IOException;
-
-    public void write(float[] buf, int offset, int size) throws IOException;
-
-    public void write(int[] buf) throws IOException;
-
-    public void write(int[] buf, int offset, int size) throws IOException;
-
-    public void write(long[] buf) throws IOException;
-
-    public void write(long[] buf, int offset, int size) throws IOException;
-
-    public void write(short[] buf) throws IOException;
-
-    public void write(short[] buf, int offset, int size) throws IOException;
-
-    /* Write an array of Strings */
-    public void write(String[] buf) throws IOException;
-
-    /* Write some of an array of Strings */
-    public void write(String[] buf, int offset, int size) throws IOException;
+/**
+ * Special high performance scientific extension of the DataOutput interface.
+ */
+public interface ArrayDataOutput extends java.io.DataOutput, Closeable {
 
     /**
-     * Write a generic (possibly multi-dimenionsional) primitive or String
-     * array. An array of Objects is also allowed if all of the elements are
-     * valid arrays.
-     * <p>
-     * This routine is not called 'write' to avoid possible compilation errors
-     * in routines which define only some of the other methods of the interface
-     * (and defer to the superclass on others). In that case there is an
-     * ambiguity as to whether to call the routine in the current class but
-     * convert to Object, or call the method from the super class with the same
-     * type argument.
+     * Flush the output buffer
+     * 
+     * @throws IOException
+     *             if the flush of the underlying stream failed
+     */
+    void flush() throws IOException;
+
+    /**
+     * Write an array of boolean's.
+     * 
+     * @param buf
+     *            array of boolean's.
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(boolean[] buf) throws IOException;
+
+    /**
+     * Write a segment of an array of boolean's.
+     * 
+     * @param buf
+     *            array of boolean's.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to write
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(boolean[] buf, int offset, int size) throws IOException;
+
+    /**
+     * Write an array of char's.
+     * 
+     * @param buf
+     *            array of char's.
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(char[] buf) throws IOException;
+
+    /**
+     * Write a segment of an array of char's.
+     * 
+     * @param buf
+     *            array of char's.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to write
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(char[] buf, int offset, int size) throws IOException;
+
+    /**
+     * Write an array of double's.
+     * 
+     * @param buf
+     *            array of double's.
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(double[] buf) throws IOException;
+
+    /**
+     * Write a segment of an array of double's.
+     * 
+     * @param buf
+     *            array of double's.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to write
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(double[] buf, int offset, int size) throws IOException;
+
+    /**
+     * Write an array of float's.
+     * 
+     * @param buf
+     *            array of float's.
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(float[] buf) throws IOException;
+
+    /**
+     * Write a segment of an array of float's.
+     * 
+     * @param buf
+     *            array of float's.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to write
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(float[] buf, int offset, int size) throws IOException;
+
+    /**
+     * Write an array of int's.
+     * 
+     * @param buf
+     *            array of int's
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(int[] buf) throws IOException;
+
+    /**
+     * Write a segment of an array of int's.
+     * 
+     * @param buf
+     *            array of int's
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to write
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(int[] buf, int offset, int size) throws IOException;
+
+    /**
+     * Write an array of longs.
+     * 
+     * @param buf
+     *            array of longs
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(long[] buf) throws IOException;
+
+    /**
+     * Write a segment of an array of longs.
+     * 
+     * @param buf
+     *            array of longs
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to write
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(long[] buf, int offset, int size) throws IOException;
+
+    /**
+     * Write an array of shorts.
+     * 
+     * @param buf
+     *            the value to write
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(short[] buf) throws IOException;
+
+    /**
+     * Write a segment of an array of shorts.
+     * 
+     * @param buf
+     *            the value to write
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to write
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(short[] buf, int offset, int size) throws IOException;
+
+    /**
+     * Write an array of Strings. Equivalent to calling writeBytes for the
+     * selected elements.
+     * 
+     * @param buf
+     *            the array to write
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(String[] buf) throws IOException;
+
+    /**
+     * Write a segment of an array of Strings. Equivalent to calling writeBytes
+     * for the selected elements.
+     * 
+     * @param buf
+     *            the array to write
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to write
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(String[] buf, int offset, int size) throws IOException;
+
+    /**
+     * This routine provides efficient writing of arrays of any primitive type.
+     * The String class is also handled but it is an error to invoke this method
+     * with an object that is not an array of these types. If the array is
+     * multidimensional, then it calls itself recursively to write the entire
+     * array. Strings are written using the standard 1 byte format (i.e., as in
+     * writeBytes). If the array is an array of objects, then
+     * writePrimitiveArray will be called for each element of the array.
      * 
      * @param o
-     *            The primitive or String array to be written.
+     *            The object to be written. It must be an array of a primitive
+     *            type, Object, or String.
      * @throws IOException
-     *             if the argument is not of the proper type
+     *             if one of the underlying write operations failed
      */
-    public void writeArray(Object o) throws IOException;
+    void writeArray(Object o) throws IOException;
+
 }
