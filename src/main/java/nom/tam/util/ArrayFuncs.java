@@ -104,7 +104,7 @@ public class ArrayFuncs {
      * 
      * @param o
      *            The object whose size is desired.
-     * @deprecated May silently underestimate the size if the size > 2 GB.
+     * @deprecated May silently underestimate the size if the size &gt; 2 GB.
      */
     @Deprecated
     public static int computeSize(Object o) {
@@ -449,7 +449,7 @@ public class ArrayFuncs {
     /**
      * Count the number of elements in an array.
      * 
-     * @deprecated May silently underestimate size if number is > 2 G.
+     * @deprecated May silently underestimate size if number is &gt; 2 G.
      */
     @Deprecated
     public static int nElements(Object o) {
@@ -459,15 +459,13 @@ public class ArrayFuncs {
     /**
      * Allocate an array dynamically. The Array.newInstance method does not
      * throw an error when there is insufficient memory and silently returns a
-     * null.
+     * null.throws an OutOfMemoryError if insufficient space is available.
      * 
      * @param cl
      *            The class of the array.
      * @param dim
      *            The dimension of the array.
      * @return The allocated array.
-     * @throws An
-     *             OutOfMemoryError if insufficient space is available.
      */
     public static Object newInstance(Class<?> cl, int dim) {
         Object o = Array.newInstance(cl, dim);
@@ -479,15 +477,14 @@ public class ArrayFuncs {
 
     /**
      * Allocate an array dynamically. The Array.newInstance method does not
-     * throw an error and silently returns a null.
+     * throw an error and silently returns a null.throws an OutOfMemoryError if
+     * insufficient space is available.
      * 
      * @param cl
      *            The class of the array.
      * @param dims
      *            The dimensions of the array.
      * @return The allocated array.
-     * @throws An
-     *             OutOfMemoryError if insufficient space is available.
      */
     public static Object newInstance(Class<?> cl, int[] dims) {
         if (dims.length == 0) {
@@ -506,7 +503,7 @@ public class ArrayFuncs {
     /**
      * Count the number of elements in an array.
      * 
-     * @deprecated May silently underestimate size if number is > 2 G.
+     * @deprecated May silently underestimate size if number is &gt; 2 G.
      */
     @Deprecated
     public static long nLElements(Object o) {

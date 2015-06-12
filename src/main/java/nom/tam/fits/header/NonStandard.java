@@ -50,7 +50,7 @@ public enum NonStandard implements IFitsHeader {
      * column 11 or higher, indicates that the quoted string should be treated
      * as a continuation of the character string value in the previous key
      * keyword. To conform to this convention, the character string value on the
-     * previous keyword must end with the ampersand character ('&'), but the
+     * previous keyword must end with the ampersand character ('&amp;'), but the
      * ampersand is not part of the value string and should be deleted before
      * concatenating the strings together. The character string value may be
      * continued on any number of consecutive CONTINUE keywords, thus

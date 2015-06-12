@@ -43,19 +43,26 @@ import nom.tam.util.ArrayDataOutput;
 public interface FitsElement {
 
     /**
-     * Get the byte at which this element begins. This is only available if the
-     * data is originally read from a random access medium.
+     * @return the byte at which this element begins. This is only available if
+     *         the data is originally read from a random access medium.
      */
     public long getFileOffset();
 
-    /** The size of this element in bytes */
+    /**
+     * @return The size of this element in bytes
+     */
     public long getSize();
 
     /**
-     * Read the contents of the element from an input source.
+     * Read a data array into the current object and if needed position to the
+     * beginning of the next FITS block.
      * 
      * @param in
-     *            The input source.
+     *            The input data stream
+     * @throws FitsException
+     *             if the read was unsuccessful.
+     * @throws IOException
+     *             if the read was unsuccessful.
      */
     public void read(ArrayDataInput in) throws FitsException, IOException;
 
@@ -70,10 +77,17 @@ public interface FitsElement {
      * Rewrite the contents of the element in place. The data must have been
      * orignally read from a random access device, and the size of the element
      * may not have changed.
+     * 
+     * @throws FitsException
+     *             if the rewrite was unsuccessful.
+     * @throws IOException
+     *             if the rewrite was unsuccessful.
      */
     public void rewrite() throws FitsException, IOException;
 
-    /** Can this element be rewritten? */
+    /**
+     * @return <code>true</code> if this element can be rewritten?
+     */
     public boolean rewriteable();
 
     /**
@@ -81,6 +95,10 @@ public interface FitsElement {
      * 
      * @param out
      *            The data sink.
+     * @throws FitsException
+     *             if the write was unsuccessful.
+     * @throws IOException
+     *             if the write was unsuccessful.
      */
     public void write(ArrayDataOutput out) throws FitsException, IOException;
 }

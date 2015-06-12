@@ -61,7 +61,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     public static final int BITPIX_DOUBLE = -64;
 
-    /** Get an HDU without content */
+    /**
+     * @return an HDU without content
+     */
     public static BasicHDU<?> getDummyHDU() {
         try {
             // Update suggested by Laurent Bourges
@@ -87,11 +89,10 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
-     * Check if this object can be described as a FITS image. This method is
-     * static but should be implemented by all subclasses. TODO: refactor this
-     * to be in a meta object so it can inherit normally also see
-     * {@link #isHeader(Header)}
-     * 
+     * @return if this object can be described as a FITS image. This method is
+     *         static but should be implemented by all subclasses. TODO:
+     *         refactor this to be in a meta object so it can inherit normally
+     *         also see {@link #isHeader(Header)}
      * @param o
      *            The Object being tested.
      */
@@ -124,7 +125,18 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         this.myHeader.addValue(key.key(), val, key.comment());
     }
 
-    /** Add information to the header */
+    /**
+     * Add information to the header.
+     * 
+     * @param key
+     *            key to add to the header
+     * @param val
+     *            value for the key to add
+     * @param comment
+     *            comment for the key/value pair
+     * @throws HeaderCardException
+     *             if the card does not folow the specification
+     */
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
         this.myHeader.addValue(key, val, comment);
     }
@@ -142,8 +154,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
-     * Indicate whether HDU can be primary HDU. This method must be overriden in
-     * HDU types which can appear at the beginning of a FITS file.
+     * @return Indicate whether HDU can be primary HDU. This method must be
+     *         overriden in HDU types which can appear at the beginning of a
+     *         FITS file.
      */
     boolean canBePrimary() {
         return false;
@@ -228,7 +241,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         }
     }
 
-    /** Get the associated Data object */
+    /**
+     * @return the associated Data object
+     */
     public final DataClass getData() {
         return this.myData;
     }
@@ -266,7 +281,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         return this.myHeader.getIntValue("GCOUNT", 1);
     }
 
-    /** Get the associated header */
+    /**
+     * @return the associated header
+     */
     public Header getHeader() {
         return this.myHeader;
     }
@@ -281,7 +298,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         return getTrimmedString("INSTRUME");
     }
 
-    /** Get the non-FITS data object */
+    /**
+     * @return the non-FITS data object
+     */
     public Object getKernel() {
         try {
             return this.myData.getKernel();
@@ -362,11 +381,6 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         return getTrimmedString("REFERENC");
     }
 
-    /**
-     * Get the total size in bytes of the HDU.
-     * 
-     * @return The size in bytes.
-     */
     @Override
     public long getSize() {
         int size = 0;
@@ -408,6 +422,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Print out some information about this HDU.
+     * 
+     * @param stream
+     *            the printstream to write the info on
      */
     public abstract void info(PrintStream stream);
 
@@ -416,16 +433,12 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * 
      * @return An unfilled Data object which can be used to read in the data for
      *         this HDU.
-     * @exception FitsException
-     *                if the Data object could not be created from this HDU's
-     *                Header
+     * @throws FitsException
+     *             if the Data object could not be created from this HDU's
+     *             Header
      */
     protected abstract Data manufactureData() throws FitsException;
 
-    /*
-     * Read out the HDU from the data stream. This will overwrite any existing
-     * header and data components.
-     */
     @SuppressWarnings("unchecked")
     @Override
     public void read(ArrayDataInput stream) throws FitsException, IOException {
@@ -434,16 +447,11 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         this.myData.read(stream);
     }
 
-    /**
-     * Reset the input stream to the beginning of the HDU, i.e., the beginning
-     * of the header
-     */
     @Override
     public boolean reset() {
         return this.myHeader.reset();
     }
 
-    /** Rewrite the HDU */
     @Override
     public void rewrite() throws FitsException, IOException {
 
@@ -455,13 +463,19 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         }
     }
 
-    /** Is the HDU rewriteable */
     @Override
     public boolean rewriteable() {
         return this.myHeader.rewriteable() && this.myData.rewriteable();
     }
 
-    /** Indicate that an HDU is the first element of a FITS file. */
+    /**
+     * Indicate that an HDU is the first element of a FITS file.
+     * 
+     * @param newPrimary
+     *            value to set
+     * @throws FitsException
+     *             if the operation failed
+     */
     void setPrimaryHDU(boolean newPrimary) throws FitsException {
 
         if (newPrimary && !canBePrimary()) {
@@ -511,10 +525,6 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     }
 
-    /*
-     * Write out the HDU
-     * @param stream The data stream to be written to.
-     */
     @Override
     public void write(ArrayDataOutput stream) throws FitsException {
         if (this.myHeader != null) {

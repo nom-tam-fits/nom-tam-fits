@@ -31,24 +31,16 @@ package nom.tam.fits;
  * #L%
  */
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PushbackInputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.zip.GZIPInputStream;
 
-import nom.tam.fits.compress.ICompressProvider;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.RandomAccess;
-
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
 /**
  * This class comprises static utility functions used throughout the FITS
@@ -58,16 +50,31 @@ public class FitsUtil {
 
     private static boolean wroteCheckingError = false;
 
-    /** Total size of blocked FITS element */
+    /**
+     * @return Total size of blocked FITS element, using e.v. padding to fits
+     *         block size.
+     * @param size
+     *            the current size.
+     */
     public static int addPadding(int size) {
         return size + padding(size);
     }
 
+    /**
+     * @return Total size of blocked FITS element, using e.v. padding to fits
+     *         block size.
+     * @param size
+     *            the current size.
+     */
     public static long addPadding(long size) {
         return size + padding(size);
     }
 
-    /** Convert an array of booleans to bytes */
+    /**
+     * @return Convert an array of booleans to bytes.
+     * @param bool
+     *            array of booleans
+     */
     static byte[] booleanToByte(boolean[] bool) {
 
         byte[] byt = new byte[bool.length];
@@ -77,8 +84,14 @@ public class FitsUtil {
         return byt;
     }
 
-    /** Convert bytes to Strings */
-    public static String[] byteArrayToStrings(byte[] o, int maxLen) {
+    /**
+     * @return Convert bytes to Strings.
+     * @param bytes
+     *            byte array to convert
+     * @param maxLen
+     *            the max string length
+     */
+    public static String[] byteArrayToStrings(byte[] bytes, int maxLen) {
         boolean checking = FitsFactory.getCheckAsciiStrings();
 
         // Note that if a String in a binary table contains an internal 0,
@@ -87,7 +100,7 @@ public class FitsUtil {
         // data back may not include subsequent characters.
         // No warning of this truncation is given.
 
-        String[] res = new String[o.length / maxLen];
+        String[] res = new String[bytes.length / maxLen];
         for (int i = 0; i < res.length; i += 1) {
 
             int start = i * maxLen;
@@ -99,13 +112,13 @@ public class FitsUtil {
             // that we should be trimming the string at all, but
             // this seems to best meet the desires of the community.
             for (; start < end; start += 1) {
-                if (o[start] != 32) {
+                if (bytes[start] != 32) {
                     break; // Skip only spaces.
                 }
             }
 
             for (; end > start; end -= 1) {
-                if (o[end - 1] != 32) {
+                if (bytes[end - 1] != 32) {
                     break;
                 }
             }
@@ -121,18 +134,18 @@ public class FitsUtil {
             boolean errFound = false;
             for (int j = start; j < end; j += 1) {
 
-                if (o[j] == 0) {
+                if (bytes[j] == 0) {
                     end = j;
                     break;
                 }
                 if (checking) {
-                    if (o[j] < 32 || o[j] > 126) {
+                    if (bytes[j] < 32 || bytes[j] > 126) {
                         errFound = true;
-                        o[j] = 32;
+                        bytes[j] = 32;
                     }
                 }
             }
-            res[i] = AsciiFuncs.asciiString(o, start, end - start);
+            res[i] = AsciiFuncs.asciiString(bytes, start, end - start);
             if (errFound && !FitsUtil.wroteCheckingError) {
                 System.err.println("Warning: Invalid ASCII character[s] detected in string:" + res[i]);
                 System.err.println("   Converted to space[s].  Any subsequent invalid characters will be converted silently");
@@ -143,7 +156,9 @@ public class FitsUtil {
 
     }
 
-    /** Convert an array of bytes to booleans */
+    /**
+     * @return Convert an array of bytes to booleans.
+     */
     static boolean[] byteToBoolean(byte[] byt) {
         boolean[] bool = new boolean[byt.length];
 
@@ -153,7 +168,9 @@ public class FitsUtil {
         return bool;
     }
 
-    /** Find out where we are in a random access file */
+    /**
+     * @return Find out where we are in a random access file .
+     */
     public static long findOffset(Object o) {
 
         if (o instanceof RandomAccess) {
@@ -164,9 +181,12 @@ public class FitsUtil {
     }
 
     /**
-     * Get a stream to a URL accommodating possible redirections. Note that if a
-     * redirection request points to a different protocol than the original
-     * request, then the redirection is not handled automatically.
+     * @return Get a stream to a URL accommodating possible redirections. Note
+     *         that if a redirection request points to a different protocol than
+     *         the original request, then the redirection is not handled
+     *         automatically.
+     * @throws IOException
+     *             if the operation failed
      */
     public static InputStream getURLStream(URL url, int level) throws IOException {
 
@@ -201,12 +221,16 @@ public class FitsUtil {
     }
 
     /**
-     * Get the maximum length of a String in a String array.
+     * @return Get the maximum length of a String in a String array.
+     * @param strings
+     *            array of strings to check
+     * @throws FitsException
+     *             if the operation failed
      */
-    public static int maxLength(String[] o) throws FitsException {
+    public static int maxLength(String[] strings) throws FitsException {
 
         int max = 0;
-        for (String element : o) {
+        for (String element : strings) {
             if (element != null && element.length() > max) {
                 max = element.length();
             }
@@ -214,12 +238,22 @@ public class FitsUtil {
         return max;
     }
 
-    /** Add padding to an output stream. */
+    /**
+     * Add padding to an output stream.
+     * 
+     * @throws FitsException
+     *             if the operation failed
+     */
     public static void pad(ArrayDataOutput stream, long size) throws FitsException {
         pad(stream, size, (byte) 0);
     }
 
-    /** Add padding to an output stream. */
+    /**
+     * Add padding to an output stream.
+     * 
+     * @throws FitsException
+     *             if the operation failed
+     */
     public static void pad(ArrayDataOutput stream, long size, byte fill) throws FitsException {
         int len = padding(size);
         if (len > 0) {
@@ -236,7 +270,7 @@ public class FitsUtil {
         }
     }
 
-    /** How many bytes are needed to fill the last 2880 block? */
+    /** @return How many bytes are needed to fill the last 2880 block? */
     public static int padding(int size) {
         return padding((long) size);
     }
@@ -250,7 +284,12 @@ public class FitsUtil {
         return mod;
     }
 
-    /** Reposition a random access stream to a requested offset */
+    /**
+     * Reposition a random access stream to a requested offset.
+     * 
+     * @throws FitsException
+     *             if the operation failed
+     */
     public static void reposition(Object o, long offset) throws FitsException {
 
         if (o == null) {
@@ -268,7 +307,7 @@ public class FitsUtil {
     }
 
     /**
-     * Copy an array of Strings to bytes.
+     * @return Copy an array of Strings to bytes.
      */
     public static byte[] stringsToByteArray(String[] o, int maxLen) {
         byte[] res = new byte[o.length * maxLen];

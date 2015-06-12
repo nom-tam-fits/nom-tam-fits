@@ -40,8 +40,6 @@ import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import nom.tam.fits.FitsDate;
-
 public class CloseIS extends FilterInputStream {
 
     private static Logger LOG = Logger.getLogger(CloseIS.class.getName());

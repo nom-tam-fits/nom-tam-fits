@@ -35,43 +35,44 @@ import java.io.PrintStream;
 
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.PrimitiveTypeEnum;
 
 /** FITS image header/data unit */
 public class ImageHDU extends BasicHDU<ImageData> {
 
-    /** Encapsulate an object as an ImageHDU. */
+    /**
+     * @return Encapsulate an object as an ImageHDU.
+     * @param o
+     *            object to encapsulate
+     * @throws FitsException
+     *             if the operation failed
+     */
     public static Data encapsulate(Object o) throws FitsException {
         return new ImageData(o);
     }
 
     /**
-     * Check if this object can be described as a FITS image.
-     * 
+     * @return is this object can be described as a FITS image.
      * @param o
      *            The Object being tested.
      */
     public static boolean isData(Object o) {
-        String s = o.getClass().getName();
+        if (o.getClass().isArray()) {
+            PrimitiveTypeEnum type = PrimitiveTypeEnum.valueOf(ArrayFuncs.getBaseClass(o));
+            return type != PrimitiveTypeEnum.BOOLEAN && //
+                    type != PrimitiveTypeEnum.STRING && //
+                    type != PrimitiveTypeEnum.UNKNOWN;
 
-        int i;
-        for (i = 0; i < s.length(); i += 1) {
-            if (s.charAt(i) != '[') {
-                break;
-            }
         }
+        return false;
 
-        // Allow all non-boolean/Object arrays.
-        // This does not check the rectangularity of the array though.
-        if (i <= 0 || s.charAt(i) == 'L' || s.charAt(i) == 'Z') {
-            return false;
-        } else {
-            return true;
-        }
     }
 
     /**
      * Check that this HDU has a valid header for this type.
      * 
+     * @param hdr
+     *            header to check
      * @return <CODE>true</CODE> if this HDU has a valid header.
      */
     public static boolean isHeader(Header hdr) {
@@ -96,12 +97,11 @@ public class ImageHDU extends BasicHDU<ImageData> {
     }
 
     /**
-     * Create a header that describes the given image data.
-     * 
+     * @return Create a header that describes the given image data.
      * @param d
      *            The image to be described.
-     * @exception FitsException
-     *                if the object does not contain valid image data.
+     * @throws FitsException
+     *             if the object does not contain valid image data.
      */
     public static Header manufactureHeader(Data d) throws FitsException {
 
@@ -122,8 +122,8 @@ public class ImageHDU extends BasicHDU<ImageData> {
      *            the header for the image.
      * @param d
      *            the data used in the image.
-     * @exception FitsException
-     *                if there was a problem with the data.
+     * @throws FitsException
+     *             if there was a problem with the data.
      */
     public ImageHDU(Header h, Data d) throws FitsException {
         this.myData = (ImageData) d;
@@ -177,8 +177,8 @@ public class ImageHDU extends BasicHDU<ImageData> {
      * 
      * @return An unfilled Data object which can be used to read in the data for
      *         this HDU.
-     * @exception FitsException
-     *                if the image extension could not be created.
+     * @throws FitsException
+     *             if the image extension could not be created.
      */
     @Override
     protected Data manufactureData() throws FitsException {

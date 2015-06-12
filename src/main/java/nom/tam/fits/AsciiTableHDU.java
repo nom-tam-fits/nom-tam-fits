@@ -107,9 +107,9 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      * 
      * @return An unfilled Data object which can be used to read in the data for
      *         this HDU.
-     * @exception FitsException
-     *                if the Data object could not be created from this HDU's
-     *                Header
+     * @throws FitsException
+     *             if the Data object could not be created from this HDU's
+     *             Header
      */
     public static Data manufactureData(Header hdr) throws FitsException {
         return new AsciiTable(hdr);
@@ -130,8 +130,6 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      *            the template specifying the ascii table.
      * @param d
      *            the FITS data structure containing the table data.
-     * @exception FitsException
-     *                if there was a problem with the header.
      */
     public AsciiTableHDU(Header h, Data d) {
         super((AsciiTable) d);

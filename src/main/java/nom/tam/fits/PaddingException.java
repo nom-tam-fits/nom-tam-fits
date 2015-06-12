@@ -49,34 +49,39 @@ package nom.tam.fits;
 public class PaddingException extends FitsException {
 
     /**
-     *
+     * serial version id.
      */
     private static final long serialVersionUID = 1L;
 
     /**
      * The HDU where the error happened.
      */
-    private BasicHDU truncatedHDU;
+    private BasicHDU<?> truncatedHDU;
 
     /**
      * When the error is thrown, the data object being read must be supplied. We
      * initially create a dummy header for this. If someone is reading the
      * entire HDU, then they can trap the exception and set the header to the
      * appropriate value.
+     * 
+     * @param data
+     *            the data that was not padded.
+     * @throws FitsException
+     *             if the data could not be used to craete a hdu.
      */
-    public PaddingException(Data datum) throws FitsException {
-        this.truncatedHDU = FitsFactory.HDUFactory(datum.getKernel());
+    public PaddingException(Data data) throws FitsException {
+        this.truncatedHDU = FitsFactory.HDUFactory(data.getKernel());
         // We want to use the original Data object... so
-        this.truncatedHDU = FitsFactory.HDUFactory(this.truncatedHDU.getHeader(), datum);
+        this.truncatedHDU = FitsFactory.HDUFactory(this.truncatedHDU.getHeader(), data);
     }
 
-    public PaddingException(String msg, Data datum) throws FitsException {
+    public PaddingException(String msg, Data data) throws FitsException {
         super(msg);
-        this.truncatedHDU = FitsFactory.HDUFactory(datum.getKernel());
-        this.truncatedHDU = FitsFactory.HDUFactory(this.truncatedHDU.getHeader(), datum);
+        this.truncatedHDU = FitsFactory.HDUFactory(data.getKernel());
+        this.truncatedHDU = FitsFactory.HDUFactory(this.truncatedHDU.getHeader(), data);
     }
 
-    public BasicHDU getTruncatedHDU() {
+    public BasicHDU<?> getTruncatedHDU() {
         return this.truncatedHDU;
     }
 

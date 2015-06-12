@@ -56,8 +56,8 @@ import nom.tam.util.RandomAccess;
  * long string keyword values to be split among multiple keywords
  * 
  * <pre>
- *    KEY        = 'ABC&'   /A comment
- *    CONTINUE      'DEF&'  / Another comment
+ *    KEY        = 'ABC&amp;'   /A comment
+ *    CONTINUE      'DEF&amp;'  / Another comment
  *    CONTINUE      'GHIJKL '
  * </pre>
  * 
@@ -84,6 +84,10 @@ public class Header implements FitsElement {
      *            The input stream to read the data from.
      * @return <CODE>null</CODE> if there was a problem with the header;
      *         otherwise return the header read from the input stream.
+     * @throws TruncatedFileException
+     *             if the stream ended prematurely
+     * @throws IOException
+     *             if the header could not be read.
      */
     public static Header readHeader(ArrayDataInput dis) throws TruncatedFileException, IOException {
         Header myHeader = new Header();
@@ -147,6 +151,10 @@ public class Header implements FitsElement {
      * 
      * @param is
      *            The input stream where header information is expected.
+     * @throws IOException
+     *             if the header could not be read.
+     * @throws TruncatedFileException
+     *             if the stream ended prematurely
      */
     public Header(ArrayDataInput is) throws TruncatedFileException, IOException {
         read(is);
@@ -157,8 +165,8 @@ public class Header implements FitsElement {
      * 
      * @param o
      *            The data object to be described.
-     * @exception FitsException
-     *                if the data was not valid for this header.
+     * @throws FitsException
+     *             if the data was not valid for this header.
      */
     public Header(Data o) throws FitsException {
         o.fillHeader(this);
@@ -205,8 +213,8 @@ public class Header implements FitsElement {
      *            The header key.
      * @param val
      *            The boolean value.
-     * @exception HeaderCardException
-     *                If the parameters cannot build a valid FITS card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(IFitsHeader key, boolean val) throws HeaderCardException {
         addValue(key.key(), val, key.comment());
@@ -220,8 +228,8 @@ public class Header implements FitsElement {
      *            The header key.
      * @param val
      *            The double value.
-     * @exception HeaderCardException
-     *                If the parameters cannot build a valid FITS card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(IFitsHeader key, double val) throws HeaderCardException {
         addValue(key.key(), val, key.comment());
@@ -235,8 +243,8 @@ public class Header implements FitsElement {
      *            The header key.
      * @param val
      *            The long value.
-     * @exception HeaderCardException
-     *                If the parameters cannot build a valid FITS card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(IFitsHeader key, long val) throws HeaderCardException {
         addValue(key.key(), val, key.comment());
@@ -249,8 +257,8 @@ public class Header implements FitsElement {
      *            The header key.
      * @param val
      *            The string value.
-     * @exception HeaderCardException
-     *                If the parameters cannot build a valid FITS card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(IFitsHeader key, String val) throws HeaderCardException {
         addValue(key.key(), val, key.comment());
@@ -266,8 +274,8 @@ public class Header implements FitsElement {
      *            The bigDecimal value.
      * @param comment
      *            A comment to append to the card.
-     * @exception HeaderCardException
-     *                If the parameters cannot build a valid FITS card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, BigDecimal val, String comment) throws HeaderCardException {
         removeCard(key);
@@ -284,8 +292,8 @@ public class Header implements FitsElement {
      *            The BigInteger value.
      * @param comment
      *            A comment to append to the card.
-     * @exception HeaderCardException
-     *                If the parameters cannot build a valid FITS card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, BigInteger val, String comment) throws HeaderCardException {
         removeCard(key);
@@ -301,8 +309,8 @@ public class Header implements FitsElement {
      *            The boolean value.
      * @param comment
      *            A comment to append to the card.
-     * @exception HeaderCardException
-     *                If the parameters cannot build a valid FITS card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
         removeCard(key);
@@ -319,8 +327,8 @@ public class Header implements FitsElement {
      *            The double value.
      * @param comment
      *            A comment to append to the card.
-     * @exception HeaderCardException
-     *                If the parameters cannot build a valid FITS card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, double val, String comment) throws HeaderCardException {
         removeCard(key);
@@ -337,8 +345,8 @@ public class Header implements FitsElement {
      *            The long value.
      * @param comment
      *            A comment to append to the card.
-     * @exception HeaderCardException
-     *                If the parameters cannot build a valid FITS card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, long val, String comment) throws HeaderCardException {
         removeCard(key);
@@ -354,8 +362,8 @@ public class Header implements FitsElement {
      *            The string value.
      * @param comment
      *            A comment to append to the card.
-     * @exception HeaderCardException
-     *                If the parameters cannot build a valid FITS card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, String val, String comment) throws HeaderCardException {
         removeCard(key);
@@ -469,8 +477,8 @@ public class Header implements FitsElement {
      * 
      * @param key
      *            the keyword to be found.
-     * @return <CODE>true<CODE> if the specified keyword is present in this
-     * 		table; <CODE>false<CODE> otherwise.
+     * @return <code>true</code> if the specified keyword is present in this
+     *         table; <code>false</code> otherwise.
      */
     public final boolean containsKey(String key) {
         return this.cards.containsKey(key);
@@ -740,17 +748,20 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Return the list of duplicate cards. Note that when the header is read in,
-     * only the last entry for a given keyword is retained in the active header.
-     * This method returns earlier cards that have been discarded in the order
-     * in which they were encountered in the header. It is possible for there to
-     * be many cards with the same keyword in this list.
+     * @return the list of duplicate cards. Note that when the header is read
+     *         in, only the last entry for a given keyword is retained in the
+     *         active header. This method returns earlier cards that have been
+     *         discarded in the order in which they were encountered in the
+     *         header. It is possible for there to be many cards with the same
+     *         keyword in this list.
      */
     public List<HeaderCard> getDuplicates() {
         return this.duplicates;
     }
 
-    /** Get the offset of this header */
+    /**
+     * @return Get the offset of this header
+     */
     @Override
     public long getFileOffset() {
         return this.fileOffset;
@@ -769,8 +780,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the <CODE>float</CODE> value associated with the given key.
-     * 
+     * @return the <CODE>float</CODE> value associated with the given key.
      * @param key
      *            The header key.
      * @param dft
@@ -792,8 +802,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the <CODE>float</CODE> value associated with the given key.
-     * 
+     * @return the <CODE>float</CODE> value associated with the given key.
      * @param key
      *            The header key.
      * @param dft
@@ -819,8 +828,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the value associated with the key as an int.
-     * 
+     * @return the value associated with the key as an int.
      * @param key
      *            The header key.
      * @param dft
@@ -842,8 +850,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the value associated with the key as an int.
-     * 
+     * @return the value associated with the key as an int.
      * @param key
      *            The header key.
      * @param dft
@@ -926,13 +933,15 @@ public class Header implements FitsElement {
         return fcard.getValue(Long.class, dft).longValue();
     }
 
-    /** Find the number of cards in the header */
+    /**
+     * @return the number of cards in the header
+     */
     public int getNumberOfCards() {
         return this.cards.size();
     }
 
     /**
-     * Find the number of physical cards in the header.
+     * @return the number of physical cards in the header.
      */
     public int getNumberOfPhysicalCards() {
         int count = 0;
@@ -943,13 +952,15 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the size of the original header in bytes.
+     * @return the size of the original header in bytes.
      */
     public long getOriginalSize() {
         return FitsUtil.addPadding(this.originalCardCount * 80);
     }
 
-    /** Get the size of the header in bytes */
+    /**
+     * @return the size of the header in bytes
+     */
     @Override
     public long getSize() {
         return headerSize();
@@ -977,7 +988,7 @@ public class Header implements FitsElement {
         return fcard.getValue();
     }
 
-    /** Were duplicate header keys found when this record was read in? */
+    /** @return Were duplicate header keys found when this record was read in? */
     public boolean hadDuplicates() {
         return this.duplicates != null;
     }
@@ -1016,8 +1027,6 @@ public class Header implements FitsElement {
      *            The comment style header.
      * @param value
      *            A string to follow the header.
-     * @exception HeaderCardException
-     *                If the parameters cannot build a valid FITS card.
      */
     public void insertCommentStyle(String header, String value) {
         // Should just truncate strings, so we should never get
@@ -1077,22 +1086,28 @@ public class Header implements FitsElement {
 
     }
 
-    /** Get an iterator over the header cards */
+    /** @return an iterator over the header cards */
     public Cursor<String, HeaderCard> iterator() {
         return this.cards.iterator(0);
     }
 
-    /** Get an iterator over the header cards starting at an index */
+    /**
+     * @return an iterator over the header cards starting at an index
+     */
     public Cursor<String, HeaderCard> iterator(int index) {
         return this.cards.iterator(index);
     }
 
-    /** Create the data element corresponding to the current header */
+    /**
+     * @return Create the data element corresponding to the current header
+     */
     public Data makeData() throws FitsException {
         return FitsFactory.dataFactory(this);
     }
 
-    /** Get the next card in the Header using the current iterator */
+    /**
+     * @return the next card in the Header using the current iterator
+     */
     public HeaderCard nextCard() {
         if (this.iter == null) {
             return null;
@@ -1124,8 +1139,8 @@ public class Header implements FitsElement {
      * 
      * @param o
      *            The data object to be described.
-     * @exception FitsException
-     *                if the data was not valid for this header.
+     * @throws FitsException
+     *             if the data was not valid for this header.
      * @deprecated Use the appropriate Header constructor.
      */
     @Deprecated
@@ -1171,6 +1186,10 @@ public class Header implements FitsElement {
      * 
      * @param dis
      *            The input stream to read the data from.
+     * @throws TruncatedFileException
+     *             the the stream ended prematurely
+     * @throws IOException
+     *             if the operation failed
      */
     @Override
     public void read(ArrayDataInput dis) throws TruncatedFileException, IOException {
@@ -1259,6 +1278,8 @@ public class Header implements FitsElement {
      * 
      * @param key
      *            The header key.
+     * @throws HeaderCardException
+     *             if the operation failed
      */
     public void removeCard(String key) throws HeaderCardException {
         if (this.cards.containsKey(key)) {
@@ -1473,10 +1494,8 @@ public class Header implements FitsElement {
         }
     }
 
-    /***** Deprecated methods *******/
     /**
-     * Find the number of cards in the header
-     * 
+     * @return the number of cards in the header
      * @deprecated see numberOfCards(). The units of the size of the header may
      *             be unclear.
      */
@@ -1558,10 +1577,10 @@ public class Header implements FitsElement {
      * 
      * @param newHdr
      *            the list of new header data lines to replace the current ones.
-     * @throws nom.tam.fits.HeaderCardException
-     * @since 2005-10-24
+     * @throws HeaderCardException
+     *             if the operation failed
      */
-    public void updateLines(final Header newHdr) throws nom.tam.fits.HeaderCardException {
+    public void updateLines(final Header newHdr) throws HeaderCardException {
         Cursor<String, HeaderCard> j = newHdr.iterator();
 
         while (j.hasNext()) {
@@ -1584,8 +1603,8 @@ public class Header implements FitsElement {
      * 
      * @param dos
      *            The output stream to which the data is to be written.
-     * @exception FitsException
-     *                if the header could not be written.
+     * @throws FitsException
+     *             if the header could not be written.
      */
     @Override
     public void write(ArrayDataOutput dos) throws FitsException {

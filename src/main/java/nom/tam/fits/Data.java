@@ -38,54 +38,75 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.RandomAccess;
 
 /**
- * This class provides methods to access the data segment of an HDU.
+ * This class provides methods to access the data segment of an HDU.<br/>
+ * This is the object which contains the actual data for the HDU.
+ * <ul>
+ * <li>For images and primary data this is a simple (but possibly
+ * multi-dimensional) primitive array. When group data is supported it will be a
+ * possibly multidimensional array of group objects.
+ * <li>For ASCII data it is a two dimensional Object array where each of the
+ * constituent objects is a primitive array of length 1.
+ * <li>For Binary data it is a two dimensional Object array where each of the
+ * constituent objects is a primitive array of arbitrary (more or less)
+ * dimensionality.
+ * </ul>
  */
 public abstract class Data implements FitsElement {
 
     /**
-     * This is the object which contains the actual data for the HDU.
-     * <ul>
-     * <li>For images and primary data this is a simple (but possibly
-     * multi-dimensional) primitive array. When group data is supported it will
-     * be a possibly multidimensional array of group objects.
-     * <li>For ASCII data it is a two dimensional Object array where each of the
-     * constituent objects is a primitive array of length 1.
-     * <li>For Binary data it is a two dimensional Object array where each of
-     * the constituent objects is a primitive array of arbitrary (more or less)
-     * dimensionality.
-     * </ul>
+     * The starting location of the data when last read
      */
-    /** The starting location of the data when last read */
     protected long fileOffset = -1;
 
-    /** The size of the data when last read */
+    /**
+     * The size of the data when last read
+     */
     protected long dataSize;
 
-    /** The inputstream used. */
+    /**
+     * The input stream used.
+     */
     protected RandomAccess input;
 
     /**
-     * Modify a header to point to this data
+     * Modify a header to point to this data, this differs per subclass, they
+     * all need oder provided different informations to the header. Basically
+     * they describe the structure of this data object.
+     * 
+     * @param head
+     *            header to fill with the data from the current data object
+     * @throws FitsException
+     *             if the operation fails
      */
     abstract void fillHeader(Header head) throws FitsException;
 
     /**
-     * Return the data array object.
+     * @return the data array object.
+     * @throws FitsException
+     *             if the data could not be gathered .
      */
     public abstract Object getData() throws FitsException;
 
-    /** Get the file offset */
+    /**
+     * @return the file offset
+     */
     @Override
     public long getFileOffset() {
         return this.fileOffset;
     }
 
-    /** Return the non-FITS data object */
+    /**
+     * @return the non-FITS data object.
+     * @throws FitsException
+     *             if the data could not be gathered .
+     */
     public Object getKernel() throws FitsException {
         return getData();
     }
 
-    /** Get the size of the data element in bytes */
+    /**
+     * @return the size of the data element in bytes.
+     */
     @Override
     public long getSize() {
         return FitsUtil.addPadding(getTrueSize());
@@ -93,15 +114,8 @@ public abstract class Data implements FitsElement {
 
     abstract long getTrueSize();
 
-    /**
-     * Read a data array into the current object and if needed position to the
-     * beginning of the next FITS block.
-     * 
-     * @param i
-     *            The input data stream
-     */
     @Override
-    public abstract void read(ArrayDataInput i) throws FitsException;
+    public abstract void read(ArrayDataInput in) throws FitsException;
 
     @Override
     public boolean reset() {
@@ -138,7 +152,12 @@ public abstract class Data implements FitsElement {
         }
     }
 
-    /** Set the fields needed for a re-read */
+    /**
+     * Set the fields needed for a re-read.
+     * 
+     * @param o
+     *            reread information.
+     */
     protected void setFileOffset(Object o) {
         if (o instanceof RandomAccess) {
             this.fileOffset = FitsUtil.findOffset(o);

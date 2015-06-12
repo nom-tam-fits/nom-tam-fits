@@ -40,7 +40,6 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
-import nom.tam.util.RandomAccess;
 
 /**
  * This class supports the FITS heap. This is currently used for variable length
@@ -57,16 +56,6 @@ public class FitsHeap implements FitsElement {
      * The current used size of the buffer <= heap.length
      */
     private int heapSize;
-
-    /**
-     * Has the heap ever been expanded?
-     */
-    private boolean expanded = false;
-
-    /**
-     * The stream the last read used
-     */
-    private ArrayDataInput input;
 
     /**
      * Our current offset into the heap. When we read from the heap we use a
@@ -123,7 +112,6 @@ public class FitsHeap implements FitsElement {
         allocate();
 
         if (this.heapSize + need > this.heap.length) {
-            this.expanded = true;
             int newlen = (this.heapSize + need) * 2;
             if (newlen < 16384) {
                 newlen = 16384;
@@ -141,6 +129,8 @@ public class FitsHeap implements FitsElement {
      *            The offset at which the data begins.
      * @param array
      *            The array to be extracted.
+     * @throws FitsException
+     *             if the operation failed
      */
     public void getData(int offset, Object array) throws FitsException {
         // System.out.println("FitsHeap getting at:"+offset+" to "+array+" "+heapOffset);
@@ -212,11 +202,6 @@ public class FitsHeap implements FitsElement {
      */
     @Override
     public void read(ArrayDataInput str) throws FitsException {
-
-        if (str instanceof RandomAccess) {
-            this.input = str;
-        }
-
         if (this.heapSize > 0) {
             allocate();
             try {
@@ -245,7 +230,7 @@ public class FitsHeap implements FitsElement {
     }
 
     /**
-     * Return the size of the Heap
+     * @return the size of the Heap
      */
     public int size() {
         return this.heapSize;

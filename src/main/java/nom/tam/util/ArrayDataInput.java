@@ -46,6 +46,8 @@ public interface ArrayDataInput extends java.io.DataInput {
      *            the maximum limit of bytes that can be read before the mark
      *            position becomes invalid.
      * @see java.io.BufferedInputStream#reset()
+     * @throws IOException
+     *             if the operation failed
      */
     public void mark(int readlimit) throws IOException;
 
@@ -93,6 +95,7 @@ public interface ArrayDataInput extends java.io.DataInput {
      * @param o
      *            A [multidimensional] primitive (or Object) array.
      * @deprecated See readLArray(Object o).
+     * @return the number of bytes read
      */
     @Deprecated
     public int readArray(Object o) throws IOException;

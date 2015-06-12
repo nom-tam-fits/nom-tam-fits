@@ -318,14 +318,14 @@ public final class ByteFormatter {
      * Recall that the binary representation of the double is of the form
      * <tt>d = 0.bbbbbbbb x 2<sup>n</sup></tt> where there are up to 53 binary
      * digits in the binary fraction (including the assumed leading 1 bit for
-     * normalized numbers). We find a value m such that <tt>10<sup>m</su> d</tt>
-     * is between <tt>2<sup>53</sup></tt> and <tt>>2<sup>63</sup></tt>. This
-     * product will be exactly convertible to a long with no loss of precision.
-     * Getting the decimal representation for that is trivial (see formatLong).
-     * This is a decimal mantissa and we have an exponent (<tt>-m</tt>). All we
-     * have to do is manipulate the decimal point to where we want to see it.
-     * Errors can arise due to roundoff in the scaling multiplication, but
-     * should be no more than a single bit.
+     * normalized numbers). We find a value m such that
+     * <tt>10<sup>m</sup> d</tt> is between <tt>2<sup>53</sup></tt> and
+     * <tt>2<sup>63</sup></tt>. This product will be exactly convertible to a
+     * long with no loss of precision. Getting the decimal representation for
+     * that is trivial (see formatLong). This is a decimal mantissa and we have
+     * an exponent (<tt>-m</tt>). All we have to do is manipulate the decimal
+     * point to where we want to see it. Errors can arise due to roundoff in the
+     * scaling multiplication, but should be no more than a single bit.
      * 
      * @param val
      *            Double to be formatted
@@ -428,14 +428,14 @@ public final class ByteFormatter {
      * Recall that the binary representation of the float is of the form
      * <tt>d = 0.bbbbbbbb x 2<sup>n</sup></tt> where there are up to 24 binary
      * digits in the binary fraction (including the assumed leading 1 bit for
-     * normalized numbers). We find a value m such that <tt>10<sup>m</su> d</tt>
-     * is between <tt>2<sup>24</sup></tt> and <tt>>2<sup>32</sup></tt>. This
-     * product will be exactly convertible to an int with no loss of precision.
-     * Getting the decimal representation for that is trivial (see
-     * formatInteger). This is a decimal mantissa and we have an exponent (
-     * <tt>-m</tt>). All we have to do is manipulate the decimal point to where
-     * we want to see it. Errors can arise due to roundoff in the scaling
-     * multiplication, but should be very small.
+     * normalized numbers). We find a value m such that
+     * <tt>10<sup>m</sup> d</tt> is between <tt>2<sup>24</sup></tt> and
+     * <tt>2<sup>32</sup></tt>. This product will be exactly convertible to an
+     * int with no loss of precision. Getting the decimal representation for
+     * that is trivial (see formatInteger). This is a decimal mantissa and we
+     * have an exponent ( <tt>-m</tt>). All we have to do is manipulate the
+     * decimal point to where we want to see it. Errors can arise due to
+     * roundoff in the scaling multiplication, but should be very small.
      * 
      * @param val
      *            Float to be formatted

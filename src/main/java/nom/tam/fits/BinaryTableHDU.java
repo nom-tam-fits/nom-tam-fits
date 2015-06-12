@@ -51,7 +51,13 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         "TDIM"
     };
 
-    /** Encapsulate data in a BinaryTable data type */
+    /**
+     * @return Encapsulate data in a BinaryTable data type
+     * @param o
+     *            data to encapsulate
+     * @throws FitsException
+     *             if the type of the data is not usable as data
+     */
     public static Data encapsulate(Object o) throws FitsException {
         if (o instanceof nom.tam.util.ColumnTable) {
             return new BinaryTable((nom.tam.util.ColumnTable<?>) o);
@@ -100,25 +106,23 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     }
 
     /**
-     * Create data from a binary table header.
-     * 
+     * @return a new created data from a binary table header.
      * @param header
      *            the template specifying the binary table.
-     * @exception FitsException
-     *                if there was a problem with the header.
+     * @throws FitsException
+     *             if there was a problem with the header.
      */
     public static Data manufactureData(Header header) throws FitsException {
         return new BinaryTable(header);
     }
 
     /**
-     * Build a binary table HDU from the supplied data.
-     * 
+     * @return a newly created binary table HDU from the supplied data.
      * @param data
      *            the data used to build the binary table. This is typically
      *            some kind of array of objects.
-     * @exception FitsException
-     *                if there was a problem with the data.
+     * @throws FitsException
+     *             if there was a problem with the data.
      */
     public static Header manufactureHeader(Data data) throws FitsException {
         Header hdr = new Header();
@@ -146,8 +150,8 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      *            number of rows in the table should be 30 and this column will
      *            have elements which are 2-d integer arrays with TDIM =
      *            (10,20).
-     * @exception FitsException
-     *                the column could not be added.
+     * @throws FitsException
+     *             the column could not be added.
      */
     @Override
     public int addColumn(Object data) throws FitsException {
@@ -241,6 +245,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      *            The 0-based index of the column to be converted.
      * @return Whether the column can be converted
      * @throws FitsException
+     *             if the header could not be adapted
      */
     public boolean setComplexColumn(int index) throws FitsException {
         boolean status = false;

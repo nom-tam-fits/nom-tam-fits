@@ -33,7 +33,7 @@ package nom.tam.fits;
 
 /**
  * This class allows FITS binary and ASCII tables to be accessed via a common
- * interface. Bug Fix: 3/28/01 to findColumn.
+ * interface.
  */
 public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> {
 
@@ -48,12 +48,20 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         this.myData = td;
     }
 
-    /** Add a column to the table. */
+    /**
+     * Add a column to the table.
+     * 
+     * @throws FitsException
+     *             if the operation failed
+     */
     public abstract int addColumn(Object data) throws FitsException;
 
     /**
      * Add a row to the end of the table. If this is the first row, then this
      * will add appropriate columns for each of the entries.
+     * 
+     * @throws FitsException
+     *             if the operation failed
      */
     public int addRow(Object[] newRow) throws FitsException {
 
@@ -71,6 +79,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Delete a set of columns from a table.
+     * 
+     * @throws FitsException
+     *             if the operation failed
      */
     public void deleteColumnsIndexOne(int column, int len) throws FitsException {
         deleteColumnsIndexZero(column - 1, len);
@@ -85,6 +96,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *            The number of columns to delete.
      * @param fields
      *            Stems for the header fields to be removed for the table.
+     * @throws FitsException
+     *             if the operation failed
      */
     public void deleteColumnsIndexOne(int column, int len, String[] fields) throws FitsException {
         deleteColumnsIndexZero(column - 1, len, fields);
@@ -92,6 +105,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Delete a set of columns from a table.
+     * 
+     * @throws FitsException
+     *             if the operation failed
      */
     public void deleteColumnsIndexZero(int column, int len) throws FitsException {
         deleteColumnsIndexZero(column, len, columnKeyStems());
@@ -106,6 +122,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *            The number of columns to delete.
      * @param fields
      *            Stems for the header fields to be removed for the table.
+     * @throws FitsException
+     *             if the operation failed
      */
     public void deleteColumnsIndexZero(int column, int len, String[] fields) throws FitsException {
 
@@ -207,6 +225,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Get a specific column from the table using 0-based column indexing.
+     * 
+     * @throws FitsException
+     *             if the operation failed
      */
     public Object getColumn(int col) throws FitsException {
         return this.myData.getColumn(col);
@@ -219,6 +240,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @param colName
      *            The name of the column to be extracted.
      * @throws FitsException
+     *             if the operation failed
      */
     public Object getColumn(String colName) throws FitsException {
         return getColumn(findColumn(colName));
@@ -230,8 +252,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @param index
      *            The 0-based index of the column.
      * @return The FITS type.
-     * @exception FitsException
-     *                if an invalid index was requested.
+     * @throws FitsException
+     *             if an invalid index was requested.
      */
     public String getColumnFormat(int index) throws FitsException {
         int flds = this.myHeader.getIntValue("TFIELDS", 0);
@@ -257,8 +279,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @param index
      *            The 0-based column index.
      * @return The column name.
-     * @exception FitsException
-     *                if an invalid index was requested.
+     * @throws FitsException
+     *             if an invalid index was requested.
      */
     public String getColumnName(int index) {
 
@@ -271,6 +293,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Get all of the columns of the table.
+     * 
+     * @throws FitsException
+     *             if the operation failed
      */
     public Object[] getColumns() throws FitsException {
         Object[] result = new Object[getNCols()];
@@ -282,6 +307,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Get a specific element of the table using 0-based indices.
+     * 
+     * @throws FitsException
+     *             if the operation failed
      */
     public Object getElement(int row, int col) throws FitsException {
         return this.myData.getElement(row, col);
@@ -313,6 +341,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Update a column within a table. The new column should have the same
      * format ast the column being replaced.
+     * 
+     * @throws FitsException
+     *             if the operation failed
      */
     public void setColumn(int col, Object newCol) throws FitsException {
         this.myData.setColumn(col, newCol);
@@ -321,6 +352,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Update a column within a table. The new column should have the same
      * format as the column being replaced.
+     * 
+     * @throws FitsException
+     *             if the operation failed
      */
     public void setColumn(String colName, Object newCol) throws FitsException {
         setColumn(findColumn(colName), newCol);
@@ -359,8 +393,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *            The comment for the header
      * @param after
      *            Should the header card be after the current column metadata
-     *            block (true), or immediately before the TFORM card (false).
-     * @throws FitsException
+     *            block (true), or immediately before the TFORM card (false). @throws
+     *            FitsException if the operation failed
      */
     public void setColumnMeta(int index, String key, String value, String comment, boolean after) throws FitsException {
         setCurrentColumn(index, after);
@@ -405,6 +439,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Update a single element within the table.
+     * 
+     * @throws FitsException
+     *             if the operation failed
      */
     public void setElement(int row, int col, Object element) throws FitsException {
         this.myData.setElement(row, col, element);
@@ -412,6 +449,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Update a row within a table.
+     * 
+     * @throws FitsException
+     *             if the operation failed
      */
     public void setRow(int row, Object[] newRow) throws FitsException {
         this.myData.setRow(row, newRow);

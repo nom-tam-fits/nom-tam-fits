@@ -47,14 +47,15 @@ public class FitsDate {
 
     private static Logger LOG = Logger.getLogger(FitsDate.class.getName());
 
-    /** Return the current date in FITS date format */
+    /**
+     * @return the current date in FITS date format
+     */
     public static String getFitsDateString() {
         return getFitsDateString(new Date(), true);
     }
 
     /**
-     * Create FITS format date string Java Date object.
-     * 
+     * @return a created FITS format date string Java Date object.
      * @param epoch
      *            The epoch to be converted to FITS format.
      */
@@ -63,8 +64,8 @@ public class FitsDate {
     }
 
     /**
-     * Create FITS format date string. Note that the date is not rounded.
-     * 
+     * @return a created FITS format date string. Note that the date is not
+     *         rounded.
      * @param epoch
      *            The epoch to be converted to FITS format.
      * @param timeOfDay
@@ -128,8 +129,8 @@ public class FitsDate {
      * 
      * @param dStr
      *            the FITS date
-     * @exception FitsException
-     *                if <CODE>dStr</CODE> does not contain a valid FITS date.
+     * @throws FitsException
+     *             if <CODE>dStr</CODE> does not contain a valid FITS date.
      */
     public FitsDate(String dStr) throws FitsException {
         // if the date string is null, we are done
