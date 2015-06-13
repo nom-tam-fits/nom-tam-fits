@@ -35,6 +35,9 @@ import static nom.tam.fits.header.InstrumentDescription.FILTER;
 import static nom.tam.fits.header.Standard.INSTRUME;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.extra.NOAOExt.WATn_nnn;
+
+import java.util.Arrays;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
@@ -129,9 +132,23 @@ public class EnumHeaderTest {
         };
         for (Class<?> class1 : classes) {
             for (Object enumConst : class1.getEnumConstants()) {
-                ((IFitsHeader) enumConst).comment();
-                ((IFitsHeader) enumConst).key();
-                ((IFitsHeader) enumConst).status();
+                IFitsHeader iFitsHeader = (IFitsHeader) enumConst;
+                Assert.assertNotNull(iFitsHeader.comment());
+                String key = iFitsHeader.key();
+                Assert.assertNotNull(key);
+                Assert.assertNotNull(iFitsHeader.status());
+                Assert.assertNotNull(iFitsHeader.valueType());
+                Assert.assertNotNull(iFitsHeader.hdu());
+
+                int nCount = 0;
+                int offset = 0;
+                while ((offset = key.indexOf('n', offset)) > 0) {
+                    nCount++;
+                    offset++;
+                }
+                int[] n = new int[nCount];
+                Arrays.fill(n, 9);
+                Assert.assertTrue(iFitsHeader.n(n).key().indexOf('n') < 0);
             }
         }
 

@@ -34,6 +34,7 @@ package nom.tam.fits.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 
 import nom.tam.fits.BasicHDU;
@@ -41,6 +42,7 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
+import nom.tam.fits.RandomGroupsData;
 import nom.tam.fits.RandomGroupsHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
@@ -159,6 +161,33 @@ public class RandomGroupsTest {
     @Test(expected = FitsException.class)
     public void illegalTypedRandomGroup() throws FitsException {
         testGroupCreationAndRecreationByType(new Double[20][20], new Double[3], -64, "Double");
+    }
+
+    @Test
+    public void testReset() throws Exception {
+        float[][] fa = new float[20][20];
+        float[] pa = new float[3];
+
+        BufferedFile bf = new BufferedFile("target/testResetData", "rw");
+        Object[][] data = new Object[1][2];
+        data[0][0] = pa;
+        data[0][1] = fa;
+        RandomGroupsData groups = (RandomGroupsData) Fits.makeHDU(data).getData();
+        bf.writeLong(1);
+        groups.write(bf);
+        bf.close();
+
+        // ok now test it
+        bf = new BufferedFile("target/testResetData", "rw");
+        bf.readLong();
+        groups = new RandomGroupsData();
+        groups.read(bf);
+        Assert.assertEquals(8, groups.getFileOffset());
+        bf.reset();
+        Assert.assertEquals(0, bf.getFilePointer());
+        groups.reset();
+        Assert.assertEquals(8, bf.getFilePointer());
+        bf.close();
     }
 
     private void testGroupCreationAndRecreationByType(Object fa, Object pa, int bipix, String typeName) throws FitsException {
