@@ -72,40 +72,30 @@ public class FitsDate {
      *            Should time of day information be included?
      */
     public static String getFitsDateString(Date epoch, boolean timeOfDay) {
+        Calendar cal = Calendar.getInstance(FitsDate.GMT);
+        cal.setTime(epoch);
+        StringBuffer fitsDate = new StringBuffer();
+        DecimalFormat df = new DecimalFormat("0000");
+        fitsDate.append(df.format(cal.get(Calendar.YEAR)));
+        fitsDate.append("-");
+        df = new DecimalFormat("00");
 
-        try {
-            Calendar cal = Calendar.getInstance(FitsDate.GMT);
+        fitsDate.append(df.format(cal.get(Calendar.MONTH) + 1));
+        fitsDate.append("-");
+        fitsDate.append(df.format(cal.get(Calendar.DAY_OF_MONTH)));
 
-            cal.setTime(epoch);
-
-            StringBuffer fitsDate = new StringBuffer();
-            DecimalFormat df = new DecimalFormat("0000");
-            fitsDate.append(df.format(cal.get(Calendar.YEAR)));
-            fitsDate.append("-");
-            df = new DecimalFormat("00");
-
-            fitsDate.append(df.format(cal.get(Calendar.MONTH) + 1));
-            fitsDate.append("-");
-            fitsDate.append(df.format(cal.get(Calendar.DAY_OF_MONTH)));
-
-            if (timeOfDay) {
-                fitsDate.append("T");
-                fitsDate.append(df.format(cal.get(Calendar.HOUR_OF_DAY)));
-                fitsDate.append(":");
-                fitsDate.append(df.format(cal.get(Calendar.MINUTE)));
-                fitsDate.append(":");
-                fitsDate.append(df.format(cal.get(Calendar.SECOND)));
-                fitsDate.append(".");
-                df = new DecimalFormat("000");
-                fitsDate.append(df.format(cal.get(Calendar.MILLISECOND)));
-            }
-
-            return new String(fitsDate);
-
-        } catch (Exception e) {
-
-            return new String("");
+        if (timeOfDay) {
+            fitsDate.append("T");
+            fitsDate.append(df.format(cal.get(Calendar.HOUR_OF_DAY)));
+            fitsDate.append(":");
+            fitsDate.append(df.format(cal.get(Calendar.MINUTE)));
+            fitsDate.append(":");
+            fitsDate.append(df.format(cal.get(Calendar.SECOND)));
+            fitsDate.append(".");
+            df = new DecimalFormat("000");
+            fitsDate.append(df.format(cal.get(Calendar.MILLISECOND)));
         }
+        return fitsDate.toString();
     }
 
     private int year = -1;

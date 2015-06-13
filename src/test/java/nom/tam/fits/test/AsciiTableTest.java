@@ -592,4 +592,32 @@ public class AsciiTableTest {
         field.setAccessible(true);
         field.set(data, null);
     }
+
+    @Test
+    public void testDeleteSpecials() throws Exception {
+        AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
+        assertEquals(50, hdu.getNRows());
+        hdu.deleteRows(-1, 1);
+        assertEquals(50, hdu.getNRows());
+        hdu.deleteRows(49, 10);
+        assertEquals(49, hdu.getNRows());
+    }
+
+    @Test
+    public void testSpecials() throws Exception {
+        AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
+        assertEquals("I10", hdu.getColumnFormat(1));
+        assertEquals("I10", hdu.getColumnMeta(1, "TFORM"));
+        Assert.assertNull(hdu.getColumnName(1));
+
+        hdu.setColumnMeta(1, "TTYPE", "TATA", null);
+        assertEquals("TATA", hdu.getColumnName(1));
+        Object colValue = hdu.getColumn("TATA");
+        Assert.assertNotNull(colValue);
+        int[] copy = (int[]) ArrayFuncs.genericClone(colValue);
+        copy[0] = 3333;
+        hdu.setColumn("TATA", copy);
+        assertEquals(3333, ((int[]) hdu.getColumn("TATA"))[0]);
+
+    }
 }

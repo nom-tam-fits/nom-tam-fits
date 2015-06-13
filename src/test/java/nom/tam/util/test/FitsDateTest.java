@@ -32,11 +32,27 @@ package nom.tam.util.test;
  */
 
 import static org.junit.Assert.assertEquals;
-import nom.tam.fits.FitsDate;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import nom.tam.fits.FitsDate;
+import nom.tam.fits.FitsException;
+
+import org.junit.Before;
 import org.junit.Test;
 
 public class FitsDateTest {
+
+    @Before
+    public void setup() {
+        Logger.getLogger(FitsDate.class.getName()).setLevel(Level.FINEST);
+    }
+
+    @Test
+    public void normalCases() {
+
+    }
 
     @Test
     public void miscBad() {
@@ -69,10 +85,18 @@ public class FitsDateTest {
     }
 
     @Test
-    public void goodNew() {
+    public void goodNew() throws FitsException {
+        assertEquals("1997-07-25T00:00:00.000", FitsDate.getFitsDateString(new FitsDate("1997-07-25").toDate()));
         assertEquals("1997-07-25", testArg("1997-07-25"));
         assertEquals("1987-06-05T04:03:02.010", testArg("1987-06-05T04:03:02.01"));
         assertEquals("1998-03-10T16:58:34", testArg("1998-03-10T16:58:34"));
+    }
+
+    @Test
+    public void special() throws FitsException {
+        assertEquals("1997-07-25T10:50:01.999", FitsDate.getFitsDateString(new FitsDate("1997-07-25T10:50:01.999").toDate()));
+        assertEquals("1997-07-25T10:50:01.009", FitsDate.getFitsDateString(new FitsDate("1997-07-25T10:50:01.009").toDate()));
+        assertEquals("1997-07-25T10:50:01.000", FitsDate.getFitsDateString(new FitsDate("1997-07-25T10:50:01").toDate()));
     }
 
     @Test

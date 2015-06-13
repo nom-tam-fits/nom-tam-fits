@@ -43,8 +43,10 @@ import static nom.tam.fits.header.extra.NOAOExt.CRVAL2;
 import static nom.tam.fits.header.extra.NOAOExt.CTYPE1;
 import static nom.tam.fits.header.extra.NOAOExt.CTYPE2;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
@@ -54,11 +56,10 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.jar.Attributes.Name;
 
-import junit.framework.Assert;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
@@ -68,9 +69,11 @@ import nom.tam.fits.ImageHDU;
 import nom.tam.fits.utilities.FitsHeaderCardParser;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
+import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class HeaderTest {
@@ -660,5 +663,60 @@ public class HeaderTest {
         header.addValue("END", "", "");
         Assert.assertEquals(2880, header.getSize());
         return header;
+    }
+
+    @Test
+    public void testSpecialSituations() throws Exception {
+        Header header = new Header();
+        assertNull(header.nextCard());
+        assertNull(header.getCard(-1));
+
+        BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream());
+        FitsException actual = null;
+        try {
+            header.write(out);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        header.addValue("DUMMY", false, "");
+        actual = null;
+        try {
+            header.write(out);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual.getMessage().indexOf("SIMPLE") > 0);
+        header.addValue("XTENSION", "", "");
+        actual = null;
+        try {
+            header.write(out);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual.getMessage().indexOf("XTENSION") > 0);
+        header.findCard("XTENSION").setValue("BINTABLE");
+        actual = null;
+        try {
+            header.write(out);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+
+        assertTrue(actual.getMessage().indexOf("not found where expected") > 0);
+
+        header.removeCard("DUMMY");
+
+        actual = null;
+        try {
+            header.write(out);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+
+        assertTrue(actual.getMessage().indexOf("terminates before") > 0);
     }
 }

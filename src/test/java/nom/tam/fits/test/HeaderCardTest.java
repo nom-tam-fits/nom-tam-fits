@@ -32,15 +32,20 @@ package nom.tam.fits.test;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
+import nom.tam.util.AsciiFuncs;
+import nom.tam.util.BufferedDataInputStream;
 
 import org.junit.Test;
 
@@ -175,6 +180,20 @@ public class HeaderCardTest {
     }
 
     @Test
+    public void testBigDecimal5() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", true, "dummy");
+        assertEquals(new BigDecimal("123.0"), hc.getValue(BigDecimal.class, new BigDecimal("123.0")));
+        assertEquals(new Double("123.0"), hc.getValue(Double.class, new Double("123.0")));
+        assertNull(hc.getValue(Double.class, null));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testOther() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", new BigDecimal("123.0"), "dummy");
+        hc.getValue(HeaderCardTest.class, null);
+    }
+
+    @Test
     public void testBigInteger() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", new BigInteger("1234567890123456789012345678901234567890123456789012345678901234567890"), "dummy");
         assertEquals(BigInteger.class, hc.valueType());
@@ -190,6 +209,9 @@ public class HeaderCardTest {
         hc = new HeaderCard("TEST", false, "dummy");
         assertEquals(Boolean.class, hc.valueType());
         assertEquals(Boolean.FALSE, hc.getValue(Boolean.class, null));
+        hc = new HeaderCard("TEST", 99, "dummy");
+        assertEquals(Boolean.FALSE, hc.getValue(Boolean.class, Boolean.FALSE));
+        assertEquals(Boolean.TRUE, hc.getValue(Boolean.class, Boolean.TRUE));
     }
 
     @Test
@@ -289,4 +311,65 @@ public class HeaderCardTest {
         assertEquals("bla bla", hc.getValue(String.class, null));
     }
 
+    @Test
+    public void testStringQuotes() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", "'bla bla'", "dummy");
+        assertEquals(String.class, hc.valueType());
+        assertEquals("bla bla", hc.getValue(String.class, null));
+        HeaderCardException actual = null;
+        try {
+            hc = new HeaderCard("TEST", "'bla bla", "dummy");
+        } catch (HeaderCardException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+    }
+
+    @Test
+    public void testCardSize() throws Exception {
+        boolean longStringsEnabled = FitsFactory.isLongStringsEnabled();
+        boolean useHierarch = FitsFactory.getUseHierarch();
+        try {
+            FitsFactory.setLongStringsEnabled(true);
+            FitsFactory.setUseHierarch(true);
+
+            HeaderCard hc =
+                    new HeaderCard(
+                            "HIERARCH.TEST.TEST.TEST.TEST.TEST.TEST",//
+                            "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla ",
+                            "dummy");
+            assertEquals(4, hc.cardSize());
+
+        } finally {
+            FitsFactory.setLongStringsEnabled(longStringsEnabled);
+            FitsFactory.setUseHierarch(useHierarch);
+
+        }
+    }
+
+    @Test
+    public void testHierarchCard() throws Exception {
+        boolean longStringsEnabled = FitsFactory.isLongStringsEnabled();
+        boolean useHierarch = FitsFactory.getUseHierarch();
+        try {
+            FitsFactory.setLongStringsEnabled(true);
+            FitsFactory.setUseHierarch(true);
+
+            HeaderCard hc =
+                    new HeaderCard(
+                            "HIERARCH.TEST.TEST.TEST.TEST.TEST.TEST",//
+                            "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla ",
+                            " dummy");
+            BufferedDataInputStream data = new BufferedDataInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(hc.toString())));
+            HeaderCard headerCard = new HeaderCard(data);
+            assertEquals(hc.getKey(), headerCard.getKey());
+            assertEquals(hc.getValue(), headerCard.getValue());
+
+        } finally {
+            FitsFactory.setLongStringsEnabled(longStringsEnabled);
+            FitsFactory.setUseHierarch(useHierarch);
+
+        }
+
+    }
 }

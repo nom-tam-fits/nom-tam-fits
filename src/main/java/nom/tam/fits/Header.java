@@ -414,7 +414,7 @@ public class Header implements FitsElement {
         boolean isExtension = false;
         if (key.equals("XTENSION")) {
             String value = card.getValue();
-            if (value == null) {
+            if (value == null || value.isEmpty()) {
                 throw new FitsException("Empty XTENSION keyword");
             }
 
@@ -1118,9 +1118,6 @@ public class Header implements FitsElement {
      * @return the next card in the Header using the current iterator
      */
     public HeaderCard nextCard() {
-        if (this.iter == null) {
-            return null;
-        }
         if (this.iter.hasNext()) {
             return this.iter.next();
         } else {
@@ -1132,7 +1129,6 @@ public class Header implements FitsElement {
      * Create a header for a null image.
      */
     void nullImage() {
-
         this.iter = iterator();
         try {
             addValue("SIMPLE", true, "ntf::header:simple:2");
@@ -1140,6 +1136,7 @@ public class Header implements FitsElement {
             addValue("NAXIS", 0, "ntf::header:naxis:2");
             addValue("EXTEND", true, "ntf::header:extend:2");
         } catch (HeaderCardException e) {
+            LOG.log(Level.SEVERE, "could not create null image, should not be possible", e);
         }
     }
 
