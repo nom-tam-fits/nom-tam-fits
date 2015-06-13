@@ -38,8 +38,10 @@ import java.io.PrintStream;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
+import nom.tam.fits.RandomGroupsHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 
@@ -64,7 +66,7 @@ public class RandomGroupsTest {
         data[0][1] = fa;
 
         // First lets write out the file painfully group by group.
-        BasicHDU hdu = Fits.makeHDU(data);
+        BasicHDU<?> hdu = Fits.makeHDU(data);
         Header hdr = hdu.getHeader();
         // Change the number of groups
         hdr.addValue("GCOUNT", 20, "Number of groups");
@@ -90,7 +92,7 @@ public class RandomGroupsTest {
 
         // Read back the data.
         Fits f = new Fits("target/rg1.fits");
-        BasicHDU[] hdus = f.read();
+        BasicHDU<?>[] hdus = f.read();
 
         data = (Object[][]) hdus[0].getKernel();
 
@@ -119,7 +121,7 @@ public class RandomGroupsTest {
         bf.close();
 
         f = new Fits("target/rg2.fits");
-        BasicHDU groupHDU = f.read()[0];
+        BasicHDU<?> groupHDU = f.read()[0];
         data = (Object[][]) groupHDU.getKernel();
         for (int i = 0; i < data.length; i += 1) {
 
@@ -141,5 +143,46 @@ public class RandomGroupsTest {
         Assert.assertTrue(groupInfo.indexOf("Number of groups:20") >= 0);
         Assert.assertTrue(groupInfo.indexOf("Parameters: float[3]") >= 0);
         Assert.assertTrue(groupInfo.indexOf("Data:float[20, 20]") >= 0);
+        f.close();
+    }
+
+    @Test
+    public void typedRandomGroup() throws FitsException {
+        testGroupCreationAndRecreationByType(new byte[20][20], new byte[3], 8, "byte");
+        testGroupCreationAndRecreationByType(new short[20][20], new short[3], 16, "short");
+        testGroupCreationAndRecreationByType(new int[20][20], new int[3], 32, "int");
+        testGroupCreationAndRecreationByType(new long[20][20], new long[3], 64, "long");
+        testGroupCreationAndRecreationByType(new float[20][20], new float[3], -32, "float");
+        testGroupCreationAndRecreationByType(new double[20][20], new double[3], -64, "double");
+    }
+
+    @Test(expected = FitsException.class)
+    public void illegalTypedRandomGroup() throws FitsException {
+        testGroupCreationAndRecreationByType(new Double[20][20], new Double[3], -64, "Double");
+    }
+
+    private void testGroupCreationAndRecreationByType(Object fa, Object pa, int bipix, String typeName) throws FitsException {
+        Object[][] data = new Object[1][2];
+        data[0][0] = pa;
+        data[0][1] = fa;
+
+        BasicHDU<?> hdu = Fits.makeHDU(data);
+        Header hdr = hdu.getHeader();
+        Assert.assertEquals(0, hdr.getIntValue("NAXIS1"));
+        Assert.assertEquals(20, hdr.getIntValue("NAXIS2"));
+        Assert.assertEquals(20, hdr.getIntValue("NAXIS3"));
+        Assert.assertEquals(0, hdr.getIntValue("NAXIS4"));
+        Assert.assertEquals(true, hdr.getBooleanValue("GROUPS"));
+        Assert.assertEquals(1, hdr.getIntValue("GCOUNT"));
+        Assert.assertEquals(3, hdr.getIntValue("PCOUNT"));
+        Assert.assertEquals(true, hdr.getBooleanValue("SIMPLE"));
+        Assert.assertEquals(bipix, hdr.getIntValue("BITPIX"));
+
+        RandomGroupsHDU newHdu = (RandomGroupsHDU) Fits.makeHDU(hdr);
+        Object[][] recreatedData = (Object[][]) newHdu.getData().getData();
+        Assert.assertEquals(1, recreatedData.length);
+        Assert.assertEquals(2, recreatedData[0].length);
+        Assert.assertEquals(typeName + "[3]", ArrayFuncs.arrayDescription(recreatedData[0][0]));
+        Assert.assertEquals(typeName + "[20, 20]", ArrayFuncs.arrayDescription(recreatedData[0][1]));
     }
 }

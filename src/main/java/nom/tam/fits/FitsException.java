@@ -38,13 +38,9 @@ package nom.tam.fits;
 public class FitsException extends Exception {
 
     /**
-     *
+     * serial version UID.
      */
     private static final long serialVersionUID = 1L;
-
-    public FitsException() {
-        super();
-    }
 
     public FitsException(String msg) {
         super(msg);

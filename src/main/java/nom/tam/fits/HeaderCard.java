@@ -597,7 +597,7 @@ public class HeaderCard implements CursorValue<String> {
             while (need > 0) {
                 len = dis.read(buffer, 80 - need, need);
                 if (len == 0) {
-                    throw new TruncatedFileException();
+                    throw new TruncatedFileException("nothing to read left");
                 }
                 need -= len;
             }

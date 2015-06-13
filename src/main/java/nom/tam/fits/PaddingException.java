@@ -70,6 +70,7 @@ public class PaddingException extends FitsException {
      *             if the data could not be used to craete a hdu.
      */
     public PaddingException(Data data) throws FitsException {
+        super("data not padded");
         this.truncatedHDU = FitsFactory.HDUFactory(data.getKernel());
         // We want to use the original Data object... so
         this.truncatedHDU = FitsFactory.HDUFactory(this.truncatedHDU.getHeader(), data);

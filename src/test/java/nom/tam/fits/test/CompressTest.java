@@ -127,7 +127,7 @@ public class CompressTest {
         System.out.println("File is:" + fil.getCanonicalPath());
         Fits f = new Fits("http://heasarc.gsfc.nasa.gov/FTP/asca/data/rev2/43021000/images/ad43021000gis25670_lo.totsky.gz");
 
-        BasicHDU h = f.readHDU();
+        BasicHDU<?> h = f.readHDU();
         int[][] data = (int[][]) h.getKernel();
         double sum = 0;
         for (int[] element : data) {

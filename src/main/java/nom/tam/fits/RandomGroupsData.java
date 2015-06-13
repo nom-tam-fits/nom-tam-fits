@@ -78,8 +78,8 @@ public class RandomGroupsData extends Data {
         Object paraSamp = this.dataArray[0][0];
         Object dataSamp = this.dataArray[0][1];
 
-        Class pbase = nom.tam.util.ArrayFuncs.getBaseClass(paraSamp);
-        Class dbase = nom.tam.util.ArrayFuncs.getBaseClass(dataSamp);
+        Class<?> pbase = nom.tam.util.ArrayFuncs.getBaseClass(paraSamp);
+        Class<?> dbase = nom.tam.util.ArrayFuncs.getBaseClass(dataSamp);
 
         if (pbase != dbase) {
             throw new FitsException("Data and parameters do not agree in type for random group");

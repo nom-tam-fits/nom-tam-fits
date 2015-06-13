@@ -161,9 +161,8 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.10.1</version>
 				<configuration>
-					<skip>${i4j.nonjavamodule}</skip>
 					<aggregate>false</aggregate>
-					<failOnError>false</failOnError>
+					<failOnError>true</failOnError>
 				</configuration>
 				<executions>
 					<execution>
