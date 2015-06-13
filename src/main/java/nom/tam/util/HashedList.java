@@ -94,12 +94,6 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
             this.current = start;
         }
 
-        /**
-         * Add a keyed entry at the current location. The new entry is inserted
-         * before the entry that would be returned in the next invocation of
-         * 'next'. The return value for that call is unaffected. Note: this
-         * method is not in the Iterator interface.
-         */
         @Override
         public void add(KEY key, VALUE ref) {
             add(ref);
@@ -116,19 +110,16 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
             return next();
         }
 
-        /** Is there another element? */
         @Override
         public boolean hasNext() {
             return this.current >= 0 && this.current < HashedList.this.ordered.size();
         }
 
-        /** Is there a previous element? */
         @Override
         public boolean hasPrev() {
             return this.current > 0;
         }
 
-        /** Get the next entry. */
         @Override
         public VALUE next() throws NoSuchElementException {
 
@@ -150,7 +141,6 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
             return next();
         }
 
-        /** Get the previous entry. */
         @Override
         public VALUE prev() throws NoSuchElementException {
             if (this.current <= 0) {
@@ -161,10 +151,6 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
             return entry;
         }
 
-        /**
-         * Remove an entry from the tree. Note that this can now be called
-         * anytime after the iterator is created.
-         */
         @Override
         public void remove() {
             if (this.current > 0 && this.current <= HashedList.this.ordered.size()) {
@@ -179,12 +165,6 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
             }
         }
 
-        /**
-         * Point the iterator to a particular keyed entry. This method is not in
-         * the Iterator interface.
-         *
-         * @param key
-         */
         @Override
         public void setKey(KEY key) {
             VALUE entry = HashedList.this.keyed.get(key);
@@ -212,7 +192,7 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
      * @param reference
      *            The actual object being stored.
      */
-    public boolean add(int pos, VALUE reference) {
+    private void add(int pos, VALUE reference) {
         VALUE entry = reference;
         KEY key = entry.getKey();
         if (this.keyed.containsKey(key) && !unkeyedKey(key)) {
@@ -232,7 +212,6 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
         } else {
             this.ordered.add(pos, entry);
         }
-        return true;
     }
 
     private boolean unkeyedKey(KEY key) {
@@ -245,10 +224,6 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
         return true;
     }
 
-    /**
-     * Add another collection to this one list. All entries are added as unkeyed
-     * entries to the end of the list.
-     */
     @Override
     public boolean addAll(Collection<? extends VALUE> c) {
         for (VALUE element : c) {
@@ -257,14 +232,12 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
         return true;
     }
 
-    /** Clear the collection */
     @Override
     public void clear() {
         this.keyed.clear();
         this.ordered.clear();
     }
 
-    /** Does the HashedList contain this element? */
     @Override
     public boolean contains(Object o) {
         for (VALUE entry : this.ordered) {
@@ -275,9 +248,6 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
         return false;
     }
 
-    /**
-     * Does the HashedList contain all the elements of this other collection.
-     */
     @Override
     public boolean containsAll(Collection<?> c) {
         List<?> values = new ArrayList<>(c);
@@ -287,19 +257,31 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
         return values.isEmpty();
     }
 
-    /** Check if the key is included in the list */
+    /**
+     * @return <code>true</code> if the key is included in the list.
+     * @param key
+     *            the key to search
+     */
     public boolean containsKey(Object key) {
         return this.keyed.containsKey(key);
     }
 
-    /** Return the n'th entry from the beginning. */
+    /**
+     * @return the n'th entry from the beginning.
+     * @param n
+     *            the index to get
+     * @throws NoSuchElementException
+     *             if the index was not in range
+     */
     public VALUE get(int n) throws NoSuchElementException {
         return this.ordered.get(n);
     }
 
     /**
-     * Return the value of a keyed entry. Non-keyed entries may be returned by
-     * requesting an iterator.
+     * @return the value of a keyed entry. Non-keyed entries may be returned by
+     *         requesting an iterator.
+     * @param key
+     *            the key to search for
      */
     public Object get(Object key) {
         VALUE entry = this.keyed.get(key);
@@ -316,17 +298,16 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
         return -1;
     }
 
-    /** Is the HashedList empty? */
     @Override
     public boolean isEmpty() {
         return this.ordered.isEmpty();
     }
 
     /**
-     * Return an iterator over the entire list. The iterator may be used to
-     * delete entries as well as to retrieve existing entries. A knowledgeable
-     * user can cast this to a HashedListIterator and use it to add as well as
-     * delete entries.
+     * @return an iterator over the entire list. The iterator may be used to
+     *         delete entries as well as to retrieve existing entries. A
+     *         knowledgeable user can cast this to a HashedListIterator and use
+     *         it to add as well as delete entries.
      */
     @Override
     public Iterator<VALUE> iterator() {
@@ -334,7 +315,11 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
     }
 
     /**
-     * Return an iterator starting with the n'th entry.
+     * @return an iterator starting with the n'th entry.
+     * @param n
+     *            the index to start the iterator
+     * @throws NoSuchElementException
+     *             if the index was not in range
      */
     public Cursor<KEY, VALUE> iterator(int n) throws NoSuchElementException {
         if (n >= 0 && n <= this.ordered.size()) {
@@ -345,8 +330,12 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
     }
 
     /**
-     * Return an iterator over the list starting with the entry with a given
-     * key.
+     * @return an iterator over the list starting with the entry with a given
+     *         key.
+     * @param key
+     *            the key to use as a start point
+     * @throws NoSuchElementException
+     *             if the index was not in range
      */
     public HashedListIterator iterator(KEY key) throws NoSuchElementException {
         VALUE entry = this.keyed.get(key);
@@ -357,7 +346,13 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
         }
     }
 
-    /** Remove an object from the list giving the object index.. */
+    /**
+     * Remove an object from the list giving the object index..
+     * 
+     * @param index
+     *            the index to remove
+     * @return true if the index was in range
+     */
     public boolean remove(int index) {
         if (index >= 0 && index < this.ordered.size()) {
             VALUE entry = this.ordered.get(index);
@@ -368,9 +363,6 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
         return false;
     }
 
-    /**
-     * Remove an object from the list giving just the object value.
-     */
     @Override
     public boolean remove(Object o) {
         for (int i = 0; i < this.ordered.size(); i += 1) {
@@ -382,7 +374,6 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
         return false;
     }
 
-    /** Remove all the elements that are found in another collection. */
     @Override
     public boolean removeAll(Collection<?> c) {
         boolean result = false;
@@ -395,6 +386,10 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
     /**
      * Remove a keyed object from the list. Unkeyed objects can be removed from
      * the list using a HashedListIterator or using the remove(Object) method.
+     * 
+     * @param key
+     *            the key to remove
+     * @return <code>true</code> if the key was removed
      */
     public boolean removeKey(Object key) {
         VALUE entry = this.keyed.get(key);
@@ -428,7 +423,6 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
         return true;
     }
 
-    /** Retain only elements contained in another collection */
     @Override
     public boolean retainAll(Collection<?> c) {
 
@@ -444,7 +438,6 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
         return result;
     }
 
-    /** Return the number of elements in the list. */
     @Override
     public int size() {
         return this.ordered.size();
@@ -452,21 +445,20 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
 
     /**
      * Sort the keys into some desired order.
+     * 
+     * @param comp
+     *            the comparator to use for the sorting
      */
     public void sort(final Comparator<KEY> comp) {
         java.util.Collections.sort(this.ordered, new EntryComparator<KEY, VALUE>(comp));
     }
 
-    /** Convert to an array of objects */
     @Override
     public Object[] toArray() {
         Object[] o = new Object[this.ordered.size()];
         return toArray(o);
     }
 
-    /**
-     * Convert to an array of objects of a specified type.
-     */
     @Override
     public <T> T[] toArray(T[] o) {
         if (o.length < size()) {

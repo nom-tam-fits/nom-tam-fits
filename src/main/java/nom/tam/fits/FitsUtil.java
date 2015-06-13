@@ -31,12 +31,15 @@ package nom.tam.fits;
  * #L%
  */
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
@@ -47,6 +50,8 @@ import nom.tam.util.RandomAccess;
  * classes.
  */
 public class FitsUtil {
+
+    private static Logger LOG = Logger.getLogger(FitsUtil.class.getName());
 
     private static boolean wroteCheckingError = false;
 
@@ -147,8 +152,8 @@ public class FitsUtil {
             }
             res[i] = AsciiFuncs.asciiString(bytes, start, end - start);
             if (errFound && !FitsUtil.wroteCheckingError) {
-                System.err.println("Warning: Invalid ASCII character[s] detected in string:" + res[i]);
-                System.err.println("   Converted to space[s].  Any subsequent invalid characters will be converted silently");
+                LOG.log(Level.SEVERE, "Warning: Invalid ASCII character[s] detected in string: " + res[i]
+                        + " Converted to space[s].  Any subsequent invalid characters will be converted silently");
                 FitsUtil.wroteCheckingError = true;
             }
         }
@@ -158,21 +163,24 @@ public class FitsUtil {
 
     /**
      * @return Convert an array of bytes to booleans.
+     * @param bytes
+     *            the array of bytes to get the booleans from.
      */
-    static boolean[] byteToBoolean(byte[] byt) {
-        boolean[] bool = new boolean[byt.length];
+    static boolean[] byteToBoolean(byte[] bytes) {
+        boolean[] bool = new boolean[bytes.length];
 
-        for (int i = 0; i < byt.length; i += 1) {
-            bool[i] = byt[i] == 'T';
+        for (int i = 0; i < bytes.length; i += 1) {
+            bool[i] = bytes[i] == 'T';
         }
         return bool;
     }
 
     /**
      * @return Find out where we are in a random access file .
+     * @param o
+     *            the stream to get the position
      */
-    public static long findOffset(Object o) {
-
+    public static long findOffset(Closeable o) {
         if (o instanceof RandomAccess) {
             return ((RandomAccess) o).getFilePointer();
         } else {
@@ -185,6 +193,10 @@ public class FitsUtil {
      *         that if a redirection request points to a different protocol than
      *         the original request, then the redirection is not handled
      *         automatically.
+     * @param url
+     *            the url to get the stream from
+     * @param level
+     *            max levels of redirection
      * @throws IOException
      *             if the operation failed
      */
@@ -241,6 +253,10 @@ public class FitsUtil {
     /**
      * Add padding to an output stream.
      * 
+     * @param stream
+     *            stream to pad
+     * @param size
+     *            the current size
      * @throws FitsException
      *             if the operation failed
      */
@@ -251,6 +267,12 @@ public class FitsUtil {
     /**
      * Add padding to an output stream.
      * 
+     * @param stream
+     *            stream to pad
+     * @param size
+     *            the current size
+     * @param fill
+     *            the fill byte to use
      * @throws FitsException
      *             if the operation failed
      */
@@ -270,7 +292,11 @@ public class FitsUtil {
         }
     }
 
-    /** @return How many bytes are needed to fill the last 2880 block? */
+    /**
+     * @return How many bytes are needed to fill a 2880 block?
+     * @param size
+     *            the size without padding
+     */
     public static int padding(int size) {
         return padding((long) size);
     }
@@ -287,36 +313,43 @@ public class FitsUtil {
     /**
      * Reposition a random access stream to a requested offset.
      * 
+     * @param o
+     *            the closable to reposition
+     * @param offset
+     *            the offset to position it to.
      * @throws FitsException
-     *             if the operation failed
+     *             if the operation was failed or not possible
      */
-    public static void reposition(Object o, long offset) throws FitsException {
-
+    public static void reposition(Closeable o, long offset) throws FitsException {
         if (o == null) {
             throw new FitsException("Attempt to reposition null stream");
-        }
-        if (!(o instanceof RandomAccess) || offset < 0) {
+        } else if (!(o instanceof RandomAccess) || offset < 0) {
             throw new FitsException("Invalid attempt to reposition stream " + o + " of type " + o.getClass().getName() + " to " + offset);
         }
-
         try {
             ((RandomAccess) o).seek(offset);
         } catch (IOException e) {
-            throw new FitsException("Unable to repostion stream " + o + " of type " + o.getClass().getName() + " to " + offset + "   Exception:" + e);
+            throw new FitsException("Unable to repostion stream " + o + " of type " + o.getClass().getName() + " to " + offset + "   Exception:" + e.getMessage(), e);
         }
     }
 
     /**
-     * @return Copy an array of Strings to bytes.
+     * Convert an array of Strings to bytes.
+     * 
+     * @return the resulting bytes
+     * @param stringArray
+     *            the array with Strings
+     * @param maxLen
+     *            the max length (in bytes) of every String
      */
-    public static byte[] stringsToByteArray(String[] o, int maxLen) {
-        byte[] res = new byte[o.length * maxLen];
-        for (int i = 0; i < o.length; i += 1) {
+    public static byte[] stringsToByteArray(String[] stringArray, int maxLen) {
+        byte[] res = new byte[stringArray.length * maxLen];
+        for (int i = 0; i < stringArray.length; i += 1) {
             byte[] bstr = null;
-            if (o[i] == null) {
+            if (stringArray[i] == null) {
                 bstr = new byte[0];
             } else {
-                bstr = AsciiFuncs.getBytes(o[i]);
+                bstr = AsciiFuncs.getBytes(stringArray[i]);
             }
             int cnt = bstr.length;
             if (cnt > maxLen) {

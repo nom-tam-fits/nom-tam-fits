@@ -88,25 +88,24 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     private byte[] skipBuf = null;
 
     /**
-     * Use the BufferedInputStream constructor.
+     * Create a BufferedInputStream based on an input stream.
      * 
      * @param o
      *            the input stream to use for reading.
      */
-    @Deprecated
     public BufferedDataInputStream(InputStream o) {
         this(o, 32768);
     }
 
     /**
-     * Use the BufferedInputStream constructor
+     * Create a BufferedInputStream based on a input stream with a specified
+     * buffer size.
      * 
      * @param o
      *            the input stream to use for reading.
      * @param bufLength
      *            the buffer length to use.
      */
-    @Deprecated
     public BufferedDataInputStream(InputStream o, int bufLength) {
         super(o, bufLength);
     }

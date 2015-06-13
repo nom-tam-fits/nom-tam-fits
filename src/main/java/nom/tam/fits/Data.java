@@ -38,8 +38,10 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.RandomAccess;
 
 /**
- * This class provides methods to access the data segment of an HDU.<br/>
+ * This class provides methods to access the data segment of an HDU.
+ * <p>
  * This is the object which contains the actual data for the HDU.
+ * </p>
  * <ul>
  * <li>For images and primary data this is a simple (but possibly
  * multi-dimensional) primitive array. When group data is supported it will be a
@@ -158,7 +160,7 @@ public abstract class Data implements FitsElement {
      * @param o
      *            reread information.
      */
-    protected void setFileOffset(Object o) {
+    protected void setFileOffset(ArrayDataInput o) {
         if (o instanceof RandomAccess) {
             this.fileOffset = FitsUtil.findOffset(o);
             this.dataSize = getTrueSize();

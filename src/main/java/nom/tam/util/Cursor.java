@@ -40,8 +40,16 @@ import java.util.NoSuchElementException;
 public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
 
     /**
-     * Add a keyed element to the collection. The new element is placed such
-     * that it will be called by a prev() call, but not a next() call.
+     * Add a keyed entry at the current location. The new entry is inserted
+     * before the entry that would be returned in the next invocation of 'next'.
+     * The new element is placed such that it will be called by a prev() call,
+     * but not a next() call.The return value for that call is unaffected. Note:
+     * this method is not in the Iterator interface.
+     * 
+     * @param key
+     *            the key of the value to add
+     * @param reference
+     *            the value to add
      */
     @Deprecated
     public abstract void add(KEY key, VALUE reference);
@@ -49,32 +57,49 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
     /**
      * Add an unkeyed element to the collection. The new element is placed such
      * that it will be called by a prev() call, but not a next() call.
+     * 
+     * @param reference
+     *            the value to add
      */
     public abstract void add(VALUE reference);
 
     /**
      * move to the last element and return that.
+     * 
+     * @return the last element.
      */
     public abstract VALUE end();
 
-    /** Is there a previous element in the collection? */
+    /**
+     * @return Is there a previous element in the collection?
+     */
     public abstract boolean hasPrev();
 
     /**
      * Returns the count next element in the iteration.
      * 
+     * @param count
+     *            the offset
      * @return the n'th next element in the iteration
      * @throws NoSuchElementException
      *             if the iteration has no more elements
      */
     public abstract VALUE next(int count);
 
-    /** Get the previous element */
-    public abstract VALUE prev() throws java.util.NoSuchElementException;
+    /**
+     * @return the previous element.
+     * @throws NoSuchElementException
+     *             if there is no previous element
+     */
+    public abstract VALUE prev() throws NoSuchElementException;
 
     /**
-     * Point the list at a particular element. Point to the end of the list if
-     * the key is not found.
+     * Point the iterator to a particular keyed entry. Point to the end of the
+     * list if the key is not found.This method is not in the Iterator
+     * interface.
+     * 
+     * @param key
+     *            the key to search for
      */
     public abstract void setKey(KEY key);
 }

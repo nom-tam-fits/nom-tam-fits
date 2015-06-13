@@ -115,7 +115,8 @@ public enum PrimitiveTypeEnum {
      * currently the only individual size primitive so, keep it simple
      * 
      * @param instance
-     * @return
+     *            the object to calculate the size
+     * @return the size in bytes of the object instance
      */
     public int size(Object instance) {
         if (instance == null) {

@@ -90,8 +90,7 @@ public class HeaderCard implements CursorValue<String> {
     public static final int MAX_STRING_VALUE_LENGTH = HeaderCard.MAX_VALUE_LENGTH - 2;
 
     /**
-     * Create a HeaderCard from a FITS card image
-     * 
+     * @return a created HeaderCard from a FITS card string.
      * @param card
      *            the 80 character card image
      */
@@ -334,6 +333,8 @@ public class HeaderCard implements CursorValue<String> {
      *            The comment
      * @param nullable
      *            Is this a nullable field or a comment-style card?
+     * @throws HeaderCardException
+     *             for any invalid keyword or value
      */
     public HeaderCard(String key, String comment, boolean nullable) throws HeaderCardException {
         this(key, null, comment, nullable, true);
@@ -467,7 +468,13 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * Return the value from this card as a specific type
+     * @param clazz
+     *            the requested class of the value
+     * @param defaultValue
+     *            the value if the card was not present.
+     * @param <T>
+     *            the type of the requested class
+     * @return the value from this card as a specific type
      */
     public <T> T getValue(Class<T> clazz, T defaultValue) {
         if (String.class.isAssignableFrom(clazz)) {
@@ -532,14 +539,14 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * Is this a key/value card?
+     * @return Is this a key/value card?
      */
     public boolean isKeyValuePair() {
         return this.key != null && this.value != null;
     }
 
     /**
-     * Does this card contain a string value?
+     * @return if this card contain does a string value?
      */
     public boolean isStringValue() {
         return this.isString;
@@ -612,6 +619,9 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * Set the value for this card.
+     * 
+     * @param update
+     *            the new value to set
      */
     public void setValue(String update) {
         this.value = update;

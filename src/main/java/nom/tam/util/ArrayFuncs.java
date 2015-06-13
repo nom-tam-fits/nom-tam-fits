@@ -415,6 +415,7 @@ public class ArrayFuncs {
      * Create an array of a type given by new type with the dimensionality given
      * in array.
      * 
+     * @return the new array with same dimensions
      * @param array
      *            A possibly multidimensional array to be converted.
      * @param newType
@@ -538,6 +539,10 @@ public class ArrayFuncs {
     /**
      * Reverse an integer array. This can be especially useful when dealing with
      * an array of indices in FITS order that you wish to have in Java order.
+     * 
+     * @return the reversed array.
+     * @param indices
+     *            the array to reverse
      */
     public static int[] reverseIndices(int[] indices) {
         int[] result = new int[indices.length];

@@ -56,6 +56,9 @@ public class FitsFactory {
      * @param hdr
      *            header to create the data from * @throws FitsException if the
      *            operation failed
+     * @throws FitsException
+     *             if the header did not contain enougth information to detect
+     *             the type of the data
      */
     public static Data dataFactory(Header hdr) throws FitsException {
 

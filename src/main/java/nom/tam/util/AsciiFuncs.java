@@ -48,17 +48,39 @@ public final class AsciiFuncs {
     private AsciiFuncs() {
     }
 
-    /** Convert to ASCII or return null if not compatible */
+    /**
+     * Convert to ASCII or return null if not compatible.
+     * 
+     * @return the String represented by the bytes
+     * @param buf
+     *            the bytes representing a string
+     */
     public static String asciiString(byte[] buf) {
         return asciiString(buf, 0, buf.length);
     }
 
-    /** Convert to ASCII or return null if not compatible */
+    /**
+     * Convert to ASCII or return null if not compatible.
+     * 
+     * @param buf
+     *            buffer to get the string bytes from
+     * @param start
+     *            the position where the string starts
+     * @param len
+     *            the length of the string
+     * @return the extracted string
+     */
     public static String asciiString(byte[] buf, int start, int len) {
         return new String(buf, start, len, StandardCharsets.US_ASCII);
     }
 
-    /** Convert an ASCII string to bytes */
+    /**
+     * Convert an ASCII string to bytes.
+     * 
+     * @return the string converted to bytes
+     * @param in
+     *            the string to convert
+     */
     public static byte[] getBytes(String in) {
         return in.getBytes(StandardCharsets.US_ASCII);
     }

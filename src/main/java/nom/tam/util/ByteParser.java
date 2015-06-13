@@ -131,12 +131,22 @@ public class ByteParser {
         return number;
     }
 
-    /** Get a boolean value from the beginning of the buffer */
+    /**
+     * @return a boolean value from the beginning of the buffer.
+     * @throws FormatException
+     *             if the double was in an unknown format
+     */
     public boolean getBoolean() throws FormatException {
         return getBoolean(this.input.length - this.offset);
     }
 
-    /** Get a boolean value from a specified region of the buffer */
+    /**
+     * @return a boolean value from a specified region of the buffer
+     * @param length
+     *            The maximum number of characters used to parse this boolean.
+     * @throws FormatException
+     *             if the double was in an unknown format
+     */
     public boolean getBoolean(int length) throws FormatException {
 
         int startOffset = this.offset;
@@ -169,7 +179,9 @@ public class ByteParser {
         return value;
     }
 
-    /** Get the buffer being used by the parser */
+    /**
+     * @return the buffer being used by the parser
+     */
     public byte[] getBuffer() {
         return this.input;
     }
@@ -179,18 +191,21 @@ public class ByteParser {
      * buffer if fillFields is set.
      * 
      * @return The value found.
+     * @throws FormatException
+     *             if the double was in an unknown format
      */
     public double getDouble() throws FormatException {
         return getDouble(this.input.length - this.offset);
     }
 
     /**
-     * Look for a double in the buffer. Leading spaces are ignored.
-     * 
+     * @return a parsed double from the buffer. Leading spaces are ignored.
      * @param length
      *            The maximum number of characters used to parse this number. If
      *            fillFields is specified then exactly only whitespace may
      *            follow a valid double value.
+     * @throws FormatException
+     *             if the double was in an unknown format
      */
     public double getDouble(int length) throws FormatException {
 
@@ -313,23 +328,42 @@ public class ByteParser {
     }
 
     /**
-     * Get a floating point value from the buffer. (see getDouble(int())
+     * @return a floating point value from the buffer. (see getDouble(int())
+     * @throws FormatException
+     *             if the float was in an unknown format
      */
     public float getFloat() throws FormatException {
         return (float) getDouble(this.input.length - this.offset);
     }
 
-    /** Get a floating point value in a region of the buffer */
+    /**
+     * @return a floating point value in a region of the buffer
+     * @param length
+     *            The maximum number of characters used to parse this float.
+     * @throws FormatException
+     *             if the float was in an unknown format
+     */
     public float getFloat(int length) throws FormatException {
         return (float) getDouble(length);
     }
 
-    /** Look for an integer at the beginning of the buffer */
+    /**
+     * @return an integer at the beginning of the buffer
+     * @throws FormatException
+     *             if the integer was in an unknown format
+     */
     public int getInt() throws FormatException {
         return getInt(this.input.length - this.offset);
     }
 
-    /** Convert a region of the buffer to an integer */
+    /**
+     * @return a region of the buffer to an integer
+     * @param length
+     *            The maximum number of characters used to parse this integer. @throws
+     *            FormatException if the integer was in an unknown format
+     * @throws FormatException
+     *             if the integer was in an unknown format
+     */
     public int getInt(int length) throws FormatException {
         int startOffset = this.offset;
 
@@ -374,7 +408,13 @@ public class ByteParser {
         return sign * number;
     }
 
-    /** Look for a long in a specified region of the buffer */
+    /**
+     * @return a long in a specified region of the buffer
+     * @param length
+     *            The maximum number of characters used to parse this long.
+     * @throws FormatException
+     *             if the long was in an unknown format
+     */
     public long getLong(int length) throws FormatException {
 
         int startOffset = this.offset;
@@ -421,15 +461,15 @@ public class ByteParser {
     }
 
     /**
-     * Get the number of characters used to parse the previous number (or the
-     * length of the previous String returned).
+     * @return the number of characters used to parse the previous number (or
+     *         the length of the previous String returned).
      */
     public int getNumberLength() {
         return this.numberLength;
     }
 
     /**
-     * Get the current offset
+     * Get the current offset.
      * 
      * @return The current offset within the buffer.
      */
@@ -438,8 +478,7 @@ public class ByteParser {
     }
 
     /**
-     * Get a string
-     * 
+     * @return a string.
      * @param length
      *            The length of the string.
      */
@@ -452,8 +491,7 @@ public class ByteParser {
     }
 
     /**
-     * Is a region blank?
-     * 
+     * @return if a region is blank?
      * @param length
      *            The length of the region to be tested
      */
@@ -464,7 +502,12 @@ public class ByteParser {
         return value;
     }
 
-    /** Set the buffer for the parser */
+    /**
+     * Set the buffer for the parser.
+     * 
+     * @param buf
+     *            buffer to set
+     */
     public void setBuffer(byte[] buf) {
         this.input = buf;
         this.offset = 0;
@@ -491,16 +534,21 @@ public class ByteParser {
         this.offset = offset;
     }
 
-    /** Skip bytes in the buffer */
+    /**
+     * Skip bytes in the buffer.
+     * 
+     * @param nBytes
+     *            number of bytes to skip
+     */
     public void skip(int nBytes) {
         this.offset += nBytes;
     }
 
     /**
-     * Skip white space. This routine skips with space in the input and returns
-     * the number of character skipped. White space is defined as ' ', '\t',
-     * '\n' or '\r'
+     * Skip white space. This routine skips with space in the input .
      * 
+     * @return the number of character skipped. White space is defined as ' ',
+     *         '\t', '\n' or '\r'
      * @param length
      *            The maximum number of characters to skip.
      */

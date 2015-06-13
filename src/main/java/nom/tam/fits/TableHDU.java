@@ -51,6 +51,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Add a column to the table.
      * 
+     * @return the index of the new row
+     * @param data
+     *            column to add to the table
      * @throws FitsException
      *             if the operation failed
      */
@@ -60,6 +63,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * Add a row to the end of the table. If this is the first row, then this
      * will add appropriate columns for each of the entries.
      * 
+     * @return the index of the new row
+     * @param newRow
+     *            row to add to the table
      * @throws FitsException
      *             if the operation failed
      */
@@ -71,15 +77,19 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Get the stems of the keywords that are associated with table columns.
-     * Users can supplement this with their own and call the appropriate
-     * deleteColumns fields.
+     * @return the stems of the keywords that are associated with table columns.
+     *         Users can supplement this with their own and call the appropriate
+     *         deleteColumns fields.
      */
     public abstract String[] columnKeyStems();
 
     /**
      * Delete a set of columns from a table.
      * 
+     * @param column
+     *            The one-indexed start column.
+     * @param len
+     *            The number of columns to delete.
      * @throws FitsException
      *             if the operation failed
      */
@@ -106,6 +116,10 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Delete a set of columns from a table.
      * 
+     * @param column
+     *            The one-indexed start column.
+     * @param len
+     *            The number of columns to delete.
      * @throws FitsException
      *             if the operation failed
      */
@@ -171,7 +185,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * 
      * @param row
      *            the (0-based) index of the first row to be deleted.
-     * @throws FitsExcpetion
+     * @throws FitsException
      *             if an error occurs.
      */
     public void deleteRows(final int row) throws FitsException {
@@ -186,7 +200,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * 
      * @param firstRow
      *            the (0-based) index of the first row to be deleted. This is
-     *            zero-based indexing: 0<=firstrow< number of rows.
+     *            zero-based indexing: 0&lt;=firstrow&lt; number of rows.
      * @param nRow
      *            the total number of rows to be deleted.
      * @throws FitsException
@@ -210,6 +224,10 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Find the 0-based column index corresponding to a particular column name.
+     * 
+     * @return index of the column
+     * @param colName
+     *            the name of the column
      */
     public int findColumn(String colName) {
 
@@ -224,8 +242,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Get a specific column from the table using 0-based column indexing.
-     * 
+     * @return a specific column from the table using 0-based column indexing.
+     * @param col
+     *            column index to get
      * @throws FitsException
      *             if the operation failed
      */
@@ -234,9 +253,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Get a specific column of the table where the column name is specified
-     * using the TTYPEn keywords in the header.
-     * 
+     * @return a specific column of the table where the column name is specified
+     *         using the TTYPEn keywords in the header.
      * @param colName
      *            The name of the column to be extracted.
      * @throws FitsException
@@ -268,6 +286,12 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * Convenience method for getting column data. Note that this works only for
      * metadata that returns a string value. This is equivalent to
      * getStringValue(type+index);
+     * 
+     * @return meta data string value
+     * @param index
+     *            index of the colum
+     * @param type
+     *            the key type to get
      */
     public String getColumnMeta(int index, String type) {
         return this.myHeader.getStringValue(type + (index + 1));
@@ -279,8 +303,6 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @param index
      *            The 0-based column index.
      * @return The column name.
-     * @throws FitsException
-     *             if an invalid index was requested.
      */
     public String getColumnName(int index) {
 
@@ -292,8 +314,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Get all of the columns of the table.
-     * 
+     * @return all of the columns of the table.
      * @throws FitsException
      *             if the operation failed
      */
@@ -306,8 +327,11 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Get a specific element of the table using 0-based indices.
-     * 
+     * @return a specific element of the table using 0-based indices.
+     * @param row
+     *            the row index of the element
+     * @param col
+     *            the column index of the element
      * @throws FitsException
      *             if the operation failed
      */
@@ -333,7 +357,13 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         return this.myData.getNRows();
     }
 
-    /** Get a specific row of the table */
+    /**
+     * @return a specific row of the table.
+     * @param row
+     *            the index of the row to retreive
+     * @throws FitsException
+     *             if the operation failed
+     */
     public Object[] getRow(int row) throws FitsException {
         return this.myData.getRow(row);
     }
@@ -342,6 +372,10 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * Update a column within a table. The new column should have the same
      * format ast the column being replaced.
      * 
+     * @param col
+     *            index of the column to replace
+     * @param newCol
+     *            the replacement column
      * @throws FitsException
      *             if the operation failed
      */
@@ -353,6 +387,10 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * Update a column within a table. The new column should have the same
      * format as the column being replaced.
      * 
+     * @param colName
+     *            name of the column to replace
+     * @param newCol
+     *            the replacement column
      * @throws FitsException
      *             if the operation failed
      */
@@ -395,6 +433,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *            Should the header card be after the current column metadata
      *            block (true), or immediately before the TFORM card (false). @throws
      *            FitsException if the operation failed
+     * @throws FitsException
+     *             if the header could not be updated
      */
     public void setColumnMeta(int index, String key, String value, String comment, boolean after) throws FitsException {
         setCurrentColumn(index, after);
@@ -440,6 +480,12 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Update a single element within the table.
      * 
+     * @param row
+     *            the row index
+     * @param col
+     *            the column index
+     * @param element
+     *            the replacement element
      * @throws FitsException
      *             if the operation failed
      */
@@ -450,6 +496,10 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Update a row within a table.
      * 
+     * @param row
+     *            row index
+     * @param newRow
+     *            the replacement row
      * @throws FitsException
      *             if the operation failed
      */

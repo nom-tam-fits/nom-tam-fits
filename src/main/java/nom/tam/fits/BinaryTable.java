@@ -1719,8 +1719,8 @@ public class BinaryTable extends AbstractTableData {
      * 
      * @param input
      *            stream to read from.
-     * @return if the heap could not be read from the stream * @throws
-     *         FitsException if the operation failed
+     * @throws FitsException
+     *             if the heap could not be read from the stream
      */
     protected void readHeap(ArrayDataInput input) throws FitsException {
         FitsUtil.reposition(input, this.fileOffset + this.nRow * this.rowLen + this.heapOffset);
@@ -1767,8 +1767,8 @@ public class BinaryTable extends AbstractTableData {
      * @param xcol
      *            The new data for the column
      * @throws FitsException
-     *                Thrown if the data does not match the current column
-     *                description.
+     *             Thrown if the data does not match the current column
+     *             description.
      */
     @Override
     public void setColumn(int col, Object xcol) throws FitsException {
@@ -1889,8 +1889,8 @@ public class BinaryTable extends AbstractTableData {
      * @param data
      *            The new data array. This should be a one-d primitive array.
      * @throws FitsException
-     *                Thrown if the type of length of the replacement data
-     *                differs from the original.
+     *             Thrown if the type of length of the replacement data differs
+     *             from the original.
      */
     public void setFlattenedColumn(int col, Object data) throws FitsException {
         ensureData();
@@ -1914,7 +1914,7 @@ public class BinaryTable extends AbstractTableData {
      * @param data
      *            The new values for the row.
      * @throws FitsException
-     *                Thrown if the new row cannot match the existing data.
+     *             Thrown if the new row cannot match the existing data.
      */
     @Override
     public void setRow(int row, Object data[]) throws FitsException {

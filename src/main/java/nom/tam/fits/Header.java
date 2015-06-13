@@ -673,6 +673,8 @@ public class Header implements FitsElement {
     /**
      * Get the n'th card image in the header
      * 
+     * @param n
+     *            the card index to get
      * @return the card image; return <CODE>null</CODE> if the n'th card does
      *         not exist.
      * @deprecated An iterator should be used for sequential access to the
@@ -867,6 +869,8 @@ public class Header implements FitsElement {
     /**
      * Get the n'th key in the header.
      * 
+     * @param n
+     *            the index of the key
      * @return the card image; return <CODE>null</CODE> if the n'th key does not
      *         exist.
      * @deprecated An iterator should be used for sequential access to the
@@ -1093,6 +1097,8 @@ public class Header implements FitsElement {
 
     /**
      * @return an iterator over the header cards starting at an index
+     * @param index
+     *            the card index to start the iterator
      */
     public Cursor<String, HeaderCard> iterator(int index) {
         return this.cards.iterator(index);
@@ -1100,6 +1106,9 @@ public class Header implements FitsElement {
 
     /**
      * @return Create the data element corresponding to the current header
+     * @throws FitsException
+     *             if the header did not contain enougth information to detect
+     *             the type of the data
      */
     public Data makeData() throws FitsException {
         return FitsFactory.dataFactory(this);
@@ -1564,6 +1573,8 @@ public class Header implements FitsElement {
      *            The key of the card to be replaced.
      * @param card
      *            A new card
+     * @throws HeaderCardException
+     *             if the operation failed
      */
     public void updateLine(String key, HeaderCard card) throws HeaderCardException {
         removeCard(key);

@@ -59,8 +59,12 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     };
 
     /**
-     * Create a ASCII table data structure from an array of objects representing
-     * the columns.
+     * @return a ASCII table data structure from an array of objects
+     *         representing the columns.
+     * @param o
+     *            the array of object to create the ascii table
+     * @throws FitsException
+     *             if the table could not be created.
      */
     public static Data encapsulate(Object o) throws FitsException {
 
@@ -73,7 +77,9 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
-     * Check if this data is usable as an ASCII table.
+     * @return true if this data is usable as an ASCII table.
+     * @param o
+     *            object representing the data
      */
     public static boolean isData(Object o) {
 
@@ -105,6 +111,8 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     /**
      * Create a Data object to correspond to the header description.
      * 
+     * @param hdr
+     *            the header to create the data for
      * @return An unfilled Data object which can be used to read in the data for
      *         this HDU.
      * @throws FitsException
@@ -115,7 +123,13 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         return new AsciiTable(hdr);
     }
 
-    /** Create a header to match the input data. */
+    /**
+     * @return a created header to match the input data.
+     * @param d
+     *            data to create a header for
+     * @throws FitsException
+     *             if the header could not b e created
+     */
     public static Header manufactureHeader(Data d) throws FitsException {
         Header hdr = new Header();
         d.fillHeader(hdr);
@@ -137,7 +151,6 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         this.myData = (AsciiTable) d;
     }
 
-    /** Add a column */
     @Override
     public int addColumn(Object newCol) throws FitsException {
         this.myData.addColumn(newCol);
@@ -159,17 +172,11 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         return getNCols();
     }
 
-    /**
-     * Return the keyword column stems for an ASCII table.
-     */
     @Override
     public String[] columnKeyStems() {
         return KEY_STEMS;
     }
 
-    /**
-     * Print a little information about the data set.
-     */
     @Override
     public void info(PrintStream stream) {
         stream.println("ASCII Table:");
@@ -193,14 +200,17 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         return isHeader(this.myHeader);
     }
 
-    /** See if an element is null */
+    /**
+     * @param row
+     *            row index of the element
+     * @param col
+     *            column index of the element
+     * @return <code>true</code> if an element is null
+     */
     public boolean isNull(int row, int col) {
         return this.myData.isNull(row, col);
     }
 
-    /**
-     * Create an empty data structure corresponding to the input header.
-     */
     @Override
     protected Data manufactureData() throws FitsException {
         return manufactureData(this.myHeader);
@@ -208,6 +218,13 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     /**
      * Mark an entry as null.
+     * 
+     * @param row
+     *            row index of the element
+     * @param col
+     *            column index of the element
+     * @param flag
+     *            set to null or not
      */
     public void setNull(int row, int col, boolean flag) {
 
@@ -220,13 +237,20 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         this.myData.setNull(row, col, flag);
     }
 
-    /** Set the null string for a column */
+    /**
+     * Set the null string for a column.
+     * 
+     * @param col
+     *            the column index
+     * @param newNull
+     *            the String representing null
+     */
     public void setNullString(int col, String newNull) {
         this.myHeader.positionAfterIndex("TBCOL", col + 1);
         try {
             this.myHeader.addValue("TNULL" + (col + 1), newNull, "ntf::asciitablehdu:tnullN:1");
         } catch (HeaderCardException e) {
-            System.err.println("Impossible exception in setNullString" + e);
+            LOG.log(Level.SEVERE, "Impossible exception in setNullString" + e);
         }
         this.myData.setNullString(col, newNull);
     }
