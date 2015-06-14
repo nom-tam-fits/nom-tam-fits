@@ -47,7 +47,9 @@ import nom.tam.util.ArrayDataOutput;
  */
 public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
-    private static Logger LOG = Logger.getLogger(BasicHDU.class.getName());
+    private static final int MAX_NAXIS_ALLOWED = 999;
+
+    private static final Logger LOG = Logger.getLogger(BasicHDU.class.getName());
 
     public static final int BITPIX_BYTE = 8;
 
@@ -177,7 +179,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         if (nAxis < 0) {
             throw new FitsException("Negative NAXIS value " + nAxis);
         }
-        if (nAxis > 999) {
+        if (nAxis > MAX_NAXIS_ALLOWED) {
             throw new FitsException("NAXIS value " + nAxis + " too large");
         }
 

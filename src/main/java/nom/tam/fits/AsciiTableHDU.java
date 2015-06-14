@@ -43,7 +43,7 @@ import nom.tam.util.Cursor;
  */
 public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
-    private static Logger LOG = Logger.getLogger(AsciiTableHDU.class.getName());
+    private static final Logger LOG = Logger.getLogger(AsciiTableHDU.class.getName());
 
     /**
      * The standard column stems for an ASCII table. Note that TBCOL is not

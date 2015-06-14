@@ -1013,15 +1013,6 @@ public class BufferedFileTest {
     }
 
     @Test
-    public void testAsciiFuncs() throws Exception {
-        Constructor<?>[] constrs = AsciiFuncs.class.getDeclaredConstructors();
-        assertEquals(constrs.length, 1);
-        assertFalse(constrs[0].isAccessible());
-        constrs[0].setAccessible(true);
-        constrs[0].newInstance();
-    }
-
-    @Test
     public void testCloseIS() throws Exception {
         final ProcessSimulator proc = new ProcessSimulator();
 

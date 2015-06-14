@@ -40,7 +40,10 @@ import java.io.InputStream;
  * 
  * @author Richard van Nieuwenhoven
  */
-public class CompressionLibLoaderProtection {
+public final class CompressionLibLoaderProtection {
+
+    private CompressionLibLoaderProtection() {
+    }
 
     public static InputStream createBZip2Stream(InputStream in) throws IOException {
         return new org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream(in);

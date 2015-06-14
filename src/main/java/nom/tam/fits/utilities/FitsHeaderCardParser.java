@@ -88,18 +88,18 @@ public class FitsHeaderCardParser {
     /**
      * pattern to replace the double quotes from string values to single quotes.
      */
-    private static Pattern DOUBLE_QUOTE_PATTERN = Pattern.compile("''");
+    private static final Pattern DOUBLE_QUOTE_PATTERN = Pattern.compile("''");
 
     /**
      * pattern to match FITS keywords, specially to parse hirarchical keywords.
      */
-    private static Pattern KEYWORD_PATTERN = Pattern.compile("([A-Z|0-9|_|-]+)([ |\\|.]*=?)");
+    private static final Pattern KEYWORD_PATTERN = Pattern.compile("([A-Z|0-9|_|-]+)([ |\\|.]*=?)");
 
     /**
      * pattern to match a quoted string where 2 quotes are used to escape a
      * single quote inside the string.
      */
-    private static Pattern STRING_PATTERN = Pattern.compile("'(?:[^']|'{2})*'");
+    private static final Pattern STRING_PATTERN = Pattern.compile("'(?:[^']|'{2})*'");
 
     /**
      * delete the start and trailing quote from the sting and replace all

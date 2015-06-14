@@ -45,7 +45,7 @@ public class FitsDate {
 
     private static final TimeZone GMT = TimeZone.getTimeZone("GMT");
 
-    private static Logger LOG = Logger.getLogger(FitsDate.class.getName());
+    private static final Logger LOG = Logger.getLogger(FitsDate.class.getName());
 
     /**
      * @return the current date in FITS date format

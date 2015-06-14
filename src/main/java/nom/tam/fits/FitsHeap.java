@@ -47,6 +47,8 @@ import nom.tam.util.BufferedDataOutputStream;
  */
 public class FitsHeap implements FitsElement {
 
+    private static final int MINIMUM_HEAP_SIZE = 16384;
+
     /**
      * The storage buffer
      */
@@ -113,8 +115,8 @@ public class FitsHeap implements FitsElement {
 
         if (this.heapSize + need > this.heap.length) {
             int newlen = (this.heapSize + need) * 2;
-            if (newlen < 16384) {
-                newlen = 16384;
+            if (newlen < MINIMUM_HEAP_SIZE) {
+                newlen = MINIMUM_HEAP_SIZE;
             }
             byte[] newHeap = new byte[newlen];
             System.arraycopy(this.heap, 0, newHeap, 0, this.heapSize);

@@ -69,7 +69,9 @@ import java.util.logging.Logger;
 
 public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
-    private static Logger LOG = Logger.getLogger(BufferedFile.class.getName());
+    private static final int DEFAULT_BUFFER_SIZE = 32768;
+
+    private static final Logger LOG = Logger.getLogger(BufferedFile.class.getName());
 
     /** The current offset into the buffer */
     private int bufferOffset;
@@ -109,7 +111,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the file could not be opened
      */
     public BufferedFile(File file) throws IOException {
-        this(file, "r", 32768);
+        this(file, "r", DEFAULT_BUFFER_SIZE);
     }
 
     /**
@@ -123,7 +125,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the file could not be opened
      */
     public BufferedFile(File file, String mode) throws IOException {
-        this(file, mode, 32768);
+        this(file, mode, DEFAULT_BUFFER_SIZE);
     }
 
     /**
@@ -151,7 +153,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the file could not be opened
      */
     public BufferedFile(String filename) throws IOException {
-        this(filename, "r", 32768);
+        this(filename, "r", DEFAULT_BUFFER_SIZE);
     }
 
     /**
@@ -165,7 +167,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the file could not be opened
      */
     public BufferedFile(String filename, String mode) throws IOException {
-        this(filename, mode, 32768);
+        this(filename, mode, DEFAULT_BUFFER_SIZE);
     }
 
     /**

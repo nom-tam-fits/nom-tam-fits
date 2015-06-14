@@ -33,9 +33,9 @@ package nom.tam.util.array;
 
 import java.lang.reflect.Array;
 
-public class MultyArrayCopier {
+public final class MultyArrayCopier {
 
-    public static final void copyInto(Object fromArray, Object toArray) {
+    public static void copyInto(Object fromArray, Object toArray) {
         new MultyArrayCopier(fromArray, toArray).copyInto();
 
     }

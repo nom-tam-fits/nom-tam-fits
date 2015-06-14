@@ -31,10 +31,17 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
 
+import nom.tam.fits.FitsFactory;
+import nom.tam.fits.utilities.FitsCopy;
+import nom.tam.fits.utilities.FitsReader;
 import nom.tam.fits.utilities.Main;
 
 import org.junit.Assert;
@@ -101,5 +108,41 @@ public class TestMain {
         } finally {
             System.setOut(out);
         }
+    }
+
+    @Test
+    public void testFitsReader() throws Exception {
+        Constructor<?>[] constrs = FitsReader.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+
+    @Test
+    public void testFitsCopy() throws Exception {
+        Constructor<?>[] constrs = FitsCopy.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+
+    @Test
+    public void testMain() throws Exception {
+        Constructor<?>[] constrs = Main.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+
+    @Test
+    public void testFitsFactory() throws Exception {
+        Constructor<?>[] constrs = FitsFactory.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
     }
 }

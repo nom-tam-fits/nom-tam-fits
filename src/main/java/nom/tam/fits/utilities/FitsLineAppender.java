@@ -41,10 +41,12 @@ package nom.tam.fits.utilities;
  */
 public class FitsLineAppender {
 
+    private static final int FITS_LINE_LENGTH = 80;
+
     /**
      * A String of 80 spaces to fill up fits card space.
      */
-    private static String _80_SPACES = "                                                                                ";
+    private static final String _80_SPACES = "                                                                                ";
 
     /**
      * the underlying StringBuffer to which the writing of fits lines happens.
@@ -61,7 +63,7 @@ public class FitsLineAppender {
      * line.
      */
     public FitsLineAppender() {
-        this.buffer = new StringBuffer(80);
+        this.buffer = new StringBuffer(FITS_LINE_LENGTH);
     }
 
     /**
@@ -94,10 +96,10 @@ public class FitsLineAppender {
      *            the string to append
      */
     public void append(String string) {
-        this.charCount = this.charCount % 80;
+        this.charCount = this.charCount % FITS_LINE_LENGTH;
         int newLength = this.charCount + string.length();
-        if (newLength > 80) {
-            this.buffer.append(string, 0, 80 - this.charCount);
+        if (newLength > FITS_LINE_LENGTH) {
+            this.buffer.append(string, 0, FITS_LINE_LENGTH - this.charCount);
             this.charCount = 0;
         } else {
             this.charCount = newLength;
@@ -136,7 +138,7 @@ public class FitsLineAppender {
      *            the number of spaces to write.
      */
     public void appendSpacesTo(int count) {
-        this.charCount = this.charCount % 80;
+        this.charCount = this.charCount % FITS_LINE_LENGTH;
         if (this.charCount != 0) {
             int spaces = count - this.charCount;
             if (spaces > 0) {
@@ -150,8 +152,8 @@ public class FitsLineAppender {
      * fill the rest of current line with spaces and start a new fits line.
      */
     public void completeLine() {
-        int count = 80 - this.charCount % 80;
-        if (count < 80) {
+        int count = FITS_LINE_LENGTH - this.charCount % FITS_LINE_LENGTH;
+        if (count < FITS_LINE_LENGTH) {
             this.buffer.append(FitsLineAppender._80_SPACES, 0, count);
         }
         // line completed start with 0;
@@ -162,7 +164,7 @@ public class FitsLineAppender {
      * @return the character position in the current line.
      */
     public int length() {
-        this.charCount = this.charCount % 80;
+        this.charCount = this.charCount % FITS_LINE_LENGTH;
         return this.charCount;
     }
 
@@ -171,8 +173,8 @@ public class FitsLineAppender {
      *         line.
      */
     public int spaceLeftInLine() {
-        this.charCount = this.charCount % 80;
-        return 80 - this.charCount;
+        this.charCount = this.charCount % FITS_LINE_LENGTH;
+        return FITS_LINE_LENGTH - this.charCount;
     }
 
     @Override

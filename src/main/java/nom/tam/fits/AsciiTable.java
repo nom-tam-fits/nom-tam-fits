@@ -50,7 +50,15 @@ import nom.tam.util.TruncationException;
 /** This class represents the data in an ASCII table */
 public class AsciiTable extends AbstractTableData {
 
-    private static Logger LOG = Logger.getLogger(AsciiTable.class.getName());
+    private static final int FLOAT_MAX_LENGTH = 16;
+
+    private static final int LONG_MAX_LENGTH = 20;
+
+    private static final int INT_MAX_LENGTH = 10;
+
+    private static final int DOUBLE_MAX_LENGTH = 24;
+
+    private static final Logger LOG = Logger.getLogger(AsciiTable.class.getName());
 
     /** The number of rows in the table */
     private int nRows;
@@ -212,13 +220,13 @@ public class AsciiTable extends AbstractTableData {
                 }
             }
         } else if (newCol instanceof double[]) {
-            maxLen = 24;
+            maxLen = DOUBLE_MAX_LENGTH;
         } else if (newCol instanceof int[]) {
-            maxLen = 10;
+            maxLen = INT_MAX_LENGTH;
         } else if (newCol instanceof long[]) {
-            maxLen = 20;
+            maxLen = LONG_MAX_LENGTH;
         } else if (newCol instanceof float[]) {
-            maxLen = 16;
+            maxLen = FLOAT_MAX_LENGTH;
         } else {
             throw new FitsException("Adding invalid type to ASCII table");
         }

@@ -34,7 +34,10 @@ package nom.tam.fits.utilities;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 
-public class FitsReader {
+public final class FitsReader {
+
+    private FitsReader() {
+    }
 
     public static void main(String[] args) throws Exception {
 
@@ -42,7 +45,7 @@ public class FitsReader {
 
         Fits f = new Fits(file);
         int i = 0;
-        BasicHDU h;
+        BasicHDU<?> h;
 
         do {
             h = f.readHDU();
@@ -56,6 +59,6 @@ public class FitsReader {
                 h.info(System.out);
             }
         } while (h != null);
-
+        f.close();
     }
 }

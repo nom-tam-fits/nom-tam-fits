@@ -37,7 +37,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
+
+import java.lang.reflect.Constructor;
+
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.AsciiFuncs;
 import nom.tam.util.TestArrayFuncs;
 
 import org.junit.Test;
@@ -597,11 +601,27 @@ public class ArrayFuncsTest {
         byte start = 2;
         int[] arr = new int[8];
 
-        byte expResult = 0;
         byte result = nom.tam.util.TestArrayFuncs.testPattern(arr, start);
         assertEquals(result, (byte) (start + arr.length));
         assertEquals(start, arr[0]);
         assertEquals(start + arr.length - 1, arr[arr.length - 1]);
     }
 
+    @Test
+    public void testAsciiFuncs() throws Exception {
+        Constructor<?>[] constrs = AsciiFuncs.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+
+    @Test
+    public void testArrayFuncs() throws Exception {
+        Constructor<?>[] constrs = ArrayFuncs.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
 }

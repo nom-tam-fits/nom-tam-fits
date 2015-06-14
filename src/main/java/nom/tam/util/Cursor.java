@@ -52,7 +52,7 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
      *            the value to add
      */
     @Deprecated
-    public abstract void add(KEY key, VALUE reference);
+    void add(KEY key, VALUE reference);
 
     /**
      * Add an unkeyed element to the collection. The new element is placed such
@@ -61,19 +61,19 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
      * @param reference
      *            the value to add
      */
-    public abstract void add(VALUE reference);
+    void add(VALUE reference);
 
     /**
      * move to the last element and return that.
      * 
      * @return the last element.
      */
-    public abstract VALUE end();
+    VALUE end();
 
     /**
      * @return Is there a previous element in the collection?
      */
-    public abstract boolean hasPrev();
+    boolean hasPrev();
 
     /**
      * Returns the count next element in the iteration.
@@ -84,14 +84,12 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
      * @throws NoSuchElementException
      *             if the iteration has no more elements
      */
-    public abstract VALUE next(int count);
+    VALUE next(int count);
 
     /**
      * @return the previous element.
-     * @throws NoSuchElementException
-     *             if there is no previous element
      */
-    public abstract VALUE prev() throws NoSuchElementException;
+    VALUE prev();
 
     /**
      * Point the iterator to a particular keyed entry. Point to the end of the
@@ -101,5 +99,5 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
      * @param key
      *            the key to search for
      */
-    public abstract void setKey(KEY key);
+    void setKey(KEY key);
 }

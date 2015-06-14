@@ -44,9 +44,12 @@ import nom.tam.util.array.MultyArrayIterator;
  * Generally these routines attempt to complete without throwing errors by
  * ignoring data they cannot understand.
  */
-public class ArrayFuncs {
+public final class ArrayFuncs {
 
-    private static Logger LOG = Logger.getLogger(ArrayFuncs.class.getName());
+    private static final Logger LOG = Logger.getLogger(ArrayFuncs.class.getName());
+
+    private ArrayFuncs() {
+    }
 
     /**
      * @return a description of an array (presumed rectangular).

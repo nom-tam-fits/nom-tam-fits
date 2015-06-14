@@ -32,14 +32,14 @@ package nom.tam.fits.test;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -49,17 +49,14 @@ import java.util.List;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsElement;
-import nom.tam.fits.FitsException;
+import nom.tam.fits.compress.CompressionLibLoaderProtection;
 import nom.tam.fits.compress.CompressionManager;
 
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.SimpleWebServer;
 
 /**
@@ -344,4 +341,23 @@ public class CompressTest {
         assertEquals(((InvocationTargetException) assertions.get(1)).getCause().getMessage(), "Unable to analyze input stream");
 
     }
+
+    @Test
+    public void testCompressionLibLoaderProtection() throws Exception {
+        Constructor<?>[] constrs = CompressionLibLoaderProtection.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+
+    @Test
+    public void testCompressionManager() throws Exception {
+        Constructor<?>[] constrs = CompressionManager.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+
 }

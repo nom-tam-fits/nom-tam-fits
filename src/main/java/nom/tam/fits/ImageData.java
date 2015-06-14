@@ -163,22 +163,22 @@ public class ImageData extends Data {
         int bitpix;
         switch (classname.charAt(dimens.length)) {
             case 'B':
-                bitpix = 8;
+                bitpix = BasicHDU.BITPIX_BYTE;
                 break;
             case 'S':
-                bitpix = 16;
+                bitpix = BasicHDU.BITPIX_SHORT;
                 break;
             case 'I':
-                bitpix = 32;
+                bitpix = BasicHDU.BITPIX_INT;
                 break;
             case 'J':
-                bitpix = 64;
+                bitpix = BasicHDU.BITPIX_LONG;
                 break;
             case 'F':
-                bitpix = -32;
+                bitpix = BasicHDU.BITPIX_FLOAT;
                 break;
             case 'D':
-                bitpix = -64;
+                bitpix = BasicHDU.BITPIX_DOUBLE;
                 break;
             default:
                 throw new FitsException("Invalid Object Type for FITS data:" + classname.charAt(dimens.length));
@@ -251,17 +251,17 @@ public class ImageData extends Data {
 
         bitpix = h.getIntValue("BITPIX", 0);
 
-        if (bitpix == 8) {
+        if (bitpix == BasicHDU.BITPIX_BYTE) {
             baseClass = Byte.TYPE;
-        } else if (bitpix == 16) {
+        } else if (bitpix == BasicHDU.BITPIX_SHORT) {
             baseClass = Short.TYPE;
-        } else if (bitpix == 32) {
+        } else if (bitpix == BasicHDU.BITPIX_INT) {
             baseClass = Integer.TYPE;
-        } else if (bitpix == 64) {
+        } else if (bitpix == BasicHDU.BITPIX_LONG) {
             baseClass = Long.TYPE;
-        } else if (bitpix == -32) {
+        } else if (bitpix == BasicHDU.BITPIX_FLOAT) {
             baseClass = Float.TYPE;
-        } else if (bitpix == -64) {
+        } else if (bitpix == BasicHDU.BITPIX_DOUBLE) {
             baseClass = Double.TYPE;
         } else {
             throw new FitsException("Invalid BITPIX:" + bitpix);

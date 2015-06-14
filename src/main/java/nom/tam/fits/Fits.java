@@ -128,7 +128,7 @@ import nom.tam.util.RandomAccess;
  */
 public class Fits implements Closeable {
 
-    private static Logger LOG = Logger.getLogger(Fits.class.getName());
+    private static final Logger LOG = Logger.getLogger(Fits.class.getName());
 
     /**
      * Calculate the Seaman-Pence 32-bit 1's complement checksum over the byte

@@ -43,7 +43,7 @@ public interface RandomAccess extends ArrayDataInput {
     /**
      * @return the current position in the stream.
      */
-    public long getFilePointer();
+    long getFilePointer();
 
     /**
      * Move to a specified location in the stream.
@@ -53,5 +53,5 @@ public interface RandomAccess extends ArrayDataInput {
      * @throws IOException
      *             if the operation fails
      */
-    public void seek(long offsetFromStart) throws java.io.IOException;
+    void seek(long offsetFromStart) throws IOException;
 }

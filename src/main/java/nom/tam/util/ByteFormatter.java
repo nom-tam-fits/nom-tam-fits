@@ -56,30 +56,30 @@ package nom.tam.util;
  */
 public final class ByteFormatter {
 
-    private static final double ilog10 = 1. / Math.log(10);
+    private static final double I_LOG_10 = 1. / Math.log(10);
 
     /**
      * Powers of 10. We overextend on both sides. These should perhaps be
      * tabulated rather than computed though it may be faster to calculate them
      * than to read in the extra bytes in the class file.
      */
-    private static final double tenpow[];
+    private static final double TEN_POW[];
 
     /** What index of tenpow is 10^0 */
-    private static final int zeropow;
+    private static final int ZERO_POW;
 
     static { // Static initializer
 
-        int min = (int) Math.floor((int) (Math.log(Double.MIN_VALUE) * ByteFormatter.ilog10));
-        int max = (int) Math.floor((int) (Math.log(Double.MAX_VALUE) * ByteFormatter.ilog10));
+        int min = (int) Math.floor((int) (Math.log(Double.MIN_VALUE) * ByteFormatter.I_LOG_10));
+        int max = (int) Math.floor((int) (Math.log(Double.MAX_VALUE) * ByteFormatter.I_LOG_10));
         max += 1;
 
-        tenpow = new double[max - min + 1];
+        TEN_POW = new double[max - min + 1];
 
-        for (int i = 0; i < ByteFormatter.tenpow.length; i += 1) {
-            ByteFormatter.tenpow[i] = Math.pow(10, i + min);
+        for (int i = 0; i < ByteFormatter.TEN_POW.length; i += 1) {
+            ByteFormatter.TEN_POW[i] = Math.pow(10, i + min);
         }
-        zeropow = -min;
+        ZERO_POW = -min;
     }
 
     /**
@@ -374,20 +374,20 @@ public final class ByteFormatter {
             }
         }
 
-        int power = (int) (Math.log(pos) * ByteFormatter.ilog10);
+        int power = (int) (Math.log(pos) * ByteFormatter.I_LOG_10);
         int shift = 17 - power;
         double scale;
         double scale2 = 1;
 
         // Scale the number so that we get a number ~ n x 10^17.
         if (shift < 200) {
-            scale = ByteFormatter.tenpow[shift + ByteFormatter.zeropow];
+            scale = ByteFormatter.TEN_POW[shift + ByteFormatter.ZERO_POW];
         } else {
             // Can get overflow if the original number is
             // very small, so we break out the shift
             // into two multipliers.
-            scale2 = ByteFormatter.tenpow[200 + ByteFormatter.zeropow];
-            scale = ByteFormatter.tenpow[shift - 200 + ByteFormatter.zeropow];
+            scale2 = ByteFormatter.TEN_POW[200 + ByteFormatter.ZERO_POW];
+            scale = ByteFormatter.TEN_POW[shift - 200 + ByteFormatter.ZERO_POW];
         }
 
         pos = pos * scale * scale2;
@@ -488,20 +488,20 @@ public final class ByteFormatter {
             }
         }
 
-        int power = (int) Math.floor(Math.log(pos) * ByteFormatter.ilog10);
+        int power = (int) Math.floor(Math.log(pos) * ByteFormatter.I_LOG_10);
         int shift = 8 - power;
         float scale;
         float scale2 = 1;
 
         // Scale the number so that we get a number ~ n x 10^8.
         if (shift < 30) {
-            scale = (float) ByteFormatter.tenpow[shift + ByteFormatter.zeropow];
+            scale = (float) ByteFormatter.TEN_POW[shift + ByteFormatter.ZERO_POW];
         } else {
             // Can get overflow if the original number is
             // very small, so we break out the shift
             // into two multipliers.
-            scale2 = (float) ByteFormatter.tenpow[30 + ByteFormatter.zeropow];
-            scale = (float) ByteFormatter.tenpow[shift - 30 + ByteFormatter.zeropow];
+            scale2 = (float) ByteFormatter.TEN_POW[30 + ByteFormatter.ZERO_POW];
+            scale = (float) ByteFormatter.TEN_POW[shift - 30 + ByteFormatter.ZERO_POW];
         }
 
         pos = pos * scale * scale2;

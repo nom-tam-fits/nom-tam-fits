@@ -55,6 +55,8 @@ import nom.tam.util.RandomAccess;
  */
 public abstract class Data implements FitsElement {
 
+    private static final int FITS_BLOCK_SIZE_MINUS_ONE = FitsFactory.FITS_BLOCK_SIZE - 1;
+
     /**
      * The starting location of the data when last read
      */
@@ -147,7 +149,8 @@ public abstract class Data implements FitsElement {
 
     @Override
     public boolean rewriteable() {
-        if (this.input == null || this.fileOffset < 0 || (getTrueSize() + 2879) / 2880 != (this.dataSize + 2879) / 2880) {
+        if (this.input == null || this.fileOffset < 0
+                || (getTrueSize() + FITS_BLOCK_SIZE_MINUS_ONE) / FitsFactory.FITS_BLOCK_SIZE != (this.dataSize + FITS_BLOCK_SIZE_MINUS_ONE) / FitsFactory.FITS_BLOCK_SIZE) {
             return false;
         } else {
             return true;

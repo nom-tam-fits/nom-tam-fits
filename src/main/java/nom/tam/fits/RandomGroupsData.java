@@ -96,17 +96,17 @@ public class RandomGroupsData extends Data {
 
         h.setSimple(true);
         if (dbase == byte.class) {
-            h.setBitpix(8);
+            h.setBitpix(BasicHDU.BITPIX_BYTE);
         } else if (dbase == short.class) {
-            h.setBitpix(16);
+            h.setBitpix(BasicHDU.BITPIX_SHORT);
         } else if (dbase == int.class) {
-            h.setBitpix(32);
+            h.setBitpix(BasicHDU.BITPIX_INT);
         } else if (dbase == long.class) { // Non-standard
-            h.setBitpix(64);
+            h.setBitpix(BasicHDU.BITPIX_LONG);
         } else if (dbase == float.class) {
-            h.setBitpix(-32);
+            h.setBitpix(BasicHDU.BITPIX_FLOAT);
         } else if (dbase == double.class) {
-            h.setBitpix(-64);
+            h.setBitpix(BasicHDU.BITPIX_DOUBLE);
         } else {
             throw new FitsException("Data type:" + dbase + " not supported for random groups");
         }

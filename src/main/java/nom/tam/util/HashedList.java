@@ -121,7 +121,7 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
         }
 
         @Override
-        public VALUE next() throws NoSuchElementException {
+        public VALUE next() {
 
             if (this.current < 0 || this.current >= HashedList.this.ordered.size()) {
                 throw new NoSuchElementException("Outside list");
@@ -142,7 +142,7 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
         }
 
         @Override
-        public VALUE prev() throws NoSuchElementException {
+        public VALUE prev() {
             if (this.current <= 0) {
                 throw new NoSuchElementException("Before beginning of list");
             }
@@ -270,10 +270,8 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
      * @return the n'th entry from the beginning.
      * @param n
      *            the index to get
-     * @throws NoSuchElementException
-     *             if the index was not in range
      */
-    public VALUE get(int n) throws NoSuchElementException {
+    public VALUE get(int n) {
         return this.ordered.get(n);
     }
 
@@ -318,10 +316,8 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
      * @return an iterator starting with the n'th entry.
      * @param n
      *            the index to start the iterator
-     * @throws NoSuchElementException
-     *             if the index was not in range
      */
-    public Cursor<KEY, VALUE> iterator(int n) throws NoSuchElementException {
+    public Cursor<KEY, VALUE> iterator(int n) {
         if (n >= 0 && n <= this.ordered.size()) {
             return new HashedListIterator(n);
         } else {
@@ -334,10 +330,8 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
      *         key.
      * @param key
      *            the key to use as a start point
-     * @throws NoSuchElementException
-     *             if the index was not in range
      */
-    public HashedListIterator iterator(KEY key) throws NoSuchElementException {
+    public HashedListIterator iterator(KEY key) {
         VALUE entry = this.keyed.get(key);
         if (entry != null) {
             return new HashedListIterator(indexOf(entry));

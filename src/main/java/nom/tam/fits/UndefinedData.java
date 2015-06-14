@@ -44,6 +44,8 @@ import nom.tam.util.ArrayFuncs;
  */
 public class UndefinedData extends Data {
 
+    private static final int BITS_PER_BYTE = 8;
+
     private byte[] data;
 
     public UndefinedData(Header h) throws FitsException {
@@ -62,7 +64,7 @@ public class UndefinedData extends Data {
         if (h.getIntValue("GCOUNT") > 1) {
             size *= h.getIntValue("GCOUNT");
         }
-        size *= Math.abs(h.getIntValue("BITPIX") / 8);
+        size *= Math.abs(h.getIntValue("BITPIX") / BITS_PER_BYTE);
 
         this.data = new byte[size];
     }
@@ -89,7 +91,7 @@ public class UndefinedData extends Data {
 
         try {
             head.setXtension("UNKNOWN");
-            head.setBitpix(8);
+            head.setBitpix(BasicHDU.BITPIX_BYTE);
             head.setNaxes(1);
             head.addValue("NAXIS1", this.data.length, "ntf::undefineddata:naxis1:1");
             head.addValue("PCOUNT", 0, "ntf::undefineddata:pcount:1");

@@ -31,7 +31,10 @@ package nom.tam.fits.utilities;
  * #L%
  */
 
-public class Main {
+public final class Main {
+
+    private Main() {
+    }
 
     public static void main(String[] args) throws Exception {
         if (args.length > 0 && "copy".equalsIgnoreCase(args[0])) {

@@ -40,9 +40,12 @@ import java.util.ServiceLoader;
 
 import nom.tam.fits.FitsException;
 
-public class CompressionManager {
+public final class CompressionManager {
 
     public static final int ONE_MEGABYTE = 1024 * 1024;
+
+    private CompressionManager() {
+    }
 
     /**
      * This method decompresses a compressed input stream. The decompression

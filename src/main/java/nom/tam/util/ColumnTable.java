@@ -56,7 +56,9 @@ import java.util.Map;
  */
 public class ColumnTable<T> implements DataTable {
 
-    private static interface PointerAccess<X extends Object> {
+    private static final int MAX_TYPE_VALUE = 256;
+
+    private interface PointerAccess<X extends Object> {
 
         void set(ColumnTable<?> table, X array);
 
@@ -70,7 +72,7 @@ public class ColumnTable<T> implements DataTable {
 
     private static final Map<PrimitiveTypeEnum, PointerAccess<?>> POINTER_ACCESSORS;
 
-    private static final PointerAccess<?>[] POINTER_ACCESSORS_BY_TYPE = new PointerAccess<?>[256];
+    private static final PointerAccess<?>[] POINTER_ACCESSORS_BY_TYPE = new PointerAccess<?>[MAX_TYPE_VALUE];
     static {
         POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.BYTE.type] = new PointerAccess<byte[][]>() {
 
@@ -435,45 +437,45 @@ public class ColumnTable<T> implements DataTable {
      * <li>the number of rows differs for the columns.
      * </ul>
      * 
-     * @param arrays
+     * @param newArrays
      *            The arrays defining the columns.
-     * @param sizes
+     * @param newSizes
      *            The number of elements in each row for the column.
      * @throws TableException
      *             if the table was inconsistent
      */
-    protected void checkArrayConsistency(Object[] arrays, int[] sizes) throws TableException {
+    protected void checkArrayConsistency(Object[] newArrays, int[] newSizes) throws TableException {
 
         // This routine throws an error if it detects an inconsistency
         // between the arrays being read in.
 
         // First check that the lengths of the two arrays are the same.
-        if (arrays.length != sizes.length) {
+        if (newArrays.length != newSizes.length) {
             throw new TableException("readArraysAsColumns: Incompatible arrays and sizes.");
         }
 
         // Now check that that we fill up all of the arrays exactly.
         int ratio = 0;
-        int rowSize = 0;
+        int newRowSize = 0;
 
-        this.types = new char[arrays.length];
-        this.bases = new Class[arrays.length];
+        this.types = new char[newArrays.length];
+        this.bases = new Class[newArrays.length];
 
-        for (int i = 0; i < arrays.length; i += 1) {
+        for (int i = 0; i < newArrays.length; i += 1) {
 
-            String classname = arrays[i].getClass().getName();
+            String classname = newArrays[i].getClass().getName();
 
-            ratio = checkColumnConsistency(arrays[i], classname, ratio, sizes[i]);
+            ratio = checkColumnConsistency(newArrays[i], classname, ratio, newSizes[i]);
 
-            rowSize += sizes[i] * ArrayFuncs.getBaseLength(arrays[i]);
+            newRowSize += newSizes[i] * ArrayFuncs.getBaseLength(newArrays[i]);
             this.types[i] = classname.charAt(1);
-            this.bases[i] = ArrayFuncs.getBaseClass(arrays[i]);
+            this.bases[i] = ArrayFuncs.getBaseClass(newArrays[i]);
         }
 
         this.nrow = ratio;
-        this.rowSize = rowSize;
-        this.arrays = arrays;
-        this.sizes = sizes;
+        this.rowSize = newRowSize;
+        this.arrays = newArrays;
+        this.sizes = newSizes;
     }
 
     private int checkColumnConsistency(Object data, String classname, int ratio, int size) throws TableException {
@@ -865,16 +867,16 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Actually perform the initialization.
      * 
-     * @param arrays
+     * @param newArrays
      *            An array of one-d primitive arrays.
-     * @param sizes
+     * @param newSizes
      *            The number of elements in each row for the corresponding
      *            column
      * @throws TableException
      *             if the structure of the columns is not consistent
      */
-    private void setup(Object[] arrays, int[] sizes) throws TableException {
-        checkArrayConsistency(arrays, sizes);
+    private void setup(Object[] newArrays, int[] newSizes) throws TableException {
+        checkArrayConsistency(newArrays, newSizes);
         initializePointers();
     }
 

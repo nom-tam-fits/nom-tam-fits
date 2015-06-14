@@ -35,15 +35,16 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.util.BufferedFile;
 
-public class FitsCopy {
+public final class FitsCopy {
+
+    private FitsCopy() {
+    }
 
     public static void main(String[] args) throws Exception {
-
         String file = args[0];
-
         Fits f = new Fits(file);
         int i = 0;
-        BasicHDU h;
+        BasicHDU<?> h;
 
         do {
             h = f.readHDU();
@@ -57,9 +58,9 @@ public class FitsCopy {
                 h.info(System.out);
             }
         } while (h != null);
+        f.close();
         BufferedFile bf = new BufferedFile(args[1], "rw");
         f.write(bf);
         bf.close();
-
     }
 }

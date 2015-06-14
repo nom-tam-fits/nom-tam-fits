@@ -68,22 +68,22 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
         Class<?> baseClass;
 
         switch (bitpix) {
-            case 8:
+            case BasicHDU.BITPIX_BYTE:
                 baseClass = Byte.TYPE;
                 break;
-            case 16:
+            case BasicHDU.BITPIX_SHORT:
                 baseClass = Short.TYPE;
                 break;
-            case 32:
+            case BasicHDU.BITPIX_INT:
                 baseClass = Integer.TYPE;
                 break;
-            case 64:
+            case BasicHDU.BITPIX_LONG:
                 baseClass = Long.TYPE;
                 break;
-            case -32:
+            case BasicHDU.BITPIX_FLOAT:
                 baseClass = Float.TYPE;
                 break;
-            case -64:
+            case BasicHDU.BITPIX_DOUBLE:
                 baseClass = Double.TYPE;
                 break;
             default:

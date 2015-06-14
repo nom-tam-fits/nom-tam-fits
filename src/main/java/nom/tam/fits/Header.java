@@ -75,7 +75,7 @@ import nom.tam.util.RandomAccess;
  */
 public class Header implements FitsElement {
 
-    private static Logger LOG = Logger.getLogger(Header.class.getName());
+    private static final Logger LOG = Logger.getLogger(Header.class.getName());
 
     /**
      * Create a header by reading the information from the input stream.

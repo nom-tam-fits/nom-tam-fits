@@ -42,7 +42,7 @@ import java.util.logging.Logger;
 
 public class CloseIS extends FilterInputStream {
 
-    private static Logger LOG = Logger.getLogger(CloseIS.class.getName());
+    private static final Logger LOG = Logger.getLogger(CloseIS.class.getName());
 
     private static final int COPY_BUFFER_SIZE = 64 * 1024;
 

@@ -46,11 +46,7 @@ public class MultyArrayPointer {
             for (int index = 0; index < length; index++) {
                 Object subElement = Array.get(element, index);
                 if (subElement != null) {
-                    if (subElement.getClass().isArray()) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+                    return subElement.getClass().isArray();
                 }
             }
             return false;
@@ -115,8 +111,8 @@ public class MultyArrayPointer {
         deactivateSub();
     }
 
-    private void set(Object array) {
-        this.array = array;
+    private void set(Object newArray) {
+        this.array = newArray;
         this.length = Array.getLength(this.array);
         this.sub = null;
         this.index = 0;

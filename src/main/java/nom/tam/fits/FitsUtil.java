@@ -51,7 +51,7 @@ import nom.tam.util.RandomAccess;
  */
 public class FitsUtil {
 
-    private static Logger LOG = Logger.getLogger(FitsUtil.class.getName());
+    private static final Logger LOG = Logger.getLogger(FitsUtil.class.getName());
 
     private static boolean wroteCheckingError = false;
 
@@ -301,9 +301,9 @@ public class FitsUtil {
 
     public static int padding(long size) {
 
-        int mod = (int) (size % 2880);
+        int mod = (int) (size % FitsFactory.FITS_BLOCK_SIZE);
         if (mod > 0) {
-            mod = 2880 - mod;
+            mod = FitsFactory.FITS_BLOCK_SIZE - mod;
         }
         return mod;
     }

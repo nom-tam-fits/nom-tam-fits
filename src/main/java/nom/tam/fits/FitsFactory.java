@@ -39,7 +39,9 @@ package nom.tam.fits;
  * and this file modified but no other changes should be needed in the FITS
  * libraries.
  */
-public class FitsFactory {
+public final class FitsFactory {
+
+    public static final int FITS_BLOCK_SIZE = 2880;
 
     private static boolean useAsciiTables = true;
 
@@ -50,6 +52,9 @@ public class FitsFactory {
     private static boolean allowTerminalJunk = false;
 
     private static boolean longStringsEnabled = false;
+
+    private FitsFactory() {
+    }
 
     /**
      * @return Given a Header construct an appropriate data.
