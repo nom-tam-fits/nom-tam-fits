@@ -37,6 +37,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -51,8 +52,10 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.compress.CompressionLibLoaderProtection;
 import nom.tam.fits.compress.CompressionManager;
+import nom.tam.fits.compress.ExternalBZip2CompressionProvider;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -360,4 +363,21 @@ public class CompressTest {
         constrs[0].newInstance();
     }
 
+    @Test
+    public void testExternalBzip2() throws Exception {
+        System.getProperties().put("BZIP_DECOMPRESSOR", "bunzip2");
+        try {
+            ExternalBZip2CompressionProvider provider = new ExternalBZip2CompressionProvider();
+            Assert.assertTrue(provider.provides('B', 'Z'));
+            FileInputStream in = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits.bz2");
+            InputStream decompressed = provider.decompress(in);
+            Fits f = new Fits(decompressed);
+            BasicHDU<?> hdu = f.readHDU();
+            Assert.assertNotNull(hdu);
+            f.close();
+        } finally {
+            System.getProperties().remove("BZIP_DECOMPRESSOR");
+        }
+
+    }
 }

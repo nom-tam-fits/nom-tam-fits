@@ -36,6 +36,8 @@ import static nom.tam.fits.header.Standard.INSTRUME;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.extra.NOAOExt.WATn_nnn;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 
 import nom.tam.fits.BasicHDU;
@@ -113,7 +115,7 @@ public class EnumHeaderTest {
     }
 
     @Test
-    public void testAllHeaders() {
+    public void testAllHeaders() throws MalformedURLException {
         Class<?>[] classes = new Class<?>[]{
             Checksum.class,
             CXCExt.class,
@@ -139,7 +141,10 @@ public class EnumHeaderTest {
                 Assert.assertNotNull(iFitsHeader.status());
                 Assert.assertNotNull(iFitsHeader.valueType());
                 Assert.assertNotNull(iFitsHeader.hdu());
-
+                String url = iFitsHeader.status().url();
+                if (url != null) {
+                    new URL(url);
+                }
                 int nCount = 0;
                 int offset = 0;
                 while ((offset = key.indexOf('n', offset)) > 0) {

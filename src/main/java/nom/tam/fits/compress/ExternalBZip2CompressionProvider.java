@@ -42,7 +42,7 @@ public class ExternalBZip2CompressionProvider implements ICompressProvider {
     private static final Logger LOG = Logger.getLogger(ExternalBZip2CompressionProvider.class.getName());
 
     private InputStream bunzipper(final InputStream compressed) throws IOException, FitsException {
-        String cmd = System.getenv("BZIP_DECOMPRESSOR");
+        String cmd = getBzip2Cmd();
         // Allow the user to have already specified the - option.
         if (cmd.indexOf(" -") < 0) {
             cmd += " -";
@@ -62,6 +62,10 @@ public class ExternalBZip2CompressionProvider implements ICompressProvider {
         }
     }
 
+    public String getBzip2Cmd() {
+        return System.getProperty("BZIP_DECOMPRESSOR", System.getenv("BZIP_DECOMPRESSOR"));
+    }
+
     @Override
     public InputStream decompress(InputStream in) throws IOException, FitsException {
         return bunzipper(in);
@@ -74,6 +78,6 @@ public class ExternalBZip2CompressionProvider implements ICompressProvider {
 
     @Override
     public boolean provides(int mag1, int mag2) {
-        return mag1 == 'B' && mag2 == 'Z' && System.getenv("BZIP_DECOMPRESSOR") != null;
+        return mag1 == 'B' && mag2 == 'Z' && getBzip2Cmd() != null;
     }
 }

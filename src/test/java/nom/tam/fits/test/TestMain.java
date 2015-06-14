@@ -36,18 +36,46 @@ import static org.junit.Assert.assertFalse;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.utilities.FitsCopy;
 import nom.tam.fits.utilities.FitsReader;
 import nom.tam.fits.utilities.Main;
+import nom.tam.util.BufferedFile;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestMain {
+
+    @Test
+    public void testNothing() throws Exception {
+        PrintStream out = System.out;
+        try {
+            ByteArrayOutputStream sysout = new ByteArrayOutputStream();
+            PrintStream out2 = new PrintStream(sysout);
+            System.setOut(out2);
+
+            Main.main(new String[]{
+                "wrong"
+            });
+            Main.main(new String[]{});
+            out2.flush();
+            String sysoutString = new String(sysout.toByteArray());
+            int firstIndexOf = sysoutString.indexOf("do not know what to do");
+            int secondIndexOf = sysoutString.indexOf("do not know what to do", firstIndexOf + 1);
+            Assert.assertTrue(firstIndexOf >= 0);
+            Assert.assertTrue(secondIndexOf >= 0);
+        } finally {
+            System.setOut(out);
+        }
+    }
 
     @Test
     public void testRead() throws Exception {
@@ -56,14 +84,27 @@ public class TestMain {
             ByteArrayOutputStream sysout = new ByteArrayOutputStream();
             PrintStream out2 = new PrintStream(sysout);
             System.setOut(out2);
+
             Main.main(new String[]{
                 "read",
-                "src/test/resources/nom/tam/fits/test/test.fits"
+                "target/testMainRead.fits"
             });
             out2.flush();
             Assert.assertEquals("\n" + //
                     "\n" + //
                     "Primary header:\n" + //
+                    "\n" + //
+                    "  Image\n" + //
+                    "      Header Information:\n" + //
+                    "         BITPIX=16\n" + //
+                    "         NAXIS=2\n" + //
+                    "         NAXIS1=5\n" + //
+                    "         NAXIS2=5\n" + //
+                    "      Data information:\n" + //
+                    "         short[5, 5]\n" + //
+                    "\n" + //
+                    "\n" + //
+                    "Extension 1:\n" + //
                     "\n" + //
                     "  Image\n" + //
                     "      Header Information:\n" + //
@@ -78,6 +119,17 @@ public class TestMain {
         }
     }
 
+    @BeforeClass
+    public static void setup() throws FitsException, IOException {
+        Fits f = new Fits("src/test/resources/nom/tam/fits/test/test.fits");
+        f.readHDU();
+        f.addHDU(Fits.makeHDU(new short[5][5]));
+        BufferedFile testFile = new BufferedFile(new File("target/testMainRead.fits"), "rw");
+        f.write(testFile);
+        f.close();
+        testFile.close();
+    }
+
     @Test
     public void testCopy() throws Exception {
         PrintStream out = System.out;
@@ -87,7 +139,7 @@ public class TestMain {
             System.setOut(out2);
             Main.main(new String[]{
                 "copy",
-                "src/test/resources/nom/tam/fits/test/test.fits",
+                "target/testMainRead.fits",
                 "target/test-copy.fits"
             });
             out2.flush();
@@ -102,8 +154,20 @@ public class TestMain {
                     "         NAXIS1=5\n" + //
                     "         NAXIS2=5\n" + //
                     "      Data information:\n" + //
+                    "         short[5, 5]\n" + //
+                    "\n" + //
+                    "\n" + //
+                    "Extension 1:\n" + //
+                    "\n" + //
+                    "  Image\n" + //
+                    "      Header Information:\n" + //
+                    "         BITPIX=16\n" + //
+                    "         NAXIS=2\n" + //
+                    "         NAXIS1=5\n" + //
+                    "         NAXIS2=5\n" + //
+                    "      Data information:\n" + //
                     "         short[5, 5]\n", new String(sysout.toByteArray()));
-            Assert.assertEquals(new File("src/test/resources/nom/tam/fits/test/test.fits").length(),//
+            Assert.assertEquals(new File("target/testMainRead.fits").length(),//
                     new File("target/test-copy.fits").length());
         } finally {
             System.setOut(out);

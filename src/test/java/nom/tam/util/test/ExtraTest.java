@@ -31,27 +31,54 @@ package nom.tam.util.test;
  * #L%
  */
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
+import nom.tam.fits.utilities.FitsHeaderCardParser;
+import nom.tam.fits.utilities.FitsHeaderCardParser.ParsedValue;
+import nom.tam.fits.utilities.FitsLineAppender;
 import nom.tam.image.comp.QuantizeRandoms;
 import nom.tam.image.comp.Rice;
 import nom.tam.image.comp.TileDescriptor;
 import nom.tam.image.comp.TileLooper;
+import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class ExtraTests {
+public class ExtraTest {
 
     @Test
-    @Ignore
-    public void test() {
-        // TODO use the mains to create some tests.
+    public void testExtraLineApender() {
+        FitsLineAppender apender = new FitsLineAppender();
+        apender.append("0123456789012345678901234567890123456789012345");
+        apender.append("0123456789012345678901234567890123456789012345");
+        Assert.assertEquals(80, apender.toString().length());
+    }
+
+    @Test
+    public void testParseStringComment() {
+        ParsedValue value = FitsHeaderCardParser.parseCardValue(" = / ' test '");
+        Assert.assertEquals("", value.getValue());
+        Assert.assertEquals("' test '", value.getComment());
+    }
+
+    @Test
+    public void testFitsHeaderCardParser() throws Exception {
+        Constructor<?>[] constrs = FitsHeaderCardParser.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
     }
 
     public static void main1(String[] args) throws Exception {
