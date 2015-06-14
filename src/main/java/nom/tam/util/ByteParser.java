@@ -282,32 +282,28 @@ public class ByteParser {
                 throw new FormatException("Invalid real field");
             }
 
-            // Look for an exponent
-            if (length > 0) {
-
-                // Our Fortran heritage means that we allow 'D' for the exponent
-                // indicator.
-                if (this.input[this.offset] == 'e' || this.input[this.offset] == 'E' || this.input[this.offset] == 'd' || this.input[this.offset] == 'D') {
-
-                    this.offset += 1;
-                    length -= 1;
-                    if (length > 0) {
-                        int sign = checkSign();
-                        if (this.foundSign) {
-                            length -= 1;
-                        }
-
-                        int exponent = (int) getBareInteger(length);
-
-                        // For very small numbers we try to miminize
-                        // effects of denormalization.
-                        if (exponent * sign > -300) {
-                            number *= Math.pow(10., exponent * sign);
-                        } else {
-                            number = 1.e-300 * (number * Math.pow(10., exponent * sign + 300));
-                        }
-                        length -= this.numberLength;
+            // Look for an exponent ,Our Fortran heritage means that we allow
+            // 'D' for the exponent
+            // indicator.
+            if (length > 0 && (this.input[this.offset] == 'e' || this.input[this.offset] == 'E' || this.input[this.offset] == 'd' || this.input[this.offset] == 'D')) {
+                this.offset += 1;
+                length -= 1;
+                if (length > 0) {
+                    int sign = checkSign();
+                    if (this.foundSign) {
+                        length -= 1;
                     }
+
+                    int exponent = (int) getBareInteger(length);
+
+                    // For very small numbers we try to miminize
+                    // effects of denormalization.
+                    if (exponent * sign > -300) {
+                        number *= Math.pow(10., exponent * sign);
+                    } else {
+                        number = 1.e-300 * (number * Math.pow(10., exponent * sign + 300));
+                    }
+                    length -= this.numberLength;
                 }
             }
         }

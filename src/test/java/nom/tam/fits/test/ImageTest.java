@@ -48,10 +48,12 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import junit.framework.Assert;
+import org.junit.Assert;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.ImageData;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
@@ -93,7 +95,7 @@ public class ImageTest {
         double[] img1 = (double[]) ArrayFuncs.flatten(dimg);
 
         Fits f = new Fits(new File("target/image1.fits"));
-        BasicHDU[] hdus = f.read();
+        BasicHDU<?>[] hdus = f.read();
 
         assertEquals("fbyte image", true, TestArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
         assertEquals("fshort image", true, TestArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
@@ -167,7 +169,7 @@ public class ImageTest {
 
         // Read a FITS file
         f = new Fits("target/image1.fits");
-        BasicHDU[] hdus = f.read();
+        BasicHDU<?>[] hdus = f.read();
 
         assertEquals("HDU count after", 8, f.getNumberOfHDUs());
         assertEquals("byte image", true, TestArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
@@ -211,10 +213,11 @@ public class ImageTest {
         assertEquals("int3 image", true, TestArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
         assertEquals("double1 image", true, TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
 
+        Assert.assertArrayEquals(new byte[0], (byte[]) new ImageData().getData());
     }
 
-    private BasicHDU makeHDU(Object data) throws FitsException {
-        BasicHDU hdu = Fits.makeHDU(data);
+    private BasicHDU<?> makeHDU(Object data) throws FitsException {
+        BasicHDU<?> hdu = Fits.makeHDU(data);
         hdu.addValue(AUTHOR, "he was it");
         hdu.addValue(DATE, "2015-03-22");
         hdu.addValue("EQUINOX", 2000.0, null);

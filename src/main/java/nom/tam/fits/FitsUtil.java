@@ -143,11 +143,9 @@ public class FitsUtil {
                     end = j;
                     break;
                 }
-                if (checking) {
-                    if (bytes[j] < 32 || bytes[j] > 126) {
-                        errFound = true;
-                        bytes[j] = 32;
-                    }
+                if (checking && (bytes[j] < 32 || bytes[j] > 126)) {
+                    errFound = true;
+                    bytes[j] = 32;
                 }
             }
             res[i] = AsciiFuncs.asciiString(bytes, start, end - start);

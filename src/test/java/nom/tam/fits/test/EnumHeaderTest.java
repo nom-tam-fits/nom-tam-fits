@@ -158,5 +158,11 @@ public class EnumHeaderTest {
     public void testSynonyms() {
         Assert.assertEquals(Standard.EQUINOX, Synonyms.primaryKeyword(Standard.EPOCH));
         Assert.assertEquals("EQUINOX", Synonyms.primaryKeyword("EPOCH"));
+        Assert.assertArrayEquals(new IFitsHeader[]{
+            Standard.EPOCH
+        }, Synonyms.EQUINOX.getSynonyms());
+
+        Assert.assertEquals(Standard.SIMPLE, Synonyms.primaryKeyword(Standard.SIMPLE));
+        Assert.assertEquals("SIMPLE", Synonyms.primaryKeyword("SIMPLE"));
     }
 }

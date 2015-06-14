@@ -38,30 +38,30 @@ package nom.tam.fits;
 
 public interface TableData {
 
-    public abstract int addColumn(Object newCol) throws FitsException;
+    int addColumn(Object newCol) throws FitsException;
 
-    public abstract int addRow(Object[] newRow) throws FitsException;
+    int addRow(Object[] newRow) throws FitsException;
 
-    public abstract void deleteColumns(int row, int len) throws FitsException;
+    void deleteColumns(int row, int len) throws FitsException;
 
-    public abstract void deleteRows(int row, int len) throws FitsException;
+    void deleteRows(int row, int len) throws FitsException;
 
-    public abstract Object getColumn(int col) throws FitsException;
+    Object getColumn(int col) throws FitsException;
 
-    public abstract Object getElement(int row, int col) throws FitsException;
+    Object getElement(int row, int col) throws FitsException;
 
-    public abstract int getNCols();
+    int getNCols();
 
-    public abstract int getNRows();
+    int getNRows();
 
-    public abstract Object[] getRow(int row) throws FitsException;
+    Object[] getRow(int row) throws FitsException;
 
-    public abstract void setColumn(int col, Object newCol) throws FitsException;
+    void setColumn(int col, Object newCol) throws FitsException;
 
-    public abstract void setElement(int row, int col, Object element) throws FitsException;
+    void setElement(int row, int col, Object element) throws FitsException;
 
-    public abstract void setRow(int row, Object[] newRow) throws FitsException;
+    void setRow(int row, Object[] newRow) throws FitsException;
 
-    public abstract void updateAfterDelete(int oldNcol, Header hdr) throws FitsException;
+    void updateAfterDelete(int oldNcol, Header hdr) throws FitsException;
 
 }

@@ -35,7 +35,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.Arrays;
 
 import nom.tam.fits.AsciiTable;
 import nom.tam.fits.BasicHDU;
@@ -317,7 +320,7 @@ public class BaseFitsTest {
         os.close();
 
         Fits fits2 = new Fits("target/UndefindedHDU4.fits");
-        BasicHDU[] hdus = fits2.read();
+        BasicHDU<?>[] hdus = fits2.read();
 
         byte[] rereadUndefinedData = (byte[]) ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
         Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
@@ -327,6 +330,32 @@ public class BaseFitsTest {
         String undefinedInfo = new String(out.toByteArray());
 
         Assert.assertTrue(undefinedInfo.indexOf("Apparent size:1000") >= 0);
+
+    }
+
+    @Test
+    public void testFitsUndefinedHdu5() throws Exception {
+        Header head = new Header();
+        head.setXtension("UNKNOWN");
+        head.setBitpix(8);
+        head.setNaxes(1);
+        head.addValue("NAXIS1", 1000, null);
+        head.addValue("PCOUNT", 0, null);
+        head.addValue("GCOUNT", 2, null);
+        UndefinedHDU hdu = (UndefinedHDU) FitsFactory.HDUFactory(head);
+        byte[] data = (byte[]) hdu.getData().getData();
+        Assert.assertEquals(2000, data.length);
+        Arrays.fill(data, (byte) 1);
+        BufferedFile buf = new BufferedFile("target/testFitsUndefinedHdu5", "rw");
+        hdu.write(buf);
+        buf.close();
+        Arrays.fill(data, (byte) 2);
+
+        buf = new BufferedFile("target/testFitsUndefinedHdu5", "rw");
+        hdu.read(buf);
+        data = (byte[]) hdu.getData().getData();
+        buf.close();
+        Assert.assertEquals((byte) 1, data[0]);
 
     }
 

@@ -32,9 +32,15 @@ package nom.tam.fits.test;
  */
 
 import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.lang.reflect.Array;
+
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.ImageHDU;
 import nom.tam.image.StandardImageTiler;
+import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 
 import org.junit.Test;
@@ -47,9 +53,10 @@ import org.junit.Test;
  */
 public class TilerTest {
 
-    void doTile(String test, float[][] data, StandardImageTiler t, int x, int y, int nx, int ny) throws Exception {
+    void doTile(String test, Object data, StandardImageTiler t, int x, int y, int nx, int ny) throws Exception {
 
-        float[] tile = new float[nx * ny];
+        Class<?> baseClass = ArrayFuncs.getBaseClass(data);
+        Object tile = Array.newInstance(baseClass, nx * ny);
         t.getTile(tile, new int[]{
             y,
             x
@@ -63,8 +70,8 @@ public class TilerTest {
 
         for (int i = 0; i < nx; i += 1) {
             for (int j = 0; j < ny; j += 1) {
-                sum0 += tile[i + j * nx];
-                sum1 += data[j + y][i + x];
+                sum0 += ((Number) Array.get(tile, i + j * nx)).doubleValue();
+                sum1 += ((Number) Array.get(Array.get(data, j + y), i + x)).doubleValue();
             }
         }
 
@@ -72,25 +79,88 @@ public class TilerTest {
     }
 
     @Test
-    public void test() throws Exception {
+    public void testFloat() throws Exception {
 
         float[][] data = new float[300][300];
-
         for (int i = 0; i < 300; i += 1) {
             for (int j = 0; j < 300; j += 1) {
                 data[i][j] = 1000 * i + j;
             }
         }
+        doTest(data, "float");
+    }
+
+    @Test
+    public void testDouble() throws Exception {
+
+        double[][] data = new double[300][300];
+        for (int i = 0; i < 300; i += 1) {
+            for (int j = 0; j < 300; j += 1) {
+                data[i][j] = 1000 * i + j;
+            }
+        }
+        doTest(data, "double");
+    }
+
+    @Test
+    public void testInt() throws Exception {
+
+        int[][] data = new int[300][300];
+        for (int i = 0; i < 300; i += 1) {
+            for (int j = 0; j < 300; j += 1) {
+                data[i][j] = 1000 * i + j;
+            }
+        }
+        doTest(data, "int");
+    }
+
+    @Test
+    public void testShort() throws Exception {
+
+        short[][] data = new short[300][300];
+        for (int i = 0; i < 300; i += 1) {
+            for (int j = 0; j < 300; j += 1) {
+                data[i][j] = (short) (1000 * i + j);
+            }
+        }
+        doTest(data, "short");
+    }
+
+    @Test
+    public void testByte() throws Exception {
+
+        byte[][] data = new byte[300][300];
+        for (int i = 0; i < 300; i += 1) {
+            for (int j = 0; j < 300; j += 1) {
+                data[i][j] = (byte) (1000 * i + j);
+            }
+        }
+        doTest(data, "byte");
+    }
+
+    @Test
+    public void testLong() throws Exception {
+
+        long[][] data = new long[300][300];
+        for (int i = 0; i < 300; i += 1) {
+            for (int j = 0; j < 300; j += 1) {
+                data[i][j] = 1000 * i + j;
+            }
+        }
+        doTest(data, "long");
+    }
+
+    private void doTest(Object data, String suffix) throws IOException, FitsException, Exception {
 
         Fits f = new Fits();
 
-        BufferedFile bf = new BufferedFile("target/tiler1.fits", "rw");
+        BufferedFile bf = new BufferedFile("target/tiler" + suffix + ".fits", "rw");
         f.addHDU(Fits.makeHDU(data));
 
         f.write(bf);
         bf.close();
 
-        f = new Fits("target/tiler1.fits");
+        f = new Fits("target/tiler" + suffix + ".fits");
 
         ImageHDU h = (ImageHDU) f.readHDU();
 

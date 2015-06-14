@@ -78,15 +78,15 @@ public class RandomGroupsData extends Data {
         Object paraSamp = this.dataArray[0][0];
         Object dataSamp = this.dataArray[0][1];
 
-        Class<?> pbase = nom.tam.util.ArrayFuncs.getBaseClass(paraSamp);
-        Class<?> dbase = nom.tam.util.ArrayFuncs.getBaseClass(dataSamp);
+        Class<?> pbase = ArrayFuncs.getBaseClass(paraSamp);
+        Class<?> dbase = ArrayFuncs.getBaseClass(dataSamp);
 
         if (pbase != dbase) {
             throw new FitsException("Data and parameters do not agree in type for random group");
         }
 
-        int[] pdims = nom.tam.util.ArrayFuncs.getDimensions(paraSamp);
-        int[] ddims = nom.tam.util.ArrayFuncs.getDimensions(dataSamp);
+        int[] pdims = ArrayFuncs.getDimensions(paraSamp);
+        int[] ddims = ArrayFuncs.getDimensions(dataSamp);
 
         if (pdims.length != 1) {
             throw new FitsException("Parameters are not 1 d array for random groups");

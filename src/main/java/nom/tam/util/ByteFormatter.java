@@ -1,7 +1,5 @@
 package nom.tam.util;
 
-import java.util.Arrays;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -984,13 +982,11 @@ public final class ByteFormatter {
      * TruncationException will be thrown if the appropriate flag is set.
      */
     void truncationFiller(byte[] buffer, int offset, int length) throws TruncationException {
-
         for (int i = offset; i < offset + length; i += 1) {
             buffer[i] = this.truncationFill;
         }
         if (this.truncationThrow) {
             throw new TruncationException();
         }
-        return;
     }
 }

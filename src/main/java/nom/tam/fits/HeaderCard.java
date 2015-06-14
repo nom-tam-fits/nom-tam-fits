@@ -396,14 +396,10 @@ public class HeaderCard implements CursorValue<String> {
         }
         if (key == null && value != null) {
             throw new HeaderCardException("Null keyword with non-null value");
+        } else if (key != null && key.length() > HeaderCard.MAX_KEYWORD_LENGTH && //
+                (!FitsFactory.getUseHierarch() || !key.substring(0, 9).equals("HIERARCH."))) {
+            throw new HeaderCardException("Keyword too long");
         }
-
-        if (key != null && key.length() > HeaderCard.MAX_KEYWORD_LENGTH) {
-            if (!FitsFactory.getUseHierarch() || !key.substring(0, 9).equals("HIERARCH.")) {
-                throw new HeaderCardException("Keyword too long");
-            }
-        }
-
         if (value != null) {
             value = value.replaceAll(" *$", "");
 

@@ -42,10 +42,10 @@ import java.io.IOException;
  */
 public interface ImageTiler {
 
-    public Object getCompleteImage() throws IOException;
+    Object getCompleteImage() throws IOException;
 
-    public Object getTile(int[] corners, int[] lengths) throws IOException;
+    Object getTile(int[] corners, int[] lengths) throws IOException;
 
-    public void getTile(Object array, int[] corners, int[] lengths) throws IOException;
+    void getTile(Object array, int[] corners, int[] lengths) throws IOException;
 
 }

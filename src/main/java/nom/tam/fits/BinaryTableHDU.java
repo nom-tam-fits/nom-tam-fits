@@ -224,11 +224,6 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         return isHeader(this.myHeader);
     }
 
-    @Override
-    protected Data manufactureData() throws FitsException {
-        return manufactureData(this.myHeader);
-    }
-
     private void prtField(PrintStream stream, String type, String field) {
         String val = this.myHeader.getStringValue(field);
         if (val != null) {
@@ -250,13 +245,9 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     public boolean setComplexColumn(int index) throws FitsException {
         boolean status = false;
         if (this.myData.setComplexColumn(index)) {
-
             // No problem with the data. Make sure the header
             // is right.
-
             BinaryTable.ColumnDesc colDesc = this.myData.getDescriptor(index);
-            Class<?> base = this.myData.getBases()[index];
-
             int dim = 1;
             String tdim = "";
             String sep = "";

@@ -122,17 +122,12 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      */
     public static boolean isData(Object potentialData) {
         if (potentialData instanceof Object[][]) {
-
             Object[][] o = (Object[][]) potentialData;
-
-            if (o.length > 0) {
-                if (o[0].length == 2) {
-                    if (ArrayFuncs.getBaseClass(o[0][0]) == ArrayFuncs.getBaseClass(o[0][1])) {
-                        String cn = o[0][0].getClass().getName();
-                        if (cn.length() == 2 && cn.charAt(1) != 'Z' || cn.charAt(1) != 'C') {
-                            return true;
-                        }
-                    }
+            if (o.length > 0 && o[0].length == 2 && //
+                    ArrayFuncs.getBaseClass(o[0][0]) == ArrayFuncs.getBaseClass(o[0][1])) {
+                String cn = o[0][0].getClass().getName();
+                if (cn.length() == 2 && cn.charAt(1) != 'Z' || cn.charAt(1) != 'C') {
+                    return true;
                 }
             }
         }
@@ -185,8 +180,8 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
         Object[] sampleRow = generateSampleRow(header);
         for (int i = 0; i < gcount; i += 1) {
-            dataArray[i][0] = ((Object[]) nom.tam.util.ArrayFuncs.deepClone(sampleRow))[0];
-            dataArray[i][1] = ((Object[]) nom.tam.util.ArrayFuncs.deepClone(sampleRow))[1];
+            dataArray[i][0] = ((Object[]) ArrayFuncs.deepClone(sampleRow))[0];
+            dataArray[i][1] = ((Object[]) ArrayFuncs.deepClone(sampleRow))[1];
         }
         return new RandomGroupsData(dataArray);
 
@@ -254,8 +249,8 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
             stream.println("    Invalid/unreadable data");
         } else {
             stream.println("    Number of groups:" + data.length);
-            stream.println("    Parameters: " + nom.tam.util.ArrayFuncs.arrayDescription(data[0][0]));
-            stream.println("    Data:" + nom.tam.util.ArrayFuncs.arrayDescription(data[0][1]));
+            stream.println("    Parameters: " + ArrayFuncs.arrayDescription(data[0][0]));
+            stream.println("    Data:" + ArrayFuncs.arrayDescription(data[0][1]));
         }
     }
 
@@ -266,16 +261,6 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      */
     public boolean isHeader() {
         return isHeader(this.myHeader);
-    }
-
-    /**
-     * @return Create a FITS Data object corresponding to this HDU header.
-     * @throws FitsException
-     *             if the operation failed
-     */
-    @Override
-    protected Data manufactureData() throws FitsException {
-        return manufactureData(this.myHeader);
     }
 
     /**

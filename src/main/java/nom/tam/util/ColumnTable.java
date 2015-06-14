@@ -337,8 +337,6 @@ public class ColumnTable<T> implements DataTable {
 
         this.rowSize += this.nrow * ArrayFuncs.getBaseLength(newColumn);
 
-        getNumberOfRows();
-
         int ncol = this.arrays.length;
 
         Object[] newArrays = new Object[ncol + 1];
@@ -690,25 +688,6 @@ public class ColumnTable<T> implements DataTable {
     }
 
     /**
-     * Calculate the number of rows to read/write at a time.
-     */
-    protected void getNumberOfRows() {
-
-        int bufSize = 65536;
-
-        // If a row is larger than bufSize, then read one row at a time.
-        if (this.rowSize == 0) {
-
-        } else if (this.rowSize > bufSize) {
-
-            // If the entire set is not too big, just read it all.
-        } else if (bufSize / this.rowSize >= this.nrow) {
-        } else {
-        }
-
-    }
-
-    /**
      * Get a row of data.
      * 
      * @param row
@@ -896,7 +875,6 @@ public class ColumnTable<T> implements DataTable {
      */
     private void setup(Object[] arrays, int[] sizes) throws TableException {
         checkArrayConsistency(arrays, sizes);
-        getNumberOfRows();
         initializePointers();
     }
 

@@ -619,5 +619,10 @@ public class AsciiTableTest {
         hdu.setColumn("TATA", copy);
         assertEquals(3333, ((int[]) hdu.getColumn("TATA"))[0]);
 
+        Assert.assertNull(hdu.getHeader().getStringValue("TNULL2"));
+        hdu.setNull(1, 1, true);
+        assertEquals("NULL", hdu.getHeader().getStringValue("TNULL2"));
+        Assert.assertTrue(hdu.isNull(1, 1));
+
     }
 }

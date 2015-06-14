@@ -46,12 +46,12 @@ public interface FitsElement {
      * @return the byte at which this element begins. This is only available if
      *         the data is originally read from a random access medium.
      */
-    public long getFileOffset();
+    long getFileOffset();
 
     /**
      * @return The size of this element in bytes
      */
-    public long getSize();
+    long getSize();
 
     /**
      * Read a data array into the current object and if needed position to the
@@ -64,14 +64,14 @@ public interface FitsElement {
      * @throws IOException
      *             if the read was unsuccessful.
      */
-    public void read(ArrayDataInput in) throws FitsException, IOException;
+    void read(ArrayDataInput in) throws FitsException, IOException;
 
     /**
      * Reset the input stream to point to the beginning of this element
      * 
      * @return True if the reset succeeded.
      */
-    public boolean reset();
+    boolean reset();
 
     /**
      * Rewrite the contents of the element in place. The data must have been
@@ -83,12 +83,12 @@ public interface FitsElement {
      * @throws IOException
      *             if the rewrite was unsuccessful.
      */
-    public void rewrite() throws FitsException, IOException;
+    void rewrite() throws FitsException, IOException;
 
     /**
      * @return <code>true</code> if this element can be rewritten?
      */
-    public boolean rewriteable();
+    boolean rewriteable();
 
     /**
      * Write the contents of the element to a data sink.
@@ -100,5 +100,5 @@ public interface FitsElement {
      * @throws IOException
      *             if the write was unsuccessful.
      */
-    public void write(ArrayDataOutput out) throws FitsException, IOException;
+    void write(ArrayDataOutput out) throws FitsException, IOException;
 }

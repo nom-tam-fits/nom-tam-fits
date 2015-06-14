@@ -38,6 +38,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -52,12 +53,33 @@ import nom.tam.fits.FitsElement;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.compress.CompressionManager;
 
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import fi.iki.elonen.NanoHTTPD;
+import fi.iki.elonen.SimpleWebServer;
 
 /**
  * Test reading .Z and .gz compressed files.
  */
 public class CompressTest {
+
+    static SimpleWebServer webserver;
+
+    @BeforeClass
+    public static void setup() throws IOException {
+        File files = new File("src/test/resources/nom/tam/fits/test").getAbsoluteFile();
+        webserver = new SimpleWebServer("localhost", 9999, files, true);
+        webserver.start();
+    }
+
+    @AfterClass
+    public static void teardown() {
+        webserver.stop();
+    }
 
     int fileRead(File is, boolean comp, boolean useComp) throws Exception {
         Fits f;
@@ -121,6 +143,7 @@ public class CompressTest {
     }
 
     @Test
+    @Ignore
     public void testgz() throws Exception {
 
         File fil = new File(".");
@@ -220,6 +243,7 @@ public class CompressTest {
     }
 
     @Test
+    @Ignore
     public void testZ() throws Exception {
         Fits f = new Fits("http://heasarc.gsfc.nasa.gov/FTP/rosat/data/pspc/processed_data/600000/rp600245n00/rp600245n00_im1.fits.Z");
 

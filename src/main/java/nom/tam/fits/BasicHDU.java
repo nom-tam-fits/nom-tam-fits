@@ -427,17 +427,6 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      */
     public abstract void info(PrintStream stream);
 
-    /**
-     * Create a Data object to correspond to the header description.
-     * 
-     * @return An unfilled Data object which can be used to read in the data for
-     *         this HDU.
-     * @throws FitsException
-     *             if the Data object could not be created from this HDU's
-     *             Header
-     */
-    protected abstract Data manufactureData() throws FitsException;
-
     @SuppressWarnings("unchecked")
     @Override
     public void read(ArrayDataInput stream) throws FitsException, IOException {
@@ -534,7 +523,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         }
         try {
             stream.flush();
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             throw new FitsException("Error flushing at end of HDU: " + e.getMessage());
         }
     }

@@ -119,9 +119,4 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
         stream.println("  XTENSION=" + this.myHeader.getStringValue("XTENSION").trim());
         stream.println("  Apparent size:" + this.myData.getTrueSize());
     }
-
-    @Override
-    protected Data manufactureData() throws FitsException {
-        return manufactureData(this.myHeader);
-    }
 }

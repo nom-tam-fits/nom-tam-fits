@@ -33,7 +33,6 @@ package nom.tam.fits.compress;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.logging.Logger;
 
 import nom.tam.fits.FitsException;
@@ -48,7 +47,6 @@ public class ExternalBZip2CompressionProvider implements ICompressProvider {
         if (cmd.indexOf(" -") < 0) {
             cmd += " -";
         }
-        final OutputStream out;
         String[] flds = cmd.split(" +");
         Process proc;
         try {

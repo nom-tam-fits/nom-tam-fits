@@ -187,12 +187,12 @@ public class Fits implements Closeable {
         long hicarry = hi >>> 16;
         long locarry = lo >>> 16;
         while (hicarry != 0 || locarry != 0) {
-            hi = (hi & 0xffffL) + locarry;
-            lo = (lo & 0xffffL) + hicarry;
+            hi = (hi & 0xffffL) | locarry;
+            lo = (lo & 0xffffL) | hicarry;
             hicarry = hi >>> 16;
             locarry = lo >>> 16;
         }
-        return (hi << 16) + lo;
+        return (hi << 16) | lo;
     }
 
     /**
@@ -246,7 +246,7 @@ public class Fits implements Closeable {
 
             ch[0] += remainder;
             boolean check = true;
-            for (; check;) // avoid ASCII punctuation
+            while (check) // avoid ASCII punctuation
             {
                 check = false;
                 for (int element : exclude) {
@@ -464,7 +464,7 @@ public class Fits implements Closeable {
      *             if the operation failed
      */
     public Fits(InputStream str) throws FitsException {
-        streamInit(str, false);
+        streamInit(str);
     }
 
     /**
@@ -482,7 +482,7 @@ public class Fits implements Closeable {
      *             if the operation failed
      */
     public Fits(InputStream str, boolean compressed) throws FitsException {
-        streamInit(str);
+        this(str);
     }
 
     /**
@@ -496,8 +496,8 @@ public class Fits implements Closeable {
      *            this file will not be read into the Fits object until the user
      *            makes some explicit request.
      * @throws FitsException
-     *                Thrown if unable to find or open a file or URL from the
-     *                string given.
+     *             Thrown if unable to find or open a file or URL from the
+     *             string given.
      **/
     public Fits(String filename) throws FitsException {
         this(filename, CompressionManager.isCompressed(filename));
@@ -516,8 +516,8 @@ public class Fits implements Closeable {
      * @param compressed
      *            is the file compressed?
      * @throws FitsException
-     *                Thrown if unable to find or open a file or URL from the
-     *                string given.
+     *             Thrown if unable to find or open a file or URL from the
+     *             string given.
      **/
     public Fits(String filename, boolean compressed) throws FitsException {
         if (filename == null) {
@@ -559,8 +559,8 @@ public class Fits implements Closeable {
      *            into the Fits object until the user makes some explicit
      *            request.
      * @throws FitsException
-     *                Thrown if unable to find or open a file or URL from the
-     *                string given.
+     *             Thrown if unable to find or open a file or URL from the
+     *             string given.
      */
     public Fits(URL myURL) throws FitsException {
         try {
@@ -580,7 +580,7 @@ public class Fits implements Closeable {
      * @param compressed
      *            Compression flag, ignored.
      * @throws FitsException
-     *                Thrown if unable to use the specified URL.
+     *             Thrown if unable to use the specified URL.
      */
     public Fits(URL myURL, boolean compressed) throws FitsException {
         this(myURL);
@@ -824,7 +824,7 @@ public class Fits implements Closeable {
         if (this.dataStr == null || this.atEOF) {
             return null;
         }
-        if (this.dataStr instanceof nom.tam.util.RandomAccess && this.lastFileOffset > 0) {
+        if (this.dataStr instanceof RandomAccess && this.lastFileOffset > 0) {
             FitsUtil.reposition(this.dataStr, this.lastFileOffset);
         }
         Header hdr = Header.readHeader(this.dataStr);
@@ -859,11 +859,11 @@ public class Fits implements Closeable {
                     break;
                 }
             } catch (EOFException e) {
-                if (FitsFactory.getAllowTerminalJunk() && e.getCause() instanceof TruncatedFileException) {
-                    if (getNumberOfHDUs() > 0) {
-                        this.atEOF = true;
-                        return;
-                    }
+                if (FitsFactory.getAllowTerminalJunk() && //
+                        e.getCause() instanceof TruncatedFileException && //
+                        getNumberOfHDUs() > 0) {
+                    this.atEOF = true;
+                    return;
                 }
                 throw new FitsException("IO error: " + e);
             } catch (IOException e) {
@@ -937,7 +937,7 @@ public class Fits implements Closeable {
             Header hdr = new Header(this.dataStr);
             int dataSize = (int) hdr.getDataSize();
             this.dataStr.skip(dataSize);
-            if (this.dataStr instanceof nom.tam.util.RandomAccess) {
+            if (this.dataStr instanceof RandomAccess) {
                 this.lastFileOffset = ((RandomAccess) this.dataStr).getFilePointer();
             }
         }
@@ -1023,8 +1023,7 @@ public class Fits implements Closeable {
                 hh = this.hduList.get(i);
                 hh.write(obs);
             } catch (ArrayIndexOutOfBoundsException e) {
-                e.printStackTrace();
-                throw new FitsException("Internal Error: Vector Inconsistency" + e);
+                throw new FitsException("Internal Error: Vector Inconsistency" + e, e);
             }
         }
         if (newOS) {
@@ -1032,17 +1031,16 @@ public class Fits implements Closeable {
                 obs.flush();
                 obs.close();
             } catch (IOException e) {
-                System.err.println("Warning: error closing FITS output stream");
+                LOG.log(Level.WARNING, "Warning: error flushing/closing FITS output stream", e);
             }
         }
-        try {
-            if (obs instanceof BufferedFile) {
+        if (obs instanceof BufferedFile) {
+            try {
                 ((BufferedFile) obs).setLength(((BufferedFile) obs).getFilePointer());
+            } catch (IOException e) {
+                LOG.log(Level.SEVERE, "Warning: error changing fits file size", e);
             }
-        } catch (IOException e) {
-            // Ignore problems...
         }
-
     }
 
     @Override

@@ -469,6 +469,7 @@ public class Header implements FitsElement {
             // End cannot have a comment
             this.iter.add(new HeaderCard("END", (String) null, null));
         } catch (HeaderCardException e) {
+            LOG.severe("can not happen");
         }
     }
 
@@ -1616,9 +1617,7 @@ public class Header implements FitsElement {
      */
     @Override
     public void write(ArrayDataOutput dos) throws FitsException {
-
         this.fileOffset = FitsUtil.findOffset(dos);
-
         // Ensure that all cards are in the proper order.
         this.cards.sort(new HeaderOrder());
         checkBeginning();
@@ -1626,25 +1625,17 @@ public class Header implements FitsElement {
         if (this.cards.size() <= 0) {
             return;
         }
-
         Cursor<String, HeaderCard> iter = this.cards.iterator(0);
-
         try {
             while (iter.hasNext()) {
                 HeaderCard card = iter.next();
-
                 byte[] b = AsciiFuncs.getBytes(card.toString());
                 dos.write(b);
             }
-
             FitsUtil.pad(dos, getNumberOfPhysicalCards() * 80, (byte) ' ');
+            dos.flush();
         } catch (IOException e) {
             throw new FitsException("IO Error writing header: " + e);
         }
-        try {
-            dos.flush();
-        } catch (IOException e) {
-        }
-
     }
 }

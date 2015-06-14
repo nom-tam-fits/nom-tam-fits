@@ -76,14 +76,12 @@ public class ImageHDU extends BasicHDU<ImageData> {
      * @return <CODE>true</CODE> if this HDU has a valid header.
      */
     public static boolean isHeader(Header hdr) {
-        boolean found = false;
-        found = hdr.getBooleanValue("SIMPLE");
+        boolean found = hdr.getBooleanValue("SIMPLE");
         if (!found) {
             String s = hdr.getStringValue("XTENSION");
-            if (s != null) {
-                if (s.trim().equals("IMAGE") || s.trim().equals("IUEIMAGE")) {
-                    found = true;
-                }
+            if (s != null && //
+                    (s.trim().equals("IMAGE") || s.trim().equals("IUEIMAGE"))) {
+                found = true;
             }
         }
         if (!found) {
@@ -170,19 +168,6 @@ public class ImageHDU extends BasicHDU<ImageData> {
         } catch (Exception e) {
             stream.println("      Unable to get data");
         }
-    }
-
-    /**
-     * Create a Data object to correspond to the header description.
-     * 
-     * @return An unfilled Data object which can be used to read in the data for
-     *         this HDU.
-     * @throws FitsException
-     *             if the image extension could not be created.
-     */
-    @Override
-    protected Data manufactureData() throws FitsException {
-        return manufactureData(this.myHeader);
     }
 
     /** Change the Image from/to primary */

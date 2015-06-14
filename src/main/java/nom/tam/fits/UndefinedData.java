@@ -44,10 +44,7 @@ import nom.tam.util.ArrayFuncs;
  */
 public class UndefinedData extends Data {
 
-    /** The size of the data */
-    long byteSize;
-
-    byte[] data;
+    private byte[] data;
 
     public UndefinedData(Header h) throws FitsException {
 
@@ -68,7 +65,6 @@ public class UndefinedData extends Data {
         size *= Math.abs(h.getIntValue("BITPIX") / 8);
 
         this.data = new byte[size];
-        this.byteSize = size;
     }
 
     /**
@@ -78,8 +74,7 @@ public class UndefinedData extends Data {
      *            object to create the hdu from
      */
     public UndefinedData(Object x) {
-        this.byteSize = ArrayFuncs.computeLSize(x);
-        this.data = new byte[(int) this.byteSize];
+        this.data = new byte[(int) ArrayFuncs.computeLSize(x)];
         ArrayFuncs.copyInto(x, this.data);
     }
 
@@ -96,7 +91,7 @@ public class UndefinedData extends Data {
             head.setXtension("UNKNOWN");
             head.setBitpix(8);
             head.setNaxes(1);
-            head.addValue("NAXIS1", this.byteSize, "ntf::undefineddata:naxis1:1");
+            head.addValue("NAXIS1", this.data.length, "ntf::undefineddata:naxis1:1");
             head.addValue("PCOUNT", 0, "ntf::undefineddata:pcount:1");
             head.addValue("GCOUNT", 1, "ntf::undefineddata:gcount:1");
             head.addValue("EXTEND", true, "ntf::undefineddata:extend:1"); // Just
@@ -108,32 +103,15 @@ public class UndefinedData extends Data {
 
     }
 
-    /**
-     * Return the actual data. Note that this may return a null when the data is
-     * not readable. It might be better to throw a FitsException, but this is a
-     * very commonly called method and we prefered not to change how users must
-     * invoke it.
-     */
     @Override
     public Object getData() {
-
-        if (this.data == null) {
-
-            try {
-                FitsUtil.reposition(this.input, this.fileOffset);
-                this.input.read(this.data);
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
         return this.data;
     }
 
     /** Get the size in bytes of the data */
     @Override
     protected long getTrueSize() {
-        return this.byteSize;
+        return this.data.length;
     }
 
     @Override
@@ -157,22 +135,11 @@ public class UndefinedData extends Data {
 
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
-
-        if (this.data == null) {
-            getData();
-        }
-
-        if (this.data == null) {
-            throw new FitsException("Null unknown data");
-        }
-
         try {
             o.write(this.data);
         } catch (IOException e) {
             throw new FitsException("IO Error on unknown data write" + e);
         }
-
         FitsUtil.pad(o, getTrueSize());
-
     }
 }

@@ -59,9 +59,9 @@ public class ImageData extends Data {
 
         int[] dims;
 
-        Class type;
+        Class<?> type;
 
-        ArrayDesc(int[] dims, Class type) {
+        ArrayDesc(int[] dims, Class<?> type) {
             this.dims = dims;
             this.type = type;
         }
@@ -71,7 +71,7 @@ public class ImageData extends Data {
      * This inner class allows the ImageTiler to see if the user has read in the
      * data.
      */
-    protected class ImageDataTiler extends nom.tam.image.StandardImageTiler {
+    protected class ImageDataTiler extends StandardImageTiler {
 
         ImageDataTiler(RandomAccess o, long offset, ArrayDesc d) {
             super(o, offset, d.dims, d.type);
@@ -241,7 +241,7 @@ public class ImageData extends Data {
 
         int i;
 
-        Class baseClass;
+        Class<?> baseClass;
 
         int gCount = h.getIntValue("GCOUNT", 1);
         int pCount = h.getIntValue("PCOUNT", 0);

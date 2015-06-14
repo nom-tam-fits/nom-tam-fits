@@ -450,6 +450,12 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.nanohttpd</groupId>
+			<artifactId>nanohttpd-webserver</artifactId>
+			<version>2.1.1</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

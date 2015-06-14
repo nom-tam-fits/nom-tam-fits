@@ -86,10 +86,13 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         if (o instanceof Object[]) {
             Object[] oo = (Object[]) o;
             for (Object element : oo) {
-                if (element instanceof String[] || element instanceof int[] || element instanceof long[] || element instanceof float[] || element instanceof double[]) {
-                    continue;
+                if (!(element instanceof String[]) && //
+                        !(element instanceof int[]) && //
+                        !(element instanceof long[]) && //
+                        !(element instanceof float[]) && //
+                        !(element instanceof double[])) {
+                    return false;
                 }
-                return false;
             }
             return true;
         } else {
@@ -192,15 +195,6 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
-     * Check that this HDU has a valid header.
-     * 
-     * @return <CODE>true</CODE> if this HDU has a valid header.
-     */
-    public boolean isHeader() {
-        return isHeader(this.myHeader);
-    }
-
-    /**
      * @param row
      *            row index of the element
      * @param col
@@ -209,11 +203,6 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      */
     public boolean isNull(int row, int col) {
         return this.myData.isNull(row, col);
-    }
-
-    @Override
-    protected Data manufactureData() throws FitsException {
-        return manufactureData(this.myHeader);
     }
 
     /**
