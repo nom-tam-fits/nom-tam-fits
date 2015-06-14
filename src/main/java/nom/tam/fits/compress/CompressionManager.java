@@ -138,7 +138,7 @@ public final class CompressionManager {
         }
 
         int len = filename.length();
-        return len > 2 && (filename.substring(len - 3).equalsIgnoreCase(".gz") || filename.substring(len - 2).equals(".Z"));
+        return len > 2 && (filename.substring(len - 3).equalsIgnoreCase(".gz") || filename.substring(len - 2).equals(".Z") || filename.substring(len - 4).equals(".bz2"));
     }
 
     private static ICompressProvider selectCompressionProvider(int mag1, int mag2) {

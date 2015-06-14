@@ -375,9 +375,25 @@ public class CompressTest {
             BasicHDU<?> hdu = f.readHDU();
             Assert.assertNotNull(hdu);
             f.close();
+            System.getProperties().put("BZIP_DECOMPRESSOR", "aHorriblyWrongCommand");
+            in = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits.bz2");
+            decompressed = provider.decompress(in);
+            f = new Fits(decompressed);
+            hdu = f.readHDU();
+            Assert.assertNotNull(hdu);
+            f.close();
         } finally {
             System.getProperties().remove("BZIP_DECOMPRESSOR");
         }
+    }
 
+    @Test
+    public void testIsCompressed() throws Exception {
+        Assert.assertFalse(CompressionManager.isCompressed((String) null));
+        Assert.assertFalse(CompressionManager.isCompressed("target/notExistenFileThatHasNoCompression"));
+        Assert.assertTrue(CompressionManager.isCompressed("target/notExistenFileThatHasCompression.Z"));
+        Assert.assertTrue(CompressionManager.isCompressed("target/notExistenFileThatHasCompression.bz2"));
+        Assert.assertTrue(CompressionManager.isCompressed("target/notExistenFileThatHasCompression.gz"));
+        Assert.assertFalse(CompressionManager.isCompressed(new File("target/notExistenFileThatHasNoCompression")));
     }
 }
