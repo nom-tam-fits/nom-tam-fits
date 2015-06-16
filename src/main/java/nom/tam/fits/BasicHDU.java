@@ -255,7 +255,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * positions given in either the header or data are expressed.
      * 
      * @return either <CODE>null</CODE> or a String object
-     * @see #getEquinox()
+     * @deprecated use {@link #getEquinox()} instead
      */
     @Deprecated
     public double getEpoch() {

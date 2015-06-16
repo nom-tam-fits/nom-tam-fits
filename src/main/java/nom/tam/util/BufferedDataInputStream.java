@@ -33,6 +33,7 @@ package nom.tam.util;
 
 // What do we use in here?
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -541,7 +542,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
      * current version
      * 
      * @return The String read.
-     * @deprecated Use BufferedReader methods.
+     * @deprecated Use {@link BufferedReader} methods.
      */
     @Deprecated
     @Override
@@ -585,7 +586,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
      *            type, or an array of Object's.
      * @throws IOException
      *             if the underlying read operation fails
-     * @deprecated See readLArray(Object o).
+     * @deprecated use {@link #readLArray(Object)} instead
      */
     @Deprecated
     public int readPrimitiveArray(Object o) throws IOException {

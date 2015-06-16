@@ -83,6 +83,8 @@ public enum Standard implements IFitsHeader {
      * it is absent. It is reserved primarily to prevent its use with other
      * meanings. Since the issuance of version 1 of the standard, the BLOCKED
      * keyword has been deprecated.
+     * 
+     * @deprecated no blocksize other that 2880 may be used.
      */
     @Deprecated
     BLOCKED(SOURCE.RESERVED, HDU.PRIMARY, VALUE.LOGICAL, "is physical blocksize a multiple of 2880?"),
@@ -214,6 +216,8 @@ public enum Standard implements IFitsHeader {
      * of the EPOCH keyword and thus it shall not be used in FITS files created
      * after the adoption of the standard; rather, the EQUINOX keyword shall be
      * used.
+     * 
+     * @deprecated use {@link EQUINOX} in stead
      */
     @Deprecated
     EPOCH(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "equinox of celestial coordinate system"),
@@ -387,7 +391,9 @@ public enum Standard implements IFitsHeader {
      */
     RADESYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Coordinate reference frame of major/minor axes."),
     /**
-     * Coordinate reference frame of major/minor axes. use RADESYS instread.
+     * Coordinate reference frame of major/minor axes. use RADESYS instead.
+     * 
+     * @deprecated use {@link RADESYS} instead.
      */
     @Deprecated
     RADECSYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Coordinate reference frame of major/minor axes."),

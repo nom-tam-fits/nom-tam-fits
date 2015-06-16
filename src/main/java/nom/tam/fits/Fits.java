@@ -604,7 +604,7 @@ public class Fits implements Closeable {
      * Get the current number of HDUs in the Fits object.
      * 
      * @return The number of HDU's in the object.
-     * @see #getNumberOfHDUs()
+     * @deprecated use {@link #getNumberOfHDUs()} instead
      */
     @Deprecated
     public int currentSize() {
@@ -904,12 +904,13 @@ public class Fits implements Closeable {
      * stream.
      * 
      * @return number of HDUs.
-     * @deprecated The meaning of size of ambiguous. Use getNumberOfHDUs()
-     *             instead. Note size() will read the input file/stream to the
-     *             EOF before returning the number of HDUs which
-     *             getNumberOfHDUs() does not. If you wish to duplicate this
-     *             behavior and ensure that the input has been exhausted before
-     *             getting the number of HDUs then use the sequence: <code>
+     * @deprecated The meaning of size of ambiguous. Use
+     *             {@link #getNumberOfHDUs()} instead. Note size() will read the
+     *             input file/stream to the EOF before returning the number of
+     *             HDUs which {@link #getNumberOfHDUs()} does not. If you wish
+     *             to duplicate this behavior and ensure that the input has been
+     *             exhausted before getting the number of HDUs then use the
+     *             sequence: <code>
      *    read(); 
      *    getNumberofHDUs();
      * </code>

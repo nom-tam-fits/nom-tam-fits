@@ -269,7 +269,7 @@ public interface ArrayDataInput extends java.io.DataInput, Closeable {
      * @return number of bytes read.
      * @param o
      *            A [multidimensional] primitive (or Object) array.
-     * @deprecated See readLArray(Object o).
+     * @deprecated use {@link ArrayDataInput#readLArray(Object)} instead.
      * @return the number of bytes read
      * @throws IOException
      *             if the underlying stream failed

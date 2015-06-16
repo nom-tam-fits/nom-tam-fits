@@ -37,7 +37,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -57,7 +56,6 @@ import nom.tam.fits.compress.ExternalBZip2CompressionProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import fi.iki.elonen.SimpleWebServer;
@@ -143,12 +141,11 @@ public class CompressTest {
     }
 
     @Test
-    @Ignore
     public void testgz() throws Exception {
 
         File fil = new File(".");
         System.out.println("File is:" + fil.getCanonicalPath());
-        Fits f = new Fits("http://heasarc.gsfc.nasa.gov/FTP/asca/data/rev2/43021000/images/ad43021000gis25670_lo.totsky.gz");
+        Fits f = new Fits("http://localhost:9999/ad43021000gis25670_lo.totsky.gz");
 
         BasicHDU<?> h = f.readHDU();
         int[][] data = (int[][]) h.getKernel();
@@ -243,9 +240,8 @@ public class CompressTest {
     }
 
     @Test
-    @Ignore
     public void testZ() throws Exception {
-        Fits f = new Fits("http://heasarc.gsfc.nasa.gov/FTP/rosat/data/pspc/processed_data/600000/rp600245n00/rp600245n00_im1.fits.Z");
+        Fits f = new Fits("http://localhost:9999/rp600245n00_im1.fits.Z");
 
         BasicHDU<?> h = f.readHDU();
         short[][] data = (short[][]) h.getKernel();

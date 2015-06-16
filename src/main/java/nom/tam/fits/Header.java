@@ -678,8 +678,9 @@ public class Header implements FitsElement {
      *            the card index to get
      * @return the card image; return <CODE>null</CODE> if the n'th card does
      *         not exist.
-     * @deprecated An iterator should be used for sequential access to the
-     *             header.
+     * @deprecated An iterator from {@link #iterator(int)} or
+     *             {@link #iterator()} should be used for sequential access to
+     *             the header.
      */
     @Deprecated
     public String getCard(int n) {
@@ -874,8 +875,9 @@ public class Header implements FitsElement {
      *            the index of the key
      * @return the card image; return <CODE>null</CODE> if the n'th key does not
      *         exist.
-     * @deprecated An iterator should be used for sequential access to the
-     *             header.
+     * @deprecated An iterator from {@link #iterator(int)} or
+     *             {@link #iterator()} should be used for sequential access to
+     *             the header.
      */
     @Deprecated
     public String getKey(int n) {
@@ -1503,8 +1505,8 @@ public class Header implements FitsElement {
 
     /**
      * @return the number of cards in the header
-     * @see #getNumberOfCards() . The units of the size of the header may be
-     *      unclear.
+     * @deprecated use {@link #getNumberOfCards()}. The units of the size of the
+     *             header may be unclear.
      */
     @Deprecated
     public int size() {

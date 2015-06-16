@@ -410,7 +410,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
      *            The object to be written.
      * @throws IOException
      *             if one of the underlying write operations failed
-     * @see #writeArray(Object)
+     * @deprecated use {@link #writeArray(Object)} instead
      */
     @Deprecated
     public void writePrimitiveArray(Object o) throws IOException {

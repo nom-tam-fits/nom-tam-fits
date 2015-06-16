@@ -50,6 +50,8 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
      *            the key of the value to add
      * @param reference
      *            the value to add
+     * @deprecated use key parameter can be omitted, so use {@link #add(Object)}
+     *             instead
      */
     @Deprecated
     void add(KEY key, VALUE reference);
