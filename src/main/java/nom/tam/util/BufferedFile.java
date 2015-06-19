@@ -253,7 +253,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
         } else {
             this.buffer[this.bufferOffset] = (byte) 0;
         }
-        this.bufferOffset += 1;
+        this.bufferOffset++;
     }
 
     private void convertFromByte(int b) throws IOException {
@@ -300,8 +300,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      */
     private boolean convertToBoolean() throws IOException {
         checkBuffer(BYTES_IN_BOOLEAN);
-        this.bufferOffset += 1;
-        return this.buffer[this.bufferOffset - 1] == 1;
+        return this.buffer[this.bufferOffset++] == 1;
     }
 
     /**
@@ -556,9 +555,8 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the underlying read operation fails
      */
     public int read() throws IOException {
-        checkBuffer(1);
-        this.bufferOffset += 1;
-        return this.buffer[this.bufferOffset - 1];
+        checkBuffer(BYTES_IN_BYTE);
+        return this.buffer[this.bufferOffset++];
     }
 
     @Override
@@ -571,7 +569,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
         int i = start;
         try {
-            for (; i < start + length; i += 1) {
+            for (; i < start + length; i++) {
                 b[i] = convertToBoolean();
             }
             return length;
@@ -645,7 +643,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
         int i = start;
         try {
-            for (; i < start + length; i += 1) {
+            for (; i < start + length; i++) {
                 c[i] = convertToChar();
             }
             return length * BYTES_IN_CHAR;
@@ -664,7 +662,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
         int i = start;
         try {
-            for (; i < start + length; i += 1) {
+            for (; i < start + length; i++) {
                 d[i] = Double.longBitsToDouble(convertToLong());
             }
             return length * BYTES_IN_DOUBLE;
@@ -683,7 +681,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
         int i = start;
         try {
-            for (; i < start + length; i += 1) {
+            for (; i < start + length; i++) {
                 f[i] = Float.intBitsToFloat(convertToInt());
             }
             return length * BYTES_IN_FLOAT;
@@ -702,7 +700,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
         int ii = start;
         try {
-            for (; ii < start + length; ii += 1) {
+            for (; ii < start + length; ii++) {
                 i[ii] = convertToInt();
             }
             return length * BYTES_IN_INTEGER;
@@ -721,7 +719,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
         int i = start;
         try {
-            for (; i < start + length; i += 1) {
+            for (; i < start + length; i++) {
                 l[i] = convertToLong();
             }
             return length * BYTES_IN_LONG;
@@ -741,7 +739,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
         int i = start;
         try {
-            for (; i < start + length; i += 1) {
+            for (; i < start + length; i++) {
                 s[i] = convertToShort();
             }
             return length * BYTES_IN_SHORT;
@@ -763,9 +761,8 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public byte readByte() throws IOException {
-        checkBuffer(1);
-        this.bufferOffset += 1;
-        return this.buffer[this.bufferOffset - 1];
+        checkBuffer(BYTES_IN_BYTE);
+        return this.buffer[this.bufferOffset++];
     }
 
     @Override
@@ -790,11 +787,9 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public void readFully(byte[] b, int off, int len) throws IOException {
-
         if (off < 0 || len < 0 || off + len > b.length) {
             throw new IOException("Attempt to read outside byte array");
         }
-
         if (read(b, off, len) < len) {
             throw new EOFException();
         }
@@ -825,7 +820,6 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      */
     @Override
     public String readLine() throws IOException {
-
         checkBuffer(-1);
         this.randomAccessFile.seek(this.fileOffset + this.bufferOffset);
         String line = this.randomAccessFile.readLine();
@@ -834,7 +828,6 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
         // Invalidate the buffer.
         this.bufferLength = 0;
         this.bufferOffset = 0;
-
         return line;
     }
 
@@ -850,9 +843,8 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public int readUnsignedByte() throws IOException {
-        checkBuffer(1);
-        this.bufferOffset += 1;
-        return this.buffer[this.bufferOffset - 1] & BYTE_MASK;
+        checkBuffer(BYTES_IN_BYTE);
+        return this.buffer[this.bufferOffset++] & BYTE_MASK;
     }
 
     @Override
@@ -963,7 +955,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public void write(boolean[] b, int start, int length) throws IOException {
-        for (int i = start; i < start + length; i += 1) {
+        for (int i = start; i < start + length; i++) {
             convertFromBoolean(b[i]);
         }
     }
@@ -1006,7 +998,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     @Override
     public void write(char[] c, int start, int length) throws IOException {
 
-        for (int i = start; i < start + length; i += 1) {
+        for (int i = start; i < start + length; i++) {
             convertFromChar(c[i]);
         }
     }
@@ -1019,7 +1011,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     @Override
     public void write(double[] d, int start, int length) throws IOException {
 
-        for (int i = start; i < start + length; i += 1) {
+        for (int i = start; i < start + length; i++) {
             convertFromLong(Double.doubleToLongBits(d[i]));
         }
     }
@@ -1031,7 +1023,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public void write(float[] f, int start, int length) throws IOException {
-        for (int i = start; i < start + length; i += 1) {
+        for (int i = start; i < start + length; i++) {
             convertFromInt(Float.floatToIntBits(f[i]));
         }
     }
@@ -1048,7 +1040,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public void write(int[] i, int start, int length) throws IOException {
-        for (int ii = start; ii < start + length; ii += 1) {
+        for (int ii = start; ii < start + length; ii++) {
             convertFromInt(i[ii]);
         }
     }
@@ -1061,7 +1053,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     @Override
     public void write(long[] l, int start, int length) throws IOException {
 
-        for (int i = start; i < start + length; i += 1) {
+        for (int i = start; i < start + length; i++) {
             convertFromLong(l[i]);
         }
     }
@@ -1074,7 +1066,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     @Override
     public void write(short[] s, int start, int length) throws IOException {
 
-        for (int i = start; i < start + length; i += 1) {
+        for (int i = start; i < start + length; i++) {
             convertFromShort(s[i]);
         }
     }
@@ -1086,7 +1078,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public void write(String[] s, int start, int length) throws IOException {
-        for (int i = start; i < start + length; i += 1) {
+        for (int i = start; i < start + length; i++) {
             writeBytes(s[i]);
         }
     }
@@ -1153,7 +1145,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     public void writeChars(String s) throws IOException {
 
         int len = s.length();
-        for (int i = 0; i < len; i += 1) {
+        for (int i = 0; i < len; i++) {
             convertFromChar(s.charAt(i));
         }
     }

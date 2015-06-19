@@ -515,7 +515,7 @@ public class AsciiTable extends AbstractTableData {
     public void fillHeader(Header hdr) {
         try {
             hdr.setXtension("TABLE");
-            hdr.setBitpix(8);
+            hdr.setBitpix(BasicHDU.BITPIX_BYTE);
             hdr.setNaxes(2);
             hdr.setNaxis(1, this.rowLen);
             hdr.setNaxis(2, this.nRows);

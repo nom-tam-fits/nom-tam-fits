@@ -43,6 +43,7 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.Cursor;
+import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.TableException;
 
@@ -162,13 +163,13 @@ public class BinaryTable extends AbstractTableData {
 
         Object[] results = new Object[row.length];
 
-        for (int col = 0; col < row.length; col += 1) {
+        for (int col = 0; col < row.length; col++) {
 
             if (row[col] instanceof String) {
 
                 String[] sa = new String[nrow];
 
-                for (int irow = 0; irow < nrow; irow += 1) {
+                for (int irow = 0; irow < nrow; irow++) {
                     sa[irow] = (String) data[irow][col];
                 }
 
@@ -184,13 +185,13 @@ public class BinaryTable extends AbstractTableData {
                     xdims[0] = nrow;
 
                     Object[] arr = (Object[]) ArrayFuncs.newInstance(base, xdims);
-                    for (int irow = 0; irow < nrow; irow += 1) {
+                    for (int irow = 0; irow < nrow; irow++) {
                         arr[irow] = data[irow][col];
                     }
                     results[col] = arr;
                 } else {
                     Object arr = ArrayFuncs.newInstance(base, nrow);
-                    for (int irow = 0; irow < nrow; irow += 1) {
+                    for (int irow = 0; irow < nrow; irow++) {
                         System.arraycopy(data[irow][col], 0, arr, irow, 1);
                     }
                     results[col] = arr;
@@ -364,7 +365,7 @@ public class BinaryTable extends AbstractTableData {
         int nCol = myHeader.getIntValue("TFIELDS");
         this.rowLen = 0;
 
-        for (int col = 0; col < nCol; col += 1) {
+        for (int col = 0; col < nCol; col++) {
             this.rowLen += processCol(myHeader, col);
         }
 
@@ -530,10 +531,10 @@ public class BinaryTable extends AbstractTableData {
         } else {
             if (added.isLongVary) {
                 added.model = new long[2];
-                this.rowLen += 16;
+                this.rowLen += FitsIO.BYTES_IN_LONG * 2;
             } else {
                 added.model = new int[2];
-                this.rowLen += 8;
+                this.rowLen += FitsIO.BYTES_IN_INTEGER * 2;
             }
         }
 
@@ -590,7 +591,7 @@ public class BinaryTable extends AbstractTableData {
         } else {
 
             Object[] flatRow = new Object[getNCols()];
-            for (int i = 0; i < getNCols(); i += 1) {
+            for (int i = 0; i < getNCols(); i++) {
                 Object x = ArrayFuncs.flatten(o[i]);
                 ColumnDesc colDesc = this.columnList.get(i);
                 flatRow[i] = arrayToColumn(colDesc, x);
@@ -601,7 +602,7 @@ public class BinaryTable extends AbstractTableData {
                 throw new FitsException("Error add row to table");
             }
 
-            this.nRow += 1;
+            this.nRow++;
         }
 
         return this.nRow;
@@ -660,7 +661,7 @@ public class BinaryTable extends AbstractTableData {
                 // Convert boolean to byte arrays
                 boolean[][] to = (boolean[][]) o;
                 byte[][] xo = new byte[to.length][];
-                for (int i = 0; i < to.length; i += 1) {
+                for (int i = 0; i < to.length; i++) {
                     xo[i] = FitsUtil.booleanToByte(to[i]);
                 }
                 o = xo;
@@ -691,7 +692,7 @@ public class BinaryTable extends AbstractTableData {
 
                 Object[] x = (Object[]) o;
                 // Fill the descriptor for each row.
-                for (int i = 0; i < nrow; i += 1) {
+                for (int i = 0; i < nrow; i++) {
                     int len = Array.getLength(x[i]);
                     descrip[2 * i] = len;
                     descrip[2 * i + 1] = offset;
@@ -704,7 +705,7 @@ public class BinaryTable extends AbstractTableData {
                 Object[] x = (Object[]) o;
 
                 // Fill the descriptor for each row.
-                for (int i = 0; i < nrow; i += 1) {
+                for (int i = 0; i < nrow; i++) {
                     int len = Array.getLength(x[i]);
                     descrip[2 * i] = len;
                     descrip[2 * i + 1] = offset;
@@ -831,7 +832,7 @@ public class BinaryTable extends AbstractTableData {
             }
 
             // Now read in each requested row.
-            for (int i = 0; i < nrow; i += 1) {
+            for (int i = 0; i < nrow; i++) {
                 Object row;
                 int offset = descrip[2 * i + 1];
                 int dim = descrip[2 * i];
@@ -886,7 +887,7 @@ public class BinaryTable extends AbstractTableData {
                     // strings where
                     // all elements are null.
                     String[] str = new String[rows];
-                    for (int i = 0; i < str.length; i += 1) {
+                    for (int i = 0; i < str.length; i++) {
                         str[i] = "";
                     }
                     o = str;
@@ -913,7 +914,7 @@ public class BinaryTable extends AbstractTableData {
         Object[] arrCol = new Object[nfields];
         int[] sizes = new int[nfields];
 
-        for (int i = 0; i < nfields; i += 1) {
+        for (int i = 0; i < nfields; i++) {
             ColumnDesc desc = this.columnList.get(i);
             sizes[i] = desc.size;
             if (desc.column != null) {
@@ -1099,7 +1100,7 @@ public class BinaryTable extends AbstractTableData {
 
         try {
             h.setXtension("BINTABLE");
-            h.setBitpix(8);
+            h.setBitpix(BasicHDU.BITPIX_BYTE);
             h.setNaxes(2);
             h.setNaxis(1, this.rowLen);
             h.setNaxis(2, this.nRow);
@@ -1110,7 +1111,7 @@ public class BinaryTable extends AbstractTableData {
             iter.next();
             iter.add(new HeaderCard("TFIELDS", this.columnList.size(), "ntf::binarytable:tfields:1"));
 
-            for (int i = 0; i < this.columnList.size(); i += 1) {
+            for (int i = 0; i < this.columnList.size(); i++) {
                 if (i > 0) {
                     h.positionAfterIndex("TFORM", i);
                 }
@@ -1168,7 +1169,7 @@ public class BinaryTable extends AbstractTableData {
 
     public int[][] getDimens() {
         int[][] dimens = new int[this.columnList.size()][];
-        for (int i = 0; i < dimens.length; i += 1) {
+        for (int i = 0; i < dimens.length; i++) {
             dimens[i] = this.columnList.get(i).dimens;
         }
         return dimens;
@@ -1227,7 +1228,7 @@ public class BinaryTable extends AbstractTableData {
          * Read the row from memory
          */
         Object[] data = new Object[this.columnList.size()];
-        for (int col = 0; col < data.length; col += 1) {
+        for (int col = 0; col < data.length; col++) {
             ColumnDesc colDesc = this.columnList.get(col);
             data[col] = ArrayFuncs.newInstance(ArrayFuncs.getBaseClass(colDesc.model), colDesc.size);
         }
@@ -1239,7 +1240,7 @@ public class BinaryTable extends AbstractTableData {
             throw new FitsException("Error in deferred row read");
         }
 
-        for (int col = 0; col < data.length; col += 1) {
+        for (int col = 0; col < data.length; col++) {
             ColumnDesc colDesc = this.columnList.get(col);
             data[col] = columnToArray(colDesc, data[col], 1);
             data[col] = encurl(data[col], col, 1);
@@ -1297,7 +1298,7 @@ public class BinaryTable extends AbstractTableData {
 
         Object[] modelRow = getModelRow();
         Object[] data = new Object[modelRow.length];
-        for (int col = 0; col < modelRow.length; col += 1) {
+        for (int col = 0; col < modelRow.length; col++) {
             ColumnDesc colDesc = this.columnList.get(col);
             Object o = this.table.getElement(row, col);
             o = columnToArray(colDesc, o, 1);
@@ -1316,7 +1317,7 @@ public class BinaryTable extends AbstractTableData {
      */
     public Object[] getModelRow() {
         Object[] modelRow = new Object[this.columnList.size()];
-        for (int i = 0; i < modelRow.length; i += 1) {
+        for (int i = 0; i < modelRow.length; i++) {
             modelRow[i] = this.columnList.get(i).model;
         }
         return modelRow;
@@ -1379,7 +1380,7 @@ public class BinaryTable extends AbstractTableData {
 
     public int[] getSizes() {
         int[] sizes = new int[this.columnList.size()];
-        for (int i = 0; i < sizes.length; i += 1) {
+        for (int i = 0; i < sizes.length; i++) {
             sizes[i] = this.columnList.get(i).size;
         }
         return sizes;
@@ -1405,7 +1406,7 @@ public class BinaryTable extends AbstractTableData {
      */
     char getTFORMType(String tform) {
 
-        for (int i = 0; i < tform.length(); i += 1) {
+        for (int i = 0; i < tform.length(); i++) {
             if (!Character.isDigit(tform.charAt(i))) {
                 return tform.charAt(i);
             }
@@ -1453,7 +1454,7 @@ public class BinaryTable extends AbstractTableData {
     private int initialNumber(String tform) {
 
         int i;
-        for (i = 0; i < tform.length(); i += 1) {
+        for (i = 0; i < tform.length(); i++) {
 
             if (!Character.isDigit(tform.charAt(i))) {
                 break;
@@ -1471,24 +1472,21 @@ public class BinaryTable extends AbstractTableData {
      * index is non-zero). In this case it can be a complex varying column.
      */
     private boolean isVarying(Object o) {
-
-        if (o == null) {
-            return false;
-        }
-        String classname = o.getClass().getName();
-
-        if (classname.length() != 3 || classname.charAt(0) != '[' || classname.charAt(1) != '[') {
+        if (o == null || //
+                !o.getClass().isArray() || //
+                !o.getClass().getComponentType().isArray() || //
+                !o.getClass().getComponentType().getComponentType().isPrimitive()) {
             return false;
         }
 
-        Object[] ox = (Object[]) o;
-        if (ox.length < 2) {
+        int oLength = Array.getLength(o);
+        if (oLength < 2) {
             return false;
         }
 
-        int flen = Array.getLength(ox[0]);
-        for (int i = 1; i < ox.length; i += 1) {
-            if (Array.getLength(ox[i]) != flen) {
+        int flen = Array.getLength(Array.get(o, 0));
+        for (int i = 1; i < oLength; i++) {
+            if (Array.getLength(Array.get(o, i)) != flen) {
                 return true;
             }
         }
@@ -1496,10 +1494,9 @@ public class BinaryTable extends AbstractTableData {
     }
 
     private boolean isVaryingComp(Object o) {
-        String classname = o.getClass().getName();
-        if (classname.equals("[[[F")) {
+        if (o instanceof float[][][]) {
             return checkCompVary((float[][][]) o);
-        } else if (classname.equals("[[[D")) {
+        } else if (o instanceof double[][][]) {
             return checkDCompVary((double[][][]) o);
         }
         return false;
@@ -1523,34 +1520,28 @@ public class BinaryTable extends AbstractTableData {
      * operation failed
      */
     private int processCol(Header header, int col) throws FitsException {
-
         String tform = header.getStringValue("TFORM" + (col + 1));
         if (tform == null) {
             throw new FitsException("Attempt to process column " + (col + 1) + " but no TFORMn found.");
         }
         tform = tform.trim();
-
         ColumnDesc colDesc = new ColumnDesc();
         String tdims = header.getStringValue("TDIM" + (col + 1));
-
         if (tdims != null) {
             tdims = tdims.trim();
         }
-
         char type = getTFORMType(tform);
         if (type == 'P' || type == 'Q') {
             colDesc.isVarying = true;
             colDesc.isLongVary = type == 'Q';
             type = getTFORMVarType(tform);
         }
-
         int size = getTFORMLength(tform);
-
         // Handle the special size cases.
         //
         // Bit arrays (8 bits fit in a byte)
         if (type == 'X') {
-            size = (size + 7) / 8;
+            size = (size + 7) / FitsIO.BITS_OF_1_BYTE;
             // Variable length arrays always have a two-element pointer (offset
             // and size)
         } else if (colDesc.isVarying) {
@@ -1559,14 +1550,11 @@ public class BinaryTable extends AbstractTableData {
 
         // bSize is the number of bytes in the field.
         int bSize = size;
-
         int[] dims = null;
-
         // Cannot really handle arbitrary arrays of bits.
         if (tdims != null && type != 'X' && !colDesc.isVarying) {
             dims = getTDims(tdims);
         }
-
         if (dims == null) {
             if (size == 1) {
                 dims = new int[0]; // Marks this as a scalar column
@@ -1576,11 +1564,8 @@ public class BinaryTable extends AbstractTableData {
                 };
             }
         }
-
         colDesc.isComplex = type == 'C' || type == 'M';
-
         Class<?> colBase = null;
-
         switch (type) {
             case 'A':
                 colBase = byte.class;
@@ -1634,24 +1619,19 @@ public class BinaryTable extends AbstractTableData {
             default:
                 throw new FitsException("Invalid type in column:" + col);
         }
-
         if (colDesc.isVarying) {
-
             dims = new int[]{
                 this.nRow,
                 2
             };
             colBase = int.class;
             bSize = 8;
-
             if (colDesc.isLongVary) {
                 colBase = long.class;
                 bSize = 16;
             }
         }
-
         if (!colDesc.isVarying && colDesc.isComplex) {
-
             int[] xdims = new int[dims.length + 1];
             System.arraycopy(dims, 0, xdims, 0, dims.length);
             xdims[dims.length] = 2;
@@ -1659,7 +1639,6 @@ public class BinaryTable extends AbstractTableData {
             bSize *= 2;
             size *= 2;
         }
-
         colDesc.model = ArrayFuncs.newInstance(colBase, dims);
         colDesc.dimens = dims;
         colDesc.size = size;
@@ -1822,7 +1801,7 @@ public class BinaryTable extends AbstractTableData {
                         }
                     } else {
                         long[] ptrs = (long[]) col;
-                        for (int i = 1; i < ptrs.length; i += 1) {
+                        for (int i = 1; i < ptrs.length; i++) {
                             if (ptrs[i] % 2 != 0) {
                                 return false;
                             }
@@ -1917,7 +1896,7 @@ public class BinaryTable extends AbstractTableData {
      *             Thrown if the new row cannot match the existing data.
      */
     @Override
-    public void setRow(int row, Object data[]) throws FitsException {
+    public void setRow(int row, Object[] data) throws FitsException {
         ensureData();
         if (data.length != getNCols()) {
             throw new FitsException("Updated row size does not agree with table");
@@ -1925,7 +1904,7 @@ public class BinaryTable extends AbstractTableData {
 
         Object[] ydata = new Object[data.length];
 
-        for (int col = 0; col < data.length; col += 1) {
+        for (int col = 0; col < data.length; col++) {
             Object o = ArrayFuncs.flatten(data[col]);
             ColumnDesc colDesc = this.columnList.get(col);
             ydata[col] = arrayToColumn(colDesc, o);
@@ -1966,12 +1945,7 @@ public class BinaryTable extends AbstractTableData {
      * @return <code>true</code> if the row is valid
      */
     protected boolean validRow(int i) {
-
-        if (getNRows() > 0 && i >= 0 && i < getNRows()) {
-            return true;
-        } else {
-            return false;
-        }
+        return getNRows() > 0 && i >= 0 && i < getNRows();
     }
 
     /**

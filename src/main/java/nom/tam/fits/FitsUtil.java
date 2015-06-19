@@ -49,11 +49,26 @@ import nom.tam.util.RandomAccess;
  * This class comprises static utility functions used throughout the FITS
  * classes.
  */
-public class FitsUtil {
+public final class FitsUtil {
 
+    private static final int MAX_NUMBER_OF_REDIRECTIONS = 5;
+
+    private static final int BYTE_REPRESENTING_BLANK = 32;
+
+    private static final int BYTE_REPRESENTING_MAX_ASCII_VALUE = 126;
+
+    /**
+     * the logger to log to.
+     */
     private static final Logger LOG = Logger.getLogger(FitsUtil.class.getName());
 
     private static boolean wroteCheckingError = false;
+
+    /**
+     * Utility class, do not instantiate it.
+     */
+    private FitsUtil() {
+    }
 
     /**
      * @return Total size of blocked FITS element, using e.v. padding to fits
@@ -117,13 +132,13 @@ public class FitsUtil {
             // that we should be trimming the string at all, but
             // this seems to best meet the desires of the community.
             for (; start < end; start += 1) {
-                if (bytes[start] != 32) {
+                if (bytes[start] != BYTE_REPRESENTING_BLANK) {
                     break; // Skip only spaces.
                 }
             }
 
             for (; end > start; end -= 1) {
-                if (bytes[end - 1] != 32) {
+                if (bytes[end - 1] != BYTE_REPRESENTING_BLANK) {
                     break;
                 }
             }
@@ -143,9 +158,9 @@ public class FitsUtil {
                     end = j;
                     break;
                 }
-                if (checking && (bytes[j] < 32 || bytes[j] > 126)) {
+                if (checking && (bytes[j] < BYTE_REPRESENTING_BLANK || bytes[j] > BYTE_REPRESENTING_MAX_ASCII_VALUE)) {
                     errFound = true;
-                    bytes[j] = 32;
+                    bytes[j] = BYTE_REPRESENTING_BLANK;
                 }
             }
             res[i] = AsciiFuncs.asciiString(bytes, start, end - start);
@@ -199,9 +214,7 @@ public class FitsUtil {
      *             if the operation failed
      */
     public static InputStream getURLStream(URL url, int level) throws IOException {
-
-        // Hard coded....sigh
-        if (level > 5) {
+        if (level > MAX_NUMBER_OF_REDIRECTIONS) {
             throw new IOException("Two many levels of redirection in URL");
         }
         URLConnection conn = url.openConnection();

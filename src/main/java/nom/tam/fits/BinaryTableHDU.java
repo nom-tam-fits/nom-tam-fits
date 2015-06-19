@@ -77,12 +77,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      * consistent.
      */
     public static boolean isData(Object o) {
-
-        if (o instanceof nom.tam.util.ColumnTable || o instanceof Object[][] || o instanceof Object[]) {
-            return true;
-        } else {
-            return false;
-        }
+        return o instanceof nom.tam.util.ColumnTable || o instanceof Object[][] || o instanceof Object[];
     }
 
     /**
@@ -98,11 +93,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
             return false;
         }
         xten = xten.trim();
-        if (xten.equals("BINTABLE") || xten.equals("A3DTABLE")) {
-            return true;
-        } else {
-            return false;
-        }
+        return xten.equals("BINTABLE") || xten.equals("A3DTABLE");
     }
 
     /**

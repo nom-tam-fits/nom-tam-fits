@@ -31,11 +31,15 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
@@ -47,11 +51,13 @@ import nom.tam.fits.Data;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
+import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.UndefinedData;
 import nom.tam.fits.UndefinedHDU;
+import nom.tam.fits.utilities.FitsReader;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
@@ -337,7 +343,7 @@ public class BaseFitsTest {
     public void testFitsUndefinedHdu5() throws Exception {
         Header head = new Header();
         head.setXtension("UNKNOWN");
-        head.setBitpix(8);
+        head.setBitpix(BasicHDU.BITPIX_BYTE);
         head.setNaxes(1);
         head.addValue("NAXIS1", 1000, null);
         head.addValue("PCOUNT", 0, null);
@@ -435,5 +441,14 @@ public class BaseFitsTest {
         header.addValue("NAXIS3", 4, "");
         ImageHDU hdu = (ImageHDU) Fits.makeHDU(header);
         Assert.assertNotNull(hdu);
+    }
+
+    @Test
+    public void testFitsUtilPrivate() throws Exception {
+        Constructor<?>[] constrs = FitsUtil.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
     }
 }
