@@ -149,12 +149,8 @@ public abstract class Data implements FitsElement {
 
     @Override
     public boolean rewriteable() {
-        if (this.input == null || this.fileOffset < 0
-                || (getTrueSize() + FITS_BLOCK_SIZE_MINUS_ONE) / FitsFactory.FITS_BLOCK_SIZE != (this.dataSize + FITS_BLOCK_SIZE_MINUS_ONE) / FitsFactory.FITS_BLOCK_SIZE) {
-            return false;
-        } else {
-            return true;
-        }
+        return this.input != null && this.fileOffset >= 0
+                && (getTrueSize() + FITS_BLOCK_SIZE_MINUS_ONE) / FitsFactory.FITS_BLOCK_SIZE == (this.dataSize + FITS_BLOCK_SIZE_MINUS_ONE) / FitsFactory.FITS_BLOCK_SIZE;
     }
 
     /**

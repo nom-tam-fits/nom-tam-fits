@@ -1,5 +1,7 @@
 package nom.tam.fits.utilities;
 
+import nom.tam.fits.HeaderCard;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -41,8 +43,6 @@ package nom.tam.fits.utilities;
  */
 public class FitsLineAppender {
 
-    private static final int FITS_LINE_LENGTH = 80;
-
     /**
      * A String of 80 spaces to fill up fits card space.
      */
@@ -63,7 +63,7 @@ public class FitsLineAppender {
      * line.
      */
     public FitsLineAppender() {
-        this.buffer = new StringBuffer(FITS_LINE_LENGTH);
+        this.buffer = new StringBuffer(HeaderCard.FITS_HEADER_CARD_SIZE);
     }
 
     /**
@@ -96,10 +96,10 @@ public class FitsLineAppender {
      *            the string to append
      */
     public void append(String string) {
-        this.charCount = this.charCount % FITS_LINE_LENGTH;
+        this.charCount = this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
         int newLength = this.charCount + string.length();
-        if (newLength > FITS_LINE_LENGTH) {
-            this.buffer.append(string, 0, FITS_LINE_LENGTH - this.charCount);
+        if (newLength > HeaderCard.FITS_HEADER_CARD_SIZE) {
+            this.buffer.append(string, 0, HeaderCard.FITS_HEADER_CARD_SIZE - this.charCount);
             this.charCount = 0;
         } else {
             this.charCount = newLength;
@@ -138,7 +138,7 @@ public class FitsLineAppender {
      *            the number of spaces to write.
      */
     public void appendSpacesTo(int count) {
-        this.charCount = this.charCount % FITS_LINE_LENGTH;
+        this.charCount = this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
         if (this.charCount != 0) {
             int spaces = count - this.charCount;
             if (spaces > 0) {
@@ -152,8 +152,8 @@ public class FitsLineAppender {
      * fill the rest of current line with spaces and start a new fits line.
      */
     public void completeLine() {
-        int count = FITS_LINE_LENGTH - this.charCount % FITS_LINE_LENGTH;
-        if (count < FITS_LINE_LENGTH) {
+        int count = HeaderCard.FITS_HEADER_CARD_SIZE - this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
+        if (count < HeaderCard.FITS_HEADER_CARD_SIZE) {
             this.buffer.append(FitsLineAppender._80_SPACES, 0, count);
         }
         // line completed start with 0;
@@ -164,7 +164,7 @@ public class FitsLineAppender {
      * @return the character position in the current line.
      */
     public int length() {
-        this.charCount = this.charCount % FITS_LINE_LENGTH;
+        this.charCount = this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
         return this.charCount;
     }
 
@@ -173,8 +173,8 @@ public class FitsLineAppender {
      *         line.
      */
     public int spaceLeftInLine() {
-        this.charCount = this.charCount % FITS_LINE_LENGTH;
-        return FITS_LINE_LENGTH - this.charCount;
+        this.charCount = this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
+        return HeaderCard.FITS_HEADER_CARD_SIZE - this.charCount;
     }
 
     @Override

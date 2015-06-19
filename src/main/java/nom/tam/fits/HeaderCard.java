@@ -54,6 +54,8 @@ import nom.tam.util.CursorValue;
  */
 public class HeaderCard implements CursorValue<String> {
 
+    public static final int FITS_HEADER_CARD_SIZE = 80;
+
     private static final BigDecimal LONG_MAX_VALUE_AS_BIG_DECIMAL = BigDecimal.valueOf(Long.MAX_VALUE);
 
     /**
@@ -132,8 +134,8 @@ public class HeaderCard implements CursorValue<String> {
 
     private static ArrayDataInput stringToArrayInputStream(String card) {
         byte[] bytes = AsciiFuncs.getBytes(card);
-        if (bytes.length % 80 != 0) {
-            byte[] newBytes = new byte[bytes.length + 80 - bytes.length % 80];
+        if (bytes.length % FITS_HEADER_CARD_SIZE != 0) {
+            byte[] newBytes = new byte[bytes.length + FITS_HEADER_CARD_SIZE - bytes.length % FITS_HEADER_CARD_SIZE];
             System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
             Arrays.fill(newBytes, bytes.length, newBytes.length, (byte) ' ');
             bytes = newBytes;
@@ -436,7 +438,7 @@ public class HeaderCard implements CursorValue<String> {
             if (stringValue.length() > maxStringValueLength) {
                 // this is very bad for performance but it is to difficult to
                 // keep the cardSize and the toString compatible at all times
-                return toString().length() / 80;
+                return toString().length() / FITS_HEADER_CARD_SIZE;
             }
         }
         return 1;
@@ -566,7 +568,7 @@ public class HeaderCard implements CursorValue<String> {
             continueCard = null;
             if (longValue.charAt(longValue.length() - 1) == '&') {
                 longValue.setLength(longValue.length() - 1);
-                dis.mark(80);
+                dis.mark(FITS_HEADER_CARD_SIZE);
                 String card = readOneHeaderLine(dis);
                 if (card.startsWith("CONTINUE")) {
                     // extract the value/comment part of the string
@@ -585,20 +587,20 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     private String readOneHeaderLine(ArrayDataInput dis) throws IOException, TruncatedFileException, EOFException {
-        byte[] buffer = new byte[80];
+        byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
         int len;
-        int need = 80;
+        int need = FITS_HEADER_CARD_SIZE;
         try {
 
             while (need > 0) {
-                len = dis.read(buffer, 80 - need, need);
+                len = dis.read(buffer, FITS_HEADER_CARD_SIZE - need, need);
                 if (len == 0) {
                     throw new TruncatedFileException("nothing to read left");
                 }
                 need -= len;
             }
         } catch (EOFException e) {
-            if (need == 80) {
+            if (need == FITS_HEADER_CARD_SIZE) {
                 throw e;
             }
             throw new TruncatedFileException(e.getMessage());
@@ -646,9 +648,9 @@ public class HeaderCard implements CursorValue<String> {
             }
         }
         FitsSubString comment = new FitsSubString(this.comment);
-        if (80 - alignPosition - 3 < comment.length()) {
+        if (FITS_HEADER_CARD_SIZE - alignPosition - 3 < comment.length()) {
             // with alignment the comment would not fit so lets make more space
-            alignPosition = Math.max(buf.length(), 80 - 3 - comment.length());
+            alignPosition = Math.max(buf.length(), FITS_HEADER_CARD_SIZE - 3 - comment.length());
             alignSmallString = buf.length();
         }
         boolean commentHandled = false;
@@ -681,7 +683,7 @@ public class HeaderCard implements CursorValue<String> {
                 buf.appendSpacesTo(alignPosition);
             }
             // is there space left for a comment?
-            comment.getAdjustedLength(((80 - buf.length()) % 80) - 3);
+            comment.getAdjustedLength(((FITS_HEADER_CARD_SIZE - buf.length()) % FITS_HEADER_CARD_SIZE) - 3);
             // if there is a comment, add a comment delimiter
             if (!commentHandled && comment.length() > 0) {
                 buf.append(" / ");
@@ -752,7 +754,7 @@ public class HeaderCard implements CursorValue<String> {
         // We also need to be careful that single quotes don't
         // make the string too long and that we don't split
         // in the middle of a quote.
-        stringValue.getAdjustedLength(80 - buf.length() - 3);
+        stringValue.getAdjustedLength(FITS_HEADER_CARD_SIZE - buf.length() - 3);
         // No comment here since we're using as much of the card
         // as we can
         buf.append('\'');

@@ -962,7 +962,7 @@ public class Header implements FitsElement {
      * @return the size of the original header in bytes.
      */
     public long getOriginalSize() {
-        return FitsUtil.addPadding(this.originalCardCount * 80);
+        return FitsUtil.addPadding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE);
     }
 
     /**
@@ -1011,7 +1011,7 @@ public class Header implements FitsElement {
             return 0;
         }
 
-        return FitsUtil.addPadding(getNumberOfPhysicalCards() * 80);
+        return FitsUtil.addPadding(getNumberOfPhysicalCards() * HeaderCard.FITS_HEADER_CARD_SIZE);
     }
 
     /**
@@ -1276,7 +1276,7 @@ public class Header implements FitsElement {
         // Read to the end of the current FITS block.
         //
         try {
-            dis.skipBytes(FitsUtil.padding(count * 80));
+            dis.skipBytes(FitsUtil.padding(count * HeaderCard.FITS_HEADER_CARD_SIZE));
         } catch (IOException e) {
             throw new TruncatedFileException(e.getMessage());
         }
@@ -1634,7 +1634,7 @@ public class Header implements FitsElement {
                 byte[] b = AsciiFuncs.getBytes(card.toString());
                 dos.write(b);
             }
-            FitsUtil.pad(dos, getNumberOfPhysicalCards() * 80, (byte) ' ');
+            FitsUtil.pad(dos, getNumberOfPhysicalCards() * HeaderCard.FITS_HEADER_CARD_SIZE, (byte) ' ');
             dos.flush();
         } catch (IOException e) {
             throw new FitsException("IO Error writing header: " + e);
