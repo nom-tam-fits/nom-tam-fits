@@ -34,7 +34,7 @@ package nom.tam.util;
 import java.io.Closeable;
 import java.io.IOException;
 
-public interface ArrayDataInput extends java.io.DataInput, Closeable {
+public interface ArrayDataInput extends java.io.DataInput, FitsIO {
 
     /**
      * See the general contract of the <code>mark</code> method of

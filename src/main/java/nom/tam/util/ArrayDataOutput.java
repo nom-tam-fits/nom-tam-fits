@@ -37,7 +37,7 @@ import java.io.IOException;
 /**
  * Special high performance scientific extension of the DataOutput interface.
  */
-public interface ArrayDataOutput extends java.io.DataOutput, Closeable {
+public interface ArrayDataOutput extends java.io.DataOutput, FitsIO {
 
     /**
      * Flush the output buffer

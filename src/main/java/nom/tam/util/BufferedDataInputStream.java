@@ -38,6 +38,7 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 
 /**
  * This class is intended for high performance I/O in scientific applications.
@@ -70,6 +71,11 @@ import java.io.InputStream;
  * Additional work is required to handle very large arrays generally.
  */
 public class BufferedDataInputStream extends BufferedInputStream implements ArrayDataInput {
+
+    /**
+     * size of the skip buffer (if it extsts) {@link #skipBuf}.
+     */
+    private static final int SKIP_BUFFER_SIZE = 8192;
 
     private long primitiveArrayCount;
 
@@ -178,69 +184,58 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
      * @return The number of bytes read.
      */
     protected long primitiveArrayRecurse(Object o) throws IOException {
-
         if (o == null) {
             return this.primitiveArrayCount;
         }
-
-        String className = o.getClass().getName();
-
-        if (className.charAt(0) != '[') {
-            throw new IOException("Invalid object passed to BufferedDataInputStream.readArray:" + className);
+        if (!o.getClass().isArray()) {
+            throw new IOException("Invalid object passed to BufferedDataInputStream.readArray:" + o.getClass().getName());
         }
-
+        int length = Array.getLength(o);
         // Is this a multidimensional array? If so process recursively.
-        if (className.charAt(1) == '[') {
-            for (int i = 0; i < ((Object[]) o).length; i += 1) {
-                primitiveArrayRecurse(((Object[]) o)[i]);
+        if (o.getClass().getComponentType().isArray()) {
+            for (int i = 0; i < length; i++) {
+                primitiveArrayRecurse(Array.get(o, i));
             }
         } else {
-
             // This is a one-d array. Process it using our special functions.
-            switch (className.charAt(1)) {
-                case 'Z':
-                    this.primitiveArrayCount += read((boolean[]) o, 0, ((boolean[]) o).length);
+            switch (PrimitiveTypeEnum.valueOf(o.getClass().getComponentType())) {
+                case BOOLEAN:
+                    this.primitiveArrayCount += read((boolean[]) o, 0, length);
                     break;
-                case 'B':
-                    int len = read((byte[]) o, 0, ((byte[]) o).length);
+                case BYTE:
+                    int len = read((byte[]) o, 0, length);
                     this.primitiveArrayCount += len;
 
-                    if (len < ((byte[]) o).length) {
+                    if (len < length) {
                         throw new EOFException();
                     }
                     break;
-                case 'C':
-                    this.primitiveArrayCount += read((char[]) o, 0, ((char[]) o).length);
+                case CHAR:
+                    this.primitiveArrayCount += read((char[]) o, 0, length);
                     break;
-                case 'S':
-                    this.primitiveArrayCount += read((short[]) o, 0, ((short[]) o).length);
+                case SHORT:
+                    this.primitiveArrayCount += read((short[]) o, 0, length);
                     break;
-                case 'I':
-                    this.primitiveArrayCount += read((int[]) o, 0, ((int[]) o).length);
+                case INT:
+                    this.primitiveArrayCount += read((int[]) o, 0, length);
                     break;
-                case 'J':
-                    this.primitiveArrayCount += read((long[]) o, 0, ((long[]) o).length);
+                case LONG:
+                    this.primitiveArrayCount += read((long[]) o, 0, length);
                     break;
-                case 'F':
-                    this.primitiveArrayCount += read((float[]) o, 0, ((float[]) o).length);
+                case FLOAT:
+                    this.primitiveArrayCount += read((float[]) o, 0, length);
                     break;
-                case 'D':
-                    this.primitiveArrayCount += read((double[]) o, 0, ((double[]) o).length);
+                case DOUBLE:
+                    this.primitiveArrayCount += read((double[]) o, 0, length);
                     break;
-                case 'L':
-
-                    // Handle an array of Objects by recursion. Anything
-                    // else is an error.
-                    if (className.equals("[Ljava.lang.Object;")) {
-                        for (int i = 0; i < ((Object[]) o).length; i += 1) {
-                            primitiveArrayRecurse(((Object[]) o)[i]);
-                        }
-                    } else {
-                        throw new IOException("Invalid object passed to BufferedDataInputStream.readArray: " + className);
+                case STRING:
+                case UNKNOWN:
+                    for (int i = 0; i < length; i++) {
+                        primitiveArrayRecurse(Array.get(o, i));
                     }
                     break;
                 default:
-                    throw new IOException("Invalid object passed to BufferedDataInputStream.readArray: " + className);
+                    throw new IOException("Invalid object passed to BufferedDataInputStream.readArray: " + o.getClass().getName());
             }
         }
         return this.primitiveArrayCount;
@@ -256,7 +251,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
         int i = start;
         try {
-            for (; i < start + len; i += 1) {
+            for (; i < start + len; i++) {
 
                 if (this.pos >= this.count) {
                     fillBuf(1);
@@ -267,7 +262,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
                 } else {
                     b[i] = false;
                 }
-                this.pos += 1;
+                this.pos++;
             }
         } catch (EOFException e) {
             return eofCheck(e, i, start, 1);
@@ -311,17 +306,17 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
         int i = start;
         try {
-            for (; i < start + len; i += 1) {
-                if (this.count - this.pos < 2) {
-                    fillBuf(2);
+            for (; i < start + len; i++) {
+                if (this.count - this.pos < BYTES_IN_CHAR) {
+                    fillBuf(BYTES_IN_CHAR);
                 }
-                c[i] = (char) (this.buf[this.pos] << 8 | this.buf[this.pos + 1] & 0xFF);
-                this.pos += 2;
+                c[i] = (char) (this.buf[this.pos++] << BITS_OF_1_BYTE | //
+                        this.buf[this.pos++] & BYTE_MASK);
             }
         } catch (EOFException e) {
-            return eofCheck(e, i, start, 2);
+            return eofCheck(e, i, start, BYTES_IN_CHAR);
         }
-        return 2 * len;
+        return BYTES_IN_CHAR * len;
     }
 
     @Override
@@ -334,20 +329,25 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
         int i = start;
         try {
-            for (; i < start + len; i += 1) {
+            for (; i < start + len; i++) {
 
-                if (this.count - this.pos < 8) {
-                    fillBuf(8);
+                if (this.count - this.pos < BYTES_IN_DOUBLE) {
+                    fillBuf(BYTES_IN_DOUBLE);
                 }
-                int i1 = this.buf[this.pos] << 24 | (this.buf[this.pos + 1] & 0xFF) << 16 | (this.buf[this.pos + 2] & 0xFF) << 8 | this.buf[this.pos + 3] & 0xFF;
-                int i2 = this.buf[this.pos + 4] << 24 | (this.buf[this.pos + 5] & 0xFF) << 16 | (this.buf[this.pos + 6] & 0xFF) << 8 | this.buf[this.pos + 7] & 0xFF;
-                d[i] = Double.longBitsToDouble((long) i1 << 32 | i2 & 0x00000000FFFFFFFFL);
-                this.pos += 8;
+                int i1 = this.buf[this.pos++] << BITS_OF_3_BYTES | //
+                        (this.buf[this.pos++] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                        (this.buf[this.pos++] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                        this.buf[this.pos++] & BYTE_MASK;
+                int i2 = this.buf[this.pos++] << BITS_OF_3_BYTES | //
+                        (this.buf[this.pos++] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                        (this.buf[this.pos++] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                        this.buf[this.pos++] & BYTE_MASK;
+                d[i] = Double.longBitsToDouble((long) i1 << BITS_OF_4_BYTES | i2 & INTEGER_MASK);
             }
         } catch (EOFException e) {
-            return eofCheck(e, i, start, 8);
+            return eofCheck(e, i, start, BYTES_IN_DOUBLE);
         }
-        return 8 * len;
+        return BYTES_IN_DOUBLE * len;
     }
 
     @Override
@@ -360,18 +360,20 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
         int i = start;
         try {
-            for (; i < start + len; i += 1) {
-                if (this.count - this.pos < 4) {
-                    fillBuf(4);
+            for (; i < start + len; i++) {
+                if (this.count - this.pos < BYTES_IN_FLOAT) {
+                    fillBuf(BYTES_IN_FLOAT);
                 }
-                int t = this.buf[this.pos] << 24 | (this.buf[this.pos + 1] & 0xFF) << 16 | (this.buf[this.pos + 2] & 0xFF) << 8 | this.buf[this.pos + 3] & 0xFF;
+                int t = this.buf[this.pos++] << BITS_OF_3_BYTES | //
+                        (this.buf[this.pos++] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                        (this.buf[this.pos++] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                        this.buf[this.pos++] & BYTE_MASK;
                 f[i] = Float.intBitsToFloat(t);
-                this.pos += 4;
             }
         } catch (EOFException e) {
-            return eofCheck(e, i, start, 4);
+            return eofCheck(e, i, start, BYTES_IN_FLOAT);
         }
-        return 4 * len;
+        return BYTES_IN_FLOAT * len;
     }
 
     @Override
@@ -384,19 +386,19 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
         int ii = start;
         try {
-            for (; ii < start + len; ii += 1) {
-
-                if (this.count - this.pos < 4) {
-                    fillBuf(4);
+            for (; ii < start + len; ii++) {
+                if (this.count - this.pos < BYTES_IN_INTEGER) {
+                    fillBuf(BYTES_IN_INTEGER);
                 }
-
-                i[ii] = this.buf[this.pos] << 24 | (this.buf[this.pos + 1] & 0xFF) << 16 | (this.buf[this.pos + 2] & 0xFF) << 8 | this.buf[this.pos + 3] & 0xFF;
-                this.pos += 4;
+                i[ii] = this.buf[this.pos++] << BITS_OF_3_BYTES | //
+                        (this.buf[this.pos++] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                        (this.buf[this.pos++] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                        this.buf[this.pos++] & BYTE_MASK;
             }
         } catch (EOFException e) {
-            return eofCheck(e, ii, start, 4);
+            return eofCheck(e, ii, start, BYTES_IN_INTEGER);
         }
-        return i.length * 4;
+        return i.length * BYTES_IN_INTEGER;
     }
 
     @Override
@@ -406,23 +408,26 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     @Override
     public int read(long[] l, int start, int len) throws IOException {
-
         int i = start;
         try {
-            for (; i < start + len; i += 1) {
-                if (this.count - this.pos < 8) {
-                    fillBuf(8);
+            for (; i < start + len; i++) {
+                if (this.count - this.pos < BYTES_IN_LONG) {
+                    fillBuf(BYTES_IN_LONG);
                 }
-                int i1 = this.buf[this.pos] << 24 | (this.buf[this.pos + 1] & 0xFF) << 16 | (this.buf[this.pos + 2] & 0xFF) << 8 | this.buf[this.pos + 3] & 0xFF;
-                int i2 = this.buf[this.pos + 4] << 24 | (this.buf[this.pos + 5] & 0xFF) << 16 | (this.buf[this.pos + 6] & 0xFF) << 8 | this.buf[this.pos + 7] & 0xFF;
-                l[i] = (long) i1 << 32 | i2 & 0x00000000FFFFFFFFL;
-                this.pos += 8;
+                int i1 = this.buf[this.pos++] << BITS_OF_3_BYTES | //
+                        (this.buf[this.pos++] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                        (this.buf[this.pos++] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                        this.buf[this.pos++] & BYTE_MASK;
+                int i2 = this.buf[this.pos++] << BITS_OF_3_BYTES | //
+                        (this.buf[this.pos++] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                        (this.buf[this.pos++] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                        this.buf[this.pos++] & BYTE_MASK;
+                l[i] = (long) i1 << BITS_OF_4_BYTES | i2 & INTEGER_MASK;
             }
-
         } catch (EOFException e) {
-            return eofCheck(e, i, start, 8);
+            return eofCheck(e, i, start, BYTES_IN_LONG);
         }
-        return 8 * len;
+        return BYTES_IN_LONG * len;
     }
 
     @Override
@@ -435,17 +440,17 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
         int i = start;
         try {
-            for (; i < start + len; i += 1) {
-                if (this.count - this.pos < 2) {
-                    fillBuf(2);
+            for (; i < start + len; i++) {
+                if (this.count - this.pos < BYTES_IN_SHORT) {
+                    fillBuf(BYTES_IN_SHORT);
                 }
-                s[i] = (short) (this.buf[this.pos] << 8 | this.buf[this.pos + 1] & 0xFF);
-                this.pos += 2;
+                s[i] = (short) (this.buf[this.pos++] << BITS_OF_1_BYTE | //
+                        this.buf[this.pos++] & BYTE_MASK);
             }
         } catch (EOFException e) {
-            return eofCheck(e, i, start, 2);
+            return eofCheck(e, i, start, BYTES_IN_SHORT);
         }
-        return 2 * len;
+        return BYTES_IN_SHORT * len;
     }
 
     @Deprecated
@@ -456,7 +461,6 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     @Override
     public boolean readBoolean() throws IOException {
-
         int b = read();
         if (b == 1) {
             return true;
@@ -474,11 +478,11 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     public char readChar() throws IOException {
         byte[] b = new byte[2];
 
-        if (read(b, 0, 2) < 2) {
+        if (read(b, 0, 2) < BYTES_IN_CHAR) {
             throw new EOFException();
         }
 
-        char c = (char) (b[0] << 8 | b[1] & 0xFF);
+        char c = (char) (b[0] << BITS_OF_1_BYTE | b[1] & BYTE_MASK);
         return c;
     }
 
@@ -490,11 +494,14 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     @Override
     public float readFloat() throws IOException {
 
-        if (read(this.bb, 0, 4) < 4) {
+        if (read(this.bb, 0, BYTES_IN_FLOAT) < BYTES_IN_FLOAT) {
             throw new EOFException();
         }
 
-        int i = this.bb[0] << 24 | (this.bb[1] & 0xFF) << 16 | (this.bb[2] & 0xFF) << 8 | this.bb[3] & 0xFF;
+        int i = this.bb[0] << BITS_OF_3_BYTES | //
+                (this.bb[1] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                (this.bb[2] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                this.bb[3] & BYTE_MASK;
         return Float.intBitsToFloat(i);
 
     }
@@ -519,10 +526,13 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     @Override
     public int readInt() throws IOException {
 
-        if (read(this.bb, 0, 4) < 4) {
+        if (read(this.bb, 0, BYTES_IN_INTEGER) < BYTES_IN_INTEGER) {
             throw new EOFException();
         }
-        int i = this.bb[0] << 24 | (this.bb[1] & 0xFF) << 16 | (this.bb[2] & 0xFF) << 8 | this.bb[3] & 0xFF;
+        int i = this.bb[0] << BITS_OF_3_BYTES | //
+                (this.bb[1] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                (this.bb[2] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                this.bb[3] & BYTE_MASK;
         return i;
     }
 
@@ -562,15 +572,20 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     @Override
     public long readLong() throws IOException {
-
         // use two ints as intermediarys to
         // avoid casts of bytes to longs...
-        if (read(this.bb, 0, 8) < 8) {
+        if (read(this.bb, 0, BYTES_IN_LONG) < BYTES_IN_LONG) {
             throw new EOFException();
         }
-        int i1 = this.bb[0] << 24 | (this.bb[1] & 0xFF) << 16 | (this.bb[2] & 0xFF) << 8 | this.bb[3] & 0xFF;
-        int i2 = this.bb[4] << 24 | (this.bb[5] & 0xFF) << 16 | (this.bb[6] & 0xFF) << 8 | this.bb[7] & 0xFF;
-        return (long) i1 << 32 | i2 & 0x00000000ffffffffL;
+        int i1 = this.bb[0] << BITS_OF_3_BYTES | //
+                (this.bb[1] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                (this.bb[2] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                this.bb[3] & BYTE_MASK;
+        int i2 = this.bb[4] << BITS_OF_3_BYTES | //
+                (this.bb[5] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                (this.bb[6] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                this.bb[7] & BYTE_MASK;
+        return (long) i1 << BITS_OF_4_BYTES | i2 & INTEGER_MASK;
     }
 
     /**
@@ -603,11 +618,12 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     @Override
     public short readShort() throws IOException {
 
-        if (read(this.bb, 0, 2) < 2) {
+        if (read(this.bb, 0, BYTES_IN_SHORT) < BYTES_IN_SHORT) {
             throw new EOFException();
         }
 
-        short s = (short) (this.bb[0] << 8 | this.bb[1] & 0xFF);
+        short s = (short) (this.bb[0] << BITS_OF_1_BYTE | //
+                this.bb[1] & BYTE_MASK);
         return s;
     }
 
@@ -619,11 +635,12 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     @Override
     public int readUnsignedShort() throws IOException {
 
-        if (read(this.bb, 0, 2) < 2) {
+        if (read(this.bb, 0, BYTES_IN_SHORT) < BYTES_IN_SHORT) {
             throw new EOFException();
         }
 
-        return (this.bb[0] & 0xFF) << 8 | this.bb[1] & 0xFF;
+        return (this.bb[0] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                this.bb[1] & BYTE_MASK;
     }
 
     @Override
@@ -661,10 +678,10 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
                 // Real IO errors will presumably casue an error
                 // in these reads too.
                 if (this.skipBuf == null) {
-                    this.skipBuf = new byte[8192];
+                    this.skipBuf = new byte[SKIP_BUFFER_SIZE];
                 }
-                while (need > 8192) {
-                    int got = read(this.skipBuf, 0, 8192);
+                while (need > SKIP_BUFFER_SIZE) {
+                    int got = read(this.skipBuf, 0, SKIP_BUFFER_SIZE);
                     if (got <= 0) {
                         break;
                     }

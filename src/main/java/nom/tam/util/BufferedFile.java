@@ -64,6 +64,7 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.reflect.Array;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -246,7 +247,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     }
 
     private void convertFromBoolean(boolean b) throws IOException {
-        needBuffer(1);
+        needBuffer(BYTES_IN_BOOLEAN);
         if (b) {
             this.buffer[this.bufferOffset] = (byte) 1;
         } else {
@@ -256,42 +257,39 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     }
 
     private void convertFromByte(int b) throws IOException {
-        needBuffer(1);
+        needBuffer(BYTES_IN_BYTE);
         this.buffer[this.bufferOffset++] = (byte) b;
     }
 
     private void convertFromChar(int c) throws IOException {
-        needBuffer(2);
-        this.buffer[this.bufferOffset++] = (byte) (c >>> 8);
+        needBuffer(BYTES_IN_CHAR);
+        this.buffer[this.bufferOffset++] = (byte) (c >>> BITS_OF_1_BYTE);
         this.buffer[this.bufferOffset++] = (byte) c;
     }
 
     private void convertFromInt(int i) throws IOException {
-
-        needBuffer(4);
-        this.buffer[this.bufferOffset++] = (byte) (i >>> 24);
-        this.buffer[this.bufferOffset++] = (byte) (i >>> 16);
-        this.buffer[this.bufferOffset++] = (byte) (i >>> 8);
+        needBuffer(BYTES_IN_INTEGER);
+        this.buffer[this.bufferOffset++] = (byte) (i >>> BITS_OF_3_BYTES);
+        this.buffer[this.bufferOffset++] = (byte) (i >>> BITS_OF_2_BYTES);
+        this.buffer[this.bufferOffset++] = (byte) (i >>> BITS_OF_1_BYTE);
         this.buffer[this.bufferOffset++] = (byte) i;
     }
 
     private void convertFromLong(long l) throws IOException {
-        needBuffer(8);
-
-        this.buffer[this.bufferOffset++] = (byte) (l >>> 56);
-        this.buffer[this.bufferOffset++] = (byte) (l >>> 48);
-        this.buffer[this.bufferOffset++] = (byte) (l >>> 40);
-        this.buffer[this.bufferOffset++] = (byte) (l >>> 32);
-        this.buffer[this.bufferOffset++] = (byte) (l >>> 24);
-        this.buffer[this.bufferOffset++] = (byte) (l >>> 16);
-        this.buffer[this.bufferOffset++] = (byte) (l >>> 8);
+        needBuffer(BYTES_IN_LONG);
+        this.buffer[this.bufferOffset++] = (byte) (l >>> BITS_OF_7_BYTES);
+        this.buffer[this.bufferOffset++] = (byte) (l >>> BITS_OF_6_BYTES);
+        this.buffer[this.bufferOffset++] = (byte) (l >>> BITS_OF_5_BYTES);
+        this.buffer[this.bufferOffset++] = (byte) (l >>> BITS_OF_4_BYTES);
+        this.buffer[this.bufferOffset++] = (byte) (l >>> BITS_OF_3_BYTES);
+        this.buffer[this.bufferOffset++] = (byte) (l >>> BITS_OF_2_BYTES);
+        this.buffer[this.bufferOffset++] = (byte) (l >>> BITS_OF_1_BYTE);
         this.buffer[this.bufferOffset++] = (byte) l;
     }
 
     private void convertFromShort(int s) throws IOException {
-        needBuffer(2);
-
-        this.buffer[this.bufferOffset++] = (byte) (s >>> 8);
+        needBuffer(BYTES_IN_SHORT);
+        this.buffer[this.bufferOffset++] = (byte) (s >>> BITS_OF_1_BYTE);
         this.buffer[this.bufferOffset++] = (byte) s;
     }
 
@@ -301,7 +299,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the underlying operation fails
      */
     private boolean convertToBoolean() throws IOException {
-        checkBuffer(1);
+        checkBuffer(BYTES_IN_BOOLEAN);
         this.bufferOffset += 1;
         return this.buffer[this.bufferOffset - 1] == 1;
     }
@@ -312,10 +310,9 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the underlying operation fails
      */
     private char convertToChar() throws IOException {
-        checkBuffer(2);
-        char c = (char) (this.buffer[this.bufferOffset] << 8 | this.buffer[this.bufferOffset + 1] & 0xFF);
-        this.bufferOffset += 2;
-        return c;
+        checkBuffer(BYTES_IN_CHAR);
+        return (char) (this.buffer[this.bufferOffset++] << BITS_OF_1_BYTE | //
+        this.buffer[this.bufferOffset++] & BYTE_MASK);
     }
 
     /**
@@ -324,11 +321,11 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the underlying operation fails
      */
     private int convertToInt() throws IOException {
-        checkBuffer(4);
-        int x = this.bufferOffset;
-        int i = this.buffer[x] << 24 | (this.buffer[x + 1] & 0xFF) << 16 | (this.buffer[x + 2] & 0xFF) << 8 | this.buffer[x + 3] & 0xFF;
-        this.bufferOffset += 4;
-        return i;
+        checkBuffer(BYTES_IN_INTEGER);
+        return this.buffer[this.bufferOffset++] << BITS_OF_3_BYTES | //
+                (this.buffer[this.bufferOffset++] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                (this.buffer[this.bufferOffset++] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                this.buffer[this.bufferOffset++] & BYTE_MASK;
     }
 
     /**
@@ -337,14 +334,16 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the underlying operation fails
      */
     private long convertToLong() throws IOException {
-        checkBuffer(8);
-        int x = this.bufferOffset;
-
-        int i1 = this.buffer[x] << 24 | (this.buffer[x + 1] & 0xFF) << 16 | (this.buffer[x + 2] & 0xFF) << 8 | this.buffer[x + 3] & 0xFF;
-        int i2 = this.buffer[x + 4] << 24 | (this.buffer[x + 5] & 0xFF) << 16 | (this.buffer[x + 6] & 0xFF) << 8 | this.buffer[x + 7] & 0xFF;
-        this.bufferOffset += 8;
-
-        return (long) i1 << 32 | i2 & 0x00000000ffffffffL;
+        checkBuffer(BYTES_IN_LONG);
+        int i1 = this.buffer[this.bufferOffset++] << BITS_OF_3_BYTES | //
+                (this.buffer[this.bufferOffset++] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                (this.buffer[this.bufferOffset++] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                this.buffer[this.bufferOffset++] & BYTE_MASK;
+        int i2 = this.buffer[this.bufferOffset++] << BITS_OF_3_BYTES | //
+                (this.buffer[this.bufferOffset++] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                (this.buffer[this.bufferOffset++] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                this.buffer[this.bufferOffset++] & BYTE_MASK;
+        return (long) i1 << BITS_OF_4_BYTES | i2 & INTEGER_MASK;
     }
 
     /**
@@ -353,10 +352,9 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the underlying operation fails
      */
     private short convertToShort() throws IOException {
-        checkBuffer(2);
-        short s = (short) (this.buffer[this.bufferOffset] << 8 | this.buffer[this.bufferOffset + 1] & 0xFF);
-        this.bufferOffset += 2;
-        return s;
+        checkBuffer(BYTES_IN_SHORT);
+        return (short) (this.buffer[this.bufferOffset++] << BITS_OF_1_BYTE | //
+        this.buffer[this.bufferOffset++] & BYTE_MASK);
     }
 
     /**
@@ -495,64 +493,58 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     }
 
     protected long primitiveArrayRecurse(Object o) throws IOException {
-
         if (o == null) {
             return this.primitiveArrayCount;
         }
-
-        String className = o.getClass().getName();
-
-        if (className.charAt(0) != '[') {
-            throw new IOException("Invalid object passed to BufferedDataInputStream.readArray:" + className);
+        if (!o.getClass().isArray()) {
+            throw new IOException("Invalid object passed to BufferedDataInputStream.readArray:" + o.getClass().getName());
         }
-
+        int length = Array.getLength(o);
         // Is this a multidimensional array? If so process recursively.
-        if (className.charAt(1) == '[') {
-            for (int i = 0; i < ((Object[]) o).length; i += 1) {
-                primitiveArrayRecurse(((Object[]) o)[i]);
+        if (o.getClass().getComponentType().isArray()) {
+            for (int i = 0; i < length; i++) {
+                primitiveArrayRecurse(Array.get(o, i));
             }
         } else {
-
             // This is a one-d array. Process it using our special functions.
-            switch (className.charAt(1)) {
-                case 'Z':
-                    this.primitiveArrayCount += read((boolean[]) o, 0, ((boolean[]) o).length);
+            switch (PrimitiveTypeEnum.valueOf(o.getClass().getComponentType())) {
+                case BOOLEAN:
+                    this.primitiveArrayCount += read((boolean[]) o, 0, length);
                     break;
-                case 'B':
-                    read((byte[]) o, 0, ((byte[]) o).length);
-                    break;
-                case 'C':
-                    this.primitiveArrayCount += read((char[]) o, 0, ((char[]) o).length);
-                    break;
-                case 'S':
-                    this.primitiveArrayCount += read((short[]) o, 0, ((short[]) o).length);
-                    break;
-                case 'I':
-                    this.primitiveArrayCount += read((int[]) o, 0, ((int[]) o).length);
-                    break;
-                case 'J':
-                    this.primitiveArrayCount += read((long[]) o, 0, ((long[]) o).length);
-                    break;
-                case 'F':
-                    this.primitiveArrayCount += read((float[]) o, 0, ((float[]) o).length);
-                    break;
-                case 'D':
-                    this.primitiveArrayCount += read((double[]) o, 0, ((double[]) o).length);
-                    break;
-                case 'L':
+                case BYTE:
+                    int len = read((byte[]) o, 0, length);
+                    this.primitiveArrayCount += len;
 
-                    // Handle an array of Objects by recursion. Anything
-                    // else is an error.
-                    if (className.equals("[Ljava.lang.Object;")) {
-                        for (int i = 0; i < ((Object[]) o).length; i += 1) {
-                            primitiveArrayRecurse(((Object[]) o)[i]);
-                        }
-                    } else {
-                        throw new IOException("Invalid object passed to BufferedFile.readPrimitiveArray: " + className);
+                    if (len < length) {
+                        throw new EOFException();
+                    }
+                    break;
+                case CHAR:
+                    this.primitiveArrayCount += read((char[]) o, 0, length);
+                    break;
+                case SHORT:
+                    this.primitiveArrayCount += read((short[]) o, 0, length);
+                    break;
+                case INT:
+                    this.primitiveArrayCount += read((int[]) o, 0, length);
+                    break;
+                case LONG:
+                    this.primitiveArrayCount += read((long[]) o, 0, length);
+                    break;
+                case FLOAT:
+                    this.primitiveArrayCount += read((float[]) o, 0, length);
+                    break;
+                case DOUBLE:
+                    this.primitiveArrayCount += read((double[]) o, 0, length);
+                    break;
+                case STRING:
+                case UNKNOWN:
+                    for (int i = 0; i < length; i++) {
+                        primitiveArrayRecurse(Array.get(o, i));
                     }
                     break;
                 default:
-                    throw new IOException("Invalid object passed to BufferedDataInputStream.readArray: " + className);
+                    throw new IOException("Invalid object passed to BufferedDataInputStream.readArray: " + o.getClass().getName());
             }
         }
         return this.primitiveArrayCount;
@@ -656,9 +648,9 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
             for (; i < start + length; i += 1) {
                 c[i] = convertToChar();
             }
-            return length * 2;
+            return length * BYTES_IN_CHAR;
         } catch (EOFException e) {
-            return eofCheck(e, start, i, 2);
+            return eofCheck(e, start, i, BYTES_IN_CHAR);
         }
     }
 
@@ -675,9 +667,9 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
             for (; i < start + length; i += 1) {
                 d[i] = Double.longBitsToDouble(convertToLong());
             }
-            return length * 8;
+            return length * BYTES_IN_DOUBLE;
         } catch (EOFException e) {
-            return eofCheck(e, start, i, 8);
+            return eofCheck(e, start, i, BYTES_IN_DOUBLE);
         }
     }
 
@@ -694,9 +686,9 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
             for (; i < start + length; i += 1) {
                 f[i] = Float.intBitsToFloat(convertToInt());
             }
-            return length * 4;
+            return length * BYTES_IN_FLOAT;
         } catch (EOFException e) {
-            return eofCheck(e, start, i, 4);
+            return eofCheck(e, start, i, BYTES_IN_FLOAT);
         }
     }
 
@@ -713,9 +705,9 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
             for (; ii < start + length; ii += 1) {
                 i[ii] = convertToInt();
             }
-            return length * 4;
+            return length * BYTES_IN_INTEGER;
         } catch (EOFException e) {
-            return eofCheck(e, start, ii, 4);
+            return eofCheck(e, start, ii, BYTES_IN_INTEGER);
         }
     }
 
@@ -732,9 +724,9 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
             for (; i < start + length; i += 1) {
                 l[i] = convertToLong();
             }
-            return length * 8;
+            return length * BYTES_IN_LONG;
         } catch (EOFException e) {
-            return eofCheck(e, start, i, 8);
+            return eofCheck(e, start, i, BYTES_IN_LONG);
         }
 
     }
@@ -752,9 +744,9 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
             for (; i < start + length; i += 1) {
                 s[i] = convertToShort();
             }
-            return length * 2;
+            return length * BYTES_IN_SHORT;
         } catch (EOFException e) {
-            return eofCheck(e, start, i, 2);
+            return eofCheck(e, start, i, BYTES_IN_SHORT);
         }
     }
 
@@ -860,7 +852,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     public int readUnsignedByte() throws IOException {
         checkBuffer(1);
         this.bufferOffset += 1;
-        return this.buffer[this.bufferOffset - 1] & 0x00ff;
+        return this.buffer[this.bufferOffset - 1] & BYTE_MASK;
     }
 
     @Override
@@ -1101,64 +1093,40 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public void writeArray(Object o) throws IOException {
-        String className = o.getClass().getName();
-
-        if (className.charAt(0) != '[') {
-            throw new IOException("Invalid object passed to BufferedFile.writeArray:" + className);
+        if (!o.getClass().isArray()) {
+            throw new IOException("Invalid object passed to BufferedDataOutputStream.write" + o.getClass().getName());
         }
-
-        // Is this a multidimensional array? If so process recursively.
-        if (className.charAt(1) == '[') {
-            for (int i = 0; i < ((Object[]) o).length; i += 1) {
-                writeArray(((Object[]) o)[i]);
+        int length = Array.getLength(o);
+        // Is this a multidimensional array? If so process recursiv
+        if (o.getClass().getComponentType().isArray()) {
+            for (int i = 0; i < length; i++) {
+                writeArray(Array.get(o, i));
             }
         } else {
-
-            // This is a one-d array. Process it using our special functions.
-            switch (className.charAt(1)) {
-                case 'Z':
-                    write((boolean[]) o, 0, ((boolean[]) o).length);
-                    break;
-                case 'B':
-                    write((byte[]) o, 0, ((byte[]) o).length);
-                    break;
-                case 'C':
-                    write((char[]) o, 0, ((char[]) o).length);
-                    break;
-                case 'S':
-                    write((short[]) o, 0, ((short[]) o).length);
-                    break;
-                case 'I':
-                    write((int[]) o, 0, ((int[]) o).length);
-                    break;
-                case 'J':
-                    write((long[]) o, 0, ((long[]) o).length);
-                    break;
-                case 'F':
-                    write((float[]) o, 0, ((float[]) o).length);
-                    break;
-                case 'D':
-                    write((double[]) o, 0, ((double[]) o).length);
-                    break;
-                case 'L':
-
-                    // Handle two exceptions: an array of strings, or an
-                    // array of objects. .
-                    if (className.equals("[Ljava.lang.String;")) {
-                        write((String[]) o, 0, ((String[]) o).length);
-                    } else if (className.equals("[Ljava.lang.Object;")) {
-                        for (int i = 0; i < ((Object[]) o).length; i += 1) {
-                            writeArray(((Object[]) o)[i]);
-                        }
-                    } else {
-                        throw new IOException("Invalid object passed to BufferedFile.write: " + className);
-                    }
-                    break;
-                default:
-                    throw new IOException("Invalid object passed to BufferedFile.write: " + className);
+            if (o instanceof boolean[]) {
+                write((boolean[]) o, 0, length);
+            } else if (o instanceof byte[]) {
+                write((byte[]) o, 0, length);
+            } else if (o instanceof char[]) {
+                write((char[]) o, 0, length);
+            } else if (o instanceof short[]) {
+                write((short[]) o, 0, length);
+            } else if (o instanceof int[]) {
+                write((int[]) o, 0, length);
+            } else if (o instanceof long[]) {
+                write((long[]) o, 0, length);
+            } else if (o instanceof float[]) {
+                write((float[]) o, 0, length);
+            } else if (o instanceof double[]) {
+                write((double[]) o, 0, length);
+            } else if (o instanceof String[]) {
+                write((String[]) o, 0, length);
+            } else {
+                for (int i = 0; i < length; i++) {
+                    writeArray(Array.get(o, i));
+                }
             }
         }
-
     }
 
     @Override

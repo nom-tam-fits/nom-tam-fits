@@ -36,6 +36,7 @@ import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 
 /**
  * This class is intended for high performance I/O in scientific applications.
@@ -106,7 +107,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     @Override
     public void write(boolean[] b, int start, int len) throws IOException {
 
-        for (int i = start; i < start + len; i += 1) {
+        for (int i = start; i < start + len; i++) {
 
             if (this.count + 1 > this.buf.length) {
                 checkBuf(1);
@@ -127,11 +128,11 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     @Override
     public void write(char[] c, int start, int len) throws IOException {
 
-        for (int i = start; i < start + len; i += 1) {
+        for (int i = start; i < start + len; i++) {
             if (this.count + 2 > this.buf.length) {
                 checkBuf(2);
             }
-            this.buf[this.count++] = (byte) (c[i] >> 8);
+            this.buf[this.count++] = (byte) (c[i] >> BITS_OF_1_BYTE);
             this.buf[this.count++] = (byte) c[i];
         }
     }
@@ -144,24 +145,24 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     @Override
     public void write(double[] d, int start, int len) throws IOException {
 
-        for (int i = start; i < start + len; i += 1) {
-            if (this.count + 8 > this.buf.length) {
-                checkBuf(8);
+        for (int i = start; i < start + len; i++) {
+            if (this.count + BITS_OF_1_BYTE > this.buf.length) {
+                checkBuf(BITS_OF_1_BYTE);
             }
             long t = Double.doubleToLongBits(d[i]);
 
-            int ix = (int) (t >>> 32);
+            int ix = (int) (t >>> BITS_OF_4_BYTES);
 
-            this.buf[this.count++] = (byte) (ix >>> 24);
-            this.buf[this.count++] = (byte) (ix >>> 16);
-            this.buf[this.count++] = (byte) (ix >>> 8);
+            this.buf[this.count++] = (byte) (ix >>> BITS_OF_3_BYTES);
+            this.buf[this.count++] = (byte) (ix >>> BITS_OF_2_BYTES);
+            this.buf[this.count++] = (byte) (ix >>> BITS_OF_1_BYTE);
             this.buf[this.count++] = (byte) ix;
 
             ix = (int) t;
 
-            this.buf[this.count++] = (byte) (ix >>> 24);
-            this.buf[this.count++] = (byte) (ix >>> 16);
-            this.buf[this.count++] = (byte) (ix >>> 8);
+            this.buf[this.count++] = (byte) (ix >>> BITS_OF_3_BYTES);
+            this.buf[this.count++] = (byte) (ix >>> BITS_OF_2_BYTES);
+            this.buf[this.count++] = (byte) (ix >>> BITS_OF_1_BYTE);
             this.buf[this.count++] = (byte) ix;
         }
 
@@ -175,15 +176,15 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     @Override
     public void write(float[] f, int start, int len) throws IOException {
 
-        for (int i = start; i < start + len; i += 1) {
+        for (int i = start; i < start + len; i++) {
 
-            if (this.count + 4 > this.buf.length) {
-                checkBuf(4);
+            if (this.count + BYTES_IN_FLOAT > this.buf.length) {
+                checkBuf(BYTES_IN_FLOAT);
             }
             int t = Float.floatToIntBits(f[i]);
-            this.buf[this.count++] = (byte) (t >>> 24);
-            this.buf[this.count++] = (byte) (t >>> 16);
-            this.buf[this.count++] = (byte) (t >>> 8);
+            this.buf[this.count++] = (byte) (t >>> BITS_OF_3_BYTES);
+            this.buf[this.count++] = (byte) (t >>> BITS_OF_2_BYTES);
+            this.buf[this.count++] = (byte) (t >>> BITS_OF_1_BYTE);
             this.buf[this.count++] = (byte) t;
         }
     }
@@ -196,14 +197,14 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     @Override
     public void write(int[] i, int start, int len) throws IOException {
 
-        for (int ii = start; ii < start + len; ii += 1) {
-            if (this.count + 4 > this.buf.length) {
-                checkBuf(4);
+        for (int ii = start; ii < start + len; ii++) {
+            if (this.count + BYTES_IN_INTEGER > this.buf.length) {
+                checkBuf(BYTES_IN_INTEGER);
             }
 
-            this.buf[this.count++] = (byte) (i[ii] >>> 24);
-            this.buf[this.count++] = (byte) (i[ii] >>> 16);
-            this.buf[this.count++] = (byte) (i[ii] >>> 8);
+            this.buf[this.count++] = (byte) (i[ii] >>> BITS_OF_3_BYTES);
+            this.buf[this.count++] = (byte) (i[ii] >>> BITS_OF_2_BYTES);
+            this.buf[this.count++] = (byte) (i[ii] >>> BITS_OF_1_BYTE);
             this.buf[this.count++] = (byte) i[ii];
 
         }
@@ -218,22 +219,22 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     @Override
     public void write(long[] l, int start, int len) throws IOException {
 
-        for (int i = start; i < start + len; i += 1) {
-            if (this.count + 8 > this.buf.length) {
-                checkBuf(8);
+        for (int i = start; i < start + len; i++) {
+            if (this.count + BYTES_IN_LONG > this.buf.length) {
+                checkBuf(BYTES_IN_LONG);
             }
-            int t = (int) (l[i] >>> 32);
+            int t = (int) (l[i] >>> BITS_OF_4_BYTES);
 
-            this.buf[this.count++] = (byte) (t >>> 24);
-            this.buf[this.count++] = (byte) (t >>> 16);
-            this.buf[this.count++] = (byte) (t >>> 8);
+            this.buf[this.count++] = (byte) (t >>> BITS_OF_3_BYTES);
+            this.buf[this.count++] = (byte) (t >>> BITS_OF_2_BYTES);
+            this.buf[this.count++] = (byte) (t >>> BITS_OF_1_BYTE);
             this.buf[this.count++] = (byte) t;
 
             t = (int) l[i];
 
-            this.buf[this.count++] = (byte) (t >>> 24);
-            this.buf[this.count++] = (byte) (t >>> 16);
-            this.buf[this.count++] = (byte) (t >>> 8);
+            this.buf[this.count++] = (byte) (t >>> BITS_OF_3_BYTES);
+            this.buf[this.count++] = (byte) (t >>> BITS_OF_2_BYTES);
+            this.buf[this.count++] = (byte) (t >>> BITS_OF_1_BYTE);
             this.buf[this.count++] = (byte) t;
         }
     }
@@ -246,11 +247,11 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     @Override
     public void write(short[] s, int start, int len) throws IOException {
 
-        for (int i = start; i < start + len; i += 1) {
-            if (this.count + 2 > this.buf.length) {
-                checkBuf(2);
+        for (int i = start; i < start + len; i++) {
+            if (this.count + BYTES_IN_SHORT > this.buf.length) {
+                checkBuf(BYTES_IN_SHORT);
             }
-            this.buf[this.count++] = (byte) (s[i] >> 8);
+            this.buf[this.count++] = (byte) (s[i] >> BITS_OF_1_BYTE);
             this.buf[this.count++] = (byte) s[i];
         }
     }
@@ -262,10 +263,8 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 
     @Override
     public void write(String[] s, int start, int len) throws IOException {
-
         // Do not worry about buffering this specially since the
         // strings may be of differing lengths.
-
         for (String element : s) {
             writeBytes(element);
         }
@@ -276,34 +275,34 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         if (!o.getClass().isArray()) {
             throw new IOException("Invalid object passed to BufferedDataOutputStream.write" + o.getClass().getName());
         }
-
-        // Is this a multidimensional array? If so process recursively.
+        int length = Array.getLength(o);
+        // Is this a multidimensional array? If so process recursiv
         if (o.getClass().getComponentType().isArray()) {
-            for (int i = 0; i < ((Object[]) o).length; i += 1) {
-                writeArray(((Object[]) o)[i]);
+            for (int i = 0; i < length; i++) {
+                writeArray(Array.get(o, i));
             }
         } else {
             if (o instanceof boolean[]) {
-                write((boolean[]) o, 0, ((boolean[]) o).length);
+                write((boolean[]) o, 0, length);
             } else if (o instanceof byte[]) {
-                write((byte[]) o, 0, ((byte[]) o).length);
+                write((byte[]) o, 0, length);
             } else if (o instanceof char[]) {
-                write((char[]) o, 0, ((char[]) o).length);
+                write((char[]) o, 0, length);
             } else if (o instanceof short[]) {
-                write((short[]) o, 0, ((short[]) o).length);
+                write((short[]) o, 0, length);
             } else if (o instanceof int[]) {
-                write((int[]) o, 0, ((int[]) o).length);
+                write((int[]) o, 0, length);
             } else if (o instanceof long[]) {
-                write((long[]) o, 0, ((long[]) o).length);
+                write((long[]) o, 0, length);
             } else if (o instanceof float[]) {
-                write((float[]) o, 0, ((float[]) o).length);
+                write((float[]) o, 0, length);
             } else if (o instanceof double[]) {
-                write((double[]) o, 0, ((double[]) o).length);
+                write((double[]) o, 0, length);
             } else if (o instanceof String[]) {
-                write((String[]) o, 0, ((String[]) o).length);
+                write((String[]) o, 0, length);
             } else {
-                for (int i = 0; i < ((Object[]) o).length; i += 1) {
-                    writeArray(((Object[]) o)[i]);
+                for (int i = 0; i < length; i++) {
+                    writeArray(Array.get(o, i));
                 }
             }
         }
@@ -311,8 +310,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 
     @Override
     public void writeBoolean(boolean b) throws IOException {
-
-        checkBuf(1);
+        checkBuf(BYTES_IN_BOOLEAN);
         if (b) {
             this.buf[this.count++] = 1;
         } else {
@@ -322,7 +320,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 
     @Override
     public void writeByte(int b) throws IOException {
-        checkBuf(1);
+        checkBuf(BYTES_IN_BYTE);
         this.buf[this.count++] = (byte) b;
     }
 
@@ -333,73 +331,64 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 
     @Override
     public void writeChar(int c) throws IOException {
-
-        checkBuf(2);
-        this.buf[this.count++] = (byte) (c >>> 8);
+        checkBuf(BYTES_IN_CHAR);
+        this.buf[this.count++] = (byte) (c >>> BITS_OF_1_BYTE);
         this.buf[this.count++] = (byte) c;
     }
 
     @Override
     public void writeChars(String s) throws IOException {
 
-        for (int i = 0; i < s.length(); i += 1) {
+        for (int i = 0; i < s.length(); i++) {
             writeChar(s.charAt(i));
         }
     }
 
     @Override
     public void writeDouble(double d) throws IOException {
-
-        checkBuf(8);
+        checkBuf(BYTES_IN_DOUBLE);
         long l = Double.doubleToLongBits(d);
-
-        this.buf[this.count++] = (byte) (l >>> 56);
-        this.buf[this.count++] = (byte) (l >>> 48);
-        this.buf[this.count++] = (byte) (l >>> 40);
-        this.buf[this.count++] = (byte) (l >>> 32);
-        this.buf[this.count++] = (byte) (l >>> 24);
-        this.buf[this.count++] = (byte) (l >>> 16);
-        this.buf[this.count++] = (byte) (l >>> 8);
+        this.buf[this.count++] = (byte) (l >>> BITS_OF_7_BYTES);
+        this.buf[this.count++] = (byte) (l >>> BITS_OF_6_BYTES);
+        this.buf[this.count++] = (byte) (l >>> BITS_OF_5_BYTES);
+        this.buf[this.count++] = (byte) (l >>> BITS_OF_4_BYTES);
+        this.buf[this.count++] = (byte) (l >>> BITS_OF_3_BYTES);
+        this.buf[this.count++] = (byte) (l >>> BITS_OF_2_BYTES);
+        this.buf[this.count++] = (byte) (l >>> BITS_OF_1_BYTE);
         this.buf[this.count++] = (byte) l;
-
     }
 
     @Override
     public void writeFloat(float f) throws IOException {
-
-        checkBuf(4);
-
+        checkBuf(BYTES_IN_FLOAT);
         int i = Float.floatToIntBits(f);
 
-        this.buf[this.count++] = (byte) (i >>> 24);
-        this.buf[this.count++] = (byte) (i >>> 16);
-        this.buf[this.count++] = (byte) (i >>> 8);
+        this.buf[this.count++] = (byte) (i >>> BITS_OF_3_BYTES);
+        this.buf[this.count++] = (byte) (i >>> BITS_OF_2_BYTES);
+        this.buf[this.count++] = (byte) (i >>> BITS_OF_1_BYTE);
         this.buf[this.count++] = (byte) i;
-
     }
 
     @Override
     public void writeInt(int i) throws IOException {
-
-        checkBuf(4);
-        this.buf[this.count++] = (byte) (i >>> 24);
-        this.buf[this.count++] = (byte) (i >>> 16);
-        this.buf[this.count++] = (byte) (i >>> 8);
+        checkBuf(BYTES_IN_INTEGER);
+        this.buf[this.count++] = (byte) (i >>> BITS_OF_3_BYTES);
+        this.buf[this.count++] = (byte) (i >>> BITS_OF_2_BYTES);
+        this.buf[this.count++] = (byte) (i >>> BITS_OF_1_BYTE);
         this.buf[this.count++] = (byte) i;
     }
 
     @Override
     public void writeLong(long l) throws IOException {
+        checkBuf(BYTES_IN_LONG);
 
-        checkBuf(8);
-
-        this.buf[this.count++] = (byte) (l >>> 56);
-        this.buf[this.count++] = (byte) (l >>> 48);
-        this.buf[this.count++] = (byte) (l >>> 40);
-        this.buf[this.count++] = (byte) (l >>> 32);
-        this.buf[this.count++] = (byte) (l >>> 24);
-        this.buf[this.count++] = (byte) (l >>> 16);
-        this.buf[this.count++] = (byte) (l >>> 8);
+        this.buf[this.count++] = (byte) (l >>> BITS_OF_7_BYTES);
+        this.buf[this.count++] = (byte) (l >>> BITS_OF_6_BYTES);
+        this.buf[this.count++] = (byte) (l >>> BITS_OF_5_BYTES);
+        this.buf[this.count++] = (byte) (l >>> BITS_OF_4_BYTES);
+        this.buf[this.count++] = (byte) (l >>> BITS_OF_3_BYTES);
+        this.buf[this.count++] = (byte) (l >>> BITS_OF_2_BYTES);
+        this.buf[this.count++] = (byte) (l >>> BITS_OF_1_BYTE);
         this.buf[this.count++] = (byte) l;
     }
 
@@ -423,8 +412,8 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     @Override
     public void writeShort(int s) throws IOException {
 
-        checkBuf(2);
-        this.buf[this.count++] = (byte) (s >>> 8);
+        checkBuf(BYTES_IN_SHORT);
+        this.buf[this.count++] = (byte) (s >>> BITS_OF_1_BYTE);
         this.buf[this.count++] = (byte) s;
 
     }
