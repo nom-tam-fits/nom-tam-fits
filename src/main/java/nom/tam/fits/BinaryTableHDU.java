@@ -244,15 +244,16 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
             String sep = "";
             // Don't loop over all values.
             // The last is the [2] for the complex data.
-            for (int i = 0; i < colDesc.dimens.length - 1; i += 1) {
-                dim *= colDesc.dimens[i];
-                tdim = colDesc.dimens[i] + sep + tdim;
+            int[] dimens = colDesc.getDimens();
+            for (int i = 0; i < dimens.length - 1; i += 1) {
+                dim *= dimens[i];
+                tdim = dimens[i] + sep + tdim;
                 sep = ",";
             }
             String suffix = "C"; // For complex
             // Update the TFORMn keyword.
 
-            if (colDesc.base == double.class) {
+            if (colDesc.getBase() == double.class) {
                 suffix = "M";
             }
 

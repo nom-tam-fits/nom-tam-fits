@@ -43,6 +43,16 @@ import java.util.logging.Logger;
  */
 public class FitsDate {
 
+    private static final int FITS_DATE_STRING_SIZE = 23;
+
+    private static final int YEAR_OFFSET = 1900;
+
+    private static final int MILLISECONDS_PER_SECOND = 1000;
+
+    private static final int FIRST_THREE_CHARACTER_VALUE = 100;
+
+    private static final int FIRST_TWO_CHARACTER_VALUE = 10;
+
     private static final TimeZone GMT = TimeZone.getTimeZone("GMT");
 
     private static final Logger LOG = Logger.getLogger(FitsDate.class.getName());
@@ -188,7 +198,13 @@ public class FitsDate {
                 }
             } catch (NumberFormatException e) {
                 // yikes, something failed; reset everything
-                this.year = this.month = this.mday = this.hour = this.minute = this.second = this.millisecond = -1;
+                this.year = -1;
+                this.month = -1;
+                this.mday = -1;
+                this.hour = -1;
+                this.minute = -1;
+                this.second = -1;
+                this.millisecond = -1;
             }
         }
     }
@@ -197,14 +213,16 @@ public class FitsDate {
         int middle = dStr.indexOf('/', first + 1);
         if (middle > first + 2 && middle < len) {
             try {
-                this.year = Integer.parseInt(dStr.substring(middle + 1)) + 1900;
+                this.year = Integer.parseInt(dStr.substring(middle + 1)) + YEAR_OFFSET;
                 this.month = Integer.parseInt(dStr.substring(first + 1, middle));
                 this.mday = Integer.parseInt(dStr.substring(0, first));
                 if (FitsDate.LOG.isLoggable(Level.FINEST)) {
                     FitsDate.LOG.log(Level.FINEST, "Old Format:" + this.year + " " + this.month + " " + this.mday);
                 }
             } catch (NumberFormatException e) {
-                this.year = this.month = this.mday = -1;
+                this.year = -1;
+                this.month = -1;
+                this.mday = -1;
             }
         }
     }
@@ -214,25 +232,23 @@ public class FitsDate {
         if (first < 0) {
             throw new FitsException("Bad time");
         }
-
         int len = tStr.length();
-
         int middle = tStr.indexOf(':', first + 1);
         if (middle > first + 2 && middle < len) {
-
             if (middle + 3 < len && tStr.charAt(middle + 3) == '.') {
                 double d = Double.valueOf(tStr.substring(middle + 3)).doubleValue();
-                this.millisecond = (int) (d * 1000);
-
+                this.millisecond = (int) (d * MILLISECONDS_PER_SECOND);
                 len = middle + 3;
             }
-
             try {
                 this.hour = Integer.parseInt(tStr.substring(0, first));
                 this.minute = Integer.parseInt(tStr.substring(first + 1, middle));
                 this.second = Integer.parseInt(tStr.substring(middle + 1, len));
             } catch (NumberFormatException e) {
-                this.hour = this.minute = this.second = this.millisecond = -1;
+                this.hour = -1;
+                this.minute = -1;
+                this.second = -1;
+                this.millisecond = -1;
             }
         }
     }
@@ -296,15 +312,15 @@ public class FitsDate {
             return "";
         }
 
-        StringBuffer buf = new StringBuffer(23);
+        StringBuffer buf = new StringBuffer(FITS_DATE_STRING_SIZE);
         buf.append(this.year);
         buf.append('-');
-        if (this.month < 10) {
+        if (this.month < FIRST_TWO_CHARACTER_VALUE) {
             buf.append('0');
         }
         buf.append(this.month);
         buf.append('-');
-        if (this.mday < 10) {
+        if (this.mday < FIRST_TWO_CHARACTER_VALUE) {
             buf.append('0');
         }
         buf.append(this.mday);
@@ -312,21 +328,21 @@ public class FitsDate {
         if (this.hour != -1) {
 
             buf.append('T');
-            if (this.hour < 10) {
+            if (this.hour < FIRST_TWO_CHARACTER_VALUE) {
                 buf.append('0');
             }
 
             buf.append(this.hour);
             buf.append(':');
 
-            if (this.minute < 10) {
+            if (this.minute < FIRST_TWO_CHARACTER_VALUE) {
                 buf.append('0');
             }
 
             buf.append(this.minute);
             buf.append(':');
 
-            if (this.second < 10) {
+            if (this.second < FIRST_TWO_CHARACTER_VALUE) {
                 buf.append('0');
             }
             buf.append(this.second);
@@ -334,8 +350,8 @@ public class FitsDate {
             if (this.millisecond != -1) {
                 buf.append('.');
 
-                if (this.millisecond < 100) {
-                    if (this.millisecond < 10) {
+                if (this.millisecond < FIRST_THREE_CHARACTER_VALUE) {
+                    if (this.millisecond < FIRST_TWO_CHARACTER_VALUE) {
                         buf.append("00");
                     } else {
                         buf.append('0');

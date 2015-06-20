@@ -46,6 +46,7 @@ import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.Cursor;
+import nom.tam.util.FitsIO;
 import nom.tam.util.HashedList;
 import nom.tam.util.RandomAccess;
 
@@ -74,6 +75,10 @@ import nom.tam.util.RandomAccess;
  * the FITS header, but this is not done automatically for the user.
  */
 public class Header implements FitsElement {
+
+    private static final int MIN_NUMBER_OF_CARDS_FOR_VALID_HEADER = 4;
+
+    private static final int MAX_CARDS_PER_HEADER = FitsFactory.FITS_BLOCK_SIZE / HeaderCard.FITS_HEADER_CARD_SIZE;
 
     private static final Logger LOG = Logger.getLogger(Header.class.getName());
 
@@ -1065,8 +1070,7 @@ public class Header implements FitsElement {
      *         otherwise.
      */
     boolean isValidHeader() {
-
-        if (getNumberOfCards() < 4) {
+        if (getNumberOfCards() < MIN_NUMBER_OF_CARDS_FOR_VALID_HEADER) {
             return false;
         }
         this.iter = iterator();
@@ -1135,7 +1139,7 @@ public class Header implements FitsElement {
         this.iter = iterator();
         try {
             addValue("SIMPLE", true, "ntf::header:simple:2");
-            addValue("BITPIX", 8, "ntf::header:bitpix:2");
+            addValue("BITPIX", BasicHDU.BITPIX_BYTE, "ntf::header:bitpix:2");
             addValue("NAXIS", 0, "ntf::header:naxis:2");
             addValue("EXTEND", true, "ntf::header:extend:2");
         } catch (HeaderCardException e) {
@@ -1363,15 +1367,11 @@ public class Header implements FitsElement {
         }
     }
 
-    /** Can the header be rewritten without rewriting the entire file? */
     @Override
     public boolean rewriteable() {
-
-        if (this.fileOffset >= 0 && this.input instanceof ArrayDataOutput && (getNumberOfPhysicalCards() + 35) / 36 == (this.originalCardCount + 35) / 36) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.fileOffset >= 0 && this.input instanceof ArrayDataOutput && //
+                (getNumberOfPhysicalCards() + (MAX_CARDS_PER_HEADER - 1)) / MAX_CARDS_PER_HEADER == //
+                (this.originalCardCount + (MAX_CARDS_PER_HEADER - 1)) / MAX_CARDS_PER_HEADER;
     }
 
     /**
@@ -1561,7 +1561,7 @@ public class Header implements FitsElement {
 
         // Now multiply by the number of bits per pixel and
         // convert to bytes.
-        size *= Math.abs(getIntValue("BITPIX", 0)) / 8;
+        size *= Math.abs(getIntValue("BITPIX", 0)) / FitsIO.BITS_OF_1_BYTE;
 
         return size;
     }
@@ -1627,10 +1627,10 @@ public class Header implements FitsElement {
         if (this.cards.size() <= 0) {
             return;
         }
-        Cursor<String, HeaderCard> iter = this.cards.iterator(0);
+        Cursor<String, HeaderCard> writeIterator = this.cards.iterator(0);
         try {
-            while (iter.hasNext()) {
-                HeaderCard card = iter.next();
+            while (writeIterator.hasNext()) {
+                HeaderCard card = writeIterator.next();
                 byte[] b = AsciiFuncs.getBytes(card.toString());
                 dos.write(b);
             }

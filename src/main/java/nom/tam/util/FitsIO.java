@@ -32,98 +32,132 @@ package nom.tam.util;
  */
 
 import java.io.Closeable;
+import java.io.IOException;
 
 /**
  * super closable interface for all fits reader/writers. It defines the
  * nessesary constands common for all reader and writers.
  * 
- * @author nir
+ * @author ritchie
  */
 public interface FitsIO extends Closeable {
 
     /**
      * number of bits in one byte.
      */
-    public static final int BITS_OF_1_BYTE = 8;
+    int BITS_OF_1_BYTE = 8;
 
     /**
      * number of bits in two byte.
      */
-    public static final int BITS_OF_2_BYTES = 16;
+    int BITS_OF_2_BYTES = 16;
 
     /**
      * number of bits in three byte.
      */
-    public static final int BITS_OF_3_BYTES = 24;
+    int BITS_OF_3_BYTES = 24;
 
     /**
      * number of bits in four byte.
      */
-    public static final int BITS_OF_4_BYTES = 32;
+    int BITS_OF_4_BYTES = 32;
 
     /**
      * number of bits in five byte.
      */
-    public static final int BITS_OF_5_BYTES = 40;
+    int BITS_OF_5_BYTES = 40;
 
     /**
      * number of bits in six byte.
      */
-    public static final int BITS_OF_6_BYTES = 48;
+    int BITS_OF_6_BYTES = 48;
 
     /**
      * number of bits in seven byte.
      */
-    public static final int BITS_OF_7_BYTES = 56;
+    int BITS_OF_7_BYTES = 56;
 
     /**
      * number of bytes occupied by a boolean.
      */
-    public static final int BYTES_IN_BOOLEAN = 1;
+    int BYTES_IN_BOOLEAN = 1;
 
     /**
      * number of bytes occupied by a byte.
      */
-    public static final int BYTES_IN_BYTE = 1;
+    int BYTES_IN_BYTE = 1;
 
     /**
      * number of bytes occupied by a char.
      */
-    public static final int BYTES_IN_CHAR = 2;
+    int BYTES_IN_CHAR = 2;
 
     /**
      * number of bytes occupied by a short.
      */
-    public static final int BYTES_IN_SHORT = 2;
+    int BYTES_IN_SHORT = 2;
 
     /**
      * number of bytes occupied by a integer.
      */
-    public static final int BYTES_IN_INTEGER = 4;
+    int BYTES_IN_INTEGER = 4;
 
     /**
      * number of bytes occupied by a long.
      */
-    public static final int BYTES_IN_LONG = 8;
+    int BYTES_IN_LONG = 8;
 
     /**
      * number of bytes occupied by a float.
      */
-    public static final int BYTES_IN_FLOAT = 4;
+    int BYTES_IN_FLOAT = 4;
 
     /**
      * number of bytes occupied by a double.
      */
-    public static final int BYTES_IN_DOUBLE = 8;
+    int BYTES_IN_DOUBLE = 8;
 
     /**
      * bit mask to get the lowest byte from an integer. Or to get an unsigned
      * integer from a byte.
      */
-    public static final int BYTE_MASK = 0xFF;
+    int BYTE_MASK = 0xFF;
+
+    /**
+     * bit mask to get the lowest short of a long.
+     */
+    long SHORT_OF_LONG_MASK = 0xffffL;
+
+    /**
+     * bit mask to get the lowest byte of a long.
+     */
+    long BYTE_1_OF_LONG_MASK = 0xffL;
+
+    /**
+     * bit mask to get the second lowest byte of a long.
+     */
+    long BYTE_2_OF_LONG_MASK = 0xff00L;
+
+    /**
+     * bit mask to get the third lowest byte of a long.
+     */
+    long BYTE_3_OF_LONG_MASK = 0xff0000L;
+
+    /**
+     * bit mask to get the fourth lowest byte of a long.
+     */
+    long BYTE_4_OF_LONG_MASK = 0xff000000L;
 
     /**
      * bit mask to get the lowest integer from an long.
      */
-    public static final long INTEGER_MASK = 0x00000000ffffffffL;
+    long INTEGER_MASK = 0x00000000ffffffffL;
+
+    /**
+     * bit mask to get the highest integer from an long.
+     */
+    long HIGH_INTEGER_MASK = 0xFFFFFFFF00000000L;
+
+    @Override
+    void close() throws IOException;
 }

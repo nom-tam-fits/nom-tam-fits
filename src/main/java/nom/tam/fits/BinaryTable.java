@@ -52,6 +52,8 @@ import nom.tam.util.TableException;
  */
 public class BinaryTable extends AbstractTableData {
 
+    private static final int MAX_EMPTY_BLOCK_SIZE = 4000000;
+
     /** Opaque state to pass to ColumnTable */
     private static class SaveState {
 
@@ -72,21 +74,51 @@ public class BinaryTable extends AbstractTableData {
     protected static class ColumnDesc implements Cloneable {
 
         /** The size of the column in the type of the column */
-        int size;
+        private int size;
 
         /** The dimensions of the column (or just [1] if a scalar) */
-        int[] dimens;
+        private int[] dimens;
 
         /** The underlying class associated with the column. */
-        Class<?> base;
+        private Class<?> base;
 
         /**
          * An example of the kind of data that should be read/written in one row
          */
-        Object model;
+        private Object model;
 
         /** Is this a variable length column ? */
-        boolean isVarying;
+        private boolean isVarying;
+
+        /**
+         * Is this a variable length column using longs? [Must have isVarying
+         * true too]
+         */
+        private boolean isLongVary;
+
+        /**
+         * Is this a complex column. Each entry will be associated with a
+         * float[2]/double[2]
+         */
+        private boolean isComplex;
+
+        /**
+         * Is this a string column. Strings will normally be converted to fixed
+         * length byte arrays with the length given by the longest string.
+         */
+        private boolean isString;
+
+        /**
+         * Is this a boolean column? Booleans are stored as bytes with the value
+         * 'T'/'F'
+         */
+        private boolean isBoolean;
+
+        /**
+         * The flattened column data. This should be nulled when the data is
+         * copied into the ColumnTable
+         */
+        private Object column;
 
         /**
          * @returnIs this a variable length column ?
@@ -96,42 +128,12 @@ public class BinaryTable extends AbstractTableData {
         }
 
         /**
-         * Is this a variable length column using longs? [Must have isVarying
-         * true too]
-         */
-        boolean isLongVary;
-
-        /**
          * @return Is this a variable length column using longs? [Must have
          *         isVarying true too]
          */
         boolean isLongVary() {
             return isLongVary;
         }
-
-        /**
-         * Is this a complex column. Each entry will be associated with a
-         * float[2]/double[2]
-         */
-        boolean isComplex;
-
-        /**
-         * Is this a string column. Strings will normally be converted to fixed
-         * length byte arrays with the length given by the longest string.
-         */
-        boolean isString;
-
-        /**
-         * Is this a boolean column? Booleans are stored as bytes with the value
-         * 'T'/'F'
-         */
-        boolean isBoolean;
-
-        /**
-         * The flattened column data. This should be nulled when the data is
-         * copied into the ColumnTable
-         */
-        Object column;
 
         @Override
         public Object clone() {
@@ -145,6 +147,14 @@ public class BinaryTable extends AbstractTableData {
             } catch (CloneNotSupportedException e) {
                 throw new IllegalStateException("ColumnDesc is not clonable, but it must be!");
             }
+        }
+
+        public int[] getDimens() {
+            return dimens;
+        }
+
+        public Class<?> getBase() {
+            return base;
         }
     }
 
@@ -239,48 +249,48 @@ public class BinaryTable extends AbstractTableData {
     /**
      * This is the area in which variable length column data lives.
      */
-    FitsHeap heap;
+    private FitsHeap heap;
 
     /**
      * The number of bytes between the end of the data and the heap
      */
-    int heapOffset;
+    private int heapOffset;
 
     /**
      * Switched to an initial value of true TAM, 11/20/12, since the heap may be
      * generated without any I/O. In that case it's valid. We set
      * heapReadFromStream to false when we skip input.
      */
-    boolean heapReadFromStream = true;
+    private boolean heapReadFromStream = true;
 
     private boolean warnedOnVariableConversion = false;
 
     /**
      * A list describing each of the columns in the table
      */
-    List<ColumnDesc> columnList = new ArrayList<>();
+    private List<ColumnDesc> columnList = new ArrayList<>();
 
     /**
      * The number of rows in the table.
      */
-    int nRow;
+    private int nRow;
 
     /**
      * The length in bytes of each row.
      */
-    int rowLen;
+    private int rowLen;
 
     /**
      * Where the data is actually stored.
      */
-    ColumnTable<SaveState> table;
+    private ColumnTable<SaveState> table;
 
     /**
      * The stream used to input the data. This is saved so that we possibly skip
      * reading the data if the user doesn't wish to read all or parts of this
      * table.
      */
-    ArrayDataInput currInput;
+    private ArrayDataInput currInput;
 
     /**
      * Create a null binary table data segment.
@@ -1541,7 +1551,7 @@ public class BinaryTable extends AbstractTableData {
         //
         // Bit arrays (8 bits fit in a byte)
         if (type == 'X') {
-            size = (size + 7) / FitsIO.BITS_OF_1_BYTE;
+            size = (size + FitsIO.BITS_OF_1_BYTE - 1) / FitsIO.BITS_OF_1_BYTE;
             // Variable length arrays always have a two-element pointer (offset
             // and size)
         } else if (colDesc.isVarying) {
@@ -1587,33 +1597,33 @@ public class BinaryTable extends AbstractTableData {
             case 'I':
                 colBase = short.class;
                 colDesc.base = short.class;
-                bSize *= 2;
+                bSize *= FitsIO.BYTES_IN_SHORT;
                 break;
 
             case 'J':
                 colBase = int.class;
                 colDesc.base = int.class;
-                bSize *= 4;
+                bSize *= FitsIO.BYTES_IN_INTEGER;
                 break;
 
             case 'K':
                 colBase = long.class;
                 colDesc.base = long.class;
-                bSize *= 8;
+                bSize *= FitsIO.BYTES_IN_LONG;
                 break;
 
             case 'E':
             case 'C':
                 colBase = float.class;
                 colDesc.base = float.class;
-                bSize *= 4;
+                bSize *= FitsIO.BYTES_IN_FLOAT;
                 break;
 
             case 'D':
             case 'M':
                 colBase = double.class;
                 colDesc.base = double.class;
-                bSize *= 8;
+                bSize *= FitsIO.BYTES_IN_DOUBLE;
                 break;
 
             default:
@@ -1625,10 +1635,10 @@ public class BinaryTable extends AbstractTableData {
                 2
             };
             colBase = int.class;
-            bSize = 8;
+            bSize = FitsIO.BYTES_IN_INTEGER * 2;
             if (colDesc.isLongVary) {
                 colBase = long.class;
-                bSize = 16;
+                bSize = FitsIO.BYTES_IN_LONG * 2;
             }
         }
         if (!colDesc.isVarying && colDesc.isComplex) {
@@ -1965,7 +1975,7 @@ public class BinaryTable extends AbstractTableData {
                 // Previous code might have allocated up to 2GB
                 // array. [In practice this is always going
                 // to be really small though...]
-                int arrSiz = 4000000;
+                int arrSiz = MAX_EMPTY_BLOCK_SIZE;
                 while (off > 0) {
                     if (arrSiz > off) {
                         arrSiz = off;

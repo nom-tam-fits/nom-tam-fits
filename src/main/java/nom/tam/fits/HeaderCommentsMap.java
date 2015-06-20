@@ -51,7 +51,7 @@ package nom.tam.fits;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HeaderCommentsMap {
+public final class HeaderCommentsMap {
 
     private static Map<String, String> commentMap = new HashMap<String, String>();
     static {
@@ -88,6 +88,9 @@ public class HeaderCommentsMap {
          * binarytable:gcount:1 binarytable:tfields:1 binarytable:tformN:1
          * binarytable:tdimN:1 tablehdu:naxis2:1
          */
+    }
+
+    private HeaderCommentsMap() {
     }
 
     public static void deleteComment(String key) {

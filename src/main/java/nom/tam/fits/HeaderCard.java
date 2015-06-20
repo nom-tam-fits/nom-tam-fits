@@ -54,6 +54,28 @@ import nom.tam.util.CursorValue;
  */
 public class HeaderCard implements CursorValue<String> {
 
+    private static final int STRING_SPLIT_POSITION_FOR_EXTRA_COMMENT_SPACE = 35;
+
+    private static final int HIERARCH_ALIGN_POSITION = 39;
+
+    private static final int NORMAL_ALIGN_POSITION = 30;
+
+    private static final int MAX_DOUBLE_STRING_LENGTH = 20;
+
+    private static final int HIERARCH_SMALL_STRING_ALIGN_POSITION = 29;
+
+    private static final int NORMAL_SMALL_STRING_ALIGN_POSITION = 19;
+
+    private static final String NTF_PREFIX = "ntf::";
+
+    private static final int NTF_PREFIX_LENGTH = NTF_PREFIX.length();
+
+    private static final String HIERARCH_WITH_DOT = "HIERARCH.";
+
+    private static final String HIERARCH_WITH_BLANK = "HIERARCH ";
+
+    private static final int HIERARCH_LENGTH_PLUS_1 = HIERARCH_WITH_BLANK.length();
+
     public static final int FITS_HEADER_CARD_SIZE = 80;
 
     private static final BigDecimal LONG_MAX_VALUE_AS_BIG_DECIMAL = BigDecimal.valueOf(Long.MAX_VALUE);
@@ -82,14 +104,32 @@ public class HeaderCard implements CursorValue<String> {
     public static final int MAX_KEYWORD_LENGTH = 8;
 
     /**
-     * Maximum length of a FITS value field
+     * Maximum length of a FITS value field.
      */
     public static final int MAX_VALUE_LENGTH = 70;
 
     /**
-     * Maximum length of a FITS string value field
+     * Maximum length of a FITS string value field.
      */
     public static final int MAX_STRING_VALUE_LENGTH = HeaderCard.MAX_VALUE_LENGTH - 2;
+
+    /**
+     * Maximum length of a FITS long string value field. the &amp; for the
+     * continuation needs one char.
+     */
+    public static final int MAX_LONG_STRING_VALUE_LENGTH = HeaderCard.MAX_STRING_VALUE_LENGTH - 1;
+
+    /**
+     * if a commend needs the be specified 2 extra chars are needed to start the
+     * comment
+     */
+    public static final int MAX_LONG_STRING_VALUE_WITH_COMMENT_LENGTH = HeaderCard.MAX_LONG_STRING_VALUE_LENGTH - 2;
+
+    /**
+     * the start and end quotes of the string and the ampasant to continue the
+     * string.
+     */
+    public static final int MAX_LONG_STRING_CONTINUE_OVERHEAD = 3;
 
     /**
      * @return a created HeaderCard from a FITS card string.
@@ -112,7 +152,7 @@ public class HeaderCard implements CursorValue<String> {
     private static String dblString(BigDecimal input) {
         String value = input.toString();
         BigDecimal decimal = input;
-        while (value.length() > 20) {
+        while (value.length() > MAX_DOUBLE_STRING_LENGTH) {
             decimal = input.setScale(decimal.scale() - 1, BigDecimal.ROUND_HALF_UP);
             value = decimal.toString();
         }
@@ -126,7 +166,7 @@ public class HeaderCard implements CursorValue<String> {
      */
     private static String dblString(double input) {
         String value = Double.toString(input);
-        if (value.length() > 20) {
+        if (value.length() > MAX_DOUBLE_STRING_LENGTH) {
             return dblString(BigDecimal.valueOf(input));
         }
         return value;
@@ -166,7 +206,7 @@ public class HeaderCard implements CursorValue<String> {
 
         String card = readOneHeaderLine(dis);
 
-        if (FitsFactory.getUseHierarch() && card.length() > 9 && card.substring(0, 9).equals("HIERARCH ")) {
+        if (FitsFactory.getUseHierarch() && card.length() > HIERARCH_LENGTH_PLUS_1 && card.substring(0, HIERARCH_LENGTH_PLUS_1).equals(HIERARCH_WITH_BLANK)) {
             hierarchCard(card, dis);
             return;
         }
@@ -176,24 +216,24 @@ public class HeaderCard implements CursorValue<String> {
         // a / terminates the string (except inside quotes)
 
         // treat short lines as special keywords
-        if (card.length() < 9) {
+        if (card.length() < HIERARCH_LENGTH_PLUS_1) {
             this.key = card;
             return;
         }
 
         // extract the key
-        this.key = card.substring(0, 8).trim();
+        this.key = card.substring(0, MAX_KEYWORD_LENGTH).trim();
 
         // if it is an empty key, assume the remainder of the card is a comment
         if (this.key.length() == 0) {
             this.key = "";
-            this.comment = card.substring(8);
+            this.comment = card.substring(MAX_KEYWORD_LENGTH);
             return;
         }
 
         // Non-key/value pair lines are treated as keyed comments
-        if (this.key.equals("COMMENT") || this.key.equals("HISTORY") || !card.substring(8, 10).equals("= ")) {
-            this.comment = card.substring(8).trim();
+        if (this.key.equals("COMMENT") || this.key.equals("HISTORY") || !card.substring(MAX_KEYWORD_LENGTH, MAX_KEYWORD_LENGTH + 2).equals("= ")) {
+            this.comment = card.substring(MAX_KEYWORD_LENGTH).trim();
             return;
         }
         // extract the value/comment part of the string
@@ -392,14 +432,15 @@ public class HeaderCard implements CursorValue<String> {
      */
     private HeaderCard(String key, String value, String comment, boolean nullable, boolean isString) throws HeaderCardException {
         this.isString = isString;
-        if (comment != null && comment.startsWith("ntf::")) {
-            String ckey = comment.substring(5); // Get rid of ntf:: prefix
+        if (comment != null && comment.startsWith(NTF_PREFIX)) {
+            String ckey = comment.substring(NTF_PREFIX_LENGTH); // Get rid of
+                                                                // ntf:: prefix
             comment = HeaderCommentsMap.getComment(ckey);
         }
         if (key == null && value != null) {
             throw new HeaderCardException("Null keyword with non-null value");
         } else if (key != null && key.length() > HeaderCard.MAX_KEYWORD_LENGTH && //
-                (!FitsFactory.getUseHierarch() || !key.substring(0, 9).equals("HIERARCH."))) {
+                (!FitsFactory.getUseHierarch() || !key.substring(0, HIERARCH_LENGTH_PLUS_1).equals(HIERARCH_WITH_DOT))) {
             throw new HeaderCardException("Keyword too long");
         }
         if (value != null) {
@@ -586,7 +627,7 @@ public class HeaderCard implements CursorValue<String> {
         this.isString = true;
     }
 
-    private String readOneHeaderLine(ArrayDataInput dis) throws IOException, TruncatedFileException, EOFException {
+    private String readOneHeaderLine(ArrayDataInput dis) throws IOException, TruncatedFileException {
         byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
         int len;
         int need = FITS_HEADER_CARD_SIZE;
@@ -633,24 +674,24 @@ public class HeaderCard implements CursorValue<String> {
      */
     @Override
     public String toString() {
-        int alignSmallString = 19;
-        int alignPosition = 30;
+        int alignSmallString = NORMAL_SMALL_STRING_ALIGN_POSITION;
+        int alignPosition = NORMAL_ALIGN_POSITION;
         FitsLineAppender buf = new FitsLineAppender();
         // start with the keyword, if there is one
         if (this.key != null) {
-            if (this.key.length() > 9 && this.key.substring(0, 9).equals("HIERARCH.")) {
+            if (this.key.length() > HIERARCH_LENGTH_PLUS_1 && this.key.substring(0, HIERARCH_LENGTH_PLUS_1).equals(HIERARCH_WITH_DOT)) {
                 buf.appendRepacing(this.key, '.', ' ');
-                alignSmallString = 29;
-                alignPosition = 39;
+                alignSmallString = HIERARCH_SMALL_STRING_ALIGN_POSITION;
+                alignPosition = HIERARCH_ALIGN_POSITION;
             } else {
                 buf.append(this.key);
-                buf.appendSpacesTo(8);
+                buf.appendSpacesTo(MAX_KEYWORD_LENGTH);
             }
         }
-        FitsSubString comment = new FitsSubString(this.comment);
-        if (FITS_HEADER_CARD_SIZE - alignPosition - 3 < comment.length()) {
+        FitsSubString commentSubString = new FitsSubString(this.comment);
+        if (FITS_HEADER_CARD_SIZE - alignPosition - MAX_LONG_STRING_CONTINUE_OVERHEAD < commentSubString.length()) {
             // with alignment the comment would not fit so lets make more space
-            alignPosition = Math.max(buf.length(), FITS_HEADER_CARD_SIZE - 3 - comment.length());
+            alignPosition = Math.max(buf.length(), FITS_HEADER_CARD_SIZE - MAX_LONG_STRING_CONTINUE_OVERHEAD - commentSubString.length());
             alignSmallString = buf.length();
         }
         boolean commentHandled = false;
@@ -683,21 +724,21 @@ public class HeaderCard implements CursorValue<String> {
                 buf.appendSpacesTo(alignPosition);
             }
             // is there space left for a comment?
-            comment.getAdjustedLength(((FITS_HEADER_CARD_SIZE - buf.length()) % FITS_HEADER_CARD_SIZE) - 3);
+            commentSubString.getAdjustedLength(((FITS_HEADER_CARD_SIZE - buf.length()) % FITS_HEADER_CARD_SIZE) - MAX_LONG_STRING_CONTINUE_OVERHEAD);
             // if there is a comment, add a comment delimiter
-            if (!commentHandled && comment.length() > 0) {
+            if (!commentHandled && commentSubString.length() > 0) {
                 buf.append(" / ");
             }
-        } else if (comment.startsWith("= ")) {
+        } else if (commentSubString.startsWith("= ")) {
             buf.append("  ");
         }
 
         // finally, add any comment
-        if (!commentHandled && comment.length() > 0) {
-            if (comment.startsWith(" ")) {
-                comment.skip(1);
+        if (!commentHandled && commentSubString.length() > 0) {
+            if (commentSubString.startsWith(" ")) {
+                commentSubString.skip(1);
             }
-            buf.append(comment);
+            buf.append(commentSubString);
         }
         buf.completeLine();
         return buf.toString();
@@ -754,7 +795,7 @@ public class HeaderCard implements CursorValue<String> {
         // We also need to be careful that single quotes don't
         // make the string too long and that we don't split
         // in the middle of a quote.
-        stringValue.getAdjustedLength(FITS_HEADER_CARD_SIZE - buf.length() - 3);
+        stringValue.getAdjustedLength(FITS_HEADER_CARD_SIZE - buf.length() - MAX_LONG_STRING_CONTINUE_OVERHEAD);
         // No comment here since we're using as much of the card
         // as we can
         buf.append('\'');
@@ -766,16 +807,16 @@ public class HeaderCard implements CursorValue<String> {
             commentValue.skip(1);
         }
         while (stringValue.length() > 0) {
-            stringValue.getAdjustedLength(67);
-            if (stringValue.fullLength() > 67) {
+            stringValue.getAdjustedLength(MAX_LONG_STRING_VALUE_LENGTH);
+            if (stringValue.fullLength() > MAX_LONG_STRING_VALUE_LENGTH) {
                 buf.append("CONTINUE  '");
                 buf.append(stringValue);
                 buf.append("&'");
                 stringValue.rest();
             } else {
-                if (commentValue.length() > 65 - stringValue.length()) {
+                if (commentValue.length() > MAX_LONG_STRING_VALUE_WITH_COMMENT_LENGTH - stringValue.length()) {
                     // ok comment does not fit lets give it a little more room
-                    stringValue.getAdjustedLength(35);
+                    stringValue.getAdjustedLength(STRING_SPLIT_POSITION_FOR_EXTRA_COMMENT_SPACE);
                     if (stringValue.fullLength() > stringValue.length()) {
                         buf.append("CONTINUE  '");
                         buf.append(stringValue);
@@ -785,7 +826,7 @@ public class HeaderCard implements CursorValue<String> {
                         buf.append(stringValue);
                         buf.append("'");
                     }
-                    int spaceForComment = buf.spaceLeftInLine() - 3;
+                    int spaceForComment = buf.spaceLeftInLine() - MAX_LONG_STRING_CONTINUE_OVERHEAD;
                     commentValue.getAdjustedLength(spaceForComment);
                 } else {
                     buf.append("CONTINUE  '");

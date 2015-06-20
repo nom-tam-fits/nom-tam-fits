@@ -50,6 +50,8 @@ import nom.tam.util.TruncationException;
 /** This class represents the data in an ASCII table */
 public class AsciiTable extends AbstractTableData {
 
+    private static final int MAX_INTEGER_LENGTH = 10;
+
     private static final int FLOAT_MAX_LENGTH = 16;
 
     private static final int LONG_MAX_LENGTH = 20;
@@ -95,10 +97,10 @@ public class AsciiTable extends AbstractTableData {
     /**
      * The parser used to convert from buffer to data.
      */
-    ByteParser bp;
+    private ByteParser bp;
 
     /** The actual stream used to input data */
-    ArrayDataInput currInput;
+    private ArrayDataInput currInput;
 
     /** Create an empty ASCII table */
     public AsciiTable() {
@@ -152,7 +154,7 @@ public class AsciiTable extends AbstractTableData {
                     this.types[i] = String.class;
                     break;
                 case 'I':
-                    if (this.lengths[i] > 10) {
+                    if (this.lengths[i] > MAX_INTEGER_LENGTH) {
                         this.types[i] = long.class;
                     } else {
                         this.types[i] = int.class;
@@ -165,6 +167,8 @@ public class AsciiTable extends AbstractTableData {
                 case 'D':
                     this.types[i] = double.class;
                     break;
+                default:
+                    throw new FitsException("could not parse column type of ascii table");
             }
 
             this.nulls[i] = hdr.getStringValue("TNULL" + (i + 1));

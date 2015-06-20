@@ -31,7 +31,6 @@ package nom.tam.fits;
  * #L%
  */
 
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
@@ -49,10 +48,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.compress.CompressionManager;
-import nom.tam.fits.header.Checksum;
+import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
@@ -128,147 +126,10 @@ import nom.tam.util.RandomAccess;
  */
 public class Fits implements Closeable {
 
+    /**
+     * logger to log to.
+     */
     private static final Logger LOG = Logger.getLogger(Fits.class.getName());
-
-    /**
-     * Calculate the Seaman-Pence 32-bit 1's complement checksum over the byte
-     * stream. The option to start from an intermediate checksum accumulated
-     * over another previous byte stream is not implemented. The implementation
-     * accumulates in two 64-bit integer values the two low-order and the two
-     * high-order bytes of adjacent 4-byte groups. A carry-over of bits is never
-     * done within the main loop (only once at the end at reduction to a 32-bit
-     * positive integer) since an overflow of a 64-bit value (signed, with
-     * maximum at 2^63-1) by summation of 16-bit values could only occur after
-     * adding approximately 140G short values (=2^47) (280GBytes) or more. We
-     * assume for now that this routine here is never called to swallow FITS
-     * files of that size or larger. by R J Mathar
-     * 
-     * @param data
-     *            the byte sequence
-     * @return the 32bit checksum in the range from 0 to 2^32-1
-     * @see Checksum#CHECKSUM
-     * @since 2005-10-05
-     */
-    public static long checksum(final byte[] data) {
-        long hi = 0;
-        long lo = 0;
-        final int len = 2 * (data.length / 4);
-        // System.out.println(data.length + " bytes") ;
-        final int remain = data.length % 4;
-        /*
-         * a write(2) on Sparc/PA-RISC would write the MSB first, on Linux the
-         * LSB; by some kind of coincidence, we can stay with the byte order
-         * known from the original C version of the algorithm.
-         */
-        for (int i = 0; i < len; i += 2) {
-            /*
-             * The four bytes in this block handled by a single 'i' are each
-             * signed (-128 to 127) in Java and need to be masked indivdually to
-             * avoid sign extension /propagation.
-             */
-            hi += data[2 * i] << 8 & 0xff00L | data[2 * i + 1] & 0xffL;
-            lo += data[2 * i + 2] << 8 & 0xff00L | data[2 * i + 3] & 0xffL;
-        }
-
-        /*
-         * The following three cases actually cannot happen since FITS records
-         * are multiples of 2880 bytes.
-         */
-        if (remain >= 1) {
-            hi += data[2 * len] << 8 & 0xff00L;
-        }
-        if (remain >= 2) {
-            hi += data[2 * len + 1] & 0xffL;
-        }
-        if (remain >= 3) {
-            lo += data[2 * len + 2] << 8 & 0xff00L;
-        }
-
-        long hicarry = hi >>> 16;
-        long locarry = lo >>> 16;
-        while (hicarry != 0 || locarry != 0) {
-            hi = (hi & 0xffffL) | locarry;
-            lo = (lo & 0xffffL) | hicarry;
-            hicarry = hi >>> 16;
-            locarry = lo >>> 16;
-        }
-        return (hi << 16) | lo;
-    }
-
-    /**
-     * Encode a 32bit integer according to the Seaman-Pence proposal.
-     * 
-     * @param c
-     *            the checksum previously calculated
-     * @return the encoded string of 16 bytes.
-     * @see http
-     *      ://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/
-     *      node14.html#SECTION00035000000000000000
-     * @author R J Mathar
-     * @since 2005-10-05
-     */
-    private static String checksumEnc(final long c, final boolean compl) {
-        byte[] asc = new byte[16];
-        final int[] exclude = {
-            0x3a,
-            0x3b,
-            0x3c,
-            0x3d,
-            0x3e,
-            0x3f,
-            0x40,
-            0x5b,
-            0x5c,
-            0x5d,
-            0x5e,
-            0x5f,
-            0x60
-        };
-        final long[] mask = {
-            0xff000000L,
-            0xff0000L,
-            0xff00L,
-            0xffL
-        };
-        final int offset = 0x30; /* ASCII 0 (zero */
-        final long value = compl ? ~c : c;
-        for (int i = 0; i < 4; i++) {
-            final int byt = (int) ((value & mask[i]) >>> 24 - 8 * i); // each
-                                                                      // byte
-                                                                      // becomes
-                                                                      // four
-            final int quotient = byt / 4 + offset;
-            final int remainder = byt % 4;
-            int[] ch = new int[4];
-            for (int j = 0; j < 4; j++) {
-                ch[j] = quotient;
-            }
-
-            ch[0] += remainder;
-            boolean check = true;
-            while (check) // avoid ASCII punctuation
-            {
-                check = false;
-                for (int element : exclude) {
-                    for (int j = 0; j < 4; j += 2) {
-                        if (ch[j] == element || ch[j + 1] == element) {
-                            ch[j]++;
-                            ch[j + 1]--;
-                            check = true;
-                        }
-                    }
-                }
-            }
-
-            for (int j = 0; j < 4; j++) // assign the bytes
-            {
-                asc[4 * j + i] = (byte) ch[j];
-            }
-        }
-        // shift the bytes 1 to the right circularly.
-        String resul = AsciiFuncs.asciiString(asc, 15, 1);
-        return resul.concat(AsciiFuncs.asciiString(asc, 0, 15));
-    }
 
     /**
      * @return a newly created HDU from the given Data.
@@ -306,79 +167,6 @@ public class Fits implements Closeable {
      */
     public static BasicHDU<?> makeHDU(Object o) throws FitsException {
         return FitsFactory.HDUFactory(o);
-    }
-
-    /**
-     * Add or update the CHECKSUM keyword. by R J Mathar
-     * 
-     * @param hdu
-     *            the HDU to be updated.
-     * @throws FitsException
-     *             if the operation failed
-     * @throws IOException
-     *             if the underlying stream failed
-     * @since 2005-10-05
-     */
-    public static void setChecksum(BasicHDU<?> hdu) throws FitsException, IOException {
-        /*
-         * the next line with the delete is needed to avoid some unexpected
-         * problems with non.tam.fits.Header.checkCard() which otherwise says it
-         * expected PCOUNT and found DATE.
-         */
-        Header hdr = hdu.getHeader();
-        hdr.deleteKey("CHECKSUM");
-        /*
-         * jThis would need org.nevec.utils.DateUtils compiled before
-         * org.nevec.prima.fits .... final String doneAt =
-         * DateUtils.dateToISOstring(0) ; We need to save the value of the
-         * comment string because this is becoming part of the checksum
-         * calculated and needs to be re-inserted again - with the same string -
-         * when the second/final call to addValue() is made below.
-         */
-        final String doneAt = HeaderCommentsMap.getComment("fits:checksum:1");
-        hdr.addValue("CHECKSUM", "0000000000000000", doneAt);
-
-        /*
-         * Convert the entire sequence of 2880 byte header cards into a byte
-         * array. The main benefit compared to the C implementations is that we
-         * do not need to worry about the particular byte order on machines
-         * (Linux/VAX/MIPS vs Hp-UX, Sparc...) supposed that the correct
-         * implementation is in the write() interface.
-         */
-        ByteArrayOutputStream hduByteImage = new ByteArrayOutputStream();
-        BufferedDataOutputStream bdos = new BufferedDataOutputStream(hduByteImage);
-
-        // DATASUM keyword.
-        hdu.getData().write(bdos);
-        bdos.flush();
-        byte[] data = hduByteImage.toByteArray();
-        checksum(data);
-        hdu.write(new BufferedDataOutputStream(hduByteImage));
-        long csd = checksum(data);
-        hdu.getHeader().addValue("DATASUM", "" + csd, "Checksum of data");
-
-        // We already have the checsum of the data. Lets compute it for
-        // the header.
-        hduByteImage.reset();
-        hdu.getHeader().write(bdos);
-        bdos.flush();
-        data = hduByteImage.toByteArray();
-
-        long csh = checksum(data);
-
-        long cshdu = csh + csd;
-        // If we had a carry it should go into the
-        // beginning.
-        while ((cshdu & 0xFFFFFFFF00000000L) != 0) {
-            cshdu = (cshdu & 0xFFFFFFFFL) + 1;
-        }
-        /*
-         * This time we do not use a deleteKey() to ensure that the keyword is
-         * replaced "in place". Note that the value of the checksum is actually
-         * independent to a permutation of the 80-byte records within the
-         * header.
-         */
-        hdr.addValue("CHECKSUM", checksumEnc(cshdu, true), doneAt);
     }
 
     /**
@@ -1049,5 +837,32 @@ public class Fits implements Closeable {
         if (dataStr != null) {
             this.dataStr.close();
         }
+    }
+
+    /**
+     * set the checksum of a hdu.
+     * 
+     * @param hdu
+     *            the hdu to add a checksum
+     * @throws FitsException
+     *             the checksum could not be added to the header
+     * @deprecated use {@link FitsCheckSum#setChecksum(BasicHDU)}
+     */
+    @Deprecated
+    public static void setChecksum(BasicHDU<?> hdu) throws FitsException {
+        FitsCheckSum.setChecksum(hdu);
+    }
+
+    /**
+     * calculate the checksum for the block of data
+     * 
+     * @param data
+     *            the data to create the checksum for
+     * @return the checksum
+     * @deprecated use {@link FitsCheckSum#checksum(byte[])}
+     */
+    @Deprecated
+    public static long checksum(final byte[] data) {
+        return FitsCheckSum.checksum(data);
     }
 }

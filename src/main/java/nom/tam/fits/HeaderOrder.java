@@ -1,5 +1,7 @@
 package nom.tam.fits;
 
+import nom.tam.fits.header.Standard;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -167,9 +169,9 @@ public class HeaderOrder implements java.util.Comparator<String> {
 
     /** Find the index for NAXISn keywords */
     private int naxisN(String key) {
-
-        if (key.length() > 5 && key.substring(0, 5).equals("NAXIS")) {
-            for (int i = 5; i < key.length(); i += 1) {
+        int startOfNumber = Standard.NAXIS.key().length();
+        if (key.length() > startOfNumber && key.substring(0, startOfNumber).equals(Standard.NAXIS.key())) {
+            for (int i = startOfNumber; i < key.length(); i += 1) {
 
                 boolean number = true;
                 char c = key.charAt(i);
@@ -178,7 +180,7 @@ public class HeaderOrder implements java.util.Comparator<String> {
                     break;
                 }
                 if (number) {
-                    return Integer.parseInt(key.substring(5));
+                    return Integer.parseInt(key.substring(startOfNumber));
                 }
             }
         }

@@ -54,9 +54,11 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.UndefinedData;
 import nom.tam.fits.UndefinedHDU;
+import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.fits.utilities.FitsReader;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
@@ -451,4 +453,23 @@ public class BaseFitsTest {
         constrs[0].setAccessible(true);
         constrs[0].newInstance();
     }
+
+    @Test
+    public void testFitsCheckSumPrivate() throws Exception {
+        Constructor<?>[] constrs = FitsCheckSum.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+
+    @Test
+    public void testHeaderCommentsMapPrivate() throws Exception {
+        Constructor<?>[] constrs = HeaderCommentsMap.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+
 }

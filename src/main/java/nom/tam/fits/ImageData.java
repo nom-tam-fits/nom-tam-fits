@@ -38,6 +38,7 @@ import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 
 /**
@@ -57,9 +58,9 @@ public class ImageData extends Data {
     /** This class describes an array */
     protected class ArrayDesc {
 
-        int[] dims;
+        private int[] dims;
 
-        Class<?> type;
+        private Class<?> type;
 
         ArrayDesc(int[] dims, Class<?> type) {
             this.dims = dims;
@@ -84,7 +85,7 @@ public class ImageData extends Data {
     }
 
     /** The size of the data */
-    long byteSize;
+    private long byteSize;
 
     /**
      * The actual array of data. This is normally a multi-dimensional primitive
@@ -92,10 +93,10 @@ public class ImageData extends Data {
      * be filled by during the read call when a non-random access device is
      * used.
      */
-    Object dataArray;
+    private Object dataArray;
 
     /** A description of what the data should look like */
-    ArrayDesc dataDescription;
+    private ArrayDesc dataDescription;
 
     /** The image tiler associated with this image. */
     private StandardImageTiler tiler;
@@ -283,7 +284,7 @@ public class ImageData extends Data {
             this.byteSize *= cdim;
             dims[ndim - i - 1] = cdim;
         }
-        this.byteSize *= Math.abs(bitpix) / 8;
+        this.byteSize *= Math.abs(bitpix) / FitsIO.BITS_OF_1_BYTE;
         if (ndim == 0) {
             this.byteSize = 0;
         }
