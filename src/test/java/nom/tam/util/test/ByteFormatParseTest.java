@@ -466,4 +466,46 @@ public class ByteFormatParseTest {
         }
         return result;
     }
+
+    @Test(expected = FormatException.class)
+    public void testLongCaseError() throws Exception {
+        new ByteParser("  A".getBytes()).getLong(10);
+    }
+
+    @Test(expected = FormatException.class)
+    public void testLongCaseFillFields1() throws Exception {
+        ByteParser byteParser = new ByteParser("  123456 A ".getBytes());
+        byteParser.setFillFields(true);
+        byteParser.getLong(10);
+    }
+
+    @Test
+    public void testLongCaseFillFields2() throws Exception {
+        ByteParser byteParser = new ByteParser("  123456  ".getBytes());
+        byteParser.setFillFields(true);
+        assertEquals(123456L, byteParser.getLong(10));
+        assertEquals(10, byteParser.getNumberLength());
+        assertEquals(10, byteParser.getOffset());
+    }
+
+    @Test(expected = FormatException.class)
+    public void testIntCaseError() throws Exception {
+        new ByteParser("  A".getBytes()).getInt(6);
+    }
+
+    @Test(expected = FormatException.class)
+    public void testIntCaseFillFields1() throws Exception {
+        ByteParser byteParser = new ByteParser("  123A ".getBytes());
+        byteParser.setFillFields(true);
+        byteParser.getInt(6);
+    }
+
+    @Test
+    public void testIntCaseFillFields2() throws Exception {
+        ByteParser byteParser = new ByteParser("  123  ".getBytes());
+        byteParser.setFillFields(true);
+        assertEquals(123, byteParser.getInt(6));
+        assertEquals(6, byteParser.getNumberLength());
+        assertEquals(6, byteParser.getOffset());
+    }
 }

@@ -94,11 +94,11 @@ public class ByteParser {
 
         if (this.input[this.offset] == '+') {
             this.foundSign = true;
-            this.offset += 1;
+            this.offset++;
             return 1;
         } else if (this.input[this.offset] == '-') {
             this.foundSign = true;
-            this.offset += 1;
+            this.offset++;
             return -1;
         }
 
@@ -124,8 +124,8 @@ public class ByteParser {
 
             number *= 10;
             number += this.input[this.offset] - '0';
-            this.offset += 1;
-            length -= 1;
+            this.offset++;
+            length--;
         }
         this.numberLength = this.offset - startOffset;
         return number;
@@ -163,8 +163,8 @@ public class ByteParser {
             this.offset = startOffset;
             throw new FormatException("Invalid boolean value");
         }
-        this.offset += 1;
-        length -= 1;
+        this.offset++;
+        length--;
 
         if (this.fillFields && length > 0) {
             if (isWhite(length)) {
@@ -224,7 +224,7 @@ public class ByteParser {
 
         double mantissaSign = checkSign();
         if (this.foundSign) {
-            length -= 1;
+            length--;
         }
 
         // Look for the special strings NaN, Inf,
@@ -263,8 +263,8 @@ public class ByteParser {
             // Check for fractional values after decimal
             if (length > 0 && this.input[this.offset] == '.') {
 
-                this.offset += 1;
-                length -= 1;
+                this.offset++;
+                length--;
 
                 double numerator = getBareInteger(length);
                 if (numerator > 0) {
@@ -286,12 +286,12 @@ public class ByteParser {
             // 'D' for the exponent
             // indicator.
             if (length > 0 && (this.input[this.offset] == 'e' || this.input[this.offset] == 'E' || this.input[this.offset] == 'd' || this.input[this.offset] == 'D')) {
-                this.offset += 1;
-                length -= 1;
+                this.offset++;
+                length--;
                 if (length > 0) {
                     int sign = checkSign();
                     if (this.foundSign) {
-                        length -= 1;
+                        length--;
                     }
 
                     int exponent = (int) getBareInteger(length);
@@ -374,13 +374,13 @@ public class ByteParser {
 
         int sign = checkSign();
         if (this.foundSign) {
-            length -= 1;
+            length--;
         }
 
         while (length > 0 && this.input[this.offset] >= '0' && this.input[this.offset] <= '9') {
             number = number * 10 + this.input[this.offset] - '0';
-            this.offset += 1;
-            length -= 1;
+            this.offset++;
+            length--;
             error = false;
         }
 
@@ -427,14 +427,14 @@ public class ByteParser {
 
         long sign = checkSign();
         if (this.foundSign) {
-            length -= 1;
+            length--;
         }
 
         while (length > 0 && this.input[this.offset] >= '0' && this.input[this.offset] <= '9') {
             number = number * 10 + this.input[this.offset] - '0';
             error = false;
-            this.offset += 1;
-            length -= 1;
+            this.offset++;
+            length--;
         }
 
         if (error) {
@@ -551,7 +551,7 @@ public class ByteParser {
     public int skipWhite(int length) {
 
         int i;
-        for (i = 0; i < length; i += 1) {
+        for (i = 0; i < length; i++) {
             if (this.input[this.offset + i] != ' ' && this.input[this.offset + i] != '\t' && this.input[this.offset + i] != '\n' && this.input[this.offset + i] != '\r') {
                 break;
             }

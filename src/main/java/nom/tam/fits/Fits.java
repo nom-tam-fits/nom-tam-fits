@@ -268,9 +268,12 @@ public class Fits implements Closeable {
      *            stream.
      * @throws FitsException
      *             if the operation failed
+     * @deprecated use {@link #Fits(InputStream)} compression is auto detected.
      */
+    @Deprecated
     public Fits(InputStream str, boolean compressed) throws FitsException {
         this(str);
+        LOG.log(Level.INFO, "compresseion ignored, will be autodetected. was set to " + compressed);
     }
 
     /**
@@ -369,9 +372,12 @@ public class Fits implements Closeable {
      *            Compression flag, ignored.
      * @throws FitsException
      *             Thrown if unable to use the specified URL.
+     * @deprecated use {@link #Fits(InputStream)} compression is auto detected.
      */
+    @Deprecated
     public Fits(URL myURL, boolean compressed) throws FitsException {
         this(myURL);
+        LOG.log(Level.INFO, "compresseion ignored, will be autodetected. was set to " + compressed);
     }
 
     /**
