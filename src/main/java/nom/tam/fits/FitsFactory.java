@@ -141,6 +141,7 @@ public final class FitsFactory {
         return null;
     }
 
+    // CHECKSTYLE:OFF
     /**
      * @return Given Header and data objects return the appropriate type of HDU.
      * @param hdr
@@ -153,14 +154,14 @@ public final class FitsFactory {
      *             if the operation failed
      * @deprecated use {@link #hduFactory(Header, Data)} instead
      */
-    @SuppressWarnings("unchecked")
     @Deprecated
-    // CSOFF: MethodName
     public static <DataClass extends Data> BasicHDU<DataClass> HDUFactory(Header hdr, DataClass d) throws FitsException {
-        // CSON: MethodName
         return hduFactory(hdr, d);
     }
 
+    // CHECKSTYLE:ON
+
+    // CHECKSTYLE:OFF
     /**
      * @return Given an object, create the appropriate FITS header to describe
      *         it.
@@ -171,11 +172,11 @@ public final class FitsFactory {
      * @deprecated use {@link #hduFactory(Object)} instead
      */
     @Deprecated
-    // CSOFF: MethodName
     public static BasicHDU<?> HDUFactory(Object o) throws FitsException {
-        // CSON: MethodName
         return hduFactory(o);
     }
+
+    // CHECKSTYLE:ON
 
     /**
      * @return Given an object, create the appropriate FITS header to describe

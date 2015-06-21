@@ -16,11 +16,7 @@
 
 <module name="Checker">
 
-	<module name="SuppressionCommentFilter">
-		<property name="offCommentFormat" value="CSOFF\: ([\w\|]+)" />
-		<property name="onCommentFormat" value="CSON\: ([\w\|]+)" />
-		<property name="checkFormat" value="$1" />
-	</module>
+	<module name="SuppressionCommentFilter"/>
 	
 	<!-- If you set the basedir property below, then all reported file names 
 		will be relative to the specified directory. See http://checkstyle.sourceforge.net/5.x/config.html#Checker 

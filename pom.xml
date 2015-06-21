@@ -419,7 +419,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.2</version>
+				<version>3.4</version>
 				<configuration>
 					<linkXref>true</linkXref>
 					<sourceEncoding>UTF-8</sourceEncoding>
@@ -436,7 +436,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.0</version>
+				<version>3.0.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
