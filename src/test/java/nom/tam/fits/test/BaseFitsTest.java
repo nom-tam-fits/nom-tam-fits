@@ -296,7 +296,7 @@ public class BaseFitsTest {
             Assert.assertEquals(header.getCard(index), newHeader.getCard(index));
         }
 
-        fits1.addHDU(FitsFactory.HDUFactory(newHeader, data));
+        fits1.addHDU(FitsFactory.hduFactory(newHeader, data));
         BufferedDataOutputStream os = new BufferedDataOutputStream(new FileOutputStream("target/UndefindedHDU3.fits"));
         fits1.write(os);
         os.close();
@@ -322,7 +322,7 @@ public class BaseFitsTest {
         Header header = new Header();
         header.pointToData(data);
 
-        fits1.addHDU(FitsFactory.HDUFactory(header, data));
+        fits1.addHDU(FitsFactory.hduFactory(header, data));
         BufferedDataOutputStream os = new BufferedDataOutputStream(new FileOutputStream("target/UndefindedHDU4.fits"));
         fits1.write(os);
         os.close();
@@ -350,7 +350,7 @@ public class BaseFitsTest {
         head.addValue("NAXIS1", 1000, null);
         head.addValue("PCOUNT", 0, null);
         head.addValue("GCOUNT", 2, null);
-        UndefinedHDU hdu = (UndefinedHDU) FitsFactory.HDUFactory(head);
+        UndefinedHDU hdu = (UndefinedHDU) FitsFactory.hduFactory(head);
         byte[] data = (byte[]) hdu.getData().getData();
         Assert.assertEquals(2000, data.length);
         Arrays.fill(data, (byte) 1);

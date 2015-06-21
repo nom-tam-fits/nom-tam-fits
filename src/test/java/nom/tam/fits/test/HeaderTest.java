@@ -408,7 +408,7 @@ public class HeaderTest {
     public void testHeaderCommentsDrift() throws Exception {
         byte[][] z = new byte[4][4];
         Fits f = new Fits();
-        BasicHDU hdu = FitsFactory.HDUFactory(z);
+        BasicHDU hdu = FitsFactory.hduFactory(z);
         f.addHDU(hdu);
         Cursor<String, HeaderCard> iter = hdu.getHeader().iterator();
         iter.end();
@@ -489,7 +489,7 @@ public class HeaderTest {
     public void testUpdateHeaderComments() throws Exception {
         byte[][] z = new byte[4][4];
         Fits f = new Fits();
-        f.addHDU(FitsFactory.HDUFactory(z));
+        f.addHDU(FitsFactory.hduFactory(z));
         BufferedFile bf = new BufferedFile("target/hx1.fits", "rw");
         f.write(bf);
         bf.close();
@@ -502,7 +502,7 @@ public class HeaderTest {
         HeaderCommentsMap.updateComment("header:bitpix:1", "A byte array");
         HeaderCommentsMap.deleteComment("header:simple:1");
         f = new Fits();
-        f.addHDU(FitsFactory.HDUFactory(z));
+        f.addHDU(FitsFactory.hduFactory(z));
         bf = new BufferedFile("target/hx2.fits", "rw");
         f.write(bf);
         bf.close();

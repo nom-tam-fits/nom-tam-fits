@@ -137,8 +137,6 @@ public final class FitsCheckSum {
      * @param compl
      *            complement the value
      * @return the encoded string of 16 bytes.
-     * @author R J Mathar
-     * @since 2005-10-05
      */
     public static String checksumEnc(final long c, final boolean compl) {
         byte[] asc = new byte[CHECKSUM_STRING_SIZE];

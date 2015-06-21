@@ -369,7 +369,7 @@ public class AsciiTableTest {
             }
         };
 
-        BasicHDU ahdu = FitsFactory.HDUFactory(o);
+        BasicHDU ahdu = FitsFactory.hduFactory(o);
         Fits f = new Fits();
         f.addHDU(ahdu);
         f.write(bf);

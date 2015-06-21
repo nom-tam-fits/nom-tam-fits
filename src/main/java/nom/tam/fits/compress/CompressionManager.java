@@ -37,12 +37,25 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ServiceLoader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.fits.FitsException;
 
 public final class CompressionManager {
 
+    private static final String BZIP2_EXTENTION = ".bz2";
+
+    private static final String COMPRESS_EXTENTION = ".Z";
+
+    private static final String GZIP_EXTENTION = ".gz";
+
     public static final int ONE_MEGABYTE = 1024 * 1024;
+
+    /**
+     * logger to log to.
+     */
+    private static final Logger LOG = Logger.getLogger(CompressionManager.class.getName());
 
     private CompressionManager() {
     }
@@ -114,6 +127,7 @@ public final class CompressionManager {
                 try {
                     fis.close();
                 } catch (IOException e) {
+                    LOG.log(Level.FINEST, "could not close stream", e);
                 }
             }
         }
@@ -138,7 +152,9 @@ public final class CompressionManager {
         }
 
         int len = filename.length();
-        return len > 2 && (filename.substring(len - 3).equalsIgnoreCase(".gz") || filename.substring(len - 2).equals(".Z") || filename.substring(len - 4).equals(".bz2"));
+        return len > 2 && (filename.substring(len - GZIP_EXTENTION.length()).equalsIgnoreCase(GZIP_EXTENTION) || //
+                filename.substring(len - COMPRESS_EXTENTION.length()).equals(COMPRESS_EXTENTION) || //
+                filename.substring(len - BZIP2_EXTENTION.length()).equals(BZIP2_EXTENTION));
     }
 
     private static ICompressProvider selectCompressionProvider(int mag1, int mag2) {

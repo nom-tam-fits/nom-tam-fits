@@ -68,7 +68,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
      *            An open output stream.
      */
     public BufferedDataOutputStream(OutputStream o) {
-        super(o, 32768);
+        super(o, DEFAULT_BUFFER_SIZE);
     }
 
     /**

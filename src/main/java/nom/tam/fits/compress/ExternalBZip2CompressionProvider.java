@@ -39,6 +39,8 @@ import nom.tam.fits.FitsException;
 
 public class ExternalBZip2CompressionProvider implements ICompressProvider {
 
+    private static final int PRIORITY = 10;
+
     private static final Logger LOG = Logger.getLogger(ExternalBZip2CompressionProvider.class.getName());
 
     private InputStream bunzipper(final InputStream compressed) throws IOException, FitsException {
@@ -73,7 +75,7 @@ public class ExternalBZip2CompressionProvider implements ICompressProvider {
 
     @Override
     public int priority() {
-        return 10;
+        return PRIORITY;
     }
 
     @Override

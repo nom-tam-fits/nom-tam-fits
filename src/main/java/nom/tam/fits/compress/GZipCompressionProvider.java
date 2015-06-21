@@ -37,6 +37,12 @@ import java.util.zip.GZIPInputStream;
 
 public class GZipCompressionProvider implements ICompressProvider {
 
+    private static final int GZIP_MAGIC_BYTE1 = 0x1f;
+
+    private static final int GZIP_MAGIC_BYTE2 = 0x8b;
+
+    private static final int PRIORITY = 5;
+
     @Override
     public InputStream decompress(InputStream in) throws IOException {
         return new GZIPInputStream(in);
@@ -44,12 +50,12 @@ public class GZipCompressionProvider implements ICompressProvider {
 
     @Override
     public int priority() {
-        return 5;
+        return PRIORITY;
     }
 
     @Override
     public boolean provides(int mag1, int mag2) {
-        return mag1 == 0x1f && mag2 == 0x8b;
+        return mag1 == GZIP_MAGIC_BYTE1 && mag2 == GZIP_MAGIC_BYTE2;
     }
 
 }

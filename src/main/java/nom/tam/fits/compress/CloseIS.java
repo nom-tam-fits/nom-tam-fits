@@ -116,7 +116,8 @@ public class CloseIS extends FilterInputStream {
     public int read() throws IOException {
         int result = 0;
         try {
-            return (result = super.read());
+            result = super.read();
+            return result;
         } catch (IOException e) {
             result = -1;
             throw e;
@@ -153,7 +154,8 @@ public class CloseIS extends FilterInputStream {
     public int read(byte[] b, int off, int len) throws IOException {
         int result = 0;
         try {
-            return (result = super.read(b, off, len));
+            result = super.read(b, off, len);
+            return result;
         } catch (IOException e) {
             throw e;
         } finally {

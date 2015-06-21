@@ -210,7 +210,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      *            primitive array.
      * @param o
      *            The tile to be filled. This is a simple primitive array.
-     * @param dims
+     * @param newDims
      *            The dimensions of the full image.
      * @param corners
      *            The indices of the corner of the image.
@@ -219,9 +219,9 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @throws IOException
      *             if the underlying stream failed
      */
-    protected void fillTile(Object data, Object o, int[] dims, int[] corners, int[] lengths) throws IOException {
+    protected void fillTile(Object data, Object o, int[] newDims, int[] corners, int[] lengths) throws IOException {
 
-        int n = dims.length;
+        int n = newDims.length;
         int[] posits = new int[n];
         int baseLength = ArrayFuncs.getBaseLength(o);
         int segment = lengths[n - 1];
@@ -240,8 +240,8 @@ public abstract class StandardImageTiler implements ImageTiler {
             // in the last index (in conjunction
             // with other tests)
 
-            int mx = dims.length - 1;
-            boolean validSegment = posits[mx] + lengths[mx] >= 0 && posits[mx] < dims[mx];
+            int mx = newDims.length - 1;
+            boolean validSegment = posits[mx] + lengths[mx] >= 0 && posits[mx] < newDims[mx];
 
             // Don't do anything for the current
             // segment if anything but the
@@ -249,7 +249,7 @@ public abstract class StandardImageTiler implements ImageTiler {
 
             if (validSegment) {
                 for (int i = 0; i < mx; i += 1) {
-                    if (posits[i] < 0 || posits[i] >= dims[i]) {
+                    if (posits[i] < 0 || posits[i] >= newDims[i]) {
                         validSegment = false;
                         break;
                     }
@@ -260,7 +260,7 @@ public abstract class StandardImageTiler implements ImageTiler {
                 if (data != null) {
                     fillMemData(data, posits, segment, o, outputOffset, 0);
                 } else {
-                    int offset = getOffset(dims, posits) * baseLength;
+                    int offset = getOffset(newDims, posits) * baseLength;
 
                     // Point to offset at real beginning
                     // of segment
@@ -272,8 +272,8 @@ public abstract class StandardImageTiler implements ImageTiler {
                         actualOutput -= posits[mx];
                         actualLen += posits[mx];
                     }
-                    if (posits[mx] + segment > dims[mx]) {
-                        actualLen -= posits[mx] + segment - dims[mx];
+                    if (posits[mx] + segment > newDims[mx]) {
+                        actualLen -= posits[mx] + segment - newDims[mx];
                     }
                     fillFileData(o, actualOffset, actualOutput, actualLen);
                 }

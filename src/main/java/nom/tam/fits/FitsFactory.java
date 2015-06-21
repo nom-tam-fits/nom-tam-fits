@@ -126,7 +126,7 @@ public final class FitsFactory {
      *             if the operation failed
      */
     @SuppressWarnings("unchecked")
-    public static <DataClass extends Data> BasicHDU<DataClass> HDUFactory(Header hdr, DataClass d) throws FitsException {
+    public static <DataClass extends Data> BasicHDU<DataClass> hduFactory(Header hdr, DataClass d) throws FitsException {
         if (d instanceof ImageData) {
             return (BasicHDU<DataClass>) new ImageHDU(hdr, d);
         } else if (d instanceof RandomGroupsData) {
@@ -142,6 +142,42 @@ public final class FitsFactory {
     }
 
     /**
+     * @return Given Header and data objects return the appropriate type of HDU.
+     * @param hdr
+     *            the header of the date
+     * @param d
+     *            the data
+     * @param <DataClass>
+     *            the class of the data
+     * @throws FitsException
+     *             if the operation failed
+     * @deprecated use {@link #hduFactory(Header, Data)} instead
+     */
+    @SuppressWarnings("unchecked")
+    @Deprecated
+    // CSOFF: MethodName
+    public static <DataClass extends Data> BasicHDU<DataClass> HDUFactory(Header hdr, DataClass d) throws FitsException {
+        // CSON: MethodName
+        return hduFactory(hdr, d);
+    }
+
+    /**
+     * @return Given an object, create the appropriate FITS header to describe
+     *         it.
+     * @param o
+     *            The object to be described.
+     * @throws FitsException
+     *             if the parameter could not be converted to a hdu.
+     * @deprecated use {@link #hduFactory(Object)} instead
+     */
+    @Deprecated
+    // CSOFF: MethodName
+    public static BasicHDU<?> HDUFactory(Object o) throws FitsException {
+        // CSON: MethodName
+        return hduFactory(o);
+    }
+
+    /**
      * @return Given an object, create the appropriate FITS header to describe
      *         it.
      * @param o
@@ -149,7 +185,7 @@ public final class FitsFactory {
      * @throws FitsException
      *             if the parameter could not be converted to a hdu.
      */
-    public static BasicHDU<?> HDUFactory(Object o) throws FitsException {
+    public static BasicHDU<?> hduFactory(Object o) throws FitsException {
         Data d;
         Header h;
 
@@ -176,7 +212,7 @@ public final class FitsFactory {
             throw new FitsException("Invalid data presented to HDUFactory");
         }
 
-        return HDUFactory(h, d);
+        return hduFactory(h, d);
     }
 
     /**

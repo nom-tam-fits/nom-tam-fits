@@ -220,7 +220,7 @@ public class BinaryTableTest {
         }
         Header hdr = new Header();
         tab.fillHeader(hdr);
-        BasicHDU hdu = FitsFactory.HDUFactory(hdr, tab);
+        BasicHDU hdu = FitsFactory.hduFactory(hdr, tab);
         Fits f = new Fits();
         f.addHDU(hdu);
         BufferedFile bf = new BufferedFile("target/bt12.fits", "rw");

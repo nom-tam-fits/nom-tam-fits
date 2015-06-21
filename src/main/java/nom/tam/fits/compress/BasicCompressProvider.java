@@ -39,6 +39,12 @@ import nom.tam.fits.FitsException;
 
 public class BasicCompressProvider implements ICompressProvider {
 
+    private static final int PRIORITY = 10;
+
+    private static final int COMPRESS_MAGIC_BYTE1 = 0x1f;
+
+    private static final int COMPRESS_MAGIC_BYTE2 = 0x9d;
+
     private static final Logger LOG = Logger.getLogger(BasicCompressProvider.class.getName());
 
     private InputStream compressInputStream(final InputStream compressed) throws IOException, FitsException {
@@ -46,7 +52,7 @@ public class BasicCompressProvider implements ICompressProvider {
             Process proc = new ProcessBuilder("uncompress", "-c").start();
             return new CloseIS(proc, compressed);
         } catch (Exception e) {
-            ICompressProvider next = CompressionManager.nextCompressionProvider(0x1f, 0x9d, this);
+            ICompressProvider next = CompressionManager.nextCompressionProvider(COMPRESS_MAGIC_BYTE1, COMPRESS_MAGIC_BYTE2, this);
             if (next != null) {
                 LOG.warning("Error initiating .Z decompression: " + e.getMessage() + " trieing alternative decompressor");
                 return next.decompress(compressed);
@@ -62,11 +68,11 @@ public class BasicCompressProvider implements ICompressProvider {
 
     @Override
     public int priority() {
-        return 10;
+        return PRIORITY;
     }
 
     @Override
     public boolean provides(int mag1, int mag2) {
-        return mag1 == 0x1f && mag2 == 0x9d;
+        return mag1 == COMPRESS_MAGIC_BYTE1 && mag2 == COMPRESS_MAGIC_BYTE2;
     }
 }

@@ -70,7 +70,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         try {
             // Update suggested by Laurent Bourges
             ImageData img = new ImageData((Object) null);
-            return FitsFactory.HDUFactory(ImageHDU.manufactureHeader(img), img);
+            return FitsFactory.hduFactory(ImageHDU.manufactureHeader(img), img);
         } catch (FitsException e) {
             LOG.log(Level.SEVERE, "Impossible exception in getDummyHDU", e);
             return null;

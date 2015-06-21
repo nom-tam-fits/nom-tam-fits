@@ -56,28 +56,33 @@ package nom.tam.util;
  */
 public final class ByteFormatter {
 
-    private static final double I_LOG_10 = 1. / Math.log(10);
+    private static final double DEFAULT_SIMPLE_MAX = 1.e6;
+
+    private static final double DEFAULT_SIMPLE_MIN = 1.e-3;
+
+    private static final int TEMP_BUFFER_SIZE = 32;
+
+    private static final int TEN = 10;
+
+    private static final double I_LOG_10 = 1. / Math.log(TEN);
 
     /**
      * Powers of 10. We overextend on both sides. These should perhaps be
      * tabulated rather than computed though it may be faster to calculate them
      * than to read in the extra bytes in the class file.
      */
-    private static final double TEN_POW[];
+    private static final double[] TEN_POW;
 
     /** What index of tenpow is 10^0 */
     private static final int ZERO_POW;
 
     static { // Static initializer
-
         int min = (int) Math.floor((int) (Math.log(Double.MIN_VALUE) * ByteFormatter.I_LOG_10));
         int max = (int) Math.floor((int) (Math.log(Double.MAX_VALUE) * ByteFormatter.I_LOG_10));
         max += 1;
-
         TEN_POW = new double[max - min + 1];
-
         for (int i = 0; i < ByteFormatter.TEN_POW.length; i += 1) {
-            ByteFormatter.TEN_POW[i] = Math.pow(10, i + min);
+            ByteFormatter.TEN_POW[i] = Math.pow(TEN, i + min);
         }
         ZERO_POW = -min;
     }
@@ -86,7 +91,7 @@ public final class ByteFormatter {
      * Digits. We could handle other bases by extending or truncating this list
      * and changing the division by 10 (and it's factors) at various locations.
      */
-    private static final byte[] digits = {
+    private static final byte[] DIGITS = {
         (byte) '0',
         (byte) '1',
         (byte) '2',
@@ -100,9 +105,9 @@ public final class ByteFormatter {
     };
 
     /** Internal buffers used in formatting fields */
-    private final byte[] tbuf1 = new byte[32];
+    private final byte[] tbuf1 = new byte[TEMP_BUFFER_SIZE];
 
-    private final byte[] tbuf2 = new byte[32];
+    private final byte[] tbuf2 = new byte[TEMP_BUFFER_SIZE];
 
     /** Should we truncate overflows or just run over limit */
     private boolean truncateOnOverflow = true;
@@ -118,10 +123,10 @@ public final class ByteFormatter {
     private boolean align = false;
 
     /** Minimum magnitude to print in non-scientific notation. */
-    double simpleMin = 1.e-3;
+    private double simpleMin = DEFAULT_SIMPLE_MIN;
 
     /** Maximum magnitude to print in non-scientific notation. */
-    double simpleMax = 1.e6;
+    private double simpleMax = DEFAULT_SIMPLE_MAX;
 
     /**
      * Fill the buffer with blank-bytes to align a field.
@@ -184,7 +189,7 @@ public final class ByteFormatter {
 
             boolean oldAlign = this.align;
             this.align = false;
-            lexp = format(exp, this.tbuf2, 0, 32);
+            lexp = format(exp, this.tbuf2, 0, TEMP_BUFFER_SIZE);
             this.align = oldAlign;
 
             minSize = lexp + 2; // e.g., 2e-12
@@ -258,7 +263,7 @@ public final class ByteFormatter {
                     }
                 }
                 exp += 1;
-                lexp = format(exp, this.tbuf2, 0, 32);
+                lexp = format(exp, this.tbuf2, 0, TEMP_BUFFER_SIZE);
             }
             buf[off] = (byte) 'E';
             off += 1;
@@ -416,7 +421,7 @@ public final class ByteFormatter {
         // Get a decimal mantissa.
         boolean oldAlign = this.align;
         this.align = false;
-        int ndig = format(numb, this.tbuf1, 0, 32);
+        int ndig = format(numb, this.tbuf1, 0, TEMP_BUFFER_SIZE);
         this.align = oldAlign;
 
         // Now format the double.
@@ -532,7 +537,7 @@ public final class ByteFormatter {
         // Get a decimal mantissa.
         boolean oldAlign = this.align;
         this.align = false;
-        int ndig = format(numb, this.tbuf1, 0, 32);
+        int ndig = format(numb, this.tbuf1, 0, TEMP_BUFFER_SIZE);
         this.align = oldAlign;
 
         // Now format the float.
@@ -574,7 +579,7 @@ public final class ByteFormatter {
 
         // Special case
         if (val == Integer.MIN_VALUE) {
-            if (len > 10 || !this.truncateOnOverflow && buf.length - off > 10) {
+            if (len > TEN || !this.truncateOnOverflow && buf.length - off > TEN) {
                 return format("-2147483648", buf, off, len);
             } else {
                 truncationFiller(buf, off, len);
@@ -588,11 +593,11 @@ public final class ByteFormatter {
         // Otherwise we need to use an intermediary buffer.
 
         int ndig = 1;
-        int dmax = 10;
+        int dmax = TEN;
 
-        while (ndig < 10 && pos >= dmax) {
+        while (ndig < TEN && pos >= dmax) {
             ndig += 1;
-            dmax *= 10;
+            dmax *= TEN;
         }
 
         if (val < 0) {
@@ -617,9 +622,9 @@ public final class ByteFormatter {
 
         int xoff = off - 1;
         do {
-            buf[xoff] = ByteFormatter.digits[pos % 10];
+            buf[xoff] = ByteFormatter.DIGITS[pos % TEN];
             xoff -= 1;
-            pos /= 10;
+            pos /= TEN;
         } while (pos > 0);
 
         if (val < 0) {
@@ -677,13 +682,13 @@ public final class ByteFormatter {
         // Otherwise we need to use an intermediary buffer.
 
         int ndig = 1;
-        long dmax = 10;
+        long dmax = TEN;
 
         // Might be faster to try to do this partially in ints
         while (ndig < 19 && pos >= dmax) {
 
             ndig += 1;
-            dmax *= 10;
+            dmax *= TEN;
         }
 
         if (val < 0) {
@@ -721,9 +726,9 @@ public final class ByteFormatter {
 
             for (int i = 0; i < 9; i += 1) {
 
-                buf[xoff] = ByteFormatter.digits[giga % 10];
+                buf[xoff] = ByteFormatter.DIGITS[giga % TEN];
                 xoff -= 1;
-                giga /= 10;
+                giga /= TEN;
                 if (last && giga == 0) {
                     break;
                 }

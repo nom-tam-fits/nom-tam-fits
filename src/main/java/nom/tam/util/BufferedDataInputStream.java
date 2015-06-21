@@ -33,7 +33,6 @@ package nom.tam.util;
 
 // What do we use in here?
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -80,9 +79,10 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     private long primitiveArrayCount;
 
     /**
-     * reused byte array to read primitives.
+     * reused byte array to read primitives. use the biggest to initialize the
+     * buffer.
      */
-    private final byte[] bb = new byte[8];
+    private final byte[] bb = new byte[BYTES_IN_DOUBLE];
 
     /**
      * Skip the requested number of bytes. This differs from the skip call in
@@ -101,7 +101,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
      *            the input stream to use for reading.
      */
     public BufferedDataInputStream(InputStream o) {
-        this(o, 32768);
+        this(o, DEFAULT_BUFFER_SIZE);
     }
 
     /**
@@ -461,12 +461,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     @Override
     public boolean readBoolean() throws IOException {
-        int b = read();
-        if (b == 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return read() == 1;
     }
 
     @Override
@@ -493,17 +488,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     @Override
     public float readFloat() throws IOException {
-
-        if (read(this.bb, 0, BYTES_IN_FLOAT) < BYTES_IN_FLOAT) {
-            throw new EOFException();
-        }
-
-        int i = this.bb[0] << BITS_OF_3_BYTES | //
-                (this.bb[1] & BYTE_MASK) << BITS_OF_2_BYTES | //
-                (this.bb[2] & BYTE_MASK) << BITS_OF_1_BYTE | //
-                this.bb[3] & BYTE_MASK;
-        return Float.intBitsToFloat(i);
-
+        return Float.intBitsToFloat(readInt());
     }
 
     @Override
@@ -525,14 +510,14 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     @Override
     public int readInt() throws IOException {
-
         if (read(this.bb, 0, BYTES_IN_INTEGER) < BYTES_IN_INTEGER) {
             throw new EOFException();
         }
-        int i = this.bb[0] << BITS_OF_3_BYTES | //
-                (this.bb[1] & BYTE_MASK) << BITS_OF_2_BYTES | //
-                (this.bb[2] & BYTE_MASK) << BITS_OF_1_BYTE | //
-                this.bb[3] & BYTE_MASK;
+        int offset = 0;
+        int i = this.bb[offset++] << BITS_OF_3_BYTES | //
+                (this.bb[offset++] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                (this.bb[offset++] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                this.bb[offset++] & BYTE_MASK;
         return i;
     }
 
@@ -545,14 +530,14 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     /**
      * Emulate the deprecated DataInputStream.readLine() method. Originally we
      * used the method itself, but Alan Brighton suggested using a
-     * BufferedReader to eliminate the deprecation warning. This was used for a
-     * long time, but more recently we noted that this doesn't work. We now use
-     * a simple method that largely ignores character encodings and only uses
-     * the "\n" as the line separator. This method is slow regardless. In the
-     * current version
+     * java.io.BufferedReader to eliminate the deprecation warning. This was
+     * used for a long time, but more recently we noted that this doesn't work.
+     * We now use a simple method that largely ignores character encodings and
+     * only uses the "\n" as the line separator. This method is slow regardless.
+     * In the current version
      * 
      * @return The String read.
-     * @deprecated Use {@link BufferedReader} methods.
+     * @deprecated Use {@link java.io.BufferedReader} methods.
      */
     @Deprecated
     @Override
@@ -577,14 +562,15 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
         if (read(this.bb, 0, BYTES_IN_LONG) < BYTES_IN_LONG) {
             throw new EOFException();
         }
-        int i1 = this.bb[0] << BITS_OF_3_BYTES | //
-                (this.bb[1] & BYTE_MASK) << BITS_OF_2_BYTES | //
-                (this.bb[2] & BYTE_MASK) << BITS_OF_1_BYTE | //
-                this.bb[3] & BYTE_MASK;
-        int i2 = this.bb[4] << BITS_OF_3_BYTES | //
-                (this.bb[5] & BYTE_MASK) << BITS_OF_2_BYTES | //
-                (this.bb[6] & BYTE_MASK) << BITS_OF_1_BYTE | //
-                this.bb[7] & BYTE_MASK;
+        int offset = 0;
+        int i1 = this.bb[offset++] << BITS_OF_3_BYTES | //
+                (this.bb[offset++] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                (this.bb[offset++] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                this.bb[offset++] & BYTE_MASK;
+        int i2 = this.bb[offset++] << BITS_OF_3_BYTES | //
+                (this.bb[offset++] & BYTE_MASK) << BITS_OF_2_BYTES | //
+                (this.bb[offset++] & BYTE_MASK) << BITS_OF_1_BYTE | //
+                this.bb[offset++] & BYTE_MASK;
         return (long) i1 << BITS_OF_4_BYTES | i2 & INTEGER_MASK;
     }
 
@@ -629,7 +615,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     @Override
     public int readUnsignedByte() throws IOException {
-        return read() & 0x00ff;
+        return read() & BYTE_MASK;
     }
 
     @Override

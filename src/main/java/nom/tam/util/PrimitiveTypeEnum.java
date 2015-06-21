@@ -61,35 +61,17 @@ public enum PrimitiveTypeEnum {
         }
     };
 
-    private final int size;
-
-    public final boolean individualSize;
-
-    public final Class<?> primitiveClass;
-
-    public final Class<?> wrapperClass;
-
-    public final char type;
-
     private static Map<Class<?>, PrimitiveTypeEnum> lookup;
 
     private static Map<Class<?>, PrimitiveTypeEnum> getLookup() {
-        if (lookup == null) {
-            lookup = new HashMap<Class<?>, PrimitiveTypeEnum>();
+        if (PrimitiveTypeEnum.lookup == null) {
+            PrimitiveTypeEnum.lookup = new HashMap<Class<?>, PrimitiveTypeEnum>();
             for (PrimitiveTypeEnum primitiveTypeEnum : values()) {
-                lookup.put(primitiveTypeEnum.primitiveClass, primitiveTypeEnum);
-                lookup.put(primitiveTypeEnum.wrapperClass, primitiveTypeEnum);
+                PrimitiveTypeEnum.lookup.put(primitiveTypeEnum.primitiveClass, primitiveTypeEnum);
+                PrimitiveTypeEnum.lookup.put(primitiveTypeEnum.wrapperClass, primitiveTypeEnum);
             }
         }
-        return lookup;
-    }
-
-    private PrimitiveTypeEnum(int size, boolean individualSize, Class<?> primitiveClass, Class<?> wrapperClass, char type) {
-        this.size = size;
-        this.individualSize = individualSize;
-        this.primitiveClass = primitiveClass;
-        this.wrapperClass = wrapperClass;
-        this.type = type;
+        return PrimitiveTypeEnum.lookup;
     }
 
     public static PrimitiveTypeEnum valueOf(Class<?> clazz) {
@@ -107,8 +89,30 @@ public enum PrimitiveTypeEnum {
         return primitiveTypeEnum;
     }
 
+    private final int size;
+
+    private final boolean individualSize;
+
+    private final Class<?> primitiveClass;
+
+    private final Class<?> wrapperClass;
+
+    private final char type;
+
+    private PrimitiveTypeEnum(int size, boolean individualSize, Class<?> primitiveClass, Class<?> wrapperClass, char type) {
+        this.size = size;
+        this.individualSize = individualSize;
+        this.primitiveClass = primitiveClass;
+        this.wrapperClass = wrapperClass;
+        this.type = type;
+    }
+
+    public boolean individualSize() {
+        return this.individualSize;
+    }
+
     public int size() {
-        return size;
+        return this.size;
     }
 
     /**
@@ -122,6 +126,10 @@ public enum PrimitiveTypeEnum {
         if (instance == null) {
             return 0;
         }
-        return size;
+        return this.size;
+    }
+
+    public char type() {
+        return this.type;
     }
 }

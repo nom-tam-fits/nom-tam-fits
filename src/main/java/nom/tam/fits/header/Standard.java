@@ -217,7 +217,7 @@ public enum Standard implements IFitsHeader {
      * after the adoption of the standard; rather, the EQUINOX keyword shall be
      * used.
      * 
-     * @deprecated use {@link EQUINOX} in stead
+     * @deprecated use {@link #EQUINOX} in stead
      */
     @Deprecated
     EPOCH(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "equinox of celestial coordinate system"),
@@ -393,7 +393,7 @@ public enum Standard implements IFitsHeader {
     /**
      * Coordinate reference frame of major/minor axes. use RADESYS instead.
      * 
-     * @deprecated use {@link RADESYS} instead.
+     * @deprecated use {@link #RADESYS} instead.
      */
     @Deprecated
     RADECSYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Coordinate reference frame of major/minor axes."),

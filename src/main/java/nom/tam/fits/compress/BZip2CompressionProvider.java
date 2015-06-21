@@ -36,6 +36,8 @@ import java.io.InputStream;
 
 public class BZip2CompressionProvider implements ICompressProvider {
 
+    private static final int PRIORITY = 5;
+
     @Override
     public InputStream decompress(InputStream in) throws IOException {
         try {
@@ -49,7 +51,7 @@ public class BZip2CompressionProvider implements ICompressProvider {
 
     @Override
     public int priority() {
-        return 5;
+        return PRIORITY;
     }
 
     @Override

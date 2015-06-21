@@ -142,7 +142,12 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the file could not be opened
      */
     public BufferedFile(File file, String mode, int bufferSize) throws IOException {
-        initialize(file, mode, bufferSize);
+        this.randomAccessFile = new RandomAccessFile(file, mode);
+        this.buffer = new byte[bufferSize];
+        this.bufferOffset = 0;
+        this.bufferLength = 0;
+        this.fileOffset = 0;
+        this.bufferSize = bufferSize;
     }
 
     /**
@@ -187,9 +192,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the file could not be opened
      */
     public BufferedFile(String filename, String mode, int bufferSize) throws IOException {
-
-        File file = new File(filename);
-        initialize(file, mode, bufferSize);
+        this(new File(filename), mode, bufferSize);
     }
 
     /**
@@ -436,17 +439,6 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
         return this.fileOffset + this.bufferOffset;
     }
 
-    protected void initialize(File file, String mode, int bufferSize) throws IOException {
-
-        this.randomAccessFile = new RandomAccessFile(file, mode);
-        this.buffer = new byte[bufferSize];
-        this.bufferOffset = 0;
-        this.bufferLength = 0;
-        this.fileOffset = 0;
-        this.bufferSize = bufferSize;
-
-    }
-
     /**
      * @return the current length of the file.
      * @throws IOException
@@ -464,7 +456,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
             try {
                 checkBuffer(readlimit);
             } catch (EOFException e) {
-                // ok read as far as possible.
+                LOG.log(Level.FINE, "mark over file limit, so read as far as possible.", e);
             }
             this.bufferMarker = this.bufferOffset;
         }
@@ -849,7 +841,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public int readUnsignedShort() throws IOException {
-        return readShort() & 0xFFFF;
+        return readShort() & SHORT_MASK;
     }
 
     @Override

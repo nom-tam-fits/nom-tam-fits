@@ -143,7 +143,7 @@ public class Fits implements Closeable {
     public static <DataClass extends Data> BasicHDU<DataClass> makeHDU(DataClass data) throws FitsException {
         Header hdr = new Header();
         data.fillHeader(hdr);
-        return FitsFactory.HDUFactory(hdr, data);
+        return FitsFactory.hduFactory(hdr, data);
     }
 
     /**
@@ -155,7 +155,7 @@ public class Fits implements Closeable {
      */
     public static BasicHDU<?> makeHDU(Header h) throws FitsException {
         Data d = FitsFactory.dataFactory(h);
-        return FitsFactory.HDUFactory(h, d);
+        return FitsFactory.hduFactory(h, d);
     }
 
     /**
@@ -166,7 +166,7 @@ public class Fits implements Closeable {
      *             if the parameter could not be converted to a hdu.
      */
     public static BasicHDU<?> makeHDU(Object o) throws FitsException {
-        return FitsFactory.HDUFactory(o);
+        return FitsFactory.hduFactory(o);
     }
 
     /**
@@ -628,7 +628,7 @@ public class Fits implements Closeable {
             throw e;
         }
         this.lastFileOffset = FitsUtil.findOffset(this.dataStr);
-        BasicHDU<?> nextHDU = FitsFactory.HDUFactory(hdr, data);
+        BasicHDU<?> nextHDU = FitsFactory.hduFactory(hdr, data);
         this.hduList.add(nextHDU);
         return nextHDU;
     }

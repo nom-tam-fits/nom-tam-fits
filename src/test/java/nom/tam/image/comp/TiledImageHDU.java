@@ -466,7 +466,7 @@ public class TiledImageHDU extends BinaryTableHDU {
         }
         System.out.println("Finished the loop");
 
-        BasicHDU bhdu = FitsFactory.HDUFactory(data);
+        BasicHDU bhdu = FitsFactory.hduFactory(data);
         // importKeywords(bhdu);
         return (ImageHDU) bhdu;
     }

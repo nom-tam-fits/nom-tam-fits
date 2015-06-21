@@ -71,15 +71,15 @@ public class PaddingException extends FitsException {
      */
     public PaddingException(Data data) throws FitsException {
         super("data not padded");
-        this.truncatedHDU = FitsFactory.HDUFactory(data.getKernel());
+        this.truncatedHDU = FitsFactory.hduFactory(data.getKernel());
         // We want to use the original Data object... so
-        this.truncatedHDU = FitsFactory.HDUFactory(this.truncatedHDU.getHeader(), data);
+        this.truncatedHDU = FitsFactory.hduFactory(this.truncatedHDU.getHeader(), data);
     }
 
     public PaddingException(String msg, Data data) throws FitsException {
         super(msg);
-        this.truncatedHDU = FitsFactory.HDUFactory(data.getKernel());
-        this.truncatedHDU = FitsFactory.HDUFactory(this.truncatedHDU.getHeader(), data);
+        this.truncatedHDU = FitsFactory.hduFactory(data.getKernel());
+        this.truncatedHDU = FitsFactory.hduFactory(this.truncatedHDU.getHeader(), data);
     }
 
     public BasicHDU<?> getTruncatedHDU() {
@@ -87,6 +87,6 @@ public class PaddingException extends FitsException {
     }
 
     void updateHeader(Header hdr) throws FitsException {
-        this.truncatedHDU = FitsFactory.HDUFactory(hdr, this.truncatedHDU.getData());
+        this.truncatedHDU = FitsFactory.hduFactory(hdr, this.truncatedHDU.getData());
     }
 }

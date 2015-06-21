@@ -36,6 +36,12 @@ import java.io.InputStream;
 
 public class ZCompressionProvider implements ICompressProvider {
 
+    private static final int Z_COMPRESS_MAGIC_BYTE1 = 0x1f;
+
+    private static final int Z_COMPRESS_MAGIC_BYTE2 = 0x9d;
+
+    private static final int PRIORITY = 5;
+
     @Override
     public InputStream decompress(InputStream in) throws IOException {
         try {
@@ -49,12 +55,12 @@ public class ZCompressionProvider implements ICompressProvider {
 
     @Override
     public int priority() {
-        return 5;
+        return PRIORITY;
     }
 
     @Override
     public boolean provides(int mag1, int mag2) {
-        return mag1 == 0x1f && mag2 == 0x9d;
+        return mag1 == Z_COMPRESS_MAGIC_BYTE1 && mag2 == Z_COMPRESS_MAGIC_BYTE2;
     }
 
 }

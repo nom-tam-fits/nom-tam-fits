@@ -31,7 +31,6 @@ package nom.tam.util;
  * #L%
  */
 
-import java.io.Closeable;
 import java.io.IOException;
 
 public interface ArrayDataInput extends java.io.DataInput, FitsIO {

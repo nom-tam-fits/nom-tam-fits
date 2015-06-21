@@ -1,7 +1,5 @@
 package nom.tam.util;
 
-import java.util.NoSuchElementException;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -83,7 +81,7 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
      * @param count
      *            the offset
      * @return the n'th next element in the iteration
-     * @throws NoSuchElementException
+     * @throws java.util.NoSuchElementException
      *             if the iteration has no more elements
      */
     VALUE next(int count);

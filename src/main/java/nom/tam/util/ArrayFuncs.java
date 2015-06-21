@@ -91,7 +91,7 @@ public final class ArrayFuncs {
             return size;
         } else {
             PrimitiveTypeEnum primType = PrimitiveTypeEnum.valueOf(o.getClass());
-            if (primType.individualSize) {
+            if (primType.individualSize()) {
                 return primType.size(o);
             } else {
                 return primType.size();

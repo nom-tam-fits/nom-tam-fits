@@ -46,7 +46,7 @@ public class FitsLineAppender {
     /**
      * A String of 80 spaces to fill up fits card space.
      */
-    private static final String _80_SPACES = "                                                                                ";
+    private static final String FULL_CARD_AS_SPACES = "                                                                                ";
 
     /**
      * the underlying StringBuffer to which the writing of fits lines happens.
@@ -142,7 +142,7 @@ public class FitsLineAppender {
         if (this.charCount != 0) {
             int spaces = count - this.charCount;
             if (spaces > 0) {
-                this.buffer.append(FitsLineAppender._80_SPACES, 0, spaces);
+                this.buffer.append(FitsLineAppender.FULL_CARD_AS_SPACES, 0, spaces);
                 this.charCount += spaces;
             }
         }
@@ -154,7 +154,7 @@ public class FitsLineAppender {
     public void completeLine() {
         int count = HeaderCard.FITS_HEADER_CARD_SIZE - this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
         if (count < HeaderCard.FITS_HEADER_CARD_SIZE) {
-            this.buffer.append(FitsLineAppender._80_SPACES, 0, count);
+            this.buffer.append(FitsLineAppender.FULL_CARD_AS_SPACES, 0, count);
         }
         // line completed start with 0;
         this.charCount = 0;

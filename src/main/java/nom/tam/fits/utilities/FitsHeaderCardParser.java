@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  * 
  * @author Richard van Nieuwenhoven
  */
-public class FitsHeaderCardParser {
+public final class FitsHeaderCardParser {
 
     /**
      * value comment pair of the header card.

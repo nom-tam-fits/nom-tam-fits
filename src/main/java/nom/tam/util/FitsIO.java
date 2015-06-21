@@ -43,6 +43,11 @@ import java.io.IOException;
 public interface FitsIO extends Closeable {
 
     /**
+     * default buffer size to use if none is specified.
+     */
+    int DEFAULT_BUFFER_SIZE = 32768;
+
+    /**
      * number of bits in one byte.
      */
     int BITS_OF_1_BYTE = 8;
@@ -122,6 +127,11 @@ public interface FitsIO extends Closeable {
      * integer from a byte.
      */
     int BYTE_MASK = 0xFF;
+
+    /**
+     * bit mask to get the lowest short of a integer.
+     */
+    int SHORT_MASK = 0xffff;
 
     /**
      * bit mask to get the lowest short of a long.
