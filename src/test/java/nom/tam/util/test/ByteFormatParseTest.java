@@ -36,6 +36,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
+import junit.framework.Assert;
 /** This class tests the ByteFormatter and ByteParser classes.
  */
 import nom.tam.util.ByteFormatter;
@@ -507,5 +508,75 @@ public class ByteFormatParseTest {
         assertEquals(123, byteParser.getInt(6));
         assertEquals(6, byteParser.getNumberLength());
         assertEquals(6, byteParser.getOffset());
+    }
+
+    @Test
+    public void testIntCaseFillFields3() throws Exception {
+        ByteParser byteParser = new ByteParser("  +123  ".getBytes());
+        byteParser.setFillFields(true);
+        assertEquals(123, byteParser.getInt(6));
+        assertEquals(6, byteParser.getNumberLength());
+        assertEquals(6, byteParser.getOffset());
+    }
+
+    @Test
+    public void testIntCaseFillFields4() throws Exception {
+        ByteParser byteParser = new ByteParser("  -123  ".getBytes());
+        byteParser.setFillFields(true);
+        assertEquals(-123, byteParser.getInt(6));
+        assertEquals(6, byteParser.getNumberLength());
+        assertEquals(6, byteParser.getOffset());
+    }
+
+    @Test
+    public void testDoubleFields2() throws Exception {
+        ByteParser byteParser = new ByteParser("  INF           ".getBytes());
+        byteParser.setFillFields(true);
+        assertEquals(Double.POSITIVE_INFINITY, byteParser.getDouble(10), 0.0000001);
+        assertEquals(10, byteParser.getNumberLength());
+        assertEquals(10, byteParser.getOffset());
+        byteParser = new ByteParser("  INFINITY           ".getBytes());
+        byteParser.setFillFields(true);
+        assertEquals(Double.POSITIVE_INFINITY, byteParser.getDouble(10), 0.0000001);
+        assertEquals(10, byteParser.getNumberLength());
+        assertEquals(10, byteParser.getOffset());
+    }
+
+    @Test(expected = FormatException.class)
+    public void testDoubleFields3() throws Exception {
+        ByteParser byteParser = new ByteParser("  INF  X         ".getBytes());
+        byteParser.setFillFields(true);
+        byteParser.getDouble(10);
+    }
+
+    @Test(expected = FormatException.class)
+    public void testDoubleFields4() throws Exception {
+        ByteParser byteParser = new ByteParser("  XXXXX         ".getBytes());
+        byteParser.setFillFields(true);
+        byteParser.getDouble(10);
+    }
+
+    @Test()
+    public void testBoolean1() throws Exception {
+        ByteParser byteParser = new ByteParser("  T         ".getBytes());
+        byteParser.setFillFields(true);
+        Assert.assertTrue(byteParser.getBoolean(10));
+        byteParser = new ByteParser("  F         ".getBytes());
+        byteParser.setFillFields(true);
+        Assert.assertFalse(byteParser.getBoolean(10));
+    }
+
+    @Test(expected = FormatException.class)
+    public void testBoolean2() throws Exception {
+        ByteParser byteParser = new ByteParser("  X         ".getBytes());
+        byteParser.setFillFields(true);
+        byteParser.getBoolean(10);
+    }
+
+    @Test(expected = FormatException.class)
+    public void testBoolean3() throws Exception {
+        ByteParser byteParser = new ByteParser("  T X        ".getBytes());
+        byteParser.setFillFields(true);
+        byteParser.getBoolean(10);
     }
 }
