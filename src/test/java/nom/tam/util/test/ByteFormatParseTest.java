@@ -35,15 +35,17 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import junit.framework.Assert;
+import nom.tam.util.AsciiFuncs;
 /** This class tests the ByteFormatter and ByteParser classes.
  */
 import nom.tam.util.ByteFormatter;
 import nom.tam.util.ByteParser;
 import nom.tam.util.FormatException;
-import nom.tam.util.TruncationException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ByteFormatParseTest {
@@ -107,8 +109,6 @@ public class ByteFormatParseTest {
         dbl[4] = Double.POSITIVE_INFINITY;
         dbl[5] = Double.NEGATIVE_INFINITY;
 
-        this.bf.setTruncationThrow(false);
-        this.bf.setAlign(true);
         this.offset = 0;
         this.cnt = 0;
         while (this.cnt < dbl.length) {
@@ -116,9 +116,12 @@ public class ByteFormatParseTest {
             this.cnt += 1;
             if (this.cnt % 4 == 0) {
                 this.offset = this.bf.format("\n", this.buffer, this.offset, 1);
+            } else {
+                this.offset = this.bf.format(" ", this.buffer, this.offset, 1);
             }
         }
         this.bf.format(99.9, this.bp.getBuffer(), this.offset, 25);
+
         this.bp.setOffset(0);
         for (int i = 0; i < dbl.length; i += 1) {
 
@@ -164,9 +167,6 @@ public class ByteFormatParseTest {
         flt[4] = Float.POSITIVE_INFINITY;
         flt[5] = Float.NEGATIVE_INFINITY;
 
-        this.bf.setTruncationThrow(false);
-        this.bf.setAlign(true);
-
         this.offset = 0;
         this.cnt = 0;
 
@@ -175,6 +175,8 @@ public class ByteFormatParseTest {
             this.cnt += 1;
             if (this.cnt % 4 == 0) {
                 this.offset = this.bf.format("\n", this.buffer, this.offset, 1);
+            } else {
+                this.offset = this.bf.format(" ", this.buffer, this.offset, 1);
             }
         }
 
@@ -201,6 +203,10 @@ public class ByteFormatParseTest {
             }
         }
         assertEquals(99.9f, this.bp.getFloat(), 1.e-14);
+
+        byte[] array = new byte[4];
+        bf.format(-9.8010921E9f, array);
+        assertEquals("-E10", AsciiFuncs.asciiString(array));
     }
 
     @Test
@@ -213,9 +219,6 @@ public class ByteFormatParseTest {
         this.bp.setBuffer(this.buffer);
         this.bp.setOffset(0);
         assertEquals("IntBlank", 0, this.bp.getInt(10));
-
-        this.bf.setAlign(true);
-        this.bf.setTruncationThrow(false);
 
         int[] tint = new int[100];
 
@@ -234,6 +237,8 @@ public class ByteFormatParseTest {
             this.cnt += 1;
             if (this.cnt % 8 == 0) {
                 this.offset = this.bf.format("\n", this.buffer, this.offset, 1);
+            } else {
+                this.offset = this.bf.format(" ", this.buffer, this.offset, 1);
             }
         }
 
@@ -252,7 +257,7 @@ public class ByteFormatParseTest {
 
         assertEquals(Integer.MIN_VALUE, this.bp.getInt());
         // Now do it with left-aligned numbers.
-        this.bf.setAlign(false);
+
         this.bp.setFillFields(true);
         this.offset = 0;
         colSize = 12;
@@ -298,8 +303,6 @@ public class ByteFormatParseTest {
         String myStr = new String(this.buffer, 0, this.offset);
         assertEquals("No spaces", -1, myStr.indexOf(" "));
 
-        this.bf.setAlign(false);
-
         this.offset = 0;
         colSize = 12;
         this.cnt = 0;
@@ -318,8 +321,6 @@ public class ByteFormatParseTest {
             assertEquals("Parse token", tint[i], Integer.parseInt(array[i]));
         }
 
-        this.bf.setTruncationThrow(false);
-
         int val = 1;
         Arrays.fill(this.buffer, (byte) ' ');
 
@@ -334,38 +335,6 @@ public class ByteFormatParseTest {
             val *= 10;
         }
 
-        this.bf.setTruncationThrow(true);
-        val = 1;
-        for (int i = 0; i < 10; i += 1) {
-            boolean thrown = false;
-            try {
-                this.offset = this.bf.format(val, this.buffer, 0, 6);
-            } catch (TruncationException e) {
-                thrown = true;
-            }
-            if (i < 6) {
-                assertEquals("TestTruncThrow" + i, false, thrown);
-            } else {
-                assertEquals("TestTruncThrow" + i, true, thrown);
-            }
-            val *= 10;
-        }
-    }
-
-    @Test(expected = TruncationException.class)
-    public void testIntTruncate() throws Exception {
-
-        for (int i = 0; i < 10; i += 1) {
-            this.buffer[i] = (byte) ' ';
-        }
-        this.bp.setOffset(0);
-        assertEquals("IntBlank", 0, this.bp.getInt(10));
-
-        this.bf.setAlign(true);
-        this.bf.setTruncationThrow(true);
-        this.bf.setTruncateOnOverflow(false);
-
-        this.bf.format(555555555, new byte[2]);
     }
 
     @Test
@@ -386,25 +355,36 @@ public class ByteFormatParseTest {
         lng[1] = Long.MIN_VALUE;
         lng[2] = 0;
 
-        this.bf.setTruncationThrow(false);
         this.bp.setFillFields(true);
-        this.bf.setAlign(true);
+
         this.offset = 0;
         for (int i = 0; i < lng.length; i += 1) {
+            int oldOffset = this.offset;
             this.offset = this.bf.format(lng[i], this.buffer, this.offset, 20);
+            while (this.offset != oldOffset + 20) {
+                this.offset = this.bf.format(" ", this.buffer, this.offset, 1);
+            }
+
             if ((i + 1) % 4 == 0) {
                 this.offset = this.bf.format("\n", this.buffer, this.offset, 1);
+            } else {
+                this.offset = this.bf.format(" ", this.buffer, this.offset, 1);
             }
         }
 
         this.bp.setOffset(0);
 
         for (int i = 0; i < lng.length; i += 1) {
-            assertEquals("Long check", lng[i], this.bp.getLong(20));
-            if ((i + 1) % 4 == 0) {
-                this.bp.skip(1);
-            }
+            assertEquals("Long check " + i, lng[i], this.bp.getLong(20));
+            this.bp.skip(1);
         }
+
+        byte[] array = new byte[1];
+        bf.format(-55215921L, array);
+        assertEquals("*", AsciiFuncs.asciiString(array));
+
+        bf.format(Long.MIN_VALUE, array);
+        assertEquals("*", AsciiFuncs.asciiString(array));
     }
 
     @Test
@@ -435,9 +415,7 @@ public class ByteFormatParseTest {
     }
 
     @Test
-    public void testBasics() throws TruncationException {
-        this.bf.setSimpleRange(-100000, 100000);
-        this.bf.setTruncationFill('*');
+    public void testBasics() {
 
         byte[] data = new byte[20];
         this.bf.format(true, data);
@@ -578,5 +556,88 @@ public class ByteFormatParseTest {
         ByteParser byteParser = new ByteParser("  T X        ".getBytes());
         byteParser.setFillFields(true);
         byteParser.getBoolean(10);
+    }
+
+    @Test
+    public void testFormatString() {
+        byte[] array = new byte[10];
+        bf.format("blabla", array);
+        byte[] expected = {
+            98,
+            108,
+            97,
+            98,
+            108,
+            97,
+            0,
+            0,
+            0,
+            0
+        };
+        assertArrayEquals(expected, array);
+    }
+
+    @Test
+    public void testFormatDouble() {
+        byte[] array = new byte[10];
+        bf.format(1.9999999999999999999999999999999999999999d, array);
+        assertEquals("2.00000000", AsciiFuncs.asciiString(array));
+        bf.format(2.0000000011111111111111111111111111111111, array);
+        assertEquals("2.00000000", AsciiFuncs.asciiString(array));
+        bf.format(2.0000000000000000000000000000000000011111d, array);
+        assertEquals("2.00000000", AsciiFuncs.asciiString(array));
+        bf.format(0.0000000000000000000000000000000000011111d, array);
+        assertEquals("1.1111E-36", AsciiFuncs.asciiString(array));
+        bf.format(111110000000000000000000000000000000000000d, array);
+        assertEquals("1.11110E41", AsciiFuncs.asciiString(array));
+
+        bf.format(1E6, array);
+        assertEquals("1000000.00", AsciiFuncs.asciiString(array));
+        bf.format(1000001d, array);
+        assertEquals("1.000001E6", AsciiFuncs.asciiString(array));
+
+        bf.format(1.00000000001E7, array);
+        assertEquals("1.000000E7", AsciiFuncs.asciiString(array));
+        bf.format(1.00000000001E8, array);
+        assertEquals("1.000000E8", AsciiFuncs.asciiString(array));
+
+        bf.format(1.436993288151429E-260, array);
+        assertEquals("1.437E-260", AsciiFuncs.asciiString(array));
+
+        bf.format(2.09160746257043E-170, array);
+        assertEquals("2.092E-170", AsciiFuncs.asciiString(array));
+
+        bf.format(3.599821542603323E-201, array);
+        assertEquals("3.600E-201", AsciiFuncs.asciiString(array));
+
+        bf.format(-9.995895768688865E-277, array);
+        assertEquals("-1.00E-276", AsciiFuncs.asciiString(array));
+
+        array = new byte[1];
+        bf.format(4.378420603609205E-19, array);
+        assertEquals("*", AsciiFuncs.asciiString(array));
+
+        array = new byte[3];
+        bf.format(9.990475008266443E9, array);
+        assertEquals("1**", AsciiFuncs.asciiString(array));
+
+    }
+
+    @Test
+    @Ignore
+    public void randomTestManyValues() {
+        for (int y = 1; y < 40; y++) {
+            byte[] array = new byte[y];
+            Random random = new Random(System.currentTimeMillis());
+            for (int i = 0; i < 1000000; i++) {
+                long longValue = ((long) random.nextInt()) << 32 | ((long) random.nextInt());
+                bf.format(longValue, array);
+                double value = Double.longBitsToDouble(longValue);
+                bf.format(value, array);
+                float value2 = Float.intBitsToFloat(random.nextInt());
+                bf.format(value2, array);
+            }
+        }
+
     }
 }

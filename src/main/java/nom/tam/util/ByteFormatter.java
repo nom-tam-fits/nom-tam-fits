@@ -56,36 +56,15 @@ package nom.tam.util;
  */
 public final class ByteFormatter {
 
+    /**
+     * Maximum magnitude to print in non-scientific notation.
+     */
     private static final double DEFAULT_SIMPLE_MAX = 1.e6;
 
-    private static final double DEFAULT_SIMPLE_MIN = 1.e-3;
-
-    private static final int TEMP_BUFFER_SIZE = 32;
-
-    private static final int TEN = 10;
-
-    private static final double I_LOG_10 = 1. / Math.log(TEN);
-
     /**
-     * Powers of 10. We overextend on both sides. These should perhaps be
-     * tabulated rather than computed though it may be faster to calculate them
-     * than to read in the extra bytes in the class file.
+     * Minimum magnitude to print in non-scientific notation.
      */
-    private static final double[] TEN_POW;
-
-    /** What index of tenpow is 10^0 */
-    private static final int ZERO_POW;
-
-    static { // Static initializer
-        int min = (int) Math.floor((int) (Math.log(Double.MIN_VALUE) * ByteFormatter.I_LOG_10));
-        int max = (int) Math.floor((int) (Math.log(Double.MAX_VALUE) * ByteFormatter.I_LOG_10));
-        max += 1;
-        TEN_POW = new double[max - min + 1];
-        for (int i = 0; i < ByteFormatter.TEN_POW.length; i += 1) {
-            ByteFormatter.TEN_POW[i] = Math.pow(TEN, i + min);
-        }
-        ZERO_POW = -min;
-    }
+    private static final double DEFAULT_SIMPLE_MIN = 1.e-3;
 
     /**
      * Digits. We could handle other bases by extending or truncating this list
@@ -104,32 +83,84 @@ public final class ByteFormatter {
         (byte) '9'
     };
 
-    /** Internal buffers used in formatting fields */
-    private final byte[] tbuf1 = new byte[TEMP_BUFFER_SIZE];
+    private static final long DOUBLE_EXPONENT_BIT_MASK = 0x7FF0000000000000L;
 
-    private final byte[] tbuf2 = new byte[TEMP_BUFFER_SIZE];
+    private static final int DOUBLE_EXPONENT_EXCESS = 52;
 
-    /** Should we truncate overflows or just run over limit */
-    private boolean truncateOnOverflow = true;
+    private static final long DOUBLE_EXPONENT_NORMALIZE_BIT = 0x0010000000000000L;
 
-    /** What do we use to fill when we cannot print the number? */
-    private byte truncationFill = (byte) '*'; // Default is often used in
-                                              // Fortran
+    private static final int DOUBLE_MIN_EXPONENT = -1023;
 
-    /** Throw exception on truncations */
-    private boolean truncationThrow = true;
+    private static final int DOUBLE_SHIFT_BASE = 17;
 
-    /** Should we right align? */
-    private boolean align = false;
+    private static final int DOUBLE_SHIFT_LIMIT = 200;
 
-    /** Minimum magnitude to print in non-scientific notation. */
-    private double simpleMin = DEFAULT_SIMPLE_MIN;
+    private static final long DOUBLE_VALUE_BIT_MASK = 0x000FFFFFFFFFFFFFL;
 
-    /** Maximum magnitude to print in non-scientific notation. */
-    private double simpleMax = DEFAULT_SIMPLE_MAX;
+    private static final int FLOAT_EXPONENT_BIT_MASK = 0x7F800000;
+
+    private static final int FLOAT_EXPONENT_EXCESS = 23;
+
+    private static final int FLOAT_EXPONENT_NORMALIZE_BIT = 0x00800000;
+
+    private static final int FLOAT_MIN_EXPONENT = -127;
+
+    private static final int FLOAT_SHIFT_BASE = 8;
+
+    private static final int FLOAT_SHIFT_LIMIT = 30;
+
+    private static final int FLOAT_VALUE_BIT_MASK = 0x007FFFFF;
+
+    private static final double I_LOG_10 = 1. / Math.log(ByteFormatter.TEN);
+
+    private static final long LONG_TO_INT_MODULO = 1000000000L;
+
+    private static final int MAX_LONG_LENGTH = 19;
+
+    private static final int NINE = 9;
+
+    private static final int NINETY_NINE = 99;
+
+    private static final int TEMP_BUFFER_SIZE = 32;
+
+    private static final int TEN = 10;
 
     /**
-     * Fill the buffer with blank-bytes to align a field.
+     * Powers of 10. We overextend on both sides. These should perhaps be
+     * tabulated rather than computed though it may be faster to calculate them
+     * than to read in the extra bytes in the class file.
+     */
+    private static final double[] TEN_POW;
+
+    /**
+     * What do we use to fill when we cannot print the number?Default is often
+     * used in Fortran.
+     */
+    private static final byte TRUNCATION_FILL = (byte) '*';
+
+    /** What index of tenpow is 10^0 */
+    private static final int ZERO_POW;
+
+    static { // Static initializer
+        int min = (int) Math.floor((int) (Math.log(Double.MIN_VALUE) * ByteFormatter.I_LOG_10));
+        int max = (int) Math.floor((int) (Math.log(Double.MAX_VALUE) * ByteFormatter.I_LOG_10));
+        max++;
+        TEN_POW = new double[max - min + 1];
+        for (int i = 0; i < ByteFormatter.TEN_POW.length; i++) {
+            ByteFormatter.TEN_POW[i] = Math.pow(ByteFormatter.TEN, i + min);
+        }
+        ZERO_POW = -min;
+    }
+
+    /**
+     * Internal buffers used in formatting fields
+     */
+    private final byte[] tbuf1 = new byte[ByteFormatter.TEMP_BUFFER_SIZE];
+
+    private final byte[] tbuf2 = new byte[ByteFormatter.TEMP_BUFFER_SIZE];
+
+    /**
+     * Fill the buffer with blank-bytes to false a field.
      * 
      * @return Offset of next available character in buffer.
      * @param buffer
@@ -140,7 +171,7 @@ public final class ByteFormatter {
      *            the number of bytes to fill
      */
     public int alignFill(byte[] buffer, int offset, int len) {
-        for (int i = offset; i < offset + len; i += 1) {
+        for (int i = offset; i < offset + len; i++) {
             buffer[i] = (byte) ' ';
         }
         return offset + len;
@@ -165,11 +196,10 @@ public final class ByteFormatter {
      * @param shift
      *            The exponent of the power of 10 that we shifted val to get the
      *            given mantissa.
-     * @return Offset of next available character in buffer.
-     * @throws TruncationException
-     *             if the value was truncated
+     * @return Offset of next available character in buffer. @ * if the value
+     *         was truncated
      */
-    int combineReal(double val, byte[] buf, int off, int len, byte[] mant, int lmant, int shift) throws TruncationException {
+    private int combineReal(double val, byte[] buf, int off, int len, byte[] mant, int lmant, int shift) {
 
         // First get the minimum size for the number
 
@@ -178,7 +208,7 @@ public final class ByteFormatter {
         int minSize;
         int maxSize;
 
-        if (pos >= this.simpleMin && pos <= this.simpleMax) {
+        if (pos >= ByteFormatter.DEFAULT_SIMPLE_MIN && pos <= ByteFormatter.DEFAULT_SIMPLE_MAX) {
             simple = true;
         }
 
@@ -186,11 +216,7 @@ public final class ByteFormatter {
         int lexp = 0;
 
         if (!simple) {
-
-            boolean oldAlign = this.align;
-            this.align = false;
-            lexp = format(exp, this.tbuf2, 0, TEMP_BUFFER_SIZE);
-            this.align = oldAlign;
+            lexp = format(exp, this.tbuf2, 0, ByteFormatter.TEMP_BUFFER_SIZE);
 
             minSize = lexp + 2; // e.g., 2e-12
             maxSize = lexp + lmant + 2; // add in "." and e
@@ -201,13 +227,13 @@ public final class ByteFormatter {
                 // Special case. E.g., 99.9 has
                 // minumum size of 3.
                 int i;
-                for (i = 0; i < lmant && i <= exp; i += 1) {
+                for (i = 0; i < lmant && i <= exp; i++) {
                     if (mant[i] != (byte) '9') {
                         break;
                     }
                 }
                 if (i > exp && i < lmant && mant[i] >= (byte) '5') {
-                    minSize += 1;
+                    minSize++;
                 }
 
                 maxSize = lmant + 1; // Add in "."
@@ -220,28 +246,21 @@ public final class ByteFormatter {
             }
         }
         if (val < 0) {
-            minSize += 1;
-            maxSize += 1;
+            minSize++;
+            maxSize++;
         }
 
         // Can the number fit?
-        if (this.truncateOnOverflow && minSize > len || minSize > buf.length - off) {
+        if (minSize > len || minSize > buf.length - off) {
             truncationFiller(buf, off, len);
             return off + len;
-        }
-
-        // Do we need to align it?
-        if (maxSize < len && this.align) {
-            int nal = len - maxSize;
-            off = alignFill(buf, off, nal);
-            len -= nal;
         }
 
         // Now begin filling in the buffer.
         if (val < 0) {
             buf[off] = (byte) '-';
-            off += 1;
-            len -= 1;
+            off++;
+            len--;
         }
 
         if (simple) {
@@ -252,21 +271,21 @@ public final class ByteFormatter {
                 off = -off;
                 len -= off;
                 // Handle the expanded exponent by filling
-                if (exp == 9 || exp == 99) {
+                if (exp == NINE || exp == NINETY_NINE) {
                     // Cannot fit...
                     if (off + len == minSize) {
                         truncationFiller(buf, off, len);
                         return off + len;
                     } else {
                         // Steal a character from the mantissa.
-                        off -= 1;
+                        off--;
                     }
                 }
-                exp += 1;
-                lexp = format(exp, this.tbuf2, 0, TEMP_BUFFER_SIZE);
+                exp++;
+                lexp = format(exp, this.tbuf2, 0, ByteFormatter.TEMP_BUFFER_SIZE);
             }
             buf[off] = (byte) 'E';
-            off += 1;
+            off++;
             System.arraycopy(this.tbuf2, 0, buf, off, lexp);
             return off + lexp;
         }
@@ -300,17 +319,13 @@ public final class ByteFormatter {
      * @return Offset of next available character in buffer.
      */
     public int format(boolean val, byte[] array, int off, int len) {
-        if (this.align && len > 1) {
-            off = alignFill(array, off, len - 1);
-        }
-
         if (len > 0) {
             if (val) {
                 array[off] = (byte) 'T';
             } else {
                 array[off] = (byte) 'F';
             }
-            off += 1;
+            off++;
         }
         return off;
     }
@@ -322,11 +337,9 @@ public final class ByteFormatter {
      *            The double to be formatted.
      * @param array
      *            The array in which to place the result.
-     * @return The number of characters used.
-     * @throws TruncationException
-     *             if the value was truncated
+     * @return The number of characters used. @ * if the value was truncated
      */
-    public int format(double val, byte[] array) throws TruncationException {
+    public int format(double val, byte[] array) {
         return format(val, array, 0, array.length);
     }
 
@@ -358,11 +371,10 @@ public final class ByteFormatter {
      *            Offset within buffer
      * @param len
      *            Maximum length of integer
-     * @return offset of next unused character in input buffer.
-     * @throws TruncationException
-     *             if the value was truncated
+     * @return offset of next unused character in input buffer. @ * if the value
+     *         was truncated
      */
-    public int format(double val, byte[] buf, int off, int len) throws TruncationException {
+    public int format(double val, byte[] buf, int off, int len) {
 
         double pos = Math.abs(val);
 
@@ -380,19 +392,19 @@ public final class ByteFormatter {
         }
 
         int power = (int) (Math.log(pos) * ByteFormatter.I_LOG_10);
-        int shift = 17 - power;
+        int shift = DOUBLE_SHIFT_BASE - power;
         double scale;
         double scale2 = 1;
 
         // Scale the number so that we get a number ~ n x 10^17.
-        if (shift < 200) {
+        if (shift < DOUBLE_SHIFT_LIMIT) {
             scale = ByteFormatter.TEN_POW[shift + ByteFormatter.ZERO_POW];
         } else {
             // Can get overflow if the original number is
             // very small, so we break out the shift
             // into two multipliers.
-            scale2 = ByteFormatter.TEN_POW[200 + ByteFormatter.ZERO_POW];
-            scale = ByteFormatter.TEN_POW[shift - 200 + ByteFormatter.ZERO_POW];
+            scale2 = ByteFormatter.TEN_POW[DOUBLE_SHIFT_LIMIT + ByteFormatter.ZERO_POW];
+            scale = ByteFormatter.TEN_POW[shift - DOUBLE_SHIFT_LIMIT + ByteFormatter.ZERO_POW];
         }
 
         pos = pos * scale * scale2;
@@ -402,27 +414,26 @@ public final class ByteFormatter {
         long bits = Double.doubleToLongBits(pos);
 
         // The exponent should be a little more than 52.
-        int exp = (int) (((bits & 0x7FF0000000000000L) >> 52) - 1023);
+        int exp = (int) (((bits & DOUBLE_EXPONENT_BIT_MASK) >> DOUBLE_EXPONENT_EXCESS) + DOUBLE_MIN_EXPONENT);
 
-        long numb = bits & 0x000FFFFFFFFFFFFFL;
+        long numb = bits & DOUBLE_VALUE_BIT_MASK;
 
-        if (exp > -1023) {
+        // this can never be false because the min exponent of a double is -1022
+        // but lets keep it if we need it for big decimals
+        if (exp > DOUBLE_MIN_EXPONENT) {
             // Normalized....
-            numb |= 0x0010000000000000L;
+            numb |= DOUBLE_EXPONENT_NORMALIZE_BIT;
         } else {
             // Denormalized
-            exp += 1;
+            exp++;
         }
 
         // Multiple this number by the excess of the exponent
         // over 52. This completes the conversion of double to long.
-        numb = numb << exp - 52;
+        numb = numb << exp - DOUBLE_EXPONENT_EXCESS;
 
         // Get a decimal mantissa.
-        boolean oldAlign = this.align;
-        this.align = false;
-        int ndig = format(numb, this.tbuf1, 0, TEMP_BUFFER_SIZE);
-        this.align = oldAlign;
+        int ndig = format(numb, this.tbuf1, 0, ByteFormatter.TEMP_BUFFER_SIZE);
 
         // Now format the double.
 
@@ -436,11 +447,9 @@ public final class ByteFormatter {
      *            The float to be formatted.
      * @param array
      *            The array in which to place the result.
-     * @return The number of characters used.
-     * @throws TruncationException
-     *             if the value was truncated
+     * @return The number of characters used. @ * if the value was truncated
      */
-    public int format(float val, byte[] array) throws TruncationException {
+    public int format(float val, byte[] array) {
         return format(val, array, 0, array.length);
     }
 
@@ -472,11 +481,10 @@ public final class ByteFormatter {
      *            Offset within buffer
      * @param len
      *            Maximum length of field
-     * @return Offset of next character in buffer.
-     * @throws TruncationException
-     *             if the value was truncated
+     * @return Offset of next character in buffer. @ * if the value was
+     *         truncated
      */
-    public int format(float val, byte[] buf, int off, int len) throws TruncationException {
+    public int format(float val, byte[] buf, int off, int len) {
 
         float pos = Math.abs(val);
 
@@ -494,19 +502,19 @@ public final class ByteFormatter {
         }
 
         int power = (int) Math.floor(Math.log(pos) * ByteFormatter.I_LOG_10);
-        int shift = 8 - power;
+        int shift = FLOAT_SHIFT_BASE - power;
         float scale;
         float scale2 = 1;
 
         // Scale the number so that we get a number ~ n x 10^8.
-        if (shift < 30) {
+        if (shift < FLOAT_SHIFT_LIMIT) {
             scale = (float) ByteFormatter.TEN_POW[shift + ByteFormatter.ZERO_POW];
         } else {
             // Can get overflow if the original number is
             // very small, so we break out the shift
             // into two multipliers.
-            scale2 = (float) ByteFormatter.TEN_POW[30 + ByteFormatter.ZERO_POW];
-            scale = (float) ByteFormatter.TEN_POW[shift - 30 + ByteFormatter.ZERO_POW];
+            scale2 = (float) ByteFormatter.TEN_POW[FLOAT_SHIFT_LIMIT + ByteFormatter.ZERO_POW];
+            scale = (float) ByteFormatter.TEN_POW[shift - FLOAT_SHIFT_LIMIT + ByteFormatter.ZERO_POW];
         }
 
         pos = pos * scale * scale2;
@@ -516,29 +524,26 @@ public final class ByteFormatter {
         int bits = Float.floatToIntBits(pos);
 
         // The exponent should be a little more than 23
-        int exp = ((bits & 0x7F800000) >> 23) - 127;
+        int exp = ((bits & FLOAT_EXPONENT_BIT_MASK) >> FLOAT_EXPONENT_EXCESS) + FLOAT_MIN_EXPONENT;
 
-        int numb = bits & 0x007FFFFF;
+        int numb = bits & FLOAT_VALUE_BIT_MASK;
 
-        if (exp > -127) {
+        if (exp > FLOAT_MIN_EXPONENT) {
             // Normalized....
-            numb |= 0x00800000;
+            numb |= FLOAT_EXPONENT_NORMALIZE_BIT;
         } else {
             // Denormalized
-            exp += 1;
+            exp++;
         }
 
         // Multiple this number by the excess of the exponent
         // over 24. This completes the conversion of float to int
         // (<<= did not work on Alpha TruUnix)
 
-        numb = numb << exp - 23L;
+        numb = numb << exp - FLOAT_EXPONENT_EXCESS;
 
         // Get a decimal mantissa.
-        boolean oldAlign = this.align;
-        this.align = false;
-        int ndig = format(numb, this.tbuf1, 0, TEMP_BUFFER_SIZE);
-        this.align = oldAlign;
+        int ndig = format(numb, this.tbuf1, 0, ByteFormatter.TEMP_BUFFER_SIZE);
 
         // Now format the float.
 
@@ -552,11 +557,9 @@ public final class ByteFormatter {
      *            The int to be formatted.
      * @param array
      *            The array in which to place the result.
-     * @return The number of characters used.
-     * @throws TruncationException
-     *             if the value was truncated
+     * @return The number of characters used. @ * if the value was truncated
      */
-    public int format(int val, byte[] array) throws TruncationException {
+    public int format(int val, byte[] array) {
         return format(val, array, 0, array.length);
     }
 
@@ -572,14 +575,12 @@ public final class ByteFormatter {
      * @param len
      *            Maximum length of integer
      * @return offset of next unused character in input buffer.
-     * @throws TruncationException
-     *             if the value was truncated
      */
-    public int format(int val, byte[] buf, int off, int len) throws TruncationException {
+    public int format(int val, byte[] buf, int off, int len) {
 
         // Special case
         if (val == Integer.MIN_VALUE) {
-            if (len > TEN || !this.truncateOnOverflow && buf.length - off > TEN) {
+            if (len > ByteFormatter.TEN) {
                 return format("-2147483648", buf, off, len);
             } else {
                 truncationFiller(buf, off, len);
@@ -593,26 +594,21 @@ public final class ByteFormatter {
         // Otherwise we need to use an intermediary buffer.
 
         int ndig = 1;
-        int dmax = TEN;
+        int dmax = ByteFormatter.TEN;
 
-        while (ndig < TEN && pos >= dmax) {
-            ndig += 1;
-            dmax *= TEN;
+        while (ndig < ByteFormatter.TEN && pos >= dmax) {
+            ndig++;
+            dmax *= ByteFormatter.TEN;
         }
 
         if (val < 0) {
-            ndig += 1;
+            ndig++;
         }
 
         // Truncate if necessary.
-        if (this.truncateOnOverflow && ndig > len || ndig > buf.length - off) {
+        if (ndig > len || ndig > buf.length - off) {
             truncationFiller(buf, off, len);
             return off + len;
-        }
-
-        // Right justify if requested.
-        if (this.align) {
-            off = alignFill(buf, off, len - ndig);
         }
 
         // Now insert the actual characters we want -- backwards
@@ -622,9 +618,9 @@ public final class ByteFormatter {
 
         int xoff = off - 1;
         do {
-            buf[xoff] = ByteFormatter.DIGITS[pos % TEN];
-            xoff -= 1;
-            pos /= TEN;
+            buf[xoff] = ByteFormatter.DIGITS[pos % ByteFormatter.TEN];
+            xoff--;
+            pos /= ByteFormatter.TEN;
         } while (pos > 0);
 
         if (val < 0) {
@@ -641,11 +637,9 @@ public final class ByteFormatter {
      *            The long to be formatted.
      * @param array
      *            The array in which to place the result.
-     * @return The number of characters used.
-     * @throws TruncationException
-     *             if the value was truncated
+     * @return The number of characters used. @ * if the value was truncated
      */
-    public int format(long val, byte[] array) throws TruncationException {
+    public int format(long val, byte[] array) {
         return format(val, array, 0, array.length);
     }
 
@@ -660,75 +654,52 @@ public final class ByteFormatter {
      *            Offset within buffer
      * @param len
      *            Maximum length of integer
-     * @return offset of next unused character in input buffer.
-     * @throws TruncationException
-     *             if the value was truncated
+     * @return offset of next unused character in input buffer. @ * if the value
+     *         was truncated
      */
-    public int format(long val, byte[] buf, int off, int len) throws TruncationException {
-
+    public int format(long val, byte[] buf, int off, int len) {
         // Special case
         if (val == Long.MIN_VALUE) {
-            if (len > 19 || !this.truncateOnOverflow && buf.length - off > 19) {
+            if (len > MAX_LONG_LENGTH) {
                 return format("-9223372036854775808", buf, off, len);
             } else {
                 truncationFiller(buf, off, len);
                 return off + len;
             }
         }
-
         long pos = Math.abs(val);
-
         // First count the number of characters in the result.
         // Otherwise we need to use an intermediary buffer.
-
         int ndig = 1;
-        long dmax = TEN;
-
+        long dmax = ByteFormatter.TEN;
         // Might be faster to try to do this partially in ints
-        while (ndig < 19 && pos >= dmax) {
-
-            ndig += 1;
-            dmax *= TEN;
+        while (ndig < MAX_LONG_LENGTH && pos >= dmax) {
+            ndig++;
+            dmax *= ByteFormatter.TEN;
         }
-
         if (val < 0) {
-            ndig += 1;
+            ndig++;
         }
-
         // Truncate if necessary.
-
-        if (this.truncateOnOverflow && ndig > len || ndig > buf.length - off) {
+        if (ndig > len || ndig > buf.length - off) {
             truncationFiller(buf, off, len);
             return off + len;
         }
-
-        // Right justify if requested.
-        if (this.align) {
-            off = alignFill(buf, off, len - ndig);
-        }
-
         // Now insert the actual characters we want -- backwards.
-
         off += ndig;
         int xoff = off - 1;
-
         buf[xoff] = (byte) '0';
         boolean last = pos == 0;
-
         while (!last) {
-
             // Work on ints rather than longs.
-
-            int giga = (int) (pos % 1000000000L);
-            pos /= 1000000000L;
-
+            int giga = (int) (pos % LONG_TO_INT_MODULO);
+            pos /= LONG_TO_INT_MODULO;
             last = pos == 0;
+            for (int i = 0; i < NINE; i++) {
 
-            for (int i = 0; i < 9; i += 1) {
-
-                buf[xoff] = ByteFormatter.DIGITS[giga % TEN];
-                xoff -= 1;
-                giga /= TEN;
+                buf[xoff] = ByteFormatter.DIGITS[giga % ByteFormatter.TEN];
+                xoff--;
+                giga /= ByteFormatter.TEN;
                 if (last && giga == 0) {
                     break;
                 }
@@ -775,7 +746,7 @@ public final class ByteFormatter {
     public int format(String val, byte[] array, int off, int len) {
 
         if (val == null) {
-            for (int i = 0; i < len; i += 1) {
+            for (int i = 0; i < len; i++) {
                 array[off + i] = (byte) ' ';
             }
             return off + len;
@@ -783,13 +754,9 @@ public final class ByteFormatter {
 
         int slen = val.length();
 
-        if (this.truncateOnOverflow && slen > len || slen > array.length - off) {
+        if (slen > len || slen > array.length - off) {
             val = val.substring(0, len);
             slen = len;
-        }
-
-        if (this.align && len > slen) {
-            off = alignFill(array, off, len - slen);
         }
 
         System.arraycopy(AsciiFuncs.getBytes(val), 0, array, off, slen);
@@ -800,7 +767,7 @@ public final class ByteFormatter {
      * Write the mantissa of the number. This method addresses the subtleties
      * involved in rounding numbers.
      */
-    int mantissa(byte[] mant, int lmant, int exp, boolean simple, byte[] buf, int off, int len) {
+    private int mantissa(byte[] mant, int lmant, int exp, boolean simple, byte[] buf, int off, int len) {
 
         // Save in case we need to extend the number.
         int off0 = off;
@@ -808,20 +775,20 @@ public final class ByteFormatter {
 
         if (exp < 0) {
             buf[off] = (byte) '0';
-            len -= 1;
-            off += 1;
+            len--;
+            off++;
             if (len > 0) {
                 buf[off] = (byte) '.';
-                off += 1;
-                len -= 1;
+                off++;
+                len--;
             }
             // Leading 0s in small numbers.
             int cexp = exp;
             while (cexp < -1 && len > 0) {
                 buf[off] = (byte) '0';
-                cexp += 1;
-                off += 1;
-                len -= 1;
+                cexp++;
+                off++;
+                len--;
             }
 
         } else {
@@ -829,33 +796,33 @@ public final class ByteFormatter {
             // Print out all digits to the left of the decimal.
             while (exp >= 0 && pos < lmant) {
                 buf[off] = mant[pos];
-                off += 1;
-                pos += 1;
-                len -= 1;
-                exp -= 1;
+                off++;
+                pos++;
+                len--;
+                exp--;
             }
             // Trust we have enough space for this.
-            for (int i = 0; i <= exp; i += 1) {
+            for (int i = 0; i <= exp; i++) {
                 buf[off] = (byte) '0';
-                off += 1;
-                len -= 1;
+                off++;
+                len--;
             }
 
             // Add in a decimal if we have space.
             if (len > 0) {
                 buf[off] = (byte) '.';
-                len -= 1;
-                off += 1;
+                len--;
+                off++;
             }
         }
 
         // Now handle the digits to the right of the decimal.
         while (len > 0 && pos < lmant) {
             buf[off] = mant[pos];
-            off += 1;
-            exp -= 1;
-            len -= 1;
-            pos += 1;
+            off++;
+            exp--;
+            len--;
+            pos++;
         }
 
         // Now handle rounding.
@@ -864,7 +831,7 @@ public final class ByteFormatter {
             int i;
 
             // Increment to the left until we find a non-9
-            for (i = off - 1; i >= off0; i -= 1) {
+            for (i = off - 1; i >= off0; i--) {
 
                 if (buf[i] == (byte) '.' || buf[i] == (byte) '-') {
                     continue;
@@ -872,7 +839,7 @@ public final class ByteFormatter {
                 if (buf[i] == (byte) '9') {
                     buf[i] = (byte) '0';
                 } else {
-                    buf[i] += 1;
+                    buf[i]++;
                     break;
                 }
             }
@@ -899,12 +866,12 @@ public final class ByteFormatter {
 
                 buf[off0] = (byte) '1';
                 boolean foundDecimal = false;
-                for (i = off0 + 1; i < off; i += 1) {
+                for (i = off0 + 1; i < off; i++) {
                     if (buf[i] == (byte) '.') {
                         foundDecimal = true;
                         if (simple) {
                             buf[i] = (byte) '0';
-                            i += 1;
+                            i++;
                             if (i < off) {
                                 buf[i] = (byte) '.';
                             }
@@ -914,7 +881,7 @@ public final class ByteFormatter {
                 }
                 if (simple && !foundDecimal) {
                     buf[off + 1] = (byte) '0'; // 99 went to 100
-                    off += 1;
+                    off++;
                 }
 
                 off = -off; // Signal to change exponent if necessary.
@@ -926,72 +893,13 @@ public final class ByteFormatter {
     }
 
     /**
-     * Set the alignment flag.
-     * 
-     * @param val
-     *            Should numbers be right aligned?
-     */
-    public void setAlign(boolean val) {
-        this.align = val;
-    }
-
-    /**
-     * Set the range of real numbers that will be formatted in non-scientific
-     * notation, i.e., .00001 rather than 1.0e-5. The sign of the number is
-     * ignored.
-     * 
-     * @param min
-     *            The minimum value for non-scientific notation.
-     * @param max
-     *            The maximum value for non-scientific notation.
-     */
-    public void setSimpleRange(double min, double max) {
-        this.simpleMin = min;
-        this.simpleMax = max;
-    }
-
-    /**
-     * Set the truncation behavior.
-     * 
-     * @param val
-     *            If set to true (the default) then do not exceed the requested
-     *            length. If a number cannot be sensibly formatted, the
-     *            truncation fill character may be inserted.
-     */
-    public void setTruncateOnOverflow(boolean val) {
-        this.truncateOnOverflow = val;
-    }
-
-    /**
-     * Set the truncation fill character.
-     * 
-     * @param val
-     *            The character to be used in subsequent truncations.
-     */
-    public void setTruncationFill(char val) {
-        this.truncationFill = (byte) val;
-    }
-
-    /**
-     * Should truncations cause a truncation overflow?
-     * 
-     * @param throwException
-     *            <code>true</code> if the trucation exceptions should be thrown
-     */
-    public void setTruncationThrow(boolean throwException) {
-        this.truncationThrow = throwException;
-    }
-
-    /**
      * Fill the buffer with truncation characters. After filling the buffer, a
      * TruncationException will be thrown if the appropriate flag is set.
      */
-    void truncationFiller(byte[] buffer, int offset, int length) throws TruncationException {
-        for (int i = offset; i < offset + length; i += 1) {
-            buffer[i] = this.truncationFill;
-        }
-        if (this.truncationThrow) {
-            throw new TruncationException();
+    private void truncationFiller(byte[] buffer, int offset, int length) {
+        for (int i = offset; i < offset + length; i++) {
+            buffer[i] = ByteFormatter.TRUNCATION_FILL;
         }
     }
+
 }

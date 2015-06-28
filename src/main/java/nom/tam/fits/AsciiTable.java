@@ -45,7 +45,6 @@ import nom.tam.util.ByteParser;
 import nom.tam.util.Cursor;
 import nom.tam.util.FormatException;
 import nom.tam.util.RandomAccess;
-import nom.tam.util.TruncationException;
 
 /** This class represents the data in an ASCII table */
 public class AsciiTable extends AbstractTableData {
@@ -1037,41 +1036,34 @@ public class AsciiTable extends AbstractTableData {
             }
 
             ByteFormatter bf = new ByteFormatter();
-            bf.setTruncationThrow(false);
-            bf.setTruncateOnOverflow(true);
 
             for (int i = 0; i < this.nRows; i += 1) {
 
                 for (int j = 0; j < this.nFields; j += 1) {
                     int offset = i * this.rowLen + this.offsets[j];
                     int len = this.lengths[j];
-
-                    try {
-                        if (this.isNull != null && this.isNull[i * this.nFields + j]) {
-                            if (this.nulls[j] == null) {
-                                throw new FitsException("No null value set when needed");
-                            }
-                            bf.format(this.nulls[j], this.buffer, offset, len);
-                        } else {
-                            if (this.types[j] == String.class) {
-                                String[] s = (String[]) this.data[j];
-                                bf.format(s[i], this.buffer, offset, len);
-                            } else if (this.types[j] == int.class) {
-                                int[] ia = (int[]) this.data[j];
-                                bf.format(ia[i], this.buffer, offset, len);
-                            } else if (this.types[j] == float.class) {
-                                float[] fa = (float[]) this.data[j];
-                                bf.format(fa[i], this.buffer, offset, len);
-                            } else if (this.types[j] == double.class) {
-                                double[] da = (double[]) this.data[j];
-                                bf.format(da[i], this.buffer, offset, len);
-                            } else if (this.types[j] == long.class) {
-                                long[] la = (long[]) this.data[j];
-                                bf.format(la[i], this.buffer, offset, len);
-                            }
+                    if (this.isNull != null && this.isNull[i * this.nFields + j]) {
+                        if (this.nulls[j] == null) {
+                            throw new FitsException("No null value set when needed");
                         }
-                    } catch (TruncationException e) {
-                        LOG.log(Level.WARNING, "Ignoring truncation error:" + i + "," + j);
+                        bf.format(this.nulls[j], this.buffer, offset, len);
+                    } else {
+                        if (this.types[j] == String.class) {
+                            String[] s = (String[]) this.data[j];
+                            bf.format(s[i], this.buffer, offset, len);
+                        } else if (this.types[j] == int.class) {
+                            int[] ia = (int[]) this.data[j];
+                            bf.format(ia[i], this.buffer, offset, len);
+                        } else if (this.types[j] == float.class) {
+                            float[] fa = (float[]) this.data[j];
+                            bf.format(fa[i], this.buffer, offset, len);
+                        } else if (this.types[j] == double.class) {
+                            double[] da = (double[]) this.data[j];
+                            bf.format(da[i], this.buffer, offset, len);
+                        } else if (this.types[j] == long.class) {
+                            long[] la = (long[]) this.data[j];
+                            bf.format(la[i], this.buffer, offset, len);
+                        }
                     }
                 }
             }
