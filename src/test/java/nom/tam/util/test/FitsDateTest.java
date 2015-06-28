@@ -94,6 +94,8 @@ public class FitsDateTest {
 
     @Test
     public void special() throws FitsException {
+        assertEquals("1997-07-25T10:50:01.999", FitsDate.getFitsDateString(new FitsDate("   1997-07-25T10:50:01.999").toDate()));
+        assertEquals("1997-07-25T10:50:01.999", FitsDate.getFitsDateString(new FitsDate("1997-07-25T10:50:01.999   ").toDate()));
         assertEquals("1997-07-25T10:50:01.999", FitsDate.getFitsDateString(new FitsDate("1997-07-25T10:50:01.999").toDate()));
         assertEquals("1997-07-25T10:50:01.009", FitsDate.getFitsDateString(new FitsDate("1997-07-25T10:50:01.009").toDate()));
         assertEquals("1997-07-25T10:50:01.000", FitsDate.getFitsDateString(new FitsDate("1997-07-25T10:50:01").toDate()));

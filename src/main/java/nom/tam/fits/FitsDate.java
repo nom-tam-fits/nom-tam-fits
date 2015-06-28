@@ -37,25 +37,55 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * @author D. Glowacki
+ * Fits date object parsed from the different type of date combinations
  */
 public class FitsDate {
 
-    private static final int FITS_DATE_STRING_SIZE = 23;
-
-    private static final int YEAR_OFFSET = 1900;
-
-    private static final int MILLISECONDS_PER_SECOND = 1000;
+    /**
+     * logger to log to.
+     */
+    private static final Logger LOG = Logger.getLogger(FitsDate.class.getName());
 
     private static final int FIRST_THREE_CHARACTER_VALUE = 100;
 
     private static final int FIRST_TWO_CHARACTER_VALUE = 10;
 
+    private static final int FITS_DATE_STRING_SIZE = 23;
+
     private static final TimeZone GMT = TimeZone.getTimeZone("GMT");
 
-    private static final Logger LOG = Logger.getLogger(FitsDate.class.getName());
+    private static final int NEW_FORMAT_DAY_OF_MONTH_GROUP = 4;
+
+    private static final int NEW_FORMAT_HOUR_GROUP = 6;
+
+    private static final int NEW_FORMAT_MILLISECOND_GROUP = 10;
+
+    private static final int NEW_FORMAT_MINUTE_GROUP = 7;
+
+    private static final int NEW_FORMAT_MONTH_GROUP = 3;
+
+    private static final int NEW_FORMAT_SECOND_GROUP = 8;
+
+    private static final int NEW_FORMAT_YEAR_GROUP = 2;
+
+    private static final Pattern NORMAL_REGEX = Pattern
+            .compile("\\s*(([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9]))(T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])(\\.([0-9][0-9][0-9]|[0-9][0-9]))?)?\\s*");
+
+    private static final int OLD_FORMAT_DAY_OF_MONTH_GROUP = 1;
+
+    private static final int OLD_FORMAT_MONTH_GROUP = 2;
+
+    private static final int OLD_FORMAT_YEAR_GROUP = 3;
+
+    private static final Pattern OLD_REGEX = Pattern.compile("\\s*([0-9][0-9])/([0-9][0-9])/([0-9][0-9])\\s*");
+
+    private static final int TWO_DIGIT_MILISECONDS_FACTOR = 10;
+
+    private static final int YEAR_OFFSET = 1900;
 
     /**
      * @return the current date in FITS date format
@@ -108,21 +138,21 @@ public class FitsDate {
         return fitsDate.toString();
     }
 
-    private int year = -1;
-
-    private int month = -1;
-
-    private int mday = -1;
+    private Date date = null;
 
     private int hour = -1;
 
-    private int minute = -1;
-
-    private int second = -1;
+    private int mday = -1;
 
     private int millisecond = -1;
 
-    private Date date = null;
+    private int minute = -1;
+
+    private int month = -1;
+
+    private int second = -1;
+
+    private int year = -1;
 
     /**
      * Convert a FITS date string to a Java <CODE>Date</CODE> object.
@@ -134,123 +164,51 @@ public class FitsDate {
      */
     public FitsDate(String dStr) throws FitsException {
         // if the date string is null, we are done
-        if (dStr == null) {
+        if (dStr == null || dStr.isEmpty()) {
             return;
         }
-
-        // if the date string is empty, we are done
-        dStr = dStr.trim();
-        if (dStr.length() == 0) {
-            return;
-        }
-
-        // if string contains at least 8 characters...
-        int len = dStr.length();
-        if (len >= 8) {
-            int first;
-
-            // ... and there is a "/" in the string...
-            first = dStr.indexOf('-');
-            if (first == 4 && first < len) {
-
-                // ... this must be an new-style date
-                buildNewDate(dStr, first, len);
-
-                // no "/" found; maybe it is an old-style date...
+        Matcher match = FitsDate.NORMAL_REGEX.matcher(dStr);
+        if (match.matches()) {
+            this.year = getInt(match, FitsDate.NEW_FORMAT_YEAR_GROUP);
+            this.month = getInt(match, FitsDate.NEW_FORMAT_MONTH_GROUP);
+            this.mday = getInt(match, FitsDate.NEW_FORMAT_DAY_OF_MONTH_GROUP);
+            this.hour = getInt(match, FitsDate.NEW_FORMAT_HOUR_GROUP);
+            this.minute = getInt(match, FitsDate.NEW_FORMAT_MINUTE_GROUP);
+            this.second = getInt(match, FitsDate.NEW_FORMAT_SECOND_GROUP);
+            this.millisecond = getMilliseconds(match, FitsDate.NEW_FORMAT_MILLISECOND_GROUP);
+        } else {
+            match = FitsDate.OLD_REGEX.matcher(dStr);
+            if (match.matches()) {
+                this.year = getInt(match, FitsDate.OLD_FORMAT_YEAR_GROUP) + FitsDate.YEAR_OFFSET;
+                this.month = getInt(match, FitsDate.OLD_FORMAT_MONTH_GROUP);
+                this.mday = getInt(match, FitsDate.OLD_FORMAT_DAY_OF_MONTH_GROUP);
             } else {
-
-                first = dStr.indexOf('/');
-                if (first > 1 && first < len) {
-
-                    // ... this must be an old-style date
-                    buildOldDate(dStr, first, len);
+                if (dStr.trim().isEmpty()) {
+                    return;
                 }
-            }
-        }
-
-        if (this.year == -1) {
-            throw new FitsException("Bad FITS date string \"" + dStr + '"');
-        }
-    }
-
-    private void buildNewDate(String dStr, int first, int len) throws FitsException {
-        // find the middle separator
-        int middle = dStr.indexOf('-', first + 1);
-        if (middle > first + 2 && middle < len) {
-            try {
-                // if this date string includes a time...
-                if (middle + 3 < len && dStr.charAt(middle + 3) == 'T') {
-                    // ... try to parse the time
-                    try {
-                        parseTime(dStr.substring(middle + 4));
-                    } catch (FitsException e) {
-                        throw new FitsException("Bad time in FITS date string \"" + dStr + "\"");
-                    }
-                    // we got the time; mark the end of the date string
-                    len = middle + 3;
-                }
-                // parse date string
-                this.year = Integer.parseInt(dStr.substring(0, first));
-                this.month = Integer.parseInt(dStr.substring(first + 1, middle));
-                this.mday = Integer.parseInt(dStr.substring(middle + 1, len));
-                if (FitsDate.LOG.isLoggable(Level.FINEST)) {
-                    FitsDate.LOG.log(Level.FINEST, "New format:" + this.year + " " + this.month + " " + this.mday);
-                }
-            } catch (NumberFormatException e) {
-                // yikes, something failed; reset everything
-                this.year = -1;
-                this.month = -1;
-                this.mday = -1;
-                this.hour = -1;
-                this.minute = -1;
-                this.second = -1;
-                this.millisecond = -1;
+                throw new FitsException("Bad FITS date string \"" + dStr + '"');
             }
         }
     }
 
-    private void buildOldDate(String dStr, int first, int len) {
-        int middle = dStr.indexOf('/', first + 1);
-        if (middle > first + 2 && middle < len) {
-            try {
-                this.year = Integer.parseInt(dStr.substring(middle + 1)) + YEAR_OFFSET;
-                this.month = Integer.parseInt(dStr.substring(first + 1, middle));
-                this.mday = Integer.parseInt(dStr.substring(0, first));
-                if (FitsDate.LOG.isLoggable(Level.FINEST)) {
-                    FitsDate.LOG.log(Level.FINEST, "Old Format:" + this.year + " " + this.month + " " + this.mday);
-                }
-            } catch (NumberFormatException e) {
-                this.year = -1;
-                this.month = -1;
-                this.mday = -1;
-            }
+    private int getInt(Matcher match, int groupIndex) {
+        String value = match.group(groupIndex);
+        if (value != null) {
+            return Integer.parseInt(value);
         }
+        return -1;
     }
 
-    private void parseTime(String tStr) throws FitsException {
-        int first = tStr.indexOf(':');
-        if (first < 0) {
-            throw new FitsException("Bad time");
-        }
-        int len = tStr.length();
-        int middle = tStr.indexOf(':', first + 1);
-        if (middle > first + 2 && middle < len) {
-            if (middle + 3 < len && tStr.charAt(middle + 3) == '.') {
-                double d = Double.valueOf(tStr.substring(middle + 3)).doubleValue();
-                this.millisecond = (int) (d * MILLISECONDS_PER_SECOND);
-                len = middle + 3;
+    private int getMilliseconds(Matcher match, int groupIndex) {
+        String value = match.group(groupIndex);
+        if (value != null) {
+            int result = Integer.parseInt(value);
+            if (value.length() == 2) {
+                result = result * FitsDate.TWO_DIGIT_MILISECONDS_FACTOR;
             }
-            try {
-                this.hour = Integer.parseInt(tStr.substring(0, first));
-                this.minute = Integer.parseInt(tStr.substring(first + 1, middle));
-                this.second = Integer.parseInt(tStr.substring(middle + 1, len));
-            } catch (NumberFormatException e) {
-                this.hour = -1;
-                this.minute = -1;
-                this.second = -1;
-                this.millisecond = -1;
-            }
+            return result;
         }
+        return -1;
     }
 
     /**
@@ -279,7 +237,6 @@ public class FitsDate {
                     FitsDate.LOG.log(Level.FINEST, "2At this point:" + cal.getTime());
                 }
             } else {
-
                 cal.set(Calendar.HOUR_OF_DAY, this.hour);
                 cal.set(Calendar.MINUTE, this.minute);
                 cal.set(Calendar.SECOND, this.second);
@@ -292,7 +249,6 @@ public class FitsDate {
                     FitsDate.LOG.log(Level.FINEST, "3At this point:" + cal.getTime());
                 }
             }
-
             this.date = cal.getTime();
         }
         if (FitsDate.LOG.isLoggable(Level.FINEST)) {
@@ -301,7 +257,6 @@ public class FitsDate {
             FitsDate.LOG.log(Level.FINEST, "  month:" + this.month);
             FitsDate.LOG.log(Level.FINEST, "  mday:" + this.mday);
             FitsDate.LOG.log(Level.FINEST, "  hour:" + this.hour);
-            FitsDate.LOG.log(Level.FINEST, "  Got the day of month:" + this.date.getDate());
         }
         return this.date;
     }
@@ -311,56 +266,38 @@ public class FitsDate {
         if (this.year == -1) {
             return "";
         }
-
-        StringBuffer buf = new StringBuffer(FITS_DATE_STRING_SIZE);
+        StringBuffer buf = new StringBuffer(FitsDate.FITS_DATE_STRING_SIZE);
         buf.append(this.year);
         buf.append('-');
-        if (this.month < FIRST_TWO_CHARACTER_VALUE) {
-            buf.append('0');
-        }
-        buf.append(this.month);
+        appendTwoDigitValue(buf, this.month);
         buf.append('-');
-        if (this.mday < FIRST_TWO_CHARACTER_VALUE) {
-            buf.append('0');
-        }
-        buf.append(this.mday);
-
+        appendTwoDigitValue(buf, mday);
         if (this.hour != -1) {
-
             buf.append('T');
-            if (this.hour < FIRST_TWO_CHARACTER_VALUE) {
-                buf.append('0');
-            }
-
-            buf.append(this.hour);
+            appendTwoDigitValue(buf, this.hour);
             buf.append(':');
-
-            if (this.minute < FIRST_TWO_CHARACTER_VALUE) {
-                buf.append('0');
-            }
-
-            buf.append(this.minute);
+            appendTwoDigitValue(buf, this.minute);
             buf.append(':');
-
-            if (this.second < FIRST_TWO_CHARACTER_VALUE) {
-                buf.append('0');
-            }
-            buf.append(this.second);
-
+            appendTwoDigitValue(buf, this.second);
             if (this.millisecond != -1) {
                 buf.append('.');
-
-                if (this.millisecond < FIRST_THREE_CHARACTER_VALUE) {
-                    if (this.millisecond < FIRST_TWO_CHARACTER_VALUE) {
-                        buf.append("00");
-                    } else {
-                        buf.append('0');
-                    }
-                }
-                buf.append(this.millisecond);
+                appendThreeDigitValue(buf, this.millisecond);
             }
         }
-
         return buf.toString();
+    }
+
+    private void appendThreeDigitValue(StringBuffer buf, int value) {
+        if (value < FitsDate.FIRST_THREE_CHARACTER_VALUE) {
+            buf.append('0');
+        }
+        appendTwoDigitValue(buf, value);
+    }
+
+    private void appendTwoDigitValue(StringBuffer buf, int value) {
+        if (value < FitsDate.FIRST_TWO_CHARACTER_VALUE) {
+            buf.append('0');
+        }
+        buf.append(value);
     }
 }

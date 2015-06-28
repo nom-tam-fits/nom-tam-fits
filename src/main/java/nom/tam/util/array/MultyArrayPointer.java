@@ -84,8 +84,7 @@ public class MultyArrayPointer {
     }
 
     public Object next() {
-        Object result = null;
-        while (result == null) {
+        while (true) {
             if (this.sub != null) {
                 Object subNext = this.sub.next();
                 if (subNext != MultyArrayPointer.END) {
@@ -103,7 +102,6 @@ public class MultyArrayPointer {
                 return element;
             }
         }
-        return result;
     }
 
     public void reset() {
