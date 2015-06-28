@@ -127,7 +127,7 @@ public class UndefinedData extends Data {
 
         int pad = FitsUtil.padding(getTrueSize());
         try {
-            i.skipBytes(pad);
+            i.skipAllBytes(pad);
         } catch (EOFException e) {
             throw new PaddingException("EOF skipping padding in undefined data", this);
         } catch (IOException e) {

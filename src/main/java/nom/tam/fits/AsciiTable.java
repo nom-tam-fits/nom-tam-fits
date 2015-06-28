@@ -745,7 +745,7 @@ public class AsciiTable extends AbstractTableData {
 
         Object[] res = new Object[1];
         try {
-            getBuffer(this.lengths[col], this.fileOffset + row * this.rowLen + this.offsets[col]);
+            getBuffer(this.lengths[col], this.fileOffset + (long) row * (long) this.rowLen + (long) this.offsets[col]);
         } catch (IOException e) {
             this.buffer = null;
             throw new FitsException("Unable to read element");
@@ -775,7 +775,7 @@ public class AsciiTable extends AbstractTableData {
         Object[] res = new Object[this.nFields];
 
         try {
-            getBuffer(this.rowLen, this.fileOffset + row * this.rowLen);
+            getBuffer(this.rowLen, this.fileOffset + (long) row * (long) this.rowLen);
         } catch (IOException e) {
             throw new FitsException("Unable to read row");
         }
@@ -808,14 +808,14 @@ public class AsciiTable extends AbstractTableData {
             setFileOffset(str);
             this.currInput = str;
             if (str instanceof RandomAccess) {
-                str.skipBytes((long) this.nRows * this.rowLen);
+                str.skipAllBytes((long) this.nRows * this.rowLen);
             } else {
                 if ((long) this.rowLen * this.nRows > Integer.MAX_VALUE) {
                     throw new FitsException("Cannot read ASCII table > 2 GB");
                 }
                 getBuffer(this.rowLen * this.nRows, 0);
             }
-            str.skipBytes(FitsUtil.padding(this.nRows * this.rowLen));
+            str.skipAllBytes(FitsUtil.padding(this.nRows * this.rowLen));
         } catch (EOFException e) {
             throw new PaddingException("EOF skipping padding after ASCII Table:" + e, this);
         } catch (IOException e) {

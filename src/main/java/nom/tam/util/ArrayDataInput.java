@@ -326,16 +326,27 @@ public interface ArrayDataInput extends java.io.DataInput, FitsIO {
      * Skip the number of bytes. This differs from the skip method in that it
      * will throw an EOF if a forward skip cannot be fully accomplished...
      * (However that isn't supposed to happen with a random access file, so
-     * there is probably no operational difference). * @param distance the
-     * number of bytes to skip
+     * there is probably no operational difference).
      * 
      * @param toSkip
      *            the number of bytes to skip
-     * @return the number of bytes really skipped
      * @throws IOException
      *             if the underlying stream failed
      */
-    long skipBytes(long toSkip) throws IOException;
+    void skipAllBytes(long toSkip) throws IOException;
+
+    /**
+     * Skip the number of bytes. This differs from the skip method in that it
+     * will throw an EOF if a forward skip cannot be fully accomplished...
+     * (However that isn't supposed to happen with a random access file, so
+     * there is probably no operational difference).
+     * 
+     * @param toSkip
+     *            the number of bytes to skip
+     * @throws IOException
+     *             if the underlying stream failed
+     */
+    void skipAllBytes(int toSkip) throws IOException;
 
     /**
      * Read a buffer and signal an EOF if the requested elements cannot be read.

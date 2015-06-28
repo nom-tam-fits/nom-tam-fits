@@ -176,7 +176,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     @Override
-    public String[] columnKeyStems() {
+    protected String[] columnKeyStems() {
         return KEY_STEMS;
     }
 

@@ -1349,7 +1349,7 @@ public class BinaryTableTest {
             btab.read(new BufferedDataInputStream(in) {
 
                 @Override
-                public long skipBytes(long toSkip) throws IOException {
+                public void skipAllBytes(long toSkip) throws IOException {
                     throw new IOException("all went wrong ;-)");
                 }
             });
@@ -1367,11 +1367,10 @@ public class BinaryTableTest {
                 int pass = 0;
 
                 @Override
-                public long skipBytes(long toSkip) throws IOException {
+                public void skipAllBytes(long toSkip) throws IOException {
                     if (pass++ == 1) {
                         throw new IOException("all went wrong ;-)");
                     }
-                    return toSkip;
                 }
             });
         } catch (Exception ex) {
@@ -1388,11 +1387,10 @@ public class BinaryTableTest {
                 int pass = 0;
 
                 @Override
-                public long skipBytes(long toSkip) throws IOException {
+                public void skipAllBytes(long toSkip) throws IOException {
                     if (pass++ == 1) {
                         throw new EOFException("all went wrong ;-)");
                     }
-                    return toSkip;
                 }
             });
         } catch (Exception ex) {
@@ -1412,7 +1410,7 @@ public class BinaryTableTest {
             btab.read(new BufferedFile("target/testReadExceptions2", "rw") {
 
                 @Override
-                public long skipBytes(long toSkip) throws IOException {
+                public void skipAllBytes(long toSkip) throws IOException {
                     throw new IOException("all went wrong ;-)");
                 }
             });
@@ -1430,11 +1428,10 @@ public class BinaryTableTest {
                 int pass = 0;
 
                 @Override
-                public long skipBytes(long toSkip) throws IOException {
+                public void skipAllBytes(long toSkip) throws IOException {
                     if (pass++ == 1) {
                         throw new IOException("all went wrong ;-)");
                     }
-                    return toSkip;
                 }
             });
         } catch (Exception ex) {
@@ -1451,11 +1448,10 @@ public class BinaryTableTest {
                 int pass = 0;
 
                 @Override
-                public long skipBytes(long toSkip) throws IOException {
+                public void skipAllBytes(long toSkip) throws IOException {
                     if (pass++ == 1) {
                         throw new EOFException("all went wrong ;-)");
                     }
-                    return toSkip;
                 }
             });
         } catch (Exception ex) {

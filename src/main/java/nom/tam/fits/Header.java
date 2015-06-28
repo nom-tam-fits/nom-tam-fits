@@ -1280,7 +1280,7 @@ public class Header implements FitsElement {
         // Read to the end of the current FITS block.
         //
         try {
-            dis.skipBytes(FitsUtil.padding(count * HeaderCard.FITS_HEADER_CARD_SIZE));
+            dis.skipAllBytes(FitsUtil.padding(count * HeaderCard.FITS_HEADER_CARD_SIZE));
         } catch (IOException e) {
             throw new TruncatedFileException(e.getMessage());
         }

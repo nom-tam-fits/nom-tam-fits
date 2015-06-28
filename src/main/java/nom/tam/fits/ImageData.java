@@ -304,7 +304,7 @@ public class ImageData extends Data {
             this.tiler = new ImageDataTiler((RandomAccess) i, ((RandomAccess) i).getFilePointer(), this.dataDescription);
             try {
                 // Handle long skips.
-                i.skipBytes(this.byteSize);
+                i.skipAllBytes(this.byteSize);
             } catch (IOException e) {
                 throw new FitsException("Unable to skip over image:" + e);
             }
@@ -322,7 +322,7 @@ public class ImageData extends Data {
 
         int pad = FitsUtil.padding(getTrueSize());
         try {
-            i.skipBytes(pad);
+            i.skipAllBytes(pad);
         } catch (EOFException e) {
             throw new PaddingException("Error skipping padding after image", this);
         } catch (IOException e) {

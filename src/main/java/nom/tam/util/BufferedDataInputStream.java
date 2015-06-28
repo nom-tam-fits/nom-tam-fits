@@ -640,16 +640,19 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     @Override
     public int skipBytes(int toSkip) throws IOException {
-        return (int) skipBytes((long) toSkip);
+        skipAllBytes(toSkip);
+        return toSkip;
     }
 
     @Override
-    public long skipBytes(long toSkip) throws IOException {
+    public void skipAllBytes(int toSkip) throws IOException {
+        skipAllBytes((long) toSkip);
+    }
 
+    @Override
+    public void skipAllBytes(long toSkip) throws IOException {
         long need = toSkip;
-
         while (need > 0) {
-
             try {
                 long got = skip(need);
                 if (got > 0) {
@@ -683,11 +686,8 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
             }
 
         }
-
         if (need > 0) {
             throw new EOFException();
-        } else {
-            return toSkip;
         }
     }
 

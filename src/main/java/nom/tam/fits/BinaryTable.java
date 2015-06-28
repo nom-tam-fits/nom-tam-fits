@@ -52,6 +52,8 @@ import nom.tam.util.TableException;
  */
 public class BinaryTable extends AbstractTableData {
 
+    private static final long MAX_INTEGER_VALUE = (long) Integer.MAX_VALUE;
+
     private static final int MAX_EMPTY_BLOCK_SIZE = 4000000;
 
     /** Opaque state to pass to ColumnTable */
@@ -167,26 +169,17 @@ public class BinaryTable extends AbstractTableData {
      * row order to a table with objects in column order.
      */
     private static Object[] convertToColumns(Object[][] data) {
-
         Object[] row = data[0];
         int nrow = data.length;
-
         Object[] results = new Object[row.length];
-
         for (int col = 0; col < row.length; col++) {
-
             if (row[col] instanceof String) {
-
                 String[] sa = new String[nrow];
-
                 for (int irow = 0; irow < nrow; irow++) {
                     sa[irow] = (String) data[irow][col];
                 }
-
                 results[col] = sa;
-
             } else {
-
                 Class<?> base = ArrayFuncs.getBaseClass(row[col]);
                 int[] dims = ArrayFuncs.getDimensions(row[col]);
 
@@ -225,7 +218,6 @@ public class BinaryTable extends AbstractTableData {
 
         // The TDIMs value should be of the form: "(iiii,jjjj,kkk,...)"
         int[] dims = null;
-
         int first = tdims.indexOf('(');
         int last = tdims.lastIndexOf(')');
         if (first >= 0 && last > first) {
@@ -235,9 +227,7 @@ public class BinaryTable extends AbstractTableData {
             java.util.StringTokenizer st = new java.util.StringTokenizer(tdims, ",");
             int dim = st.countTokens();
             if (dim > 0) {
-
                 dims = new int[dim];
-
                 for (int i = dim - 1; i >= 0; i -= 1) {
                     dims[i] = Integer.parseInt(st.nextToken().trim());
                 }
@@ -345,15 +335,17 @@ public class BinaryTable extends AbstractTableData {
     public BinaryTable(Header myHeader) throws FitsException {
         long heapSizeL = myHeader.getLongValue("PCOUNT");
         long heapOffsetL = myHeader.getLongValue("THEAP");
-        if (heapOffsetL > Integer.MAX_VALUE) {
+        if (heapOffsetL > MAX_INTEGER_VALUE) {
             throw new FitsException("Heap Offset > 2GB");
         }
-        this.heapOffset = (int) heapOffsetL;
-        if (heapSizeL > Integer.MAX_VALUE) {
+        if (heapSizeL > MAX_INTEGER_VALUE) {
             throw new FitsException("Heap size > 2 GB");
         }
+        if ((heapSizeL - heapOffsetL) > MAX_INTEGER_VALUE) {
+            throw new FitsException("Unable to allocate heap > 2GB");
+        }
+        this.heapOffset = (int) heapOffsetL;
         int heapSize = (int) heapSizeL;
-
         int rwsz = myHeader.getIntValue("NAXIS1");
         this.nRow = myHeader.getIntValue("NAXIS2");
 
@@ -367,18 +359,12 @@ public class BinaryTable extends AbstractTableData {
             throw new FitsException("Inconsistent THEAP and PCOUNT");
         }
 
-        if (heapSize - this.heapOffset > Integer.MAX_VALUE) {
-            throw new FitsException("Unable to allocate heap > 2GB");
-        }
-
         this.heap = new FitsHeap(heapSize - this.heapOffset);
         int nCol = myHeader.getIntValue("TFIELDS");
         this.rowLen = 0;
-
         for (int col = 0; col < nCol; col++) {
             this.rowLen += processCol(myHeader, col);
         }
-
         HeaderCard card = myHeader.findCard("NAXIS1");
         card.setValue(String.valueOf(this.rowLen));
         myHeader.updateLine("NAXIS1", card);
@@ -1244,7 +1230,7 @@ public class BinaryTable extends AbstractTableData {
         }
 
         try {
-            FitsUtil.reposition(this.currInput, this.fileOffset + row * this.rowLen);
+            FitsUtil.reposition(this.currInput, this.fileOffset + (long) row * (long) this.rowLen);
             this.currInput.readLArray(data);
         } catch (IOException e) {
             throw new FitsException("Error in deferred row read");
@@ -1670,13 +1656,13 @@ public class BinaryTable extends AbstractTableData {
         if (i instanceof RandomAccess) {
 
             try {
-                i.skipBytes(getTrueSize());
+                i.skipAllBytes(getTrueSize());
                 this.heapReadFromStream = false;
             } catch (IOException e) {
                 throw new FitsException("Unable to skip binary table HDU:" + e, e);
             }
             try {
-                i.skipBytes(FitsUtil.padding(getTrueSize()));
+                i.skipAllBytes(FitsUtil.padding(getTrueSize()));
             } catch (EOFException e) {
                 throw new PaddingException("Missing padding after binary table:" + e, this);
             } catch (IOException e) {
@@ -1728,7 +1714,7 @@ public class BinaryTable extends AbstractTableData {
     protected void readTrueData(ArrayDataInput i) throws FitsException {
         try {
             this.table.read(i);
-            i.skipBytes(this.heapOffset);
+            i.skipAllBytes(this.heapOffset);
             this.heap.read(i);
             this.heapReadFromStream = true;
 

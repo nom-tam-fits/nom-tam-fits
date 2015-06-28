@@ -156,7 +156,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      * What are the standard column stems for a binary table?
      */
     @Override
-    public String[] columnKeyStems() {
+    protected String[] columnKeyStems() {
         return BinaryTableHDU.KEY_STEMS;
     }
 

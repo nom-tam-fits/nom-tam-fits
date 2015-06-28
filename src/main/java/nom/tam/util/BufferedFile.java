@@ -925,18 +925,21 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     }
 
     @Override
-    public int skipBytes(int toSkip) throws IOException {
-        return (int) skipBytes((long) toSkip);
+    public int skipBytes(int n) throws IOException {
+        skipAllBytes(n);
+        return n;
     }
 
     @Override
-    public long skipBytes(long toSkip) throws IOException {
+    public void skipAllBytes(int toSkip) throws IOException {
+        skipAllBytes((long) toSkip);
+    }
 
+    @Override
+    public void skipAllBytes(long toSkip) throws IOException {
         // Note that we allow negative skips...
         if (skip(toSkip) < toSkip) {
             throw new EOFException();
-        } else {
-            return toSkip;
         }
     }
 

@@ -151,7 +151,7 @@ public class RandomGroupsData extends Data {
         }
         int pad = FitsUtil.padding(getTrueSize());
         try {
-            str.skipBytes(pad);
+            str.skipAllBytes(pad);
         } catch (EOFException e) {
             throw new PaddingException("EOF reading padding after random groups", this);
         } catch (IOException e) {

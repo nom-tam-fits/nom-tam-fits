@@ -70,7 +70,9 @@ public class BigFileTest {
             bf = new BufferedFile(fname, "r");
             long skip = 2500000000L; // 2.5 G
 
-            long val1 = bf.skipBytes(skip);
+            long val1 = bf.getFilePointer();
+            bf.skipAllBytes(skip);
+            val1 = bf.getFilePointer() - val1;
             long val2 = bf.getFilePointer();
             int val = bf.read();
             bf.close();
@@ -80,10 +82,9 @@ public class BigFileTest {
             assertEquals("SkipVal", sample, val);
 
             BufferedDataInputStream bdis = new BufferedDataInputStream(new FileInputStream(fname));
-            val1 = bdis.skipBytes(skip);
+            bdis.skipAllBytes(skip);
             val = bdis.read();
             bdis.close();
-            assertEquals("SSkipResult", skip, val1);
             assertEquals("SSkipVal", sample, val);
         } catch (Exception e) {
             e.printStackTrace(System.err);

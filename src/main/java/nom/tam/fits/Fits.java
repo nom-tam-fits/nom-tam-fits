@@ -174,11 +174,31 @@ public class Fits implements Closeable {
      */
     public static String version() {
         Properties props = new Properties();
+        InputStream versionProperties = null;
         try {
-            props.load(Fits.class.getResourceAsStream("/META-INF/maven/gov.nasa.gsfc.heasarc/nom-tam-fits/pom.properties"));
+            versionProperties = Fits.class.getResourceAsStream("/META-INF/maven/gov.nasa.gsfc.heasarc/nom-tam-fits/pom.properties");
+            props.load(versionProperties);
             return props.getProperty("version");
         } catch (IOException e) {
             return "unknown";
+        } finally {
+            saveClose(versionProperties);
+        }
+    }
+
+    /**
+     * close the input stream, and ignore eventual errors.
+     * 
+     * @param in
+     *            the input stream to close.
+     */
+    public static void saveClose(InputStream in) {
+        if (in != null) {
+            try {
+                in.close();
+            } catch (IOException e) {
+                LOG.log(Level.INFO, "close failed, ignoring", e);
+            }
         }
     }
 
@@ -731,7 +751,7 @@ public class Fits implements Closeable {
         } else {
             Header hdr = new Header(this.dataStr);
             int dataSize = (int) hdr.getDataSize();
-            this.dataStr.skip(dataSize);
+            this.dataStr.skipAllBytes(dataSize);
             if (this.dataStr instanceof RandomAccess) {
                 this.lastFileOffset = ((RandomAccess) this.dataStr).getFilePointer();
             }

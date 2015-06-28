@@ -81,7 +81,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *         Users can supplement this with their own and call the appropriate
      *         deleteColumns fields.
      */
-    public abstract String[] columnKeyStems();
+    protected abstract String[] columnKeyStems();
 
     /**
      * Delete a set of columns from a table.
