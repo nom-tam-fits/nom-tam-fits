@@ -286,6 +286,22 @@
 						<version>6.7</version>
 					</dependency>
 				</dependencies>
+				<executions>
+					<execution>
+						<goals>
+							<goal>checkstyle</goal>
+						</goals>
+						<phase>process-sources</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<configLocation>${project.basedir}/src/main/checkstyle/nom-tam-fits-style.xml</configLocation>
+					<suppressionsLocation>${project.basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
+					<suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
+					<encoding>UTF-8</encoding>
+					<consoleOutput>true</consoleOutput>
+					<failsOnError>true</failsOnError>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>com.github.github</groupId>
@@ -389,7 +405,7 @@
 					<suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
 					<encoding>UTF-8</encoding>
 					<consoleOutput>true</consoleOutput>
-					<failsOnError>false</failsOnError>
+					<failsOnError>true</failsOnError>
 					<linkXRef>true</linkXRef>
 				</configuration>
 				<reportSets>

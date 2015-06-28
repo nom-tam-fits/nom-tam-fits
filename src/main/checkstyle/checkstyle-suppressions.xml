@@ -5,6 +5,10 @@
      "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 
 <suppressions>
-	<suppress checks="." files="nom.tam.fits.test[\\/]" /> 
-	<suppress checks="." files="nom.tam.util.test[\\/]" /> 
+	<suppress checks="." files="nom.tam.fits.test[\\/]" />
+	<suppress checks="." files="nom.tam.util.test[\\/]" />
+	<!-- enumerations may be longer because of the big javadoc's -->
+	<suppress checks="FileLength" files="nom.tam.fits.header[\\/]" />
+	<!-- backward compatibility for two methods -->
+	<suppress checks="MethodName" files="nom.tam.fits.FitsFactory" />
 </suppressions>
