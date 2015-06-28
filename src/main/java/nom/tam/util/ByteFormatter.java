@@ -56,6 +56,12 @@ package nom.tam.util;
  */
 public final class ByteFormatter {
 
+    public static final String NOT_A_NUMBER = "NaN";
+
+    public static final String INFINITY = "Infinity";
+
+    public static final String NEGATIVE_INFINITY = "-Infinity";
+
     /**
      * Maximum magnitude to print in non-scientific notation.
      */
@@ -382,12 +388,12 @@ public final class ByteFormatter {
         if (pos == 0.) {
             return format("0.0", buf, off, len);
         } else if (Double.isNaN(val)) {
-            return format("NaN", buf, off, len);
+            return format(NOT_A_NUMBER, buf, off, len);
         } else if (Double.isInfinite(val)) {
             if (val > 0) {
-                return format("Infinity", buf, off, len);
+                return format(INFINITY, buf, off, len);
             } else {
-                return format("-Infinity", buf, off, len);
+                return format(NEGATIVE_INFINITY, buf, off, len);
             }
         }
 
@@ -492,7 +498,7 @@ public final class ByteFormatter {
         if (pos == 0.) {
             return format("0.0", buf, off, len);
         } else if (Float.isNaN(val)) {
-            return format("NaN", buf, off, len);
+            return format(NOT_A_NUMBER, buf, off, len);
         } else if (Float.isInfinite(val)) {
             if (val > 0) {
                 return format("Infinity", buf, off, len);

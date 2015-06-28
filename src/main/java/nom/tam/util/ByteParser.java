@@ -56,20 +56,42 @@ package nom.tam.util;
  */
 public class ByteParser {
 
-    /** Array being parsed */
-    private byte[] input;
+    private static final double D_TEN = 10.;
 
-    /** Current offset into input. */
-    private int offset;
+    private static final int EXPONENT_DENORMALISATION_CORR_LIMIT = -300;
 
-    /** Length of last parsed value */
-    private int numberLength;
+    private static final double EXPONENT_DENORMALISATION_FACTOR = 1.e-300;
+
+    private static final byte[] INFINITY_LOWER = AsciiFuncs.getBytes(ByteFormatter.INFINITY.toLowerCase());
+
+    private static final byte[] INFINITY_UPPER = AsciiFuncs.getBytes(ByteFormatter.INFINITY.toUpperCase());
+
+    private static final int INFINITY_LENGTH = ByteParser.INFINITY_UPPER.length;
+
+    private static final int INFINITY_SHORTCUT_LENGTH = 3;
+
+    private static final byte[] NOT_A_NUMBER_LOWER = AsciiFuncs.getBytes(ByteFormatter.NOT_A_NUMBER.toLowerCase());
+
+    private static final byte[] NOT_A_NUMBER_UPPER = AsciiFuncs.getBytes(ByteFormatter.NOT_A_NUMBER.toUpperCase());
+
+    private static final int NOT_A_NUMBER_LENGTH = ByteParser.NOT_A_NUMBER_UPPER.length;
+
+    private static final int TEN = 10;
+
+    /** Do we fill up fields? */
+    private boolean fillFields = false;
 
     /** Did we find a sign last time we checked? */
     private boolean foundSign;
 
-    /** Do we fill up fields? */
-    private boolean fillFields = false;
+    /** Array being parsed */
+    private byte[] input;
+
+    /** Length of last parsed value */
+    private int numberLength;
+
+    /** Current offset into input. */
+    private int offset;
 
     /**
      * Construct a parser.
@@ -122,7 +144,7 @@ public class ByteParser {
 
         while (length > 0 && this.input[this.offset] >= '0' && this.input[this.offset] <= '9') {
 
-            number *= 10;
+            number *= ByteParser.TEN;
             number += this.input[this.offset] - '0';
             this.offset++;
             length--;
@@ -208,67 +230,46 @@ public class ByteParser {
      *             if the double was in an unknown format
      */
     public double getDouble(int length) throws FormatException {
-
         int startOffset = this.offset;
-
         boolean error = true;
-
         double number = 0;
         // Skip initial blanks.
         length -= skipWhite(length);
-
         if (length == 0) {
             this.numberLength = this.offset - startOffset;
             return 0;
         }
-
         double mantissaSign = checkSign();
         if (this.foundSign) {
             length--;
         }
-
         // Look for the special strings NaN, Inf,
-        if (length >= 3 && (this.input[this.offset] == 'n' || this.input[this.offset] == 'N') && (this.input[this.offset + 1] == 'a' || this.input[this.offset + 1] == 'A')
-                && (this.input[this.offset + 2] == 'n' || this.input[this.offset + 2] == 'N')) {
-
+        if (isCaseInsensitiv(length, ByteParser.NOT_A_NUMBER_LENGTH, ByteParser.NOT_A_NUMBER_LOWER, ByteParser.NOT_A_NUMBER_UPPER)) {
             number = Double.NaN;
-            length -= 3;
-            this.offset += 3;
-
+            length -= ByteParser.NOT_A_NUMBER_LENGTH;
+            this.offset += ByteParser.NOT_A_NUMBER_LENGTH;
             // Look for the longer string first then try the shorter.
-        } else if (length >= 8 && (this.input[this.offset] == 'i' || this.input[this.offset] == 'I')
-                && (this.input[this.offset + 1] == 'n' || this.input[this.offset + 1] == 'N') && (this.input[this.offset + 2] == 'f' || this.input[this.offset + 2] == 'F')
-                && (this.input[this.offset + 3] == 'i' || this.input[this.offset + 3] == 'I') && (this.input[this.offset + 4] == 'n' || this.input[this.offset + 4] == 'N')
-                && (this.input[this.offset + 5] == 'i' || this.input[this.offset + 5] == 'I') && (this.input[this.offset + 6] == 't' || this.input[this.offset + 6] == 'T')
-                && (this.input[this.offset + 7] == 'y' || this.input[this.offset + 7] == 'Y')) {
+        } else if (isCaseInsensitiv(length, ByteParser.INFINITY_LENGTH, ByteParser.INFINITY_LOWER, ByteParser.INFINITY_UPPER)) {
             number = Double.POSITIVE_INFINITY;
-            length -= 8;
-            this.offset += 8;
-
-        } else if (length >= 3 && (this.input[this.offset] == 'i' || this.input[this.offset] == 'I')
-                && (this.input[this.offset + 1] == 'n' || this.input[this.offset + 1] == 'N') && (this.input[this.offset + 2] == 'f' || this.input[this.offset + 2] == 'F')) {
+            length -= ByteParser.INFINITY_LENGTH;
+            this.offset += ByteParser.INFINITY_LENGTH;
+        } else if (isCaseInsensitiv(length, ByteParser.INFINITY_SHORTCUT_LENGTH, ByteParser.INFINITY_LOWER, ByteParser.INFINITY_UPPER)) {
             number = Double.POSITIVE_INFINITY;
-            length -= 3;
-            this.offset += 3;
-
+            length -= ByteParser.INFINITY_SHORTCUT_LENGTH;
+            this.offset += ByteParser.INFINITY_SHORTCUT_LENGTH;
         } else {
-
             number = getBareInteger(length); // This will update offset
             length -= this.numberLength; // Set by getBareInteger
-
             if (this.numberLength > 0) {
                 error = false;
             }
-
             // Check for fractional values after decimal
             if (length > 0 && this.input[this.offset] == '.') {
-
                 this.offset++;
                 length--;
-
                 double numerator = getBareInteger(length);
                 if (numerator > 0) {
-                    number += numerator / Math.pow(10., this.numberLength);
+                    number += numerator / Math.pow(ByteParser.D_TEN, this.numberLength);
                 }
                 length -= this.numberLength;
                 if (this.numberLength > 0) {
@@ -298,10 +299,12 @@ public class ByteParser {
 
                     // For very small numbers we try to miminize
                     // effects of denormalization.
-                    if (exponent * sign > -300) {
-                        number *= Math.pow(10., exponent * sign);
+                    if (exponent * sign > ByteParser.EXPONENT_DENORMALISATION_CORR_LIMIT) {
+                        number *= Math.pow(ByteParser.D_TEN, exponent * sign);
                     } else {
-                        number = 1.e-300 * (number * Math.pow(10., exponent * sign + 300));
+                        number =
+                                ByteParser.EXPONENT_DENORMALISATION_FACTOR
+                                        * (number * Math.pow(ByteParser.D_TEN, exponent * sign + ByteParser.EXPONENT_DENORMALISATION_CORR_LIMIT * -1));
                     }
                     length -= this.numberLength;
                 }
@@ -378,7 +381,7 @@ public class ByteParser {
         }
 
         while (length > 0 && this.input[this.offset] >= '0' && this.input[this.offset] <= '9') {
-            number = number * 10 + this.input[this.offset] - '0';
+            number = number * ByteParser.TEN + this.input[this.offset] - '0';
             this.offset++;
             length--;
             error = false;
@@ -431,7 +434,7 @@ public class ByteParser {
         }
 
         while (length > 0 && this.input[this.offset] >= '0' && this.input[this.offset] <= '9') {
-            number = number * 10 + this.input[this.offset] - '0';
+            number = number * ByteParser.TEN + this.input[this.offset] - '0';
             error = false;
             this.offset++;
             length--;
@@ -484,6 +487,18 @@ public class ByteParser {
         this.offset += length;
         this.numberLength = length;
         return s;
+    }
+
+    private boolean isCaseInsensitiv(int length, int constantLength, byte[] lowerConstant, byte[] upperConstant) {
+        if (length < constantLength) {
+            return false;
+        }
+        for (int i = 0; i < constantLength; i++) {
+            if (this.input[this.offset + i] != lowerConstant[i] && this.input[this.offset + i] != upperConstant[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
