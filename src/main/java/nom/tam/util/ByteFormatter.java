@@ -93,8 +93,10 @@ public final class ByteFormatter {
 
     private static final int DOUBLE_EXPONENT_EXCESS = 52;
 
+    // The hidden bit in normalized double numbers.
     private static final long DOUBLE_EXPONENT_NORMALIZE_BIT = 0x0010000000000000L;
 
+    // Used to check if double is normalized
     private static final int DOUBLE_MIN_EXPONENT = -1023;
 
     private static final int DOUBLE_SHIFT_BASE = 17;
@@ -107,8 +109,10 @@ public final class ByteFormatter {
 
     private static final int FLOAT_EXPONENT_EXCESS = 23;
 
+    // The hidden bit in normalized floating point numbers.
     private static final int FLOAT_EXPONENT_NORMALIZE_BIT = 0x00800000;
 
+    // Used to check if float is normalized
     private static final int FLOAT_MIN_EXPONENT = -127;
 
     private static final int FLOAT_SHIFT_BASE = 8;
@@ -123,13 +127,16 @@ public final class ByteFormatter {
 
     private static final int MAX_LONG_LENGTH = 19;
 
-    private static final int NINE = 9;
+    private static final int NINE = 9; // The maximum digit. 
+    // Special case handling when rounding up and when incrementing the exponent.
 
-    private static final int NINETY_NINE = 99;
+    private static final int NINETY_NINE = 99; // The maximum two digit integer. 
+    // When we increment an exponent of this value, the exponent gets longer.
+    // Don't need to worry about 999 since exponents can't be that big.
 
     private static final int TEMP_BUFFER_SIZE = 32;
 
-    private static final int TEN = 10;
+    private static final int TEN = 10;  // The underlying base
 
     /**
      * Powers of 10. We overextend on both sides. These should perhaps be
