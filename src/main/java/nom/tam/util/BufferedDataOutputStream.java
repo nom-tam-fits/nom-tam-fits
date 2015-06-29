@@ -421,9 +421,14 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
     @Override
     public void writeUTF(String s) throws IOException {
         // Punt on this one and use standard routines.
-        DataOutputStream d = new DataOutputStream(this);
+        DataOutputStream d = new DataOutputStream(this) {
+
+            @Override
+            public void close() throws IOException {
+                flush();
+            }
+        };
         d.writeUTF(s);
-        d.flush();
-        // do not close the dataoutput stream because it propagates to ourself.
+        d.close();
     }
 }

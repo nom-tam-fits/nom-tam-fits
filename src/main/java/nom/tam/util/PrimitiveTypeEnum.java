@@ -63,7 +63,7 @@ public enum PrimitiveTypeEnum {
 
     private static Map<Class<?>, PrimitiveTypeEnum> lookup;
 
-    private static Map<Class<?>, PrimitiveTypeEnum> getLookup() {
+    private static synchronized Map<Class<?>, PrimitiveTypeEnum> getLookup() {
         if (PrimitiveTypeEnum.lookup == null) {
             PrimitiveTypeEnum.lookup = new HashMap<Class<?>, PrimitiveTypeEnum>();
             for (PrimitiveTypeEnum primitiveTypeEnum : values()) {

@@ -38,6 +38,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import nom.tam.fits.FitsUtil;
+
 /**
  * A data table is conventionally considered to consist of rows and columns,
  * where the structure within each column is constant, but different columns may
@@ -627,7 +629,7 @@ public class ColumnTable<T> implements DataTable {
      * @return An array of Class objects, one for each column.
      */
     public Class<?>[] getBases() {
-        return this.bases;
+        return FitsUtil.unprotectInternalData(this.bases);
     }
 
     /**
@@ -647,7 +649,7 @@ public class ColumnTable<T> implements DataTable {
      * @return the actual data arrays
      */
     public Object[] getColumns() {
-        return this.arrays;
+        return FitsUtil.unprotectInternalData(this.arrays);
     }
 
     /**
@@ -709,7 +711,7 @@ public class ColumnTable<T> implements DataTable {
     }
 
     public int[] getSizes() {
-        return this.sizes;
+        return FitsUtil.unprotectInternalData(this.sizes);
     }
 
     /**
@@ -718,7 +720,7 @@ public class ColumnTable<T> implements DataTable {
      * @return An array of char's, one for each column.
      */
     public char[] getTypes() {
-        return this.types;
+        return FitsUtil.unprotectInternalData(this.types);
     }
 
     /**

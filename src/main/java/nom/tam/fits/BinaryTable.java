@@ -152,7 +152,7 @@ public class BinaryTable extends AbstractTableData {
         }
 
         public int[] getDimens() {
-            return dimens;
+            return FitsUtil.unprotectInternalData(dimens);
         }
 
         public Class<?> getBase() {
@@ -1722,7 +1722,7 @@ public class BinaryTable extends AbstractTableData {
             throw new FitsException("Error reading binary table data:" + e, e);
         }
         try {
-            i.skipBytes(FitsUtil.padding(getTrueSize()));
+            i.skipAllBytes(FitsUtil.padding(getTrueSize()));
         } catch (EOFException e) {
             throw new PaddingException("Error skipping padding after binary table", this);
         } catch (IOException e) {

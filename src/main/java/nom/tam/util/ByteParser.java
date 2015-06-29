@@ -1,5 +1,7 @@
 package nom.tam.util;
 
+import nom.tam.fits.FitsUtil;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -101,7 +103,7 @@ public class ByteParser {
      *            re-used by refilling its contents and resetting the offset.
      */
     public ByteParser(byte[] input) {
-        this.input = input;
+        this.input = FitsUtil.unprotectInternalData(input);
         this.offset = 0;
     }
 
@@ -205,7 +207,7 @@ public class ByteParser {
      * @return the buffer being used by the parser
      */
     public byte[] getBuffer() {
-        return this.input;
+        return FitsUtil.unprotectInternalData(this.input);
     }
 
     /**
@@ -520,7 +522,7 @@ public class ByteParser {
      *            buffer to set
      */
     public void setBuffer(byte[] buf) {
-        this.input = buf;
+        this.input = FitsUtil.unprotectInternalData(buf);
         this.offset = 0;
     }
 

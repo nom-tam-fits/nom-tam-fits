@@ -65,7 +65,7 @@ public class RandomGroupsData extends Data {
      *            as described above.
      */
     public RandomGroupsData(Object[][] x) {
-        this.dataArray = x;
+        this.dataArray = FitsUtil.unprotectInternalData(x);
     }
 
     @Override
@@ -124,7 +124,7 @@ public class RandomGroupsData extends Data {
 
     @Override
     public Object getData() {
-        return this.dataArray;
+        return FitsUtil.unprotectInternalData(this.dataArray);
     }
 
     /** Get the size of the actual data element. */

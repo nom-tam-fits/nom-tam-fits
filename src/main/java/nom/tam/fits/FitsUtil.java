@@ -373,4 +373,17 @@ public final class FitsUtil {
         }
         return res;
     }
+
+    /**
+     * This marker method is used to explicitley allow exposure of internal
+     * array's to the outside of objects. When this method is used the exposure
+     * is done by purpose!
+     * 
+     * @param data
+     *            the data to unprotect
+     * @return the data itself
+     */
+    public static <T> T unprotectInternalData(T data) {
+        return data;
+    }
 }

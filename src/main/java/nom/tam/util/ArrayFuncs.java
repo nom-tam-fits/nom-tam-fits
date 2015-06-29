@@ -128,9 +128,6 @@ public final class ArrayFuncs {
          */
         /* First create the full new array. */
         Object mimic = mimicArray(array, newType);
-        if (mimic == null) {
-            return mimic;
-        }
         /* Now copy the info into the new array */
         copyInto(array, mimic);
         return mimic;

@@ -631,11 +631,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     @Override
     public String readUTF() throws IOException {
-
-        // Punt on this one and use DataInputStream routines.
-        DataInputStream d = new DataInputStream(this);
-        return d.readUTF();
-
+        return DataInputStream.readUTF(this);
     }
 
     @Override

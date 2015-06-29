@@ -1128,7 +1128,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public void writeBytes(String s) throws IOException {
-        write(s.getBytes(), 0, s.length());
+        write(AsciiFuncs.getBytes(s), 0, s.length());
     }
 
     @Override

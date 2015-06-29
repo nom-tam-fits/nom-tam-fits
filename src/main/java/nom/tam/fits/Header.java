@@ -1244,15 +1244,14 @@ public class Header implements FitsElement {
                 // wants to be sure that long strings are disabled,
                 // they can call setLongStringsEnabled(false) after
                 // reading the header.
-                // (Missing null check here fixed thanks to Kevin McAbee).
-                if (key != null && key.equals("LONGSTRN")) {
+                if ("LONGSTRN".equals(key)) {
                     FitsFactory.setLongStringsEnabled(true);
                 }
                 // save card
 
                 this.originalCardCount++; // RBH ADDED
                 addLine(fcard);
-                if (key.equals("END")) {
+                if ("END".equals(key)) {
                     break; // Out of reading the header.
                 }
             }

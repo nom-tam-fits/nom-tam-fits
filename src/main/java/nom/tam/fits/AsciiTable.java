@@ -628,8 +628,7 @@ public class AsciiTable extends AbstractTableData {
                 }
             }
         }
-
-        return this.data;
+        return FitsUtil.unprotectInternalData(this.data);
     }
 
     /**

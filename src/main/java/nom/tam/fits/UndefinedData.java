@@ -107,7 +107,7 @@ public class UndefinedData extends Data {
 
     @Override
     public Object getData() {
-        return this.data;
+        return FitsUtil.unprotectInternalData(this.data);
     }
 
     /** Get the size in bytes of the data */

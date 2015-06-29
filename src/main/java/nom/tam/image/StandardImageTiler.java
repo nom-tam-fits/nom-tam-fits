@@ -33,6 +33,7 @@ package nom.tam.image;
 
 import java.io.IOException;
 
+import nom.tam.fits.FitsUtil;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.RandomAccess;
 
@@ -114,7 +115,7 @@ public abstract class StandardImageTiler implements ImageTiler {
     public StandardImageTiler(RandomAccess f, long fileOffset, int[] dims, Class<?> base) {
         this.randomAccessFile = f;
         this.fileOffset = fileOffset;
-        this.dims = dims;
+        this.dims = FitsUtil.unprotectInternalData(dims);
         this.base = base;
     }
 

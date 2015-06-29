@@ -37,6 +37,7 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,7 +79,7 @@ public class CloseIS extends FilterInputStream {
                         bytes.write(buffer, 0, len);
                     }
                     error.close();
-                    errorText = new String(bytes.toByteArray());
+                    errorText = new String(bytes.toByteArray(), Charset.defaultCharset());
                 } catch (IOException e) {
                     exception = e;
                 }
@@ -108,6 +109,13 @@ public class CloseIS extends FilterInputStream {
                 }
             }
         });
+        start();
+    }
+
+    /**
+     * start all threads.
+     */
+    private void start() {
         stdError.start();
         copier.start();
     }

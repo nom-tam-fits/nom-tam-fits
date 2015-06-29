@@ -258,7 +258,7 @@ public class FitsDate {
             FitsDate.LOG.log(Level.FINEST, "  mday:" + this.mday);
             FitsDate.LOG.log(Level.FINEST, "  hour:" + this.hour);
         }
-        return this.date;
+        return FitsUtil.unprotectInternalData(this.date);
     }
 
     @Override

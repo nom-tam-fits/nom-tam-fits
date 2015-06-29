@@ -55,8 +55,10 @@ import nom.tam.util.RandomAccess;
  */
 public class ImageData extends Data {
 
-    /** This class describes an array */
-    protected class ArrayDesc {
+    /**
+     * This class describes an array
+     */
+    protected static class ArrayDesc {
 
         private int[] dims;
 

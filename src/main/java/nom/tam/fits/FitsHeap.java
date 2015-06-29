@@ -145,7 +145,7 @@ public class FitsHeap implements FitsElement {
                 this.bstr = new BufferedDataInputStream(new ByteArrayInputStream(this.heap));
             }
 
-            this.bstr.skipBytes(offset - this.heapOffset);
+            this.bstr.skipAllBytes(offset - this.heapOffset);
             this.heapOffset = offset;
             this.heapOffset += this.bstr.readLArray(array);
 
