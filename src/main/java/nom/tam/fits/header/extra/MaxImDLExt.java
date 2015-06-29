@@ -223,7 +223,8 @@ public enum MaxImDLExt implements IFitsHeader {
      */
     YBAYROFF(VALUE.REAL, "Y offset of Bayer array");
 
-    private IFitsHeader key;
+    @SuppressWarnings("CPD-START")
+    private final IFitsHeader key;
 
     private MaxImDLExt(String key, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(key, IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType, comment);
@@ -259,6 +260,7 @@ public enum MaxImDLExt implements IFitsHeader {
     }
 
     @Override
+    @SuppressWarnings("CPD-END")
     public VALUE valueType() {
         return this.key.valueType();
     }

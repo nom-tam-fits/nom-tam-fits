@@ -3,6 +3,7 @@ package nom.tam.fits.header;
 import nom.tam.fits.header.extra.NOAOExt;
 import nom.tam.fits.header.extra.SBFitsExt;
 import nom.tam.fits.header.extra.STScIExt;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /*
  * #%L
@@ -56,6 +57,7 @@ public enum Synonyms {
         this.synonyms = synonyms;
     }
 
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "by convention the array may not be changed.")
     public IFitsHeader[] getSynonyms() {
         return this.synonyms;
     }

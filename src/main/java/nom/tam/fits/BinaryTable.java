@@ -46,6 +46,7 @@ import nom.tam.util.Cursor;
 import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.TableException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class defines the methods for accessing FITS binary table data.
@@ -151,8 +152,9 @@ public class BinaryTable extends AbstractTableData {
             }
         }
 
+        @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
         public int[] getDimens() {
-            return FitsUtil.unprotectInternalData(dimens);
+            return dimens;
         }
 
         public Class<?> getBase() {

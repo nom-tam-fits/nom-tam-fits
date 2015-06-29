@@ -38,7 +38,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import nom.tam.fits.FitsUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * A data table is conventionally considered to consist of rows and columns,
@@ -96,6 +96,7 @@ public class ColumnTable<T> implements DataTable {
             }
 
             @Override
+            @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
             public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
                 is.read(table.bytePointers[index], arrOffset, size);
             }
@@ -162,6 +163,7 @@ public class ColumnTable<T> implements DataTable {
             }
 
             @Override
+            @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
             public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
                 is.read(table.charPointers[index], arrOffset, size);
             }
@@ -628,8 +630,9 @@ public class ColumnTable<T> implements DataTable {
      * 
      * @return An array of Class objects, one for each column.
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Class<?>[] getBases() {
-        return FitsUtil.unprotectInternalData(this.bases);
+        return this.bases;
     }
 
     /**
@@ -648,8 +651,9 @@ public class ColumnTable<T> implements DataTable {
     /**
      * @return the actual data arrays
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Object[] getColumns() {
-        return FitsUtil.unprotectInternalData(this.arrays);
+        return this.arrays;
     }
 
     /**
@@ -710,8 +714,9 @@ public class ColumnTable<T> implements DataTable {
         return x;
     }
 
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public int[] getSizes() {
-        return FitsUtil.unprotectInternalData(this.sizes);
+        return this.sizes;
     }
 
     /**
@@ -719,8 +724,9 @@ public class ColumnTable<T> implements DataTable {
      * 
      * @return An array of char's, one for each column.
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public char[] getTypes() {
-        return FitsUtil.unprotectInternalData(this.types);
+        return this.types;
     }
 
     /**

@@ -40,6 +40,7 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class supports the FITS heap. This is currently used for variable length
@@ -202,6 +203,7 @@ public class FitsHeap implements FitsElement {
     /**
      * Read the heap
      */
+    @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     @Override
     public void read(ArrayDataInput str) throws FitsException {
         if (this.heapSize > 0) {

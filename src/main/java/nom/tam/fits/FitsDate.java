@@ -40,6 +40,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Fits date object parsed from the different type of date combinations
  */
@@ -216,6 +218,7 @@ public class FitsDate {
      * 
      * @return The Java Date object.
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Date toDate() {
         if (this.date == null && this.year != -1) {
             Calendar cal = Calendar.getInstance(FitsDate.GMT);
@@ -258,7 +261,7 @@ public class FitsDate {
             FitsDate.LOG.log(Level.FINEST, "  mday:" + this.mday);
             FitsDate.LOG.log(Level.FINEST, "  hour:" + this.hour);
         }
-        return FitsUtil.unprotectInternalData(this.date);
+        return this.date;
     }
 
     @Override

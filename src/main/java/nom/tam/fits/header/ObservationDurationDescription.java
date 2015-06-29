@@ -121,7 +121,8 @@ public enum ObservationDurationDescription implements IFitsHeader {
      */
     TIME_OBS("TIME-OBS", SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "time at the start of the observation");
 
-    private IFitsHeader key;
+    @SuppressWarnings("CPD-START")
+    private final IFitsHeader key;
 
     private ObservationDurationDescription(SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
@@ -157,6 +158,7 @@ public enum ObservationDurationDescription implements IFitsHeader {
     }
 
     @Override
+    @SuppressWarnings("CPD-END")
     public VALUE valueType() {
         return this.key.valueType();
     }

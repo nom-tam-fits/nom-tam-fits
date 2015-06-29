@@ -37,6 +37,7 @@ import java.io.IOException;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class instantiates FITS Random Groups data. Random groups are
@@ -64,8 +65,9 @@ public class RandomGroupsData extends Data {
      *            The initial data array. This should a two-d array of objects
      *            as described above.
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public RandomGroupsData(Object[][] x) {
-        this.dataArray = FitsUtil.unprotectInternalData(x);
+        this.dataArray = x;
     }
 
     @Override
@@ -123,8 +125,9 @@ public class RandomGroupsData extends Data {
     }
 
     @Override
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Object getData() {
-        return FitsUtil.unprotectInternalData(this.dataArray);
+        return this.dataArray;
     }
 
     /** Get the size of the actual data element. */

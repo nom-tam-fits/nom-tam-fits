@@ -1,5 +1,7 @@
 package nom.tam.fits.header;
 
+import java.io.Serializable;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -31,7 +33,12 @@ package nom.tam.fits.header;
  * #L%
  */
 
-public class FitsHeaderImpl implements IFitsHeader {
+public class FitsHeaderImpl implements IFitsHeader, Serializable {
+
+    /**
+     * Serialization id.
+     */
+    private static final long serialVersionUID = 1L;
 
     private final String comment;
 

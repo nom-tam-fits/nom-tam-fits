@@ -544,7 +544,8 @@ public enum Standard implements IFitsHeader {
      */
     XTENSION(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.STRING, "marks beginning of new HDU");
 
-    private IFitsHeader key;
+    @SuppressWarnings("CPD-START")
+    private final IFitsHeader key;
 
     private Standard(SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
@@ -580,6 +581,7 @@ public enum Standard implements IFitsHeader {
     }
 
     @Override
+    @SuppressWarnings("CPD-END")
     public VALUE valueType() {
         return this.key.valueType();
     }

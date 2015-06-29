@@ -84,7 +84,8 @@ public enum CXCStclSharedExt implements IFitsHeader {
      */
     TSTOP("add TIMEZERO and MJDREF for absolute TT");
 
-    private IFitsHeader key;
+    @SuppressWarnings("CPD-START")
+    private final IFitsHeader key;
 
     private CXCStclSharedExt(String comment) {
         this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
@@ -120,6 +121,7 @@ public enum CXCStclSharedExt implements IFitsHeader {
     }
 
     @Override
+    @SuppressWarnings("CPD-END")
     public VALUE valueType() {
         return this.key.valueType();
     }

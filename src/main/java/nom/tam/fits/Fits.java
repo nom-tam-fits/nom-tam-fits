@@ -55,6 +55,7 @@ import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.RandomAccess;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class provides access to routines to allow users to read and write FITS
@@ -462,6 +463,7 @@ public class Fits implements Closeable {
      * @throws FitsException
      *             if the opening of the file failed.
      */
+    @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "stream stays open, and will be read when nessesary.")
     protected void fileInit(File myFile, boolean compressed) throws FitsException {
         try {
             if (compressed) {

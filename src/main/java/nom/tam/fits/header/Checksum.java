@@ -76,7 +76,8 @@ public enum Checksum implements IFitsHeader {
      */
     DATASUM(HDU.ANY, VALUE.STRING, "checksum of the data records");
 
-    private IFitsHeader key;
+    @SuppressWarnings("CPD-START")
+    private final IFitsHeader key;
 
     private Checksum(HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CHECKSUM, hdu, valueType, comment);
@@ -108,8 +109,8 @@ public enum Checksum implements IFitsHeader {
     }
 
     @Override
+    @SuppressWarnings("CPD-END")
     public VALUE valueType() {
         return this.key.valueType();
     }
-
 }

@@ -45,6 +45,7 @@ import nom.tam.util.ByteParser;
 import nom.tam.util.Cursor;
 import nom.tam.util.FormatException;
 import nom.tam.util.RandomAccess;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** This class represents the data in an ASCII table */
 public class AsciiTable extends AbstractTableData {
@@ -589,8 +590,8 @@ public class AsciiTable extends AbstractTableData {
      * @throws FitsException
      *             if the operation failed
      */
-
     @Override
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Object getData() throws FitsException {
 
         if (this.data == null) {
@@ -628,7 +629,7 @@ public class AsciiTable extends AbstractTableData {
                 }
             }
         }
-        return FitsUtil.unprotectInternalData(this.data);
+        return this.data;
     }
 
     /**

@@ -33,9 +33,9 @@ package nom.tam.image;
 
 import java.io.IOException;
 
-import nom.tam.fits.FitsUtil;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.RandomAccess;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class provides a subset of an N-dimensional image. Modified May 2, 2000
@@ -112,10 +112,11 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param base
      *            The base class (should be a primitive type) of the image.
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public StandardImageTiler(RandomAccess f, long fileOffset, int[] dims, Class<?> base) {
         this.randomAccessFile = f;
         this.fileOffset = fileOffset;
-        this.dims = FitsUtil.unprotectInternalData(dims);
+        this.dims = dims;
         this.base = base;
     }
 
@@ -133,6 +134,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @throws IOException
      *             if the underlying stream failed
      */
+    @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     protected void fillFileData(Object output, int delta, int outputOffset, int segment) throws IOException {
 
         this.randomAccessFile.seek(this.fileOffset + delta);

@@ -37,6 +37,7 @@ import java.io.IOException;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class provides a simple holder for data which is not handled by other
@@ -106,8 +107,9 @@ public class UndefinedData extends Data {
     }
 
     @Override
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Object getData() {
-        return FitsUtil.unprotectInternalData(this.data);
+        return this.data;
     }
 
     /** Get the size in bytes of the data */

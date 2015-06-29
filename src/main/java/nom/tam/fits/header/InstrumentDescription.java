@@ -110,7 +110,8 @@ public enum InstrumentDescription implements IFitsHeader {
      */
     SATURATE(SOURCE.STScI, HDU.ANY, VALUE.INTEGER, "Data value at which saturation occurs");
 
-    private IFitsHeader key;
+    @SuppressWarnings("CPD-START")
+    private final IFitsHeader key;
 
     private InstrumentDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
@@ -142,6 +143,7 @@ public enum InstrumentDescription implements IFitsHeader {
     }
 
     @Override
+    @SuppressWarnings("CPD-END")
     public VALUE valueType() {
         return this.key.valueType();
     }

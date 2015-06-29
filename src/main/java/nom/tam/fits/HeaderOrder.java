@@ -1,5 +1,7 @@
 package nom.tam.fits;
 
+import java.io.Serializable;
+
 import nom.tam.fits.header.Standard;
 
 /*
@@ -37,7 +39,12 @@ import nom.tam.fits.header.Standard;
  * This class implements a comparator which ensures that FITS keywords are
  * written out in a proper order.
  */
-public class HeaderOrder implements java.util.Comparator<String> {
+public class HeaderOrder implements java.util.Comparator<String>, Serializable {
+
+    /**
+     * Serialization id.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Which order should the cards indexed by these keys be written out? This
