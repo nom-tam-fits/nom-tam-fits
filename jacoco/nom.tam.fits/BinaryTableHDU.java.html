@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>BinaryTableHDU.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">BinaryTableHDU.java</span></div><h1>BinaryTableHDU.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.io.PrintStream;
+
+import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.ArrayFuncs;
+
+/** FITS binary table header/data unit */
+public class BinaryTableHDU extends TableHDU&lt;BinaryTable&gt; {
+
+    /** The standard column keywords for a binary table. */
+<span class="fc" id="L43">    private static final String[] KEY_STEMS = {</span>
+        &quot;TTYPE&quot;,
+        &quot;TFORM&quot;,
+        &quot;TUNIT&quot;,
+        &quot;TNULL&quot;,
+        &quot;TSCAL&quot;,
+        &quot;TZERO&quot;,
+        &quot;TDISP&quot;,
+        &quot;TDIM&quot;
+    };
+
+    /**
+     * @return Encapsulate data in a BinaryTable data type
+     * @param o
+     *            data to encapsulate
+     * @throws FitsException
+     *             if the type of the data is not usable as data
+     */
+    public static Data encapsulate(Object o) throws FitsException {
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if (o instanceof nom.tam.util.ColumnTable) {</span>
+<span class="fc" id="L63">            return new BinaryTable((nom.tam.util.ColumnTable&lt;?&gt;) o);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        } else if (o instanceof Object[][]) {</span>
+<span class="fc" id="L65">            return new BinaryTable((Object[][]) o);</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        } else if (o instanceof Object[]) {</span>
+<span class="fc" id="L67">            return new BinaryTable((Object[]) o);</span>
+        } else {
+<span class="nc" id="L69">            throw new FitsException(&quot;Unable to encapsulate object of type:&quot; + o.getClass().getName() + &quot; as BinaryTable&quot;);</span>
+        }
+    }
+
+    /*
+     * Check if this data object is consistent with a binary table. There are
+     * three options: a column table object, an Object[][], or an Object[]. This
+     * routine doesn't check that the dimensions of arrays are properly
+     * consistent.
+     */
+    public static boolean isData(Object o) {
+<span class="pc bpc" id="L80" title="1 of 6 branches missed.">        return o instanceof nom.tam.util.ColumnTable || o instanceof Object[][] || o instanceof Object[];</span>
+    }
+
+    /**
+     * Check that this is a valid binary table header.
+     * 
+     * @param header
+     *            to validate.
+     * @return &lt;CODE&gt;true&lt;/CODE&gt; if this is a binary table header.
+     */
+    public static boolean isHeader(Header header) {
+<span class="fc" id="L91">        String xten = header.getStringValue(&quot;XTENSION&quot;);</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">        if (xten == null) {</span>
+<span class="nc" id="L93">            return false;</span>
+        }
+<span class="fc" id="L95">        xten = xten.trim();</span>
+<span class="pc bpc" id="L96" title="1 of 4 branches missed.">        return xten.equals(&quot;BINTABLE&quot;) || xten.equals(&quot;A3DTABLE&quot;);</span>
+    }
+
+    /**
+     * @return a new created data from a binary table header.
+     * @param header
+     *            the template specifying the binary table.
+     * @throws FitsException
+     *             if there was a problem with the header.
+     */
+    public static Data manufactureData(Header header) throws FitsException {
+<span class="fc" id="L107">        return new BinaryTable(header);</span>
+    }
+
+    /**
+     * @return a newly created binary table HDU from the supplied data.
+     * @param data
+     *            the data used to build the binary table. This is typically
+     *            some kind of array of objects.
+     * @throws FitsException
+     *             if there was a problem with the data.
+     */
+    public static Header manufactureHeader(Data data) throws FitsException {
+<span class="fc" id="L119">        Header hdr = new Header();</span>
+<span class="fc" id="L120">        data.fillHeader(hdr);</span>
+<span class="fc" id="L121">        return hdr;</span>
+    }
+
+    public BinaryTableHDU(Header hdr, Data datum) {
+<span class="fc" id="L125">        super((BinaryTable) datum);</span>
+<span class="fc" id="L126">        this.myHeader = hdr;</span>
+<span class="fc" id="L127">        this.myData = (BinaryTable) datum;</span>
+
+<span class="fc" id="L129">    }</span>
+
+    /**
+     * Add a column without any associated header information.
+     * 
+     * @param data
+     *            The column data to be added. Data should be an Object[] where
+     *            type of all of the constituents is identical. The length of
+     *            data should match the other columns. &lt;b&gt; Note:&lt;/b&gt; It is valid
+     *            for data to be a 2 or higher dimensionality primitive array.
+     *            In this case the column index is the first (in Java speak)
+     *            index of the array. E.g., if called with int[30][20][10], the
+     *            number of rows in the table should be 30 and this column will
+     *            have elements which are 2-d integer arrays with TDIM =
+     *            (10,20).
+     * @throws FitsException
+     *             the column could not be added.
+     */
+    @Override
+    public int addColumn(Object data) throws FitsException {
+
+<span class="nc" id="L150">        int col = this.myData.addColumn(data);</span>
+<span class="nc" id="L151">        this.myData.pointToColumn(getNCols() - 1, this.myHeader);</span>
+<span class="nc" id="L152">        return col;</span>
+    }
+
+    /**
+     * What are the standard column stems for a binary table?
+     */
+    @Override
+    protected String[] columnKeyStems() {
+<span class="fc" id="L160">        return BinaryTableHDU.KEY_STEMS;</span>
+    }
+
+    /**
+     * Print out some information about this HDU.
+     */
+    @Override
+    public void info(PrintStream stream) {
+
+<span class="fc" id="L169">        BinaryTable myData = this.myData;</span>
+
+<span class="fc" id="L171">        stream.println(&quot;  Binary Table&quot;);</span>
+<span class="fc" id="L172">        stream.println(&quot;      Header Information:&quot;);</span>
+
+<span class="fc" id="L174">        int nhcol = this.myHeader.getIntValue(&quot;TFIELDS&quot;, -1);</span>
+<span class="fc" id="L175">        int nrow = this.myHeader.getIntValue(&quot;NAXIS2&quot;, -1);</span>
+<span class="fc" id="L176">        int rowsize = this.myHeader.getIntValue(&quot;NAXIS1&quot;, -1);</span>
+
+<span class="fc" id="L178">        stream.print(&quot;          &quot; + nhcol + &quot; fields&quot;);</span>
+<span class="fc" id="L179">        stream.println(&quot;, &quot; + nrow + &quot; rows of length &quot; + rowsize);</span>
+
+<span class="fc bfc" id="L181" title="All 2 branches covered.">        for (int i = 1; i &lt;= nhcol; i += 1) {</span>
+<span class="fc" id="L182">            stream.print(&quot;           &quot; + i + &quot;:&quot;);</span>
+<span class="fc" id="L183">            prtField(stream, &quot;Name&quot;, &quot;TTYPE&quot; + i);</span>
+<span class="fc" id="L184">            prtField(stream, &quot;Format&quot;, &quot;TFORM&quot; + i);</span>
+<span class="fc" id="L185">            prtField(stream, &quot;Dimens&quot;, &quot;TDIM&quot; + i);</span>
+<span class="fc" id="L186">            stream.println(&quot;&quot;);</span>
+        }
+
+<span class="fc" id="L189">        stream.println(&quot;      Data Information:&quot;);</span>
+<span class="pc bpc" id="L190" title="3 of 6 branches missed.">        if (myData == null || this.myData.getNRows() == 0 || this.myData.getNCols() == 0) {</span>
+<span class="nc" id="L191">            stream.println(&quot;         No data present&quot;);</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">            if (this.myData.getHeapSize() &gt; 0) {</span>
+<span class="nc" id="L193">                stream.println(&quot;         Heap size is: &quot; + this.myData.getHeapSize() + &quot; bytes&quot;);</span>
+            }
+        } else {
+
+<span class="fc" id="L197">            stream.println(&quot;          Number of rows=&quot; + this.myData.getNRows());</span>
+<span class="fc" id="L198">            stream.println(&quot;          Number of columns=&quot; + this.myData.getNCols());</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">            if (this.myData.getHeapSize() &gt; 0) {</span>
+<span class="nc" id="L200">                stream.println(&quot;          Heap size is: &quot; + this.myData.getHeapSize() + &quot; bytes&quot;);</span>
+            }
+<span class="fc" id="L202">            Object[] cols = this.myData.getFlatColumns();</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">            for (int i = 0; i &lt; cols.length; i += 1) {</span>
+<span class="fc" id="L204">                stream.println(&quot;           &quot; + i + &quot;:&quot; + ArrayFuncs.arrayDescription(cols[i]));</span>
+            }
+        }
+<span class="fc" id="L207">    }</span>
+
+    /**
+     * Check that this HDU has a valid header.
+     * 
+     * @return &lt;CODE&gt;true&lt;/CODE&gt; if this HDU has a valid header.
+     */
+    public boolean isHeader() {
+<span class="nc" id="L215">        return isHeader(this.myHeader);</span>
+    }
+
+    private void prtField(PrintStream stream, String type, String field) {
+<span class="fc" id="L219">        String val = this.myHeader.getStringValue(field);</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">        if (val != null) {</span>
+<span class="fc" id="L221">            stream.print(type + '=' + val + &quot;; &quot;);</span>
+        }
+<span class="fc" id="L223">    }</span>
+
+    /**
+     * Convert a column in the table to complex. Only tables with appropriate
+     * types and dimensionalities can be converted. It is legal to call this on
+     * a column that is already complex.
+     * 
+     * @param index
+     *            The 0-based index of the column to be converted.
+     * @return Whether the column can be converted
+     * @throws FitsException
+     *             if the header could not be adapted
+     */
+    public boolean setComplexColumn(int index) throws FitsException {
+<span class="fc" id="L237">        boolean status = false;</span>
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">        if (this.myData.setComplexColumn(index)) {</span>
+            // No problem with the data. Make sure the header
+            // is right.
+<span class="fc" id="L241">            BinaryTable.ColumnDesc colDesc = this.myData.getDescriptor(index);</span>
+<span class="fc" id="L242">            int dim = 1;</span>
+<span class="fc" id="L243">            String tdim = &quot;&quot;;</span>
+<span class="fc" id="L244">            String sep = &quot;&quot;;</span>
+            // Don't loop over all values.
+            // The last is the [2] for the complex data.
+<span class="fc" id="L247">            int[] dimens = colDesc.getDimens();</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">            for (int i = 0; i &lt; dimens.length - 1; i += 1) {</span>
+<span class="fc" id="L249">                dim *= dimens[i];</span>
+<span class="fc" id="L250">                tdim = dimens[i] + sep + tdim;</span>
+<span class="fc" id="L251">                sep = &quot;,&quot;;</span>
+            }
+<span class="fc" id="L253">            String suffix = &quot;C&quot;; // For complex</span>
+            // Update the TFORMn keyword.
+
+<span class="fc bfc" id="L256" title="All 2 branches covered.">            if (colDesc.getBase() == double.class) {</span>
+<span class="fc" id="L257">                suffix = &quot;M&quot;;</span>
+            }
+
+            // Worry about variable length columns.
+<span class="fc" id="L261">            String prefix = &quot;&quot;;</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">            if (this.myData.getDescriptor(index).isVarying()) {</span>
+<span class="fc" id="L263">                prefix = &quot;P&quot;;</span>
+<span class="fc" id="L264">                dim = 1;</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">                if (this.myData.getDescriptor(index).isLongVary()) {</span>
+<span class="nc" id="L266">                    prefix = &quot;Q&quot;;</span>
+                }
+            }
+
+            // Now update the header.
+<span class="fc" id="L271">            this.myHeader.findCard(&quot;TFORM&quot; + (index + 1));</span>
+<span class="fc" id="L272">            HeaderCard hc = this.myHeader.nextCard();</span>
+<span class="fc" id="L273">            String oldComment = hc.getComment();</span>
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">            if (oldComment == null) {</span>
+<span class="fc" id="L275">                oldComment = &quot;Column converted to complex&quot;;</span>
+            }
+<span class="fc" id="L277">            this.myHeader.addValue(&quot;TFORM&quot; + (index + 1), dim + prefix + suffix, oldComment);</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">            if (tdim.length() &gt; 0) {</span>
+<span class="fc" id="L279">                this.myHeader.addValue(&quot;TDIM&quot; + (index + 1), &quot;(&quot; + tdim + &quot;)&quot;, &quot;ntf::binarytablehdu:tdimN:1&quot;);</span>
+            } else {
+                // Just in case there used to be a TDIM card that's no longer
+                // needed.
+<span class="fc" id="L283">                this.myHeader.removeCard(&quot;TDIM&quot; + (index + 1));</span>
+            }
+<span class="fc" id="L285">            status = true;</span>
+        }
+<span class="fc" id="L287">        return status;</span>
+    }
+
+    // Need to tell header about the Heap before writing.
+    @Override
+    public void write(ArrayDataOutput ado) throws FitsException {
+
+<span class="fc" id="L294">        int oldSize = this.myHeader.getIntValue(&quot;PCOUNT&quot;);</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">        if (oldSize != this.myData.getHeapSize()) {</span>
+<span class="fc" id="L296">            this.myHeader.addValue(&quot;PCOUNT&quot;, this.myData.getHeapSize(), &quot;ntf::binarytablehdu:pcount:1&quot;);</span>
+        }
+
+<span class="fc bfc" id="L299" title="All 2 branches covered.">        if (this.myHeader.getIntValue(&quot;PCOUNT&quot;) == 0) {</span>
+<span class="fc" id="L300">            this.myHeader.deleteKey(&quot;THEAP&quot;);</span>
+        } else {
+<span class="fc" id="L302">            this.myHeader.getIntValue(&quot;TFIELDS&quot;);</span>
+<span class="fc" id="L303">            int offset = this.myHeader.getIntValue(&quot;NAXIS1&quot;) * this.myHeader.getIntValue(&quot;NAXIS2&quot;) + this.myData.getHeapOffset();</span>
+<span class="fc" id="L304">            this.myHeader.addValue(&quot;THEAP&quot;, offset, &quot;ntf::binarytablehdu:theap:1&quot;);</span>
+        }
+
+<span class="fc" id="L307">        super.write(ado);</span>
+<span class="fc" id="L308">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

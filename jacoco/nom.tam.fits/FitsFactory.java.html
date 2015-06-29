@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FitsFactory.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">FitsFactory.java</span></div><h1>FitsFactory.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+/**
+ * This class contains the code which associates particular FITS types with
+ * header and data configurations. It comprises a set of Factory methods which
+ * call appropriate methods in the HDU classes. If -- God forbid -- a new FITS
+ * HDU type were created, then the XXHDU, XXData classes would need to be added
+ * and this file modified but no other changes should be needed in the FITS
+ * libraries.
+ */
+public final class FitsFactory {
+
+    public static final int FITS_BLOCK_SIZE = 2880;
+
+<span class="fc" id="L46">    private static boolean useAsciiTables = true;</span>
+
+<span class="fc" id="L48">    private static boolean useHierarch = false;</span>
+
+<span class="fc" id="L50">    private static boolean checkAsciiStrings = false;</span>
+
+<span class="fc" id="L52">    private static boolean allowTerminalJunk = false;</span>
+
+<span class="fc" id="L54">    private static boolean longStringsEnabled = false;</span>
+
+<span class="fc" id="L56">    private FitsFactory() {</span>
+<span class="fc" id="L57">    }</span>
+
+    /**
+     * @return Given a Header construct an appropriate data.
+     * @param hdr
+     *            header to create the data from * @throws FitsException if the
+     *            operation failed
+     * @throws FitsException
+     *             if the header did not contain enougth information to detect
+     *             the type of the data
+     */
+    public static Data dataFactory(Header hdr) throws FitsException {
+
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        if (ImageHDU.isHeader(hdr)) {</span>
+<span class="fc" id="L71">            Data d = ImageHDU.manufactureData(hdr);</span>
+<span class="fc" id="L72">            hdr.afterExtend(); // Fix for positioning error noted by V. Forchi</span>
+<span class="fc" id="L73">            return d;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        } else if (RandomGroupsHDU.isHeader(hdr)) {</span>
+<span class="fc" id="L75">            return RandomGroupsHDU.manufactureData(hdr);</span>
+<span class="fc bfc" id="L76" title="All 4 branches covered.">        } else if (FitsFactory.useAsciiTables &amp;&amp; AsciiTableHDU.isHeader(hdr)) {</span>
+<span class="fc" id="L77">            return AsciiTableHDU.manufactureData(hdr);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        } else if (BinaryTableHDU.isHeader(hdr)) {</span>
+<span class="fc" id="L79">            return BinaryTableHDU.manufactureData(hdr);</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        } else if (UndefinedHDU.isHeader(hdr)) {</span>
+<span class="fc" id="L81">            return UndefinedHDU.manufactureData(hdr);</span>
+        } else {
+<span class="nc" id="L83">            throw new FitsException(&quot;Unrecognizable header in dataFactory&quot;);</span>
+        }
+
+    }
+
+    /**
+     * @return Is terminal junk (i.e., non-FITS data following a valid HDU)
+     *         allowed.
+     */
+    public static boolean getAllowTerminalJunk() {
+<span class="fc" id="L93">        return FitsFactory.allowTerminalJunk;</span>
+    }
+
+    /**
+     * @return Get the current status for string checking.
+     */
+    static boolean getCheckAsciiStrings() {
+<span class="fc" id="L100">        return FitsFactory.checkAsciiStrings;</span>
+    }
+
+    /**
+     * @return Get the current status of ASCII table writing
+     */
+    static boolean getUseAsciiTables() {
+<span class="nc" id="L107">        return FitsFactory.useAsciiTables;</span>
+    }
+
+    /**
+     * @return &lt;code&gt;true&lt;/code&gt; if we are processing HIERARCH style keywords
+     */
+    public static boolean getUseHierarch() {
+<span class="fc" id="L114">        return FitsFactory.useHierarch;</span>
+    }
+
+    /**
+     * @return Given Header and data objects return the appropriate type of HDU.
+     * @param hdr
+     *            the header of the date
+     * @param d
+     *            the data
+     * @param &lt;DataClass&gt;
+     *            the class of the data
+     * @throws FitsException
+     *             if the operation failed
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public static &lt;DataClass extends Data&gt; BasicHDU&lt;DataClass&gt; hduFactory(Header hdr, DataClass d) throws FitsException {
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        if (d instanceof ImageData) {</span>
+<span class="fc" id="L131">            return (BasicHDU&lt;DataClass&gt;) new ImageHDU(hdr, d);</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        } else if (d instanceof RandomGroupsData) {</span>
+<span class="fc" id="L133">            return (BasicHDU&lt;DataClass&gt;) new RandomGroupsHDU(hdr, d);</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">        } else if (d instanceof AsciiTable) {</span>
+<span class="fc" id="L135">            return (BasicHDU&lt;DataClass&gt;) new AsciiTableHDU(hdr, d);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        } else if (d instanceof BinaryTable) {</span>
+<span class="fc" id="L137">            return (BasicHDU&lt;DataClass&gt;) new BinaryTableHDU(hdr, d);</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">        } else if (d instanceof UndefinedData) {</span>
+<span class="fc" id="L139">            return (BasicHDU&lt;DataClass&gt;) new UndefinedHDU(hdr, d);</span>
+        }
+<span class="nc" id="L141">        return null;</span>
+    }
+
+    // CHECKSTYLE:OFF
+    /**
+     * @return Given Header and data objects return the appropriate type of HDU.
+     * @param hdr
+     *            the header of the date
+     * @param d
+     *            the data
+     * @param &lt;DataClass&gt;
+     *            the class of the data
+     * @throws FitsException
+     *             if the operation failed
+     * @deprecated use {@link #hduFactory(Header, Data)} instead
+     */
+    @Deprecated
+    public static &lt;DataClass extends Data&gt; BasicHDU&lt;DataClass&gt; HDUFactory(Header hdr, DataClass d) throws FitsException {
+<span class="fc" id="L159">        return hduFactory(hdr, d);</span>
+    }
+
+    // CHECKSTYLE:ON
+
+    // CHECKSTYLE:OFF
+    /**
+     * @return Given an object, create the appropriate FITS header to describe
+     *         it.
+     * @param o
+     *            The object to be described.
+     * @throws FitsException
+     *             if the parameter could not be converted to a hdu.
+     * @deprecated use {@link #hduFactory(Object)} instead
+     */
+    @Deprecated
+    public static BasicHDU&lt;?&gt; HDUFactory(Object o) throws FitsException {
+<span class="nc" id="L176">        return hduFactory(o);</span>
+    }
+
+    // CHECKSTYLE:ON
+
+    /**
+     * @return Given an object, create the appropriate FITS header to describe
+     *         it.
+     * @param o
+     *            The object to be described.
+     * @throws FitsException
+     *             if the parameter could not be converted to a hdu.
+     */
+    public static BasicHDU&lt;?&gt; hduFactory(Object o) throws FitsException {
+        Data d;
+        Header h;
+
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        if (o instanceof Header) {</span>
+<span class="fc" id="L194">            h = (Header) o;</span>
+<span class="fc" id="L195">            d = dataFactory(h);</span>
+
+<span class="fc bfc" id="L197" title="All 2 branches covered.">        } else if (ImageHDU.isData(o)) {</span>
+<span class="fc" id="L198">            d = ImageHDU.encapsulate(o);</span>
+<span class="fc" id="L199">            h = ImageHDU.manufactureHeader(d);</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        } else if (RandomGroupsHDU.isData(o)) {</span>
+<span class="fc" id="L201">            d = RandomGroupsHDU.encapsulate(o);</span>
+<span class="fc" id="L202">            h = RandomGroupsHDU.manufactureHeader(d);</span>
+<span class="fc bfc" id="L203" title="All 4 branches covered.">        } else if (FitsFactory.useAsciiTables &amp;&amp; AsciiTableHDU.isData(o)) {</span>
+<span class="fc" id="L204">            d = AsciiTableHDU.encapsulate(o);</span>
+<span class="fc" id="L205">            h = AsciiTableHDU.manufactureHeader(d);</span>
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">        } else if (BinaryTableHDU.isData(o)) {</span>
+<span class="fc" id="L207">            d = BinaryTableHDU.encapsulate(o);</span>
+<span class="fc" id="L208">            h = BinaryTableHDU.manufactureHeader(d);</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">        } else if (UndefinedHDU.isData(o)) {</span>
+<span class="nc" id="L210">            d = UndefinedHDU.encapsulate(o);</span>
+<span class="nc" id="L211">            h = UndefinedHDU.manufactureHeader(d);</span>
+        } else {
+<span class="nc" id="L213">            throw new FitsException(&quot;Invalid data presented to HDUFactory&quot;);</span>
+        }
+
+<span class="fc" id="L216">        return hduFactory(h, d);</span>
+    }
+
+    /**
+     * @return &lt;code&gt;true&lt;/code&gt; If long string support is enabled.
+     */
+    public static boolean isLongStringsEnabled() {
+<span class="fc" id="L223">        return FitsFactory.longStringsEnabled;</span>
+    }
+
+    /**
+     * Do we allow junk after a valid FITS file?
+     * 
+     * @param allowTerminalJunk
+     *            value to set
+     */
+    public static void setAllowTerminalJunk(boolean allowTerminalJunk) {
+<span class="fc" id="L233">        FitsFactory.allowTerminalJunk = allowTerminalJunk;</span>
+<span class="fc" id="L234">    }</span>
+
+    /**
+     * Enable/Disable checking of strings values used in tables to ensure that
+     * they are within the range specified by the FITS standard. The standard
+     * only allows the values 0x20 - 0x7E with null bytes allowed in one limited
+     * context. Disabled by default.
+     * 
+     * @param checkAsciiStrings
+     *            value to set
+     */
+    public static void setCheckAsciiStrings(boolean checkAsciiStrings) {
+<span class="fc" id="L246">        FitsFactory.checkAsciiStrings = checkAsciiStrings;</span>
+<span class="fc" id="L247">    }</span>
+
+    /**
+     * Enable/Disable longstring support.
+     * 
+     * @param longStringsEnabled
+     *            value to set
+     */
+    public static void setLongStringsEnabled(boolean longStringsEnabled) {
+<span class="fc" id="L256">        FitsFactory.longStringsEnabled = longStringsEnabled;</span>
+<span class="fc" id="L257">    }</span>
+
+    /**
+     * Indicate whether ASCII tables should be used where feasible.
+     * 
+     * @param useAsciiTables
+     *            value to set
+     */
+    public static void setUseAsciiTables(boolean useAsciiTables) {
+<span class="fc" id="L266">        FitsFactory.useAsciiTables = useAsciiTables;</span>
+<span class="fc" id="L267">    }</span>
+
+    /**
+     * Enable/Disable hierarchical keyword processing.
+     * 
+     * @param useHierarch
+     *            value to set
+     */
+    public static void setUseHierarch(boolean useHierarch) {
+<span class="fc" id="L276">        FitsFactory.useHierarch = useHierarch;</span>
+<span class="fc" id="L277">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

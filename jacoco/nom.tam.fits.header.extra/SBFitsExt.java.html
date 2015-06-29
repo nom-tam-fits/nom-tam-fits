@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SBFitsExt.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.header.extra</a> &gt; <span class="el_source">SBFitsExt.java</span></div><h1>SBFitsExt.java</h1><pre class="source lang-java linenums">package nom.tam.fits.header.extra;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.IFitsHeader;
+
+/**
+ * A Set of FITS Standard Extensions for Amateur Astronomical Processing
+ * Software Packages published by SBIG.
+ * &lt;p&gt;
+ * Please note that SBIG has published a FITS Standard SBIGFITSEXT that SBIG
+ * with CCDOps , Software Bisque with CCDSoft and Diffraction Limited with
+ * MaximDl all agreed to and implemented.
+ * &lt;/p&gt;
+ * 
+ * &lt;pre&gt;
+ * @see &lt;a href=&quot;http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf&quot;&gt;http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf&lt;/a&gt;
+ * &lt;/pre&gt;
+ * 
+ * @author Richard van Nieuwenhoven.
+ */
+<span class="pc" id="L52">public enum SBFitsExt implements IFitsHeader {</span>
+    /**
+     * Aperture Area of the Telescope used in square millimeters. Note that we
+     * are specifying the area as well as the diameter because we want to be
+     * able to correct for any central obstruction.
+     */
+<span class="fc" id="L58">    APTAREA(VALUE.REAL, &quot;Aperture Area of the Telescope&quot;),</span>
+    /**
+     * Aperture Diameter of the Telescope used in millimeters.
+     */
+<span class="fc" id="L62">    APTDIA(VALUE.REAL, &quot;Aperture Diameter of the Telescope&quot;),</span>
+    /**
+     * Upon initial display of this image use this ADU level for the Black
+     * level.
+     */
+<span class="fc" id="L67">    CBLACK(VALUE.INTEGER, &quot;use this ADU level for the Black&quot;),</span>
+    /**
+     * Temperature of CCD when exposure taken.
+     */
+<span class="fc" id="L71">    CCD_TEMP(&quot;CCD-TEMP&quot;, VALUE.REAL, &quot;Temperature of CCD&quot;),</span>
+    /**
+     * Altitude in degrees of the center of the image in degrees. Format is the
+     * same as the OBJCTDEC keyword.
+     */
+<span class="fc" id="L76">    CENTALT(VALUE.STRING, &quot;Altitude of the center of the image&quot;),</span>
+    /**
+     * Azimuth in degrees of the center of the image in degrees. Format is the
+     * same as the OBJCTDEC keyword.
+     */
+<span class="fc" id="L81">    CENTAZ(VALUE.STRING, &quot;Azimuth of the center of the image&quot;),</span>
+    /**
+     * Upon initial display of this image use this ADU level as the White level.
+     * For the SBIG method of displaying images using Background and Range the
+     * following conversions would be used: Background = CBLACK Range = CWHITE -
+     * CBLACK.
+     */
+<span class="fc" id="L88">    CWHITE(VALUE.INTEGER, &quot;use this ADU level for the White&quot;),</span>
+    /**
+     * Total dark time of the observation. This is the total time during which
+     * dark current is collected by the detector. If the times in the extension
+     * are different the primary HDU gives one of the extension times.
+     * &lt;p&gt;
+     * units = UNITTIME
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * default value = EXPTIME
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * index = none
+     * &lt;/p&gt;
+     */
+<span class="fc" id="L103">    DARKTIME(VALUE.REAL, &quot;Dark time&quot;),</span>
+    /**
+     * Electronic gain in e-/ADU.
+     */
+<span class="fc" id="L107">    EGAIN(VALUE.REAL, &quot;Electronic gain in e-/ADU&quot;),</span>
+    /*
+     * Optional Keywords &lt;p&gt; The following Keywords are not defined in the FITS
+     * Standard but are defined in this Standard. They may or may not be
+     * included by AIP Software Packages adhering to this Standard. Any of these
+     * keywords read by an AIP Package must be preserved in files written. &lt;/p&gt;
+     */
+    /**
+     * Focal Length of the Telescope used in millimeters.
+     */
+<span class="fc" id="L117">    FOCALLEN(VALUE.REAL, &quot;Focal Length of the Telescope&quot;),</span>
+    /**
+     * This indicates the type of image and should be one of the following:
+     * Light Frame Dark Frame Bias Frame Flat Field.
+     */
+<span class="fc" id="L122">    IMAGETYP(VALUE.STRING, &quot;type of image&quot;),</span>
+    /**
+     * This is the Declination of the center of the image in degrees. The format
+     * for this is ‘+25 12 34.111’ (SDD MM SS.SSS) using a space as the
+     * separator. For the sign, North is + and South is -.
+     */
+<span class="fc" id="L128">    OBJCTDEC(VALUE.STRING, &quot;Declination of the center of the image&quot;),</span>
+    /**
+     * This is the Right Ascension of the center of the image in hours, minutes
+     * and secon ds. The format for this is ’12 24 23.123’ (HH MM SS.SSS) using
+     * a space as the separator.
+     */
+<span class="fc" id="L134">    OBJCTRA(VALUE.STRING, &quot;Right Ascension of the center of the image&quot;),</span>
+    /**
+     * Add this ADU count to each pixel value to get to a zero - based ADU. For
+     * example in SBIG images we add 100 ADU to each pixel to stop underflow at
+     * Zero ADU from noise. We would set PEDESTAL to - 100 in this case.
+     */
+<span class="fc" id="L140">    PEDESTAL(VALUE.INTEGER, &quot;ADU count to each pixel value to get to a zero&quot;),</span>
+    /**
+     * This string indicates the version of this standard that the image was
+     * created to ie ‘SBFITSEXT Version 1.0’.
+     */
+<span class="fc" id="L145">    SBSTDVER(VALUE.STRING, &quot;version of this standard&quot;),</span>
+    /**
+     * This is the setpoint of the cooling in degrees C. If it is not specified
+     * the setpoint is assumed to be the
+     */
+<span class="fc" id="L150">    SET_TEMP(&quot;SET-TEMP&quot;, VALUE.REAL, &quot;setpoint of the cooling in degrees C&quot;),</span>
+    /**
+     * Latitude of the imaging location in degrees. Format is the same as the
+     * OBJCTDEC key word.
+     */
+<span class="fc" id="L155">    SITELAT(VALUE.STRING, &quot;Latitude of the imaging location&quot;),</span>
+
+    /**
+     * Longitude of the imaging location in degrees. Format is the same as the
+     * OBJCTDEC keyword.
+     */
+<span class="fc" id="L161">    SITELONG(VALUE.STRING, &quot;Longitude of the imaging location&quot;),</span>
+    /**
+     * Number of images combined to make this image as in Track and Accumulate
+     * or Co - Added images.
+     */
+<span class="fc" id="L166">    SNAPSHOT(VALUE.INTEGER, &quot;Number of images combined&quot;),</span>
+    /**
+     * This indicates the name and version of the Software that initially
+     * created this file ie ‘SBIGs CCDOps Version 5.10’.
+     */
+<span class="fc" id="L171">    SWCREATE(VALUE.STRING, &quot;created version of the Software&quot;),</span>
+    /**
+     * This indicates the name and version of the Software that modified this
+     * file ie ‘SBIGs CCDOps Version 5.10’ and the re can be multiple copies of
+     * this keyword. Only add this keyword if you actually modified the image
+     * and we suggest placing this above the HISTORY keywords corresponding to
+     * the modifications made to the image.
+     */
+<span class="fc" id="L179">    SWMODIFY(VALUE.STRING, &quot;modified version of the Software&quot;),</span>
+
+    /**
+     * If the image was auto-guided this is the exposure time in seconds of the
+     * tracker used to acquire this image. If this keyword is not present then
+     * the image was unguided or hand guided.
+     */
+<span class="fc" id="L186">    TRAKTIME(VALUE.REAL, &quot;exposure time in seconds of the tracker&quot;),</span>
+
+    /**
+     * Binning factor in width.
+     */
+<span class="fc" id="L191">    XBINNING(VALUE.INTEGER, &quot;Binning factor in width&quot;),</span>
+    /**
+     * Sub frame X position of upper left pixel relative to whole frame in
+     * binned pixel units.
+     */
+<span class="fc" id="L196">    XORGSUBF(VALUE.INTEGER, &quot;Sub frame X position&quot;),</span>
+
+    /**
+     * Pixel width in microns (after binning).
+     */
+<span class="fc" id="L201">    XPIXSZ(VALUE.REAL, &quot;Pixel width in microns&quot;),</span>
+    /**
+     * Binning factor in height.
+     */
+<span class="fc" id="L205">    YBINNING(VALUE.INTEGER, &quot;Binning factor in height&quot;),</span>
+    /**
+     * Sub frame Y position of upper left pixel relative to whole frame in
+     * binned pixel units.
+     */
+<span class="fc" id="L210">    YORGSUBF(VALUE.INTEGER, &quot;Sub frame Y position&quot;),</span>
+    /**
+     * Pixel height in microns (after binning).
+     */
+<span class="fc" id="L214">    YPIXSZ(VALUE.REAL, &quot;Pixel height in microns&quot;);</span>
+
+    private IFitsHeader key;
+
+<span class="fc" id="L218">    private SBFitsExt(String key, VALUE valueType, String comment) {</span>
+<span class="fc" id="L219">        this.key = new FitsHeaderImpl(key, IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);</span>
+<span class="fc" id="L220">    }</span>
+
+<span class="fc" id="L222">    private SBFitsExt(VALUE valueType, String comment) {</span>
+<span class="fc" id="L223">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);</span>
+<span class="fc" id="L224">    }</span>
+
+    @Override
+    public String comment() {
+<span class="fc" id="L228">        return this.key.comment();</span>
+    }
+
+    @Override
+    public HDU hdu() {
+<span class="fc" id="L233">        return this.key.hdu();</span>
+    }
+
+    @Override
+    public String key() {
+<span class="fc" id="L238">        return this.key.key();</span>
+    }
+
+    @Override
+    public IFitsHeader n(int... number) {
+<span class="fc" id="L243">        return this.key.n(number);</span>
+    }
+
+    @Override
+    public SOURCE status() {
+<span class="fc" id="L248">        return this.key.status();</span>
+    }
+
+    @Override
+    public VALUE valueType() {
+<span class="fc" id="L253">        return this.key.valueType();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

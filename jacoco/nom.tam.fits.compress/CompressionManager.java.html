@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CompressionManager.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compress</a> &gt; <span class="el_source">CompressionManager.java</span></div><h1>CompressionManager.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compress;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ServiceLoader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import nom.tam.fits.FitsException;
+
+public final class CompressionManager {
+
+    private static final String BZIP2_EXTENTION = &quot;.bz2&quot;;
+
+    private static final String COMPRESS_EXTENTION = &quot;.Z&quot;;
+
+    private static final String GZIP_EXTENTION = &quot;.gz&quot;;
+
+    public static final int ONE_MEGABYTE = 1024 * 1024;
+
+    /**
+     * logger to log to.
+     */
+<span class="fc" id="L58">    private static final Logger LOG = Logger.getLogger(CompressionManager.class.getName());</span>
+
+<span class="fc" id="L60">    private CompressionManager() {</span>
+<span class="fc" id="L61">    }</span>
+
+    /**
+     * This method decompresses a compressed input stream. The decompression
+     * method is selected automatically based upon the first two bytes read.
+     * 
+     * @param compressed
+     *            The compressed input stram
+     * @return A stream which wraps the input stream and decompresses it. If the
+     *         input stream is not compressed, a pushback input stream wrapping
+     *         the original stream is returned.
+     * @throws FitsException
+     *             when the stream could not be read or decompressed
+     */
+    public static InputStream decompress(InputStream compressed) throws FitsException {
+
+<span class="fc" id="L77">        BufferedInputStream pb = new BufferedInputStream(compressed, ONE_MEGABYTE);</span>
+
+<span class="fc" id="L79">        pb.mark(2);</span>
+<span class="fc" id="L80">        int mag1 = -1;</span>
+<span class="fc" id="L81">        int mag2 = -1;</span>
+
+        try {
+<span class="fc" id="L84">            mag1 = pb.read();</span>
+<span class="fc" id="L85">            mag2 = pb.read();</span>
+            // Push the data back into the stream
+<span class="fc" id="L87">            pb.reset();</span>
+
+<span class="fc" id="L89">            ICompressProvider selectedProvider = selectCompressionProvider(mag1, mag2);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">            if (selectedProvider != null) {</span>
+<span class="fc" id="L91">                return selectedProvider.decompress(pb);</span>
+            } else {
+<span class="fc" id="L93">                return pb;</span>
+            }
+
+<span class="nc" id="L96">        } catch (IOException e) {</span>
+            // This is probably a prelude to failure...
+<span class="nc" id="L98">            throw new FitsException(&quot;Unable to analyze input stream&quot;);</span>
+        }
+    }
+
+    /**
+     * Is a file compressed? (the magic number in the first 2 bytes is used to
+     * detect the compression.
+     * 
+     * @param file
+     *            file to test for compression algorithms
+     * @return true if the file is compressed
+     */
+    public static boolean isCompressed(File file) {
+<span class="fc" id="L111">        InputStream fis = null;</span>
+        try {
+<span class="fc bfc" id="L113" title="All 2 branches covered.">            if (file.exists()) {</span>
+<span class="fc" id="L114">                fis = new FileInputStream(file);</span>
+<span class="fc" id="L115">                int mag1 = fis.read();</span>
+<span class="fc" id="L116">                int mag2 = fis.read();</span>
+<span class="fc" id="L117">                fis.close();</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">                return selectCompressionProvider(mag1, mag2) != null;</span>
+            }
+
+<span class="nc" id="L121">        } catch (IOException e) {</span>
+            // This is probably a prelude to failure...
+<span class="nc" id="L123">            return false;</span>
+
+        } finally {
+<span class="pc bpc" id="L126" title="6 of 8 branches missed.">            if (fis != null) {</span>
+                try {
+<span class="pc" id="L128">                    fis.close();</span>
+<span class="nc" id="L129">                } catch (IOException e) {</span>
+<span class="nc" id="L130">                    LOG.log(Level.FINEST, &quot;could not close stream&quot;, e);</span>
+<span class="pc" id="L131">                }</span>
+            }
+        }
+<span class="fc" id="L134">        return false;</span>
+    }
+
+    /**
+     * Is a file compressed? (the magic number in the first 2 bytes is used to
+     * detect the compression.
+     * 
+     * @param filename
+     *            of the file to test for compression algorithms
+     * @return true if the file is compressed
+     */
+    public static boolean isCompressed(String filename) {
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        if (filename == null) {</span>
+<span class="fc" id="L147">            return false;</span>
+        }
+<span class="fc" id="L149">        File test = new File(filename);</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        if (test.exists()) {</span>
+<span class="fc" id="L151">            return isCompressed(test);</span>
+        }
+
+<span class="fc" id="L154">        int len = filename.length();</span>
+<span class="pc bpc" id="L155" title="1 of 4 branches missed.">        return len &gt; 2 &amp;&amp; (filename.substring(len - GZIP_EXTENTION.length()).equalsIgnoreCase(GZIP_EXTENTION) || //</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">                filename.substring(len - COMPRESS_EXTENTION.length()).equals(COMPRESS_EXTENTION) || //</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">                filename.substring(len - BZIP2_EXTENTION.length()).equals(BZIP2_EXTENTION));</span>
+    }
+
+    private static ICompressProvider selectCompressionProvider(int mag1, int mag2) {
+<span class="fc" id="L161">        return nextCompressionProvider(mag1, mag2, null);</span>
+    }
+
+    protected static ICompressProvider nextCompressionProvider(int mag1, int mag2, ICompressProvider old) {
+<span class="fc" id="L165">        ICompressProvider selectedProvider = null;</span>
+<span class="fc" id="L166">        int priority = 0;</span>
+<span class="fc" id="L167">        int maxPriority = Integer.MAX_VALUE;</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        if (old != null) {</span>
+<span class="fc" id="L169">            maxPriority = old.priority();</span>
+        }
+<span class="fc" id="L171">        ServiceLoader&lt;ICompressProvider&gt; compressionProviders = ServiceLoader.load(ICompressProvider.class, Thread.currentThread().getContextClassLoader());</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        for (ICompressProvider provider : compressionProviders) {</span>
+<span class="pc bpc" id="L173" title="2 of 8 branches missed.">            if (provider.priority() &gt; 0 &amp;&amp; provider.priority() &gt; priority &amp;&amp; provider.priority() &lt; maxPriority &amp;&amp; //</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">                    provider != old &amp;&amp; provider.provides(mag1, mag2)) {</span>
+<span class="fc" id="L175">                priority = provider.priority();</span>
+<span class="fc" id="L176">                selectedProvider = provider;</span>
+            }
+<span class="fc" id="L178">        }</span>
+<span class="fc" id="L179">        return selectedProvider;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

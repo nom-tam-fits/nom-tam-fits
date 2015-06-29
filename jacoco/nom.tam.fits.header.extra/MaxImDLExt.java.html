@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MaxImDLExt.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.header.extra</a> &gt; <span class="el_source">MaxImDLExt.java</span></div><h1>MaxImDLExt.java</h1><pre class="source lang-java linenums">package nom.tam.fits.header.extra;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.IFitsHeader;
+
+/**
+ * The Fits extension as defined by Maxim DL.Extension keywords that may be
+ * added or read by MaxIm DL, depending on the current equipment and software
+ * configuration.
+ * &lt;p&gt;
+ * This standard extends the @see {@link SBFitsExt} all that fields are
+ * included.
+ * &lt;/p&gt;
+ * 
+ * &lt;pre&gt;
+ * http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm
+ * &lt;/pre&gt;
+ * 
+ * @author Richard van Nieuwenhoven
+ */
+<span class="pc" id="L52">public enum MaxImDLExt implements IFitsHeader {</span>
+    /**
+     * if present the image has a valid Bayer color pattern.
+     */
+<span class="fc" id="L56">    BAYERPAT(VALUE.REAL, &quot;image Bayer color pattern&quot;),</span>
+    /**
+     * Boltwood Cloud Sensor ambient temperature in degrees C.
+     */
+<span class="fc" id="L60">    BOLTAMBT(VALUE.REAL, &quot;ambient temperature in degrees C&quot;),</span>
+    /**
+     * Boltwood Cloud Sensor cloud condition.
+     */
+<span class="fc" id="L64">    BOLTCLOU(VALUE.REAL, &quot;Boltwood Cloud Sensor cloud condition.&quot;),</span>
+
+    /**
+     * Boltwood Cloud Sensor daylight level.
+     */
+<span class="fc" id="L69">    BOLTDAY(VALUE.REAL, &quot;Boltwood Cloud Sensor daylight level.&quot;),</span>
+    /**
+     * Boltwood Cloud Sensor dewpoint in degrees C.
+     */
+<span class="fc" id="L73">    BOLTDEW(VALUE.REAL, &quot;Boltwood Cloud Sensor dewpoint in degrees C.&quot;),</span>
+    /**
+     * Boltwood Cloud Sensor humidity in percent.
+     */
+<span class="fc" id="L77">    BOLTHUM(VALUE.REAL, &quot;Boltwood Cloud Sensor humidity in percent.&quot;),</span>
+    /**
+     * Boltwood Cloud Sensor rain condition.
+     */
+<span class="fc" id="L81">    BOLTRAIN(VALUE.REAL, &quot;Boltwood Cloud Sensor rain condition.&quot;),</span>
+    /**
+     * Boltwood Cloud Sensor sky minus ambient temperature in degrees C.
+     */
+<span class="fc" id="L85">    BOLTSKYT(VALUE.REAL, &quot;Boltwood Cloud Sensor sky minus ambient temperature in degrees C.&quot;),</span>
+    /**
+     * Boltwood Cloud Sensor wind speed in km/h.
+     */
+<span class="fc" id="L89">    BOLTWIND(VALUE.REAL, &quot;Boltwood Cloud Sensor wind speed in km/h.&quot;),</span>
+    /**
+     * indicates calibration state of the image; B indicates bias corrected, D
+     * indicates dark corrected, F indicates flat corrected.
+     */
+<span class="fc" id="L94">    CALSTAT(VALUE.REAL, &quot;calibration state of the image&quot;),</span>
+    /**
+     * type of color sensor Bayer array or zero for monochrome.
+     */
+<span class="fc" id="L98">    COLORTYP(VALUE.REAL, &quot;type of color sensor&quot;),</span>
+    /**
+     * initial display screen stretch mode.
+     */
+<span class="fc" id="L102">    CSTRETCH(VALUE.REAL, &quot;initial display screen stretch mode&quot;),</span>
+    /**
+     * dark current integration time, if recorded. May be longer than exposure
+     * time.
+     */
+<span class="fc" id="L107">    DARKTIME(VALUE.REAL, &quot;dark current integration time&quot;),</span>
+    /**
+     * Davis Instruments Weather Station ambient temperature in deg C
+     */
+<span class="fc" id="L111">    DAVAMBT(VALUE.REAL, &quot;ambient temperature&quot;),</span>
+    /**
+     * Davis Instruments Weather Station barometric pressure in hPa
+     */
+<span class="fc" id="L115">    DAVBAROM(VALUE.REAL, &quot;barometric pressure&quot;),</span>
+    /**
+     * Davis Instruments Weather Station dewpoint in deg C
+     */
+<span class="fc" id="L119">    DAVDEW(VALUE.REAL, &quot;dewpoint in deg C&quot;),</span>
+    /**
+     * Davis Instruments Weather Station humidity in percent
+     */
+<span class="fc" id="L123">    DAVHUM(VALUE.REAL, &quot;humidity in percent&quot;),</span>
+    /**
+     * Davis Instruments Weather Station solar radiation in W/m^2
+     */
+<span class="fc" id="L127">    DAVRAD(VALUE.REAL, &quot;solar radiation&quot;),</span>
+    /**
+     * Davis Instruments Weather Station accumulated rainfall in mm/day
+     */
+<span class="fc" id="L131">    DAVRAIN(VALUE.REAL, &quot;accumulated rainfall&quot;),</span>
+    /**
+     * Davis Instruments Weather Station wind speed in km/h
+     */
+<span class="fc" id="L135">    DAVWIND(VALUE.REAL, &quot;wind speed&quot;),</span>
+    /**
+     * Davis Instruments Weather Station wind direction in deg
+     */
+<span class="fc" id="L139">    DAVWINDD(VALUE.REAL, &quot;wind direction&quot;),</span>
+    /**
+     * status of pier flip for German Equatorial mounts.
+     */
+<span class="fc" id="L143">    FLIPSTAT(VALUE.REAL, &quot;status of pier flip&quot;),</span>
+    /**
+     * Focuser position in steps, if focuser is connected.
+     */
+<span class="fc" id="L147">    FOCUSPOS(VALUE.REAL, &quot;Focuser position in steps&quot;),</span>
+    /**
+     * Focuser step size in microns, if available.
+     */
+<span class="fc" id="L151">    FOCUSSZ(VALUE.REAL, &quot;Focuser step size in microns&quot;),</span>
+    /**
+     * Focuser temperature readout in degrees C, if available.
+     */
+<span class="fc" id="L155">    FOCUSTEM(VALUE.REAL, &quot;Focuser temperature readout&quot;),</span>
+    /**
+     * format of file from which image was read.
+     */
+<span class="fc" id="L159">    INPUTFMT(VALUE.REAL, &quot;format of file&quot;),</span>
+    /**
+     * ISO camera setting, if camera uses ISO speeds.
+     */
+<span class="fc" id="L163">    ISOSPEED(VALUE.REAL, &quot;ISO camera setting&quot;),</span>
+    /**
+     * records the geocentric Julian Day of the start of exposure.
+     */
+<span class="fc" id="L167">    JD(VALUE.REAL, &quot;geocentric Julian Day&quot;),</span>
+    /**
+     * records the geocentric Julian Day of the start of exposure.
+     */
+<span class="fc" id="L171">    JD_GEO(VALUE.REAL, &quot;geocentric Julian Da&quot;),</span>
+    /**
+     * records the Heliocentric Julian Date at the exposure midpoint.
+     */
+<span class="fc" id="L175">    JD_HELIO(VALUE.REAL, &quot;Heliocentric Julian Date&quot;),</span>
+    /**
+     * records the Heliocentric Julian Date at the exposure midpoint.
+     */
+<span class="fc" id="L179">    JD_HELIO2(&quot;JD-HELIO&quot;, VALUE.REAL, &quot;Heliocentric Julian Date&quot;),</span>
+    /**
+     * UT of midpoint of exposure.
+     */
+<span class="fc" id="L183">    MIDPOINT(VALUE.REAL, &quot;midpoint of exposure&quot;),</span>
+    /**
+     * user-entered information; free-form notes.
+     */
+<span class="fc" id="L187">    NOTES(VALUE.REAL, &quot;free-form note&quot;),</span>
+    /**
+     * nominal altitude of center of image
+     */
+<span class="fc" id="L191">    OBJCTALT(VALUE.REAL, &quot;altitude of center of image&quot;),</span>
+    /**
+     * nominal azimuth of center of image
+     */
+<span class="fc" id="L195">    OBJCTAZ(VALUE.REAL, &quot;nominal azimuth of center of image&quot;),</span>
+    /**
+     * nominal hour angle of center of image
+     */
+<span class="fc" id="L199">    OBJCTHA(VALUE.REAL, &quot;nominal hour angle of center of image&quot;),</span>
+    /**
+     * indicates side-of-pier status when connected to a German Equatorial
+     * mount.
+     */
+<span class="fc" id="L204">    PIERSIDE(VALUE.REAL, &quot;side-of-pier status&quot;),</span>
+    /**
+     * records the selected Readout Mode (if any) for the camera.
+     */
+<span class="fc" id="L208">    READOUTM(VALUE.REAL, &quot;Readout Mode for the camera&quot;),</span>
+    /**
+     * Rotator angle in degrees, if focal plane rotator is connected.
+     */
+<span class="fc" id="L212">    ROTATANG(VALUE.REAL, &quot;Rotator angle in degrees&quot;),</span>
+    /**
+     * indicates tile position within a mosaic.
+     */
+<span class="fc" id="L216">    TILEXY(VALUE.REAL, &quot;tile position within a mosaic&quot;),</span>
+    /**
+     * X offset of Bayer array on imaging sensor.
+     */
+<span class="fc" id="L220">    XBAYROFF(VALUE.REAL, &quot;X offset of Bayer array&quot;),</span>
+    /**
+     * Y offset of Bayer array on imaging sensor.
+     */
+<span class="fc" id="L224">    YBAYROFF(VALUE.REAL, &quot;Y offset of Bayer array&quot;);</span>
+
+    private IFitsHeader key;
+
+<span class="fc" id="L228">    private MaxImDLExt(String key, VALUE valueType, String comment) {</span>
+<span class="fc" id="L229">        this.key = new FitsHeaderImpl(key, IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType, comment);</span>
+<span class="fc" id="L230">    }</span>
+
+<span class="fc" id="L232">    private MaxImDLExt(VALUE valueType, String comment) {</span>
+<span class="fc" id="L233">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType, comment);</span>
+<span class="fc" id="L234">    }</span>
+
+    @Override
+    public String comment() {
+<span class="fc" id="L238">        return this.key.comment();</span>
+    }
+
+    @Override
+    public HDU hdu() {
+<span class="fc" id="L243">        return this.key.hdu();</span>
+    }
+
+    @Override
+    public String key() {
+<span class="fc" id="L248">        return this.key.key();</span>
+    }
+
+    @Override
+    public IFitsHeader n(int... number) {
+<span class="fc" id="L253">        return this.key.n(number);</span>
+    }
+
+    @Override
+    public SOURCE status() {
+<span class="fc" id="L258">        return this.key.status();</span>
+    }
+
+    @Override
+    public VALUE valueType() {
+<span class="fc" id="L263">        return this.key.valueType();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

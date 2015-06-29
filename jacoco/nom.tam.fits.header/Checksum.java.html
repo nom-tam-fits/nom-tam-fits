@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Checksum.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.header</a> &gt; <span class="el_source">Checksum.java</span></div><h1>Checksum.java</h1><pre class="source lang-java linenums">package nom.tam.fits.header;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+/**
+ * File checksum keywords. This data dictionary contains FITS keywords that have
+ * been widely used within the astronomical community. It is recommended that
+ * these keywords only be used as defined here.
+ * 
+ * &lt;pre&gt;
+ * @see &lt;a href=&quot;http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html&quot;&gt;http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html&lt;/a&gt;
+ * &lt;/pre&gt;
+ * 
+ * @author Richard van Nieuwenhoven
+ */
+<span class="pc" id="L45">public enum Checksum implements IFitsHeader {</span>
+    /**
+     * The value field of the CHECKSUM keyword shall contain a 16 character
+     * string, left justified starting in column 12, containing the ASCII
+     * encoded complement of the checksum of the FITS HDU (Header and Data
+     * Unit). The algorithm shall be the 32-bit 1's complement checksum and the
+     * ASCII encoding that are described in the checksum proposal. The checksum
+     * is accumulated in FITS datastream order on the same HDU, identical in all
+     * respects, except that the value of the CHECKSUM keyword shall be set to
+     * the string '0000000000000000' (ASCII 0's, hex 30) before the checksum is
+     * computed.
+     */
+<span class="fc" id="L57">    CHECKSUM(HDU.ANY, VALUE.STRING, &quot;checksum for the current HDU&quot;),</span>
+    /**
+     * The value field of the CHECKVER keyword shall contain a string, unique in
+     * the first 8 characters, which distinguishes between any future
+     * alternative checksum algorithms which may be defined. The default value
+     * for a missing keyword shall be 'COMPLEMENT' which will represent the
+     * algorithm defined in the current proposal. It is recommended that this
+     * keyword be omitted from headers which implement the default ASCII encoded
+     * 32-bit 1's complement algorithm.
+     */
+<span class="fc" id="L67">    CHECKVER(HDU.ANY, VALUE.STRING, &quot;version of checksum algorithm&quot;),</span>
+
+    /**
+     * The value field of the DATASUM keyword shall be a character string
+     * containing the unsigned integer value of the checksum of the data records
+     * of the HDU. For dataless HDU's, this keyword may either be omitted, or
+     * the value field shall contain the string value '0', which is preferred. A
+     * missing DATASUM keyword asserts no knowledge of the checksum of the data
+     * records.
+     */
+<span class="fc" id="L77">    DATASUM(HDU.ANY, VALUE.STRING, &quot;checksum of the data records&quot;);</span>
+
+    private IFitsHeader key;
+
+<span class="fc" id="L81">    private Checksum(HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L82">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CHECKSUM, hdu, valueType, comment);</span>
+<span class="fc" id="L83">    }</span>
+
+    @Override
+    public String comment() {
+<span class="fc" id="L87">        return this.key.comment();</span>
+    }
+
+    @Override
+    public HDU hdu() {
+<span class="fc" id="L92">        return this.key.hdu();</span>
+    }
+
+    @Override
+    public String key() {
+<span class="fc" id="L97">        return this.key.key();</span>
+    }
+
+    @Override
+    public IFitsHeader n(int... number) {
+<span class="fc" id="L102">        return this.key.n(number);</span>
+    }
+
+    @Override
+    public SOURCE status() {
+<span class="fc" id="L107">        return this.key.status();</span>
+    }
+
+    @Override
+    public VALUE valueType() {
+<span class="fc" id="L112">        return this.key.valueType();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

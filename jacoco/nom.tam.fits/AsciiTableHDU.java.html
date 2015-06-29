@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>AsciiTableHDU.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">AsciiTableHDU.java</span></div><h1>AsciiTableHDU.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import nom.tam.util.ArrayFuncs;
+import nom.tam.util.Cursor;
+
+/**
+ * FITS ASCII table header/data unit
+ */
+public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
+
+<span class="fc" id="L46">    private static final Logger LOG = Logger.getLogger(AsciiTableHDU.class.getName());</span>
+
+    /**
+     * The standard column stems for an ASCII table. Note that TBCOL is not
+     * included here -- it needs to be handled specially since it does not
+     * simply shift.
+     */
+<span class="fc" id="L53">    private static final String[] KEY_STEMS = {</span>
+        &quot;TFORM&quot;,
+        &quot;TZERO&quot;,
+        &quot;TNULL&quot;,
+        &quot;TTYPE&quot;,
+        &quot;TUNIT&quot;
+    };
+
+    /**
+     * @return a ASCII table data structure from an array of objects
+     *         representing the columns.
+     * @param o
+     *            the array of object to create the ascii table
+     * @throws FitsException
+     *             if the table could not be created.
+     */
+    public static Data encapsulate(Object o) throws FitsException {
+
+<span class="fc" id="L71">        Object[] oo = (Object[]) o;</span>
+<span class="fc" id="L72">        AsciiTable d = new AsciiTable();</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        for (Object element : oo) {</span>
+<span class="fc" id="L74">            d.addColumn(element);</span>
+        }
+<span class="fc" id="L76">        return d;</span>
+    }
+
+    /**
+     * @return true if this data is usable as an ASCII table.
+     * @param o
+     *            object representing the data
+     */
+    public static boolean isData(Object o) {
+
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (o instanceof Object[]) {</span>
+<span class="fc" id="L87">            Object[] oo = (Object[]) o;</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">            for (Object element : oo) {</span>
+<span class="fc bfc" id="L89" title="All 10 branches covered.">                if (!(element instanceof String[]) &amp;&amp; //</span>
+                        !(element instanceof int[]) &amp;&amp; //
+                        !(element instanceof long[]) &amp;&amp; //
+                        !(element instanceof float[]) &amp;&amp; //
+                        !(element instanceof double[])) {
+<span class="fc" id="L94">                    return false;</span>
+                }
+            }
+<span class="fc" id="L97">            return true;</span>
+        } else {
+<span class="fc" id="L99">            return false;</span>
+        }
+    }
+
+    /**
+     * Check that this is a valid ascii table header.
+     * 
+     * @param header
+     *            to validate.
+     * @return &lt;CODE&gt;true&lt;/CODE&gt; if this is an ascii table header.
+     */
+    public static boolean isHeader(Header header) {
+<span class="fc" id="L111">        return header.getStringValue(&quot;XTENSION&quot;).trim().equals(&quot;TABLE&quot;);</span>
+    }
+
+    /**
+     * Create a Data object to correspond to the header description.
+     * 
+     * @param hdr
+     *            the header to create the data for
+     * @return An unfilled Data object which can be used to read in the data for
+     *         this HDU.
+     * @throws FitsException
+     *             if the Data object could not be created from this HDU's
+     *             Header
+     */
+    public static Data manufactureData(Header hdr) throws FitsException {
+<span class="fc" id="L126">        return new AsciiTable(hdr);</span>
+    }
+
+    /**
+     * @return a created header to match the input data.
+     * @param d
+     *            data to create a header for
+     * @throws FitsException
+     *             if the header could not b e created
+     */
+    public static Header manufactureHeader(Data d) throws FitsException {
+<span class="fc" id="L137">        Header hdr = new Header();</span>
+<span class="fc" id="L138">        d.fillHeader(hdr);</span>
+<span class="fc" id="L139">        hdr.iterator();</span>
+<span class="fc" id="L140">        return hdr;</span>
+    }
+
+    /**
+     * Create an ascii table header/data unit.
+     * 
+     * @param h
+     *            the template specifying the ascii table.
+     * @param d
+     *            the FITS data structure containing the table data.
+     */
+    public AsciiTableHDU(Header h, Data d) {
+<span class="fc" id="L152">        super((AsciiTable) d);</span>
+<span class="fc" id="L153">        this.myHeader = h;</span>
+<span class="fc" id="L154">        this.myData = (AsciiTable) d;</span>
+<span class="fc" id="L155">    }</span>
+
+    @Override
+    public int addColumn(Object newCol) throws FitsException {
+<span class="fc" id="L159">        this.myData.addColumn(newCol);</span>
+        // Move the iterator to point after all the data describing
+        // the previous column.
+
+<span class="fc" id="L163">        Cursor&lt;String, HeaderCard&gt; iter = this.myHeader.positionAfterIndex(&quot;TBCOL&quot;, this.myData.getNCols());</span>
+
+<span class="fc" id="L165">        int rowlen = this.myData.addColInfo(getNCols() - 1, iter);</span>
+<span class="fc" id="L166">        int oldRowlen = this.myHeader.getIntValue(&quot;NAXIS1&quot;);</span>
+<span class="fc" id="L167">        this.myHeader.setNaxis(1, rowlen + oldRowlen);</span>
+
+<span class="fc" id="L169">        int oldTfields = this.myHeader.getIntValue(&quot;TFIELDS&quot;);</span>
+        try {
+<span class="fc" id="L171">            this.myHeader.addValue(&quot;TFIELDS&quot;, oldTfields + 1, &quot;ntf::asciitablehdu:tfields:1&quot;);</span>
+<span class="nc" id="L172">        } catch (Exception e) {</span>
+<span class="nc" id="L173">            LOG.log(Level.SEVERE, &quot;Impossible exception at addColumn&quot;, e);</span>
+<span class="fc" id="L174">        }</span>
+<span class="fc" id="L175">        return getNCols();</span>
+    }
+
+    @Override
+    protected String[] columnKeyStems() {
+<span class="fc" id="L180">        return KEY_STEMS;</span>
+    }
+
+    @Override
+    public void info(PrintStream stream) {
+<span class="fc" id="L185">        stream.println(&quot;ASCII Table:&quot;);</span>
+<span class="fc" id="L186">        stream.println(&quot;  Header:&quot;);</span>
+<span class="fc" id="L187">        stream.println(&quot;    Number of fields:&quot; + this.myHeader.getIntValue(&quot;TFIELDS&quot;));</span>
+<span class="fc" id="L188">        stream.println(&quot;    Number of rows:  &quot; + this.myHeader.getIntValue(&quot;NAXIS2&quot;));</span>
+<span class="fc" id="L189">        stream.println(&quot;    Length of row:   &quot; + this.myHeader.getIntValue(&quot;NAXIS1&quot;));</span>
+<span class="fc" id="L190">        stream.println(&quot;  Data:&quot;);</span>
+<span class="fc" id="L191">        Object[] data = (Object[]) getKernel();</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">        for (int i = 0; i &lt; getNCols(); i += 1) {</span>
+<span class="fc" id="L193">            stream.println(&quot;      &quot; + i + &quot;:&quot; + ArrayFuncs.arrayDescription(data[i]));</span>
+        }
+<span class="fc" id="L195">    }</span>
+
+    /**
+     * @param row
+     *            row index of the element
+     * @param col
+     *            column index of the element
+     * @return &lt;code&gt;true&lt;/code&gt; if an element is null
+     */
+    public boolean isNull(int row, int col) {
+<span class="fc" id="L205">        return this.myData.isNull(row, col);</span>
+    }
+
+    /**
+     * Mark an entry as null.
+     * 
+     * @param row
+     *            row index of the element
+     * @param col
+     *            column index of the element
+     * @param flag
+     *            set to null or not
+     */
+    public void setNull(int row, int col, boolean flag) {
+
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">        if (flag) {</span>
+<span class="fc" id="L221">            String nullStr = this.myHeader.getStringValue(&quot;TNULL&quot; + (col + 1));</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">            if (nullStr == null) {</span>
+<span class="fc" id="L223">                setNullString(col, &quot;NULL&quot;);</span>
+            }
+        }
+<span class="fc" id="L226">        this.myData.setNull(row, col, flag);</span>
+<span class="fc" id="L227">    }</span>
+
+    /**
+     * Set the null string for a column.
+     * 
+     * @param col
+     *            the column index
+     * @param newNull
+     *            the String representing null
+     */
+    public void setNullString(int col, String newNull) {
+<span class="fc" id="L238">        this.myHeader.positionAfterIndex(&quot;TBCOL&quot;, col + 1);</span>
+        try {
+<span class="fc" id="L240">            this.myHeader.addValue(&quot;TNULL&quot; + (col + 1), newNull, &quot;ntf::asciitablehdu:tnullN:1&quot;);</span>
+<span class="nc" id="L241">        } catch (HeaderCardException e) {</span>
+<span class="nc" id="L242">            LOG.log(Level.SEVERE, &quot;Impossible exception in setNullString&quot; + e);</span>
+<span class="fc" id="L243">        }</span>
+<span class="fc" id="L244">        this.myData.setNullString(col, newNull);</span>
+<span class="fc" id="L245">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

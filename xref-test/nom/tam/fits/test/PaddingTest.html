@@ -89,7 +89,7 @@
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>              assertEquals(<span class="jxr_string">"HDUCount2"</span>, 1, f.getNumberOfHDUs());
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>          }
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>          ImageHDU hdu0 = (ImageHDU) (f.getHDU(0));
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>          ImageHDU hdu0 = (ImageHDU) f.getHDU(0);
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>          byte[][] aa = (byte[][]) hdu0.getKernel();
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>          <strong class="jxr_keyword">int</strong> miss = 0;
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>          <strong class="jxr_keyword">int</strong> match = 0;
@@ -182,8 +182,8 @@
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>             assertEquals(<span class="jxr_string">"HDUCount2"</span>, 2, f.getNumberOfHDUs());
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>         }
 <a class="jxr_linenumber" name="L176" href="#L176">176</a> 
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>         ImageHDU hdu0 = (ImageHDU) (f.getHDU(0));
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>         ImageHDU hdu1 = (ImageHDU) (f.getHDU(1));
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>         ImageHDU hdu0 = (ImageHDU) f.getHDU(0);
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>         ImageHDU hdu1 = (ImageHDU) f.getHDU(1);
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>         byte[][] aa = (byte[][]) hdu0.getKernel();
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>         byte[][] bb = (byte[][]) hdu1.getKernel();
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>         <strong class="jxr_keyword">int</strong> miss = 0;

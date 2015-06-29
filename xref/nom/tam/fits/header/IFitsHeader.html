@@ -56,7 +56,7 @@
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>      <strong class="jxr_keyword">public</strong> enum <a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> {
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>          <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment">         * &lt;pre&gt;</em>
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment">         *  @see &lt;a href="<a href="http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html" target="alexandria_uri">http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html</a>"&gt;<a href="http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html" target="alexandria_uri">http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html</a>&lt;/a&gt;</em>
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment">         *  @see &lt;a href="<a href="http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html" target="alexandria_uri">http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html</a>"&gt;checksum doc&lt;/a&gt;</em>
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment">         * &lt;/pre&gt;</em>
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment">         */</em>
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>          CHECKSUM(<span class="jxr_string">"http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html"</span>),
@@ -132,12 +132,12 @@
 <a class="jxr_linenumber" name="L124" href="#L124">124</a> 
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String url;
 <a class="jxr_linenumber" name="L126" href="#L126">126</a> 
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>         <strong class="jxr_keyword">public</strong> String url() {
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>             <strong class="jxr_keyword">return</strong> url;
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>         <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a>(String url) {
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>             <strong class="jxr_keyword">this</strong>.url = url;
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>         }
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> 
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>         <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a>(String url) {
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>             <strong class="jxr_keyword">this</strong>.url = url;
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>         <strong class="jxr_keyword">public</strong> String url() {
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.url;
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>         }
 <a class="jxr_linenumber" name="L134" href="#L134">134</a> 
 <a class="jxr_linenumber" name="L135" href="#L135">135</a>     }

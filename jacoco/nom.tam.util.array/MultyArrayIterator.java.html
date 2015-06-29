@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MultyArrayIterator.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util.array</a> &gt; <span class="el_source">MultyArrayIterator.java</span></div><h1>MultyArrayIterator.java</h1><pre class="source lang-java linenums">package nom.tam.util.array;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.lang.reflect.Array;
+
+public class MultyArrayIterator {
+
+    private final Object baseArray;
+
+    private final boolean baseIsNoSubArray;
+
+<span class="fc" id="L42">    private boolean baseNextCalled = false;</span>
+
+    private final MultyArrayPointer pointer;
+
+<span class="fc" id="L46">    public MultyArrayIterator(Object baseArray) {</span>
+<span class="fc" id="L47">        this.baseArray = baseArray;</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        this.baseIsNoSubArray = !MultyArrayPointer.isSubArray(this.baseArray);</span>
+<span class="fc" id="L49">        this.pointer = new MultyArrayPointer(this.baseArray);</span>
+<span class="fc" id="L50">    }</span>
+
+    public Class&lt;?&gt; deepComponentType() {
+<span class="fc" id="L53">        Class&lt;?&gt; clazz = this.baseArray.getClass();</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        while (clazz.isArray()) {</span>
+<span class="fc" id="L55">            clazz = clazz.getComponentType();</span>
+        }
+<span class="fc" id="L57">        return clazz;</span>
+    }
+
+    public Object next() {
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (this.baseIsNoSubArray) {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            if (this.baseNextCalled) {</span>
+<span class="fc" id="L63">                return null;</span>
+            } else {
+<span class="fc" id="L65">                this.baseNextCalled = true;</span>
+<span class="fc" id="L66">                return this.baseArray;</span>
+            }
+        } else {
+<span class="fc" id="L69">            Object result = null;</span>
+<span class="fc bfc" id="L70" title="All 4 branches covered.">            while (result == null || Array.getLength(result) == 0) {</span>
+<span class="fc" id="L71">                result = this.pointer.next();</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">                if (result == MultyArrayPointer.END) {</span>
+<span class="fc" id="L73">                    return null;</span>
+                }
+            }
+<span class="fc" id="L76">            return result;</span>
+        }
+    }
+
+    public void reset() {
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (this.baseIsNoSubArray) {</span>
+<span class="nc" id="L82">            this.baseNextCalled = false;</span>
+        } else {
+<span class="nc" id="L84">            this.pointer.reset();</span>
+        }
+<span class="nc" id="L86">    }</span>
+
+    public int size() {
+<span class="nc" id="L89">        int size = 0;</span>
+        Object next;
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        while ((next = next()) != null) {</span>
+<span class="nc" id="L92">            size += Array.getLength(next);</span>
+        }
+<span class="nc" id="L94">        return size;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

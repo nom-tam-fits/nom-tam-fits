@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PrimitiveTypeEnum.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">PrimitiveTypeEnum.java</span></div><h1>PrimitiveTypeEnum.java</h1><pre class="source lang-java linenums">package nom.tam.util;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.util.HashMap;
+import java.util.Map;
+
+<span class="pc" id="L37">public enum PrimitiveTypeEnum {</span>
+<span class="fc" id="L38">    BYTE(1, false, byte.class, Byte.class, 'B'),</span>
+<span class="fc" id="L39">    SHORT(2, false, short.class, Short.class, 'S'),</span>
+<span class="fc" id="L40">    CHAR(2, false, char.class, Character.class, 'C'),</span>
+<span class="fc" id="L41">    INT(4, false, int.class, Integer.class, 'I'),</span>
+<span class="fc" id="L42">    LONG(8, false, long.class, Long.class, 'J'),</span>
+<span class="fc" id="L43">    FLOAT(4, false, float.class, Float.class, 'F'),</span>
+<span class="fc" id="L44">    DOUBLE(8, false, double.class, Double.class, 'D'),</span>
+<span class="fc" id="L45">    BOOLEAN(1, false, boolean.class, Boolean.class, 'Z'),</span>
+<span class="fc" id="L46">    STRING(0, true, CharSequence.class, String.class, 'L') {</span>
+
+        @Override
+        public int size(Object instance) {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            if (instance == null) {</span>
+<span class="fc" id="L51">                return 0;</span>
+            }
+<span class="fc" id="L53">            return ((CharSequence) instance).length();</span>
+        }
+    },
+<span class="fc" id="L56">    UNKNOWN(0, true, Object.class, Object.class, 'L') {</span>
+
+        @Override
+        public int size(Object instance) {
+<span class="fc" id="L60">            return 0;</span>
+        }
+    };
+
+    private static Map&lt;Class&lt;?&gt;, PrimitiveTypeEnum&gt; lookup;
+
+    private static synchronized Map&lt;Class&lt;?&gt;, PrimitiveTypeEnum&gt; getLookup() {
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (PrimitiveTypeEnum.lookup == null) {</span>
+<span class="fc" id="L68">            PrimitiveTypeEnum.lookup = new HashMap&lt;Class&lt;?&gt;, PrimitiveTypeEnum&gt;();</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">            for (PrimitiveTypeEnum primitiveTypeEnum : values()) {</span>
+<span class="fc" id="L70">                PrimitiveTypeEnum.lookup.put(primitiveTypeEnum.primitiveClass, primitiveTypeEnum);</span>
+<span class="fc" id="L71">                PrimitiveTypeEnum.lookup.put(primitiveTypeEnum.wrapperClass, primitiveTypeEnum);</span>
+            }
+        }
+<span class="fc" id="L74">        return PrimitiveTypeEnum.lookup;</span>
+    }
+
+    public static PrimitiveTypeEnum valueOf(Class&lt;?&gt; clazz) {
+<span class="fc" id="L78">        PrimitiveTypeEnum primitiveTypeEnum = getLookup().get(clazz);</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        if (primitiveTypeEnum == null) {</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">            for (Class&lt;?&gt; interf : clazz.getInterfaces()) {</span>
+<span class="fc" id="L81">                primitiveTypeEnum = getLookup().get(interf);</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">                if (primitiveTypeEnum != null) {</span>
+<span class="fc" id="L83">                    return primitiveTypeEnum;</span>
+                }
+            }
+
+<span class="nc" id="L87">            return UNKNOWN;</span>
+        }
+<span class="fc" id="L89">        return primitiveTypeEnum;</span>
+    }
+
+    private final int size;
+
+    private final boolean individualSize;
+
+    private final Class&lt;?&gt; primitiveClass;
+
+    private final Class&lt;?&gt; wrapperClass;
+
+    private final char type;
+
+<span class="fc" id="L102">    private PrimitiveTypeEnum(int size, boolean individualSize, Class&lt;?&gt; primitiveClass, Class&lt;?&gt; wrapperClass, char type) {</span>
+<span class="fc" id="L103">        this.size = size;</span>
+<span class="fc" id="L104">        this.individualSize = individualSize;</span>
+<span class="fc" id="L105">        this.primitiveClass = primitiveClass;</span>
+<span class="fc" id="L106">        this.wrapperClass = wrapperClass;</span>
+<span class="fc" id="L107">        this.type = type;</span>
+<span class="fc" id="L108">    }</span>
+
+    public boolean individualSize() {
+<span class="fc" id="L111">        return this.individualSize;</span>
+    }
+
+    public int size() {
+<span class="fc" id="L115">        return this.size;</span>
+    }
+
+    /**
+     * currently the only individual size primitive so, keep it simple
+     * 
+     * @param instance
+     *            the object to calculate the size
+     * @return the size in bytes of the object instance
+     */
+    public int size(Object instance) {
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        if (instance == null) {</span>
+<span class="fc" id="L127">            return 0;</span>
+        }
+<span class="fc" id="L129">        return this.size;</span>
+    }
+
+    public char type() {
+<span class="fc" id="L133">        return this.type;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

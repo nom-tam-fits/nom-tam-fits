@@ -44,21 +44,21 @@
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a href="../../../nom/tam/util/DataTable.html">DataTable</a> {
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> setRow(<strong class="jxr_keyword">int</strong> row, Object newRow) <strong class="jxr_keyword">throws</strong> TableException;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>      Object getColumn(<strong class="jxr_keyword">int</strong> column);
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> Object getRow(<strong class="jxr_keyword">int</strong> row);
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>      Object getElement(<strong class="jxr_keyword">int</strong> row, <strong class="jxr_keyword">int</strong> col);
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> setColumn(<strong class="jxr_keyword">int</strong> column, Object newColumn) <strong class="jxr_keyword">throws</strong> TableException;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>      <strong class="jxr_keyword">int</strong> getNCols();
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> Object getColumn(<strong class="jxr_keyword">int</strong> column);
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>      <strong class="jxr_keyword">int</strong> getNRows();
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> setElement(<strong class="jxr_keyword">int</strong> row, <strong class="jxr_keyword">int</strong> col, Object newElement) <strong class="jxr_keyword">throws</strong> TableException;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      Object getRow(<strong class="jxr_keyword">int</strong> row);
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> Object getElement(<strong class="jxr_keyword">int</strong> row, <strong class="jxr_keyword">int</strong> col);
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">void</strong> setColumn(<strong class="jxr_keyword">int</strong> column, Object newColumn) <strong class="jxr_keyword">throws</strong> TableException;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">int</strong> getNRows();
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>      <strong class="jxr_keyword">void</strong> setElement(<strong class="jxr_keyword">int</strong> row, <strong class="jxr_keyword">int</strong> col, Object newElement) <strong class="jxr_keyword">throws</strong> TableException;
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">int</strong> getNCols();
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">void</strong> setRow(<strong class="jxr_keyword">int</strong> row, Object newRow) <strong class="jxr_keyword">throws</strong> TableException;
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  }
 </pre>
 <hr/>

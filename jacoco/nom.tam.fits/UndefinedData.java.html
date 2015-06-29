@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>UndefinedData.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">UndefinedData.java</span></div><h1>UndefinedData.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.io.EOFException;
+import java.io.IOException;
+
+import nom.tam.util.ArrayDataInput;
+import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.ArrayFuncs;
+
+/**
+ * This class provides a simple holder for data which is not handled by other
+ * classes.
+ */
+public class UndefinedData extends Data {
+
+    private static final int BITS_PER_BYTE = 8;
+
+    private byte[] data;
+
+<span class="fc" id="L51">    public UndefinedData(Header h) throws FitsException {</span>
+
+        /**
+         * Just get a byte buffer to hold the data.
+         */
+        // Bug fix by Vincenzo Forzi.
+<span class="fc" id="L57">        int naxis = h.getIntValue(&quot;NAXIS&quot;);</span>
+
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        int size = naxis &gt; 0 ? 1 : 0;</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        for (int i = 0; i &lt; naxis; i += 1) {</span>
+<span class="fc" id="L61">            size *= h.getIntValue(&quot;NAXIS&quot; + (i + 1));</span>
+        }
+<span class="fc" id="L63">        size += h.getIntValue(&quot;PCOUNT&quot;);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (h.getIntValue(&quot;GCOUNT&quot;) &gt; 1) {</span>
+<span class="fc" id="L65">            size *= h.getIntValue(&quot;GCOUNT&quot;);</span>
+        }
+<span class="fc" id="L67">        size *= Math.abs(h.getIntValue(&quot;BITPIX&quot;) / BITS_PER_BYTE);</span>
+
+<span class="fc" id="L69">        this.data = new byte[size];</span>
+<span class="fc" id="L70">    }</span>
+
+    /**
+     * Create an UndefinedData object using the specified object.
+     * 
+     * @param x
+     *            object to create the hdu from
+     */
+<span class="fc" id="L78">    public UndefinedData(Object x) {</span>
+<span class="fc" id="L79">        this.data = new byte[(int) ArrayFuncs.computeLSize(x)];</span>
+<span class="fc" id="L80">        ArrayFuncs.copyInto(x, this.data);</span>
+<span class="fc" id="L81">    }</span>
+
+    /**
+     * Fill header with keywords that describe data.
+     * 
+     * @param head
+     *            The FITS header
+     */
+    @Override
+    protected void fillHeader(Header head) {
+
+        try {
+<span class="fc" id="L93">            head.setXtension(&quot;UNKNOWN&quot;);</span>
+<span class="fc" id="L94">            head.setBitpix(BasicHDU.BITPIX_BYTE);</span>
+<span class="fc" id="L95">            head.setNaxes(1);</span>
+<span class="fc" id="L96">            head.addValue(&quot;NAXIS1&quot;, this.data.length, &quot;ntf::undefineddata:naxis1:1&quot;);</span>
+<span class="fc" id="L97">            head.addValue(&quot;PCOUNT&quot;, 0, &quot;ntf::undefineddata:pcount:1&quot;);</span>
+<span class="fc" id="L98">            head.addValue(&quot;GCOUNT&quot;, 1, &quot;ntf::undefineddata:gcount:1&quot;);</span>
+<span class="fc" id="L99">            head.addValue(&quot;EXTEND&quot;, true, &quot;ntf::undefineddata:extend:1&quot;); // Just</span>
+                                                                          // in
+                                                                          // case!
+<span class="nc" id="L102">        } catch (HeaderCardException e) {</span>
+<span class="nc" id="L103">            System.err.println(&quot;Unable to create unknown header:&quot; + e);</span>
+<span class="fc" id="L104">        }</span>
+
+<span class="fc" id="L106">    }</span>
+
+    @Override
+    public Object getData() {
+<span class="fc" id="L110">        return FitsUtil.unprotectInternalData(this.data);</span>
+    }
+
+    /** Get the size in bytes of the data */
+    @Override
+    protected long getTrueSize() {
+<span class="fc" id="L116">        return this.data.length;</span>
+    }
+
+    @Override
+    public void read(ArrayDataInput i) throws FitsException {
+<span class="fc" id="L121">        setFileOffset(i);</span>
+        try {
+<span class="fc" id="L123">            i.readFully(this.data);</span>
+<span class="nc" id="L124">        } catch (IOException e) {</span>
+<span class="nc" id="L125">            throw new FitsException(&quot;Unable to read unknown data:&quot; + e);</span>
+<span class="fc" id="L126">        }</span>
+
+<span class="fc" id="L128">        int pad = FitsUtil.padding(getTrueSize());</span>
+        try {
+<span class="fc" id="L130">            i.skipAllBytes(pad);</span>
+<span class="nc" id="L131">        } catch (EOFException e) {</span>
+<span class="nc" id="L132">            throw new PaddingException(&quot;EOF skipping padding in undefined data&quot;, this);</span>
+<span class="nc" id="L133">        } catch (IOException e) {</span>
+<span class="nc" id="L134">            throw new FitsException(&quot;Error skipping padding in undefined data&quot;);</span>
+<span class="fc" id="L135">        }</span>
+<span class="fc" id="L136">    }</span>
+
+    @Override
+    public void write(ArrayDataOutput o) throws FitsException {
+        try {
+<span class="fc" id="L141">            o.write(this.data);</span>
+<span class="nc" id="L142">        } catch (IOException e) {</span>
+<span class="nc" id="L143">            throw new FitsException(&quot;IO Error on unknown data write&quot; + e);</span>
+<span class="fc" id="L144">        }</span>
+<span class="fc" id="L145">        FitsUtil.pad(o, getTrueSize());</span>
+<span class="fc" id="L146">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

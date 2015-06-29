@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CXCExt.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.header.extra</a> &gt; <span class="el_source">CXCExt.java</span></div><h1>CXCExt.java</h1><pre class="source lang-java linenums">package nom.tam.fits.header.extra;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.IFitsHeader;
+
+/**
+ * This is the file content.txt that presents a comprehensive compilation of all
+ * classes of data products in the Chandra Data Archive for the &quot;flight&quot;
+ * dataset. This file is the definitive authority on the values of various FITS
+ * header keywords.
+ * &lt;p&gt;
+ * All files are identified by the CONTENT value of their principal HDUs.
+ * &lt;/p&gt;
+ * 
+ * &lt;pre&gt;
+ * http://cxc.harvard.edu/contrib/arots/fits/content.txt
+ * &lt;/pre&gt;
+ * 
+ * @author Richard van Nieuwenhoven
+ */
+<span class="pc" id="L52">public enum CXCExt implements IFitsHeader {</span>
+    /**
+     * ASC-DS processing system revision (release)
+     */
+<span class="fc" id="L56">    ASCDSVER(&quot;ASC-DS processing system revision (release)&quot;),</span>
+    /**
+     * Correction applied to Basic Time rate (s)
+     */
+<span class="fc" id="L60">    BTIMCORR(&quot;Correction applied to Basic Time rate (s)&quot;),</span>
+    /**
+     * Basic Time clock drift (s / VCDUcount^2)
+     */
+<span class="fc" id="L64">    BTIMDRFT(&quot;Basic Time clock drift (s / VCDUcount^2)&quot;),</span>
+    /**
+     * Basic Time offset (s)
+     */
+<span class="fc" id="L68">    BTIMNULL(&quot;Basic Time offset (s)&quot;),</span>
+    /**
+     * Basic Time clock rate (s / VCDUcount)
+     */
+<span class="fc" id="L72">    BTIMRATE(&quot;Basic Time clock rate (s / VCDUcount)&quot;),</span>
+
+    /**
+     * Data product identification '########'
+     */
+<span class="fc" id="L77">    CONTENT(&quot;Data product identification&quot;),</span>
+    /**
+     * ???
+     */
+<span class="fc" id="L81">    CONVERS(&quot;??&quot;),</span>
+    /**
+     * Data class '########'
+     */
+<span class="fc" id="L85">    DATACLAS(&quot;Data class&quot;),</span>
+    /**
+     * Dead time correction
+     */
+<span class="fc" id="L89">    DTCOR(&quot;Dead time correction&quot;),</span>
+    /**
+     * Assumed focal length, mm; Level 1 and up
+     */
+<span class="fc" id="L93">    FOC_LEN(&quot;Assumed focal length, mm; Level 1 and up&quot;),</span>
+    /**
+     * ICD reference
+     */
+<span class="fc" id="L97">    HDUSPEC(&quot;ICD reference&quot;),</span>
+    /**
+     * The OGIP long string convention may be used.
+     */
+<span class="fc" id="L101">    LONGSTRN(&quot;The OGIP long string convention may be used.&quot;),</span>
+    /**
+     * Mission is AXAF
+     */
+<span class="fc" id="L105">    MISSION(&quot;Mission is AXAF&quot;),</span>
+
+    /**
+     * Processing version of data
+     */
+<span class="fc" id="L110">    REVISION(&quot;Processing version of data&quot;),</span>
+    /**
+     * Nominal roll angle, deg
+     */
+<span class="fc" id="L114">    ROLL_NOM(&quot;Nominal roll angle, deg&quot;),</span>
+    /**
+     * Sequence number
+     */
+<span class="fc" id="L118">    SEQ_NUM(&quot;Sequence number&quot;),</span>
+    /**
+     * SIM focus pos (mm)
+     */
+<span class="fc" id="L122">    SIM_X(&quot;SIM focus pos (mm)&quot;),</span>
+    /**
+     * SIM orthogonal axis pos (mm)
+     */
+<span class="fc" id="L126">    SIM_Y(&quot;SIM orthogonal axis pos (mm)&quot;),</span>
+    /**
+     * SIM translation stage pos (mm)
+     */
+<span class="fc" id="L130">    SIM_Z(&quot;SIM translation stage pos (mm)&quot;),</span>
+    /**
+     * Major frame count at start
+     */
+<span class="fc" id="L134">    STARTMJF(&quot;Major frame count at start&quot;),</span>
+    /**
+     * Minor frame count at start
+     */
+<span class="fc" id="L138">    STARTMNF(&quot;Minor frame count at start&quot;),</span>
+    /**
+     * On-Board MET close to STARTMJF and STARTMNF
+     */
+<span class="fc" id="L142">    STARTOBT(&quot;On-Board MET close to STARTMJF and STARTMNF&quot;),</span>
+    /**
+     * Major frame count at stop
+     */
+<span class="fc" id="L146">    STOPMJF(&quot;Major frame count at stop&quot;),</span>
+    /**
+     * Minor frame count at stop
+     */
+<span class="fc" id="L150">    STOPMNF(&quot;Minor frame count at stop&quot;),</span>
+    /**
+     * Absolute precision of clock correction
+     */
+<span class="fc" id="L154">    TIERABSO(&quot;Absolute precision of clock correction&quot;),</span>
+    /**
+     * Short-term clock stability
+     */
+<span class="fc" id="L158">    TIERRELA(&quot;Short-term clock stability&quot;),</span>
+
+    /**
+     * Time stamp reference as bin fraction
+     */
+<span class="fc" id="L163">    TIMEPIXR(&quot;Time stamp reference as bin fraction&quot;),</span>
+
+    /**
+     * Telemetry revision number (IP&amp;amp;CL)
+     */
+<span class="fc" id="L168">    TLMVER(&quot;Telemetry revision number (IP&amp;CL)&quot;),</span>
+    /**
+     * As in the &quot;TIME&quot; column: raw space craft clock;
+     */
+<span class="fc" id="L172">    TSTART(&quot;As in the \&quot;TIME\&quot; column: raw space craft clock;&quot;),</span>
+    /**
+     * add TIMEZERO and MJDREF for absolute TT
+     */
+<span class="fc" id="L176">    TSTOP(&quot;add TIMEZERO and MJDREF for absolute TT&quot;);</span>
+
+    private IFitsHeader key;
+
+<span class="fc" id="L180">    private CXCExt(String comment) {</span>
+<span class="fc" id="L181">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);</span>
+<span class="fc" id="L182">    }</span>
+
+    @Override
+    public String comment() {
+<span class="fc" id="L186">        return this.key.comment();</span>
+    }
+
+    @Override
+    public HDU hdu() {
+<span class="fc" id="L191">        return this.key.hdu();</span>
+    }
+
+    @Override
+    public String key() {
+<span class="fc" id="L196">        return this.key.key();</span>
+    }
+
+    @Override
+    public IFitsHeader n(int... number) {
+<span class="fc" id="L201">        return this.key.n(number);</span>
+    }
+
+    @Override
+    public SOURCE status() {
+<span class="fc" id="L206">        return this.key.status();</span>
+    }
+
+    @Override
+    public VALUE valueType() {
+<span class="fc" id="L211">        return this.key.valueType();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

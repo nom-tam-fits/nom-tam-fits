@@ -59,32 +59,32 @@
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/fits/HeaderCommentsMap.html">HeaderCommentsMap</a> {
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/fits/HeaderCommentsMap.html">HeaderCommentsMap</a> {
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Map&lt;String, String&gt; commentMap = <strong class="jxr_keyword">new</strong> HashMap&lt;String, String&gt;();
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">static</strong> {
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          commentMap.put(<span class="jxr_string">"header:extend:1"</span>, <span class="jxr_string">"Extensions are permitted"</span>);
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>          commentMap.put(<span class="jxr_string">"header:simple:1"</span>, <span class="jxr_string">"Java FITS: "</span> + <strong class="jxr_keyword">new</strong> java.util.Date());
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          commentMap.put(<span class="jxr_string">"header:xtension:1"</span>, <span class="jxr_string">"Java FITS: "</span> + <strong class="jxr_keyword">new</strong> java.util.Date());
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          commentMap.put(<span class="jxr_string">"header:naxis:1"</span>, <span class="jxr_string">"Dimensionality"</span>);
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>          commentMap.put(<span class="jxr_string">"header:extend:2"</span>, <span class="jxr_string">"Extensions are permitted"</span>);
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          commentMap.put(<span class="jxr_string">"asciitable:pcount:1"</span>, <span class="jxr_string">"No group data"</span>);
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          commentMap.put(<span class="jxr_string">"asciitable:gcount:1"</span>, <span class="jxr_string">"One group"</span>);
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          commentMap.put(<span class="jxr_string">"asciitable:tfields:1"</span>, <span class="jxr_string">"Number of fields in table"</span>);
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          commentMap.put(<span class="jxr_string">"asciitable:tbcolN:1"</span>, <span class="jxr_string">"Column offset"</span>);
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          commentMap.put(<span class="jxr_string">"asciitable:naxis1:1"</span>, <span class="jxr_string">"Size of row in bytes"</span>);
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          commentMap.put(<span class="jxr_string">"undefineddata:naxis1:1"</span>, <span class="jxr_string">"Number of Bytes"</span>);
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          commentMap.put(<span class="jxr_string">"undefineddata:extend:1"</span>, <span class="jxr_string">"Extensions are permitted"</span>);
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          commentMap.put(<span class="jxr_string">"binarytablehdu:pcount:1"</span>, <span class="jxr_string">"Includes heap"</span>);
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>          commentMap.put(<span class="jxr_string">"binarytable:naxis1:1"</span>, <span class="jxr_string">"Bytes per row"</span>);
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          commentMap.put(<span class="jxr_string">"fits:checksum:1"</span>, <span class="jxr_string">"as of "</span> + FitsDate.getFitsDateString());
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          commentMap.put(<span class="jxr_string">"basichdu:extend:1"</span>, <span class="jxr_string">"Allow extensions"</span>);
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          commentMap.put(<span class="jxr_string">"basichdu:gcount:1"</span>, <span class="jxr_string">"Required value"</span>);
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          commentMap.put(<span class="jxr_string">"basichdu:pcount:1"</span>, <span class="jxr_string">"Required value"</span>);
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          commentMap.put(<span class="jxr_string">"imagedata:extend:1"</span>, <span class="jxr_string">"Extension permitted"</span>);
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          commentMap.put(<span class="jxr_string">"imagedata:pcount:1"</span>, <span class="jxr_string">"No extra parameters"</span>);
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          commentMap.put(<span class="jxr_string">"imagedata:gcount:1"</span>, <span class="jxr_string">"One group"</span>);
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          commentMap.put(<span class="jxr_string">"tablehdu:tfields:1"</span>, <span class="jxr_string">"Number of table fields"</span>);
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"header:extend:1"</span>, <span class="jxr_string">"Extensions are permitted"</span>);
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"header:simple:1"</span>, <span class="jxr_string">"Java FITS: "</span> + <strong class="jxr_keyword">new</strong> java.util.Date());
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"header:xtension:1"</span>, <span class="jxr_string">"Java FITS: "</span> + <strong class="jxr_keyword">new</strong> java.util.Date());
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"header:naxis:1"</span>, <span class="jxr_string">"Dimensionality"</span>);
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"header:extend:2"</span>, <span class="jxr_string">"Extensions are permitted"</span>);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"asciitable:pcount:1"</span>, <span class="jxr_string">"No group data"</span>);
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"asciitable:gcount:1"</span>, <span class="jxr_string">"One group"</span>);
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"asciitable:tfields:1"</span>, <span class="jxr_string">"Number of fields in table"</span>);
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"asciitable:tbcolN:1"</span>, <span class="jxr_string">"Column offset"</span>);
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"asciitable:naxis1:1"</span>, <span class="jxr_string">"Size of row in bytes"</span>);
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"undefineddata:naxis1:1"</span>, <span class="jxr_string">"Number of Bytes"</span>);
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"undefineddata:extend:1"</span>, <span class="jxr_string">"Extensions are permitted"</span>);
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"binarytablehdu:pcount:1"</span>, <span class="jxr_string">"Includes heap"</span>);
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"binarytable:naxis1:1"</span>, <span class="jxr_string">"Bytes per row"</span>);
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"fits:checksum:1"</span>, <span class="jxr_string">"as of "</span> + FitsDate.getFitsDateString());
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"basichdu:extend:1"</span>, <span class="jxr_string">"Allow extensions"</span>);
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"basichdu:gcount:1"</span>, <span class="jxr_string">"Required value"</span>);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"basichdu:pcount:1"</span>, <span class="jxr_string">"Required value"</span>);
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"imagedata:extend:1"</span>, <span class="jxr_string">"Extension permitted"</span>);
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"imagedata:pcount:1"</span>, <span class="jxr_string">"No extra parameters"</span>);
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"imagedata:gcount:1"</span>, <span class="jxr_string">"One group"</span>);
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"tablehdu:tfields:1"</span>, <span class="jxr_string">"Number of table fields"</span>);
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>          <em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  <em class="jxr_comment">         * Null entries: header:bitpix:1 header:simple:2 header:bitpix:2</em>
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  <em class="jxr_comment">         * header:naxisN:1 header:naxis:2 undefineddata:pcount:1</em>
@@ -98,18 +98,21 @@
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_comment">         */</em>
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>      }
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String getComment(String key) {
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>          <strong class="jxr_keyword">return</strong> commentMap.get(key);
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>      }
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> updateComment(String key, String comment) {
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>          commentMap.put(key, comment);
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>      }
-<a class="jxr_linenumber" name="L100" href="#L100">100</a> 
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> deleteComment(String key) {
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>         commentMap.remove(key);
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>     }
-<a class="jxr_linenumber" name="L104" href="#L104">104</a> }
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>      <strong class="jxr_keyword">private</strong> <a href="../../../nom/tam/fits/HeaderCommentsMap.html">HeaderCommentsMap</a>() {
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>      }
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>  
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> deleteComment(String key) {
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>          HeaderCommentsMap.commentMap.remove(key);
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>      }
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String getComment(String key) {
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>         <strong class="jxr_keyword">return</strong> HeaderCommentsMap.commentMap.get(key);
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>     }
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> 
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> updateComment(String key, String comment) {
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>         HeaderCommentsMap.commentMap.put(key, comment);
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>     }
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>STScIExt.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.header.extra</a> &gt; <span class="el_source">STScIExt.java</span></div><h1>STScIExt.java</h1><pre class="source lang-java linenums">package nom.tam.fits.header.extra;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.IFitsHeader;
+
+/**
+ * This keyword dictionary gathered form STScI.
+ * 
+ * &lt;pre&gt;
+ *  @see &lt;a href=&quot;http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html&quot;&gt;http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html&lt;/a&gt;
+ * &lt;/pre&gt;
+ * 
+ * @author Richard van Nieuwenhoven.
+ */
+<span class="pc" id="L46">public enum STScIExt implements IFitsHeader {</span>
+    /**
+     * approach vectors
+     */
+<span class="fc" id="L50">    APPVEC(&quot;approach vectors&quot;),</span>
+    /**
+     * Telemetry rate
+     */
+<span class="fc" id="L54">    BIT_RATE(&quot;Telemetry rate&quot;),</span>
+    /**
+     * date of initial data represented (dd/mm/yy)
+     */
+<span class="fc" id="L58">    DATE_BEG(&quot;DATE-BEG&quot;, &quot;date of initial data represented.&quot;),</span>
+    /**
+     * Date of original file creation (dd/mm/yy)
+     */
+<span class="fc" id="L62">    DATE_MAP(&quot;DATE-MAP&quot;, &quot;Date of original file creation&quot;),</span>
+    /**
+     * File standard deviation of DEC (degrees)
+     */
+<span class="fc" id="L66">    DEC_PNTE(&quot;&quot;),</span>
+    /**
+     * Detector X field of view (mm)
+     */
+<span class="fc" id="L70">    FOV_X_MM(&quot;Detector X field of view (mm)&quot;),</span>
+    /**
+     * Detector X field of view (mm)
+     */
+<span class="fc" id="L74">    FOV_Y_MM(&quot;Detector Y field of view (mm)&quot;),</span>
+    /**
+     * BITS/PIXEL OF IPPS RASTER.
+     */
+<span class="fc" id="L78">    IPPS_B_P(&quot;IPPS-B/P&quot;, &quot;BITS/PIXEL OF IPPS RASTER.&quot;),</span>
+    /**
+     * IPPS identification.
+     */
+<span class="fc" id="L82">    IPPS_ID(&quot;IPPS-ID&quot;, &quot;&quot;),</span>
+    /**
+     * MAXIMUM VALUE IN RASTER
+     */
+<span class="fc" id="L86">    IPPS_MAX(&quot;IPPS-MAX&quot;, &quot;MAXIMUM VALUE IN RASTER&quot;),</span>
+    /**
+     * MINIMUM VALUE IN RASTER
+     */
+<span class="fc" id="L90">    IPPS_MIN(&quot;IPPS-MIN&quot;, &quot;MINIMUM VALUE IN RASTER&quot;),</span>
+    /**
+     * RASTER LFN/RASTER ORDINAL
+     */
+<span class="fc" id="L94">    IPPS_RF(&quot;IPPS-RF&quot;, &quot;RASTER LFN/RASTER ORDINAL&quot;),</span>
+    /**
+     * ?
+     */
+<span class="fc" id="L98">    JOBNAME(&quot;&quot;),</span>
+    /**
+     * Fractional portion of ephemeris MJD
+     */
+<span class="fc" id="L102">    MJDREFF(&quot;Fractional portion of ephemeris MJD&quot;),</span>
+    /**
+     * Integer portion of ephemeris MJD
+     */
+<span class="fc" id="L106">    MJDREFI(&quot;Integer portion of ephemeris MJD&quot;),</span>
+    /**
+     * Modal Configuration ID
+     */
+<span class="fc" id="L110">    MODAL_ID(&quot;Modal Configuration ID&quot;),</span>
+    /**
+     * optical attribute number is id.
+     */
+<span class="fc" id="L114">    OPTICn(&quot;&quot;),</span>
+    /**
+     * beginning orbit number
+     */
+<span class="fc" id="L118">    ORBITBEG(&quot;beginning orbit number&quot;),</span>
+    /**
+     * ending orbit number
+     */
+<span class="fc" id="L122">    ORBITEND(&quot;ending orbit number&quot;),</span>
+    /**
+     * File standard deviation of ROLL (degrees)
+     */
+<span class="fc" id="L126">    PA_PNTE(&quot;File standard deviation of ROLL&quot;),</span>
+    /**
+     * Quad tree pixel resolution
+     */
+<span class="fc" id="L130">    PIXRESOL(&quot;Quad tree pixel resolution&quot;),</span>
+    /**
+     * Processing script version
+     */
+<span class="fc" id="L134">    PROCVER(&quot;Processing script version&quot;),</span>
+    /**
+     * ?
+     */
+<span class="fc" id="L138">    PRODUCT(&quot;&quot;),</span>
+    /**
+     * File standard deviation of RA (degrees)
+     */
+<span class="fc" id="L142">    RA_PNTE(&quot;File standard deviation of RA &quot;),</span>
+    /**
+     * Sequential number from ODB
+     */
+<span class="fc" id="L146">    SEQNUM(&quot;Sequential number from ODB&quot;),</span>
+    /**
+     * Number of times sequence processed
+     */
+<span class="fc" id="L150">    SEQPNUM(&quot;Number of times sequence processed&quot;),</span>
+    /**
+     * solar elongations included
+     */
+<span class="fc" id="L154">    SOLELONG(&quot;solar elongations included&quot;),</span>
+    /**
+     * ?
+     */
+<span class="fc" id="L158">    TCDLTn(&quot;&quot;),</span>
+    /**
+     * ?
+     */
+<span class="fc" id="L162">    TCRPXn(&quot;&quot;),</span>
+    /**
+     * ?
+     */
+<span class="fc" id="L166">    TCRVLn(&quot;&quot;),</span>
+    /**
+     * ?
+     */
+<span class="fc" id="L170">    TCTYPn(&quot;&quot;),</span>
+    /**
+     * Default time system. All times which do not have a &quot;timesys&quot; element
+     * associated with them in this dictionary default to this keyword. time
+     * system (same as IRAS)
+     */
+<span class="fc" id="L176">    TIMESYS(&quot;Default time system&quot;),</span>
+    /**
+     * offset to be applied to TIME column
+     */
+<span class="fc" id="L180">    TIMEZERO(&quot;offset to be applied to TIME column&quot;),</span>
+    /**
+     * observation start time in TIMESYS system .
+     */
+<span class="fc" id="L184">    TSTART(&quot;observation start time&quot;),</span>
+    /**
+     * observation stop time in TIMESYS system .
+     */
+<span class="fc" id="L188">    TSTOP(&quot;observation stop time&quot;),</span>
+    /**
+     * Version of Data Reduction Software
+     */
+<span class="fc" id="L192">    VERSION(&quot;Version of Data Reduction Software &quot;),</span>
+    /**
+     * nominal wavelength of Band n
+     */
+<span class="fc" id="L196">    WAVEn(&quot;nominal wavelength of Band&quot;),</span>
+    /**
+     * signal from zodiacal dust remains in map
+     */
+<span class="fc" id="L200">    ZLREMOV(&quot;signal from zodiacal dust remains in map&quot;),</span>
+    /**
+     * Modified Julian date at the start of the exposure. The fractional part of
+     * the date is given to better than a second of time.
+     * &lt;p&gt;
+     * units = 'd'
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * default value = none
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * index = none
+     * &lt;/p&gt;
+     */
+<span class="fc" id="L214">    MJD_OBS(&quot;MJD-OBS&quot;, &quot;MJD of exposure start&quot;);</span>
+
+    private IFitsHeader key;
+
+<span class="fc" id="L218">    private STScIExt(String comment) {</span>
+<span class="fc" id="L219">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);</span>
+<span class="fc" id="L220">    }</span>
+
+<span class="fc" id="L222">    private STScIExt(String key, String comment) {</span>
+<span class="fc" id="L223">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);</span>
+<span class="fc" id="L224">    }</span>
+
+    @Override
+    public String comment() {
+<span class="fc" id="L228">        return this.key.comment();</span>
+    }
+
+    @Override
+    public HDU hdu() {
+<span class="fc" id="L233">        return this.key.hdu();</span>
+    }
+
+    @Override
+    public String key() {
+<span class="fc" id="L238">        return this.key.key();</span>
+    }
+
+    @Override
+    public IFitsHeader n(int... number) {
+<span class="fc" id="L243">        return this.key.n(number);</span>
+    }
+
+    @Override
+    public SOURCE status() {
+<span class="fc" id="L248">        return this.key.status();</span>
+    }
+
+    @Override
+    public VALUE valueType() {
+<span class="fc" id="L253">        return this.key.valueType();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>UndefinedHDU.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">UndefinedHDU.java</span></div><h1>UndefinedHDU.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.io.PrintStream;
+
+import nom.tam.util.ArrayFuncs;
+
+/**
+ * Holder for unknown data types.
+ */
+public class UndefinedHDU extends BasicHDU&lt;UndefinedData&gt; {
+
+    /**
+     * @return Encapsulate an object as an ImageHDU.
+     * @param o
+     *            the object to encapsulate
+     * @throws FitsException
+     *             if the operation failed
+     */
+    public static Data encapsulate(Object o) throws FitsException {
+<span class="fc" id="L51">        return new UndefinedData(o);</span>
+    }
+
+    /**
+     * Check if we can use the following object as in an Undefined FITS block.
+     * We allow this so long as computeLSize can get a size. Note that
+     * computeLSize may be wrong!
+     * 
+     * @param o
+     *            The Object being tested.
+     * @return true if o can be an Undefined FITS block.
+     */
+    public static boolean isData(Object o) {
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        return ArrayFuncs.computeLSize(o) &gt; 0;</span>
+    }
+
+    /**
+     * Check if we can find the length of the data for this header.
+     * 
+     * @param hdr
+     *            header to check.
+     * @return &lt;CODE&gt;true&lt;/CODE&gt; if this HDU has a valid header.
+     */
+    public static boolean isHeader(Header hdr) {
+<span class="pc bpc" id="L75" title="2 of 4 branches missed.">        if (hdr.getStringValue(&quot;XTENSION&quot;) != null &amp;&amp; hdr.getIntValue(&quot;NAXIS&quot;, -1) &gt;= 0) {</span>
+<span class="fc" id="L76">            return true;</span>
+        }
+<span class="nc" id="L78">        return false;</span>
+    }
+
+    public static Data manufactureData(Header hdr) throws FitsException {
+<span class="fc" id="L82">        return new UndefinedData(hdr);</span>
+    }
+
+    /**
+     * @return Create a header that describes the given image data.
+     * @param d
+     *            The image to be described.
+     * @throws FitsException
+     *             if the object does not contain valid image data.
+     */
+    public static Header manufactureHeader(Data d) throws FitsException {
+
+<span class="fc" id="L94">        Header h = new Header();</span>
+<span class="fc" id="L95">        d.fillHeader(h);</span>
+
+<span class="fc" id="L97">        return h;</span>
+    }
+
+    /**
+     * Build an image HDU using the supplied data.
+     * 
+     * @param h
+     *            the header for this HDU
+     * @param d
+     *            the data used to build the image.
+     * @throws FitsException
+     *             if there was a problem with the data.
+     */
+<span class="fc" id="L110">    public UndefinedHDU(Header h, Data d) throws FitsException {</span>
+<span class="fc" id="L111">        this.myData = (UndefinedData) d;</span>
+<span class="fc" id="L112">        this.myHeader = h;</span>
+
+<span class="fc" id="L114">    }</span>
+
+    @Override
+    public void info(PrintStream stream) {
+<span class="fc" id="L118">        stream.println(&quot;  Unhandled/Undefined/Unknown Type&quot;);</span>
+<span class="fc" id="L119">        stream.println(&quot;  XTENSION=&quot; + this.myHeader.getStringValue(&quot;XTENSION&quot;).trim());</span>
+<span class="fc" id="L120">        stream.println(&quot;  Apparent size:&quot; + this.myData.getTrueSize());</span>
+<span class="fc" id="L121">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

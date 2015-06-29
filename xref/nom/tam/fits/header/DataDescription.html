@@ -230,37 +230,37 @@
 <a class="jxr_linenumber" name="L222" href="#L222">222</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key;
 <a class="jxr_linenumber" name="L223" href="#L223">223</a> 
 <a class="jxr_linenumber" name="L224" href="#L224">224</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/fits/header/DataDescription.html">DataDescription</a>(IFitsHeader.SOURCE status, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment) {
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>         key = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(name(), status, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(name(), status, hdu, valueType, comment);
 <a class="jxr_linenumber" name="L226" href="#L226">226</a>     }
 <a class="jxr_linenumber" name="L227" href="#L227">227</a> 
 <a class="jxr_linenumber" name="L228" href="#L228">228</a>     @Override
 <a class="jxr_linenumber" name="L229" href="#L229">229</a>     <strong class="jxr_keyword">public</strong> String comment() {
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>         <strong class="jxr_keyword">return</strong> key.comment();
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.comment();
 <a class="jxr_linenumber" name="L231" href="#L231">231</a>     }
 <a class="jxr_linenumber" name="L232" href="#L232">232</a> 
 <a class="jxr_linenumber" name="L233" href="#L233">233</a>     @Override
 <a class="jxr_linenumber" name="L234" href="#L234">234</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu() {
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>         <strong class="jxr_keyword">return</strong> key.hdu();
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.hdu();
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>     }
 <a class="jxr_linenumber" name="L237" href="#L237">237</a> 
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>     @Override
 <a class="jxr_linenumber" name="L239" href="#L239">239</a>     <strong class="jxr_keyword">public</strong> String key() {
-<a class="jxr_linenumber" name="L240" href="#L240">240</a>         <strong class="jxr_keyword">return</strong> key.key();
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.key();
 <a class="jxr_linenumber" name="L241" href="#L241">241</a>     }
 <a class="jxr_linenumber" name="L242" href="#L242">242</a> 
 <a class="jxr_linenumber" name="L243" href="#L243">243</a>     @Override
 <a class="jxr_linenumber" name="L244" href="#L244">244</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> n(<strong class="jxr_keyword">int</strong>... number) {
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>         <strong class="jxr_keyword">return</strong> key.n(number);
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.n(number);
 <a class="jxr_linenumber" name="L246" href="#L246">246</a>     }
 <a class="jxr_linenumber" name="L247" href="#L247">247</a> 
 <a class="jxr_linenumber" name="L248" href="#L248">248</a>     @Override
 <a class="jxr_linenumber" name="L249" href="#L249">249</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status() {
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>         <strong class="jxr_keyword">return</strong> key.status();
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.status();
 <a class="jxr_linenumber" name="L251" href="#L251">251</a>     }
 <a class="jxr_linenumber" name="L252" href="#L252">252</a> 
 <a class="jxr_linenumber" name="L253" href="#L253">253</a>     @Override
 <a class="jxr_linenumber" name="L254" href="#L254">254</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType() {
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>         <strong class="jxr_keyword">return</strong> key.valueType();
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.valueType();
 <a class="jxr_linenumber" name="L256" href="#L256">256</a>     }
 <a class="jxr_linenumber" name="L257" href="#L257">257</a> }
 </pre>

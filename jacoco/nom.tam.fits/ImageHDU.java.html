@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ImageHDU.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">ImageHDU.java</span></div><h1>ImageHDU.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.io.PrintStream;
+
+import nom.tam.image.StandardImageTiler;
+import nom.tam.util.ArrayFuncs;
+import nom.tam.util.PrimitiveTypeEnum;
+
+/** FITS image header/data unit */
+public class ImageHDU extends BasicHDU&lt;ImageData&gt; {
+
+    /**
+     * @return Encapsulate an object as an ImageHDU.
+     * @param o
+     *            object to encapsulate
+     * @throws FitsException
+     *             if the operation failed
+     */
+    public static Data encapsulate(Object o) throws FitsException {
+<span class="fc" id="L51">        return new ImageData(o);</span>
+    }
+
+    /**
+     * @return is this object can be described as a FITS image.
+     * @param o
+     *            The Object being tested.
+     */
+    public static boolean isData(Object o) {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        if (o.getClass().isArray()) {</span>
+<span class="fc" id="L61">            PrimitiveTypeEnum type = PrimitiveTypeEnum.valueOf(ArrayFuncs.getBaseClass(o));</span>
+<span class="pc bpc" id="L62" title="2 of 6 branches missed.">            return type != PrimitiveTypeEnum.BOOLEAN &amp;&amp; //</span>
+                    type != PrimitiveTypeEnum.STRING &amp;&amp; //
+                    type != PrimitiveTypeEnum.UNKNOWN;
+
+        }
+<span class="fc" id="L67">        return false;</span>
+
+    }
+
+    /**
+     * Check that this HDU has a valid header for this type.
+     * 
+     * @param hdr
+     *            header to check
+     * @return &lt;CODE&gt;true&lt;/CODE&gt; if this HDU has a valid header.
+     */
+    public static boolean isHeader(Header hdr) {
+<span class="fc" id="L79">        boolean found = hdr.getBooleanValue(&quot;SIMPLE&quot;);</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (!found) {</span>
+<span class="fc" id="L81">            String s = hdr.getStringValue(&quot;XTENSION&quot;);</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">            if (s != null &amp;&amp; //</span>
+<span class="pc bpc" id="L83" title="1 of 4 branches missed.">                    (s.trim().equals(&quot;IMAGE&quot;) || s.trim().equals(&quot;IUEIMAGE&quot;))) {</span>
+<span class="fc" id="L84">                found = true;</span>
+            }
+        }
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (!found) {</span>
+<span class="fc" id="L88">            return false;</span>
+        }
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        return !hdr.getBooleanValue(&quot;GROUPS&quot;);</span>
+    }
+
+    public static Data manufactureData(Header hdr) throws FitsException {
+<span class="fc" id="L94">        return new ImageData(hdr);</span>
+    }
+
+    /**
+     * @return Create a header that describes the given image data.
+     * @param d
+     *            The image to be described.
+     * @throws FitsException
+     *             if the object does not contain valid image data.
+     */
+    public static Header manufactureHeader(Data d) throws FitsException {
+
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (d == null) {</span>
+<span class="nc" id="L107">            return null;</span>
+        }
+
+<span class="fc" id="L110">        Header h = new Header();</span>
+<span class="fc" id="L111">        d.fillHeader(h);</span>
+
+<span class="fc" id="L113">        return h;</span>
+    }
+
+    /**
+     * Build an image HDU using the supplied data.
+     * 
+     * @param h
+     *            the header for the image.
+     * @param d
+     *            the data used in the image.
+     * @throws FitsException
+     *             if there was a problem with the data.
+     */
+<span class="fc" id="L126">    public ImageHDU(Header h, Data d) throws FitsException {</span>
+<span class="fc" id="L127">        this.myData = (ImageData) d;</span>
+<span class="fc" id="L128">        this.myHeader = h;</span>
+
+<span class="fc" id="L130">    }</span>
+
+    /** Indicate that Images can appear at the beginning of a FITS dataset */
+    @Override
+    protected boolean canBePrimary() {
+<span class="fc" id="L135">        return true;</span>
+    }
+
+    public StandardImageTiler getTiler() {
+<span class="fc" id="L139">        return ((ImageData) this.myData).getTiler();</span>
+    }
+
+    /**
+     * Print out some information about this HDU.
+     */
+    @Override
+    public void info(PrintStream stream) {
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">        if (isHeader(this.myHeader)) {</span>
+<span class="fc" id="L148">            stream.println(&quot;  Image&quot;);</span>
+        } else {
+<span class="nc" id="L150">            stream.println(&quot;  Image (bad header)&quot;);</span>
+        }
+
+<span class="fc" id="L153">        stream.println(&quot;      Header Information:&quot;);</span>
+<span class="fc" id="L154">        stream.println(&quot;         BITPIX=&quot; + this.myHeader.getIntValue(&quot;BITPIX&quot;, -1));</span>
+<span class="fc" id="L155">        int naxis = this.myHeader.getIntValue(&quot;NAXIS&quot;, -1);</span>
+<span class="fc" id="L156">        stream.println(&quot;         NAXIS=&quot; + naxis);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        for (int i = 1; i &lt;= naxis; i += 1) {</span>
+<span class="fc" id="L158">            stream.println(&quot;         NAXIS&quot; + i + &quot;=&quot; + this.myHeader.getIntValue(&quot;NAXIS&quot; + i, -1));</span>
+        }
+
+<span class="fc" id="L161">        stream.println(&quot;      Data information:&quot;);</span>
+        try {
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">            if (this.myData.getData() == null) {</span>
+<span class="nc" id="L164">                stream.println(&quot;        No Data&quot;);</span>
+            } else {
+<span class="fc" id="L166">                stream.println(&quot;         &quot; + ArrayFuncs.arrayDescription(this.myData.getData()));</span>
+            }
+<span class="nc" id="L168">        } catch (Exception e) {</span>
+<span class="nc" id="L169">            stream.println(&quot;      Unable to get data&quot;);</span>
+<span class="fc" id="L170">        }</span>
+<span class="fc" id="L171">    }</span>
+
+    /** Change the Image from/to primary */
+    @Override
+    protected void setPrimaryHDU(boolean status) {
+
+        try {
+<span class="fc" id="L178">            super.setPrimaryHDU(status);</span>
+<span class="nc" id="L179">        } catch (FitsException e) {</span>
+<span class="nc" id="L180">            System.err.println(&quot;Impossible exception in ImageData&quot;);</span>
+<span class="fc" id="L181">        }</span>
+
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        if (status) {</span>
+<span class="fc" id="L184">            this.myHeader.setSimple(true);</span>
+        } else {
+<span class="fc" id="L186">            this.myHeader.setXtension(&quot;IMAGE&quot;);</span>
+        }
+<span class="fc" id="L188">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

@@ -78,27 +78,28 @@
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>              bf = <strong class="jxr_keyword">new</strong> BufferedFile(fname, <span class="jxr_string">"r"</span>);
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>              <strong class="jxr_keyword">long</strong> skip = 2500000000L; <em class="jxr_comment">// 2.5 G</em>
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>              <strong class="jxr_keyword">long</strong> val1 = bf.skipBytes(skip);
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>              <strong class="jxr_keyword">long</strong> val2 = bf.getFilePointer();
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>              <strong class="jxr_keyword">int</strong> val = bf.read();
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>              bf.close();
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>              assertEquals(<span class="jxr_string">"SkipResult"</span>, skip, val1);
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>              assertEquals(<span class="jxr_string">"SkipPos"</span>, skip, val2);
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>              assertEquals(<span class="jxr_string">"SkipVal"</span>, (<strong class="jxr_keyword">int</strong>) sample, val);
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>  
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>              BufferedDataInputStream bdis = <strong class="jxr_keyword">new</strong> BufferedDataInputStream(<strong class="jxr_keyword">new</strong> FileInputStream(fname));
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>              val1 = bdis.skipBytes(skip);
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>              val = bdis.read();
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>              bdis.close();
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>              assertEquals(<span class="jxr_string">"SSkipResult"</span>, skip, val1);
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>              assertEquals(<span class="jxr_string">"SSkipVal"</span>, (<strong class="jxr_keyword">int</strong>) sample, val);
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>          } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>              e.printStackTrace(System.err);
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>              <strong class="jxr_keyword">throw</strong> e;
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>          }
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>      }
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>  }
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>              <strong class="jxr_keyword">long</strong> val1 = bf.getFilePointer();
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>              bf.skipAllBytes(skip);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>              val1 = bf.getFilePointer() - val1;
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>              <strong class="jxr_keyword">long</strong> val2 = bf.getFilePointer();
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>              <strong class="jxr_keyword">int</strong> val = bf.read();
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>              bf.close();
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>              assertEquals(<span class="jxr_string">"SkipResult"</span>, skip, val1);
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>              assertEquals(<span class="jxr_string">"SkipPos"</span>, skip, val2);
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>              assertEquals(<span class="jxr_string">"SkipVal"</span>, sample, val);
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>              BufferedDataInputStream bdis = <strong class="jxr_keyword">new</strong> BufferedDataInputStream(<strong class="jxr_keyword">new</strong> FileInputStream(fname));
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>              bdis.skipAllBytes(skip);
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>              val = bdis.read();
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>              bdis.close();
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>              assertEquals(<span class="jxr_string">"SSkipVal"</span>, sample, val);
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>          } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>              e.printStackTrace(System.err);
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>              <strong class="jxr_keyword">throw</strong> e;
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          }
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>      }
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>

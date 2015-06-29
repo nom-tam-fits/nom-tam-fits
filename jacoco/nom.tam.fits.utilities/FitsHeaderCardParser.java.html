@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FitsHeaderCardParser.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.utilities</a> &gt; <span class="el_source">FitsHeaderCardParser.java</span></div><h1>FitsHeaderCardParser.java</h1><pre class="source lang-java linenums">package nom.tam.fits.utilities;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * A helper utility class to parse header cards for there value (especially
+ * strings) and comments.
+ * 
+ * @author Richard van Nieuwenhoven
+ */
+public final class FitsHeaderCardParser {
+
+    /**
+     * value comment pair of the header card.
+     */
+<span class="fc" id="L48">    public static class ParsedValue {</span>
+
+        /**
+         * the comment specified with the value.
+         */
+<span class="fc" id="L53">        private String comment = null;</span>
+
+        /**
+         * was the value quoted?
+         */
+<span class="fc" id="L58">        private boolean isString = false;</span>
+
+        /**
+         * the value of the card. (trimmed)
+         */
+<span class="fc" id="L63">        private String value = null;</span>
+
+        /**
+         * @return the comment of the card.
+         */
+        public String getComment() {
+<span class="fc" id="L69">            return this.comment;</span>
+        }
+
+        /**
+         * @return the value of the card.
+         */
+        public String getValue() {
+<span class="fc" id="L76">            return this.value;</span>
+        }
+
+        /**
+         * @return true if the value was quoted.
+         */
+        public boolean isString() {
+<span class="fc" id="L83">            return this.isString;</span>
+        }
+
+    }
+
+    /**
+     * pattern to replace the double quotes from string values to single quotes.
+     */
+<span class="fc" id="L91">    private static final Pattern DOUBLE_QUOTE_PATTERN = Pattern.compile(&quot;''&quot;);</span>
+
+    /**
+     * pattern to match FITS keywords, specially to parse hirarchical keywords.
+     */
+<span class="fc" id="L96">    private static final Pattern KEYWORD_PATTERN = Pattern.compile(&quot;([A-Z|0-9|_|-]+)([ |\\|.]*=?)&quot;);</span>
+
+    /**
+     * pattern to match a quoted string where 2 quotes are used to escape a
+     * single quote inside the string.
+     */
+<span class="fc" id="L102">    private static final Pattern STRING_PATTERN = Pattern.compile(&quot;'(?:[^']|'{2})*'&quot;);</span>
+
+    /**
+     * delete the start and trailing quote from the sting and replace all
+     * (escaped)double quotes with a single quote. Then trim the trailing
+     * blanks.
+     * 
+     * @param quotedString
+     *            the string to un-quote.
+     * @return the unquoted string
+     */
+    private static String deleteQuotes(String quotedString) {
+<span class="fc" id="L114">        Matcher doubleQuoteMatcher = FitsHeaderCardParser.DOUBLE_QUOTE_PATTERN.matcher(quotedString);</span>
+<span class="fc" id="L115">        StringBuffer sb = new StringBuffer();</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        if (doubleQuoteMatcher.find(1)) {</span>
+            do {
+<span class="fc" id="L118">                doubleQuoteMatcher.appendReplacement(sb, &quot;'&quot;);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">            } while (doubleQuoteMatcher.find());</span>
+        }
+<span class="fc" id="L121">        doubleQuoteMatcher.appendTail(sb);</span>
+<span class="fc" id="L122">        sb.deleteCharAt(0);</span>
+<span class="fc" id="L123">        sb.setLength(sb.length() - 1);</span>
+<span class="fc bfc" id="L124" title="All 4 branches covered.">        while (sb.length() &gt; 0 &amp;&amp; Character.isWhitespace(sb.charAt(sb.length() - 1))) {</span>
+<span class="fc" id="L125">            sb.setLength(sb.length() - 1);</span>
+        }
+<span class="fc" id="L127">        return sb.toString();</span>
+    }
+
+    /**
+     * get the not empty comment string from the end of the card. start scanning
+     * from the end of the value.
+     * 
+     * @param stringCard
+     *            the string representing the card
+     * @param startPosition
+     *            the start point for the scan
+     * @return the not empty comment or null if no comment was found.
+     */
+    private static String extractComment(String stringCard, int startPosition) {
+<span class="fc" id="L141">        int startOfComment = stringCard.indexOf('/', startPosition) + 1;</span>
+<span class="pc bpc" id="L142" title="1 of 4 branches missed.">        if (startOfComment &gt; 0 &amp;&amp; stringCard.length() &gt; startOfComment) {</span>
+<span class="fc" id="L143">            return stringCard.substring(startOfComment).trim();</span>
+        }
+<span class="fc" id="L145">        return null;</span>
+    }
+
+    /**
+     * parse a fits keyword from a card and return it as a dot separated list.
+     * 
+     * @param card
+     *            the card to parse.
+     * @return dot separated key list
+     */
+    public static String parseCardKey(String card) {
+<span class="fc" id="L156">        int indexOfEquals = card.indexOf('=');</span>
+<span class="fc" id="L157">        StringBuilder builder = new StringBuilder();</span>
+<span class="fc" id="L158">        Matcher kewordMatcher = FitsHeaderCardParser.KEYWORD_PATTERN.matcher(card);</span>
+<span class="pc bpc" id="L159" title="1 of 4 branches missed.">        while (kewordMatcher.find() &amp;&amp; kewordMatcher.start() &lt; indexOfEquals) {</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">            if (builder.length() != 0) {</span>
+<span class="fc" id="L161">                builder.append('.');</span>
+            }
+<span class="fc" id="L163">            builder.append(kewordMatcher.group(1));</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">            if (kewordMatcher.group(2).endsWith(&quot;=&quot;)) {</span>
+<span class="fc" id="L165">                break;</span>
+            }
+        }
+<span class="fc" id="L168">        return builder.toString();</span>
+    }
+
+    /**
+     * Parse the card for a value and comment. Quoted string values are unquoted
+     * and the {@link ParsedValue#isString} specifies if the value was a quoted
+     * string. non quoted values are trimmed.
+     * 
+     * @param card
+     *            the card to parse.
+     * @return a parsed card or null if no value could be detected.
+     */
+    public static ParsedValue parseCardValue(String card) {
+<span class="fc" id="L181">        ParsedValue value = parseStringValue(card);</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">        if (value == null) {</span>
+            // ok no string lets check for an equals.
+<span class="fc" id="L184">            int indexOfEquals = card.indexOf('=');</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">            if (indexOfEquals &gt; 0) {</span>
+                // its no string so the value goes max till the comment
+<span class="fc" id="L187">                value = new ParsedValue();</span>
+<span class="fc" id="L188">                int endOfValue = card.length() - 1;</span>
+<span class="fc" id="L189">                int startOfComment = card.indexOf('/', indexOfEquals);</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">                if (startOfComment &gt; 0) {</span>
+<span class="fc" id="L191">                    endOfValue = startOfComment - 1;</span>
+<span class="fc" id="L192">                    value.comment = extractComment(card, startOfComment);</span>
+                }
+<span class="fc" id="L194">                value.value = card.substring(indexOfEquals + 1, endOfValue + 1).trim();</span>
+            }
+        }
+<span class="fc" id="L197">        return value;</span>
+    }
+
+    /**
+     * lets see if there is a quoted sting in the card.
+     * 
+     * @param card
+     *            the card string to parse.
+     * @return the parsed value with the unquoted string or null if no quoted
+     *         string was found.
+     */
+    private static ParsedValue parseStringValue(String card) {
+<span class="fc" id="L209">        ParsedValue stringValue = null;</span>
+<span class="fc" id="L210">        Matcher matcher = FitsHeaderCardParser.STRING_PATTERN.matcher(card);</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">        if (matcher.find()) {</span>
+<span class="fc" id="L212">            int indexOfComment = card.indexOf('/');</span>
+<span class="fc bfc" id="L213" title="All 4 branches covered.">            if (indexOfComment &gt;= 0 &amp;&amp; indexOfComment &lt; matcher.start()) {</span>
+                // ok the string was commented, forget the string.
+<span class="fc" id="L215">                return null;</span>
+            }
+<span class="fc" id="L217">            stringValue = new ParsedValue();</span>
+<span class="fc" id="L218">            stringValue.isString = true;</span>
+<span class="fc" id="L219">            stringValue.value = deleteQuotes(matcher.group(0));</span>
+<span class="fc" id="L220">            stringValue.comment = extractComment(card, matcher.end());</span>
+        }
+<span class="fc" id="L222">        return stringValue;</span>
+    }
+
+    /**
+     * utility class will not be instantiated.
+     */
+<span class="fc" id="L228">    private FitsHeaderCardParser() {</span>
+<span class="fc" id="L229">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

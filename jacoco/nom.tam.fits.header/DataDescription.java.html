@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DataDescription.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.header</a> &gt; <span class="el_source">DataDescription.java</span></div><h1>DataDescription.java</h1><pre class="source lang-java linenums">package nom.tam.fits.header;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+/**
+ * This data dictionary contains FITS keywords that have been widely used within
+ * the astronomical community. It is recommended that these keywords only be
+ * used as defined here. These are the keywords that describe the data or the
+ * FITS file itself
+ * 
+ * &lt;pre&gt;
+ * @see &lt;a href=&quot;http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html&quot;&gt;http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html&lt;/a&gt;
+ * &lt;/pre&gt;
+ * 
+ * @author Richard van Nieuwenhoven
+ */
+<span class="pc" id="L46">public enum DataDescription implements IFitsHeader {</span>
+    /**
+     * The value field shall contain a character string that uniquely defines
+     * the configuration state, or version, of the the software processing
+     * system that generated the data contained in the HDU. This keyword differs
+     * from the CREATOR keyword in that it give the name and version of the
+     * overall processing system and not just the name and version of a single
+     * program.
+     */
+<span class="fc" id="L55">    CONFIGUR(SOURCE.INTEGRAL, HDU.ANY, VALUE.STRING, &quot;software configuration used to process the data&quot;),</span>
+    /**
+     * The value field shall contain a character string giving the name, and
+     * optionally, the version of the program that originally created the
+     * current FITS HDU. This keyword is synonymous with the PROGRAM keyword.
+     * Example: 'TASKNAME V1.2.3'
+     */
+<span class="fc" id="L62">    CREATOR(SOURCE.HEASARC, HDU.ANY, VALUE.STRING, &quot;the name of the software task that created the file&quot;),</span>
+
+    /**
+     * The value field shall contain a character string giving the the host file
+     * name used to record the original data.
+     */
+<span class="fc" id="L68">    FILENAME(SOURCE.NOAO, HDU.ANY, VALUE.STRING, &quot;name of the file &quot;),</span>
+
+    /**
+     * The value field shall contain a character string giving the file type
+     * suffix of the host file name. The full file name typically consists of
+     * the root name (see ROOTNAME) followed by a file type suffix, separated by
+     * the period ('.') character.
+     */
+<span class="fc" id="L76">    FILETYPE(SOURCE.UNKNOWN, HDU.ANY, VALUE.STRING, &quot;type of file&quot;),</span>
+
+    /**
+     * The value fields of this hierarchical set of indexed keywords shall
+     * contain character strings that classify the type of data contained in the
+     * HDU. The HDUCLAS1 keyword gives the highest, most general data
+     * classification, and the HDUCLAS2 and higher keywords provide
+     * progressively more detailed subclassifications of the data.
+     */
+<span class="fc" id="L85">    HDUCLASn(SOURCE.HEASARC, HDU.ANY, VALUE.STRING, &quot;hierarchical classification of the data&quot;),</span>
+
+    /**
+     * The value field shall contain a character string that identifies the
+     * domain to which the associated HDUCLASn keywords apply. This keyword
+     * typically identifies the institution or project that has defined the
+     * allowed set of values for the associated hierarchical HDUCLASn keywords.
+     */
+<span class="fc" id="L93">    HDUCLASS(SOURCE.HEASARC, HDU.ANY, VALUE.STRING, &quot;general identifier for the classification of the data&quot;),</span>
+
+    /**
+     * The value field shall contain a character string that gives a reference
+     * to a document that describes the allowed values that may be assigned to
+     * the HDUCLASn data classification keywords.
+     */
+<span class="fc" id="L100">    HDUDOC(SOURCE.HEASARC, HDU.ANY, VALUE.STRING, &quot;reference to document describing the data format&quot;),</span>
+
+    /**
+     * This keyword is synonymous to the standard EXTLEVEL keyword except that
+     * it may also be used in the primary key. It is recommended that the
+     * HDULEVEL and EXTLEVEL keywords should not both be given in the same HDU
+     * key, but if they are, then the HDULEVEL keyword will have precedence.
+     */
+<span class="fc" id="L108">    HDULEVEL(SOURCE.UNKNOWN, HDU.ANY, VALUE.INTEGER, &quot;hierarchical level of the HDU&quot;),</span>
+    /**
+     * This keyword is synonymous to the standard EXTNAME keyword except that it
+     * may also be used in the primary key. It is recommended that the HDUNAME
+     * and EXTNAME keywords should not both be given in the same HDU key, but if
+     * they are, then the HDUNAME keyword will have precedence.
+     */
+<span class="fc" id="L115">    HDUNAME(SOURCE.UNKNOWN, HDU.ANY, VALUE.STRING, &quot;descriptive name of the HDU&quot;),</span>
+
+    /**
+     * This keyword is synonymous to the standard EXTVER keyword except that it
+     * may also be used in the primary key. It is recommended that the HDUVER
+     * and EXTVER keywords should not both be given in the same HDU key, but if
+     * they are, then the HDUVER keyword will have precedence.
+     */
+<span class="fc" id="L123">    HDUVER(SOURCE.UNKNOWN, HDU.ANY, VALUE.INTEGER, &quot;version number of the HDU&quot;),</span>
+    /**
+     * The value field shall contain a character string that gives the specific
+     * version of the document referenced by HDUDOC.
+     */
+<span class="fc" id="L128">    HDUVERS(SOURCE.HEASARC, HDU.ANY, VALUE.STRING, &quot;specific version of the document referenced by HDUDOC&quot;),</span>
+    /**
+     * The value field shall contain an integer giving the number of standard
+     * extensions contained in the FITS file. This keyword may only be used in
+     * the primary array key.
+     */
+<span class="fc" id="L134">    NEXTEND(SOURCE.STScI, HDU.PRIMARY, VALUE.INTEGER, &quot;Number of standard extensions&quot;),</span>
+    /**
+     * The value field shall contain a character string giving the name, and
+     * optionally, the version of the program that originally created the
+     * current FITS HDU. This keyword is synonymous with the CREATOR keyword.
+     * Example: 'TASKNAME V1.2.3'
+     */
+<span class="fc" id="L141">    PROGRAM(SOURCE.UCOLICK, HDU.ANY, VALUE.STRING, &quot;the name of the software task that created the file&quot;),</span>
+    /**
+     * The value field shall contain a character string giving the root of the
+     * host file name. The full file name typically consists of the root name
+     * followed by a file type suffix (see FILETYPE), separated by the period
+     * ('.') character.
+     */
+<span class="fc" id="L148">    ROOTNAME(SOURCE.UNKNOWN, HDU.ANY, VALUE.STRING, &quot;rootname of the file&quot;),</span>
+    /**
+     * The value field of this indexed keyword shall contain a floating point
+     * number specifying the suggested bin size when producing a histogram of
+     * the values in column n. This keyword is typically used in conjunction the
+     * TLMINn and TLMAXn keywords when constructing a histogram of the values in
+     * column n, such that the histogram ranges from TLMINn to TLMAXn with the
+     * histogram bin size given by TDBINn. This keyword may only be used in
+     * 'TABLE' or 'BINTABLE' extensions.
+     */
+<span class="fc" id="L158">    TDBINn(SOURCE.CXC, HDU.TABLE, VALUE.REAL, &quot;default histogram bin size for the column&quot;),</span>
+    /**
+     * The value field of this indexed keyword shall contain a floating point
+     * number specifying the maximum valid physical value represented in column
+     * n of the table, exclusive of any special values. This keyword may only be
+     * used in 'TABLE' or 'BINTABLE' extensions and is analogous to the DATAMAX
+     * keyword used for FITS images.
+     */
+<span class="fc" id="L166">    TDMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, &quot;maximum physical value in the column&quot;),</span>
+    /**
+     * The value field of this indexed keyword shall contain a floating point
+     * number specifying the minimum valid physical value represented in column
+     * n of the table, exclusive of any special values. This keyword may only be
+     * used in 'TABLE' or 'BINTABLE' extensions and is analogous to the DATAMIN
+     * keyword used for FITS images.
+     */
+<span class="fc" id="L174">    TDMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, &quot;minimum physical value in the column&quot;),</span>
+    /**
+     * The value field shall contain a character string giving a title that is
+     * suitable for display purposes, e.g., for annotation on images or plots of
+     * the data contained in the HDU.
+     */
+<span class="fc" id="L180">    TITLE(SOURCE.ROSAT, HDU.ANY, VALUE.STRING, &quot;title for the observation or data&quot;),</span>
+    /**
+     * The value field of this indexed keyword shall contain a floating point
+     * number specifying the upper bound of the legal range of physical values
+     * that may be represented in column n of the table. The column may contain
+     * values that are greater than this legal maximum value but the
+     * interpretation of such values is not defined here. The value of this
+     * keyword is typically used as the maxinum value when constructing a
+     * histogram of the values in the column. This keyword may only be used in
+     * 'TABLE' or 'BINTABLE' extensions.
+     */
+<span class="fc" id="L191">    TLMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, &quot;maximum legal value in the column&quot;),</span>
+    /**
+     * The value field of this indexed keyword shall contain a floating point
+     * number specifying the lower bound of the legal range of physical values
+     * that may be represented in column n of the table. The column may contain
+     * values that are less than this legal minimum value but the interpretation
+     * of such values is not defined here. The value of this keyword is
+     * typically used as the mininum value when constructing a histogram of the
+     * values in the column. This keyword may only be used in 'TABLE' or
+     * 'BINTABLE' extensions.
+     */
+<span class="fc" id="L202">    TLMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, &quot;minimum legal value in the column&quot;),</span>
+    /**
+     * The value field shall contain a character string that defines the order
+     * in which the rows in the current FITS ASCII or binary table extension
+     * have been sorted. The character string lists the name (as given by the
+     * TTYPEn keyword) of the primary sort column, optionally followed by the
+     * names of any secondary sort column(s). The presence of this keyword
+     * indicates that the rows in the table have been sorted first by the values
+     * in the primary sort column; any rows that have the same value in the
+     * primary column have been further sorted by the values in the secondary
+     * sort column and so on for all the specified columns. If more than one
+     * column is specified by TSORTKEY then the names must be separated by a
+     * comma. One or more spaces are also allowed between the comma and the
+     * following column name. By default, columns are sorted in ascending order,
+     * but a minus sign may precede the column name to indicate that the rows
+     * are sorted in descending order. This keyword may only be used in 'TABLE'
+     * or 'BINTABLE' extensions. Example: TSORTKEY = 'TIME, RA, DEC'.
+     */
+<span class="fc" id="L220">    TSORTKEY(SOURCE.HEASARC, HDU.TABLE, VALUE.STRING, &quot;defines the sort order of a table&quot;);</span>
+
+    private IFitsHeader key;
+
+<span class="fc" id="L224">    private DataDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L225">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
+<span class="fc" id="L226">    }</span>
+
+    @Override
+    public String comment() {
+<span class="fc" id="L230">        return this.key.comment();</span>
+    }
+
+    @Override
+    public HDU hdu() {
+<span class="fc" id="L235">        return this.key.hdu();</span>
+    }
+
+    @Override
+    public String key() {
+<span class="fc" id="L240">        return this.key.key();</span>
+    }
+
+    @Override
+    public IFitsHeader n(int... number) {
+<span class="fc" id="L245">        return this.key.n(number);</span>
+    }
+
+    @Override
+    public SOURCE status() {
+<span class="fc" id="L250">        return this.key.status();</span>
+    }
+
+    @Override
+    public VALUE valueType() {
+<span class="fc" id="L255">        return this.key.valueType();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
