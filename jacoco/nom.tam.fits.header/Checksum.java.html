@@ -76,41 +76,42 @@
      */
 <span class="fc" id="L77">    DATASUM(HDU.ANY, VALUE.STRING, &quot;checksum of the data records&quot;);</span>
 
-    private IFitsHeader key;
+    @SuppressWarnings(&quot;CPD-START&quot;)
+    private final IFitsHeader key;
 
-<span class="fc" id="L81">    private Checksum(HDU hdu, VALUE valueType, String comment) {</span>
-<span class="fc" id="L82">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CHECKSUM, hdu, valueType, comment);</span>
-<span class="fc" id="L83">    }</span>
+<span class="fc" id="L82">    private Checksum(HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L83">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CHECKSUM, hdu, valueType, comment);</span>
+<span class="fc" id="L84">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L87">        return this.key.comment();</span>
+<span class="fc" id="L88">        return this.key.comment();</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L92">        return this.key.hdu();</span>
+<span class="fc" id="L93">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L97">        return this.key.key();</span>
+<span class="fc" id="L98">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L102">        return this.key.n(number);</span>
+<span class="fc" id="L103">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L107">        return this.key.status();</span>
+<span class="fc" id="L108">        return this.key.status();</span>
     }
 
     @Override
+    @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L112">        return this.key.valueType();</span>
+<span class="fc" id="L114">        return this.key.valueType();</span>
     }
-
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

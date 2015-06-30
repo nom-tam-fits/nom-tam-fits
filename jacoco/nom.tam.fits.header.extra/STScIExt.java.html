@@ -213,44 +213,46 @@ import nom.tam.fits.header.IFitsHeader;
      */
 <span class="fc" id="L214">    MJD_OBS(&quot;MJD-OBS&quot;, &quot;MJD of exposure start&quot;);</span>
 
-    private IFitsHeader key;
+    @SuppressWarnings(&quot;CPD-START&quot;)
+    private final IFitsHeader key;
 
-<span class="fc" id="L218">    private STScIExt(String comment) {</span>
-<span class="fc" id="L219">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);</span>
-<span class="fc" id="L220">    }</span>
+<span class="fc" id="L219">    private STScIExt(String comment) {</span>
+<span class="fc" id="L220">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);</span>
+<span class="fc" id="L221">    }</span>
 
-<span class="fc" id="L222">    private STScIExt(String key, String comment) {</span>
-<span class="fc" id="L223">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);</span>
-<span class="fc" id="L224">    }</span>
+<span class="fc" id="L223">    private STScIExt(String key, String comment) {</span>
+<span class="fc" id="L224">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);</span>
+<span class="fc" id="L225">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L228">        return this.key.comment();</span>
+<span class="fc" id="L229">        return this.key.comment();</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L233">        return this.key.hdu();</span>
+<span class="fc" id="L234">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L238">        return this.key.key();</span>
+<span class="fc" id="L239">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L243">        return this.key.n(number);</span>
+<span class="fc" id="L244">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L248">        return this.key.status();</span>
+<span class="fc" id="L249">        return this.key.status();</span>
     }
 
     @Override
+    @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L253">        return this.key.valueType();</span>
+<span class="fc" id="L255">        return this.key.valueType();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

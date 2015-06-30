@@ -94,40 +94,42 @@
      */
 <span class="fc" id="L95">    INHERIT(SOURCE.STScI, HDU.EXTENSION, VALUE.LOGICAL, &quot;denotes the INHERIT keyword convention&quot;);</span>
 
-    private IFitsHeader key;
+    @SuppressWarnings(&quot;CPD-START&quot;)
+    private final IFitsHeader key;
 
-<span class="fc" id="L99">    private NonStandard(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
-<span class="fc" id="L100">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
-<span class="fc" id="L101">    }</span>
+<span class="fc" id="L100">    private NonStandard(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L101">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
+<span class="fc" id="L102">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L105">        return this.key.comment();</span>
+<span class="fc" id="L106">        return this.key.comment();</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L110">        return this.key.hdu();</span>
+<span class="fc" id="L111">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L115">        return this.key.key();</span>
+<span class="fc" id="L116">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L120">        return this.key.n(number);</span>
+<span class="fc" id="L121">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L125">        return this.key.status();</span>
+<span class="fc" id="L126">        return this.key.status();</span>
     }
 
     @Override
+    @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L130">        return this.key.valueType();</span>
+<span class="fc" id="L132">        return this.key.valueType();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

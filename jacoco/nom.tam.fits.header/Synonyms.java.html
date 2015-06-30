@@ -3,6 +3,7 @@
 import nom.tam.fits.header.extra.NOAOExt;
 import nom.tam.fits.header.extra.SBFitsExt;
 import nom.tam.fits.header.extra.STScIExt;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /*
  * #%L
@@ -41,49 +42,50 @@ import nom.tam.fits.header.extra.STScIExt;
  * 
  * @author Richard van Nieuwenhoven
  */
-<span class="pc" id="L44">public enum Synonyms {</span>
-<span class="fc" id="L45">    EQUINOX(Standard.EQUINOX, Standard.EPOCH),</span>
-<span class="fc" id="L46">    TIMESYS(NOAOExt.TIMESYS, STScIExt.TIMESYS),</span>
-<span class="fc" id="L47">    RADESYS(Standard.RADESYS, Standard.RADECSYS),</span>
-<span class="fc" id="L48">    DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);</span>
+<span class="pc" id="L45">public enum Synonyms {</span>
+<span class="fc" id="L46">    EQUINOX(Standard.EQUINOX, Standard.EPOCH),</span>
+<span class="fc" id="L47">    TIMESYS(NOAOExt.TIMESYS, STScIExt.TIMESYS),</span>
+<span class="fc" id="L48">    RADESYS(Standard.RADESYS, Standard.RADECSYS),</span>
+<span class="fc" id="L49">    DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);</span>
 
     private final IFitsHeader primaryKeyword;
 
     private final IFitsHeader[] synonyms;
 
-<span class="fc" id="L54">    private Synonyms(IFitsHeader primaryKeyword, IFitsHeader... synonyms) {</span>
-<span class="fc" id="L55">        this.primaryKeyword = primaryKeyword;</span>
-<span class="fc" id="L56">        this.synonyms = synonyms;</span>
-<span class="fc" id="L57">    }</span>
+<span class="fc" id="L55">    private Synonyms(IFitsHeader primaryKeyword, IFitsHeader... synonyms) {</span>
+<span class="fc" id="L56">        this.primaryKeyword = primaryKeyword;</span>
+<span class="fc" id="L57">        this.synonyms = synonyms;</span>
+<span class="fc" id="L58">    }</span>
 
+    @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;by convention the array may not be changed.&quot;)
     public IFitsHeader[] getSynonyms() {
-<span class="fc" id="L60">        return this.synonyms;</span>
+<span class="fc" id="L62">        return this.synonyms;</span>
     }
 
     public IFitsHeader primaryKeyword() {
-<span class="fc" id="L64">        return this.primaryKeyword;</span>
+<span class="fc" id="L66">        return this.primaryKeyword;</span>
     }
 
     public static IFitsHeader primaryKeyword(IFitsHeader header) {
-<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (Synonyms synonym : values()) {</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">            for (IFitsHeader synHeader : synonym.synonyms) {</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">                if (synHeader.equals(header)) {</span>
-<span class="fc" id="L71">                    return synonym.primaryKeyword();</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        for (Synonyms synonym : values()) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">            for (IFitsHeader synHeader : synonym.synonyms) {</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">                if (synHeader.equals(header)) {</span>
+<span class="fc" id="L73">                    return synonym.primaryKeyword();</span>
                 }
             }
         }
-<span class="fc" id="L75">        return header;</span>
+<span class="fc" id="L77">        return header;</span>
     }
 
     public static String primaryKeyword(String header) {
-<span class="fc bfc" id="L79" title="All 2 branches covered.">        for (Synonyms synonym : values()) {</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">            for (IFitsHeader synHeader : synonym.synonyms) {</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">                if (synHeader.key().equals(header)) {</span>
-<span class="fc" id="L82">                    return synonym.primaryKeyword().key();</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        for (Synonyms synonym : values()) {</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">            for (IFitsHeader synHeader : synonym.synonyms) {</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">                if (synHeader.key().equals(header)) {</span>
+<span class="fc" id="L84">                    return synonym.primaryKeyword().key();</span>
                 }
             }
         }
-<span class="fc" id="L86">        return header;</span>
+<span class="fc" id="L88">        return header;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

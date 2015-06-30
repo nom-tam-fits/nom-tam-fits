@@ -33,9 +33,9 @@
 
 import java.io.IOException;
 
-import nom.tam.fits.FitsUtil;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.RandomAccess;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class provides a subset of an N-dimensional image. Modified May 2, 2000
@@ -112,12 +112,13 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param base
      *            The base class (should be a primitive type) of the image.
      */
-<span class="fc" id="L115">    public StandardImageTiler(RandomAccess f, long fileOffset, int[] dims, Class&lt;?&gt; base) {</span>
-<span class="fc" id="L116">        this.randomAccessFile = f;</span>
-<span class="fc" id="L117">        this.fileOffset = fileOffset;</span>
-<span class="fc" id="L118">        this.dims = FitsUtil.unprotectInternalData(dims);</span>
-<span class="fc" id="L119">        this.base = base;</span>
-<span class="fc" id="L120">    }</span>
+    @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;intended exposure of mutable data&quot;)
+<span class="fc" id="L116">    public StandardImageTiler(RandomAccess f, long fileOffset, int[] dims, Class&lt;?&gt; base) {</span>
+<span class="fc" id="L117">        this.randomAccessFile = f;</span>
+<span class="fc" id="L118">        this.fileOffset = fileOffset;</span>
+<span class="fc" id="L119">        this.dims = dims;</span>
+<span class="fc" id="L120">        this.base = base;</span>
+<span class="fc" id="L121">    }</span>
 
     /**
      * File a tile segment from a file.
@@ -133,28 +134,29 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @throws IOException
      *             if the underlying stream failed
      */
+    @SuppressFBWarnings(value = &quot;RR_NOT_CHECKED&quot;, justification = &quot;this read will never return less than the requested length&quot;)
     protected void fillFileData(Object output, int delta, int outputOffset, int segment) throws IOException {
 
-<span class="fc" id="L138">        this.randomAccessFile.seek(this.fileOffset + delta);</span>
+<span class="fc" id="L140">        this.randomAccessFile.seek(this.fileOffset + delta);</span>
 
-<span class="fc bfc" id="L140" title="All 2 branches covered.">        if (this.base == float.class) {</span>
-<span class="fc" id="L141">            this.randomAccessFile.read((float[]) output, outputOffset, segment);</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">        } else if (this.base == int.class) {</span>
-<span class="fc" id="L143">            this.randomAccessFile.read((int[]) output, outputOffset, segment);</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">        } else if (this.base == short.class) {</span>
-<span class="fc" id="L145">            this.randomAccessFile.read((short[]) output, outputOffset, segment);</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">        } else if (this.base == double.class) {</span>
-<span class="fc" id="L147">            this.randomAccessFile.read((double[]) output, outputOffset, segment);</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">        } else if (this.base == byte.class) {</span>
-<span class="fc" id="L149">            this.randomAccessFile.read((byte[]) output, outputOffset, segment);</span>
-<span class="pc bpc" id="L150" title="1 of 2 branches missed.">        } else if (this.base == char.class) {</span>
-<span class="nc" id="L151">            this.randomAccessFile.read((char[]) output, outputOffset, segment);</span>
-<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        } else if (this.base == long.class) {</span>
-<span class="fc" id="L153">            this.randomAccessFile.read((long[]) output, outputOffset, segment);</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">        if (this.base == float.class) {</span>
+<span class="fc" id="L143">            this.randomAccessFile.read((float[]) output, outputOffset, segment);</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        } else if (this.base == int.class) {</span>
+<span class="fc" id="L145">            this.randomAccessFile.read((int[]) output, outputOffset, segment);</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        } else if (this.base == short.class) {</span>
+<span class="fc" id="L147">            this.randomAccessFile.read((short[]) output, outputOffset, segment);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        } else if (this.base == double.class) {</span>
+<span class="fc" id="L149">            this.randomAccessFile.read((double[]) output, outputOffset, segment);</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        } else if (this.base == byte.class) {</span>
+<span class="fc" id="L151">            this.randomAccessFile.read((byte[]) output, outputOffset, segment);</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        } else if (this.base == char.class) {</span>
+<span class="nc" id="L153">            this.randomAccessFile.read((char[]) output, outputOffset, segment);</span>
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">        } else if (this.base == long.class) {</span>
+<span class="fc" id="L155">            this.randomAccessFile.read((long[]) output, outputOffset, segment);</span>
         } else {
-<span class="nc" id="L155">            throw new IOException(&quot;Invalid type for tile array&quot;);</span>
+<span class="nc" id="L157">            throw new IOException(&quot;Invalid type for tile array&quot;);</span>
         }
-<span class="fc" id="L157">    }</span>
+<span class="fc" id="L159">    }</span>
 
     /**
      * Fill a single segment from memory. This routine is called recursively to
@@ -177,30 +179,30 @@ public abstract class StandardImageTiler implements ImageTiler {
      */
     protected void fillMemData(Object data, int[] posits, int length, Object output, int outputOffset, int dim) {
 
-<span class="fc bfc" id="L180" title="All 2 branches covered.">        if (data instanceof Object[]) {</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">        if (data instanceof Object[]) {</span>
 
-<span class="fc" id="L182">            Object[] xo = (Object[]) data;</span>
-<span class="fc" id="L183">            fillMemData(xo[posits[dim]], posits, length, output, outputOffset, dim + 1);</span>
+<span class="fc" id="L184">            Object[] xo = (Object[]) data;</span>
+<span class="fc" id="L185">            fillMemData(xo[posits[dim]], posits, length, output, outputOffset, dim + 1);</span>
 
-<span class="fc" id="L185">        } else {</span>
+<span class="fc" id="L187">        } else {</span>
 
             // Adjust the spacing for the actual copy.
-<span class="fc" id="L188">            int startFrom = posits[dim];</span>
-<span class="fc" id="L189">            int startTo = outputOffset;</span>
-<span class="fc" id="L190">            int copyLength = length;</span>
+<span class="fc" id="L190">            int startFrom = posits[dim];</span>
+<span class="fc" id="L191">            int startTo = outputOffset;</span>
+<span class="fc" id="L192">            int copyLength = length;</span>
 
-<span class="pc bpc" id="L192" title="1 of 2 branches missed.">            if (posits[dim] &lt; 0) {</span>
-<span class="nc" id="L193">                startFrom -= posits[dim];</span>
-<span class="nc" id="L194">                startTo -= posits[dim];</span>
-<span class="nc" id="L195">                copyLength += posits[dim];</span>
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">            if (posits[dim] &lt; 0) {</span>
+<span class="nc" id="L195">                startFrom -= posits[dim];</span>
+<span class="nc" id="L196">                startTo -= posits[dim];</span>
+<span class="nc" id="L197">                copyLength += posits[dim];</span>
             }
-<span class="pc bpc" id="L197" title="1 of 2 branches missed.">            if (posits[dim] + length &gt; this.dims[dim]) {</span>
-<span class="nc" id="L198">                copyLength -= posits[dim] + length - this.dims[dim];</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">            if (posits[dim] + length &gt; this.dims[dim]) {</span>
+<span class="nc" id="L200">                copyLength -= posits[dim] + length - this.dims[dim];</span>
             }
 
-<span class="fc" id="L201">            System.arraycopy(data, startFrom, output, startTo, copyLength);</span>
+<span class="fc" id="L203">            System.arraycopy(data, startFrom, output, startTo, copyLength);</span>
         }
-<span class="fc" id="L203">    }</span>
+<span class="fc" id="L205">    }</span>
 
     /**
      * Fill the subset.
@@ -222,18 +224,18 @@ public abstract class StandardImageTiler implements ImageTiler {
      */
     protected void fillTile(Object data, Object o, int[] newDims, int[] corners, int[] lengths) throws IOException {
 
-<span class="fc" id="L225">        int n = newDims.length;</span>
-<span class="fc" id="L226">        int[] posits = new int[n];</span>
-<span class="fc" id="L227">        int baseLength = ArrayFuncs.getBaseLength(o);</span>
-<span class="fc" id="L228">        int segment = lengths[n - 1];</span>
+<span class="fc" id="L227">        int n = newDims.length;</span>
+<span class="fc" id="L228">        int[] posits = new int[n];</span>
+<span class="fc" id="L229">        int baseLength = ArrayFuncs.getBaseLength(o);</span>
+<span class="fc" id="L230">        int segment = lengths[n - 1];</span>
 
-<span class="fc" id="L230">        System.arraycopy(corners, 0, posits, 0, n);</span>
-<span class="fc" id="L231">        long currentOffset = 0;</span>
-<span class="fc bfc" id="L232" title="All 2 branches covered.">        if (data == null) {</span>
-<span class="fc" id="L233">            currentOffset = this.randomAccessFile.getFilePointer();</span>
+<span class="fc" id="L232">        System.arraycopy(corners, 0, posits, 0, n);</span>
+<span class="fc" id="L233">        long currentOffset = 0;</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        if (data == null) {</span>
+<span class="fc" id="L235">            currentOffset = this.randomAccessFile.getFilePointer();</span>
         }
 
-<span class="fc" id="L236">        int outputOffset = 0;</span>
+<span class="fc" id="L238">        int outputOffset = 0;</span>
 
         do {
 
@@ -241,51 +243,51 @@ public abstract class StandardImageTiler implements ImageTiler {
             // in the last index (in conjunction
             // with other tests)
 
-<span class="fc" id="L244">            int mx = newDims.length - 1;</span>
-<span class="pc bpc" id="L245" title="2 of 4 branches missed.">            boolean validSegment = posits[mx] + lengths[mx] &gt;= 0 &amp;&amp; posits[mx] &lt; newDims[mx];</span>
+<span class="fc" id="L246">            int mx = newDims.length - 1;</span>
+<span class="pc bpc" id="L247" title="2 of 4 branches missed.">            boolean validSegment = posits[mx] + lengths[mx] &gt;= 0 &amp;&amp; posits[mx] &lt; newDims[mx];</span>
 
             // Don't do anything for the current
             // segment if anything but the
             // last index is out of range.
 
-<span class="pc bpc" id="L251" title="1 of 2 branches missed.">            if (validSegment) {</span>
-<span class="fc bfc" id="L252" title="All 2 branches covered.">                for (int i = 0; i &lt; mx; i += 1) {</span>
-<span class="pc bpc" id="L253" title="2 of 4 branches missed.">                    if (posits[i] &lt; 0 || posits[i] &gt;= newDims[i]) {</span>
-<span class="nc" id="L254">                        validSegment = false;</span>
-<span class="nc" id="L255">                        break;</span>
+<span class="pc bpc" id="L253" title="1 of 2 branches missed.">            if (validSegment) {</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">                for (int i = 0; i &lt; mx; i += 1) {</span>
+<span class="pc bpc" id="L255" title="2 of 4 branches missed.">                    if (posits[i] &lt; 0 || posits[i] &gt;= newDims[i]) {</span>
+<span class="nc" id="L256">                        validSegment = false;</span>
+<span class="nc" id="L257">                        break;</span>
                     }
                 }
             }
 
-<span class="pc bpc" id="L260" title="1 of 2 branches missed.">            if (validSegment) {</span>
-<span class="fc bfc" id="L261" title="All 2 branches covered.">                if (data != null) {</span>
-<span class="fc" id="L262">                    fillMemData(data, posits, segment, o, outputOffset, 0);</span>
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">            if (validSegment) {</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">                if (data != null) {</span>
+<span class="fc" id="L264">                    fillMemData(data, posits, segment, o, outputOffset, 0);</span>
                 } else {
-<span class="fc" id="L264">                    int offset = getOffset(newDims, posits) * baseLength;</span>
+<span class="fc" id="L266">                    int offset = getOffset(newDims, posits) * baseLength;</span>
 
                     // Point to offset at real beginning
                     // of segment
-<span class="fc" id="L268">                    int actualLen = segment;</span>
-<span class="fc" id="L269">                    int actualOffset = offset;</span>
-<span class="fc" id="L270">                    int actualOutput = outputOffset;</span>
-<span class="pc bpc" id="L271" title="1 of 2 branches missed.">                    if (posits[mx] &lt; 0) {</span>
-<span class="nc" id="L272">                        actualOffset -= posits[mx] * baseLength;</span>
-<span class="nc" id="L273">                        actualOutput -= posits[mx];</span>
-<span class="nc" id="L274">                        actualLen += posits[mx];</span>
+<span class="fc" id="L270">                    int actualLen = segment;</span>
+<span class="fc" id="L271">                    int actualOffset = offset;</span>
+<span class="fc" id="L272">                    int actualOutput = outputOffset;</span>
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">                    if (posits[mx] &lt; 0) {</span>
+<span class="nc" id="L274">                        actualOffset -= posits[mx] * baseLength;</span>
+<span class="nc" id="L275">                        actualOutput -= posits[mx];</span>
+<span class="nc" id="L276">                        actualLen += posits[mx];</span>
                     }
-<span class="pc bpc" id="L276" title="1 of 2 branches missed.">                    if (posits[mx] + segment &gt; newDims[mx]) {</span>
-<span class="nc" id="L277">                        actualLen -= posits[mx] + segment - newDims[mx];</span>
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">                    if (posits[mx] + segment &gt; newDims[mx]) {</span>
+<span class="nc" id="L279">                        actualLen -= posits[mx] + segment - newDims[mx];</span>
                     }
-<span class="fc" id="L279">                    fillFileData(o, actualOffset, actualOutput, actualLen);</span>
+<span class="fc" id="L281">                    fillFileData(o, actualOffset, actualOutput, actualLen);</span>
                 }
             }
-<span class="fc" id="L282">            outputOffset += segment;</span>
+<span class="fc" id="L284">            outputOffset += segment;</span>
 
-<span class="fc bfc" id="L284" title="All 2 branches covered.">        } while (incrementPosition(corners, posits, lengths));</span>
-<span class="fc bfc" id="L285" title="All 2 branches covered.">        if (data == null) {</span>
-<span class="fc" id="L286">            this.randomAccessFile.seek(currentOffset);</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">        } while (incrementPosition(corners, posits, lengths));</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">        if (data == null) {</span>
+<span class="fc" id="L288">            this.randomAccessFile.seek(currentOffset);</span>
         }
-<span class="fc" id="L288">    }</span>
+<span class="fc" id="L290">    }</span>
 
     /**
      * Read the entire image into a multidimensional array.
@@ -296,15 +298,15 @@ public abstract class StandardImageTiler implements ImageTiler {
     @Override
     public Object getCompleteImage() throws IOException {
 
-<span class="pc bpc" id="L299" title="1 of 2 branches missed.">        if (this.randomAccessFile == null) {</span>
-<span class="nc" id="L300">            throw new IOException(&quot;Attempt to read from null file&quot;);</span>
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">        if (this.randomAccessFile == null) {</span>
+<span class="nc" id="L302">            throw new IOException(&quot;Attempt to read from null file&quot;);</span>
         }
-<span class="fc" id="L302">        long currentOffset = this.randomAccessFile.getFilePointer();</span>
-<span class="fc" id="L303">        Object o = ArrayFuncs.newInstance(this.base, this.dims);</span>
-<span class="fc" id="L304">        this.randomAccessFile.seek(this.fileOffset);</span>
-<span class="fc" id="L305">        this.randomAccessFile.readLArray(o);</span>
-<span class="fc" id="L306">        this.randomAccessFile.seek(currentOffset);</span>
-<span class="fc" id="L307">        return o;</span>
+<span class="fc" id="L304">        long currentOffset = this.randomAccessFile.getFilePointer();</span>
+<span class="fc" id="L305">        Object o = ArrayFuncs.newInstance(this.base, this.dims);</span>
+<span class="fc" id="L306">        this.randomAccessFile.seek(this.fileOffset);</span>
+<span class="fc" id="L307">        this.randomAccessFile.readLArray(o);</span>
+<span class="fc" id="L308">        this.randomAccessFile.seek(currentOffset);</span>
+<span class="fc" id="L309">        return o;</span>
     }
 
     /**
@@ -329,24 +331,24 @@ public abstract class StandardImageTiler implements ImageTiler {
     @Override
     public Object getTile(int[] corners, int[] lengths) throws IOException {
 
-<span class="pc bpc" id="L332" title="2 of 4 branches missed.">        if (corners.length != this.dims.length || lengths.length != this.dims.length) {</span>
-<span class="nc" id="L333">            throw new IOException(&quot;Inconsistent sub-image request&quot;);</span>
+<span class="pc bpc" id="L334" title="2 of 4 branches missed.">        if (corners.length != this.dims.length || lengths.length != this.dims.length) {</span>
+<span class="nc" id="L335">            throw new IOException(&quot;Inconsistent sub-image request&quot;);</span>
         }
 
-<span class="fc" id="L336">        int arraySize = 1;</span>
-<span class="fc bfc" id="L337" title="All 2 branches covered.">        for (int i = 0; i &lt; this.dims.length; i += 1) {</span>
+<span class="fc" id="L338">        int arraySize = 1;</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">        for (int i = 0; i &lt; this.dims.length; i += 1) {</span>
 
-<span class="pc bpc" id="L339" title="3 of 6 branches missed.">            if (corners[i] &lt; 0 || lengths[i] &lt; 0 || corners[i] + lengths[i] &gt; this.dims[i]) {</span>
-<span class="nc" id="L340">                throw new IOException(&quot;Sub-image not within image&quot;);</span>
+<span class="pc bpc" id="L341" title="3 of 6 branches missed.">            if (corners[i] &lt; 0 || lengths[i] &lt; 0 || corners[i] + lengths[i] &gt; this.dims[i]) {</span>
+<span class="nc" id="L342">                throw new IOException(&quot;Sub-image not within image&quot;);</span>
             }
 
-<span class="fc" id="L343">            arraySize *= lengths[i];</span>
+<span class="fc" id="L345">            arraySize *= lengths[i];</span>
         }
 
-<span class="fc" id="L346">        Object outArray = ArrayFuncs.newInstance(this.base, arraySize);</span>
+<span class="fc" id="L348">        Object outArray = ArrayFuncs.newInstance(this.base, arraySize);</span>
 
-<span class="fc" id="L348">        getTile(outArray, corners, lengths);</span>
-<span class="fc" id="L349">        return outArray;</span>
+<span class="fc" id="L350">        getTile(outArray, corners, lengths);</span>
+<span class="fc" id="L351">        return outArray;</span>
     }
 
     /**
@@ -368,12 +370,12 @@ public abstract class StandardImageTiler implements ImageTiler {
     @Override
     public void getTile(Object outArray, int[] corners, int[] lengths) throws IOException {
 
-<span class="fc" id="L371">        Object data = getMemoryImage();</span>
+<span class="fc" id="L373">        Object data = getMemoryImage();</span>
 
-<span class="pc bpc" id="L373" title="1 of 4 branches missed.">        if (data == null &amp;&amp; this.randomAccessFile == null) {</span>
-<span class="nc" id="L374">            throw new IOException(&quot;No data source for tile subset&quot;);</span>
+<span class="pc bpc" id="L375" title="1 of 4 branches missed.">        if (data == null &amp;&amp; this.randomAccessFile == null) {</span>
+<span class="nc" id="L376">            throw new IOException(&quot;No data source for tile subset&quot;);</span>
         }
-<span class="fc" id="L376">        fillTile(data, outArray, this.dims, corners, lengths);</span>
-<span class="fc" id="L377">    }</span>
+<span class="fc" id="L378">        fillTile(data, outArray, this.dims, corners, lengths);</span>
+<span class="fc" id="L379">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

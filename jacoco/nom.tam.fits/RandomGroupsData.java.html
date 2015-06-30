@@ -37,6 +37,7 @@ import java.io.IOException;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class instantiates FITS Random Groups data. Random groups are
@@ -52,9 +53,9 @@ public class RandomGroupsData extends Data {
     /**
      * Create the equivalent of a null data element.
      */
-<span class="fc" id="L55">    public RandomGroupsData() {</span>
-<span class="fc" id="L56">        this.dataArray = new Object[0][];</span>
-<span class="fc" id="L57">    }</span>
+<span class="fc" id="L56">    public RandomGroupsData() {</span>
+<span class="fc" id="L57">        this.dataArray = new Object[0][];</span>
+<span class="fc" id="L58">    }</span>
 
     /**
      * Create a RandomGroupsData object using the specified object to initialize
@@ -64,77 +65,79 @@ public class RandomGroupsData extends Data {
      *            The initial data array. This should a two-d array of objects
      *            as described above.
      */
-<span class="fc" id="L67">    public RandomGroupsData(Object[][] x) {</span>
-<span class="fc" id="L68">        this.dataArray = FitsUtil.unprotectInternalData(x);</span>
-<span class="fc" id="L69">    }</span>
+    @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;intended exposure of mutable data&quot;)
+<span class="fc" id="L69">    public RandomGroupsData(Object[][] x) {</span>
+<span class="fc" id="L70">        this.dataArray = x;</span>
+<span class="fc" id="L71">    }</span>
 
     @Override
     protected void fillHeader(Header h) throws FitsException {
 
-<span class="pc bpc" id="L74" title="2 of 4 branches missed.">        if (this.dataArray.length &lt;= 0 || this.dataArray[0].length != 2) {</span>
-<span class="nc" id="L75">            throw new FitsException(&quot;Data not conformable to Random Groups&quot;);</span>
+<span class="pc bpc" id="L76" title="2 of 4 branches missed.">        if (this.dataArray.length &lt;= 0 || this.dataArray[0].length != 2) {</span>
+<span class="nc" id="L77">            throw new FitsException(&quot;Data not conformable to Random Groups&quot;);</span>
         }
 
-<span class="fc" id="L78">        Object paraSamp = this.dataArray[0][0];</span>
-<span class="fc" id="L79">        Object dataSamp = this.dataArray[0][1];</span>
+<span class="fc" id="L80">        Object paraSamp = this.dataArray[0][0];</span>
+<span class="fc" id="L81">        Object dataSamp = this.dataArray[0][1];</span>
 
-<span class="fc" id="L81">        Class&lt;?&gt; pbase = ArrayFuncs.getBaseClass(paraSamp);</span>
-<span class="fc" id="L82">        Class&lt;?&gt; dbase = ArrayFuncs.getBaseClass(dataSamp);</span>
+<span class="fc" id="L83">        Class&lt;?&gt; pbase = ArrayFuncs.getBaseClass(paraSamp);</span>
+<span class="fc" id="L84">        Class&lt;?&gt; dbase = ArrayFuncs.getBaseClass(dataSamp);</span>
 
-<span class="pc bpc" id="L84" title="1 of 2 branches missed.">        if (pbase != dbase) {</span>
-<span class="nc" id="L85">            throw new FitsException(&quot;Data and parameters do not agree in type for random group&quot;);</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        if (pbase != dbase) {</span>
+<span class="nc" id="L87">            throw new FitsException(&quot;Data and parameters do not agree in type for random group&quot;);</span>
         }
 
-<span class="fc" id="L88">        int[] pdims = ArrayFuncs.getDimensions(paraSamp);</span>
-<span class="fc" id="L89">        int[] ddims = ArrayFuncs.getDimensions(dataSamp);</span>
+<span class="fc" id="L90">        int[] pdims = ArrayFuncs.getDimensions(paraSamp);</span>
+<span class="fc" id="L91">        int[] ddims = ArrayFuncs.getDimensions(dataSamp);</span>
 
-<span class="pc bpc" id="L91" title="1 of 2 branches missed.">        if (pdims.length != 1) {</span>
-<span class="nc" id="L92">            throw new FitsException(&quot;Parameters are not 1 d array for random groups&quot;);</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">        if (pdims.length != 1) {</span>
+<span class="nc" id="L94">            throw new FitsException(&quot;Parameters are not 1 d array for random groups&quot;);</span>
         }
 
         // Got the information we need to build the header.
 
-<span class="fc" id="L97">        h.setSimple(true);</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (dbase == byte.class) {</span>
-<span class="fc" id="L99">            h.setBitpix(BasicHDU.BITPIX_BYTE);</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">        } else if (dbase == short.class) {</span>
-<span class="fc" id="L101">            h.setBitpix(BasicHDU.BITPIX_SHORT);</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">        } else if (dbase == int.class) {</span>
-<span class="fc" id="L103">            h.setBitpix(BasicHDU.BITPIX_INT);</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">        } else if (dbase == long.class) { // Non-standard</span>
-<span class="fc" id="L105">            h.setBitpix(BasicHDU.BITPIX_LONG);</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">        } else if (dbase == float.class) {</span>
-<span class="fc" id="L107">            h.setBitpix(BasicHDU.BITPIX_FLOAT);</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">        } else if (dbase == double.class) {</span>
-<span class="fc" id="L109">            h.setBitpix(BasicHDU.BITPIX_DOUBLE);</span>
+<span class="fc" id="L99">        h.setSimple(true);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (dbase == byte.class) {</span>
+<span class="fc" id="L101">            h.setBitpix(BasicHDU.BITPIX_BYTE);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        } else if (dbase == short.class) {</span>
+<span class="fc" id="L103">            h.setBitpix(BasicHDU.BITPIX_SHORT);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        } else if (dbase == int.class) {</span>
+<span class="fc" id="L105">            h.setBitpix(BasicHDU.BITPIX_INT);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        } else if (dbase == long.class) { // Non-standard</span>
+<span class="fc" id="L107">            h.setBitpix(BasicHDU.BITPIX_LONG);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        } else if (dbase == float.class) {</span>
+<span class="fc" id="L109">            h.setBitpix(BasicHDU.BITPIX_FLOAT);</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        } else if (dbase == double.class) {</span>
+<span class="fc" id="L111">            h.setBitpix(BasicHDU.BITPIX_DOUBLE);</span>
         } else {
-<span class="fc" id="L111">            throw new FitsException(&quot;Data type:&quot; + dbase + &quot; not supported for random groups&quot;);</span>
+<span class="fc" id="L113">            throw new FitsException(&quot;Data type:&quot; + dbase + &quot; not supported for random groups&quot;);</span>
         }
 
-<span class="fc" id="L114">        h.setNaxes(ddims.length + 1);</span>
-<span class="fc" id="L115">        h.addValue(&quot;NAXIS1&quot;, 0, &quot;ntf::randomgroupsdata:naxis1:1&quot;);</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">        for (int i = 2; i &lt;= ddims.length + 1; i += 1) {</span>
-<span class="fc" id="L117">            h.addValue(&quot;NAXIS&quot; + i, ddims[i - 2], &quot;ntf::randomgroupsdata:naxisN:1&quot;);</span>
+<span class="fc" id="L116">        h.setNaxes(ddims.length + 1);</span>
+<span class="fc" id="L117">        h.addValue(&quot;NAXIS1&quot;, 0, &quot;ntf::randomgroupsdata:naxis1:1&quot;);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        for (int i = 2; i &lt;= ddims.length + 1; i += 1) {</span>
+<span class="fc" id="L119">            h.addValue(&quot;NAXIS&quot; + i, ddims[i - 2], &quot;ntf::randomgroupsdata:naxisN:1&quot;);</span>
         }
 
-<span class="fc" id="L120">        h.addValue(&quot;GROUPS&quot;, true, &quot;ntf::randomgroupsdata:groups:1&quot;);</span>
-<span class="fc" id="L121">        h.addValue(&quot;GCOUNT&quot;, this.dataArray.length, &quot;ntf::randomgroupsdata:gcount:1&quot;);</span>
-<span class="fc" id="L122">        h.addValue(&quot;PCOUNT&quot;, pdims[0], &quot;ntf::randomgroupsdata:pcount:1&quot;);</span>
-<span class="fc" id="L123">    }</span>
+<span class="fc" id="L122">        h.addValue(&quot;GROUPS&quot;, true, &quot;ntf::randomgroupsdata:groups:1&quot;);</span>
+<span class="fc" id="L123">        h.addValue(&quot;GCOUNT&quot;, this.dataArray.length, &quot;ntf::randomgroupsdata:gcount:1&quot;);</span>
+<span class="fc" id="L124">        h.addValue(&quot;PCOUNT&quot;, pdims[0], &quot;ntf::randomgroupsdata:pcount:1&quot;);</span>
+<span class="fc" id="L125">    }</span>
 
     @Override
+    @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;intended exposure of mutable data&quot;)
     public Object getData() {
-<span class="fc" id="L127">        return FitsUtil.unprotectInternalData(this.dataArray);</span>
+<span class="fc" id="L130">        return this.dataArray;</span>
     }
 
     /** Get the size of the actual data element. */
     @Override
     protected long getTrueSize() {
 
-<span class="pc bpc" id="L134" title="1 of 4 branches missed.">        if (this.dataArray != null &amp;&amp; this.dataArray.length &gt; 0) {</span>
-<span class="fc" id="L135">            return (ArrayFuncs.computeLSize(this.dataArray[0][0]) + ArrayFuncs.computeLSize(this.dataArray[0][1])) * this.dataArray.length;</span>
+<span class="pc bpc" id="L137" title="1 of 4 branches missed.">        if (this.dataArray != null &amp;&amp; this.dataArray.length &gt; 0) {</span>
+<span class="fc" id="L138">            return (ArrayFuncs.computeLSize(this.dataArray[0][0]) + ArrayFuncs.computeLSize(this.dataArray[0][1])) * this.dataArray.length;</span>
         } else {
-<span class="fc" id="L137">            return 0;</span>
+<span class="fc" id="L140">            return 0;</span>
         }
     }
 
@@ -142,33 +145,33 @@ public class RandomGroupsData extends Data {
     @Override
     public void read(ArrayDataInput str) throws FitsException {
 
-<span class="fc" id="L145">        setFileOffset(str);</span>
+<span class="fc" id="L148">        setFileOffset(str);</span>
 
         try {
-<span class="fc" id="L148">            str.readLArray(this.dataArray);</span>
-<span class="nc" id="L149">        } catch (IOException e) {</span>
-<span class="nc" id="L150">            throw new FitsException(&quot;IO error reading Random Groups data &quot; + e);</span>
-<span class="fc" id="L151">        }</span>
-<span class="fc" id="L152">        int pad = FitsUtil.padding(getTrueSize());</span>
+<span class="fc" id="L151">            str.readLArray(this.dataArray);</span>
+<span class="nc" id="L152">        } catch (IOException e) {</span>
+<span class="nc" id="L153">            throw new FitsException(&quot;IO error reading Random Groups data &quot; + e);</span>
+<span class="fc" id="L154">        }</span>
+<span class="fc" id="L155">        int pad = FitsUtil.padding(getTrueSize());</span>
         try {
-<span class="fc" id="L154">            str.skipAllBytes(pad);</span>
-<span class="nc" id="L155">        } catch (EOFException e) {</span>
-<span class="nc" id="L156">            throw new PaddingException(&quot;EOF reading padding after random groups&quot;, this);</span>
-<span class="nc" id="L157">        } catch (IOException e) {</span>
-<span class="nc" id="L158">            throw new FitsException(&quot;IO error reading padding after random groups&quot;);</span>
-<span class="fc" id="L159">        }</span>
-<span class="fc" id="L160">    }</span>
+<span class="fc" id="L157">            str.skipAllBytes(pad);</span>
+<span class="nc" id="L158">        } catch (EOFException e) {</span>
+<span class="nc" id="L159">            throw new PaddingException(&quot;EOF reading padding after random groups&quot;, this);</span>
+<span class="nc" id="L160">        } catch (IOException e) {</span>
+<span class="nc" id="L161">            throw new FitsException(&quot;IO error reading padding after random groups&quot;);</span>
+<span class="fc" id="L162">        }</span>
+<span class="fc" id="L163">    }</span>
 
     /** Write the RandomGroupsData */
     @Override
     public void write(ArrayDataOutput str) throws FitsException {
         try {
-<span class="fc" id="L166">            str.writeArray(this.dataArray);</span>
-<span class="fc" id="L167">            FitsUtil.pad(str, getTrueSize());</span>
-<span class="nc" id="L168">        } catch (IOException e) {</span>
-<span class="nc" id="L169">            throw new FitsException(&quot;IO error writing random groups data &quot; + e);</span>
-<span class="fc" id="L170">        }</span>
-<span class="fc" id="L171">    }</span>
+<span class="fc" id="L169">            str.writeArray(this.dataArray);</span>
+<span class="fc" id="L170">            FitsUtil.pad(str, getTrueSize());</span>
+<span class="nc" id="L171">        } catch (IOException e) {</span>
+<span class="nc" id="L172">            throw new FitsException(&quot;IO error writing random groups data &quot; + e);</span>
+<span class="fc" id="L173">        }</span>
+<span class="fc" id="L174">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

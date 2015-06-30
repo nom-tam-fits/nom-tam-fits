@@ -223,44 +223,46 @@ import nom.tam.fits.header.IFitsHeader;
      */
 <span class="fc" id="L224">    YBAYROFF(VALUE.REAL, &quot;Y offset of Bayer array&quot;);</span>
 
-    private IFitsHeader key;
+    @SuppressWarnings(&quot;CPD-START&quot;)
+    private final IFitsHeader key;
 
-<span class="fc" id="L228">    private MaxImDLExt(String key, VALUE valueType, String comment) {</span>
-<span class="fc" id="L229">        this.key = new FitsHeaderImpl(key, IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType, comment);</span>
-<span class="fc" id="L230">    }</span>
+<span class="fc" id="L229">    private MaxImDLExt(String key, VALUE valueType, String comment) {</span>
+<span class="fc" id="L230">        this.key = new FitsHeaderImpl(key, IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType, comment);</span>
+<span class="fc" id="L231">    }</span>
 
-<span class="fc" id="L232">    private MaxImDLExt(VALUE valueType, String comment) {</span>
-<span class="fc" id="L233">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType, comment);</span>
-<span class="fc" id="L234">    }</span>
+<span class="fc" id="L233">    private MaxImDLExt(VALUE valueType, String comment) {</span>
+<span class="fc" id="L234">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType, comment);</span>
+<span class="fc" id="L235">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L238">        return this.key.comment();</span>
+<span class="fc" id="L239">        return this.key.comment();</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L243">        return this.key.hdu();</span>
+<span class="fc" id="L244">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L248">        return this.key.key();</span>
+<span class="fc" id="L249">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L253">        return this.key.n(number);</span>
+<span class="fc" id="L254">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L258">        return this.key.status();</span>
+<span class="fc" id="L259">        return this.key.status();</span>
     }
 
     @Override
+    @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L263">        return this.key.valueType();</span>
+<span class="fc" id="L265">        return this.key.valueType();</span>
     }
 
 }

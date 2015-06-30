@@ -40,6 +40,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Fits date object parsed from the different type of date combinations
  */
@@ -48,7 +50,7 @@ public class FitsDate {
     /**
      * logger to log to.
      */
-<span class="fc" id="L51">    private static final Logger LOG = Logger.getLogger(FitsDate.class.getName());</span>
+<span class="fc" id="L53">    private static final Logger LOG = Logger.getLogger(FitsDate.class.getName());</span>
 
     private static final int FIRST_THREE_CHARACTER_VALUE = 100;
 
@@ -56,7 +58,7 @@ public class FitsDate {
 
     private static final int FITS_DATE_STRING_SIZE = 23;
 
-<span class="fc" id="L59">    private static final TimeZone GMT = TimeZone.getTimeZone(&quot;GMT&quot;);</span>
+<span class="fc" id="L61">    private static final TimeZone GMT = TimeZone.getTimeZone(&quot;GMT&quot;);</span>
 
     private static final int NEW_FORMAT_DAY_OF_MONTH_GROUP = 4;
 
@@ -72,8 +74,8 @@ public class FitsDate {
 
     private static final int NEW_FORMAT_YEAR_GROUP = 2;
 
-<span class="fc" id="L75">    private static final Pattern NORMAL_REGEX = Pattern</span>
-<span class="fc" id="L76">            .compile(&quot;\\s*(([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9]))(T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])(\\.([0-9][0-9][0-9]|[0-9][0-9]))?)?\\s*&quot;);</span>
+<span class="fc" id="L77">    private static final Pattern NORMAL_REGEX = Pattern</span>
+<span class="fc" id="L78">            .compile(&quot;\\s*(([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9]))(T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])(\\.([0-9][0-9][0-9]|[0-9][0-9]))?)?\\s*&quot;);</span>
 
     private static final int OLD_FORMAT_DAY_OF_MONTH_GROUP = 1;
 
@@ -81,7 +83,7 @@ public class FitsDate {
 
     private static final int OLD_FORMAT_YEAR_GROUP = 3;
 
-<span class="fc" id="L84">    private static final Pattern OLD_REGEX = Pattern.compile(&quot;\\s*([0-9][0-9])/([0-9][0-9])/([0-9][0-9])\\s*&quot;);</span>
+<span class="fc" id="L86">    private static final Pattern OLD_REGEX = Pattern.compile(&quot;\\s*([0-9][0-9])/([0-9][0-9])/([0-9][0-9])\\s*&quot;);</span>
 
     private static final int TWO_DIGIT_MILISECONDS_FACTOR = 10;
 
@@ -91,7 +93,7 @@ public class FitsDate {
      * @return the current date in FITS date format
      */
     public static String getFitsDateString() {
-<span class="fc" id="L94">        return getFitsDateString(new Date(), true);</span>
+<span class="fc" id="L96">        return getFitsDateString(new Date(), true);</span>
     }
 
     /**
@@ -100,7 +102,7 @@ public class FitsDate {
      *            The epoch to be converted to FITS format.
      */
     public static String getFitsDateString(Date epoch) {
-<span class="fc" id="L103">        return getFitsDateString(epoch, true);</span>
+<span class="fc" id="L105">        return getFitsDateString(epoch, true);</span>
     }
 
     /**
@@ -112,47 +114,47 @@ public class FitsDate {
      *            Should time of day information be included?
      */
     public static String getFitsDateString(Date epoch, boolean timeOfDay) {
-<span class="fc" id="L115">        Calendar cal = Calendar.getInstance(FitsDate.GMT);</span>
-<span class="fc" id="L116">        cal.setTime(epoch);</span>
-<span class="fc" id="L117">        StringBuffer fitsDate = new StringBuffer();</span>
-<span class="fc" id="L118">        DecimalFormat df = new DecimalFormat(&quot;0000&quot;);</span>
-<span class="fc" id="L119">        fitsDate.append(df.format(cal.get(Calendar.YEAR)));</span>
-<span class="fc" id="L120">        fitsDate.append(&quot;-&quot;);</span>
-<span class="fc" id="L121">        df = new DecimalFormat(&quot;00&quot;);</span>
+<span class="fc" id="L117">        Calendar cal = Calendar.getInstance(FitsDate.GMT);</span>
+<span class="fc" id="L118">        cal.setTime(epoch);</span>
+<span class="fc" id="L119">        StringBuffer fitsDate = new StringBuffer();</span>
+<span class="fc" id="L120">        DecimalFormat df = new DecimalFormat(&quot;0000&quot;);</span>
+<span class="fc" id="L121">        fitsDate.append(df.format(cal.get(Calendar.YEAR)));</span>
+<span class="fc" id="L122">        fitsDate.append(&quot;-&quot;);</span>
+<span class="fc" id="L123">        df = new DecimalFormat(&quot;00&quot;);</span>
 
-<span class="fc" id="L123">        fitsDate.append(df.format(cal.get(Calendar.MONTH) + 1));</span>
-<span class="fc" id="L124">        fitsDate.append(&quot;-&quot;);</span>
-<span class="fc" id="L125">        fitsDate.append(df.format(cal.get(Calendar.DAY_OF_MONTH)));</span>
+<span class="fc" id="L125">        fitsDate.append(df.format(cal.get(Calendar.MONTH) + 1));</span>
+<span class="fc" id="L126">        fitsDate.append(&quot;-&quot;);</span>
+<span class="fc" id="L127">        fitsDate.append(df.format(cal.get(Calendar.DAY_OF_MONTH)));</span>
 
-<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        if (timeOfDay) {</span>
-<span class="fc" id="L128">            fitsDate.append(&quot;T&quot;);</span>
-<span class="fc" id="L129">            fitsDate.append(df.format(cal.get(Calendar.HOUR_OF_DAY)));</span>
-<span class="fc" id="L130">            fitsDate.append(&quot;:&quot;);</span>
-<span class="fc" id="L131">            fitsDate.append(df.format(cal.get(Calendar.MINUTE)));</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">        if (timeOfDay) {</span>
+<span class="fc" id="L130">            fitsDate.append(&quot;T&quot;);</span>
+<span class="fc" id="L131">            fitsDate.append(df.format(cal.get(Calendar.HOUR_OF_DAY)));</span>
 <span class="fc" id="L132">            fitsDate.append(&quot;:&quot;);</span>
-<span class="fc" id="L133">            fitsDate.append(df.format(cal.get(Calendar.SECOND)));</span>
-<span class="fc" id="L134">            fitsDate.append(&quot;.&quot;);</span>
-<span class="fc" id="L135">            df = new DecimalFormat(&quot;000&quot;);</span>
-<span class="fc" id="L136">            fitsDate.append(df.format(cal.get(Calendar.MILLISECOND)));</span>
+<span class="fc" id="L133">            fitsDate.append(df.format(cal.get(Calendar.MINUTE)));</span>
+<span class="fc" id="L134">            fitsDate.append(&quot;:&quot;);</span>
+<span class="fc" id="L135">            fitsDate.append(df.format(cal.get(Calendar.SECOND)));</span>
+<span class="fc" id="L136">            fitsDate.append(&quot;.&quot;);</span>
+<span class="fc" id="L137">            df = new DecimalFormat(&quot;000&quot;);</span>
+<span class="fc" id="L138">            fitsDate.append(df.format(cal.get(Calendar.MILLISECOND)));</span>
         }
-<span class="fc" id="L138">        return fitsDate.toString();</span>
+<span class="fc" id="L140">        return fitsDate.toString();</span>
     }
 
-<span class="fc" id="L141">    private Date date = null;</span>
+<span class="fc" id="L143">    private Date date = null;</span>
 
-<span class="fc" id="L143">    private int hour = -1;</span>
+<span class="fc" id="L145">    private int hour = -1;</span>
 
-<span class="fc" id="L145">    private int mday = -1;</span>
+<span class="fc" id="L147">    private int mday = -1;</span>
 
-<span class="fc" id="L147">    private int millisecond = -1;</span>
+<span class="fc" id="L149">    private int millisecond = -1;</span>
 
-<span class="fc" id="L149">    private int minute = -1;</span>
+<span class="fc" id="L151">    private int minute = -1;</span>
 
-<span class="fc" id="L151">    private int month = -1;</span>
+<span class="fc" id="L153">    private int month = -1;</span>
 
-<span class="fc" id="L153">    private int second = -1;</span>
+<span class="fc" id="L155">    private int second = -1;</span>
 
-<span class="fc" id="L155">    private int year = -1;</span>
+<span class="fc" id="L157">    private int year = -1;</span>
 
     /**
      * Convert a FITS date string to a Java &lt;CODE&gt;Date&lt;/CODE&gt; object.
@@ -162,53 +164,53 @@ public class FitsDate {
      * @throws FitsException
      *             if &lt;CODE&gt;dStr&lt;/CODE&gt; does not contain a valid FITS date.
      */
-<span class="fc" id="L165">    public FitsDate(String dStr) throws FitsException {</span>
+<span class="fc" id="L167">    public FitsDate(String dStr) throws FitsException {</span>
         // if the date string is null, we are done
-<span class="pc bpc" id="L167" title="1 of 4 branches missed.">        if (dStr == null || dStr.isEmpty()) {</span>
-<span class="fc" id="L168">            return;</span>
+<span class="pc bpc" id="L169" title="1 of 4 branches missed.">        if (dStr == null || dStr.isEmpty()) {</span>
+<span class="fc" id="L170">            return;</span>
         }
-<span class="fc" id="L170">        Matcher match = FitsDate.NORMAL_REGEX.matcher(dStr);</span>
-<span class="fc bfc" id="L171" title="All 2 branches covered.">        if (match.matches()) {</span>
-<span class="fc" id="L172">            this.year = getInt(match, FitsDate.NEW_FORMAT_YEAR_GROUP);</span>
-<span class="fc" id="L173">            this.month = getInt(match, FitsDate.NEW_FORMAT_MONTH_GROUP);</span>
-<span class="fc" id="L174">            this.mday = getInt(match, FitsDate.NEW_FORMAT_DAY_OF_MONTH_GROUP);</span>
-<span class="fc" id="L175">            this.hour = getInt(match, FitsDate.NEW_FORMAT_HOUR_GROUP);</span>
-<span class="fc" id="L176">            this.minute = getInt(match, FitsDate.NEW_FORMAT_MINUTE_GROUP);</span>
-<span class="fc" id="L177">            this.second = getInt(match, FitsDate.NEW_FORMAT_SECOND_GROUP);</span>
-<span class="fc" id="L178">            this.millisecond = getMilliseconds(match, FitsDate.NEW_FORMAT_MILLISECOND_GROUP);</span>
+<span class="fc" id="L172">        Matcher match = FitsDate.NORMAL_REGEX.matcher(dStr);</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">        if (match.matches()) {</span>
+<span class="fc" id="L174">            this.year = getInt(match, FitsDate.NEW_FORMAT_YEAR_GROUP);</span>
+<span class="fc" id="L175">            this.month = getInt(match, FitsDate.NEW_FORMAT_MONTH_GROUP);</span>
+<span class="fc" id="L176">            this.mday = getInt(match, FitsDate.NEW_FORMAT_DAY_OF_MONTH_GROUP);</span>
+<span class="fc" id="L177">            this.hour = getInt(match, FitsDate.NEW_FORMAT_HOUR_GROUP);</span>
+<span class="fc" id="L178">            this.minute = getInt(match, FitsDate.NEW_FORMAT_MINUTE_GROUP);</span>
+<span class="fc" id="L179">            this.second = getInt(match, FitsDate.NEW_FORMAT_SECOND_GROUP);</span>
+<span class="fc" id="L180">            this.millisecond = getMilliseconds(match, FitsDate.NEW_FORMAT_MILLISECOND_GROUP);</span>
         } else {
-<span class="fc" id="L180">            match = FitsDate.OLD_REGEX.matcher(dStr);</span>
-<span class="fc bfc" id="L181" title="All 2 branches covered.">            if (match.matches()) {</span>
-<span class="fc" id="L182">                this.year = getInt(match, FitsDate.OLD_FORMAT_YEAR_GROUP) + FitsDate.YEAR_OFFSET;</span>
-<span class="fc" id="L183">                this.month = getInt(match, FitsDate.OLD_FORMAT_MONTH_GROUP);</span>
-<span class="fc" id="L184">                this.mday = getInt(match, FitsDate.OLD_FORMAT_DAY_OF_MONTH_GROUP);</span>
+<span class="fc" id="L182">            match = FitsDate.OLD_REGEX.matcher(dStr);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">            if (match.matches()) {</span>
+<span class="fc" id="L184">                this.year = getInt(match, FitsDate.OLD_FORMAT_YEAR_GROUP) + FitsDate.YEAR_OFFSET;</span>
+<span class="fc" id="L185">                this.month = getInt(match, FitsDate.OLD_FORMAT_MONTH_GROUP);</span>
+<span class="fc" id="L186">                this.mday = getInt(match, FitsDate.OLD_FORMAT_DAY_OF_MONTH_GROUP);</span>
             } else {
-<span class="fc bfc" id="L186" title="All 2 branches covered.">                if (dStr.trim().isEmpty()) {</span>
-<span class="fc" id="L187">                    return;</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">                if (dStr.trim().isEmpty()) {</span>
+<span class="fc" id="L189">                    return;</span>
                 }
-<span class="fc" id="L189">                throw new FitsException(&quot;Bad FITS date string \&quot;&quot; + dStr + '&quot;');</span>
+<span class="fc" id="L191">                throw new FitsException(&quot;Bad FITS date string \&quot;&quot; + dStr + '&quot;');</span>
             }
         }
-<span class="fc" id="L192">    }</span>
+<span class="fc" id="L194">    }</span>
 
     private int getInt(Matcher match, int groupIndex) {
-<span class="fc" id="L195">        String value = match.group(groupIndex);</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">        if (value != null) {</span>
-<span class="fc" id="L197">            return Integer.parseInt(value);</span>
+<span class="fc" id="L197">        String value = match.group(groupIndex);</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">        if (value != null) {</span>
+<span class="fc" id="L199">            return Integer.parseInt(value);</span>
         }
-<span class="fc" id="L199">        return -1;</span>
+<span class="fc" id="L201">        return -1;</span>
     }
 
     private int getMilliseconds(Matcher match, int groupIndex) {
-<span class="fc" id="L203">        String value = match.group(groupIndex);</span>
-<span class="fc bfc" id="L204" title="All 2 branches covered.">        if (value != null) {</span>
-<span class="fc" id="L205">            int result = Integer.parseInt(value);</span>
-<span class="fc bfc" id="L206" title="All 2 branches covered.">            if (value.length() == 2) {</span>
-<span class="fc" id="L207">                result = result * FitsDate.TWO_DIGIT_MILISECONDS_FACTOR;</span>
+<span class="fc" id="L205">        String value = match.group(groupIndex);</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        if (value != null) {</span>
+<span class="fc" id="L207">            int result = Integer.parseInt(value);</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">            if (value.length() == 2) {</span>
+<span class="fc" id="L209">                result = result * FitsDate.TWO_DIGIT_MILISECONDS_FACTOR;</span>
             }
-<span class="fc" id="L209">            return result;</span>
+<span class="fc" id="L211">            return result;</span>
         }
-<span class="fc" id="L211">        return -1;</span>
+<span class="fc" id="L213">        return -1;</span>
     }
 
     /**
@@ -216,89 +218,90 @@ public class FitsDate {
      * 
      * @return The Java Date object.
      */
+    @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;intended exposure of mutable data&quot;)
     public Date toDate() {
-<span class="pc bpc" id="L220" title="2 of 4 branches missed.">        if (this.date == null &amp;&amp; this.year != -1) {</span>
-<span class="fc" id="L221">            Calendar cal = Calendar.getInstance(FitsDate.GMT);</span>
+<span class="pc bpc" id="L223" title="2 of 4 branches missed.">        if (this.date == null &amp;&amp; this.year != -1) {</span>
+<span class="fc" id="L224">            Calendar cal = Calendar.getInstance(FitsDate.GMT);</span>
 
-<span class="fc" id="L223">            cal.set(Calendar.YEAR, this.year);</span>
-<span class="fc" id="L224">            cal.set(Calendar.MONTH, this.month - 1);</span>
-<span class="fc" id="L225">            cal.set(Calendar.DAY_OF_MONTH, this.mday);</span>
-<span class="fc bfc" id="L226" title="All 2 branches covered.">            if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
-<span class="fc" id="L227">                FitsDate.LOG.log(Level.FINEST, &quot;At this point:&quot; + cal.getTime());</span>
+<span class="fc" id="L226">            cal.set(Calendar.YEAR, this.year);</span>
+<span class="fc" id="L227">            cal.set(Calendar.MONTH, this.month - 1);</span>
+<span class="fc" id="L228">            cal.set(Calendar.DAY_OF_MONTH, this.mday);</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">            if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
+<span class="fc" id="L230">                FitsDate.LOG.log(Level.FINEST, &quot;At this point:&quot; + cal.getTime());</span>
             }
 
-<span class="fc bfc" id="L230" title="All 2 branches covered.">            if (this.hour == -1) {</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">            if (this.hour == -1) {</span>
 
-<span class="fc" id="L232">                cal.set(Calendar.HOUR_OF_DAY, 0);</span>
-<span class="fc" id="L233">                cal.set(Calendar.MINUTE, 0);</span>
-<span class="fc" id="L234">                cal.set(Calendar.SECOND, 0);</span>
-<span class="fc" id="L235">                cal.set(Calendar.MILLISECOND, 0);</span>
-<span class="fc bfc" id="L236" title="All 2 branches covered.">                if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
-<span class="fc" id="L237">                    FitsDate.LOG.log(Level.FINEST, &quot;2At this point:&quot; + cal.getTime());</span>
+<span class="fc" id="L235">                cal.set(Calendar.HOUR_OF_DAY, 0);</span>
+<span class="fc" id="L236">                cal.set(Calendar.MINUTE, 0);</span>
+<span class="fc" id="L237">                cal.set(Calendar.SECOND, 0);</span>
+<span class="fc" id="L238">                cal.set(Calendar.MILLISECOND, 0);</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">                if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
+<span class="fc" id="L240">                    FitsDate.LOG.log(Level.FINEST, &quot;2At this point:&quot; + cal.getTime());</span>
                 }
             } else {
-<span class="fc" id="L240">                cal.set(Calendar.HOUR_OF_DAY, this.hour);</span>
-<span class="fc" id="L241">                cal.set(Calendar.MINUTE, this.minute);</span>
-<span class="fc" id="L242">                cal.set(Calendar.SECOND, this.second);</span>
-<span class="fc bfc" id="L243" title="All 2 branches covered.">                if (this.millisecond == -1) {</span>
-<span class="fc" id="L244">                    cal.set(Calendar.MILLISECOND, 0);</span>
+<span class="fc" id="L243">                cal.set(Calendar.HOUR_OF_DAY, this.hour);</span>
+<span class="fc" id="L244">                cal.set(Calendar.MINUTE, this.minute);</span>
+<span class="fc" id="L245">                cal.set(Calendar.SECOND, this.second);</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">                if (this.millisecond == -1) {</span>
+<span class="fc" id="L247">                    cal.set(Calendar.MILLISECOND, 0);</span>
                 } else {
-<span class="fc" id="L246">                    cal.set(Calendar.MILLISECOND, this.millisecond);</span>
+<span class="fc" id="L249">                    cal.set(Calendar.MILLISECOND, this.millisecond);</span>
                 }
-<span class="pc bpc" id="L248" title="1 of 2 branches missed.">                if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
-<span class="fc" id="L249">                    FitsDate.LOG.log(Level.FINEST, &quot;3At this point:&quot; + cal.getTime());</span>
+<span class="pc bpc" id="L251" title="1 of 2 branches missed.">                if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
+<span class="fc" id="L252">                    FitsDate.LOG.log(Level.FINEST, &quot;3At this point:&quot; + cal.getTime());</span>
                 }
             }
-<span class="fc" id="L252">            this.date = cal.getTime();</span>
+<span class="fc" id="L255">            this.date = cal.getTime();</span>
         }
-<span class="fc bfc" id="L254" title="All 2 branches covered.">        if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
-<span class="fc" id="L255">            FitsDate.LOG.log(Level.FINEST, &quot;  date:&quot; + this.date);</span>
-<span class="fc" id="L256">            FitsDate.LOG.log(Level.FINEST, &quot;  year:&quot; + this.year);</span>
-<span class="fc" id="L257">            FitsDate.LOG.log(Level.FINEST, &quot;  month:&quot; + this.month);</span>
-<span class="fc" id="L258">            FitsDate.LOG.log(Level.FINEST, &quot;  mday:&quot; + this.mday);</span>
-<span class="fc" id="L259">            FitsDate.LOG.log(Level.FINEST, &quot;  hour:&quot; + this.hour);</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">        if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
+<span class="fc" id="L258">            FitsDate.LOG.log(Level.FINEST, &quot;  date:&quot; + this.date);</span>
+<span class="fc" id="L259">            FitsDate.LOG.log(Level.FINEST, &quot;  year:&quot; + this.year);</span>
+<span class="fc" id="L260">            FitsDate.LOG.log(Level.FINEST, &quot;  month:&quot; + this.month);</span>
+<span class="fc" id="L261">            FitsDate.LOG.log(Level.FINEST, &quot;  mday:&quot; + this.mday);</span>
+<span class="fc" id="L262">            FitsDate.LOG.log(Level.FINEST, &quot;  hour:&quot; + this.hour);</span>
         }
-<span class="fc" id="L261">        return FitsUtil.unprotectInternalData(this.date);</span>
+<span class="fc" id="L264">        return this.date;</span>
     }
 
     @Override
     public String toString() {
-<span class="fc bfc" id="L266" title="All 2 branches covered.">        if (this.year == -1) {</span>
-<span class="fc" id="L267">            return &quot;&quot;;</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">        if (this.year == -1) {</span>
+<span class="fc" id="L270">            return &quot;&quot;;</span>
         }
-<span class="fc" id="L269">        StringBuffer buf = new StringBuffer(FitsDate.FITS_DATE_STRING_SIZE);</span>
-<span class="fc" id="L270">        buf.append(this.year);</span>
-<span class="fc" id="L271">        buf.append('-');</span>
-<span class="fc" id="L272">        appendTwoDigitValue(buf, this.month);</span>
-<span class="fc" id="L273">        buf.append('-');</span>
-<span class="fc" id="L274">        appendTwoDigitValue(buf, mday);</span>
-<span class="fc bfc" id="L275" title="All 2 branches covered.">        if (this.hour != -1) {</span>
-<span class="fc" id="L276">            buf.append('T');</span>
-<span class="fc" id="L277">            appendTwoDigitValue(buf, this.hour);</span>
-<span class="fc" id="L278">            buf.append(':');</span>
-<span class="fc" id="L279">            appendTwoDigitValue(buf, this.minute);</span>
-<span class="fc" id="L280">            buf.append(':');</span>
-<span class="fc" id="L281">            appendTwoDigitValue(buf, this.second);</span>
-<span class="fc bfc" id="L282" title="All 2 branches covered.">            if (this.millisecond != -1) {</span>
-<span class="fc" id="L283">                buf.append('.');</span>
-<span class="fc" id="L284">                appendThreeDigitValue(buf, this.millisecond);</span>
+<span class="fc" id="L272">        StringBuffer buf = new StringBuffer(FitsDate.FITS_DATE_STRING_SIZE);</span>
+<span class="fc" id="L273">        buf.append(this.year);</span>
+<span class="fc" id="L274">        buf.append('-');</span>
+<span class="fc" id="L275">        appendTwoDigitValue(buf, this.month);</span>
+<span class="fc" id="L276">        buf.append('-');</span>
+<span class="fc" id="L277">        appendTwoDigitValue(buf, mday);</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        if (this.hour != -1) {</span>
+<span class="fc" id="L279">            buf.append('T');</span>
+<span class="fc" id="L280">            appendTwoDigitValue(buf, this.hour);</span>
+<span class="fc" id="L281">            buf.append(':');</span>
+<span class="fc" id="L282">            appendTwoDigitValue(buf, this.minute);</span>
+<span class="fc" id="L283">            buf.append(':');</span>
+<span class="fc" id="L284">            appendTwoDigitValue(buf, this.second);</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">            if (this.millisecond != -1) {</span>
+<span class="fc" id="L286">                buf.append('.');</span>
+<span class="fc" id="L287">                appendThreeDigitValue(buf, this.millisecond);</span>
             }
         }
-<span class="fc" id="L287">        return buf.toString();</span>
+<span class="fc" id="L290">        return buf.toString();</span>
     }
 
     private void appendThreeDigitValue(StringBuffer buf, int value) {
-<span class="pc bpc" id="L291" title="1 of 2 branches missed.">        if (value &lt; FitsDate.FIRST_THREE_CHARACTER_VALUE) {</span>
-<span class="fc" id="L292">            buf.append('0');</span>
+<span class="pc bpc" id="L294" title="1 of 2 branches missed.">        if (value &lt; FitsDate.FIRST_THREE_CHARACTER_VALUE) {</span>
+<span class="fc" id="L295">            buf.append('0');</span>
         }
-<span class="fc" id="L294">        appendTwoDigitValue(buf, value);</span>
-<span class="fc" id="L295">    }</span>
+<span class="fc" id="L297">        appendTwoDigitValue(buf, value);</span>
+<span class="fc" id="L298">    }</span>
 
     private void appendTwoDigitValue(StringBuffer buf, int value) {
-<span class="fc bfc" id="L298" title="All 2 branches covered.">        if (value &lt; FitsDate.FIRST_TWO_CHARACTER_VALUE) {</span>
-<span class="fc" id="L299">            buf.append('0');</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">        if (value &lt; FitsDate.FIRST_TWO_CHARACTER_VALUE) {</span>
+<span class="fc" id="L302">            buf.append('0');</span>
         }
-<span class="fc" id="L301">        buf.append(value);</span>
-<span class="fc" id="L302">    }</span>
+<span class="fc" id="L304">        buf.append(value);</span>
+<span class="fc" id="L305">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

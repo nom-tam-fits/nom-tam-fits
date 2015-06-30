@@ -180,10 +180,10 @@ public final class FitsCheckSum {
 <span class="fc" id="L180">                check = false;</span>
 <span class="fc bfc" id="L181" title="All 2 branches covered.">                for (int element : exclude) {</span>
 <span class="fc bfc" id="L182" title="All 2 branches covered.">                    for (int j = 0; j &lt; CHECKSUM_BLOCK_SIZE; j += CHECKSUM_HALF_BLOCK_SIZE) {</span>
-<span class="fc bfc" id="L183" title="All 4 branches covered.">                        if (ch[j] == element || ch[j + 1] == element) {</span>
-<span class="fc" id="L184">                            ch[j]++;</span>
-<span class="fc" id="L185">                            ch[j + 1]--;</span>
-<span class="fc" id="L186">                            check = true;</span>
+<span class="pc bpc" id="L183" title="2 of 4 branches missed.">                        if (ch[j] == element || ch[j + 1] == element) {</span>
+<span class="nc" id="L184">                            ch[j]++;</span>
+<span class="nc" id="L185">                            ch[j + 1]--;</span>
+<span class="nc" id="L186">                            check = true;</span>
                         }
                     }
                 }

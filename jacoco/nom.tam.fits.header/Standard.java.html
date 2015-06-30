@@ -544,44 +544,46 @@
      */
 <span class="fc" id="L545">    XTENSION(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.STRING, &quot;marks beginning of new HDU&quot;);</span>
 
-    private IFitsHeader key;
+    @SuppressWarnings(&quot;CPD-START&quot;)
+    private final IFitsHeader key;
 
-<span class="fc" id="L549">    private Standard(SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
-<span class="fc" id="L550">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
-<span class="fc" id="L551">    }</span>
+<span class="fc" id="L550">    private Standard(SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L551">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
+<span class="fc" id="L552">    }</span>
 
-<span class="fc" id="L553">    private Standard(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
-<span class="pc bpc" id="L554" title="1 of 2 branches missed.">        this.key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);</span>
-<span class="fc" id="L555">    }</span>
+<span class="fc" id="L554">    private Standard(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
+<span class="pc bpc" id="L555" title="1 of 2 branches missed.">        this.key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);</span>
+<span class="fc" id="L556">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L559">        return this.key.comment();</span>
+<span class="fc" id="L560">        return this.key.comment();</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L564">        return this.key.hdu();</span>
+<span class="fc" id="L565">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L569">        return this.key.key();</span>
+<span class="fc" id="L570">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L574">        return this.key.n(number);</span>
+<span class="fc" id="L575">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L579">        return this.key.status();</span>
+<span class="fc" id="L580">        return this.key.status();</span>
     }
 
     @Override
+    @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L584">        return this.key.valueType();</span>
+<span class="fc" id="L586">        return this.key.valueType();</span>
     }
 
 }

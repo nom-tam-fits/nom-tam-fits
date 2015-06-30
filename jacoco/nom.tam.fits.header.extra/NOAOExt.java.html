@@ -8144,44 +8144,46 @@ import nom.tam.fits.header.IFitsHeader;
      */
 <span class="fc" id="L8145">    MJD_OBS(&quot;MJD-OBS&quot;, HDU.PRIMARY_EXTENSION, VALUE.REAL, &quot;MJD of exposure start&quot;);</span>
 
-    private IFitsHeader key;
+    @SuppressWarnings(&quot;CPD-START&quot;)
+    private final IFitsHeader key;
 
-<span class="fc" id="L8149">    private NOAOExt(HDU hdu, VALUE valueType, String comment) {</span>
-<span class="fc" id="L8150">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);</span>
-<span class="fc" id="L8151">    }</span>
+<span class="fc" id="L8150">    private NOAOExt(HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L8151">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);</span>
+<span class="fc" id="L8152">    }</span>
 
-<span class="fc" id="L8153">    private NOAOExt(String key, HDU hdu, VALUE valueType, String comment) {</span>
-<span class="fc" id="L8154">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);</span>
-<span class="fc" id="L8155">    }</span>
+<span class="fc" id="L8154">    private NOAOExt(String key, HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L8155">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);</span>
+<span class="fc" id="L8156">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L8159">        return this.key.comment();</span>
+<span class="fc" id="L8160">        return this.key.comment();</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L8164">        return this.key.hdu();</span>
+<span class="fc" id="L8165">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L8169">        return this.key.key();</span>
+<span class="fc" id="L8170">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L8174">        return this.key.n(number);</span>
+<span class="fc" id="L8175">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L8179">        return this.key.status();</span>
+<span class="fc" id="L8180">        return this.key.status();</span>
     }
 
     @Override
+    @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L8184">        return this.key.valueType();</span>
+<span class="fc" id="L8186">        return this.key.valueType();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

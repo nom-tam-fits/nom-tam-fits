@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HeaderOrder.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">HeaderOrder.java</span></div><h1>HeaderOrder.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
 
+import java.io.Serializable;
+
 import nom.tam.fits.header.Standard;
 
 /*
@@ -37,7 +39,12 @@ import nom.tam.fits.header.Standard;
  * This class implements a comparator which ensures that FITS keywords are
  * written out in a proper order.
  */
-<span class="fc" id="L40">public class HeaderOrder implements java.util.Comparator&lt;String&gt; {</span>
+<span class="fc" id="L42">public class HeaderOrder implements java.util.Comparator&lt;String&gt;, Serializable {</span>
+
+    /**
+     * Serialization id.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Which order should the cards indexed by these keys be written out? This
@@ -56,104 +63,104 @@ import nom.tam.fits.header.Standard;
         // order.
 
         // Equals are equal
-<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (c1.equals(c2)) {</span>
-<span class="fc" id="L60">            return 0;</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (c1.equals(c2)) {</span>
+<span class="fc" id="L67">            return 0;</span>
         }
 
         // Now search in the order in which cards must appear
         // in the header.
 
-<span class="pc bpc" id="L66" title="1 of 4 branches missed.">        if (c1.equals(&quot;SIMPLE&quot;) || c1.equals(&quot;XTENSION&quot;)) {</span>
-<span class="fc" id="L67">            return -1;</span>
-        }
-<span class="fc bfc" id="L69" title="All 4 branches covered.">        if (c2.equals(&quot;SIMPLE&quot;) || c2.equals(&quot;XTENSION&quot;)) {</span>
-<span class="fc" id="L70">            return 1;</span>
-        }
-
-<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (c1.equals(&quot;BITPIX&quot;)) {</span>
+<span class="pc bpc" id="L73" title="1 of 4 branches missed.">        if (c1.equals(&quot;SIMPLE&quot;) || c1.equals(&quot;XTENSION&quot;)) {</span>
 <span class="fc" id="L74">            return -1;</span>
         }
-<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (c2.equals(&quot;BITPIX&quot;)) {</span>
+<span class="fc bfc" id="L76" title="All 4 branches covered.">        if (c2.equals(&quot;SIMPLE&quot;) || c2.equals(&quot;XTENSION&quot;)) {</span>
 <span class="fc" id="L77">            return 1;</span>
         }
 
-<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (c1.equals(&quot;NAXIS&quot;)) {</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (c1.equals(&quot;BITPIX&quot;)) {</span>
 <span class="fc" id="L81">            return -1;</span>
         }
-<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (c2.equals(&quot;NAXIS&quot;)) {</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (c2.equals(&quot;BITPIX&quot;)) {</span>
 <span class="fc" id="L84">            return 1;</span>
+        }
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (c1.equals(&quot;NAXIS&quot;)) {</span>
+<span class="fc" id="L88">            return -1;</span>
+        }
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (c2.equals(&quot;NAXIS&quot;)) {</span>
+<span class="fc" id="L91">            return 1;</span>
         }
 
         // Check the NAXISn cards. These must
         // be in axis order.
 
-<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (naxisN(c1) &gt; 0) {</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">            if (naxisN(c2) &gt; 0) {</span>
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">                if (naxisN(c1) &lt; naxisN(c2)) {</span>
-<span class="nc" id="L93">                    return -1;</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (naxisN(c1) &gt; 0) {</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">            if (naxisN(c2) &gt; 0) {</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">                if (naxisN(c1) &lt; naxisN(c2)) {</span>
+<span class="nc" id="L100">                    return -1;</span>
                 } else {
-<span class="fc" id="L95">                    return 1;</span>
+<span class="fc" id="L102">                    return 1;</span>
                 }
             }
-<span class="fc" id="L98">            return -1;</span>
+<span class="fc" id="L105">            return -1;</span>
         }
 
-<span class="fc bfc" id="L101" title="All 2 branches covered.">        if (naxisN(c2) &gt; 0) {</span>
-<span class="fc" id="L102">            return 1;</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (naxisN(c2) &gt; 0) {</span>
+<span class="fc" id="L109">            return 1;</span>
         }
 
         // The EXTEND keyword is no longer required in the FITS standard
         // but in earlier versions of the standard it was required to
         // be here if present in the primary data array.
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if (c1.equals(&quot;EXTEND&quot;)) {</span>
-<span class="nc" id="L109">            return -1;</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">        if (c1.equals(&quot;EXTEND&quot;)) {</span>
+<span class="nc" id="L116">            return -1;</span>
         }
-<span class="fc bfc" id="L111" title="All 2 branches covered.">        if (c2.equals(&quot;EXTEND&quot;)) {</span>
-<span class="fc" id="L112">            return 1;</span>
-        }
-
-<span class="fc bfc" id="L115" title="All 2 branches covered.">        if (c1.equals(&quot;PCOUNT&quot;)) {</span>
-<span class="fc" id="L116">            return -1;</span>
-        }
-<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (c2.equals(&quot;PCOUNT&quot;)) {</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (c2.equals(&quot;EXTEND&quot;)) {</span>
 <span class="fc" id="L119">            return 1;</span>
         }
 
-<span class="fc bfc" id="L122" title="All 2 branches covered.">        if (c1.equals(&quot;GCOUNT&quot;)) {</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        if (c1.equals(&quot;PCOUNT&quot;)) {</span>
 <span class="fc" id="L123">            return -1;</span>
         }
-<span class="fc bfc" id="L125" title="All 2 branches covered.">        if (c2.equals(&quot;GCOUNT&quot;)) {</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        if (c2.equals(&quot;PCOUNT&quot;)) {</span>
 <span class="fc" id="L126">            return 1;</span>
         }
 
-<span class="fc bfc" id="L129" title="All 2 branches covered.">        if (c1.equals(&quot;TFIELDS&quot;)) {</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        if (c1.equals(&quot;GCOUNT&quot;)) {</span>
 <span class="fc" id="L130">            return -1;</span>
         }
-<span class="fc bfc" id="L132" title="All 2 branches covered.">        if (c2.equals(&quot;TFIELDS&quot;)) {</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        if (c2.equals(&quot;GCOUNT&quot;)) {</span>
 <span class="fc" id="L133">            return 1;</span>
+        }
+
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        if (c1.equals(&quot;TFIELDS&quot;)) {</span>
+<span class="fc" id="L137">            return -1;</span>
+        }
+<span class="fc bfc" id="L139" title="All 2 branches covered.">        if (c2.equals(&quot;TFIELDS&quot;)) {</span>
+<span class="fc" id="L140">            return 1;</span>
         }
 
         // In principal this only needs to be in the first 36 cards,
         // but we put it here since it's convenient. BLOCKED is
         // deprecated currently.
-<span class="pc bpc" id="L139" title="1 of 2 branches missed.">        if (c1.equals(&quot;BLOCKED&quot;)) {</span>
-<span class="nc" id="L140">            return -1;</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">        if (c1.equals(&quot;BLOCKED&quot;)) {</span>
+<span class="nc" id="L147">            return -1;</span>
         }
-<span class="pc bpc" id="L142" title="1 of 2 branches missed.">        if (c2.equals(&quot;BLOCKED&quot;)) {</span>
-<span class="nc" id="L143">            return 1;</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">        if (c2.equals(&quot;BLOCKED&quot;)) {</span>
+<span class="nc" id="L150">            return 1;</span>
         }
 
         // Note that this must be at the end, so the
         // values returned are inverted.
-<span class="fc bfc" id="L148" title="All 2 branches covered.">        if (c1.equals(&quot;END&quot;)) {</span>
-<span class="fc" id="L149">            return 1;</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        if (c1.equals(&quot;END&quot;)) {</span>
+<span class="fc" id="L156">            return 1;</span>
         }
-<span class="fc bfc" id="L151" title="All 2 branches covered.">        if (c2.equals(&quot;END&quot;)) {</span>
-<span class="fc" id="L152">            return -1;</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        if (c2.equals(&quot;END&quot;)) {</span>
+<span class="fc" id="L159">            return -1;</span>
         }
 
         // All other cards can be in any order.
-<span class="fc" id="L156">        return 0;</span>
+<span class="fc" id="L163">        return 0;</span>
     }
 
     /**
@@ -164,27 +171,27 @@ import nom.tam.fits.header.Standard;
      *            second card
      */
     public boolean equals(String a, String b) {
-<span class="nc bnc" id="L167" title="All 2 branches missed.">        return compare(a, b) == 0;</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        return compare(a, b) == 0;</span>
     }
 
     /** Find the index for NAXISn keywords */
     private int naxisN(String key) {
-<span class="fc" id="L172">        int startOfNumber = Standard.NAXIS.key().length();</span>
-<span class="fc bfc" id="L173" title="All 4 branches covered.">        if (key.length() &gt; startOfNumber &amp;&amp; key.substring(0, startOfNumber).equals(Standard.NAXIS.key())) {</span>
-<span class="pc bpc" id="L174" title="1 of 2 branches missed.">            for (int i = startOfNumber; i &lt; key.length(); i += 1) {</span>
+<span class="fc" id="L179">        int startOfNumber = Standard.NAXIS.key().length();</span>
+<span class="fc bfc" id="L180" title="All 4 branches covered.">        if (key.length() &gt; startOfNumber &amp;&amp; key.substring(0, startOfNumber).equals(Standard.NAXIS.key())) {</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">            for (int i = startOfNumber; i &lt; key.length(); i += 1) {</span>
 
-<span class="fc" id="L176">                boolean number = true;</span>
-<span class="fc" id="L177">                char c = key.charAt(i);</span>
-<span class="pc bpc" id="L178" title="2 of 4 branches missed.">                if ('0' &gt; c || c &gt; '9') {</span>
-<span class="nc" id="L179">                    number = false;</span>
-<span class="nc" id="L180">                    break;</span>
+<span class="fc" id="L183">                boolean number = true;</span>
+<span class="fc" id="L184">                char c = key.charAt(i);</span>
+<span class="pc bpc" id="L185" title="2 of 4 branches missed.">                if ('0' &gt; c || c &gt; '9') {</span>
+<span class="nc" id="L186">                    number = false;</span>
+<span class="nc" id="L187">                    break;</span>
                 }
-<span class="pc bpc" id="L182" title="1 of 2 branches missed.">                if (number) {</span>
-<span class="fc" id="L183">                    return Integer.parseInt(key.substring(startOfNumber));</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">                if (number) {</span>
+<span class="fc" id="L190">                    return Integer.parseInt(key.substring(startOfNumber));</span>
                 }
             }
         }
-<span class="fc" id="L187">        return -1;</span>
+<span class="fc" id="L194">        return -1;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

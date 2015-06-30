@@ -219,40 +219,42 @@
      */
 <span class="fc" id="L220">    TSORTKEY(SOURCE.HEASARC, HDU.TABLE, VALUE.STRING, &quot;defines the sort order of a table&quot;);</span>
 
-    private IFitsHeader key;
+    @SuppressWarnings(&quot;CPD-START&quot;)
+    private final IFitsHeader key;
 
-<span class="fc" id="L224">    private DataDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
-<span class="fc" id="L225">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
-<span class="fc" id="L226">    }</span>
+<span class="fc" id="L225">    private DataDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L226">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
+<span class="fc" id="L227">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L230">        return this.key.comment();</span>
+<span class="fc" id="L231">        return this.key.comment();</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L235">        return this.key.hdu();</span>
+<span class="fc" id="L236">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L240">        return this.key.key();</span>
+<span class="fc" id="L241">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L245">        return this.key.n(number);</span>
+<span class="fc" id="L246">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L250">        return this.key.status();</span>
+<span class="fc" id="L251">        return this.key.status();</span>
     }
 
     @Override
+    @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L255">        return this.key.valueType();</span>
+<span class="fc" id="L257">        return this.key.valueType();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

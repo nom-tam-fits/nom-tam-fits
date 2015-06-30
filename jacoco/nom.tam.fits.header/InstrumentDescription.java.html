@@ -110,40 +110,42 @@
      */
 <span class="fc" id="L111">    SATURATE(SOURCE.STScI, HDU.ANY, VALUE.INTEGER, &quot;Data value at which saturation occurs&quot;);</span>
 
-    private IFitsHeader key;
+    @SuppressWarnings(&quot;CPD-START&quot;)
+    private final IFitsHeader key;
 
-<span class="fc" id="L115">    private InstrumentDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
-<span class="fc" id="L116">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
-<span class="fc" id="L117">    }</span>
+<span class="fc" id="L116">    private InstrumentDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L117">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
+<span class="fc" id="L118">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L121">        return this.key.comment();</span>
+<span class="fc" id="L122">        return this.key.comment();</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L126">        return this.key.hdu();</span>
+<span class="fc" id="L127">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L131">        return this.key.key();</span>
+<span class="fc" id="L132">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L136">        return this.key.n(number);</span>
+<span class="fc" id="L137">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L141">        return this.key.status();</span>
+<span class="fc" id="L142">        return this.key.status();</span>
     }
 
     @Override
+    @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L146">        return this.key.valueType();</span>
+<span class="fc" id="L148">        return this.key.valueType();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

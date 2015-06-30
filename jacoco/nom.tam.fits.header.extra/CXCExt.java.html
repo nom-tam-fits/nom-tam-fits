@@ -175,40 +175,42 @@ import nom.tam.fits.header.IFitsHeader;
      */
 <span class="fc" id="L176">    TSTOP(&quot;add TIMEZERO and MJDREF for absolute TT&quot;);</span>
 
-    private IFitsHeader key;
+    @SuppressWarnings(&quot;CPD-START&quot;)
+    private final IFitsHeader key;
 
-<span class="fc" id="L180">    private CXCExt(String comment) {</span>
-<span class="fc" id="L181">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);</span>
-<span class="fc" id="L182">    }</span>
+<span class="fc" id="L181">    private CXCExt(String comment) {</span>
+<span class="fc" id="L182">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);</span>
+<span class="fc" id="L183">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L186">        return this.key.comment();</span>
+<span class="fc" id="L187">        return this.key.comment();</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L191">        return this.key.hdu();</span>
+<span class="fc" id="L192">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L196">        return this.key.key();</span>
+<span class="fc" id="L197">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L201">        return this.key.n(number);</span>
+<span class="fc" id="L202">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L206">        return this.key.status();</span>
+<span class="fc" id="L207">        return this.key.status();</span>
     }
 
     @Override
+    @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L211">        return this.key.valueType();</span>
+<span class="fc" id="L213">        return this.key.valueType();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

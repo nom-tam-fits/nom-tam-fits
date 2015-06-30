@@ -223,40 +223,42 @@
      */
 <span class="fc" id="L224">    SUNANGLE(SOURCE.STScI, HDU.ANY, VALUE.REAL, &quot;angle between the observation and the sun&quot;);</span>
 
-    private IFitsHeader key;
+    @SuppressWarnings(&quot;CPD-START&quot;)
+    private final IFitsHeader key;
 
-<span class="fc" id="L228">    private ObservationDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
-<span class="fc" id="L229">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
-<span class="fc" id="L230">    }</span>
+<span class="fc" id="L229">    private ObservationDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L230">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
+<span class="fc" id="L231">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L234">        return this.key.comment();</span>
+<span class="fc" id="L235">        return this.key.comment();</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L239">        return this.key.hdu();</span>
+<span class="fc" id="L240">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L244">        return this.key.key();</span>
+<span class="fc" id="L245">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L249">        return this.key.n(number);</span>
+<span class="fc" id="L250">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L254">        return this.key.status();</span>
+<span class="fc" id="L255">        return this.key.status();</span>
     }
 
     @Override
+    @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L259">        return this.key.valueType();</span>
+<span class="fc" id="L261">        return this.key.valueType();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
