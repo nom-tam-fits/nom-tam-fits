@@ -93,10 +93,14 @@ public final class ByteFormatter {
 
     private static final int DOUBLE_EXPONENT_EXCESS = 52;
 
-    // The hidden bit in normalized double numbers.
+    /**
+     * The hidden bit in normalized double numbers.
+     */
     private static final long DOUBLE_EXPONENT_NORMALIZE_BIT = 0x0010000000000000L;
 
-    // Used to check if double is normalized
+    /**
+     * Used to check if double is normalized
+     */
     private static final int DOUBLE_MIN_EXPONENT = -1023;
 
     private static final int DOUBLE_SHIFT_BASE = 17;
@@ -109,10 +113,14 @@ public final class ByteFormatter {
 
     private static final int FLOAT_EXPONENT_EXCESS = 23;
 
-    // The hidden bit in normalized floating point numbers.
+    /**
+     * The hidden bit in normalized floating point numbers.
+     */
     private static final int FLOAT_EXPONENT_NORMALIZE_BIT = 0x00800000;
 
-    // Used to check if float is normalized
+    /**
+     * Used to check if float is normalized
+     */
     private static final int FLOAT_MIN_EXPONENT = -127;
 
     private static final int FLOAT_SHIFT_BASE = 8;
@@ -121,29 +129,39 @@ public final class ByteFormatter {
 
     private static final int FLOAT_VALUE_BIT_MASK = 0x007FFFFF;
 
-    private static final double I_LOG_10 = 1. / Math.log(ByteFormatter.TEN);
+    private static final double I_LOG_10 = 1. / Math.log(ByteFormatter.NUMBER_BASE);
 
     private static final long LONG_TO_INT_MODULO = 1000000000L;
 
     private static final int MAX_LONG_LENGTH = 19;
 
-    private static final int NINE = 9; // The maximum digit. 
-    // Special case handling when rounding up and when incrementing the exponent.
+    /**
+     * The maximum single digit integer. Special case handling when rounding up
+     * and when incrementing the exponent.
+     */
 
-    private static final int NINETY_NINE = 99; // The maximum two digit integer. 
-    // When we increment an exponent of this value, the exponent gets longer.
-    // Don't need to worry about 999 since exponents can't be that big.
+    private static final int MAXIMUM_SINGLE_DIGIT_INTEGER = 9;
+
+    /**
+     * The maximum two digit integer. When we increment an exponent of this
+     * value, the exponent gets longer. Don't need to worry about 999 since
+     * exponents can't be that big.
+     */
+    private static final int MAXIMUM_TWO_DIGIT_INTEGER = 99;
 
     private static final int TEMP_BUFFER_SIZE = 32;
 
-    private static final int TEN = 10;  // The underlying base
+    /**
+     * The underlying number base used in this class.
+     */
+    private static final int NUMBER_BASE = 10;
 
     /**
-     * Powers of 10. We overextend on both sides. These should perhaps be
+     * Powers of 10. We over extend on both sides. These should perhaps be
      * tabulated rather than computed though it may be faster to calculate them
      * than to read in the extra bytes in the class file.
      */
-    private static final double[] TEN_POW;
+    private static final double[] NUMBER_BASE_POWERS;
 
     /**
      * What do we use to fill when we cannot print the number?Default is often
@@ -151,16 +169,18 @@ public final class ByteFormatter {
      */
     private static final byte TRUNCATION_FILL = (byte) '*';
 
-    /** What index of tenpow is 10^0 */
+    /**
+     * What index of tenpow is 10^0
+     */
     private static final int ZERO_POW;
 
     static { // Static initializer
         int min = (int) Math.floor((int) (Math.log(Double.MIN_VALUE) * ByteFormatter.I_LOG_10));
         int max = (int) Math.floor((int) (Math.log(Double.MAX_VALUE) * ByteFormatter.I_LOG_10));
         max++;
-        TEN_POW = new double[max - min + 1];
-        for (int i = 0; i < ByteFormatter.TEN_POW.length; i++) {
-            ByteFormatter.TEN_POW[i] = Math.pow(ByteFormatter.TEN, i + min);
+        NUMBER_BASE_POWERS = new double[max - min + 1];
+        for (int i = 0; i < ByteFormatter.NUMBER_BASE_POWERS.length; i++) {
+            ByteFormatter.NUMBER_BASE_POWERS[i] = Math.pow(ByteFormatter.NUMBER_BASE, i + min);
         }
         ZERO_POW = -min;
     }
@@ -284,7 +304,7 @@ public final class ByteFormatter {
                 off = -off;
                 len -= off;
                 // Handle the expanded exponent by filling
-                if (exp == NINE || exp == NINETY_NINE) {
+                if (exp == MAXIMUM_SINGLE_DIGIT_INTEGER || exp == MAXIMUM_TWO_DIGIT_INTEGER) {
                     // Cannot fit...
                     if (off + len == minSize) {
                         truncationFiller(buf, off, len);
@@ -411,13 +431,13 @@ public final class ByteFormatter {
 
         // Scale the number so that we get a number ~ n x 10^17.
         if (shift < DOUBLE_SHIFT_LIMIT) {
-            scale = ByteFormatter.TEN_POW[shift + ByteFormatter.ZERO_POW];
+            scale = ByteFormatter.NUMBER_BASE_POWERS[shift + ByteFormatter.ZERO_POW];
         } else {
             // Can get overflow if the original number is
             // very small, so we break out the shift
             // into two multipliers.
-            scale2 = ByteFormatter.TEN_POW[DOUBLE_SHIFT_LIMIT + ByteFormatter.ZERO_POW];
-            scale = ByteFormatter.TEN_POW[shift - DOUBLE_SHIFT_LIMIT + ByteFormatter.ZERO_POW];
+            scale2 = ByteFormatter.NUMBER_BASE_POWERS[DOUBLE_SHIFT_LIMIT + ByteFormatter.ZERO_POW];
+            scale = ByteFormatter.NUMBER_BASE_POWERS[shift - DOUBLE_SHIFT_LIMIT + ByteFormatter.ZERO_POW];
         }
 
         pos = pos * scale * scale2;
@@ -521,13 +541,13 @@ public final class ByteFormatter {
 
         // Scale the number so that we get a number ~ n x 10^8.
         if (shift < FLOAT_SHIFT_LIMIT) {
-            scale = (float) ByteFormatter.TEN_POW[shift + ByteFormatter.ZERO_POW];
+            scale = (float) ByteFormatter.NUMBER_BASE_POWERS[shift + ByteFormatter.ZERO_POW];
         } else {
             // Can get overflow if the original number is
             // very small, so we break out the shift
             // into two multipliers.
-            scale2 = (float) ByteFormatter.TEN_POW[FLOAT_SHIFT_LIMIT + ByteFormatter.ZERO_POW];
-            scale = (float) ByteFormatter.TEN_POW[shift - FLOAT_SHIFT_LIMIT + ByteFormatter.ZERO_POW];
+            scale2 = (float) ByteFormatter.NUMBER_BASE_POWERS[FLOAT_SHIFT_LIMIT + ByteFormatter.ZERO_POW];
+            scale = (float) ByteFormatter.NUMBER_BASE_POWERS[shift - FLOAT_SHIFT_LIMIT + ByteFormatter.ZERO_POW];
         }
 
         pos = pos * scale * scale2;
@@ -593,7 +613,7 @@ public final class ByteFormatter {
 
         // Special case
         if (val == Integer.MIN_VALUE) {
-            if (len > ByteFormatter.TEN) {
+            if (len > ByteFormatter.NUMBER_BASE) {
                 return format("-2147483648", buf, off, len);
             } else {
                 truncationFiller(buf, off, len);
@@ -607,11 +627,11 @@ public final class ByteFormatter {
         // Otherwise we need to use an intermediary buffer.
 
         int ndig = 1;
-        int dmax = ByteFormatter.TEN;
+        int dmax = ByteFormatter.NUMBER_BASE;
 
-        while (ndig < ByteFormatter.TEN && pos >= dmax) {
+        while (ndig < ByteFormatter.NUMBER_BASE && pos >= dmax) {
             ndig++;
-            dmax *= ByteFormatter.TEN;
+            dmax *= ByteFormatter.NUMBER_BASE;
         }
 
         if (val < 0) {
@@ -631,9 +651,9 @@ public final class ByteFormatter {
 
         int xoff = off - 1;
         do {
-            buf[xoff] = ByteFormatter.DIGITS[pos % ByteFormatter.TEN];
+            buf[xoff] = ByteFormatter.DIGITS[pos % ByteFormatter.NUMBER_BASE];
             xoff--;
-            pos /= ByteFormatter.TEN;
+            pos /= ByteFormatter.NUMBER_BASE;
         } while (pos > 0);
 
         if (val < 0) {
@@ -684,11 +704,11 @@ public final class ByteFormatter {
         // First count the number of characters in the result.
         // Otherwise we need to use an intermediary buffer.
         int ndig = 1;
-        long dmax = ByteFormatter.TEN;
+        long dmax = ByteFormatter.NUMBER_BASE;
         // Might be faster to try to do this partially in ints
         while (ndig < MAX_LONG_LENGTH && pos >= dmax) {
             ndig++;
-            dmax *= ByteFormatter.TEN;
+            dmax *= ByteFormatter.NUMBER_BASE;
         }
         if (val < 0) {
             ndig++;
@@ -708,11 +728,11 @@ public final class ByteFormatter {
             int giga = (int) (pos % LONG_TO_INT_MODULO);
             pos /= LONG_TO_INT_MODULO;
             last = pos == 0;
-            for (int i = 0; i < NINE; i++) {
+            for (int i = 0; i < MAXIMUM_SINGLE_DIGIT_INTEGER; i++) {
 
-                buf[xoff] = ByteFormatter.DIGITS[giga % ByteFormatter.TEN];
+                buf[xoff] = ByteFormatter.DIGITS[giga % ByteFormatter.NUMBER_BASE];
                 xoff--;
-                giga /= ByteFormatter.TEN;
+                giga /= ByteFormatter.NUMBER_BASE;
                 if (last && giga == 0) {
                     break;
                 }

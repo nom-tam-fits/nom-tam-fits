@@ -58,8 +58,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class ByteParser {
 
-    private static final double D_TEN = 10.;
-
     private static final int EXPONENT_DENORMALISATION_CORR_LIMIT = -300;
 
     private static final double EXPONENT_DENORMALISATION_FACTOR = 1.e-300;
@@ -78,21 +76,39 @@ public class ByteParser {
 
     private static final int NOT_A_NUMBER_LENGTH = ByteParser.NOT_A_NUMBER_UPPER.length;
 
-    private static final int TEN = 10;
+    /**
+     * The underlying number base used in this class.
+     */
+    private static final int NUMBER_BASE = 10;
 
-    /** Do we fill up fields? */
+    /**
+     * The underlying number base used in this class as a double value.
+     */
+    private static final double NUMBER_BASE_DOUBLE = 10.;
+
+    /**
+     * Do we fill up fields?
+     */
     private boolean fillFields = false;
 
-    /** Did we find a sign last time we checked? */
+    /**
+     * Did we find a sign last time we checked?
+     */
     private boolean foundSign;
 
-    /** Array being parsed */
+    /**
+     * Array being parsed
+     */
     private byte[] input;
 
-    /** Length of last parsed value */
+    /**
+     * Length of last parsed value
+     */
     private int numberLength;
 
-    /** Current offset into input. */
+    /**
+     * Current offset into input.
+     */
     private int offset;
 
     /**
@@ -147,7 +163,7 @@ public class ByteParser {
 
         while (length > 0 && this.input[this.offset] >= '0' && this.input[this.offset] <= '9') {
 
-            number *= ByteParser.TEN;
+            number *= ByteParser.NUMBER_BASE;
             number += this.input[this.offset] - '0';
             this.offset++;
             length--;
@@ -273,7 +289,7 @@ public class ByteParser {
                 length--;
                 double numerator = getBareInteger(length);
                 if (numerator > 0) {
-                    number += numerator / Math.pow(ByteParser.D_TEN, this.numberLength);
+                    number += numerator / Math.pow(ByteParser.NUMBER_BASE_DOUBLE, this.numberLength);
                 }
                 length -= this.numberLength;
                 if (this.numberLength > 0) {
@@ -304,11 +320,11 @@ public class ByteParser {
                     // For very small numbers we try to miminize
                     // effects of denormalization.
                     if (exponent * sign > ByteParser.EXPONENT_DENORMALISATION_CORR_LIMIT) {
-                        number *= Math.pow(ByteParser.D_TEN, exponent * sign);
+                        number *= Math.pow(ByteParser.NUMBER_BASE_DOUBLE, exponent * sign);
                     } else {
                         number =
                                 ByteParser.EXPONENT_DENORMALISATION_FACTOR
-                                        * (number * Math.pow(ByteParser.D_TEN, exponent * sign + ByteParser.EXPONENT_DENORMALISATION_CORR_LIMIT * -1));
+                                        * (number * Math.pow(ByteParser.NUMBER_BASE_DOUBLE, exponent * sign + ByteParser.EXPONENT_DENORMALISATION_CORR_LIMIT * -1));
                     }
                     length -= this.numberLength;
                 }
@@ -385,7 +401,7 @@ public class ByteParser {
         }
 
         while (length > 0 && this.input[this.offset] >= '0' && this.input[this.offset] <= '9') {
-            number = number * ByteParser.TEN + this.input[this.offset] - '0';
+            number = number * ByteParser.NUMBER_BASE + this.input[this.offset] - '0';
             this.offset++;
             length--;
             error = false;
@@ -438,7 +454,7 @@ public class ByteParser {
         }
 
         while (length > 0 && this.input[this.offset] >= '0' && this.input[this.offset] <= '9') {
-            number = number * ByteParser.TEN + this.input[this.offset] - '0';
+            number = number * ByteParser.NUMBER_BASE + this.input[this.offset] - '0';
             error = false;
             this.offset++;
             length--;
@@ -569,16 +585,13 @@ public class ByteParser {
      *            The maximum number of characters to skip.
      */
     public int skipWhite(int length) {
-
         int i;
         for (i = 0; i < length; i++) {
             if (this.input[this.offset + i] != ' ' && this.input[this.offset + i] != '\t' && this.input[this.offset + i] != '\n' && this.input[this.offset + i] != '\r') {
                 break;
             }
         }
-
         this.offset += i;
         return i;
-
     }
 }
