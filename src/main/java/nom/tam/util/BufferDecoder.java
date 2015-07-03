@@ -37,12 +37,75 @@ import java.lang.reflect.Array;
 
 public abstract class BufferDecoder {
 
-    private final BufferPointer sharedBuffer;
+    private class PrimitiveArrayRecurse {
 
-    /**
-     * Counter used in reading arrays
-     */
-    private long primitiveArrayCount;
+        /**
+         * Counter used in reading arrays
+         */
+        private long primitiveArrayCount;
+
+        protected long primitiveArrayRecurse(Object o) throws IOException {
+            if (o == null) {
+                return this.primitiveArrayCount;
+            }
+            if (!o.getClass().isArray()) {
+                throw new IOException("Invalid object passed to BufferedDataInputStream.readArray:" + o.getClass().getName());
+            }
+            int length = Array.getLength(o);
+            // Is this a multidimensional array? If so process recursively.
+            if (o.getClass().getComponentType().isArray()) {
+                for (int i = 0; i < length; i++) {
+                    primitiveArrayRecurse(Array.get(o, i));
+                }
+            } else {
+                // This is a one-d array. Process it using our special
+                // functions.
+                switch (PrimitiveTypeEnum.valueOf(o.getClass().getComponentType())) {
+                    case BOOLEAN:
+                        this.primitiveArrayCount += read((boolean[]) o, 0, length);
+                        break;
+                    case BYTE:
+                        int len = read((byte[]) o, 0, length);
+                        this.primitiveArrayCount += len;
+
+                        if (len < length) {
+                            throw new EOFException();
+                        }
+                        break;
+                    case CHAR:
+                        this.primitiveArrayCount += read((char[]) o, 0, length);
+                        break;
+                    case SHORT:
+                        this.primitiveArrayCount += read((short[]) o, 0, length);
+                        break;
+                    case INT:
+                        this.primitiveArrayCount += read((int[]) o, 0, length);
+                        break;
+                    case LONG:
+                        this.primitiveArrayCount += read((long[]) o, 0, length);
+                        break;
+                    case FLOAT:
+                        this.primitiveArrayCount += read((float[]) o, 0, length);
+                        break;
+                    case DOUBLE:
+                        this.primitiveArrayCount += read((double[]) o, 0, length);
+                        break;
+                    case STRING:
+                    case UNKNOWN:
+                        for (int i = 0; i < length; i++) {
+                            primitiveArrayRecurse(Array.get(o, i));
+                        }
+                        break;
+                    default:
+                        throw new IOException("Invalid object passed to BufferedDataInputStream.readArray: " + o.getClass().getName());
+                }
+            }
+            return this.primitiveArrayCount;
+        }
+
+    }
+
+    private final BufferPointer sharedBuffer;
 
     public BufferDecoder(BufferPointer sharedBuffer) {
         this.sharedBuffer = sharedBuffer;
@@ -60,64 +123,6 @@ public abstract class BufferDecoder {
     protected abstract void checkBuffer(int needBytes) throws IOException;
 
     protected abstract int eofCheck(EOFException e, int start, int index, int length) throws EOFException;
-
-    protected long primitiveArrayRecurse(Object o) throws IOException {
-        if (o == null) {
-            return this.primitiveArrayCount;
-        }
-        if (!o.getClass().isArray()) {
-            throw new IOException("Invalid object passed to BufferedDataInputStream.readArray:" + o.getClass().getName());
-        }
-        int length = Array.getLength(o);
-        // Is this a multidimensional array? If so process recursively.
-        if (o.getClass().getComponentType().isArray()) {
-            for (int i = 0; i < length; i++) {
-                primitiveArrayRecurse(Array.get(o, i));
-            }
-        } else {
-            // This is a one-d array. Process it using our special functions.
-            switch (PrimitiveTypeEnum.valueOf(o.getClass().getComponentType())) {
-                case BOOLEAN:
-                    this.primitiveArrayCount += read((boolean[]) o, 0, length);
-                    break;
-                case BYTE:
-                    int len = read((byte[]) o, 0, length);
-                    this.primitiveArrayCount += len;
-
-                    if (len < length) {
-                        throw new EOFException();
-                    }
-                    break;
-                case CHAR:
-                    this.primitiveArrayCount += read((char[]) o, 0, length);
-                    break;
-                case SHORT:
-                    this.primitiveArrayCount += read((short[]) o, 0, length);
-                    break;
-                case INT:
-                    this.primitiveArrayCount += read((int[]) o, 0, length);
-                    break;
-                case LONG:
-                    this.primitiveArrayCount += read((long[]) o, 0, length);
-                    break;
-                case FLOAT:
-                    this.primitiveArrayCount += read((float[]) o, 0, length);
-                    break;
-                case DOUBLE:
-                    this.primitiveArrayCount += read((double[]) o, 0, length);
-                    break;
-                case STRING:
-                case UNKNOWN:
-                    for (int i = 0; i < length; i++) {
-                        primitiveArrayRecurse(Array.get(o, i));
-                    }
-                    break;
-                default:
-                    throw new IOException("Invalid object passed to BufferedDataInputStream.readArray: " + o.getClass().getName());
-            }
-        }
-        return this.primitiveArrayCount;
-    }
 
     protected int read(boolean[] b, int start, int length) throws IOException {
 
@@ -294,8 +299,7 @@ public abstract class BufferDecoder {
     }
 
     protected long readLArray(Object o) throws IOException {
-        this.primitiveArrayCount = 0;
-        return primitiveArrayRecurse(o);
+        return new PrimitiveArrayRecurse().primitiveArrayRecurse(o);
     }
 
     /**
