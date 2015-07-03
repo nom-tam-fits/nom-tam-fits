@@ -34,9 +34,9 @@ package nom.tam.util;
 public class BufferPointer {
 
     /**
-     * The current offset into the buffer
+     * The data buffer.
      */
-    protected int bufferOffset;
+    protected byte[] buffer;
 
     /**
      * The number of valid characters in the buffer
@@ -44,14 +44,15 @@ public class BufferPointer {
     protected int bufferLength;
 
     /**
-     * The data buffer.
+     * The current offset into the buffer
      */
-    protected byte[] buffer;
+    protected int bufferOffset;
 
-    protected void init(int bufferSize) {
+    protected BufferPointer init(int bufferSize) {
         this.buffer = new byte[bufferSize];
         this.bufferOffset = 0;
         this.bufferLength = 0;
+        return this;
     }
 
     protected void invalidate() {
