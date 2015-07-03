@@ -120,13 +120,19 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
         }
     };
 
-    /** The underlying access to the file system */
+    /**
+     * The underlying access to the file system
+     */
     private final RandomAccessFile randomAccessFile;
 
-    /** The offset of the beginning of the current dataBuffer.buffer */
+    /**
+     * The offset of the beginning of the current dataBuffer.buffer
+     */
     private long fileOffset;
 
-    /** Is the dataBuffer.buffer being used for input or output */
+    /**
+     * Is the dataBuffer.buffer being used for input or output
+     */
     private boolean doingInput;
 
     /**
@@ -297,8 +303,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
         if (!this.doingInput && this.bufferPointer.bufferOffset > 0) {
             this.randomAccessFile.write(this.bufferPointer.buffer, 0, this.bufferPointer.bufferOffset);
             this.fileOffset += this.bufferPointer.bufferOffset;
-            this.bufferPointer.bufferOffset = 0;
-            this.bufferPointer.bufferLength = 0;
+            this.bufferPointer.invalidate();
         }
     }
 
@@ -363,11 +368,8 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
         if (this.doingInput) {
             this.fileOffset += this.bufferPointer.bufferOffset;
             this.randomAccessFile.seek(this.fileOffset);
-
             this.doingInput = false;
-
-            this.bufferPointer.bufferOffset = 0;
-            this.bufferPointer.bufferLength = 0;
+            this.bufferPointer.invalidate();
         }
 
         if (this.bufferPointer.bufferOffset + need >= this.bufferPointer.buffer.length) {
@@ -606,7 +608,6 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the resizing of the underlying stream fails
      */
     public void setLength(long newLength) throws IOException {
-
         flush();
         this.randomAccessFile.setLength(newLength);
         if (newLength < this.fileOffset) {
@@ -616,7 +617,6 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public long skip(long offset) throws IOException {
-
         if (offset > 0 && this.fileOffset + this.bufferPointer.bufferOffset + offset > this.randomAccessFile.length()) {
             offset = this.randomAccessFile.length() - this.fileOffset - this.bufferPointer.bufferOffset;
             seek(this.randomAccessFile.length());
@@ -665,7 +665,6 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public void write(byte[] buf, int offset, int length) throws IOException {
-
         if (length < this.bufferPointer.buffer.length) {
             /* If we can use the dataBuffer.buffer do so... */
             needBuffer(length);
@@ -678,11 +677,8 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
              * is clean when we're done.
              */
             flush();
-
             this.randomAccessFile.write(buf, offset, length);
-
             this.fileOffset += length;
-
             this.doingInput = false;
             this.bufferPointer.invalidate();
         }
@@ -790,11 +786,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public void writeChars(String s) throws IOException {
-
-        int len = s.length();
-        for (int i = 0; i < len; i++) {
-            this.dataEncoder.writeChar(s.charAt(i));
-        }
+        this.dataEncoder.writeChars(s);
     }
 
     @Override
@@ -819,7 +811,6 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public void writeShort(int s) throws IOException {
-
         this.dataEncoder.writeShort(s);
     }
 

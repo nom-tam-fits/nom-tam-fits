@@ -161,6 +161,13 @@ public abstract class BufferEncoder {
         this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) c;
     }
 
+    protected void writeChars(String s) throws IOException {
+        int len = s.length();
+        for (int i = 0; i < len; i++) {
+            writeChar(s.charAt(i));
+        }
+    }
+
     protected void writeInt(int i) throws IOException {
         needBuffer(FitsIO.BYTES_IN_INTEGER);
         this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (i >>> FitsIO.BITS_OF_3_BYTES);
