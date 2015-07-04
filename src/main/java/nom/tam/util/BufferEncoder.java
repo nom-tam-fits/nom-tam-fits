@@ -58,14 +58,12 @@ public abstract class BufferEncoder {
     protected abstract void write(byte[] buf, int offset, int length) throws IOException;
 
     protected void write(char[] c, int start, int length) throws IOException {
-
         for (int i = start; i < start + length; i++) {
             writeChar(c[i]);
         }
     }
 
     protected void write(double[] d, int start, int length) throws IOException {
-
         for (int i = start; i < start + length; i++) {
             writeLong(Double.doubleToLongBits(d[i]));
         }
@@ -84,14 +82,12 @@ public abstract class BufferEncoder {
     }
 
     protected void write(long[] l, int start, int length) throws IOException {
-
         for (int i = start; i < start + length; i++) {
             writeLong(l[i]);
         }
     }
 
     protected void write(short[] s, int start, int length) throws IOException {
-
         for (int i = start; i < start + length; i++) {
             writeShort(s[i]);
         }
@@ -166,6 +162,14 @@ public abstract class BufferEncoder {
         for (int i = 0; i < len; i++) {
             writeChar(s.charAt(i));
         }
+    }
+
+    protected void writeDouble(double d) throws IOException {
+        writeLong(Double.doubleToLongBits(d));
+    }
+
+    protected void writeFloat(float f) throws IOException {
+        writeInt(Float.floatToIntBits(f));
     }
 
     protected void writeInt(int i) throws IOException {

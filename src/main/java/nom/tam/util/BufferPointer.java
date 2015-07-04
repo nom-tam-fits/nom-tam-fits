@@ -1,5 +1,7 @@
 package nom.tam.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -47,6 +49,14 @@ public class BufferPointer {
      * The current offset into the buffer
      */
     protected int bufferOffset;
+
+    public BufferPointer() {
+    }
+
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
+    public BufferPointer(byte[] buffer) {
+        this.buffer = buffer;
+    }
 
     protected BufferPointer init(int bufferSize) {
         this.buffer = new byte[bufferSize];

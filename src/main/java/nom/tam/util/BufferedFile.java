@@ -791,12 +791,12 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public void writeDouble(double d) throws IOException {
-        this.dataEncoder.writeLong(Double.doubleToLongBits(d));
+        this.dataEncoder.writeDouble(d);
     }
 
     @Override
     public void writeFloat(float f) throws IOException {
-        this.dataEncoder.writeInt(Float.floatToIntBits(f));
+        this.dataEncoder.writeFloat(f);
     }
 
     @Override
