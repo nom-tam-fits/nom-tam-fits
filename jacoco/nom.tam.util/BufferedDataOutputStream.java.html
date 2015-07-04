@@ -36,7 +36,6 @@ import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 
 /**
  * This class is intended for high performance I/O in scientific applications.
@@ -61,6 +60,25 @@ import java.lang.reflect.Array;
  */
 public class BufferedDataOutputStream extends BufferedOutputStream implements ArrayDataOutput {
 
+<span class="fc" id="L63">    private final BufferPointer bufferPointer = new BufferPointer(this.buf);</span>
+
+<span class="fc" id="L65">    private final BufferEncoder bufferEncoder = new BufferEncoder(this.bufferPointer) {</span>
+
+        @Override
+        protected void needBuffer(int need) throws IOException {
+<span class="fc" id="L69">            BufferedDataOutputStream.this.checkBuf(need);</span>
+<span class="fc" id="L70">            BufferedDataOutputStream.this.bufferPointer.bufferLength = BufferedDataOutputStream.this.count;</span>
+<span class="fc" id="L71">            BufferedDataOutputStream.this.bufferPointer.bufferOffset = BufferedDataOutputStream.this.count;</span>
+<span class="fc" id="L72">            BufferedDataOutputStream.this.count += need;</span>
+<span class="fc" id="L73">        }</span>
+
+        @Override
+        protected void write(byte[] buf, int offset, int length) throws IOException {
+<span class="fc" id="L77">            BufferedDataOutputStream.this.write(buf, offset, length);</span>
+
+<span class="fc" id="L79">        }</span>
+    };
+
     /**
      * Use the BufferedOutputStream constructor
      * 
@@ -68,8 +86,8 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
      *            An open output stream.
      */
     public BufferedDataOutputStream(OutputStream o) {
-<span class="fc" id="L71">        super(o, DEFAULT_BUFFER_SIZE);</span>
-<span class="fc" id="L72">    }</span>
+<span class="fc" id="L89">        super(o, FitsIO.DEFAULT_BUFFER_SIZE);</span>
+<span class="fc" id="L90">    }</span>
 
     /**
      * Use the BufferedOutputStream constructor
@@ -80,8 +98,8 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
      *            The buffer size.
      */
     public BufferedDataOutputStream(OutputStream o, int bufLength) {
-<span class="fc" id="L83">        super(o, bufLength);</span>
-<span class="fc" id="L84">    }</span>
+<span class="fc" id="L101">        super(o, bufLength);</span>
+<span class="fc" id="L102">    }</span>
 
     /**
      * See if there is enough space to add something to the buffer.
@@ -93,48 +111,30 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
      */
     protected void checkBuf(int need) throws IOException {
 
-<span class="fc bfc" id="L96" title="All 2 branches covered.">        if (this.count + need &gt; this.buf.length) {</span>
-<span class="fc" id="L97">            this.out.write(this.buf, 0, this.count);</span>
-<span class="fc" id="L98">            this.count = 0;</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (this.count + need &gt; this.buf.length) {</span>
+<span class="fc" id="L115">            this.out.write(this.buf, 0, this.count);</span>
+<span class="fc" id="L116">            this.count = 0;</span>
         }
-<span class="fc" id="L100">    }</span>
+<span class="fc" id="L118">    }</span>
 
     @Override
     public void write(boolean[] b) throws IOException {
-<span class="fc" id="L104">        write(b, 0, b.length);</span>
-<span class="fc" id="L105">    }</span>
+<span class="fc" id="L122">        write(b, 0, b.length);</span>
+<span class="fc" id="L123">    }</span>
 
     @Override
-    public void write(boolean[] b, int start, int len) throws IOException {
-
-<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (int i = start; i &lt; start + len; i++) {</span>
-
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">            if (this.count + 1 &gt; this.buf.length) {</span>
-<span class="nc" id="L113">                checkBuf(1);</span>
-            }
-<span class="fc bfc" id="L115" title="All 2 branches covered.">            if (b[i]) {</span>
-<span class="fc" id="L116">                this.buf[this.count++] = 1;</span>
-            } else {
-<span class="fc" id="L118">                this.buf[this.count++] = 0;</span>
-            }
-        }
-<span class="fc" id="L121">    }</span>
+    public void write(boolean[] b, int start, int length) throws IOException {
+<span class="fc" id="L127">        this.bufferEncoder.write(b, start, length);</span>
+<span class="fc" id="L128">    }</span>
 
     @Override
     public void write(char[] c) throws IOException {
-<span class="fc" id="L125">        write(c, 0, c.length);</span>
-<span class="fc" id="L126">    }</span>
+<span class="fc" id="L132">        write(c, 0, c.length);</span>
+<span class="fc" id="L133">    }</span>
 
     @Override
-    public void write(char[] c, int start, int len) throws IOException {
-
-<span class="fc bfc" id="L131" title="All 2 branches covered.">        for (int i = start; i &lt; start + len; i++) {</span>
-<span class="pc bpc" id="L132" title="1 of 2 branches missed.">            if (this.count + 2 &gt; this.buf.length) {</span>
-<span class="nc" id="L133">                checkBuf(2);</span>
-            }
-<span class="fc" id="L135">            this.buf[this.count++] = (byte) (c[i] &gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L136">            this.buf[this.count++] = (byte) c[i];</span>
-        }
+    public void write(char[] c, int start, int length) throws IOException {
+<span class="fc" id="L137">        this.bufferEncoder.write(c, start, length);</span>
 <span class="fc" id="L138">    }</span>
 
     @Override
@@ -143,254 +143,113 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 <span class="fc" id="L143">    }</span>
 
     @Override
-    public void write(double[] d, int start, int len) throws IOException {
-
-<span class="fc bfc" id="L148" title="All 2 branches covered.">        for (int i = start; i &lt; start + len; i++) {</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">            if (this.count + BITS_OF_1_BYTE &gt; this.buf.length) {</span>
-<span class="fc" id="L150">                checkBuf(BITS_OF_1_BYTE);</span>
-            }
-<span class="fc" id="L152">            long t = Double.doubleToLongBits(d[i]);</span>
-
-<span class="fc" id="L154">            int ix = (int) (t &gt;&gt;&gt; BITS_OF_4_BYTES);</span>
-
-<span class="fc" id="L156">            this.buf[this.count++] = (byte) (ix &gt;&gt;&gt; BITS_OF_3_BYTES);</span>
-<span class="fc" id="L157">            this.buf[this.count++] = (byte) (ix &gt;&gt;&gt; BITS_OF_2_BYTES);</span>
-<span class="fc" id="L158">            this.buf[this.count++] = (byte) (ix &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L159">            this.buf[this.count++] = (byte) ix;</span>
-
-<span class="fc" id="L161">            ix = (int) t;</span>
-
-<span class="fc" id="L163">            this.buf[this.count++] = (byte) (ix &gt;&gt;&gt; BITS_OF_3_BYTES);</span>
-<span class="fc" id="L164">            this.buf[this.count++] = (byte) (ix &gt;&gt;&gt; BITS_OF_2_BYTES);</span>
-<span class="fc" id="L165">            this.buf[this.count++] = (byte) (ix &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L166">            this.buf[this.count++] = (byte) ix;</span>
-        }
-
-<span class="fc" id="L169">    }</span>
+    public void write(double[] d, int start, int length) throws IOException {
+<span class="fc" id="L147">        this.bufferEncoder.write(d, start, length);</span>
+<span class="fc" id="L148">    }</span>
 
     @Override
     public void write(float[] f) throws IOException {
-<span class="fc" id="L173">        write(f, 0, f.length);</span>
-<span class="fc" id="L174">    }</span>
+<span class="fc" id="L152">        write(f, 0, f.length);</span>
+<span class="fc" id="L153">    }</span>
 
     @Override
-    public void write(float[] f, int start, int len) throws IOException {
-
-<span class="fc bfc" id="L179" title="All 2 branches covered.">        for (int i = start; i &lt; start + len; i++) {</span>
-
-<span class="fc bfc" id="L181" title="All 2 branches covered.">            if (this.count + BYTES_IN_FLOAT &gt; this.buf.length) {</span>
-<span class="fc" id="L182">                checkBuf(BYTES_IN_FLOAT);</span>
-            }
-<span class="fc" id="L184">            int t = Float.floatToIntBits(f[i]);</span>
-<span class="fc" id="L185">            this.buf[this.count++] = (byte) (t &gt;&gt;&gt; BITS_OF_3_BYTES);</span>
-<span class="fc" id="L186">            this.buf[this.count++] = (byte) (t &gt;&gt;&gt; BITS_OF_2_BYTES);</span>
-<span class="fc" id="L187">            this.buf[this.count++] = (byte) (t &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L188">            this.buf[this.count++] = (byte) t;</span>
-        }
-<span class="fc" id="L190">    }</span>
+    public void write(float[] f, int start, int length) throws IOException {
+<span class="fc" id="L157">        this.bufferEncoder.write(f, start, length);</span>
+<span class="fc" id="L158">    }</span>
 
     @Override
     public void write(int[] i) throws IOException {
-<span class="fc" id="L194">        write(i, 0, i.length);</span>
-<span class="fc" id="L195">    }</span>
+<span class="fc" id="L162">        write(i, 0, i.length);</span>
+<span class="fc" id="L163">    }</span>
 
     @Override
-    public void write(int[] i, int start, int len) throws IOException {
-
-<span class="fc bfc" id="L200" title="All 2 branches covered.">        for (int ii = start; ii &lt; start + len; ii++) {</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">            if (this.count + BYTES_IN_INTEGER &gt; this.buf.length) {</span>
-<span class="fc" id="L202">                checkBuf(BYTES_IN_INTEGER);</span>
-            }
-
-<span class="fc" id="L205">            this.buf[this.count++] = (byte) (i[ii] &gt;&gt;&gt; BITS_OF_3_BYTES);</span>
-<span class="fc" id="L206">            this.buf[this.count++] = (byte) (i[ii] &gt;&gt;&gt; BITS_OF_2_BYTES);</span>
-<span class="fc" id="L207">            this.buf[this.count++] = (byte) (i[ii] &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L208">            this.buf[this.count++] = (byte) i[ii];</span>
-
-        }
-
-<span class="fc" id="L212">    }</span>
+    public void write(int[] i, int start, int length) throws IOException {
+<span class="fc" id="L167">        this.bufferEncoder.write(i, start, length);</span>
+<span class="fc" id="L168">    }</span>
 
     @Override
     public void write(long[] l) throws IOException {
-<span class="fc" id="L216">        write(l, 0, l.length);</span>
-<span class="fc" id="L217">    }</span>
+<span class="fc" id="L172">        write(l, 0, l.length);</span>
+<span class="fc" id="L173">    }</span>
 
     @Override
-    public void write(long[] l, int start, int len) throws IOException {
-
-<span class="fc bfc" id="L222" title="All 2 branches covered.">        for (int i = start; i &lt; start + len; i++) {</span>
-<span class="fc bfc" id="L223" title="All 2 branches covered.">            if (this.count + BYTES_IN_LONG &gt; this.buf.length) {</span>
-<span class="fc" id="L224">                checkBuf(BYTES_IN_LONG);</span>
-            }
-<span class="fc" id="L226">            int t = (int) (l[i] &gt;&gt;&gt; BITS_OF_4_BYTES);</span>
-
-<span class="fc" id="L228">            this.buf[this.count++] = (byte) (t &gt;&gt;&gt; BITS_OF_3_BYTES);</span>
-<span class="fc" id="L229">            this.buf[this.count++] = (byte) (t &gt;&gt;&gt; BITS_OF_2_BYTES);</span>
-<span class="fc" id="L230">            this.buf[this.count++] = (byte) (t &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L231">            this.buf[this.count++] = (byte) t;</span>
-
-<span class="fc" id="L233">            t = (int) l[i];</span>
-
-<span class="fc" id="L235">            this.buf[this.count++] = (byte) (t &gt;&gt;&gt; BITS_OF_3_BYTES);</span>
-<span class="fc" id="L236">            this.buf[this.count++] = (byte) (t &gt;&gt;&gt; BITS_OF_2_BYTES);</span>
-<span class="fc" id="L237">            this.buf[this.count++] = (byte) (t &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L238">            this.buf[this.count++] = (byte) t;</span>
-        }
-<span class="fc" id="L240">    }</span>
+    public void write(long[] l, int start, int length) throws IOException {
+<span class="fc" id="L177">        this.bufferEncoder.write(l, start, length);</span>
+<span class="fc" id="L178">    }</span>
 
     @Override
     public void write(short[] s) throws IOException {
-<span class="fc" id="L244">        write(s, 0, s.length);</span>
-<span class="fc" id="L245">    }</span>
+<span class="fc" id="L182">        write(s, 0, s.length);</span>
+<span class="fc" id="L183">    }</span>
 
     @Override
-    public void write(short[] s, int start, int len) throws IOException {
-
-<span class="fc bfc" id="L250" title="All 2 branches covered.">        for (int i = start; i &lt; start + len; i++) {</span>
-<span class="fc bfc" id="L251" title="All 2 branches covered.">            if (this.count + BYTES_IN_SHORT &gt; this.buf.length) {</span>
-<span class="fc" id="L252">                checkBuf(BYTES_IN_SHORT);</span>
-            }
-<span class="fc" id="L254">            this.buf[this.count++] = (byte) (s[i] &gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L255">            this.buf[this.count++] = (byte) s[i];</span>
-        }
-<span class="fc" id="L257">    }</span>
+    public void write(short[] s, int start, int length) throws IOException {
+<span class="fc" id="L187">        this.bufferEncoder.write(s, start, length);</span>
+<span class="fc" id="L188">    }</span>
 
     @Override
     public void write(String[] s) throws IOException {
-<span class="nc" id="L261">        write(s, 0, s.length);</span>
-<span class="nc" id="L262">    }</span>
+<span class="nc" id="L192">        write(s, 0, s.length);</span>
+<span class="nc" id="L193">    }</span>
 
     @Override
     public void write(String[] s, int start, int len) throws IOException {
         // Do not worry about buffering this specially since the
         // strings may be of differing lengths.
-<span class="nc bnc" id="L268" title="All 2 branches missed.">        for (String element : s) {</span>
-<span class="nc" id="L269">            writeBytes(element);</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">        for (String element : s) {</span>
+<span class="nc" id="L200">            writeBytes(element);</span>
         }
-<span class="nc" id="L271">    }</span>
+<span class="nc" id="L202">    }</span>
 
     @Override
     public void writeArray(Object o) throws IOException {
-<span class="pc bpc" id="L275" title="1 of 2 branches missed.">        if (!o.getClass().isArray()) {</span>
-<span class="nc" id="L276">            throw new IOException(&quot;Invalid object passed to BufferedDataOutputStream.write&quot; + o.getClass().getName());</span>
-        }
-<span class="fc" id="L278">        int length = Array.getLength(o);</span>
-        // Is this a multidimensional array? If so process recursiv
-<span class="fc bfc" id="L280" title="All 2 branches covered.">        if (o.getClass().getComponentType().isArray()) {</span>
-<span class="fc bfc" id="L281" title="All 2 branches covered.">            for (int i = 0; i &lt; length; i++) {</span>
-<span class="fc" id="L282">                writeArray(Array.get(o, i));</span>
-            }
-        } else {
-<span class="fc bfc" id="L285" title="All 2 branches covered.">            if (o instanceof boolean[]) {</span>
-<span class="fc" id="L286">                write((boolean[]) o, 0, length);</span>
-<span class="fc bfc" id="L287" title="All 2 branches covered.">            } else if (o instanceof byte[]) {</span>
-<span class="fc" id="L288">                write((byte[]) o, 0, length);</span>
-<span class="fc bfc" id="L289" title="All 2 branches covered.">            } else if (o instanceof char[]) {</span>
-<span class="fc" id="L290">                write((char[]) o, 0, length);</span>
-<span class="fc bfc" id="L291" title="All 2 branches covered.">            } else if (o instanceof short[]) {</span>
-<span class="fc" id="L292">                write((short[]) o, 0, length);</span>
-<span class="fc bfc" id="L293" title="All 2 branches covered.">            } else if (o instanceof int[]) {</span>
-<span class="fc" id="L294">                write((int[]) o, 0, length);</span>
-<span class="fc bfc" id="L295" title="All 2 branches covered.">            } else if (o instanceof long[]) {</span>
-<span class="fc" id="L296">                write((long[]) o, 0, length);</span>
-<span class="fc bfc" id="L297" title="All 2 branches covered.">            } else if (o instanceof float[]) {</span>
-<span class="fc" id="L298">                write((float[]) o, 0, length);</span>
-<span class="pc bpc" id="L299" title="1 of 2 branches missed.">            } else if (o instanceof double[]) {</span>
-<span class="fc" id="L300">                write((double[]) o, 0, length);</span>
-<span class="nc bnc" id="L301" title="All 2 branches missed.">            } else if (o instanceof String[]) {</span>
-<span class="nc" id="L302">                write((String[]) o, 0, length);</span>
-            } else {
-<span class="nc bnc" id="L304" title="All 2 branches missed.">                for (int i = 0; i &lt; length; i++) {</span>
-<span class="nc" id="L305">                    writeArray(Array.get(o, i));</span>
-                }
-            }
-        }
-<span class="fc" id="L309">    }</span>
+<span class="fc" id="L206">        this.bufferEncoder.writeArray(o);</span>
+<span class="fc" id="L207">    }</span>
 
     @Override
     public void writeBoolean(boolean b) throws IOException {
-<span class="fc" id="L313">        checkBuf(BYTES_IN_BOOLEAN);</span>
-<span class="fc bfc" id="L314" title="All 2 branches covered.">        if (b) {</span>
-<span class="fc" id="L315">            this.buf[this.count++] = 1;</span>
-        } else {
-<span class="fc" id="L317">            this.buf[this.count++] = 0;</span>
-        }
-<span class="fc" id="L319">    }</span>
+<span class="fc" id="L211">        this.bufferEncoder.writeBoolean(b);</span>
+<span class="fc" id="L212">    }</span>
 
     @Override
     public void writeByte(int b) throws IOException {
-<span class="fc" id="L323">        checkBuf(BYTES_IN_BYTE);</span>
-<span class="fc" id="L324">        this.buf[this.count++] = (byte) b;</span>
-<span class="fc" id="L325">    }</span>
+<span class="fc" id="L216">        this.bufferEncoder.writeByte(b);</span>
+<span class="fc" id="L217">    }</span>
 
     @Override
     public void writeBytes(String s) throws IOException {
-<span class="fc" id="L329">        write(AsciiFuncs.getBytes(s), 0, s.length());</span>
-<span class="fc" id="L330">    }</span>
+<span class="fc" id="L221">        write(AsciiFuncs.getBytes(s), 0, s.length());</span>
+<span class="fc" id="L222">    }</span>
 
     @Override
     public void writeChar(int c) throws IOException {
-<span class="fc" id="L334">        checkBuf(BYTES_IN_CHAR);</span>
-<span class="fc" id="L335">        this.buf[this.count++] = (byte) (c &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L336">        this.buf[this.count++] = (byte) c;</span>
-<span class="fc" id="L337">    }</span>
+<span class="fc" id="L226">        this.bufferEncoder.writeChar(c);</span>
+<span class="fc" id="L227">    }</span>
 
     @Override
     public void writeChars(String s) throws IOException {
-
-<span class="nc bnc" id="L342" title="All 2 branches missed.">        for (int i = 0; i &lt; s.length(); i++) {</span>
-<span class="nc" id="L343">            writeChar(s.charAt(i));</span>
-        }
-<span class="nc" id="L345">    }</span>
+<span class="nc" id="L231">        this.bufferEncoder.writeChars(s);</span>
+<span class="nc" id="L232">    }</span>
 
     @Override
     public void writeDouble(double d) throws IOException {
-<span class="fc" id="L349">        checkBuf(BYTES_IN_DOUBLE);</span>
-<span class="fc" id="L350">        long l = Double.doubleToLongBits(d);</span>
-<span class="fc" id="L351">        this.buf[this.count++] = (byte) (l &gt;&gt;&gt; BITS_OF_7_BYTES);</span>
-<span class="fc" id="L352">        this.buf[this.count++] = (byte) (l &gt;&gt;&gt; BITS_OF_6_BYTES);</span>
-<span class="fc" id="L353">        this.buf[this.count++] = (byte) (l &gt;&gt;&gt; BITS_OF_5_BYTES);</span>
-<span class="fc" id="L354">        this.buf[this.count++] = (byte) (l &gt;&gt;&gt; BITS_OF_4_BYTES);</span>
-<span class="fc" id="L355">        this.buf[this.count++] = (byte) (l &gt;&gt;&gt; BITS_OF_3_BYTES);</span>
-<span class="fc" id="L356">        this.buf[this.count++] = (byte) (l &gt;&gt;&gt; BITS_OF_2_BYTES);</span>
-<span class="fc" id="L357">        this.buf[this.count++] = (byte) (l &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L358">        this.buf[this.count++] = (byte) l;</span>
-<span class="fc" id="L359">    }</span>
+<span class="fc" id="L236">        this.bufferEncoder.writeDouble(d);</span>
+<span class="fc" id="L237">    }</span>
 
     @Override
     public void writeFloat(float f) throws IOException {
-<span class="fc" id="L363">        checkBuf(BYTES_IN_FLOAT);</span>
-<span class="fc" id="L364">        int i = Float.floatToIntBits(f);</span>
-
-<span class="fc" id="L366">        this.buf[this.count++] = (byte) (i &gt;&gt;&gt; BITS_OF_3_BYTES);</span>
-<span class="fc" id="L367">        this.buf[this.count++] = (byte) (i &gt;&gt;&gt; BITS_OF_2_BYTES);</span>
-<span class="fc" id="L368">        this.buf[this.count++] = (byte) (i &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L369">        this.buf[this.count++] = (byte) i;</span>
-<span class="fc" id="L370">    }</span>
+<span class="fc" id="L241">        this.bufferEncoder.writeFloat(f);</span>
+<span class="fc" id="L242">    }</span>
 
     @Override
     public void writeInt(int i) throws IOException {
-<span class="fc" id="L374">        checkBuf(BYTES_IN_INTEGER);</span>
-<span class="fc" id="L375">        this.buf[this.count++] = (byte) (i &gt;&gt;&gt; BITS_OF_3_BYTES);</span>
-<span class="fc" id="L376">        this.buf[this.count++] = (byte) (i &gt;&gt;&gt; BITS_OF_2_BYTES);</span>
-<span class="fc" id="L377">        this.buf[this.count++] = (byte) (i &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L378">        this.buf[this.count++] = (byte) i;</span>
-<span class="fc" id="L379">    }</span>
+<span class="fc" id="L246">        this.bufferEncoder.writeInt(i);</span>
+<span class="fc" id="L247">    }</span>
 
     @Override
     public void writeLong(long l) throws IOException {
-<span class="fc" id="L383">        checkBuf(BYTES_IN_LONG);</span>
-
-<span class="fc" id="L385">        this.buf[this.count++] = (byte) (l &gt;&gt;&gt; BITS_OF_7_BYTES);</span>
-<span class="fc" id="L386">        this.buf[this.count++] = (byte) (l &gt;&gt;&gt; BITS_OF_6_BYTES);</span>
-<span class="fc" id="L387">        this.buf[this.count++] = (byte) (l &gt;&gt;&gt; BITS_OF_5_BYTES);</span>
-<span class="fc" id="L388">        this.buf[this.count++] = (byte) (l &gt;&gt;&gt; BITS_OF_4_BYTES);</span>
-<span class="fc" id="L389">        this.buf[this.count++] = (byte) (l &gt;&gt;&gt; BITS_OF_3_BYTES);</span>
-<span class="fc" id="L390">        this.buf[this.count++] = (byte) (l &gt;&gt;&gt; BITS_OF_2_BYTES);</span>
-<span class="fc" id="L391">        this.buf[this.count++] = (byte) (l &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L392">        this.buf[this.count++] = (byte) l;</span>
-<span class="fc" id="L393">    }</span>
+<span class="fc" id="L251">        this.bufferEncoder.writeLong(l);</span>
+<span class="fc" id="L252">    }</span>
 
     /**
      * Deprecated use {@link #writeArray(Object)}.
@@ -403,33 +262,29 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
      */
     @Deprecated
     public void writePrimitiveArray(Object o) throws IOException {
-<span class="fc" id="L406">        writeArray(o);</span>
-<span class="fc" id="L407">    }</span>
+<span class="fc" id="L265">        writeArray(o);</span>
+<span class="fc" id="L266">    }</span>
 
     /**
      * Write a short value.
      */
     @Override
     public void writeShort(int s) throws IOException {
-
-<span class="fc" id="L415">        checkBuf(BYTES_IN_SHORT);</span>
-<span class="fc" id="L416">        this.buf[this.count++] = (byte) (s &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L417">        this.buf[this.count++] = (byte) s;</span>
-
-<span class="fc" id="L419">    }</span>
+<span class="fc" id="L273">        this.bufferEncoder.writeShort(s);</span>
+<span class="fc" id="L274">    }</span>
 
     @Override
     public void writeUTF(String s) throws IOException {
         // Punt on this one and use standard routines.
-<span class="fc" id="L424">        DataOutputStream d = new DataOutputStream(this) {</span>
+<span class="fc" id="L279">        DataOutputStream d = new DataOutputStream(this) {</span>
 
             @Override
             public void close() throws IOException {
-<span class="fc" id="L428">                flush();</span>
-<span class="fc" id="L429">            }</span>
+<span class="fc" id="L283">                flush();</span>
+<span class="fc" id="L284">            }</span>
         };
-<span class="fc" id="L431">        d.writeUTF(s);</span>
-<span class="fc" id="L432">        d.close();</span>
-<span class="fc" id="L433">    }</span>
+<span class="fc" id="L286">        d.writeUTF(s);</span>
+<span class="fc" id="L287">        d.close();</span>
+<span class="fc" id="L288">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

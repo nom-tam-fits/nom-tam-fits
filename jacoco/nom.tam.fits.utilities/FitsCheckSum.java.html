@@ -31,16 +31,10 @@
  * #L%
  */
 
-import static nom.tam.util.FitsIO.BITS_OF_1_BYTE;
-import static nom.tam.util.FitsIO.BITS_OF_2_BYTES;
-import static nom.tam.util.FitsIO.BITS_OF_3_BYTES;
 import static nom.tam.util.FitsIO.BYTE_1_OF_LONG_MASK;
 import static nom.tam.util.FitsIO.BYTE_2_OF_LONG_MASK;
 import static nom.tam.util.FitsIO.BYTE_3_OF_LONG_MASK;
 import static nom.tam.util.FitsIO.BYTE_4_OF_LONG_MASK;
-import static nom.tam.util.FitsIO.HIGH_INTEGER_MASK;
-import static nom.tam.util.FitsIO.INTEGER_MASK;
-import static nom.tam.util.FitsIO.SHORT_OF_LONG_MASK;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -54,6 +48,7 @@ import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.header.Checksum;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.FitsIO;
 
 public final class FitsCheckSum {
 
@@ -62,14 +57,14 @@ public final class FitsCheckSum {
     /**
      * logger to log to.
      */
-<span class="fc" id="L65">    private static final Logger LOG = Logger.getLogger(FitsCheckSum.class.getName());</span>
+<span class="fc" id="L60">    private static final Logger LOG = Logger.getLogger(FitsCheckSum.class.getName());</span>
 
     private static final int CHECKSUM_BLOCK_SIZE = 4;
 
     private static final int CHECKSUM_HALF_BLOCK_SIZE = 2;
 
-<span class="fc" id="L71">    private FitsCheckSum() {</span>
-<span class="fc" id="L72">    }</span>
+<span class="fc" id="L66">    private FitsCheckSum() {</span>
+<span class="fc" id="L67">    }</span>
 
     /**
      * Calculate the Seaman-Pence 32-bit 1's complement checksum over the byte
@@ -91,39 +86,39 @@ public final class FitsCheckSum {
      * @since 2005-10-05
      */
     public static long checksum(final byte[] data) {
-<span class="fc" id="L94">        long hi = 0;</span>
-<span class="fc" id="L95">        long lo = 0;</span>
-<span class="fc" id="L96">        final int len = CHECKSUM_HALF_BLOCK_SIZE * (data.length / CHECKSUM_BLOCK_SIZE);</span>
+<span class="fc" id="L89">        long hi = 0;</span>
+<span class="fc" id="L90">        long lo = 0;</span>
+<span class="fc" id="L91">        final int len = CHECKSUM_HALF_BLOCK_SIZE * (data.length / CHECKSUM_BLOCK_SIZE);</span>
         // System.out.println(data.length + &quot; bytes&quot;) ;
-<span class="fc" id="L98">        final int remain = data.length % CHECKSUM_BLOCK_SIZE;</span>
-<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if (remain != 0) {</span>
-<span class="nc" id="L100">            throw new IllegalArgumentException(&quot;fits blocks always must be devidable by 4&quot;);</span>
+<span class="fc" id="L93">        final int remain = data.length % CHECKSUM_BLOCK_SIZE;</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">        if (remain != 0) {</span>
+<span class="nc" id="L95">            throw new IllegalArgumentException(&quot;fits blocks always must be devidable by 4&quot;);</span>
         }
         /*
          * a write(2) on Sparc/PA-RISC would write the MSB first, on Linux the
          * LSB; by some kind of coincidence, we can stay with the byte order
          * known from the original C version of the algorithm.
          */
-<span class="fc bfc" id="L107" title="All 2 branches covered.">        for (int i = 0; i &lt; len; i += CHECKSUM_HALF_BLOCK_SIZE) {</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (int i = 0; i &lt; len; i += CHECKSUM_HALF_BLOCK_SIZE) {</span>
             /*
              * The four bytes in this block handled by a single 'i' are each
              * signed (-128 to 127) in Java and need to be masked indivdually to
              * avoid sign extension /propagation.
              */
-<span class="fc" id="L113">            int offset = CHECKSUM_HALF_BLOCK_SIZE * i;</span>
-<span class="fc" id="L114">            hi += data[offset++] &lt;&lt; BITS_OF_1_BYTE &amp; BYTE_2_OF_LONG_MASK | data[offset++] &amp; BYTE_1_OF_LONG_MASK;</span>
-<span class="fc" id="L115">            lo += data[offset++] &lt;&lt; BITS_OF_1_BYTE &amp; BYTE_2_OF_LONG_MASK | data[offset++] &amp; BYTE_1_OF_LONG_MASK;</span>
+<span class="fc" id="L108">            int offset = CHECKSUM_HALF_BLOCK_SIZE * i;</span>
+<span class="fc" id="L109">            hi += data[offset++] &lt;&lt; FitsIO.BITS_OF_1_BYTE &amp; BYTE_2_OF_LONG_MASK | data[offset++] &amp; BYTE_1_OF_LONG_MASK;</span>
+<span class="fc" id="L110">            lo += data[offset++] &lt;&lt; FitsIO.BITS_OF_1_BYTE &amp; BYTE_2_OF_LONG_MASK | data[offset++] &amp; BYTE_1_OF_LONG_MASK;</span>
         }
 
-<span class="fc" id="L118">        long hicarry = hi &gt;&gt;&gt; BITS_OF_2_BYTES;</span>
-<span class="fc" id="L119">        long locarry = lo &gt;&gt;&gt; BITS_OF_2_BYTES;</span>
-<span class="pc bpc" id="L120" title="1 of 4 branches missed.">        while (hicarry != 0 || locarry != 0) {</span>
-<span class="fc" id="L121">            hi = (hi &amp; SHORT_OF_LONG_MASK) | locarry;</span>
-<span class="fc" id="L122">            lo = (lo &amp; SHORT_OF_LONG_MASK) | hicarry;</span>
-<span class="fc" id="L123">            hicarry = hi &gt;&gt;&gt; BITS_OF_2_BYTES;</span>
-<span class="fc" id="L124">            locarry = lo &gt;&gt;&gt; BITS_OF_2_BYTES;</span>
+<span class="fc" id="L113">        long hicarry = hi &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
+<span class="fc" id="L114">        long locarry = lo &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
+<span class="pc bpc" id="L115" title="1 of 4 branches missed.">        while (hicarry != 0 || locarry != 0) {</span>
+<span class="fc" id="L116">            hi = (hi &amp; FitsIO.SHORT_OF_LONG_MASK) | locarry;</span>
+<span class="fc" id="L117">            lo = (lo &amp; FitsIO.SHORT_OF_LONG_MASK) | hicarry;</span>
+<span class="fc" id="L118">            hicarry = hi &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
+<span class="fc" id="L119">            locarry = lo &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
         }
-<span class="fc" id="L126">        return (hi &lt;&lt; BITS_OF_2_BYTES) | lo;</span>
+<span class="fc" id="L121">        return (hi &lt;&lt; FitsIO.BITS_OF_2_BYTES) | lo;</span>
     }
 
     /**
@@ -139,8 +134,8 @@ public final class FitsCheckSum {
      * @return the encoded string of 16 bytes.
      */
     public static String checksumEnc(final long c, final boolean compl) {
-<span class="fc" id="L142">        byte[] asc = new byte[CHECKSUM_STRING_SIZE];</span>
-<span class="fc" id="L143">        final int[] exclude = {</span>
+<span class="fc" id="L137">        byte[] asc = new byte[CHECKSUM_STRING_SIZE];</span>
+<span class="fc" id="L138">        final int[] exclude = {</span>
             0x3a,
             0x3b,
             0x3c,
@@ -155,48 +150,48 @@ public final class FitsCheckSum {
             0x5f,
             0x60
         };
-<span class="fc" id="L158">        final long[] mask = {</span>
+<span class="fc" id="L153">        final long[] mask = {</span>
             BYTE_4_OF_LONG_MASK,
             BYTE_3_OF_LONG_MASK,
             BYTE_2_OF_LONG_MASK,
             BYTE_1_OF_LONG_MASK
         };
-<span class="fc" id="L164">        final int offset = 0x30; /* ASCII 0 (zero */</span>
-<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        final long value = compl ? ~c : c;</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">        for (int i = 0; i &lt; CHECKSUM_BLOCK_SIZE; i++) {</span>
+<span class="fc" id="L159">        final int offset = 0x30; /* ASCII 0 (zero */</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">        final long value = compl ? ~c : c;</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">        for (int i = 0; i &lt; CHECKSUM_BLOCK_SIZE; i++) {</span>
             // each byte becomes four
-<span class="fc" id="L168">            final int byt = (int) ((value &amp; mask[i]) &gt;&gt;&gt; BITS_OF_3_BYTES - BITS_OF_1_BYTE * i);</span>
-<span class="fc" id="L169">            final int quotient = byt / CHECKSUM_BLOCK_SIZE + offset;</span>
-<span class="fc" id="L170">            final int remainder = byt % CHECKSUM_BLOCK_SIZE;</span>
-<span class="fc" id="L171">            int[] ch = new int[CHECKSUM_BLOCK_SIZE];</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">            for (int j = 0; j &lt; CHECKSUM_BLOCK_SIZE; j++) {</span>
-<span class="fc" id="L173">                ch[j] = quotient;</span>
+<span class="fc" id="L163">            final int byt = (int) ((value &amp; mask[i]) &gt;&gt;&gt; FitsIO.BITS_OF_3_BYTES - FitsIO.BITS_OF_1_BYTE * i);</span>
+<span class="fc" id="L164">            final int quotient = byt / CHECKSUM_BLOCK_SIZE + offset;</span>
+<span class="fc" id="L165">            final int remainder = byt % CHECKSUM_BLOCK_SIZE;</span>
+<span class="fc" id="L166">            int[] ch = new int[CHECKSUM_BLOCK_SIZE];</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">            for (int j = 0; j &lt; CHECKSUM_BLOCK_SIZE; j++) {</span>
+<span class="fc" id="L168">                ch[j] = quotient;</span>
             }
 
-<span class="fc" id="L176">            ch[0] += remainder;</span>
-<span class="fc" id="L177">            boolean check = true;</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">            while (check) {</span>
+<span class="fc" id="L171">            ch[0] += remainder;</span>
+<span class="fc" id="L172">            boolean check = true;</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">            while (check) {</span>
                 // avoid ASCII punctuation
-<span class="fc" id="L180">                check = false;</span>
-<span class="fc bfc" id="L181" title="All 2 branches covered.">                for (int element : exclude) {</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">                    for (int j = 0; j &lt; CHECKSUM_BLOCK_SIZE; j += CHECKSUM_HALF_BLOCK_SIZE) {</span>
-<span class="pc bpc" id="L183" title="2 of 4 branches missed.">                        if (ch[j] == element || ch[j + 1] == element) {</span>
-<span class="nc" id="L184">                            ch[j]++;</span>
-<span class="nc" id="L185">                            ch[j + 1]--;</span>
-<span class="nc" id="L186">                            check = true;</span>
+<span class="fc" id="L175">                check = false;</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">                for (int element : exclude) {</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">                    for (int j = 0; j &lt; CHECKSUM_BLOCK_SIZE; j += CHECKSUM_HALF_BLOCK_SIZE) {</span>
+<span class="fc bfc" id="L178" title="All 4 branches covered.">                        if (ch[j] == element || ch[j + 1] == element) {</span>
+<span class="fc" id="L179">                            ch[j]++;</span>
+<span class="fc" id="L180">                            ch[j + 1]--;</span>
+<span class="fc" id="L181">                            check = true;</span>
                         }
                     }
                 }
             }
 
-<span class="fc bfc" id="L192" title="All 2 branches covered.">            for (int j = 0; j &lt; CHECKSUM_BLOCK_SIZE; j++) {</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">            for (int j = 0; j &lt; CHECKSUM_BLOCK_SIZE; j++) {</span>
                 // assign the bytes
-<span class="fc" id="L194">                asc[CHECKSUM_BLOCK_SIZE * j + i] = (byte) ch[j];</span>
+<span class="fc" id="L189">                asc[CHECKSUM_BLOCK_SIZE * j + i] = (byte) ch[j];</span>
             }
         }
         // shift the bytes 1 to the right circularly.
-<span class="fc" id="L198">        String resul = AsciiFuncs.asciiString(asc, CHECKSUM_STRING_SIZE - 1, 1);</span>
-<span class="fc" id="L199">        return resul.concat(AsciiFuncs.asciiString(asc, 0, CHECKSUM_STRING_SIZE - 1));</span>
+<span class="fc" id="L193">        String resul = AsciiFuncs.asciiString(asc, CHECKSUM_STRING_SIZE - 1, 1);</span>
+<span class="fc" id="L194">        return resul.concat(AsciiFuncs.asciiString(asc, 0, CHECKSUM_STRING_SIZE - 1));</span>
     }
 
     /**
@@ -214,8 +209,8 @@ public final class FitsCheckSum {
          * problems with non.tam.fits.Header.checkCard() which otherwise says it
          * expected PCOUNT and found DATE.
          */
-<span class="fc" id="L217">        Header hdr = hdu.getHeader();</span>
-<span class="fc" id="L218">        hdr.deleteKey(Checksum.CHECKSUM.key());</span>
+<span class="fc" id="L212">        Header hdr = hdu.getHeader();</span>
+<span class="fc" id="L213">        hdr.deleteKey(Checksum.CHECKSUM.key());</span>
         /*
          * jThis would need org.nevec.utils.DateUtils compiled before
          * org.nevec.prima.fits .... final String doneAt =
@@ -224,8 +219,8 @@ public final class FitsCheckSum {
          * calculated and needs to be re-inserted again - with the same string -
          * when the second/final call to addValue() is made below.
          */
-<span class="fc" id="L227">        final String doneAt = HeaderCommentsMap.getComment(&quot;fits:checksum:1&quot;);</span>
-<span class="fc" id="L228">        hdr.addValue(Checksum.CHECKSUM.key(), &quot;0000000000000000&quot;, doneAt);</span>
+<span class="fc" id="L222">        final String doneAt = HeaderCommentsMap.getComment(&quot;fits:checksum:1&quot;);</span>
+<span class="fc" id="L223">        hdr.addValue(Checksum.CHECKSUM.key(), &quot;0000000000000000&quot;, doneAt);</span>
 
         /*
          * Convert the entire sequence of 2880 byte header cards into a byte
@@ -234,48 +229,49 @@ public final class FitsCheckSum {
          * (Linux/VAX/MIPS vs Hp-UX, Sparc...) supposed that the correct
          * implementation is in the write() interface.
          */
-<span class="fc" id="L237">        ByteArrayOutputStream hduByteImage = new ByteArrayOutputStream();</span>
-<span class="fc" id="L238">        BufferedDataOutputStream bdos = new BufferedDataOutputStream(hduByteImage);</span>
+<span class="fc" id="L232">        ByteArrayOutputStream hduByteImage = new ByteArrayOutputStream();</span>
+<span class="fc" id="L233">        BufferedDataOutputStream bdos = new BufferedDataOutputStream(hduByteImage);</span>
 
         // DATASUM keyword.
-<span class="fc" id="L241">        hdu.getData().write(bdos);</span>
+<span class="fc" id="L236">        hdu.getData().write(bdos);</span>
         try {
-<span class="fc" id="L243">            bdos.flush();</span>
-<span class="nc" id="L244">        } catch (IOException e) {</span>
-<span class="nc" id="L245">            LOG.log(Level.SEVERE, &quot;should not happen&quot;, e);</span>
-<span class="fc" id="L246">        }</span>
-<span class="fc" id="L247">        byte[] data = hduByteImage.toByteArray();</span>
-<span class="fc" id="L248">        checksum(data);</span>
-<span class="fc" id="L249">        hdu.write(new BufferedDataOutputStream(hduByteImage));</span>
-<span class="fc" id="L250">        long csd = checksum(data);</span>
-<span class="fc" id="L251">        hdu.getHeader().addValue(&quot;DATASUM&quot;, &quot;&quot; + csd, &quot;Checksum of data&quot;);</span>
+<span class="fc" id="L238">            bdos.flush();</span>
+<span class="nc" id="L239">        } catch (IOException e) {</span>
+<span class="nc" id="L240">            LOG.log(Level.SEVERE, &quot;should not happen&quot;, e);</span>
+<span class="fc" id="L241">        }</span>
+<span class="fc" id="L242">        byte[] data = hduByteImage.toByteArray();</span>
+<span class="fc" id="L243">        checksum(data);</span>
+<span class="fc" id="L244">        hdu.write(new BufferedDataOutputStream(hduByteImage));</span>
+<span class="fc" id="L245">        long csd = checksum(data);</span>
+<span class="fc" id="L246">        hdu.getHeader().addValue(&quot;DATASUM&quot;, &quot;&quot; + csd, &quot;Checksum of data&quot;);</span>
 
         // We already have the checsum of the data. Lets compute it for
         // the header.
-<span class="fc" id="L255">        hduByteImage.reset();</span>
-<span class="fc" id="L256">        hdu.getHeader().write(bdos);</span>
+<span class="fc" id="L250">        hduByteImage.reset();</span>
+<span class="fc" id="L251">        hdu.getHeader().write(bdos);</span>
         try {
-<span class="fc" id="L258">            bdos.flush();</span>
-<span class="nc" id="L259">        } catch (IOException e) {</span>
-<span class="nc" id="L260">            LOG.log(Level.SEVERE, &quot;should not happen&quot;, e);</span>
-<span class="fc" id="L261">        }</span>
-<span class="fc" id="L262">        data = hduByteImage.toByteArray();</span>
+<span class="fc" id="L253">            bdos.flush();</span>
+<span class="nc" id="L254">        } catch (IOException e) {</span>
+<span class="nc" id="L255">            LOG.log(Level.SEVERE, &quot;should not happen&quot;, e);</span>
+<span class="fc" id="L256">        }</span>
+<span class="fc" id="L257">        data = hduByteImage.toByteArray();</span>
 
-<span class="fc" id="L264">        long csh = checksum(data);</span>
+<span class="fc" id="L259">        long csh = checksum(data);</span>
 
-<span class="fc" id="L266">        long cshdu = csh + csd;</span>
+<span class="fc" id="L261">        long cshdu = csh + csd;</span>
         // If we had a carry it should go into the
         // beginning.
-<span class="pc bpc" id="L269" title="1 of 2 branches missed.">        while ((cshdu &amp; HIGH_INTEGER_MASK) != 0) {</span>
-<span class="nc" id="L270">            cshdu = (cshdu &amp; INTEGER_MASK) + 1;</span>
-        }
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">        while ((cshdu &amp; FitsIO.HIGH_INTEGER_MASK) != 0) {</span>
+<span class="nc" id="L265">            long cshduIntPart = cshdu &amp; FitsIO.INTEGER_MASK;</span>
+<span class="nc" id="L266">            cshdu = cshduIntPart + 1;</span>
+<span class="nc" id="L267">        }</span>
         /*
          * This time we do not use a deleteKey() to ensure that the keyword is
          * replaced &quot;in place&quot;. Note that the value of the checksum is actually
          * independent to a permutation of the 80-byte records within the
          * header.
          */
-<span class="fc" id="L278">        hdr.addValue(&quot;CHECKSUM&quot;, checksumEnc(cshdu, true), doneAt);</span>
-<span class="fc" id="L279">    }</span>
+<span class="fc" id="L274">        hdr.addValue(&quot;CHECKSUM&quot;, checksumEnc(cshdu, true), doneAt);</span>
+<span class="fc" id="L275">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

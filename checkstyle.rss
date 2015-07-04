@@ -25,7 +25,7 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;1996 - 2015 nom-tam-fits</copyright>
     <item>
-      <title>File: 88,
+      <title>File: 91,
              Errors: 0,
              Warnings: 0,
              Infos: 0
@@ -61,6 +61,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.FitsFactory.java">nom/tam/fits/FitsFactory.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.BufferEncoder.java">nom/tam/util/BufferEncoder.java</a>
                 </td>
                 <td>
                   0
@@ -215,6 +229,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.DataDescription.java">nom/tam/fits/header/DataDescription.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.BufferPointer.java">nom/tam/util/BufferPointer.java</a>
                 </td>
                 <td>
                   0
@@ -1209,6 +1237,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.utilities.FitsReader.java">nom/tam/fits/utilities/FitsReader.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.BufferDecoder.java">nom/tam/util/BufferDecoder.java</a>
                 </td>
                 <td>
                   0

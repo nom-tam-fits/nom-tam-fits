@@ -64,7 +64,6 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.lang.reflect.Array;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -72,34 +71,72 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     private static final int DEFAULT_BUFFER_SIZE = 32768;
 
-<span class="fc" id="L75">    private static final Logger LOG = Logger.getLogger(BufferedFile.class.getName());</span>
+<span class="fc" id="L74">    private static final Logger LOG = Logger.getLogger(BufferedFile.class.getName());</span>
 
-    /** The current offset into the buffer */
-    private int bufferOffset;
+<span class="fc" id="L76">    private final BufferPointer bufferPointer = new BufferPointer();</span>
 
-    /** The number of valid characters in the buffer */
-    private int bufferLength;
+<span class="fc" id="L78">    private final BufferDecoder dataDecoder = new BufferDecoder(this.bufferPointer) {</span>
 
-    /** The declared length of the buffer array */
-    private int bufferSize;
+        @Override
+        protected void checkBuffer(int needBytes) throws IOException {
+<span class="fc" id="L82">            BufferedFile.this.checkBuffer(needBytes);</span>
+<span class="fc" id="L83">        }</span>
 
-    /** Counter used in reading arrays */
-    private long primitiveArrayCount;
+        /**
+         * See if an exception should be thrown during an array read.
+         * 
+         * @param e
+         *            the eof exception that happened.
+         * @param start
+         *            the start index
+         * @param index
+         *            the current index
+         * @param length
+         *            the element length
+         * @return the number of bytes read before the end of file exception.
+         * @throws EOFException
+         *             if no extra bytes could be read
+         */
+        @Override
+        protected int eofCheck(EOFException e, int start, int index, int length) throws EOFException {
+<span class="nc bnc" id="L102" title="All 2 branches missed.">            if (start == index) {</span>
+<span class="nc" id="L103">                throw e;</span>
+            } else {
+<span class="nc" id="L105">                return (index - start) * length;</span>
+            }
+        }
+    };
 
-    /** The data buffer. */
-    private byte[] buffer;
+<span class="fc" id="L110">    private final BufferEncoder dataEncoder = new BufferEncoder(this.bufferPointer) {</span>
 
-    /** The underlying access to the file system */
-    private RandomAccessFile randomAccessFile;
+        @Override
+        protected void needBuffer(int needBytes) throws IOException {
+<span class="fc" id="L114">            BufferedFile.this.needBuffer(needBytes);</span>
+<span class="fc" id="L115">        }</span>
 
-    /** The offset of the beginning of the current buffer */
+        @Override
+        protected void write(byte[] buf, int offset, int length) throws IOException {
+<span class="fc" id="L119">            BufferedFile.this.write(buf, offset, length);</span>
+<span class="fc" id="L120">        }</span>
+    };
+
+    /**
+     * The underlying access to the file system
+     */
+    private final RandomAccessFile randomAccessFile;
+
+    /**
+     * The offset of the beginning of the current dataBuffer.buffer
+     */
     private long fileOffset;
 
-    /** Is the buffer being used for input or output */
+    /**
+     * Is the dataBuffer.buffer being used for input or output
+     */
     private boolean doingInput;
 
     /**
-     * marker position in the buffer.
+     * marker position in the dataBuffer.buffer.
      */
     private int bufferMarker;
 
@@ -112,8 +149,8 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the file could not be opened
      */
     public BufferedFile(File file) throws IOException {
-<span class="fc" id="L115">        this(file, &quot;r&quot;, DEFAULT_BUFFER_SIZE);</span>
-<span class="fc" id="L116">    }</span>
+<span class="fc" id="L152">        this(file, &quot;r&quot;, BufferedFile.DEFAULT_BUFFER_SIZE);</span>
+<span class="fc" id="L153">    }</span>
 
     /**
      * Create a buffered file from a File descriptor
@@ -126,8 +163,8 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the file could not be opened
      */
     public BufferedFile(File file, String mode) throws IOException {
-<span class="fc" id="L129">        this(file, mode, DEFAULT_BUFFER_SIZE);</span>
-<span class="fc" id="L130">    }</span>
+<span class="fc" id="L166">        this(file, mode, BufferedFile.DEFAULT_BUFFER_SIZE);</span>
+<span class="fc" id="L167">    }</span>
 
     /**
      * Create a buffered file from a file descriptor
@@ -137,18 +174,16 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      * @param mode
      *            the mode to open the file in
      * @param bufferSize
-     *            the buffer size to use
+     *            the dataBuffer.buffer size to use
      * @throws IOException
      *             if the file could not be opened
      */
-<span class="fc" id="L144">    public BufferedFile(File file, String mode, int bufferSize) throws IOException {</span>
-<span class="fc" id="L145">        this.randomAccessFile = new RandomAccessFile(file, mode);</span>
-<span class="fc" id="L146">        this.buffer = new byte[bufferSize];</span>
-<span class="fc" id="L147">        this.bufferOffset = 0;</span>
-<span class="fc" id="L148">        this.bufferLength = 0;</span>
-<span class="fc" id="L149">        this.fileOffset = 0;</span>
-<span class="fc" id="L150">        this.bufferSize = bufferSize;</span>
-<span class="fc" id="L151">    }</span>
+<span class="fc" id="L181">    public BufferedFile(File file, String mode, int bufferSize) throws IOException {</span>
+<span class="fc" id="L182">        this.randomAccessFile = new RandomAccessFile(file, mode);</span>
+<span class="fc" id="L183">        this.bufferPointer.init(bufferSize);</span>
+<span class="fc" id="L184">        this.fileOffset = 0;</span>
+
+<span class="fc" id="L186">    }</span>
 
     /**
      * Create a read-only buffered file
@@ -159,8 +194,8 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the file could not be opened
      */
     public BufferedFile(String filename) throws IOException {
-<span class="fc" id="L162">        this(filename, &quot;r&quot;, DEFAULT_BUFFER_SIZE);</span>
-<span class="fc" id="L163">    }</span>
+<span class="fc" id="L197">        this(filename, &quot;r&quot;, BufferedFile.DEFAULT_BUFFER_SIZE);</span>
+<span class="fc" id="L198">    }</span>
 
     /**
      * Create a buffered file with the given mode.
@@ -173,11 +208,12 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the file could not be opened
      */
     public BufferedFile(String filename, String mode) throws IOException {
-<span class="fc" id="L176">        this(filename, mode, DEFAULT_BUFFER_SIZE);</span>
-<span class="fc" id="L177">    }</span>
+<span class="fc" id="L211">        this(filename, mode, BufferedFile.DEFAULT_BUFFER_SIZE);</span>
+<span class="fc" id="L212">    }</span>
 
     /**
-     * Create a buffered file with the given mode and a specified buffer size.
+     * Create a buffered file with the given mode and a specified
+     * dataBuffer.buffer size.
      * 
      * @param filename
      *            The file to be accessed.
@@ -185,15 +221,15 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *            A string composed of &quot;r&quot; and &quot;w&quot; indicating read or write
      *            access.
      * @param bufferSize
-     *            The buffer size to be used. This should be substantially
-     *            larger than 100 bytes and defaults to 32768 bytes in the other
-     *            constructors.
+     *            The dataBuffer.buffer size to be used. This should be
+     *            substantially larger than 100 bytes and defaults to 32768
+     *            bytes in the other constructors.
      * @throws IOException
      *             if the file could not be opened
      */
     public BufferedFile(String filename, String mode, int bufferSize) throws IOException {
-<span class="fc" id="L195">        this(new File(filename), mode, bufferSize);</span>
-<span class="fc" id="L196">    }</span>
+<span class="fc" id="L231">        this(new File(filename), mode, bufferSize);</span>
+<span class="fc" id="L232">    }</span>
 
     /**
      * This should only be used when a small number of bytes is required
@@ -202,208 +238,74 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      * @param needBytes
      *            the number of bytes needed for the next operation.
      * @throws IOException
-     *             if the buffer could not be filled
+     *             if the dataBuffer.buffer could not be filled
      */
     private void checkBuffer(int needBytes) throws IOException {
 
-        // Check if the buffer has some pending output.
-<span class="pc bpc" id="L210" title="1 of 4 branches missed.">        if (!this.doingInput &amp;&amp; this.bufferOffset &gt; 0) {</span>
-<span class="nc" id="L211">            flush();</span>
+        // Check if the dataBuffer.buffer has some pending output.
+<span class="pc bpc" id="L246" title="1 of 4 branches missed.">        if (!this.doingInput &amp;&amp; this.bufferPointer.bufferOffset &gt; 0) {</span>
+<span class="nc" id="L247">            flush();</span>
         }
-<span class="fc" id="L213">        this.doingInput = true;</span>
+<span class="fc" id="L249">        this.doingInput = true;</span>
 
-<span class="fc bfc" id="L215" title="All 2 branches covered.">        if (this.bufferOffset + needBytes &lt; this.bufferLength) {</span>
-<span class="fc" id="L216">            return;</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">        if (this.bufferPointer.bufferOffset + needBytes &lt; this.bufferPointer.bufferLength) {</span>
+<span class="fc" id="L252">            return;</span>
         }
         /*
-         * Move the last few bytes to the beginning of the buffer and read in
-         * enough data to fill the current demand.
+         * Move the last few bytes to the beginning of the dataBuffer.buffer and
+         * read in enough data to fill the current demand.
          */
-<span class="fc" id="L222">        int len = this.bufferLength - this.bufferOffset;</span>
+<span class="fc" id="L258">        int len = this.bufferPointer.bufferLength - this.bufferPointer.bufferOffset;</span>
 
         /*
-         * Note that new location that the beginning of the buffer corresponds
-         * to.
+         * Note that new location that the beginning of the dataBuffer.buffer
+         * corresponds to.
          */
-<span class="fc" id="L228">        this.fileOffset += this.bufferOffset;</span>
-<span class="fc bfc" id="L229" title="All 2 branches covered.">        if (len &gt; 0) {</span>
-<span class="fc" id="L230">            System.arraycopy(this.buffer, this.bufferOffset, this.buffer, 0, len);</span>
+<span class="fc" id="L264">        this.fileOffset += this.bufferPointer.bufferOffset;</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">        if (len &gt; 0) {</span>
+<span class="fc" id="L266">            System.arraycopy(this.bufferPointer.buffer, this.bufferPointer.bufferOffset, this.bufferPointer.buffer, 0, len);</span>
         }
-<span class="fc" id="L232">        needBytes -= len;</span>
-<span class="fc" id="L233">        this.bufferLength = len;</span>
-<span class="fc" id="L234">        this.bufferOffset = 0;</span>
+<span class="fc" id="L268">        needBytes -= len;</span>
+<span class="fc" id="L269">        this.bufferPointer.bufferLength = len;</span>
+<span class="fc" id="L270">        this.bufferPointer.bufferOffset = 0;</span>
 
-<span class="fc bfc" id="L236" title="All 2 branches covered.">        while (needBytes &gt; 0) {</span>
-<span class="fc" id="L237">            len = this.randomAccessFile.read(this.buffer, this.bufferLength, this.bufferSize - this.bufferLength);</span>
-<span class="fc bfc" id="L238" title="All 2 branches covered.">            if (len &lt; 0) {</span>
-<span class="fc" id="L239">                throw new EOFException();</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">        while (needBytes &gt; 0) {</span>
+<span class="fc" id="L273">            len = this.randomAccessFile.read(this.bufferPointer.buffer, this.bufferPointer.bufferLength, this.bufferPointer.buffer.length - this.bufferPointer.bufferLength);</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">            if (len &lt; 0) {</span>
+<span class="fc" id="L275">                throw new EOFException();</span>
             }
-<span class="fc" id="L241">            needBytes -= len;</span>
-<span class="fc" id="L242">            this.bufferLength += len;</span>
+<span class="fc" id="L277">            needBytes -= len;</span>
+<span class="fc" id="L278">            this.bufferPointer.bufferLength += len;</span>
         }
-<span class="fc" id="L244">    }</span>
+<span class="fc" id="L280">    }</span>
 
     @Override
     public void close() throws IOException {
-<span class="fc" id="L248">        flush();</span>
-<span class="fc" id="L249">        this.randomAccessFile.close();</span>
-<span class="fc" id="L250">    }</span>
-
-    private void convertFromBoolean(boolean b) throws IOException {
-<span class="fc" id="L253">        needBuffer(BYTES_IN_BOOLEAN);</span>
-<span class="fc bfc" id="L254" title="All 2 branches covered.">        if (b) {</span>
-<span class="fc" id="L255">            this.buffer[this.bufferOffset] = (byte) 1;</span>
-        } else {
-<span class="fc" id="L257">            this.buffer[this.bufferOffset] = (byte) 0;</span>
-        }
-<span class="fc" id="L259">        this.bufferOffset++;</span>
-<span class="fc" id="L260">    }</span>
-
-    private void convertFromByte(int b) throws IOException {
-<span class="fc" id="L263">        needBuffer(BYTES_IN_BYTE);</span>
-<span class="fc" id="L264">        this.buffer[this.bufferOffset++] = (byte) b;</span>
-<span class="fc" id="L265">    }</span>
-
-    private void convertFromChar(int c) throws IOException {
-<span class="fc" id="L268">        needBuffer(BYTES_IN_CHAR);</span>
-<span class="fc" id="L269">        this.buffer[this.bufferOffset++] = (byte) (c &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L270">        this.buffer[this.bufferOffset++] = (byte) c;</span>
-<span class="fc" id="L271">    }</span>
-
-    private void convertFromInt(int i) throws IOException {
-<span class="fc" id="L274">        needBuffer(BYTES_IN_INTEGER);</span>
-<span class="fc" id="L275">        this.buffer[this.bufferOffset++] = (byte) (i &gt;&gt;&gt; BITS_OF_3_BYTES);</span>
-<span class="fc" id="L276">        this.buffer[this.bufferOffset++] = (byte) (i &gt;&gt;&gt; BITS_OF_2_BYTES);</span>
-<span class="fc" id="L277">        this.buffer[this.bufferOffset++] = (byte) (i &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L278">        this.buffer[this.bufferOffset++] = (byte) i;</span>
-<span class="fc" id="L279">    }</span>
-
-    private void convertFromLong(long l) throws IOException {
-<span class="fc" id="L282">        needBuffer(BYTES_IN_LONG);</span>
-<span class="fc" id="L283">        this.buffer[this.bufferOffset++] = (byte) (l &gt;&gt;&gt; BITS_OF_7_BYTES);</span>
-<span class="fc" id="L284">        this.buffer[this.bufferOffset++] = (byte) (l &gt;&gt;&gt; BITS_OF_6_BYTES);</span>
-<span class="fc" id="L285">        this.buffer[this.bufferOffset++] = (byte) (l &gt;&gt;&gt; BITS_OF_5_BYTES);</span>
-<span class="fc" id="L286">        this.buffer[this.bufferOffset++] = (byte) (l &gt;&gt;&gt; BITS_OF_4_BYTES);</span>
-<span class="fc" id="L287">        this.buffer[this.bufferOffset++] = (byte) (l &gt;&gt;&gt; BITS_OF_3_BYTES);</span>
-<span class="fc" id="L288">        this.buffer[this.bufferOffset++] = (byte) (l &gt;&gt;&gt; BITS_OF_2_BYTES);</span>
-<span class="fc" id="L289">        this.buffer[this.bufferOffset++] = (byte) (l &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L290">        this.buffer[this.bufferOffset++] = (byte) l;</span>
-<span class="fc" id="L291">    }</span>
-
-    private void convertFromShort(int s) throws IOException {
-<span class="fc" id="L294">        needBuffer(BYTES_IN_SHORT);</span>
-<span class="fc" id="L295">        this.buffer[this.bufferOffset++] = (byte) (s &gt;&gt;&gt; BITS_OF_1_BYTE);</span>
-<span class="fc" id="L296">        this.buffer[this.bufferOffset++] = (byte) s;</span>
-<span class="fc" id="L297">    }</span>
-
-    /**
-     * @return a boolean from the buffer
-     * @throws IOException
-     *             if the underlying operation fails
-     */
-    private boolean convertToBoolean() throws IOException {
-<span class="fc" id="L305">        checkBuffer(BYTES_IN_BOOLEAN);</span>
-<span class="fc bfc" id="L306" title="All 2 branches covered.">        return this.buffer[this.bufferOffset++] == 1;</span>
-    }
-
-    /**
-     * @return a char from the buffer
-     * @throws IOException
-     *             if the underlying operation fails
-     */
-    private char convertToChar() throws IOException {
-<span class="fc" id="L315">        checkBuffer(BYTES_IN_CHAR);</span>
-<span class="fc" id="L316">        return (char) (this.buffer[this.bufferOffset++] &lt;&lt; BITS_OF_1_BYTE | //</span>
-        this.buffer[this.bufferOffset++] &amp; BYTE_MASK);
-    }
-
-    /**
-     * @return an integer value from the buffer
-     * @throws IOException
-     *             if the underlying operation fails
-     */
-    private int convertToInt() throws IOException {
-<span class="fc" id="L326">        checkBuffer(BYTES_IN_INTEGER);</span>
-<span class="fc" id="L327">        return this.buffer[this.bufferOffset++] &lt;&lt; BITS_OF_3_BYTES | //</span>
-                (this.buffer[this.bufferOffset++] &amp; BYTE_MASK) &lt;&lt; BITS_OF_2_BYTES | //
-                (this.buffer[this.bufferOffset++] &amp; BYTE_MASK) &lt;&lt; BITS_OF_1_BYTE | //
-                this.buffer[this.bufferOffset++] &amp; BYTE_MASK;
-    }
-
-    /**
-     * @return a long value from the buffer
-     * @throws IOException
-     *             if the underlying operation fails
-     */
-    private long convertToLong() throws IOException {
-<span class="fc" id="L339">        checkBuffer(BYTES_IN_LONG);</span>
-<span class="fc" id="L340">        int i1 = this.buffer[this.bufferOffset++] &lt;&lt; BITS_OF_3_BYTES | //</span>
-                (this.buffer[this.bufferOffset++] &amp; BYTE_MASK) &lt;&lt; BITS_OF_2_BYTES | //
-                (this.buffer[this.bufferOffset++] &amp; BYTE_MASK) &lt;&lt; BITS_OF_1_BYTE | //
-                this.buffer[this.bufferOffset++] &amp; BYTE_MASK;
-<span class="fc" id="L344">        int i2 = this.buffer[this.bufferOffset++] &lt;&lt; BITS_OF_3_BYTES | //</span>
-                (this.buffer[this.bufferOffset++] &amp; BYTE_MASK) &lt;&lt; BITS_OF_2_BYTES | //
-                (this.buffer[this.bufferOffset++] &amp; BYTE_MASK) &lt;&lt; BITS_OF_1_BYTE | //
-                this.buffer[this.bufferOffset++] &amp; BYTE_MASK;
-<span class="fc" id="L348">        return (long) i1 &lt;&lt; BITS_OF_4_BYTES | i2 &amp; INTEGER_MASK;</span>
-    }
-
-    /**
-     * @return a short from the buffer
-     * @throws IOException
-     *             if the underlying operation fails
-     */
-    private short convertToShort() throws IOException {
-<span class="fc" id="L357">        checkBuffer(BYTES_IN_SHORT);</span>
-<span class="fc" id="L358">        return (short) (this.buffer[this.bufferOffset++] &lt;&lt; BITS_OF_1_BYTE | //</span>
-        this.buffer[this.bufferOffset++] &amp; BYTE_MASK);
-    }
-
-    /**
-     * See if an exception should be thrown during an array read.
-     * 
-     * @param e
-     *            the eof exception that happened.
-     * @param start
-     *            the start index
-     * @param index
-     *            the current index
-     * @param length
-     *            the element length
-     * @return the number of bytes read before the end of file exception.
-     * @throws EOFException
-     *             if no extra bytes could be read
-     */
-    private int eofCheck(EOFException e, int start, int index, int length) throws EOFException {
-<span class="nc bnc" id="L378" title="All 2 branches missed.">        if (start == index) {</span>
-<span class="nc" id="L379">            throw e;</span>
-        } else {
-<span class="nc" id="L381">            return (index - start) * length;</span>
-        }
-    }
+<span class="fc" id="L284">        flush();</span>
+<span class="fc" id="L285">        this.randomAccessFile.close();</span>
+<span class="fc" id="L286">    }</span>
 
     @Override
     protected void finalize() {
         try {
-<span class="fc bfc" id="L388" title="All 2 branches covered.">            if (getFD().valid()) {</span>
-<span class="fc" id="L389">                flush();</span>
-<span class="fc" id="L390">                close();</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">            if (getFD().valid()) {</span>
+<span class="fc" id="L292">                flush();</span>
+<span class="fc" id="L293">                close();</span>
             }
-<span class="fc" id="L392">        } catch (Exception e) {</span>
-<span class="fc" id="L393">            LOG.log(Level.SEVERE, &quot;could not finalize buffered file&quot;, e);</span>
-<span class="fc" id="L394">        }</span>
-<span class="fc" id="L395">    }</span>
+<span class="fc" id="L295">        } catch (Exception e) {</span>
+<span class="fc" id="L296">            BufferedFile.LOG.log(Level.SEVERE, &quot;could not finalize buffered file&quot;, e);</span>
+<span class="fc" id="L297">        }</span>
+<span class="fc" id="L298">    }</span>
 
     @Override
     public void flush() throws IOException {
 
-<span class="fc bfc" id="L400" title="All 4 branches covered.">        if (!this.doingInput &amp;&amp; this.bufferOffset &gt; 0) {</span>
-<span class="fc" id="L401">            this.randomAccessFile.write(this.buffer, 0, this.bufferOffset);</span>
-<span class="fc" id="L402">            this.fileOffset += this.bufferOffset;</span>
-<span class="fc" id="L403">            this.bufferOffset = 0;</span>
-<span class="fc" id="L404">            this.bufferLength = 0;</span>
+<span class="fc bfc" id="L303" title="All 4 branches covered.">        if (!this.doingInput &amp;&amp; this.bufferPointer.bufferOffset &gt; 0) {</span>
+<span class="fc" id="L304">            this.randomAccessFile.write(this.bufferPointer.buffer, 0, this.bufferPointer.bufferOffset);</span>
+<span class="fc" id="L305">            this.fileOffset += this.bufferPointer.bufferOffset;</span>
+<span class="fc" id="L306">            this.bufferPointer.invalidate();</span>
         }
-<span class="fc" id="L406">    }</span>
+<span class="fc" id="L308">    }</span>
 
     /**
      * Get the channel associated with this file. Note that this returns the
@@ -416,7 +318,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      * @return the file channel
      */
     public java.nio.channels.FileChannel getChannel() {
-<span class="nc" id="L419">        return this.randomAccessFile.getChannel();</span>
+<span class="nc" id="L321">        return this.randomAccessFile.getChannel();</span>
     }
 
     /**
@@ -428,7 +330,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the descriptor could not be accessed.
      */
     public FileDescriptor getFD() throws IOException {
-<span class="fc" id="L431">        return this.randomAccessFile.getFD();</span>
+<span class="fc" id="L333">        return this.randomAccessFile.getFD();</span>
     }
 
     /**
@@ -436,7 +338,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      */
     @Override
     public long getFilePointer() {
-<span class="fc" id="L439">        return this.fileOffset + this.bufferOffset;</span>
+<span class="fc" id="L341">        return this.fileOffset + this.bufferPointer.bufferOffset;</span>
     }
 
     /**
@@ -445,101 +347,37 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the operation failed
      */
     public long length() throws IOException {
-<span class="fc" id="L448">        flush();</span>
-<span class="fc" id="L449">        return this.randomAccessFile.length();</span>
+<span class="fc" id="L350">        flush();</span>
+<span class="fc" id="L351">        return this.randomAccessFile.length();</span>
     }
 
     @Override
     public void mark(int readlimit) throws IOException {
-<span class="fc" id="L454">        this.bufferMarker = this.bufferOffset;</span>
-<span class="pc bpc" id="L455" title="1 of 2 branches missed.">        if (this.bufferMarker + readlimit &gt; this.bufferLength) {</span>
+<span class="fc" id="L356">        this.bufferMarker = this.bufferPointer.bufferOffset;</span>
+<span class="pc bpc" id="L357" title="1 of 2 branches missed.">        if (this.bufferMarker + readlimit &gt; this.bufferPointer.bufferLength) {</span>
             try {
-<span class="nc" id="L457">                checkBuffer(readlimit);</span>
-<span class="nc" id="L458">            } catch (EOFException e) {</span>
-<span class="nc" id="L459">                LOG.log(Level.FINE, &quot;mark over file limit, so read as far as possible.&quot;, e);</span>
-<span class="nc" id="L460">            }</span>
-<span class="nc" id="L461">            this.bufferMarker = this.bufferOffset;</span>
+<span class="nc" id="L359">                checkBuffer(readlimit);</span>
+<span class="nc" id="L360">            } catch (EOFException e) {</span>
+<span class="nc" id="L361">                BufferedFile.LOG.log(Level.FINE, &quot;mark over file limit, so read as far as possible.&quot;, e);</span>
+<span class="nc" id="L362">            }</span>
+<span class="nc" id="L363">            this.bufferMarker = this.bufferPointer.bufferOffset;</span>
         }
-<span class="fc" id="L463">    }</span>
+<span class="fc" id="L365">    }</span>
 
-    /**** Output Routines ****/
     private void needBuffer(int need) throws IOException {
-
-<span class="fc bfc" id="L468" title="All 2 branches covered.">        if (this.doingInput) {</span>
-
-<span class="fc" id="L470">            this.fileOffset += this.bufferOffset;</span>
-<span class="fc" id="L471">            this.randomAccessFile.seek(this.fileOffset);</span>
-
-<span class="fc" id="L473">            this.doingInput = false;</span>
-
-<span class="fc" id="L475">            this.bufferOffset = 0;</span>
-<span class="fc" id="L476">            this.bufferLength = 0;</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">        if (this.doingInput) {</span>
+<span class="fc" id="L369">            this.fileOffset += this.bufferPointer.bufferOffset;</span>
+<span class="fc" id="L370">            this.randomAccessFile.seek(this.fileOffset);</span>
+<span class="fc" id="L371">            this.doingInput = false;</span>
+<span class="fc" id="L372">            this.bufferPointer.invalidate();</span>
         }
 
-<span class="fc bfc" id="L479" title="All 2 branches covered.">        if (this.bufferOffset + need &gt;= this.bufferSize) {</span>
-<span class="fc" id="L480">            this.randomAccessFile.write(this.buffer, 0, this.bufferOffset);</span>
-<span class="fc" id="L481">            this.fileOffset += this.bufferOffset;</span>
-<span class="fc" id="L482">            this.bufferOffset = 0;</span>
+<span class="fc bfc" id="L375" title="All 2 branches covered.">        if (this.bufferPointer.bufferOffset + need &gt;= this.bufferPointer.buffer.length) {</span>
+<span class="fc" id="L376">            this.randomAccessFile.write(this.bufferPointer.buffer, 0, this.bufferPointer.bufferOffset);</span>
+<span class="fc" id="L377">            this.fileOffset += this.bufferPointer.bufferOffset;</span>
+<span class="fc" id="L378">            this.bufferPointer.bufferOffset = 0;</span>
         }
-<span class="fc" id="L484">    }</span>
-
-    protected long primitiveArrayRecurse(Object o) throws IOException {
-<span class="pc bpc" id="L487" title="1 of 2 branches missed.">        if (o == null) {</span>
-<span class="nc" id="L488">            return this.primitiveArrayCount;</span>
-        }
-<span class="pc bpc" id="L490" title="1 of 2 branches missed.">        if (!o.getClass().isArray()) {</span>
-<span class="nc" id="L491">            throw new IOException(&quot;Invalid object passed to BufferedDataInputStream.readArray:&quot; + o.getClass().getName());</span>
-        }
-<span class="fc" id="L493">        int length = Array.getLength(o);</span>
-        // Is this a multidimensional array? If so process recursively.
-<span class="fc bfc" id="L495" title="All 2 branches covered.">        if (o.getClass().getComponentType().isArray()) {</span>
-<span class="fc bfc" id="L496" title="All 2 branches covered.">            for (int i = 0; i &lt; length; i++) {</span>
-<span class="fc" id="L497">                primitiveArrayRecurse(Array.get(o, i));</span>
-            }
-        } else {
-            // This is a one-d array. Process it using our special functions.
-<span class="pc bpc" id="L501" title="1 of 10 branches missed.">            switch (PrimitiveTypeEnum.valueOf(o.getClass().getComponentType())) {</span>
-                case BOOLEAN:
-<span class="fc" id="L503">                    this.primitiveArrayCount += read((boolean[]) o, 0, length);</span>
-<span class="fc" id="L504">                    break;</span>
-                case BYTE:
-<span class="fc" id="L506">                    int len = read((byte[]) o, 0, length);</span>
-<span class="fc" id="L507">                    this.primitiveArrayCount += len;</span>
-
-<span class="pc bpc" id="L509" title="1 of 2 branches missed.">                    if (len &lt; length) {</span>
-<span class="nc" id="L510">                        throw new EOFException();</span>
-                    }
-                    break;
-                case CHAR:
-<span class="fc" id="L514">                    this.primitiveArrayCount += read((char[]) o, 0, length);</span>
-<span class="fc" id="L515">                    break;</span>
-                case SHORT:
-<span class="fc" id="L517">                    this.primitiveArrayCount += read((short[]) o, 0, length);</span>
-<span class="fc" id="L518">                    break;</span>
-                case INT:
-<span class="fc" id="L520">                    this.primitiveArrayCount += read((int[]) o, 0, length);</span>
-<span class="fc" id="L521">                    break;</span>
-                case LONG:
-<span class="fc" id="L523">                    this.primitiveArrayCount += read((long[]) o, 0, length);</span>
-<span class="fc" id="L524">                    break;</span>
-                case FLOAT:
-<span class="fc" id="L526">                    this.primitiveArrayCount += read((float[]) o, 0, length);</span>
-<span class="fc" id="L527">                    break;</span>
-                case DOUBLE:
-<span class="fc" id="L529">                    this.primitiveArrayCount += read((double[]) o, 0, length);</span>
-<span class="fc" id="L530">                    break;</span>
-                case STRING:
-                case UNKNOWN:
-<span class="fc bfc" id="L533" title="All 2 branches covered.">                    for (int i = 0; i &lt; length; i++) {</span>
-<span class="fc" id="L534">                        primitiveArrayRecurse(Array.get(o, i));</span>
-                    }
-<span class="fc" id="L536">                    break;</span>
-                default:
-<span class="nc" id="L538">                    throw new IOException(&quot;Invalid object passed to BufferedDataInputStream.readArray: &quot; + o.getClass().getName());</span>
-            }
-        }
-<span class="fc" id="L541">        return this.primitiveArrayCount;</span>
-    }
+<span class="fc" id="L380">    }</span>
 
     /**
      * @return Read a byte.
@@ -547,262 +385,140 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the underlying read operation fails
      */
     public int read() throws IOException {
-<span class="fc" id="L550">        checkBuffer(BYTES_IN_BYTE);</span>
-<span class="fc" id="L551">        return this.buffer[this.bufferOffset++];</span>
+<span class="fc" id="L388">        checkBuffer(FitsIO.BYTES_IN_BYTE);</span>
+<span class="fc" id="L389">        return this.bufferPointer.buffer[this.bufferPointer.bufferOffset++];</span>
     }
 
     @Override
     public int read(boolean[] b) throws IOException {
-<span class="fc" id="L556">        return read(b, 0, b.length);</span>
+<span class="fc" id="L394">        return read(b, 0, b.length);</span>
     }
 
     @Override
     public int read(boolean[] b, int start, int length) throws IOException {
-
-<span class="fc" id="L562">        int i = start;</span>
-        try {
-<span class="fc bfc" id="L564" title="All 2 branches covered.">            for (; i &lt; start + length; i++) {</span>
-<span class="fc" id="L565">                b[i] = convertToBoolean();</span>
-            }
-<span class="fc" id="L567">            return length;</span>
-<span class="nc" id="L568">        } catch (EOFException e) {</span>
-<span class="nc" id="L569">            return eofCheck(e, start, i, 1);</span>
-        }
+<span class="fc" id="L399">        return this.dataDecoder.read(b, start, length);</span>
     }
 
     @Override
     public int read(byte[] buf) throws IOException {
-<span class="fc" id="L575">        return read(buf, 0, buf.length);</span>
+<span class="fc" id="L404">        return read(buf, 0, buf.length);</span>
     }
 
     @Override
     public int read(byte[] buf, int offset, int len) throws IOException {
-
-<span class="fc" id="L581">        checkBuffer(-1);</span>
-<span class="fc" id="L582">        int total = 0;</span>
-
-        // Ensure that the entire buffer is read.
-<span class="fc bfc" id="L585" title="All 2 branches covered.">        while (len &gt; 0) {</span>
-
-<span class="fc bfc" id="L587" title="All 2 branches covered.">            if (this.bufferOffset &lt; this.bufferLength) {</span>
-
-<span class="fc" id="L589">                int get = len;</span>
-<span class="fc bfc" id="L590" title="All 2 branches covered.">                if (this.bufferOffset + get &gt; this.bufferLength) {</span>
-<span class="fc" id="L591">                    get = this.bufferLength - this.bufferOffset;</span>
-                }
-<span class="fc" id="L593">                System.arraycopy(this.buffer, this.bufferOffset, buf, offset, get);</span>
-<span class="fc" id="L594">                len -= get;</span>
-<span class="fc" id="L595">                this.bufferOffset += get;</span>
-<span class="fc" id="L596">                offset += get;</span>
-<span class="fc" id="L597">                total += get;</span>
-<span class="fc" id="L598">                continue;</span>
-
-            } else {
-
-                // This might be pretty long, but we know that the
-                // old buffer is exhausted.
-                try {
-<span class="fc bfc" id="L605" title="All 2 branches covered.">                    if (len &gt; this.bufferSize) {</span>
-<span class="fc" id="L606">                        checkBuffer(this.bufferSize);</span>
-                    } else {
-<span class="fc" id="L608">                        checkBuffer(len);</span>
-                    }
-<span class="fc" id="L610">                } catch (EOFException e) {</span>
-<span class="fc bfc" id="L611" title="All 2 branches covered.">                    if (this.bufferLength &gt; 0) {</span>
-<span class="fc" id="L612">                        System.arraycopy(this.buffer, 0, buf, offset, this.bufferLength);</span>
-<span class="fc" id="L613">                        total += this.bufferLength;</span>
-<span class="fc" id="L614">                        this.bufferLength = 0;</span>
-                    }
-<span class="fc bfc" id="L616" title="All 2 branches covered.">                    if (total == 0) {</span>
-<span class="fc" id="L617">                        throw e;</span>
-                    } else {
-<span class="fc" id="L619">                        return total;</span>
-                    }
-<span class="fc" id="L621">                }</span>
-            }
-        }
-
-<span class="fc" id="L625">        return total;</span>
+<span class="fc" id="L409">        return this.dataDecoder.read(buf, offset, len);</span>
     }
 
     @Override
     public int read(char[] c) throws IOException {
-<span class="fc" id="L630">        return read(c, 0, c.length);</span>
+<span class="fc" id="L414">        return read(c, 0, c.length);</span>
     }
 
     @Override
     public int read(char[] c, int start, int length) throws IOException {
-
-<span class="fc" id="L636">        int i = start;</span>
-        try {
-<span class="fc bfc" id="L638" title="All 2 branches covered.">            for (; i &lt; start + length; i++) {</span>
-<span class="fc" id="L639">                c[i] = convertToChar();</span>
-            }
-<span class="fc" id="L641">            return length * BYTES_IN_CHAR;</span>
-<span class="nc" id="L642">        } catch (EOFException e) {</span>
-<span class="nc" id="L643">            return eofCheck(e, start, i, BYTES_IN_CHAR);</span>
-        }
+<span class="fc" id="L419">        return this.dataDecoder.read(c, start, length);</span>
     }
 
     @Override
     public int read(double[] d) throws IOException {
-<span class="fc" id="L649">        return read(d, 0, d.length);</span>
+<span class="fc" id="L424">        return read(d, 0, d.length);</span>
     }
 
     @Override
     public int read(double[] d, int start, int length) throws IOException {
-
-<span class="fc" id="L655">        int i = start;</span>
-        try {
-<span class="fc bfc" id="L657" title="All 2 branches covered.">            for (; i &lt; start + length; i++) {</span>
-<span class="fc" id="L658">                d[i] = Double.longBitsToDouble(convertToLong());</span>
-            }
-<span class="fc" id="L660">            return length * BYTES_IN_DOUBLE;</span>
-<span class="nc" id="L661">        } catch (EOFException e) {</span>
-<span class="nc" id="L662">            return eofCheck(e, start, i, BYTES_IN_DOUBLE);</span>
-        }
+<span class="fc" id="L429">        return this.dataDecoder.read(d, start, length);</span>
     }
 
     @Override
     public int read(float[] f) throws IOException {
-<span class="fc" id="L668">        return read(f, 0, f.length);</span>
+<span class="fc" id="L434">        return read(f, 0, f.length);</span>
     }
 
     @Override
     public int read(float[] f, int start, int length) throws IOException {
-
-<span class="fc" id="L674">        int i = start;</span>
-        try {
-<span class="fc bfc" id="L676" title="All 2 branches covered.">            for (; i &lt; start + length; i++) {</span>
-<span class="fc" id="L677">                f[i] = Float.intBitsToFloat(convertToInt());</span>
-            }
-<span class="fc" id="L679">            return length * BYTES_IN_FLOAT;</span>
-<span class="nc" id="L680">        } catch (EOFException e) {</span>
-<span class="nc" id="L681">            return eofCheck(e, start, i, BYTES_IN_FLOAT);</span>
-        }
+<span class="fc" id="L439">        return this.dataDecoder.read(f, start, length);</span>
     }
 
     @Override
     public int read(int[] i) throws IOException {
-<span class="fc" id="L687">        return read(i, 0, i.length);</span>
+<span class="fc" id="L444">        return read(i, 0, i.length);</span>
     }
 
     @Override
     public int read(int[] i, int start, int length) throws IOException {
-
-<span class="fc" id="L693">        int ii = start;</span>
-        try {
-<span class="fc bfc" id="L695" title="All 2 branches covered.">            for (; ii &lt; start + length; ii++) {</span>
-<span class="fc" id="L696">                i[ii] = convertToInt();</span>
-            }
-<span class="fc" id="L698">            return length * BYTES_IN_INTEGER;</span>
-<span class="nc" id="L699">        } catch (EOFException e) {</span>
-<span class="nc" id="L700">            return eofCheck(e, start, ii, BYTES_IN_INTEGER);</span>
-        }
+<span class="fc" id="L449">        return this.dataDecoder.read(i, start, length);</span>
     }
 
     @Override
     public int read(long[] l) throws IOException {
-<span class="fc" id="L706">        return read(l, 0, l.length);</span>
+<span class="fc" id="L454">        return read(l, 0, l.length);</span>
     }
 
     @Override
     public int read(long[] l, int start, int length) throws IOException {
-
-<span class="fc" id="L712">        int i = start;</span>
-        try {
-<span class="fc bfc" id="L714" title="All 2 branches covered.">            for (; i &lt; start + length; i++) {</span>
-<span class="fc" id="L715">                l[i] = convertToLong();</span>
-            }
-<span class="fc" id="L717">            return length * BYTES_IN_LONG;</span>
-<span class="nc" id="L718">        } catch (EOFException e) {</span>
-<span class="nc" id="L719">            return eofCheck(e, start, i, BYTES_IN_LONG);</span>
-        }
-
+<span class="fc" id="L459">        return this.dataDecoder.read(l, start, length);</span>
     }
 
     @Override
     public int read(short[] s) throws IOException {
-<span class="fc" id="L726">        return read(s, 0, s.length);</span>
+<span class="fc" id="L464">        return read(s, 0, s.length);</span>
     }
 
     @Override
     public int read(short[] s, int start, int length) throws IOException {
-
-<span class="fc" id="L732">        int i = start;</span>
-        try {
-<span class="fc bfc" id="L734" title="All 2 branches covered.">            for (; i &lt; start + length; i++) {</span>
-<span class="fc" id="L735">                s[i] = convertToShort();</span>
-            }
-<span class="fc" id="L737">            return length * BYTES_IN_SHORT;</span>
-<span class="nc" id="L738">        } catch (EOFException e) {</span>
-<span class="nc" id="L739">            return eofCheck(e, start, i, BYTES_IN_SHORT);</span>
-        }
+<span class="fc" id="L469">        return this.dataDecoder.read(s, start, length);</span>
     }
 
     @Deprecated
     @Override
     public int readArray(Object o) throws IOException {
-<span class="fc" id="L746">        return (int) readLArray(o);</span>
+<span class="fc" id="L475">        return (int) readLArray(o);</span>
     }
 
     @Override
     public boolean readBoolean() throws IOException {
-<span class="fc" id="L751">        return convertToBoolean();</span>
+<span class="fc" id="L480">        return this.dataDecoder.readBoolean();</span>
     }
 
     @Override
     public byte readByte() throws IOException {
-<span class="fc" id="L756">        checkBuffer(BYTES_IN_BYTE);</span>
-<span class="fc" id="L757">        return this.buffer[this.bufferOffset++];</span>
+<span class="fc" id="L485">        checkBuffer(FitsIO.BYTES_IN_BYTE);</span>
+<span class="fc" id="L486">        return this.bufferPointer.buffer[this.bufferPointer.bufferOffset++];</span>
     }
 
     @Override
     public char readChar() throws IOException {
-<span class="fc" id="L762">        return convertToChar();</span>
+<span class="fc" id="L491">        return this.dataDecoder.readChar();</span>
     }
 
     @Override
     public double readDouble() throws IOException {
-<span class="fc" id="L767">        return Double.longBitsToDouble(convertToLong());</span>
+<span class="fc" id="L496">        return this.dataDecoder.readDouble();</span>
     }
 
     @Override
     public float readFloat() throws IOException {
-<span class="fc" id="L772">        return Float.intBitsToFloat(convertToInt());</span>
+<span class="fc" id="L501">        return this.dataDecoder.readFloat();</span>
     }
 
     @Override
     public void readFully(byte[] b) throws IOException {
-<span class="fc" id="L777">        readFully(b, 0, b.length);</span>
-<span class="fc" id="L778">    }</span>
+<span class="fc" id="L506">        this.dataDecoder.readFully(b, 0, b.length);</span>
+<span class="fc" id="L507">    }</span>
 
     @Override
     public void readFully(byte[] b, int off, int len) throws IOException {
-<span class="pc bpc" id="L782" title="3 of 6 branches missed.">        if (off &lt; 0 || len &lt; 0 || off + len &gt; b.length) {</span>
-<span class="nc" id="L783">            throw new IOException(&quot;Attempt to read outside byte array&quot;);</span>
-        }
-<span class="pc bpc" id="L785" title="1 of 2 branches missed.">        if (read(b, off, len) &lt; len) {</span>
-<span class="nc" id="L786">            throw new EOFException();</span>
-        }
-<span class="fc" id="L788">    }</span>
+<span class="nc" id="L511">        this.dataDecoder.readFully(b, off, len);</span>
+<span class="nc" id="L512">    }</span>
 
     @Override
     public int readInt() throws IOException {
-<span class="fc" id="L792">        return convertToInt();</span>
+<span class="fc" id="L516">        return this.dataDecoder.readInt();</span>
     }
 
     @Override
     public long readLArray(Object o) throws IOException {
-
-        // Note that we assume that only a single thread is
-        // doing a primitive Array read at any given time. Otherwise
-        // primitiveArrayCount can be wrong and also the
-        // input data can be mixed up. If this assumption is not
-        // true we need to synchronize this call.
-
-<span class="fc" id="L804">        this.primitiveArrayCount = 0;</span>
-<span class="fc" id="L805">        return primitiveArrayRecurse(o);</span>
+<span class="fc" id="L521">        return this.dataDecoder.readLArray(o);</span>
     }
 
     /**
@@ -812,83 +528,69 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      */
     @Override
     public String readLine() throws IOException {
-<span class="fc" id="L815">        checkBuffer(-1);</span>
-<span class="fc" id="L816">        this.randomAccessFile.seek(this.fileOffset + this.bufferOffset);</span>
-<span class="fc" id="L817">        String line = this.randomAccessFile.readLine();</span>
-<span class="fc" id="L818">        this.fileOffset = this.randomAccessFile.getFilePointer();</span>
-
-        // Invalidate the buffer.
-<span class="fc" id="L821">        this.bufferLength = 0;</span>
-<span class="fc" id="L822">        this.bufferOffset = 0;</span>
-<span class="fc" id="L823">        return line;</span>
+<span class="fc" id="L531">        checkBuffer(-1);</span>
+<span class="fc" id="L532">        this.randomAccessFile.seek(this.fileOffset + this.bufferPointer.bufferOffset);</span>
+<span class="fc" id="L533">        String line = this.randomAccessFile.readLine();</span>
+<span class="fc" id="L534">        this.fileOffset = this.randomAccessFile.getFilePointer();</span>
+<span class="fc" id="L535">        this.bufferPointer.invalidate();</span>
+<span class="fc" id="L536">        return line;</span>
     }
 
     @Override
     public long readLong() throws IOException {
-<span class="fc" id="L828">        return convertToLong();</span>
+<span class="fc" id="L541">        return this.dataDecoder.readLong();</span>
     }
 
     @Override
     public short readShort() throws IOException {
-<span class="fc" id="L833">        return convertToShort();</span>
+<span class="fc" id="L546">        return this.dataDecoder.readShort();</span>
     }
 
     @Override
     public int readUnsignedByte() throws IOException {
-<span class="fc" id="L838">        checkBuffer(BYTES_IN_BYTE);</span>
-<span class="fc" id="L839">        return this.buffer[this.bufferOffset++] &amp; BYTE_MASK;</span>
+<span class="fc" id="L551">        checkBuffer(FitsIO.BYTES_IN_BYTE);</span>
+<span class="fc" id="L552">        return this.bufferPointer.buffer[this.bufferPointer.bufferOffset++] &amp; FitsIO.BYTE_MASK;</span>
     }
 
     @Override
     public int readUnsignedShort() throws IOException {
-<span class="fc" id="L844">        return readShort() &amp; SHORT_MASK;</span>
+<span class="fc" id="L557">        return readShort() &amp; FitsIO.SHORT_MASK;</span>
     }
 
     @Override
     public String readUTF() throws IOException {
-<span class="fc" id="L849">        checkBuffer(-1);</span>
-<span class="fc" id="L850">        this.randomAccessFile.seek(this.fileOffset + this.bufferOffset);</span>
-<span class="fc" id="L851">        String utf = this.randomAccessFile.readUTF();</span>
-<span class="fc" id="L852">        this.fileOffset = this.randomAccessFile.getFilePointer();</span>
-
-        // Invalidate the buffer.
-<span class="fc" id="L855">        this.bufferLength = 0;</span>
-<span class="fc" id="L856">        this.bufferOffset = 0;</span>
-
-<span class="fc" id="L858">        return utf;</span>
+<span class="fc" id="L562">        checkBuffer(-1);</span>
+<span class="fc" id="L563">        this.randomAccessFile.seek(this.fileOffset + this.bufferPointer.bufferOffset);</span>
+<span class="fc" id="L564">        String utf = this.randomAccessFile.readUTF();</span>
+<span class="fc" id="L565">        this.fileOffset = this.randomAccessFile.getFilePointer();</span>
+<span class="fc" id="L566">        this.bufferPointer.invalidate();</span>
+<span class="fc" id="L567">        return utf;</span>
     }
 
     @Override
     public void reset() throws IOException {
-<span class="fc" id="L863">        this.bufferOffset = this.bufferMarker;</span>
-<span class="fc" id="L864">    }</span>
+<span class="fc" id="L572">        this.bufferPointer.bufferOffset = this.bufferMarker;</span>
+<span class="fc" id="L573">    }</span>
 
     @Override
     public void seek(long offsetFromStart) throws IOException {
-
-<span class="fc bfc" id="L869" title="All 2 branches covered.">        if (!this.doingInput) {</span>
+<span class="fc bfc" id="L577" title="All 2 branches covered.">        if (!this.doingInput) {</span>
             // Have to flush before a seek...
-<span class="fc" id="L871">            flush();</span>
+<span class="fc" id="L579">            flush();</span>
         }
-
-        // Are we within the current buffer?
-<span class="fc bfc" id="L875" title="All 4 branches covered.">        if (this.fileOffset &lt;= offsetFromStart &amp;&amp; offsetFromStart &lt; this.fileOffset + this.bufferLength) {</span>
-<span class="fc" id="L876">            this.bufferOffset = (int) (offsetFromStart - this.fileOffset);</span>
+        // Are we within the current dataBuffer.buffer?
+<span class="fc bfc" id="L582" title="All 4 branches covered.">        if (this.fileOffset &lt;= offsetFromStart &amp;&amp; offsetFromStart &lt; this.fileOffset + this.bufferPointer.bufferLength) {</span>
+<span class="fc" id="L583">            this.bufferPointer.bufferOffset = (int) (offsetFromStart - this.fileOffset);</span>
         } else {
-
             // Seek to the desired location.
-<span class="pc bpc" id="L880" title="1 of 2 branches missed.">            if (offsetFromStart &lt; 0) {</span>
-<span class="nc" id="L881">                offsetFromStart = 0;</span>
+<span class="pc bpc" id="L586" title="1 of 2 branches missed.">            if (offsetFromStart &lt; 0) {</span>
+<span class="nc" id="L587">                offsetFromStart = 0;</span>
             }
-
-<span class="fc" id="L884">            this.fileOffset = offsetFromStart;</span>
-<span class="fc" id="L885">            this.randomAccessFile.seek(this.fileOffset);</span>
-
-            // Invalidate the current buffer.
-<span class="fc" id="L888">            this.bufferLength = 0;</span>
-<span class="fc" id="L889">            this.bufferOffset = 0;</span>
+<span class="fc" id="L589">            this.fileOffset = offsetFromStart;</span>
+<span class="fc" id="L590">            this.randomAccessFile.seek(this.fileOffset);</span>
+<span class="fc" id="L591">            this.bufferPointer.invalidate();</span>
         }
-<span class="fc" id="L891">    }</span>
+<span class="fc" id="L593">    }</span>
 
     /**
      * Set the length of the file. This method calls the method of the same name
@@ -901,281 +603,217 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the resizing of the underlying stream fails
      */
     public void setLength(long newLength) throws IOException {
-
-<span class="fc" id="L905">        flush();</span>
-<span class="fc" id="L906">        this.randomAccessFile.setLength(newLength);</span>
-<span class="pc bpc" id="L907" title="1 of 2 branches missed.">        if (newLength &lt; this.fileOffset) {</span>
-<span class="nc" id="L908">            this.fileOffset = newLength;</span>
+<span class="fc" id="L606">        flush();</span>
+<span class="fc" id="L607">        this.randomAccessFile.setLength(newLength);</span>
+<span class="pc bpc" id="L608" title="1 of 2 branches missed.">        if (newLength &lt; this.fileOffset) {</span>
+<span class="nc" id="L609">            this.fileOffset = newLength;</span>
         }
-<span class="fc" id="L910">    }</span>
+<span class="fc" id="L611">    }</span>
 
     @Override
     public long skip(long offset) throws IOException {
-
-<span class="fc bfc" id="L915" title="All 4 branches covered.">        if (offset &gt; 0 &amp;&amp; this.fileOffset + this.bufferOffset + offset &gt; this.randomAccessFile.length()) {</span>
-<span class="fc" id="L916">            offset = this.randomAccessFile.length() - this.fileOffset - this.bufferOffset;</span>
-<span class="fc" id="L917">            seek(this.randomAccessFile.length());</span>
-<span class="pc bpc" id="L918" title="1 of 2 branches missed.">        } else if (this.fileOffset + this.bufferOffset + offset &lt; 0) {</span>
-<span class="nc" id="L919">            offset = -(this.fileOffset + this.bufferOffset);</span>
-<span class="nc" id="L920">            seek(0);</span>
+<span class="fc bfc" id="L615" title="All 4 branches covered.">        if (offset &gt; 0 &amp;&amp; this.fileOffset + this.bufferPointer.bufferOffset + offset &gt; this.randomAccessFile.length()) {</span>
+<span class="fc" id="L616">            offset = this.randomAccessFile.length() - this.fileOffset - this.bufferPointer.bufferOffset;</span>
+<span class="fc" id="L617">            seek(this.randomAccessFile.length());</span>
+<span class="pc bpc" id="L618" title="1 of 2 branches missed.">        } else if (this.fileOffset + this.bufferPointer.bufferOffset + offset &lt; 0) {</span>
+<span class="nc" id="L619">            offset = -(this.fileOffset + this.bufferPointer.bufferOffset);</span>
+<span class="nc" id="L620">            seek(0);</span>
         } else {
-<span class="fc" id="L922">            seek(this.fileOffset + this.bufferOffset + offset);</span>
+<span class="fc" id="L622">            seek(this.fileOffset + this.bufferPointer.bufferOffset + offset);</span>
         }
-<span class="fc" id="L924">        return offset;</span>
-    }
-
-    @Override
-    public int skipBytes(int n) throws IOException {
-<span class="fc" id="L929">        skipAllBytes(n);</span>
-<span class="fc" id="L930">        return n;</span>
+<span class="fc" id="L624">        return offset;</span>
     }
 
     @Override
     public void skipAllBytes(int toSkip) throws IOException {
-<span class="fc" id="L935">        skipAllBytes((long) toSkip);</span>
-<span class="fc" id="L936">    }</span>
+<span class="fc" id="L629">        skipAllBytes((long) toSkip);</span>
+<span class="fc" id="L630">    }</span>
 
     @Override
     public void skipAllBytes(long toSkip) throws IOException {
         // Note that we allow negative skips...
-<span class="fc bfc" id="L941" title="All 2 branches covered.">        if (skip(toSkip) &lt; toSkip) {</span>
-<span class="fc" id="L942">            throw new EOFException();</span>
+<span class="fc bfc" id="L635" title="All 2 branches covered.">        if (skip(toSkip) &lt; toSkip) {</span>
+<span class="fc" id="L636">            throw new EOFException();</span>
         }
-<span class="fc" id="L944">    }</span>
+<span class="fc" id="L638">    }</span>
+
+    @Override
+    public int skipBytes(int n) throws IOException {
+<span class="fc" id="L642">        skipAllBytes(n);</span>
+<span class="fc" id="L643">        return n;</span>
+    }
 
     @Override
     public void write(boolean[] b) throws IOException {
-<span class="fc" id="L948">        write(b, 0, b.length);</span>
-<span class="fc" id="L949">    }</span>
+<span class="fc" id="L648">        write(b, 0, b.length);</span>
+<span class="fc" id="L649">    }</span>
 
     @Override
     public void write(boolean[] b, int start, int length) throws IOException {
-<span class="fc bfc" id="L953" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L954">            convertFromBoolean(b[i]);</span>
-        }
-<span class="fc" id="L956">    }</span>
+<span class="fc" id="L653">        this.dataEncoder.write(b, start, length);</span>
+<span class="fc" id="L654">    }</span>
 
     @Override
     public void write(byte[] buf) throws IOException {
-<span class="fc" id="L960">        write(buf, 0, buf.length);</span>
-<span class="fc" id="L961">    }</span>
+<span class="fc" id="L658">        write(buf, 0, buf.length);</span>
+<span class="fc" id="L659">    }</span>
 
     @Override
     public void write(byte[] buf, int offset, int length) throws IOException {
-
-<span class="fc bfc" id="L966" title="All 2 branches covered.">        if (length &lt; this.bufferSize) {</span>
-            /* If we can use the buffer do so... */
-<span class="fc" id="L968">            needBuffer(length);</span>
-<span class="fc" id="L969">            System.arraycopy(buf, offset, this.buffer, this.bufferOffset, length);</span>
-<span class="fc" id="L970">            this.bufferOffset += length;</span>
+<span class="fc bfc" id="L663" title="All 2 branches covered.">        if (length &lt; this.bufferPointer.buffer.length) {</span>
+            /* If we can use the dataBuffer.buffer do so... */
+<span class="fc" id="L665">            needBuffer(length);</span>
+<span class="fc" id="L666">            System.arraycopy(buf, offset, this.bufferPointer.buffer, this.bufferPointer.bufferOffset, length);</span>
+<span class="fc" id="L667">            this.bufferPointer.bufferOffset += length;</span>
         } else {
             /*
-             * Otherwise flush the buffer and write the data directly. Make sure
-             * that we indicate that the buffer is clean when we're done.
+             * Otherwise flush the dataBuffer.buffer and write the data
+             * directly. Make sure that we indicate that the dataBuffer.buffer
+             * is clean when we're done.
              */
-<span class="fc" id="L976">            flush();</span>
-
-<span class="fc" id="L978">            this.randomAccessFile.write(buf, offset, length);</span>
-
-<span class="fc" id="L980">            this.fileOffset += length;</span>
-
-<span class="fc" id="L982">            this.doingInput = false;</span>
-<span class="fc" id="L983">            this.bufferOffset = 0;</span>
-<span class="fc" id="L984">            this.bufferLength = 0;</span>
+<span class="fc" id="L674">            flush();</span>
+<span class="fc" id="L675">            this.randomAccessFile.write(buf, offset, length);</span>
+<span class="fc" id="L676">            this.fileOffset += length;</span>
+<span class="fc" id="L677">            this.doingInput = false;</span>
+<span class="fc" id="L678">            this.bufferPointer.invalidate();</span>
         }
-<span class="fc" id="L986">    }</span>
+<span class="fc" id="L680">    }</span>
 
     @Override
     public void write(char[] c) throws IOException {
-<span class="fc" id="L990">        write(c, 0, c.length);</span>
-<span class="fc" id="L991">    }</span>
+<span class="fc" id="L684">        write(c, 0, c.length);</span>
+<span class="fc" id="L685">    }</span>
 
     @Override
     public void write(char[] c, int start, int length) throws IOException {
-
-<span class="fc bfc" id="L996" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L997">            convertFromChar(c[i]);</span>
-        }
-<span class="fc" id="L999">    }</span>
+<span class="fc" id="L689">        this.dataEncoder.write(c, start, length);</span>
+<span class="fc" id="L690">    }</span>
 
     @Override
     public void write(double[] d) throws IOException {
-<span class="fc" id="L1003">        write(d, 0, d.length);</span>
-<span class="fc" id="L1004">    }</span>
+<span class="fc" id="L694">        write(d, 0, d.length);</span>
+<span class="fc" id="L695">    }</span>
 
     @Override
     public void write(double[] d, int start, int length) throws IOException {
-
-<span class="fc bfc" id="L1009" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L1010">            convertFromLong(Double.doubleToLongBits(d[i]));</span>
-        }
-<span class="fc" id="L1012">    }</span>
+<span class="fc" id="L699">        this.dataEncoder.write(d, start, length);</span>
+<span class="fc" id="L700">    }</span>
 
     @Override
     public void write(float[] f) throws IOException {
-<span class="fc" id="L1016">        write(f, 0, f.length);</span>
-<span class="fc" id="L1017">    }</span>
+<span class="fc" id="L704">        write(f, 0, f.length);</span>
+<span class="fc" id="L705">    }</span>
 
     @Override
     public void write(float[] f, int start, int length) throws IOException {
-<span class="fc bfc" id="L1021" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L1022">            convertFromInt(Float.floatToIntBits(f[i]));</span>
-        }
-<span class="fc" id="L1024">    }</span>
+<span class="fc" id="L709">        this.dataEncoder.write(f, start, length);</span>
+<span class="fc" id="L710">    }</span>
 
     @Override
     public void write(int buf) throws IOException {
-<span class="nc" id="L1028">        convertFromByte(buf);</span>
-<span class="nc" id="L1029">    }</span>
+<span class="nc" id="L714">        this.dataEncoder.writeByte(buf);</span>
+<span class="nc" id="L715">    }</span>
 
     @Override
     public void write(int[] i) throws IOException {
-<span class="fc" id="L1033">        write(i, 0, i.length);</span>
-<span class="fc" id="L1034">    }</span>
+<span class="fc" id="L719">        write(i, 0, i.length);</span>
+<span class="fc" id="L720">    }</span>
 
     @Override
     public void write(int[] i, int start, int length) throws IOException {
-<span class="fc bfc" id="L1038" title="All 2 branches covered.">        for (int ii = start; ii &lt; start + length; ii++) {</span>
-<span class="fc" id="L1039">            convertFromInt(i[ii]);</span>
-        }
-<span class="fc" id="L1041">    }</span>
+<span class="fc" id="L724">        this.dataEncoder.write(i, start, length);</span>
+<span class="fc" id="L725">    }</span>
 
     @Override
     public void write(long[] l) throws IOException {
-<span class="fc" id="L1045">        write(l, 0, l.length);</span>
-<span class="fc" id="L1046">    }</span>
+<span class="fc" id="L729">        write(l, 0, l.length);</span>
+<span class="fc" id="L730">    }</span>
 
     @Override
     public void write(long[] l, int start, int length) throws IOException {
-
-<span class="fc bfc" id="L1051" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L1052">            convertFromLong(l[i]);</span>
-        }
-<span class="fc" id="L1054">    }</span>
+<span class="fc" id="L734">        this.dataEncoder.write(l, start, length);</span>
+<span class="fc" id="L735">    }</span>
 
     @Override
     public void write(short[] s) throws IOException {
-<span class="fc" id="L1058">        write(s, 0, s.length);</span>
-<span class="fc" id="L1059">    }</span>
+<span class="fc" id="L739">        write(s, 0, s.length);</span>
+<span class="fc" id="L740">    }</span>
 
     @Override
     public void write(short[] s, int start, int length) throws IOException {
-
-<span class="fc bfc" id="L1064" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L1065">            convertFromShort(s[i]);</span>
-        }
-<span class="fc" id="L1067">    }</span>
+<span class="fc" id="L744">        this.dataEncoder.write(s, start, length);</span>
+<span class="fc" id="L745">    }</span>
 
     @Override
     public void write(String[] s) throws IOException {
-<span class="fc" id="L1071">        write(s, 0, s.length);</span>
-<span class="fc" id="L1072">    }</span>
+<span class="fc" id="L749">        write(s, 0, s.length);</span>
+<span class="fc" id="L750">    }</span>
 
     @Override
     public void write(String[] s, int start, int length) throws IOException {
-<span class="fc bfc" id="L1076" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L1077">            writeBytes(s[i]);</span>
-        }
-<span class="fc" id="L1079">    }</span>
+<span class="fc" id="L754">        this.dataEncoder.write(s, start, length);</span>
+<span class="fc" id="L755">    }</span>
 
     @Override
     public void writeArray(Object o) throws IOException {
-<span class="pc bpc" id="L1083" title="1 of 2 branches missed.">        if (!o.getClass().isArray()) {</span>
-<span class="nc" id="L1084">            throw new IOException(&quot;Invalid object passed to BufferedDataOutputStream.write&quot; + o.getClass().getName());</span>
-        }
-<span class="fc" id="L1086">        int length = Array.getLength(o);</span>
-        // Is this a multidimensional array? If so process recursiv
-<span class="fc bfc" id="L1088" title="All 2 branches covered.">        if (o.getClass().getComponentType().isArray()) {</span>
-<span class="fc bfc" id="L1089" title="All 2 branches covered.">            for (int i = 0; i &lt; length; i++) {</span>
-<span class="fc" id="L1090">                writeArray(Array.get(o, i));</span>
-            }
-        } else {
-<span class="fc bfc" id="L1093" title="All 2 branches covered.">            if (o instanceof boolean[]) {</span>
-<span class="fc" id="L1094">                write((boolean[]) o, 0, length);</span>
-<span class="fc bfc" id="L1095" title="All 2 branches covered.">            } else if (o instanceof byte[]) {</span>
-<span class="fc" id="L1096">                write((byte[]) o, 0, length);</span>
-<span class="fc bfc" id="L1097" title="All 2 branches covered.">            } else if (o instanceof char[]) {</span>
-<span class="fc" id="L1098">                write((char[]) o, 0, length);</span>
-<span class="fc bfc" id="L1099" title="All 2 branches covered.">            } else if (o instanceof short[]) {</span>
-<span class="fc" id="L1100">                write((short[]) o, 0, length);</span>
-<span class="fc bfc" id="L1101" title="All 2 branches covered.">            } else if (o instanceof int[]) {</span>
-<span class="fc" id="L1102">                write((int[]) o, 0, length);</span>
-<span class="fc bfc" id="L1103" title="All 2 branches covered.">            } else if (o instanceof long[]) {</span>
-<span class="fc" id="L1104">                write((long[]) o, 0, length);</span>
-<span class="fc bfc" id="L1105" title="All 2 branches covered.">            } else if (o instanceof float[]) {</span>
-<span class="fc" id="L1106">                write((float[]) o, 0, length);</span>
-<span class="fc bfc" id="L1107" title="All 2 branches covered.">            } else if (o instanceof double[]) {</span>
-<span class="fc" id="L1108">                write((double[]) o, 0, length);</span>
-<span class="pc bpc" id="L1109" title="1 of 2 branches missed.">            } else if (o instanceof String[]) {</span>
-<span class="nc" id="L1110">                write((String[]) o, 0, length);</span>
-            } else {
-<span class="fc bfc" id="L1112" title="All 2 branches covered.">                for (int i = 0; i &lt; length; i++) {</span>
-<span class="fc" id="L1113">                    writeArray(Array.get(o, i));</span>
-                }
-            }
-        }
-<span class="fc" id="L1117">    }</span>
+<span class="fc" id="L759">        this.dataEncoder.writeArray(o);</span>
+<span class="fc" id="L760">    }</span>
 
     @Override
     public void writeBoolean(boolean b) throws IOException {
-<span class="fc" id="L1121">        convertFromBoolean(b);</span>
-<span class="fc" id="L1122">    }</span>
+<span class="fc" id="L764">        this.dataEncoder.writeBoolean(b);</span>
+<span class="fc" id="L765">    }</span>
 
     @Override
     public void writeByte(int b) throws IOException {
-<span class="fc" id="L1126">        convertFromByte(b);</span>
-<span class="fc" id="L1127">    }</span>
+<span class="fc" id="L769">        this.dataEncoder.writeByte(b);</span>
+<span class="fc" id="L770">    }</span>
 
     @Override
     public void writeBytes(String s) throws IOException {
-<span class="fc" id="L1131">        write(AsciiFuncs.getBytes(s), 0, s.length());</span>
-<span class="fc" id="L1132">    }</span>
+<span class="fc" id="L774">        write(AsciiFuncs.getBytes(s), 0, s.length());</span>
+<span class="fc" id="L775">    }</span>
 
     @Override
     public void writeChar(int c) throws IOException {
-<span class="fc" id="L1136">        convertFromChar(c);</span>
-<span class="fc" id="L1137">    }</span>
+<span class="fc" id="L779">        this.dataEncoder.writeChar(c);</span>
+<span class="fc" id="L780">    }</span>
 
     @Override
     public void writeChars(String s) throws IOException {
-
-<span class="fc" id="L1142">        int len = s.length();</span>
-<span class="fc bfc" id="L1143" title="All 2 branches covered.">        for (int i = 0; i &lt; len; i++) {</span>
-<span class="fc" id="L1144">            convertFromChar(s.charAt(i));</span>
-        }
-<span class="fc" id="L1146">    }</span>
+<span class="fc" id="L784">        this.dataEncoder.writeChars(s);</span>
+<span class="fc" id="L785">    }</span>
 
     @Override
     public void writeDouble(double d) throws IOException {
-<span class="fc" id="L1150">        convertFromLong(Double.doubleToLongBits(d));</span>
-<span class="fc" id="L1151">    }</span>
+<span class="fc" id="L789">        this.dataEncoder.writeDouble(d);</span>
+<span class="fc" id="L790">    }</span>
 
     @Override
     public void writeFloat(float f) throws IOException {
-<span class="fc" id="L1155">        convertFromInt(Float.floatToIntBits(f));</span>
-<span class="fc" id="L1156">    }</span>
+<span class="fc" id="L794">        this.dataEncoder.writeFloat(f);</span>
+<span class="fc" id="L795">    }</span>
 
     @Override
     public void writeInt(int i) throws IOException {
-<span class="fc" id="L1160">        convertFromInt(i);</span>
-<span class="fc" id="L1161">    }</span>
+<span class="fc" id="L799">        this.dataEncoder.writeInt(i);</span>
+<span class="fc" id="L800">    }</span>
 
     @Override
     public void writeLong(long l) throws IOException {
-<span class="fc" id="L1165">        convertFromLong(l);</span>
-<span class="fc" id="L1166">    }</span>
+<span class="fc" id="L804">        this.dataEncoder.writeLong(l);</span>
+<span class="fc" id="L805">    }</span>
 
     @Override
     public void writeShort(int s) throws IOException {
-
-<span class="fc" id="L1171">        convertFromShort(s);</span>
-<span class="fc" id="L1172">    }</span>
+<span class="fc" id="L809">        this.dataEncoder.writeShort(s);</span>
+<span class="fc" id="L810">    }</span>
 
     @Override
     public void writeUTF(String s) throws IOException {
-<span class="fc" id="L1176">        flush();</span>
-<span class="fc" id="L1177">        this.randomAccessFile.writeUTF(s);</span>
-<span class="fc" id="L1178">        this.fileOffset = this.randomAccessFile.getFilePointer();</span>
-<span class="fc" id="L1179">    }</span>
+<span class="fc" id="L814">        flush();</span>
+<span class="fc" id="L815">        this.randomAccessFile.writeUTF(s);</span>
+<span class="fc" id="L816">        this.fileOffset = this.randomAccessFile.getFilePointer();</span>
+<span class="fc" id="L817">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
