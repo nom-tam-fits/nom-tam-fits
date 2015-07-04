@@ -33,6 +33,8 @@ package nom.tam.fits.doc;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -62,7 +64,7 @@ public class GenerateReleaseNote {
         out.print("Release ");
         out.println(version);
         out.println();
-        out.println(description);
+        println(out, limitString(description, 80));
         out.println();
         NodeList nodes = release.getElementsByTagName("action");
         for (int index = 0; index < nodes.getLength(); index++) {
@@ -70,7 +72,7 @@ public class GenerateReleaseNote {
             String dev = child.getAttribute("dev");
             String issue = child.getAttribute("issue");
             if (isEmptyOrNull(dev) && isEmptyOrNull(issue)) {
-                out.println(child.getTextContent().trim());
+                println(out, limitString(child.getTextContent().trim(), 80));
                 out.println();
             }
         }
@@ -82,18 +84,39 @@ public class GenerateReleaseNote {
             String dev = child.getAttribute("dev");
             String issue = child.getAttribute("issue");
             if (!isEmptyOrNull(dev) || !isEmptyOrNull(issue)) {
-                out.print("     - ");
-                out.println(child.getTextContent().trim());
+                println(out, "     - ", limitString(child.getTextContent().trim(), 72));
             }
         }
         out.close();
+    }
+
+    private static void println(PrintStream out, List<String> limitString) {
+        println(out, "", limitString);
+    }
+
+    private static void println(PrintStream out, String prefix, List<String> limitString) {
+        for (String string : limitString) {
+            out.print(prefix);
+            out.println(string);
+            prefix = "                                                       ".substring(0, prefix.length());
+        }
     }
 
     static boolean isEmptyOrNull(String value) {
         return value == null || value.trim().isEmpty();
     }
 
-    static String limitString(String string, int size) {
-        return string;
+    static List<String> limitString(String string, int size) {
+        List<String> result = new ArrayList<>();
+        while (string.length() > 80) {
+            int split = 80;
+            while (!Character.isWhitespace(string.charAt(split))) {
+                split--;
+            }
+            result.add(string.substring(0, split));
+            string = string.substring(split + 1);
+        }
+        result.add(string);
+        return result;
     }
 }
