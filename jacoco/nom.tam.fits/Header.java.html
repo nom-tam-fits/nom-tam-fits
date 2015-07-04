@@ -1368,8 +1368,8 @@ public class Header implements FitsElement {
 
     @Override
     public boolean rewriteable() {
-<span class="pc bpc" id="L1371" title="2 of 4 branches missed.">        return this.fileOffset &gt;= 0 &amp;&amp; this.input instanceof ArrayDataOutput &amp;&amp; //</span>
-<span class="fc bfc" id="L1372" title="All 2 branches covered.">                (getNumberOfPhysicalCards() + (MAX_CARDS_PER_HEADER - 1)) / MAX_CARDS_PER_HEADER == //</span>
+<span class="pc bpc" id="L1371" title="2 of 6 branches missed.">        return this.fileOffset &gt;= 0 &amp;&amp; this.input instanceof ArrayDataOutput &amp;&amp; //</span>
+                (getNumberOfPhysicalCards() + (MAX_CARDS_PER_HEADER - 1)) / MAX_CARDS_PER_HEADER == //
                 (this.originalCardCount + (MAX_CARDS_PER_HEADER - 1)) / MAX_CARDS_PER_HEADER;
     }
 

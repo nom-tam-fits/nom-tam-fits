@@ -1470,10 +1470,10 @@ public class BinaryTable extends AbstractTableData {
      * index is non-zero). In this case it can be a complex varying column.
      */
     private boolean isVarying(Object o) {
-<span class="pc bpc" id="L1473" title="1 of 2 branches missed.">        if (o == null || //</span>
-<span class="pc bpc" id="L1474" title="1 of 2 branches missed.">                !o.getClass().isArray() || //</span>
-<span class="fc bfc" id="L1475" title="All 2 branches covered.">                !o.getClass().getComponentType().isArray() || //</span>
-<span class="fc bfc" id="L1476" title="All 2 branches covered.">                !o.getClass().getComponentType().getComponentType().isPrimitive()) {</span>
+<span class="pc bpc" id="L1473" title="2 of 8 branches missed.">        if (o == null || //</span>
+                !o.getClass().isArray() || //
+                !o.getClass().getComponentType().isArray() || //
+                !o.getClass().getComponentType().getComponentType().isPrimitive()) {
 <span class="fc" id="L1477">            return false;</span>
         }
 

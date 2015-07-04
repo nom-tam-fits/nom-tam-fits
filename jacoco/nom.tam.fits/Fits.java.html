@@ -675,9 +675,9 @@ public class Fits implements Closeable {
 <span class="fc" id="L675">                    break;</span>
                 }
 <span class="fc" id="L677">            } catch (EOFException e) {</span>
-<span class="pc bpc" id="L678" title="1 of 2 branches missed.">                if (FitsFactory.getAllowTerminalJunk() &amp;&amp; //</span>
-<span class="pc bpc" id="L679" title="1 of 2 branches missed.">                        e.getCause() instanceof TruncatedFileException &amp;&amp; //</span>
-<span class="fc bfc" id="L680" title="All 2 branches covered.">                        getNumberOfHDUs() &gt; 0) {</span>
+<span class="pc bpc" id="L678" title="2 of 6 branches missed.">                if (FitsFactory.getAllowTerminalJunk() &amp;&amp; //</span>
+                        e.getCause() instanceof TruncatedFileException &amp;&amp; //
+                        getNumberOfHDUs() &gt; 0) {
 <span class="fc" id="L681">                    this.atEOF = true;</span>
 <span class="fc" id="L682">                    return;</span>
                 }

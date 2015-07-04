@@ -79,8 +79,8 @@ public class ImageHDU extends BasicHDU&lt;ImageData&gt; {
 <span class="fc" id="L79">        boolean found = hdr.getBooleanValue(&quot;SIMPLE&quot;);</span>
 <span class="fc bfc" id="L80" title="All 2 branches covered.">        if (!found) {</span>
 <span class="fc" id="L81">            String s = hdr.getStringValue(&quot;XTENSION&quot;);</span>
-<span class="pc bpc" id="L82" title="1 of 2 branches missed.">            if (s != null &amp;&amp; //</span>
-<span class="pc bpc" id="L83" title="1 of 4 branches missed.">                    (s.trim().equals(&quot;IMAGE&quot;) || s.trim().equals(&quot;IUEIMAGE&quot;))) {</span>
+<span class="pc bpc" id="L82" title="2 of 6 branches missed.">            if (s != null &amp;&amp; //</span>
+                    (s.trim().equals(&quot;IMAGE&quot;) || s.trim().equals(&quot;IUEIMAGE&quot;))) {
 <span class="fc" id="L84">                found = true;</span>
             }
         }

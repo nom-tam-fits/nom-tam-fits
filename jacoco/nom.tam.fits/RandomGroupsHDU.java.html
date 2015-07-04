@@ -123,8 +123,8 @@ public class RandomGroupsHDU extends BasicHDU&lt;RandomGroupsData&gt; {
     public static boolean isData(Object potentialData) {
 <span class="fc bfc" id="L124" title="All 2 branches covered.">        if (potentialData instanceof Object[][]) {</span>
 <span class="fc" id="L125">            Object[][] o = (Object[][]) potentialData;</span>
-<span class="pc bpc" id="L126" title="1 of 4 branches missed.">            if (o.length &gt; 0 &amp;&amp; o[0].length == 2 &amp;&amp; //</span>
-<span class="pc bpc" id="L127" title="1 of 2 branches missed.">                    ArrayFuncs.getBaseClass(o[0][0]) == ArrayFuncs.getBaseClass(o[0][1])) {</span>
+<span class="pc bpc" id="L126" title="2 of 6 branches missed.">            if (o.length &gt; 0 &amp;&amp; o[0].length == 2 &amp;&amp; //</span>
+                    ArrayFuncs.getBaseClass(o[0][0]) == ArrayFuncs.getBaseClass(o[0][1])) {
 <span class="fc" id="L128">                String cn = o[0][0].getClass().getName();</span>
 <span class="pc bpc" id="L129" title="2 of 6 branches missed.">                if (cn.length() == 2 &amp;&amp; cn.charAt(1) != 'Z' || cn.charAt(1) != 'C') {</span>
 <span class="fc" id="L130">                    return true;</span>

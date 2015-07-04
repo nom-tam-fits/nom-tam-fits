@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20150704" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>nom-tam-fits &#x2013; </title>
+    <title>nom-tam-fits &#x2013; FITS header keywords</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.3.0.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -59,11 +59,11 @@
         nom.tam FITS library</a>
         </li>
       <li class="divider ">/</li>
-        <li class=""></li>
+        <li class="">FITS header keywords</li>
                 
                 
                     
-                 <li id="projectVersion" class="pull-right">Version: 1.12.1-SNAPSHOT</li>
+                 <li id="projectVersion" class="pull-right">Version: 1.13.0-SNAPSHOT</li>
       
                             </ul>
       </div>
@@ -137,54 +137,56 @@
                 
         <div id="bodyColumn"  class="span9" >
                                   
-            <h1>FITS header keywords</h1><p>There many, many sources of FITS keywords. Many organisations (or groups of organisations) have defined their own sets of keywords.
-This results in many different dictionaries with partly overlapping definitions. To help the &ldquo;normal&rdquo; user of FITS files
-with these, we have started to collect the standards and will try to include them in this library to ease finding of the &ldquo;right&rdquo;
-keyword.</p><p>These dictionaries are organized in a hierarchical form. Every dictionary other than the root
-extends the list of keywords of another dictionary.
-The root of this tree is the dictionary used in
-the FITS standard itself. Below that is a dictionary with entries from
-different libraries that use the same keywords. These are collected in a dictionary of commonly used keywords.</p><p>These enumerations of keywords (dictionaries) can be found in and under the package <a href="./apidocs/nom/tam/fits/header/package-summary.html" title="nom.tam.fits.header">nom.tam.fits.header</a>.
-The standard and commonly used keywords can be found there. Commonly used keywords are sorted in separate enumerations by theme.
-All included dictionaries of organisations can be found in the <a href="./apidocs/nom/tam/fits/header/extra/package-summary.html" title="nom.tam.fits.header.extra">nom.tam.fits.header.extra</a> package. </p><p>Currently we include:</p>
+            <h1>FITS header keywords</h1>
+<p>There many, many sources of FITS keywords. Many organisations (or groups of organisations) have defined their own sets of keywords. This results in many different dictionaries with partly overlapping definitions. To help the &#x201c;normal&#x201d; user of FITS files with these, we have started to collect the standards and will try to include them in this library to ease finding of the &#x201c;right&#x201d; keyword.</p>
+<p>These dictionaries are organized in a hierarchical form. Every dictionary other than the root extends the list of keywords of another dictionary. The root of this tree is the dictionary used in the FITS standard itself. Below that is a dictionary with entries from different libraries that use the same keywords. These are collected in a dictionary of commonly used keywords.</p>
+<p>These enumerations of keywords (dictionaries) can be found in and under the package <a href="./apidocs/nom/tam/fits/header/package-summary.html" title="nom.tam.fits.header">nom.tam.fits.header</a>. The standard and commonly used keywords can be found there. Commonly used keywords are sorted in separate enumerations by theme. All included dictionaries of organisations can be found in the <a href="./apidocs/nom/tam/fits/header/extra/package-summary.html" title="nom.tam.fits.header.extra">nom.tam.fits.header.extra</a> package. </p>
+<p>Currently we include:</p>
+
 <ul>
-  <li>Standard
- source: [<a href="http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html</a>)</li><li>Common standard
- inherits from Standard
- source: [<a href="http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html</a>)</li><li>NOAO
- inherits from Common standard
- source: [<a href="http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html">http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html</a>)</li><li>SBFits
- inherits from Common standard
- source: [<a href="http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf](http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf">http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf](http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf</a>)</li><li>MaxImDL
- inherits from SBFits
- source: [<a href="http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm">http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm</a>)</li><li>CXCStclShared
- inherits from Common standard
- source: we found these duplicated</li><li>CXC
- inherits from CXCStclShared
- source: [<a href="http://cxc.harvard.edu/contrib/arots/fits/content.txt](http://cxc.harvard.edu/contrib/arots/fits/content.txt">http://cxc.harvard.edu/contrib/arots/fits/content.txt](http://cxc.harvard.edu/contrib/arots/fits/content.txt</a>)</li><li>STScI
- inherits from CXCStclShared
- source: [<a href="http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>)</li>
-</ul><p>All duplicates were eliminated from enumerations (including enumerations that are defined in one of the &ldquo;parent&rdquo; standards).
-So always use a keyword of one of the higher level standards when possible.</p><p>Furthermore we have identified synonym keywords inside and between dictionaries.
-We have also started to collect these in the Synonyms class in the header package. So you can find the best keyword to
-use rather than a less widely defined synonym. </p><p>The enums may be used to set and extract keyword values.
-You can also make the compiler check references to keywords (No more pruney String references).
-Future versions of the library will try to validate using these dictionaries and
-warn you when you use a keyword inappropriately (e.g., wrong data type,
-wrong HDU or deprecated keyword).</p><p>We would appreciate any additional help in correcting errors in these definitions
-or adding new dictionaries. While we are happy to receive information in any format,
-a pull request will work best.</p><h2>How to use them</h2><p>To use the header keywords, just make static imports of them and use them just as you would have used strings. Here a simple example:</p>
-<pre><code>import static nom.tam.fits.header.InstrumentDescription.FILTER;
+  
+<li>Standard  source: <a class="externalLink" href="http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html</a></li>
+  
+<li>Common standard  inherits from Standard  source: <a class="externalLink" href="http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html</a></li>
+  
+<li>NOAO  inherits from Common standard  source: <a class="externalLink" href="http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html">http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html</a></li>
+  
+<li>SBFits  inherits from Common standard  source: <a class="externalLink" href="http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf">http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf</a></li>
+  
+<li>MaxImDL  inherits from SBFits  source: <a class="externalLink" href="http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm">http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm</a></li>
+  
+<li>CXCStclShared  inherits from Common standard  source: we found these duplicated</li>
+  
+<li>CXC  inherits from CXCStclShared  source: <a class="externalLink" href="http://cxc.harvard.edu/contrib/arots/fits/content.txt">http://cxc.harvard.edu/contrib/arots/fits/content.txt</a></li>
+  
+<li>STScI  inherits from CXCStclShared  source: <a class="externalLink" href="http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a></li>
+</ul>
+<p>All duplicates were eliminated from enumerations (including enumerations that are defined in one of the &#x201c;parent&#x201d; standards). So always use a keyword of one of the higher level standards when possible.</p>
+<p>Furthermore we have identified synonym keywords inside and between dictionaries. We have also started to collect these in the Synonyms class in the header package. So you can find the best keyword to use rather than a less widely defined synonym. </p>
+<p>The enums may be used to set and extract keyword values. You can also make the compiler check references to keywords (No more pruney String references). Future versions of the library will try to validate using these dictionaries and warn you when you use a keyword inappropriately (e.g., wrong data type, wrong HDU or deprecated keyword).</p>
+<p>We would appreciate any additional help in correcting errors in these definitions or adding new dictionaries. While we are happy to receive information in any format, a pull request will work best.</p>
+<div class="section">
+<h2><a name="How_to_use_them"></a>How to use them</h2>
+<p>To use the header keywords, just make static imports of them and use them just as you would have used strings. Here a simple example:</p>
+
+<div class="source">
+<div class="source">
+<pre>import static nom.tam.fits.header.InstrumentDescription.FILTER;
 import static nom.tam.fits.header.Standard.INSTRUME;
 ...
 hdr.addValue(INSTRUME, &quot;My very big telescope&quot;);
 hdr.addValue(FILTER, &quot;meade #25A Red&quot;);
 ...
-</code></pre><p>Some keywords have indexes that must be specified, just call the n() method on the keyword and specify the indexes you want. You must spececify one integer per &lsquo;n&rsquo; in the keyword.</p>
-<pre><code>import static nom.tam.fits.header.extra.NOAOExt.WATn_nnn;
+</pre></div></div>
+<p>Some keywords have indexes that must be specified, just call the n() method on the keyword and specify the indexes you want. You must spececify one integer per &#x2018;n&#x2019; in the keyword.</p>
+
+<div class="source">
+<div class="source">
+<pre>import static nom.tam.fits.header.extra.NOAOExt.WATn_nnn;
 ...
 hdr.addValue(WATn_nnn.n(9, 2, 3, 4), &quot;50&quot;);
-</code></pre><p>You can use the compiler to check your keywords, and also use your IDE to easily find references to certain keywords.</p>
+</pre></div></div>
+<p>You can use the compiler to check your keywords, and also use your IDE to easily find references to certain keywords.</p></div>
                   </div>
             </div>
           </div>

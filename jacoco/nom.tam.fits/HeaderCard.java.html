@@ -427,8 +427,8 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
         }
 <span class="pc bpc" id="L428" title="3 of 4 branches missed.">        if (key == null &amp;&amp; value != null) {</span>
 <span class="nc" id="L429">            throw new HeaderCardException(&quot;Null keyword with non-null value&quot;);</span>
-<span class="pc bpc" id="L430" title="1 of 4 branches missed.">        } else if (key != null &amp;&amp; key.length() &gt; HeaderCard.MAX_KEYWORD_LENGTH &amp;&amp; //</span>
-<span class="fc bfc" id="L431" title="All 4 branches covered.">                (!FitsFactory.getUseHierarch() || !key.substring(0, HIERARCH_LENGTH_PLUS_1).equals(HIERARCH_WITH_DOT))) {</span>
+<span class="pc bpc" id="L430" title="1 of 8 branches missed.">        } else if (key != null &amp;&amp; key.length() &gt; HeaderCard.MAX_KEYWORD_LENGTH &amp;&amp; //</span>
+                (!FitsFactory.getUseHierarch() || !key.substring(0, HIERARCH_LENGTH_PLUS_1).equals(HIERARCH_WITH_DOT))) {
 <span class="fc" id="L432">            throw new HeaderCardException(&quot;Keyword too long&quot;);</span>
         }
 <span class="fc bfc" id="L434" title="All 2 branches covered.">        if (value != null) {</span>

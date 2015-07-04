@@ -324,7 +324,7 @@ public class ByteParser {
                     } else {
 <span class="fc" id="L325">                        number =</span>
                                 ByteParser.EXPONENT_DENORMALISATION_FACTOR
-<span class="fc" id="L327">                                        * (number * Math.pow(ByteParser.NUMBER_BASE_DOUBLE, exponent * sign + ByteParser.EXPONENT_DENORMALISATION_CORR_LIMIT * -1));</span>
+                                        * (number * Math.pow(ByteParser.NUMBER_BASE_DOUBLE, exponent * sign + ByteParser.EXPONENT_DENORMALISATION_CORR_LIMIT * -1));
                     }
 <span class="fc" id="L329">                    length -= this.numberLength;</span>
                 }

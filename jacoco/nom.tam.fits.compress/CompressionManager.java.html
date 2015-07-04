@@ -152,9 +152,9 @@ public final class CompressionManager {
         }
 
 <span class="fc" id="L154">        int len = filename.length();</span>
-<span class="pc bpc" id="L155" title="1 of 4 branches missed.">        return len &gt; 2 &amp;&amp; (filename.substring(len - GZIP_EXTENTION.length()).equalsIgnoreCase(GZIP_EXTENTION) || //</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">                filename.substring(len - COMPRESS_EXTENTION.length()).equals(COMPRESS_EXTENTION) || //</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">                filename.substring(len - BZIP2_EXTENTION.length()).equals(BZIP2_EXTENTION));</span>
+<span class="pc bpc" id="L155" title="1 of 8 branches missed.">        return len &gt; 2 &amp;&amp; (filename.substring(len - GZIP_EXTENTION.length()).equalsIgnoreCase(GZIP_EXTENTION) || //</span>
+                filename.substring(len - COMPRESS_EXTENTION.length()).equals(COMPRESS_EXTENTION) || //
+                filename.substring(len - BZIP2_EXTENTION.length()).equals(BZIP2_EXTENTION));
     }
 
     private static ICompressProvider selectCompressionProvider(int mag1, int mag2) {
@@ -170,8 +170,8 @@ public final class CompressionManager {
         }
 <span class="fc" id="L171">        ServiceLoader&lt;ICompressProvider&gt; compressionProviders = ServiceLoader.load(ICompressProvider.class, Thread.currentThread().getContextClassLoader());</span>
 <span class="fc bfc" id="L172" title="All 2 branches covered.">        for (ICompressProvider provider : compressionProviders) {</span>
-<span class="pc bpc" id="L173" title="2 of 8 branches missed.">            if (provider.priority() &gt; 0 &amp;&amp; provider.priority() &gt; priority &amp;&amp; provider.priority() &lt; maxPriority &amp;&amp; //</span>
-<span class="fc bfc" id="L174" title="All 2 branches covered.">                    provider != old &amp;&amp; provider.provides(mag1, mag2)) {</span>
+<span class="pc bpc" id="L173" title="2 of 10 branches missed.">            if (provider.priority() &gt; 0 &amp;&amp; provider.priority() &gt; priority &amp;&amp; provider.priority() &lt; maxPriority &amp;&amp; //</span>
+                    provider != old &amp;&amp; provider.provides(mag1, mag2)) {
 <span class="fc" id="L175">                priority = provider.priority();</span>
 <span class="fc" id="L176">                selectedProvider = provider;</span>
             }
