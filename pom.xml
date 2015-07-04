@@ -110,7 +110,7 @@
 		</site>
 	</distributionManagement>
 	<issueManagement>
-		<system>GitHub Issues</system>
+		<system>GitHub</system>
 		<url>https://github.com/nom-tam-fits/nom-tam-fits/issues/</url>
 	</issueManagement>
 	<licenses>

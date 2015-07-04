@@ -1,6 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<document>
+<document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
+		<release version="1.13.0" date="2015-07-11" description="This is a stability release, before the new fits standard will be implemented in version 2.0">
+			<action type="update">
+				Some more detailed general text about this version if nesessary.
+			</action>
+			<action type="remove" dev="ritchieGitHub" issue="23">
+				Tile compression, will be implemented from scratch in 2.0 and is not yet available in 1.13.0
+			</action>
+			<action type="update" dev="ritchieGitHub" issue="29">
+				Unit tests extended to cover 92% of the library .
+			</action>
+			<action type="update" dev="ritchieGitHub" issue="17">
+				Longstring support was improved and longer comments are now supported.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="20">
+				Compression dependecy to apache compression is now optional again.
+			</action>
+		</release>
 		<release version="1.12.0" date="2015-02-20">
 			<action type="add" dev="ritchieGitHub">
 				Enumerations where added for ~1000 more or less Standard fits headers are now included (making compile references to headers possible).
@@ -251,7 +267,8 @@
 				the
 				cursor just after the EXTEND keyword where
 				new keywords are legal. It's still possible for users to write an
-				illegal header but now it requires at least a little effort on
+				illegal header but now it requires at
+				least a little effort on
 				their
 				part.noted originally by V. Forchi.
 			</action>
@@ -293,7 +310,8 @@
 				ignored
 				previously, but there is now a method
 				FitsFactory.setCheckAsciiString(boolean flag) which can be called
-				to turn on checking. A warning will be issued and non-printing
+				to turn on checking. A warning will be
+				issued and non-printing
 				characters
 				will be converted to spaces if this flag is set. Only a single
 				warning will be issued regardless of the number of invalid characters are
@@ -322,7 +340,8 @@
 				that a field
 				which otherwise would be treated
 				as a float or double array (with most rapidly varying
-				dimensionality of 2) should be treated as complex. The internal
+				dimensionality of 2) should be treated as complex.
+				The internal
 				data
 				representations are
 				identical.
@@ -457,7 +476,8 @@
 				is the same.
 				Similarly
 				int nElements(Object)
-				is now matched with
+				is now
+				matched with
 				long
 				nLElements(Object)
 
@@ -472,7 +492,8 @@
 				array indices
 				must be ints. E.g., no single dimension can exceed 2 GB,
 				and the total size of the heap for a given binary table HDU cannot
-				exceed 2 GB. ASCII tables may also be limited to 2 GB
+				exceed 2
+				GB. ASCII tables may also be limited to 2 GB
 				in some circumstances.
 				Files which exceed these limits may be readable using line by line
 				approaches, but users will need to use the library at a much lower level.
@@ -529,7 +550,8 @@
 				the new
 				class changes were
 				made in BinaryTable, AsciiTable, UndefinedData, ImageData and RandomGroupsData to throw the
-				exception at the appropriate time. The main Fits method was
+				exception at the appropriate
+				time. The main Fits method was
 				also
 				updated so that when
 				its readHDU() method is being used, the notional header that is given to the truncated HDU
@@ -556,7 +578,8 @@
 				method
 				will need to be recompiled.
 				Specific bugs were noted by Javier Diaz and Juan Carlos Segovia.
-				Note that the program may still fail on very large files but it should give
+				Note that the program may still fail on very
+				large files but it should give
 				more
 				informative error messages when it does so
 			</action>
@@ -715,7 +738,8 @@
 				differently than in
 				his code. There are deleteColumns
 				and deleteRows methods in TableHDU that delete either a specified range
-				or all tables or columns after (and including) the
+				or all tables or columns after
+				(and including) the
 				one specified.
 			</action>
 			<action type="update" dev="tmcglynn">
