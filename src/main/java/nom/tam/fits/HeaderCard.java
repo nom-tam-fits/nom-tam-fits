@@ -236,19 +236,7 @@ public class HeaderCard implements CursorValue<String> {
             this.comment = card.substring(MAX_KEYWORD_LENGTH).trim();
             return;
         }
-        // extract the value/comment part of the string
-        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
-
-        if (FitsFactory.isLongStringsEnabled() && parsedValue.isString() && parsedValue.getValue().endsWith("&")) {
-            longStringCard(dis, parsedValue);
-        } else {
-            this.value = parsedValue.getValue();
-            this.isString = parsedValue.isString();
-            this.comment = parsedValue.getComment();
-            if (!this.isString && this.value.indexOf('\'') >= 0) {
-                throw new IllegalArgumentException("no single quotes allowed in values");
-            }
-        }
+        extractValueCommentFromString(dis, card);
     }
 
     /**
@@ -485,6 +473,22 @@ public class HeaderCard implements CursorValue<String> {
         return 1;
     }
 
+    private void extractValueCommentFromString(ArrayDataInput dis, String card) throws IOException, TruncatedFileException {
+        // extract the value/comment part of the string
+        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
+
+        if (FitsFactory.isLongStringsEnabled() && parsedValue.isString() && parsedValue.getValue().endsWith("&")) {
+            longStringCard(dis, parsedValue);
+        } else {
+            this.value = parsedValue.getValue();
+            this.isString = parsedValue.isString();
+            this.comment = parsedValue.getComment();
+            if (!this.isString && this.value.indexOf('\'') >= 0) {
+                throw new IllegalArgumentException("no single quotes allowed in values");
+            }
+        }
+    }
+
     /**
      * @return the comment from this card
      */
@@ -562,19 +566,7 @@ public class HeaderCard implements CursorValue<String> {
 
         this.key = FitsHeaderCardParser.parseCardKey(card);
 
-        // extract the value/comment part of the string
-        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
-
-        if (FitsFactory.isLongStringsEnabled() && parsedValue.isString() && parsedValue.getValue().endsWith("&")) {
-            longStringCard(dis, parsedValue);
-        } else {
-            this.value = parsedValue.getValue();
-            this.isString = parsedValue.isString();
-            this.comment = parsedValue.getComment();
-            if (!this.isString && this.value.indexOf('\'') >= 0) {
-                throw new IllegalArgumentException("no single quotes allowed in values");
-            }
-        }
+        extractValueCommentFromString(dis, card);
     }
 
     /**
@@ -724,7 +716,9 @@ public class HeaderCard implements CursorValue<String> {
                 buf.appendSpacesTo(alignPosition);
             }
             // is there space left for a comment?
-            commentSubString.getAdjustedLength(((FITS_HEADER_CARD_SIZE - buf.length()) % FITS_HEADER_CARD_SIZE) - MAX_LONG_STRING_CONTINUE_OVERHEAD);
+            int spaceLeft = FITS_HEADER_CARD_SIZE - buf.length();
+            int spaceLeftInCard = spaceLeft % FITS_HEADER_CARD_SIZE;
+            commentSubString.getAdjustedLength(spaceLeftInCard - MAX_LONG_STRING_CONTINUE_OVERHEAD);
             // if there is a comment, add a comment delimiter
             if (!commentHandled && commentSubString.length() > 0) {
                 buf.append(" / ");

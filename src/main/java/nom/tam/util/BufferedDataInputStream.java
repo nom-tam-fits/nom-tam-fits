@@ -275,29 +275,22 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     @Override
     public double readDouble() throws IOException {
-        return Double.longBitsToDouble(readLong());
+        return this.bufferDecoder.readDouble();
     }
 
     @Override
     public float readFloat() throws IOException {
-        return Float.intBitsToFloat(readInt());
+        return this.bufferDecoder.readFloat();
     }
 
     @Override
     public void readFully(byte[] b) throws IOException {
-        readFully(b, 0, b.length);
+        this.bufferDecoder.readFully(b, 0, b.length);
     }
 
     @Override
     public void readFully(byte[] b, int off, int len) throws IOException {
-
-        if (off < 0 || len < 0 || off + len > b.length) {
-            throw new IOException("Attempt to read outside byte array");
-        }
-
-        if (read(b, off, len) < len) {
-            throw new EOFException();
-        }
+        this.bufferDecoder.readFully(b, off, len);
     }
 
     @Override

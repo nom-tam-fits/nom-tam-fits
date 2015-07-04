@@ -493,27 +493,22 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public double readDouble() throws IOException {
-        return Double.longBitsToDouble(this.dataDecoder.readLong());
+        return this.dataDecoder.readDouble();
     }
 
     @Override
     public float readFloat() throws IOException {
-        return Float.intBitsToFloat(this.dataDecoder.readInt());
+        return this.dataDecoder.readFloat();
     }
 
     @Override
     public void readFully(byte[] b) throws IOException {
-        readFully(b, 0, b.length);
+        this.dataDecoder.readFully(b, 0, b.length);
     }
 
     @Override
     public void readFully(byte[] b, int off, int len) throws IOException {
-        if (off < 0 || len < 0 || off + len > b.length) {
-            throw new IOException("Attempt to read outside byte array");
-        }
-        if (read(b, off, len) < len) {
-            throw new EOFException();
-        }
+        this.dataDecoder.readFully(b, off, len);
     }
 
     @Override

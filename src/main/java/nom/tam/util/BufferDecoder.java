@@ -281,8 +281,7 @@ public abstract class BufferDecoder {
      */
     protected char readChar() throws IOException {
         checkBuffer(FitsIO.BYTES_IN_CHAR);
-        return (char) (this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] << FitsIO.BITS_OF_1_BYTE | //
-        /*           */this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK);
+        return (char) readUncheckedShort();
     }
 
     /**
@@ -292,10 +291,7 @@ public abstract class BufferDecoder {
      */
     protected int readInt() throws IOException {
         checkBuffer(FitsIO.BYTES_IN_INTEGER);
-        return this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] << FitsIO.BITS_OF_3_BYTES | //
-                (this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK) << FitsIO.BITS_OF_2_BYTES | //
-                (this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK) << FitsIO.BITS_OF_1_BYTE | //
-                this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK;
+        return readUncheckedInt();
     }
 
     protected long readLArray(Object o) throws IOException {
@@ -309,15 +305,26 @@ public abstract class BufferDecoder {
      */
     protected long readLong() throws IOException {
         checkBuffer(FitsIO.BYTES_IN_LONG);
-        int i1 = this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] << FitsIO.BITS_OF_3_BYTES | //
-                (this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK) << FitsIO.BITS_OF_2_BYTES | //
-                (this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK) << FitsIO.BITS_OF_1_BYTE | //
-                this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK;
-        int i2 = this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] << FitsIO.BITS_OF_3_BYTES | //
-                (this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK) << FitsIO.BITS_OF_2_BYTES | //
-                (this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK) << FitsIO.BITS_OF_1_BYTE | //
-                this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK;
+        int i1 = readUncheckedInt();
+        int i2 = readUncheckedInt();
         return (long) i1 << FitsIO.BITS_OF_4_BYTES | i2 & FitsIO.INTEGER_MASK;
+    }
+
+    protected double readDouble() throws IOException {
+        return Double.longBitsToDouble(readLong());
+    }
+
+    protected float readFloat() throws IOException {
+        return Float.intBitsToFloat(readInt());
+    }
+
+    protected void readFully(byte[] b, int off, int len) throws IOException {
+        if (off < 0 || len < 0 || off + len > b.length) {
+            throw new IOException("Attempt to read outside byte array");
+        }
+        if (read(b, off, len) < len) {
+            throw new EOFException();
+        }
     }
 
     /**
@@ -327,8 +334,19 @@ public abstract class BufferDecoder {
      */
     protected short readShort() throws IOException {
         checkBuffer(FitsIO.BYTES_IN_SHORT);
-        return (short) (this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] << FitsIO.BITS_OF_1_BYTE | //
-        /*            */this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK);
+        return (short) readUncheckedShort();
+    }
+
+    private int readUncheckedInt() {
+        return this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] << FitsIO.BITS_OF_3_BYTES | //
+                (this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK) << FitsIO.BITS_OF_2_BYTES | //
+                (this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK) << FitsIO.BITS_OF_1_BYTE | //
+                this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK;
+    }
+
+    private int readUncheckedShort() {
+        return this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] << FitsIO.BITS_OF_1_BYTE | //
+                this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK;
     }
 
 }

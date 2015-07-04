@@ -31,16 +31,10 @@ package nom.tam.fits.utilities;
  * #L%
  */
 
-import static nom.tam.util.FitsIO.BITS_OF_1_BYTE;
-import static nom.tam.util.FitsIO.BITS_OF_2_BYTES;
-import static nom.tam.util.FitsIO.BITS_OF_3_BYTES;
 import static nom.tam.util.FitsIO.BYTE_1_OF_LONG_MASK;
 import static nom.tam.util.FitsIO.BYTE_2_OF_LONG_MASK;
 import static nom.tam.util.FitsIO.BYTE_3_OF_LONG_MASK;
 import static nom.tam.util.FitsIO.BYTE_4_OF_LONG_MASK;
-import static nom.tam.util.FitsIO.HIGH_INTEGER_MASK;
-import static nom.tam.util.FitsIO.INTEGER_MASK;
-import static nom.tam.util.FitsIO.SHORT_OF_LONG_MASK;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -54,6 +48,7 @@ import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.header.Checksum;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.FitsIO;
 
 public final class FitsCheckSum {
 
@@ -111,19 +106,19 @@ public final class FitsCheckSum {
              * avoid sign extension /propagation.
              */
             int offset = CHECKSUM_HALF_BLOCK_SIZE * i;
-            hi += data[offset++] << BITS_OF_1_BYTE & BYTE_2_OF_LONG_MASK | data[offset++] & BYTE_1_OF_LONG_MASK;
-            lo += data[offset++] << BITS_OF_1_BYTE & BYTE_2_OF_LONG_MASK | data[offset++] & BYTE_1_OF_LONG_MASK;
+            hi += data[offset++] << FitsIO.BITS_OF_1_BYTE & BYTE_2_OF_LONG_MASK | data[offset++] & BYTE_1_OF_LONG_MASK;
+            lo += data[offset++] << FitsIO.BITS_OF_1_BYTE & BYTE_2_OF_LONG_MASK | data[offset++] & BYTE_1_OF_LONG_MASK;
         }
 
-        long hicarry = hi >>> BITS_OF_2_BYTES;
-        long locarry = lo >>> BITS_OF_2_BYTES;
+        long hicarry = hi >>> FitsIO.BITS_OF_2_BYTES;
+        long locarry = lo >>> FitsIO.BITS_OF_2_BYTES;
         while (hicarry != 0 || locarry != 0) {
-            hi = (hi & SHORT_OF_LONG_MASK) | locarry;
-            lo = (lo & SHORT_OF_LONG_MASK) | hicarry;
-            hicarry = hi >>> BITS_OF_2_BYTES;
-            locarry = lo >>> BITS_OF_2_BYTES;
+            hi = (hi & FitsIO.SHORT_OF_LONG_MASK) | locarry;
+            lo = (lo & FitsIO.SHORT_OF_LONG_MASK) | hicarry;
+            hicarry = hi >>> FitsIO.BITS_OF_2_BYTES;
+            locarry = lo >>> FitsIO.BITS_OF_2_BYTES;
         }
-        return (hi << BITS_OF_2_BYTES) | lo;
+        return (hi << FitsIO.BITS_OF_2_BYTES) | lo;
     }
 
     /**
@@ -165,7 +160,7 @@ public final class FitsCheckSum {
         final long value = compl ? ~c : c;
         for (int i = 0; i < CHECKSUM_BLOCK_SIZE; i++) {
             // each byte becomes four
-            final int byt = (int) ((value & mask[i]) >>> BITS_OF_3_BYTES - BITS_OF_1_BYTE * i);
+            final int byt = (int) ((value & mask[i]) >>> FitsIO.BITS_OF_3_BYTES - FitsIO.BITS_OF_1_BYTE * i);
             final int quotient = byt / CHECKSUM_BLOCK_SIZE + offset;
             final int remainder = byt % CHECKSUM_BLOCK_SIZE;
             int[] ch = new int[CHECKSUM_BLOCK_SIZE];
@@ -266,8 +261,9 @@ public final class FitsCheckSum {
         long cshdu = csh + csd;
         // If we had a carry it should go into the
         // beginning.
-        while ((cshdu & HIGH_INTEGER_MASK) != 0) {
-            cshdu = (cshdu & INTEGER_MASK) + 1;
+        while ((cshdu & FitsIO.HIGH_INTEGER_MASK) != 0) {
+            long cshduIntPart = cshdu & FitsIO.INTEGER_MASK;
+            cshdu = cshduIntPart + 1;
         }
         /*
          * This time we do not use a deleteKey() to ensure that the keyword is
