@@ -136,7 +136,7 @@ public class AsciiTableTest {
 
         Fits f = new Fits("target/at1.fits");
 
-        TableHDU th = (TableHDU) f.getHDU(1);
+        TableHDU<?> th = (TableHDU<?>) f.getHDU(1);
         assertEquals("delrBef", 50, th.getNRows());
         th.deleteRows(2, 2);
         assertEquals("delrAft", 48, th.getNRows());
@@ -145,7 +145,7 @@ public class AsciiTableTest {
         bf.close();
 
         f = new Fits("target/at1y.fits");
-        th = (TableHDU) f.getHDU(1);
+        th = (TableHDU<?>) f.getHDU(1);
         assertEquals("delrAft2", 48, th.getNRows());
 
         assertEquals("delcBef", 5, th.getNCols());
@@ -158,7 +158,7 @@ public class AsciiTableTest {
         bf.close();
 
         f = new Fits("target/at1z.fits");
-        th = (TableHDU) f.getHDU(1);
+        th = (TableHDU<?>) f.getHDU(1);
         assertEquals("delcAft3", 1, th.getNCols());
     }
 
@@ -230,7 +230,7 @@ public class AsciiTableTest {
         Object[] samp = getSampleCols();
 
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
-        AsciiTable data = (AsciiTable) hdu.getData();
+        AsciiTable data = hdu.getData();
         float[] f1 = (float[]) data.getColumn(0);
         float[] f2 = f1.clone();
         for (int i = 0; i < f2.length; i += 1) {
@@ -369,14 +369,17 @@ public class AsciiTableTest {
             }
         };
 
-        BasicHDU ahdu = FitsFactory.hduFactory(o);
-        Fits f = new Fits();
-        f.addHDU(ahdu);
-        f.write(bf);
+        BasicHDU<?> ahdu = FitsFactory.hduFactory(o);
+        try(Fits f = new Fits()) {
+	        f.addHDU(ahdu);
+	        f.write(bf);
+        }
         bf.close();
 
-        f = new Fits("target/at3.fits");
-        BasicHDU bhdu = f.getHDU(1);
+        BasicHDU<?> bhdu;
+        try(Fits f = new Fits("target/at3.fits")) {
+        	bhdu = f.getHDU(1);
+        }
         Header hdr = bhdu.getHeader();
         assertEquals(hdr.getStringValue("TFORM1"), "A1");
         assertEquals(hdr.getStringValue("TFORM2"), "A1");
@@ -386,23 +389,24 @@ public class AsciiTableTest {
     }
 
     public void readByColumn() throws Exception {
-        Fits f = new Fits("target/at1.fits");
-        AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
-        AsciiTable data = (AsciiTable) hdu.getData();
-        Object[] cols = getSampleCols();
-
-        assertEquals("Number of rows", data.getNRows(), 50);
-        assertEquals("Number of columns", data.getNCols(), 5);
-
-        for (int j = 0; j < data.getNCols(); j += 1) {
-            Object col = data.getColumn(j);
-            if (j == 4) {
-                String[] st = (String[]) col;
-                for (int i = 0; i < st.length; i += 1) {
-                    st[i] = st[i].trim();
-                }
-            }
-            assertEquals("Ascii Columns:" + j, true, TestArrayFuncs.arrayEquals(cols[j], col, 1.e-6, 1.e-14));
+        try (Fits f = new Fits("target/at1.fits")) {
+        	AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+	        AsciiTable data = hdu.getData();
+	        Object[] cols = getSampleCols();
+	
+	        assertEquals("Number of rows", data.getNRows(), 50);
+	        assertEquals("Number of columns", data.getNCols(), 5);
+	
+	        for (int j = 0; j < data.getNCols(); j += 1) {
+	            Object col = data.getColumn(j);
+	            if (j == 4) {
+	                String[] st = (String[]) col;
+	                for (int i = 0; i < st.length; i += 1) {
+	                    st[i] = st[i].trim();
+	                }
+	            }
+	            assertEquals("Ascii Columns:" + j, true, TestArrayFuncs.arrayEquals(cols[j], col, 1.e-6, 1.e-14));
+	        }
         }
     }
 
@@ -410,7 +414,7 @@ public class AsciiTableTest {
 
         Fits f = new Fits("target/at2.fits");
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
-        AsciiTable data = (AsciiTable) hdu.getData();
+        AsciiTable data = hdu.getData();
 
         for (int i = 0; i < data.getNRows(); i += 1) {
             Object[] row = data.getRow(i);
@@ -427,7 +431,7 @@ public class AsciiTableTest {
         Object[] cols = getSampleCols();
 
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
-        AsciiTable data = (AsciiTable) hdu.getData();
+        AsciiTable data = hdu.getData();
 
         for (int i = 0; i < data.getNRows(); i += 1) {
             assertEquals("Rows:" + i, 50, data.getNRows());

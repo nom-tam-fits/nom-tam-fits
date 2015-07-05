@@ -47,7 +47,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
      * @throws FitsException
      *             if the operation failed
      */
-    public static Data encapsulate(Object o) throws FitsException {
+    public static ImageData encapsulate(Object o) throws FitsException {
         return new ImageData(o);
     }
 
@@ -123,9 +123,8 @@ public class ImageHDU extends BasicHDU<ImageData> {
      * @throws FitsException
      *             if there was a problem with the data.
      */
-    public ImageHDU(Header h, Data d) throws FitsException {
-        this.myData = (ImageData) d;
-        this.myHeader = h;
+    public ImageHDU(Header h, ImageData d) throws FitsException {
+        super(h, d);
 
     }
 

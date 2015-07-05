@@ -41,11 +41,13 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * Create the TableHDU. Note that this will normally only be invoked by
      * subclasses in the FITS package.
      * 
+     * @param hdr
+     *            the header
      * @param td
      *            The data for the table.
      */
-    protected TableHDU(T td) {
-        this.myData = td;
+    protected TableHDU(Header hdr, T td) {
+        super(hdr, td);
     }
 
     /**

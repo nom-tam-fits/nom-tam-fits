@@ -47,9 +47,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.lang.reflect.Constructor;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import nom.tam.fits.compress.CloseIS;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;

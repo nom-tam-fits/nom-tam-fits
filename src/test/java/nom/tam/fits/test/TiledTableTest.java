@@ -41,6 +41,7 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Data;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.image.comp.TiledImageHDU;
 import nom.tam.util.ArrayFuncs;
@@ -154,7 +155,7 @@ public class TiledTableTest {
     }
 
     private TiledImageHDU tiledImageHdu(Object bimg, Map<String, String> params) throws FitsException, IOException {
-        Data data = ImageHDU.encapsulate(bimg);
+        ImageData data = ImageHDU.encapsulate(bimg);
         return new TiledImageHDU(new ImageHDU(ImageHDU.manufactureHeader(data), data), params);
     }
 }

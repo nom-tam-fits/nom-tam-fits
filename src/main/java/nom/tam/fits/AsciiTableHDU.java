@@ -62,11 +62,11 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      * @return a ASCII table data structure from an array of objects
      *         representing the columns.
      * @param o
-     *            the array of object to create the ascii table
+     *            the array of object to create the ASCII table
      * @throws FitsException
      *             if the table could not be created.
      */
-    public static Data encapsulate(Object o) throws FitsException {
+    public static AsciiTable encapsulate(Object o) throws FitsException {
 
         Object[] oo = (Object[]) o;
         AsciiTable d = new AsciiTable();
@@ -141,17 +141,15 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
-     * Create an ascii table header/data unit.
+     * Create an ASCII table header/data unit.
      * 
      * @param h
-     *            the template specifying the ascii table.
+     *            the template specifying the ASCII table.
      * @param d
      *            the FITS data structure containing the table data.
      */
-    public AsciiTableHDU(Header h, Data d) {
-        super((AsciiTable) d);
-        this.myHeader = h;
-        this.myData = (AsciiTable) d;
+    public AsciiTableHDU(Header h, AsciiTable d) {
+        super(h, d);
     }
 
     @Override

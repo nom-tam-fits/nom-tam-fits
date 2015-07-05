@@ -68,7 +68,7 @@ public class ChecksumTest {
             }
         };
         Fits f = new Fits();
-        BasicHDU bhdu = FitsFactory.hduFactory(data);
+        BasicHDU<?> bhdu = FitsFactory.hduFactory(data);
         f.addHDU(bhdu);
 
         Fits.setChecksum(bhdu);

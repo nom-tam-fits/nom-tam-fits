@@ -137,7 +137,7 @@ public class Fits implements Closeable {
      * @param data
      *            The data to be described in this HDU.
      * @param <DataClass>
-     *            the class of the hdu
+     *            the class of the HDU
      * @throws FitsException
      *             if the operation failed
      */
@@ -152,7 +152,7 @@ public class Fits implements Closeable {
      * @param h
      *            The header which describes the FITS extension
      * @throws FitsException
-     *             if the header could not be converted to a hdu.
+     *             if the header could not be converted to a HDU.
      */
     public static BasicHDU<?> makeHDU(Header h) throws FitsException {
         Data d = FitsFactory.dataFactory(h);
@@ -164,7 +164,7 @@ public class Fits implements Closeable {
      * @param o
      *            The data to be described in this HDU.
      * @throws FitsException
-     *             if the parameter could not be converted to a hdu.
+     *             if the parameter could not be converted to a HDU.
      */
     public static BasicHDU<?> makeHDU(Object o) throws FitsException {
         return FitsFactory.hduFactory(o);
@@ -294,7 +294,7 @@ public class Fits implements Closeable {
     @Deprecated
     public Fits(InputStream str, boolean compressed) throws FitsException {
         this(str);
-        LOG.log(Level.INFO, "compresseion ignored, will be autodetected. was set to " + compressed);
+        LOG.log(Level.INFO, "compression ignored, will be autodetected. was set to " + compressed);
     }
 
     /**
@@ -398,7 +398,7 @@ public class Fits implements Closeable {
     @Deprecated
     public Fits(URL myURL, boolean compressed) throws FitsException {
         this(myURL);
-        LOG.log(Level.INFO, "compresseion ignored, will be autodetected. was set to " + compressed);
+        LOG.log(Level.INFO, "compression ignored, will be autodetected. was set to " + compressed);
     }
 
     /**
@@ -409,7 +409,7 @@ public class Fits implements Closeable {
      * @param myHDU
      *            The HDU to be added to the end of the FITS object.
      * @throws FitsException
-     *             if the hdu could not be inserted.
+     *             if the HDU could not be inserted.
      */
     public void addHDU(BasicHDU<?> myHDU) throws FitsException {
         insertHDU(myHDU, getNumberOfHDUs());
@@ -423,7 +423,7 @@ public class Fits implements Closeable {
      */
     @Deprecated
     public int currentSize() {
-        return this.hduList.size();
+        return getNumberOfHDUs();
     }
 
     /**
@@ -435,7 +435,7 @@ public class Fits implements Closeable {
      *            from an image to primary HDU if possible. If not a dummy
      *            header HDU will then be inserted.
      * @throws FitsException
-     *             if the hdu could not be deleted.
+     *             if the HDU could not be deleted.
      */
     public void deleteHDU(int n) throws FitsException {
         int size = getNumberOfHDUs();
@@ -486,7 +486,7 @@ public class Fits implements Closeable {
      * @throws FitsException
      *             if the header could not be read
      * @throws IOException
-     *             if the undelaying buffer thowed an error
+     *             if the underlying buffer threw an error
      */
     public BasicHDU<?> getHDU(int n) throws FitsException, IOException {
         int size = getNumberOfHDUs();
@@ -527,7 +527,7 @@ public class Fits implements Closeable {
      * @param position
      *            The location at which the HDU is to be inserted.
      * @throws FitsException
-     *             if the hdu could not be inserted.
+     *             if the HDU could not be inserted.
      */
     public void insertHDU(BasicHDU<?> myHDU, int position) throws FitsException {
         if (myHDU == null) {
@@ -634,7 +634,7 @@ public class Fits implements Closeable {
      * @throws FitsException
      *             if the header could not be read
      * @throws IOException
-     *             if the undelaying buffer thowed an error
+     *             if the underlying buffer threw an error
      */
     public BasicHDU<?> readHDU() throws FitsException, IOException {
         if (this.dataStr == null || this.atEOF) {
@@ -656,7 +656,7 @@ public class Fits implements Closeable {
             throw e;
         }
         this.lastFileOffset = FitsUtil.findOffset(this.dataStr);
-        BasicHDU<?> nextHDU = FitsFactory.hduFactory(hdr, data);
+        BasicHDU<Data> nextHDU = FitsFactory.hduFactory(hdr, data);
         this.hduList.add(nextHDU);
         return nextHDU;
     }
@@ -743,7 +743,7 @@ public class Fits implements Closeable {
      * Skip the next HDU on the default input stream.
      * 
      * @throws FitsException
-     *             if the hdu could not be skipped
+     *             if the HDU could not be skipped
      * @throws IOException
      *             if the underlying stream failed
      */
@@ -766,7 +766,7 @@ public class Fits implements Closeable {
      * @param n
      *            The number of HDUs to be skipped.
      * @throws FitsException
-     *             if the hdu could not be skipped
+     *             if the HDU could not be skipped
      * @throws IOException
      *             if the underlying stream failed
      */
@@ -868,10 +868,10 @@ public class Fits implements Closeable {
     }
 
     /**
-     * set the checksum of a hdu.
+     * set the checksum of a HDU.
      * 
      * @param hdu
-     *            the hdu to add a checksum
+     *            the HDU to add a checksum
      * @throws FitsException
      *             the checksum could not be added to the header
      * @deprecated use {@link FitsCheckSum#setChecksum(BasicHDU)}

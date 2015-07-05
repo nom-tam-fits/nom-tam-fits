@@ -42,9 +42,8 @@ import java.util.Map;
 import java.util.Set;
 
 import nom.tam.fits.BasicHDU;
+import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.Data;
-import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
@@ -53,7 +52,6 @@ import nom.tam.fits.ImageHDU;
 import nom.tam.image.ImageTiler;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 
 /**
@@ -181,7 +179,7 @@ public class TiledImageHDU extends BinaryTableHDU {
         }
     }
 
-    private static Map<Integer, Class> bitpixClasses = new HashMap<Integer, Class>();
+    private static Map<Integer, Class<?>> bitpixClasses = new HashMap<>();
 
     static {
         TiledImageHDU.bitpixClasses.put(8, byte.class);
@@ -206,7 +204,7 @@ public class TiledImageHDU extends BinaryTableHDU {
      * 
      * @return A nil data segment
      */
-    private static Data nilData() throws FitsException {
+    private static BinaryTable nilData() throws FitsException {
         // We start with two rows so that we can ensure
         // that it is seen as a variable length column.
         // Need to delete these before adding the real data.
@@ -224,7 +222,7 @@ public class TiledImageHDU extends BinaryTableHDU {
 
     private final CompressionScheme cs;
 
-    private final Class baseClass;
+    private final Class<?> baseClass;
 
     /**
      * The tile widths in each dimension
@@ -361,9 +359,9 @@ public class TiledImageHDU extends BinaryTableHDU {
             this.quant = new Quantizer(scale, offset);
         }
 
-        Cursor newPointer = this.hdr.iterator();
+        Cursor<String, HeaderCard> newPointer = this.hdr.iterator();
         newPointer.setKey("END");
-        Cursor oldPointer = old.iterator();
+        Cursor<String, HeaderCard> oldPointer = old.iterator();
         oldPointer.setKey("BITPIX");
 
         copyOldKeywords(oldPointer, newPointer);
@@ -372,14 +370,14 @@ public class TiledImageHDU extends BinaryTableHDU {
         populateData(kern, bitpix, tl, this.cs);
     }
 
-    private void copyOldKeywords(Cursor oldPointer, Cursor newPointer) {
+    private void copyOldKeywords(Cursor<String, HeaderCard> oldPointer, Cursor<String, HeaderCard> newPointer) {
 
         newPointer.add(HeaderCard.create("COMMENT"));
         newPointer.add(HeaderCard.create("COMMENT   Header info copied from original image"));
         newPointer.add(HeaderCard.create("COMMENT"));
 
         while (oldPointer.hasNext()) {
-            HeaderCard card = (HeaderCard) oldPointer.next();
+            HeaderCard card = oldPointer.next();
             String key = card.getKey();
             if (key.equals("END")) {
                 break;
@@ -466,7 +464,7 @@ public class TiledImageHDU extends BinaryTableHDU {
         }
         System.out.println("Finished the loop");
 
-        BasicHDU bhdu = FitsFactory.hduFactory(data);
+        BasicHDU<?> bhdu = FitsFactory.hduFactory(data);
         // importKeywords(bhdu);
         return (ImageHDU) bhdu;
     }
@@ -518,8 +516,9 @@ public class TiledImageHDU extends BinaryTableHDU {
         tileData = this.cs.decompress(tileData, tileLen);
         Object tile = ArrayFuncs.newInstance(this.baseClass, ArrayFuncs.reverseIndices(td.size));
         if (this.quant == null) {
-            BufferedDataInputStream bds = new BufferedDataInputStream(new ByteArrayInputStream(tileData));
-            bds.readLArray(tile);
+            try(BufferedDataInputStream bds = new BufferedDataInputStream(new ByteArrayInputStream(tileData))) {
+            	bds.readLArray(tile);
+            }
         } else {
             this.quant.fill(tileData, tile, td);
         }
@@ -666,19 +665,15 @@ public class TiledImageHDU extends BinaryTableHDU {
 
     private void populateData(Object kern, int bitpix, TileLooper tl, CompressionScheme cs) throws FitsException, IOException {
 
-        getData();
         this.deleteRows(0, 2);
 
         int tileCount = 0;
 
         Iterator<TileDescriptor> ti = tl.iterator();
         this.kernelClass = kern.getClass().getName();
-        getData();
 
         while (ti.hasNext()) {
             TileDescriptor td = ti.next();
-            for (int element : td.size) {
-            }
             byte[] data;
             if (this.quant == null) {
                 data = getTileData(td, kern, bitpix);

@@ -58,7 +58,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      * @throws FitsException
      *             if the type of the data is not usable as data
      */
-    public static Data encapsulate(Object o) throws FitsException {
+    public static BinaryTable encapsulate(Object o) throws FitsException {
         if (o instanceof nom.tam.util.ColumnTable) {
             return new BinaryTable((nom.tam.util.ColumnTable<?>) o);
         } else if (o instanceof Object[][]) {
@@ -103,7 +103,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      * @throws FitsException
      *             if there was a problem with the header.
      */
-    public static Data manufactureData(Header header) throws FitsException {
+    public static BinaryTable manufactureData(Header header) throws FitsException {
         return new BinaryTable(header);
     }
 
@@ -121,11 +121,8 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         return hdr;
     }
 
-    public BinaryTableHDU(Header hdr, Data datum) {
-        super((BinaryTable) datum);
-        this.myHeader = hdr;
-        this.myData = (BinaryTable) datum;
-
+    public BinaryTableHDU(Header hdr, BinaryTable datum) {
+        super(hdr, datum);
     }
 
     /**

@@ -11,3 +11,5 @@ release.properties
 /jtest.fil
 /.travis.yml~
 /target/
+/.metadata/
+/RemoteSystemsTempFiles/

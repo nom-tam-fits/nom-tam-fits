@@ -111,6 +111,11 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /** Is this the first HDU in a FITS file? */
     protected boolean isPrimary = false;
 
+    protected BasicHDU(Header myHeader, DataClass myData) {
+        this.myHeader = myHeader;
+        this.myData = myData;
+    }
+
     public void addValue(IFitsHeader key, boolean val) throws HeaderCardException {
         this.myHeader.addValue(key.key(), val, key.comment());
     }
@@ -137,7 +142,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @param comment
      *            comment for the key/value pair
      * @throws HeaderCardException
-     *             if the card does not folow the specification
+     *             if the card does not follow the specification
      */
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
         this.myHeader.addValue(key, val, comment);

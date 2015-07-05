@@ -59,10 +59,9 @@ public final class FitsFactory {
     /**
      * @return Given a Header construct an appropriate data.
      * @param hdr
-     *            header to create the data from * @throws FitsException if the
-     *            operation failed
+     *            header to create the data from
      * @throws FitsException
-     *             if the header did not contain enougth information to detect
+     *             if the header did not contain enough information to detect
      *             the type of the data
      */
     public static Data dataFactory(Header hdr) throws FitsException {
@@ -128,15 +127,15 @@ public final class FitsFactory {
     @SuppressWarnings("unchecked")
     public static <DataClass extends Data> BasicHDU<DataClass> hduFactory(Header hdr, DataClass d) throws FitsException {
         if (d instanceof ImageData) {
-            return (BasicHDU<DataClass>) new ImageHDU(hdr, d);
+            return (BasicHDU<DataClass>) new ImageHDU(hdr, (ImageData) d);
         } else if (d instanceof RandomGroupsData) {
-            return (BasicHDU<DataClass>) new RandomGroupsHDU(hdr, d);
-        } else if (d instanceof AsciiTable) {
-            return (BasicHDU<DataClass>) new AsciiTableHDU(hdr, d);
+            return (BasicHDU<DataClass>) new RandomGroupsHDU(hdr, (RandomGroupsData) d);
+        } else if (FitsFactory.useAsciiTables && d instanceof AsciiTable) {
+            return (BasicHDU<DataClass>) new AsciiTableHDU(hdr, (AsciiTable) d);
         } else if (d instanceof BinaryTable) {
-            return (BasicHDU<DataClass>) new BinaryTableHDU(hdr, d);
+            return (BasicHDU<DataClass>) new BinaryTableHDU(hdr, (BinaryTable) d);
         } else if (d instanceof UndefinedData) {
-            return (BasicHDU<DataClass>) new UndefinedHDU(hdr, d);
+            return (BasicHDU<DataClass>) new UndefinedHDU(hdr, (UndefinedData) d);
         }
         return null;
     }

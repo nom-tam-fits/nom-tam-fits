@@ -86,8 +86,8 @@ public class TestArrayFuncs {
             return false;
         }
 
-        Class xClass = x.getClass();
-        Class yClass = y.getClass();
+        Class<?> xClass = x.getClass();
+        Class<?> yClass = y.getClass();
 
         if (xClass != yClass) {
             return false;
@@ -199,7 +199,7 @@ public class TestArrayFuncs {
      *            The desired dimensions.
      * @return An array object populated with a simple test pattern.
      */
-    public static Object generateArray(Class baseType, int[] dims) {
+    public static Object generateArray(Class<?> baseType, int[] dims) {
 
         // Generate an array and populate it with a test pattern of
         // data.

@@ -419,8 +419,6 @@ public class BinaryTable extends AbstractTableData {
         ColumnDesc added = new ColumnDesc();
         this.columnList.add(added);
 
-        Class<?> base = ArrayFuncs.getBaseClass(o);
-
         // A varying length column is a two-d primitive
         // array where the second index is not constant.
         // We do not support Q types here, since Java
@@ -446,6 +444,7 @@ public class BinaryTable extends AbstractTableData {
         if (!added.isVarying) {
 
             int[] allDim = ArrayFuncs.getDimensions(o);
+            Class<?> base = ArrayFuncs.getBaseClass(o);
 
             // Add a dimension for the length of Strings.
             if (base == String.class) {
