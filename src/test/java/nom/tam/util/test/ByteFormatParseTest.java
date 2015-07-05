@@ -256,52 +256,6 @@ public class ByteFormatParseTest {
         }
 
         assertEquals(Integer.MIN_VALUE, this.bp.getInt());
-        // Now do it with left-aligned numbers.
-
-        this.bp.setFillFields(true);
-        this.offset = 0;
-        colSize = 12;
-        this.cnt = 0;
-        this.offset = 0;
-        while (this.cnt < tint.length) {
-            int oldOffset = this.offset;
-            this.offset = this.bf.format(tint[this.cnt], this.buffer, this.offset, colSize);
-            int nb = colSize - (this.offset - oldOffset);
-            if (nb > 0) {
-                this.offset = this.bf.alignFill(this.buffer, this.offset, nb);
-            }
-            this.cnt += 1;
-            if (this.cnt % 8 == 0) {
-                this.offset = this.bf.format("\n", this.buffer, this.offset, 1);
-            }
-        }
-
-        // Now see if we can get them back
-        this.bp.setOffset(0);
-        for (int i = 0; i < tint.length; i += 1) {
-
-            int chk = this.bp.getInt(colSize);
-
-            assertEquals("IntegersLA", chk, tint[i]);
-            if ((i + 1) % 8 == 0) {
-                this.bp.skip(1);
-            }
-        }
-
-        this.offset = 0;
-        colSize = 12;
-        this.cnt = 0;
-        this.offset = 0;
-        while (this.cnt < tint.length) {
-            this.offset = this.bf.format(tint[this.cnt], this.buffer, this.offset, colSize);
-            this.cnt += 1;
-            if (this.cnt % 8 == 0) {
-                this.offset = this.bf.format("\n", this.buffer, this.offset, 1);
-            }
-        }
-
-        String myStr = new String(this.buffer, 0, this.offset);
-        assertEquals("No spaces", -1, myStr.indexOf(" "));
 
         this.offset = 0;
         colSize = 12;
@@ -312,7 +266,7 @@ public class ByteFormatParseTest {
             this.offset = this.bf.format(" ", this.buffer, this.offset, 1);
             this.cnt += 1;
         }
-        myStr = new String(this.buffer, 0, this.offset);
+        String myStr = new String(this.buffer, 0, this.offset);
         String[] array = myStr.split(" ");
 
         assertEquals("Split size", 100, array.length);
@@ -355,15 +309,9 @@ public class ByteFormatParseTest {
         lng[1] = Long.MIN_VALUE;
         lng[2] = 0;
 
-        this.bp.setFillFields(true);
-
         this.offset = 0;
         for (int i = 0; i < lng.length; i += 1) {
-            int oldOffset = this.offset;
             this.offset = this.bf.format(lng[i], this.buffer, this.offset, 20);
-            while (this.offset != oldOffset + 20) {
-                this.offset = this.bf.format(" ", this.buffer, this.offset, 1);
-            }
 
             if ((i + 1) % 4 == 0) {
                 this.offset = this.bf.format("\n", this.buffer, this.offset, 1);
@@ -451,20 +399,13 @@ public class ByteFormatParseTest {
         new ByteParser("  A".getBytes()).getLong(10);
     }
 
-    @Test(expected = FormatException.class)
-    public void testLongCaseFillFields1() throws Exception {
-        ByteParser byteParser = new ByteParser("  123456 A ".getBytes());
-        byteParser.setFillFields(true);
-        byteParser.getLong(10);
-    }
-
     @Test
     public void testLongCaseFillFields2() throws Exception {
         ByteParser byteParser = new ByteParser("  123456  ".getBytes());
-        byteParser.setFillFields(true);
+
         assertEquals(123456L, byteParser.getLong(10));
-        assertEquals(10, byteParser.getNumberLength());
-        assertEquals(10, byteParser.getOffset());
+        assertEquals(8, byteParser.getNumberLength());
+        assertEquals(8, byteParser.getOffset());
     }
 
     @Test(expected = FormatException.class)
@@ -472,26 +413,19 @@ public class ByteFormatParseTest {
         new ByteParser("  A".getBytes()).getInt(6);
     }
 
-    @Test(expected = FormatException.class)
-    public void testIntCaseFillFields1() throws Exception {
-        ByteParser byteParser = new ByteParser("  123A ".getBytes());
-        byteParser.setFillFields(true);
-        byteParser.getInt(6);
-    }
-
     @Test
     public void testIntCaseFillFields2() throws Exception {
         ByteParser byteParser = new ByteParser("  123  ".getBytes());
-        byteParser.setFillFields(true);
+
         assertEquals(123, byteParser.getInt(6));
-        assertEquals(6, byteParser.getNumberLength());
-        assertEquals(6, byteParser.getOffset());
+        assertEquals(5, byteParser.getNumberLength());
+        assertEquals(5, byteParser.getOffset());
     }
 
     @Test
     public void testIntCaseFillFields3() throws Exception {
         ByteParser byteParser = new ByteParser("  +123  ".getBytes());
-        byteParser.setFillFields(true);
+
         assertEquals(123, byteParser.getInt(6));
         assertEquals(6, byteParser.getNumberLength());
         assertEquals(6, byteParser.getOffset());
@@ -500,7 +434,7 @@ public class ByteFormatParseTest {
     @Test
     public void testIntCaseFillFields4() throws Exception {
         ByteParser byteParser = new ByteParser("  -123  ".getBytes());
-        byteParser.setFillFields(true);
+
         assertEquals(-123, byteParser.getInt(6));
         assertEquals(6, byteParser.getNumberLength());
         assertEquals(6, byteParser.getOffset());
@@ -509,52 +443,38 @@ public class ByteFormatParseTest {
     @Test
     public void testDoubleFields2() throws Exception {
         ByteParser byteParser = new ByteParser("  INF           ".getBytes());
-        byteParser.setFillFields(true);
-        assertEquals(Double.POSITIVE_INFINITY, byteParser.getDouble(10), 0.0000001);
-        assertEquals(10, byteParser.getNumberLength());
-        assertEquals(10, byteParser.getOffset());
-        byteParser = new ByteParser("  INFINITY           ".getBytes());
-        byteParser.setFillFields(true);
-        assertEquals(Double.POSITIVE_INFINITY, byteParser.getDouble(10), 0.0000001);
-        assertEquals(10, byteParser.getNumberLength());
-        assertEquals(10, byteParser.getOffset());
-    }
 
-    @Test(expected = FormatException.class)
-    public void testDoubleFields3() throws Exception {
-        ByteParser byteParser = new ByteParser("  INF  X         ".getBytes());
-        byteParser.setFillFields(true);
-        byteParser.getDouble(10);
+        assertEquals(Double.POSITIVE_INFINITY, byteParser.getDouble(10), 0.0000001);
+        assertEquals(5, byteParser.getNumberLength());
+        assertEquals(5, byteParser.getOffset());
+        byteParser = new ByteParser("  INFINITY           ".getBytes());
+
+        assertEquals(Double.POSITIVE_INFINITY, byteParser.getDouble(10), 0.0000001);
+        assertEquals(10, byteParser.getNumberLength());
+        assertEquals(10, byteParser.getOffset());
     }
 
     @Test(expected = FormatException.class)
     public void testDoubleFields4() throws Exception {
         ByteParser byteParser = new ByteParser("  XXXXX         ".getBytes());
-        byteParser.setFillFields(true);
+
         byteParser.getDouble(10);
     }
 
     @Test()
     public void testBoolean1() throws Exception {
         ByteParser byteParser = new ByteParser("  T         ".getBytes());
-        byteParser.setFillFields(true);
+
         Assert.assertTrue(byteParser.getBoolean(10));
         byteParser = new ByteParser("  F         ".getBytes());
-        byteParser.setFillFields(true);
+
         Assert.assertFalse(byteParser.getBoolean(10));
     }
 
     @Test(expected = FormatException.class)
     public void testBoolean2() throws Exception {
         ByteParser byteParser = new ByteParser("  X         ".getBytes());
-        byteParser.setFillFields(true);
-        byteParser.getBoolean(10);
-    }
 
-    @Test(expected = FormatException.class)
-    public void testBoolean3() throws Exception {
-        ByteParser byteParser = new ByteParser("  T X        ".getBytes());
-        byteParser.setFillFields(true);
         byteParser.getBoolean(10);
     }
 

@@ -87,11 +87,6 @@ public class ByteParser {
     private static final double NUMBER_BASE_DOUBLE = 10.;
 
     /**
-     * Do we fill up fields?
-     */
-    private boolean fillFields = false;
-
-    /**
      * Did we find a sign last time we checked?
      */
     private boolean foundSign;
@@ -205,17 +200,6 @@ public class ByteParser {
             throw new FormatException("Invalid boolean value");
         }
         this.offset++;
-        length--;
-
-        if (this.fillFields && length > 0) {
-            if (isWhite(length)) {
-                this.offset += length;
-            } else {
-                this.numberLength = 0;
-                this.offset = startOffset;
-                throw new FormatException("Non-white following boolean");
-            }
-        }
         this.numberLength = this.offset - startOffset;
         return value;
     }
@@ -266,16 +250,13 @@ public class ByteParser {
         // Look for the special strings NaN, Inf,
         if (isCaseInsensitiv(length, ByteParser.NOT_A_NUMBER_LENGTH, ByteParser.NOT_A_NUMBER_LOWER, ByteParser.NOT_A_NUMBER_UPPER)) {
             number = Double.NaN;
-            length -= ByteParser.NOT_A_NUMBER_LENGTH;
             this.offset += ByteParser.NOT_A_NUMBER_LENGTH;
             // Look for the longer string first then try the shorter.
         } else if (isCaseInsensitiv(length, ByteParser.INFINITY_LENGTH, ByteParser.INFINITY_LOWER, ByteParser.INFINITY_UPPER)) {
             number = Double.POSITIVE_INFINITY;
-            length -= ByteParser.INFINITY_LENGTH;
             this.offset += ByteParser.INFINITY_LENGTH;
         } else if (isCaseInsensitiv(length, ByteParser.INFINITY_SHORTCUT_LENGTH, ByteParser.INFINITY_LOWER, ByteParser.INFINITY_UPPER)) {
             number = Double.POSITIVE_INFINITY;
-            length -= ByteParser.INFINITY_SHORTCUT_LENGTH;
             this.offset += ByteParser.INFINITY_SHORTCUT_LENGTH;
         } else {
             number = getBareInteger(length); // This will update offset
@@ -326,22 +307,9 @@ public class ByteParser {
                                 ByteParser.EXPONENT_DENORMALISATION_FACTOR
                                         * (number * Math.pow(ByteParser.NUMBER_BASE_DOUBLE, exponent * sign + ByteParser.EXPONENT_DENORMALISATION_CORR_LIMIT * -1));
                     }
-                    length -= this.numberLength;
                 }
             }
         }
-
-        if (this.fillFields && length > 0) {
-
-            if (isWhite(length)) {
-                this.offset += length;
-            } else {
-                this.numberLength = 0;
-                this.offset = startOffset;
-                throw new FormatException("Non-blanks following real.");
-            }
-        }
-
         this.numberLength = this.offset - startOffset;
         return mantissaSign * number;
     }
@@ -412,17 +380,6 @@ public class ByteParser {
             this.offset = startOffset;
             throw new FormatException("Invalid Integer");
         }
-
-        if (length > 0 && this.fillFields) {
-            if (isWhite(length)) {
-                this.offset += length;
-            } else {
-                this.numberLength = 0;
-                this.offset = startOffset;
-                throw new FormatException("Non-white following integer");
-            }
-        }
-
         this.numberLength = this.offset - startOffset;
         return sign * number;
     }
@@ -464,16 +421,6 @@ public class ByteParser {
             this.numberLength = 0;
             this.offset = startOffset;
             throw new FormatException("Invalid long number");
-        }
-
-        if (length > 0 && this.fillFields) {
-            if (isWhite(length)) {
-                this.offset += length;
-            } else {
-                this.offset = startOffset;
-                this.numberLength = 0;
-                throw new FormatException("Non-white following long");
-            }
         }
         this.numberLength = this.offset - startOffset;
         return sign * number;
@@ -522,18 +469,6 @@ public class ByteParser {
     }
 
     /**
-     * @return if a region is blank?
-     * @param length
-     *            The length of the region to be tested
-     */
-    private boolean isWhite(int length) {
-        int oldOffset = this.offset;
-        boolean value = skipWhite(length) == length;
-        this.offset = oldOffset;
-        return value;
-    }
-
-    /**
      * Set the buffer for the parser.
      * 
      * @param buf
@@ -543,17 +478,6 @@ public class ByteParser {
     public void setBuffer(byte[] buf) {
         this.input = buf;
         this.offset = 0;
-    }
-
-    /**
-     * Do we require a field to completely fill up the specified length (with
-     * optional leading and trailing white space.
-     * 
-     * @param flag
-     *            Is filling required?
-     */
-    public void setFillFields(boolean flag) {
-        this.fillFields = flag;
     }
 
     /**

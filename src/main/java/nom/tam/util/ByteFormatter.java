@@ -193,24 +193,6 @@ public final class ByteFormatter {
     private final byte[] tbuf2 = new byte[ByteFormatter.TEMP_BUFFER_SIZE];
 
     /**
-     * Fill the buffer with blank-bytes to false a field.
-     * 
-     * @return Offset of next available character in buffer.
-     * @param buffer
-     *            buffer to fill
-     * @param offset
-     *            the offset where to start
-     * @param len
-     *            the number of bytes to fill
-     */
-    public int alignFill(byte[] buffer, int offset, int len) {
-        for (int i = offset; i < offset + len; i++) {
-            buffer[i] = (byte) ' ';
-        }
-        return offset + len;
-    }
-
-    /**
      * This method formats a double given a decimal mantissa and exponent
      * information.
      * 
