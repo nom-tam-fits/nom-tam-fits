@@ -34,7 +34,6 @@ package nom.tam.fits.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 
 import nom.tam.fits.BasicHDU;

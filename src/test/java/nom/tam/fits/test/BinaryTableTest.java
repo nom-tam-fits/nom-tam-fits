@@ -63,7 +63,6 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
-import nom.tam.util.ColumnTable;
 import nom.tam.util.TableException;
 import nom.tam.util.TestArrayFuncs;
 
@@ -171,7 +170,7 @@ public class BinaryTableTest {
 
         f = new Fits("target/bt3.fits");
         BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
-        btab = (BinaryTable) bhdu.getData();
+        btab = bhdu.getData();
 
         assertEquals("col1", true, TestArrayFuncs.arrayEquals(this.floats, bhdu.getColumn(0)));
         assertEquals("col2", true, TestArrayFuncs.arrayEquals(this.vf, bhdu.getColumn(1)));
@@ -220,50 +219,48 @@ public class BinaryTableTest {
         }
         Header hdr = new Header();
         tab.fillHeader(hdr);
-        BasicHDU hdu = FitsFactory.hduFactory(hdr, tab);
-        Fits f = new Fits();
-        f.addHDU(hdu);
-        BufferedFile bf = new BufferedFile("target/bt12.fits", "rw");
-        f.write(bf);
-        bf.close();
+        BasicHDU<?> hdu = FitsFactory.hduFactory(hdr, tab);
+        try (Fits f = new Fits(); BufferedFile bf = new BufferedFile("target/bt12.fits", "rw")) {
+	        f.addHDU(hdu);
+	        f.write(bf);
+        }
         System.out.println("Wrote file bt12.fits");
 
-        f = new Fits("target/bt12.fits");
-
-        BinaryTableHDU btu = (BinaryTableHDU) f.getHDU(1);
-        // In the first column the first string is the longest so all strings
-        // should fit.
-        String[] res = (String[]) btu.getColumn(0);
-
-        for (int i = 0; i < 50; i += 1) {
-            System.out.println(i + "  " + res[i] + " :: " + strings[i] + " " + strings[i].equals(res[i]));
-        }
-        assertEquals("bfe0", true, TestArrayFuncs.arrayEquals(btu.getColumn(0), strings));
-        assertEquals("bfe1", true, TestArrayFuncs.arrayEquals(btu.getColumn(1), shorts));
-        assertEquals("bfe2", true, TestArrayFuncs.arrayEquals(btu.getColumn(2), floats));
-        assertEquals("bfe3", true, TestArrayFuncs.arrayEquals(btu.getColumn(3), doubles));
-        // The strings will be truncated to the length of the longest string in
-        // the first row.
-        String[][] results = (String[][]) btu.getColumn(4);
-        assertEquals("bfe4", false, TestArrayFuncs.arrayEquals(results, multiString));
-        int max = 0;
-        for (int i = 0; i < 3; i += 1) {
-            if (multiString[0][i].length() > max)
-                max = multiString[0][i].length();
-        }
-        // Now check that within the truncation limit the strings are identical.
-        for (int i = 0; i < 50; i += 1) {
-            for (int j = 0; j < 3; j += 1) {
-                String test = multiString[i][j];
-                if (test.length() > max) {
-                    test = test.substring(0, max);
-                }
-                assertEquals("cmp" + i + "," + j, test.trim(), results[i][j].trim());
-            }
+        try (Fits f = new Fits("target/bt12.fits")) {
+	        BinaryTableHDU btu = (BinaryTableHDU) f.getHDU(1);
+	        // In the first column the first string is the longest so all strings
+	        // should fit.
+	        String[] res = (String[]) btu.getColumn(0);
+	
+	        for (int i = 0; i < 50; i += 1) {
+	            System.out.println(i + "  " + res[i] + " :: " + strings[i] + " " + strings[i].equals(res[i]));
+	        }
+	        assertEquals("bfe0", true, TestArrayFuncs.arrayEquals(btu.getColumn(0), strings));
+	        assertEquals("bfe1", true, TestArrayFuncs.arrayEquals(btu.getColumn(1), shorts));
+	        assertEquals("bfe2", true, TestArrayFuncs.arrayEquals(btu.getColumn(2), floats));
+	        assertEquals("bfe3", true, TestArrayFuncs.arrayEquals(btu.getColumn(3), doubles));
+	        // The strings will be truncated to the length of the longest string in
+	        // the first row.
+	        String[][] results = (String[][]) btu.getColumn(4);
+	        assertEquals("bfe4", false, TestArrayFuncs.arrayEquals(results, multiString));
+	        int max = 0;
+	        for (int i = 0; i < 3; i += 1) {
+	            if (multiString[0][i].length() > max)
+	                max = multiString[0][i].length();
+	        }
+	        // Now check that within the truncation limit the strings are identical.
+	        for (int i = 0; i < 50; i += 1) {
+	            for (int j = 0; j < 3; j += 1) {
+	                String test = multiString[i][j];
+	                if (test.length() > max) {
+	                    test = test.substring(0, max);
+	                }
+	                assertEquals("cmp" + i + "," + j, test.trim(), results[i][j].trim());
+	            }
+	        }
         }
         // Cleanup...
         strings[0] = oldString;
-
     }
 
     @Test
@@ -273,7 +270,7 @@ public class BinaryTableTest {
         f.read();
         BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
         Header hdr = bhdu.getHeader();
-        BinaryTable btab = (BinaryTable) bhdu.getData();
+        BinaryTable btab = bhdu.getData();
         for (int i = 0; i < 50; i += 1) {
 
             Object[] row = btab.getRow(i);
@@ -285,7 +282,7 @@ public class BinaryTableTest {
         // Tom -> here the table is replaced by a copy that is not the same but
         // should be?
         FitsFactory.setUseAsciiTables(true);
-        btab = new BinaryTable((ColumnTable) btab.getData());
+        btab = new BinaryTable(btab.getData());
 
         f = new Fits();
         f.addHDU(Fits.makeHDU(btab));
@@ -349,7 +346,7 @@ public class BinaryTableTest {
         f.read();
         BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
         Header hdr = bhdu.getHeader();
-        BinaryTable btab = (BinaryTable) bhdu.getData();
+        BinaryTable btab = bhdu.getData();
         for (int i = 0; i < 50; i += 1) {
 
             Object[] row = btab.getRow(i);
@@ -359,7 +356,7 @@ public class BinaryTableTest {
             btab.addRow(row);
         }
         // TODO: should this not result in the same thing?
-        BinaryTable xx = new BinaryTable((ColumnTable) btab.getData());
+        BinaryTable xx = new BinaryTable(btab.getData());
 
         f = new Fits();
         f.addHDU(Fits.makeHDU(btab));
@@ -860,13 +857,13 @@ public class BinaryTableTest {
             }
         }
         assertEquals(count, 2);
-        tryDeleteNonExcistingColumn(firstHdu);
+        tryDeleteNonExistingColumn(firstHdu);
     }
 
-    private void tryDeleteNonExcistingColumn(BinaryTableHDU firstHdu) {
+    private void tryDeleteNonExistingColumn(BinaryTableHDU firstHdu) {
         TableException tableException = null;
         try {
-            ((BinaryTable) firstHdu.getData()).deleteColumns(1000000000, 1);
+            firstHdu.getData().deleteColumns(1000000000, 1);
         } catch (FitsException ex) {
             tableException = (TableException) ex.getCause();
         }
@@ -896,7 +893,7 @@ public class BinaryTableTest {
         }
 
         Fits f = new Fits();
-        BasicHDU hdu = Fits.makeHDU(x);
+        BasicHDU<?> hdu = Fits.makeHDU(x);
         f.addHDU(hdu);
         BufferedFile bf = new BufferedFile("target/bt5.fits", "rw");
         f.write(bf);
@@ -1210,7 +1207,7 @@ public class BinaryTableTest {
                 this.vc,
                 this.vdc
             };
-            BasicHDU hdu = Fits.makeHDU(data);
+            BasicHDU<?> hdu = Fits.makeHDU(data);
             Fits f = new Fits();
             f.addHDU(hdu);
             BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/bt2.fits"));

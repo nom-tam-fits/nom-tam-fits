@@ -72,7 +72,7 @@ public class RealStats {
      * Get the statistics on an n-dimensional real array.
      */
     public RealStats(Object input) {
-        Class base = ArrayFuncs.getBaseClass(input);
+        Class<?> base = ArrayFuncs.getBaseClass(input);
         this.flt = false;
         if (base == float.class) {
             this.flt = true;

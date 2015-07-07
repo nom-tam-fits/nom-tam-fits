@@ -50,7 +50,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
     private static final Logger LOG = Logger.getLogger(RandomGroupsHDU.class.getName());
 
-    public static Data encapsulate(Object o) throws FitsException {
+    public static RandomGroupsData encapsulate(Object o) throws FitsException {
         if (o instanceof Object[][]) {
             return new RandomGroupsData((Object[][]) o);
         } else {
@@ -213,9 +213,8 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * @param data
      *            data to use
      */
-    public RandomGroupsHDU(Header header, Data data) {
-        this.myHeader = header;
-        this.myData = (RandomGroupsData) data;
+    public RandomGroupsHDU(Header header, RandomGroupsData data) {
+        super(header, data);
     }
 
     @Override

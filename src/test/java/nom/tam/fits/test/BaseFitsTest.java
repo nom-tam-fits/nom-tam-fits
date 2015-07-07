@@ -38,15 +38,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
 
-import nom.tam.fits.AsciiTable;
+import nom.tam.fits.AsciiTableHDU;
 import nom.tam.fits.BasicHDU;
-import nom.tam.fits.BinaryTable;
+import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Data;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
@@ -59,7 +57,6 @@ import nom.tam.fits.ImageHDU;
 import nom.tam.fits.UndefinedData;
 import nom.tam.fits.UndefinedHDU;
 import nom.tam.fits.utilities.FitsCheckSum;
-import nom.tam.fits.utilities.FitsReader;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
@@ -87,52 +84,53 @@ public class BaseFitsTest {
     public void testFitsSkipHdu() throws Exception {
         Fits fits1 = makeAsciiTable();
 
-        BasicHDU image = fits1.readHDU();
-        BasicHDU hdu2 = fits1.readHDU();
+        BasicHDU<?> image = fits1.readHDU();
+        AsciiTableHDU hdu2 = (AsciiTableHDU) fits1.readHDU();
         fits1.skipHDU(2);
-        BasicHDU hdu3 = fits1.readHDU();
+        AsciiTableHDU hdu3 = (AsciiTableHDU) fits1.readHDU();
 
         hdu2.info(System.out);
         hdu3.info(System.out);
         Assert.assertArrayEquals(new int[]{
             11
-        }, (int[]) ((AsciiTable) hdu2.getData()).getElement(1, 1));
+        }, (int[]) hdu2.getData().getElement(1, 1));
         Assert.assertArrayEquals(new int[]{
             41
-        }, (int[]) ((AsciiTable) hdu3.getData()).getElement(1, 1));
+        }, (int[]) hdu3.getData().getElement(1, 1));
         hdu3.getData();
 
     }
 
     @Test
     public void testFitsDeleteHdu() throws Exception {
-        Fits fits1 = makeAsciiTable();
-        fits1.read();
-        Exception actual = null;
-        try {
-            fits1.deleteHDU(-2);
-        } catch (FitsException ex) {
-            actual = ex;
-        }
-        Assert.assertNotNull(actual);
+		try (Fits fits1 = makeAsciiTable()) {
+			fits1.read();
+			Exception actual = null;
+			try {
+				fits1.deleteHDU(-2);
+			} catch (FitsException ex) {
+				actual = ex;
+			}
+			Assert.assertNotNull(actual);
 
-        Assert.assertNull(fits1.getHDU(99));
-        // will be ignored
-        fits1.insertHDU(null, 99);
-        fits1.deleteHDU(2);
-        fits1.deleteHDU(2);
-        writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
+			Assert.assertNull(fits1.getHDU(99));
+			// will be ignored
+			fits1.insertHDU(null, 99);
+			fits1.deleteHDU(2);
+			fits1.deleteHDU(2);
+			writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
+		}
 
-        fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
-        BasicHDU image = fits1.readHDU();
-        BasicHDU hdu2 = fits1.readHDU();
-        BasicHDU hdu3 = fits1.readHDU();
+        Fits fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
+        fits1.readHDU();
+        AsciiTableHDU hdu2 = (AsciiTableHDU) fits1.readHDU();
+        AsciiTableHDU hdu3 = (AsciiTableHDU) fits1.readHDU();
         Assert.assertArrayEquals(new int[]{
             11
-        }, (int[]) ((AsciiTable) hdu2.getData()).getElement(1, 1));
+        }, (int[]) hdu2.getData().getElement(1, 1));
         Assert.assertArrayEquals(new int[]{
             41
-        }, (int[]) ((AsciiTable) hdu3.getData()).getElement(1, 1));
+        }, (int[]) hdu3.getData().getElement(1, 1));
         hdu3.getData();
 
     }
@@ -208,21 +206,20 @@ public class BaseFitsTest {
 
         Fits fits1 = makeAsciiTable();
 
-        BasicHDU image = fits1.readHDU();
-        BasicHDU hdu2 = fits1.readHDU();
+        fits1.readHDU();
+        BinaryTableHDU hdu2 = (BinaryTableHDU) fits1.readHDU();
         fits1.skipHDU(2);
-        BasicHDU hdu3 = fits1.readHDU();
+        BinaryTableHDU hdu3 = (BinaryTableHDU) fits1.readHDU();
 
         hdu2.info(System.out);
         hdu3.info(System.out);
         Assert.assertArrayEquals(new int[]{
             11
-        }, (int[]) ((BinaryTable) hdu2.getData()).getElement(1, 1));
+        }, (int[]) hdu2.getData().getElement(1, 1));
         Assert.assertArrayEquals(new int[]{
             41
-        }, (int[]) ((BinaryTable) hdu3.getData()).getElement(1, 1));
+        }, (int[]) hdu3.getData().getElement(1, 1));
         hdu3.getData();
-
     }
 
     @Test
@@ -239,7 +236,7 @@ public class BaseFitsTest {
         os.close();
 
         Fits fits2 = new Fits("target/UndefindedHDU.fits");
-        BasicHDU[] hdus = fits2.read();
+        BasicHDU<?>[] hdus = fits2.read();
 
         byte[] rereadUndefinedData = (byte[]) ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
         Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
@@ -262,7 +259,7 @@ public class BaseFitsTest {
         os.close();
 
         Fits fits2 = new Fits("target/UndefindedHDU2.fits");
-        BasicHDU[] hdus = fits2.read();
+        BasicHDU<?>[] hdus = fits2.read();
 
         byte[] rereadUndefinedData = (byte[]) ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
         Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
@@ -373,7 +370,7 @@ public class BaseFitsTest {
         for (int index = 0; index < undefinedData.length; index++) {
             undefinedData[index] = (byte) index;
         }
-        Data data = UndefinedHDU.encapsulate(undefinedData);
+        UndefinedData data = UndefinedHDU.encapsulate(undefinedData);
         Header header = new Header();
         header.pointToData(data);
         UndefinedHDU hdu = new UndefinedHDU(header, data);

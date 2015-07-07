@@ -114,7 +114,7 @@ public class Header implements FitsElement {
      * please use {@link FitsFactory#setLongStringsEnabled(boolean)} instead.
      * 
      * @param flag
-     *            the new value for long-string enabeling.
+     *            the new value for long-string enabling.
      */
     @Deprecated
     public static void setLongStringsEnabled(boolean flag) {
@@ -1114,7 +1114,7 @@ public class Header implements FitsElement {
     /**
      * @return Create the data element corresponding to the current header
      * @throws FitsException
-     *             if the header did not contain enougth information to detect
+     *             if the header did not contain enough information to detect
      *             the type of the data
      */
     public Data makeData() throws FitsException {

@@ -47,7 +47,7 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      * @throws FitsException
      *             if the operation failed
      */
-    public static Data encapsulate(Object o) throws FitsException {
+    public static UndefinedData encapsulate(Object o) throws FitsException {
         return new UndefinedData(o);
     }
 
@@ -107,9 +107,8 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      * @throws FitsException
      *             if there was a problem with the data.
      */
-    public UndefinedHDU(Header h, Data d) throws FitsException {
-        this.myData = (UndefinedData) d;
-        this.myHeader = h;
+    public UndefinedHDU(Header h, UndefinedData d) throws FitsException {
+        super(h, d);
 
     }
 

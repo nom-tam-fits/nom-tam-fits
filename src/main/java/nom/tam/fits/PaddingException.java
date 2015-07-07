@@ -43,7 +43,7 @@ package nom.tam.fits;
  *          f.addHDU(e.getHDU());
  *     }
  * </code> to ensure that a truncated HDU is included in the FITS object.
- * Generally the FITS file have already added any HDUs prior to the truncatd
+ * Generally the FITS file have already added any HDUs prior to the truncated
  * one.
  */
 public class PaddingException extends FitsException {
@@ -67,7 +67,7 @@ public class PaddingException extends FitsException {
      * @param data
      *            the data that was not padded.
      * @throws FitsException
-     *             if the data could not be used to craete a hdu.
+     *             if the data could not be used to create a hdu.
      */
     public PaddingException(Data data) throws FitsException {
         super("data not padded");

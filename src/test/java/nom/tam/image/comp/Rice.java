@@ -36,12 +36,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
-import nom.tam.util.BufferedDataOutputStream;
 
 /**
  * Do Rice compression. Integer data in any local region rarely use the full

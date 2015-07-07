@@ -84,7 +84,7 @@ public class HeaderTest {
         Fits f = new Fits("target/ht1.fits");
         ImageHDU hdu = (ImageHDU) f.getHDU(0);
         Header hdr = hdu.getHeader();
-        Cursor c = hdr.iterator();
+        Cursor<String, HeaderCard> c = hdr.iterator();
 
         c.setKey("XXX");
         c.add(new HeaderCard(CTYPE1.key(), "GLON-CAR", "Galactic Longitude"));
@@ -174,15 +174,15 @@ public class HeaderTest {
         // We should be pointed after the EXTEND and before TESTKEY
         h.addValue("TESTKEY2", "TESTVAL2", null); // Should precede TESTKEY
 
-        Cursor c = h.iterator();
-        assertEquals("E1", ((HeaderCard) c.next()).getKey(), SIMPLE.key());
-        assertEquals("E2", ((HeaderCard) c.next()).getKey(), BITPIX.key());
-        assertEquals("E3", ((HeaderCard) c.next()).getKey(), NAXIS.key());
-        assertEquals("E4", ((HeaderCard) c.next()).getKey(), NAXISn.n(1).key());
-        assertEquals("E5", ((HeaderCard) c.next()).getKey(), NAXISn.n(2).key());
-        assertEquals("E6", ((HeaderCard) c.next()).getKey(), EXTEND.key());
-        assertEquals("E7", ((HeaderCard) c.next()).getKey(), "TESTKEY2");
-        assertEquals("E8", ((HeaderCard) c.next()).getKey(), "TESTKEY");
+        Cursor<String, HeaderCard> c = h.iterator();
+        assertEquals("E1", c.next().getKey(), SIMPLE.key());
+        assertEquals("E2", c.next().getKey(), BITPIX.key());
+        assertEquals("E3", c.next().getKey(), NAXIS.key());
+        assertEquals("E4", c.next().getKey(), NAXISn.n(1).key());
+        assertEquals("E5", c.next().getKey(), NAXISn.n(2).key());
+        assertEquals("E6", c.next().getKey(), EXTEND.key());
+        assertEquals("E7", c.next().getKey(), "TESTKEY2");
+        assertEquals("E8", c.next().getKey(), "TESTKEY");
 
     }
 
@@ -366,20 +366,20 @@ public class HeaderTest {
 
         assertEquals("BITPIX", BigInteger.valueOf(-32), hdr.getBigIntegerValue(BITPIX.name()));
 
-        Cursor c = hdr.iterator();
-        HeaderCard hc = (HeaderCard) c.next();
+        Cursor<String, HeaderCard> c = hdr.iterator();
+        HeaderCard hc = c.next();
         assertEquals("SIMPLE_1", SIMPLE.key(), hc.getKey());
 
-        hc = (HeaderCard) c.next();
+        hc = c.next();
         assertEquals("BITPIX_2", BITPIX.key(), hc.getKey());
 
-        hc = (HeaderCard) c.next();
+        hc = c.next();
         assertEquals("NAXIS_3", NAXIS.key(), hc.getKey());
 
-        hc = (HeaderCard) c.next();
+        hc = c.next();
         assertEquals("NAXIS1_4", NAXISn.n(1).key(), hc.getKey());
 
-        hc = (HeaderCard) c.next();
+        hc = c.next();
         assertEquals("NAXIS2_5", NAXISn.n(2).key(), hc.getKey());
     }
 
@@ -389,7 +389,7 @@ public class HeaderTest {
         Fits f = new Fits("target/ht1.fits");
         ImageHDU hdu = (ImageHDU) f.getHDU(0);
         Header hdr = hdu.getHeader();
-        Cursor c = hdr.iterator();
+        Cursor<String, HeaderCard> c = hdr.iterator();
 
         c = hdr.iterator();
         c.next();
@@ -408,7 +408,7 @@ public class HeaderTest {
     public void testHeaderCommentsDrift() throws Exception {
         byte[][] z = new byte[4][4];
         Fits f = new Fits();
-        BasicHDU hdu = FitsFactory.hduFactory(z);
+        BasicHDU<?> hdu = FitsFactory.hduFactory(z);
         f.addHDU(hdu);
         Cursor<String, HeaderCard> iter = hdu.getHeader().iterator();
         iter.end();
@@ -459,7 +459,7 @@ public class HeaderTest {
         Fits f = new Fits("target/ht1.fits");
         ImageHDU hdu = (ImageHDU) f.getHDU(0);
         Header hdr = hdu.getHeader();
-        Cursor c = hdr.iterator();
+        Cursor<String, HeaderCard> c = hdr.iterator();
 
         int nc = hdr.getNumberOfCards();
         int nb = (nc - 1) / 36;
@@ -520,7 +520,7 @@ public class HeaderTest {
         fits.read(in);
         in.close();
 
-        BasicHDU hdu = fits.getHDU(0);
+        BasicHDU<?> hdu = fits.getHDU(0);
         Header hdr = hdu.getHeader();
 
         hdu.addValue(CTYPE1, true);
@@ -571,7 +571,7 @@ public class HeaderTest {
 
     @Test
     public void dumpHeaderTests() throws Exception {
-        BasicHDU hdu = new Fits("target/ht1.fits").getHDU(0);
+        BasicHDU<?> hdu = new Fits("target/ht1.fits").getHDU(0);
         Header hdr = hdu.getHeader();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         hdr.dumpHeader(new PrintStream(out));
@@ -596,7 +596,7 @@ public class HeaderTest {
 
     @Test
     public void notExistentKeys() throws Exception {
-        BasicHDU hdu = new Fits("target/ht1.fits").getHDU(0);
+        BasicHDU<?> hdu = new Fits("target/ht1.fits").getHDU(0);
         Header hdr = hdu.getHeader();
         Assert.assertNull(hdr.getCard(10000));
         Assert.assertNull(hdr.getKey(10000));

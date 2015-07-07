@@ -1,7 +1,3 @@
-/** This inteface describes allows uses to easily perform
- *  basic I/O operations
- *  on a FITS element.
- */
 package nom.tam.fits;
 
 /*
@@ -40,6 +36,10 @@ import java.io.IOException;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 
+/**
+ * This interface allows to easily perform basic I/O operations on a FITS
+ * element.
+ */
 public interface FitsElement {
 
     /**
@@ -75,7 +75,7 @@ public interface FitsElement {
 
     /**
      * Rewrite the contents of the element in place. The data must have been
-     * orignally read from a random access device, and the size of the element
+     * originally read from a random access device, and the size of the element
      * may not have changed.
      * 
      * @throws FitsException

@@ -193,7 +193,7 @@ public class ArrayFuncsTest {
                 6
             }
         };
-        Class newType = double.class;
+        Class<?> newType = double.class;
 
         boolean reuse = true;
         double[][] dres = (double[][]) ArrayFuncs.convertArray(array, newType, reuse);
@@ -202,7 +202,7 @@ public class ArrayFuncsTest {
 
         newType = int.class;
         int[][] ires = (int[][]) ArrayFuncs.convertArray(array, newType, true);
-        assertEquals(array, ires);
+        assertArrayEquals(array, ires);
 
         ires = (int[][]) ArrayFuncs.convertArray(array, newType, false);
         assertNotSame(array, ires);
@@ -442,7 +442,7 @@ public class ArrayFuncsTest {
     public void testGenerateArray() {
         System.out.println("generateArray");
 
-        Class baseType = int.class;
+        Class<?> baseType = int.class;
         int[] dims = {
             2,
             3,
@@ -569,7 +569,7 @@ public class ArrayFuncsTest {
         System.out.println("mimicArray");
 
         int[][] array = new int[2][3];
-        Class newType = double.class;
+        Class<?> newType = double.class;
 
         double[][] result = (double[][]) nom.tam.util.ArrayFuncs.mimicArray(array, newType);
         assertEquals(result.length, array.length);

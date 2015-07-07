@@ -173,7 +173,7 @@ public class Quantizer {
      */
 
     public byte[] quantize(Object input, TileDescriptor td, int tileIndex) {
-        Class cs = ArrayFuncs.getBaseClass(input);
+        Class<?> cs = ArrayFuncs.getBaseClass(input);
         if (cs == float.class) {
             this.isFloat = true;
         } else {

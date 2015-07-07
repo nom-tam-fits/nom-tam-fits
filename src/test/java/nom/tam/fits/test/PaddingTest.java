@@ -61,7 +61,7 @@ public class PaddingTest {
             }
         }
 
-        BasicHDU hdu = Fits.makeHDU(bimg);
+        BasicHDU<?> hdu = Fits.makeHDU(bimg);
         Header hdr = hdu.getHeader();
         hdr.addValue("NEWKEY", "TESTVALUE", "Test keyword");
         BufferedFile bf = new BufferedFile("target/padding1.fits", "rw");
@@ -132,7 +132,7 @@ public class PaddingTest {
             }
         }
 
-        BasicHDU hdu = Fits.makeHDU(bimg);
+        BasicHDU<?> hdu = Fits.makeHDU(bimg);
         f.addHDU(hdu);
 
         // First create a FITS file with a truncated second HDU.
@@ -140,11 +140,11 @@ public class PaddingTest {
         f.write(bf);
 
         hdu.getHeader().setXtension("IMAGE");
-        Cursor curs = hdu.getHeader().iterator();
+        Cursor<String, HeaderCard> curs = hdu.getHeader().iterator();
         int cnt = 0;
         // Write the header
         while (curs.hasNext()) {
-            bf.write(((HeaderCard) curs.next()).toString().getBytes());
+            bf.write(curs.next().toString().getBytes());
             cnt += 1;
         }
 
