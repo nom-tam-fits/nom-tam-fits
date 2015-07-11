@@ -31,10 +31,20 @@ package nom.tam.fits;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.TFIELDS;
+import static nom.tam.fits.header.Standard.TFORMn;
+import static nom.tam.fits.header.Standard.TNULLn;
+import static nom.tam.fits.header.Standard.TTYPEn;
+import static nom.tam.fits.header.Standard.TUNITn;
+import static nom.tam.fits.header.Standard.TZEROn;
+import static nom.tam.fits.header.Standard.XTENSION;
+
 import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import nom.tam.fits.header.IFitsHeader;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.Cursor;
 
@@ -50,12 +60,12 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      * included here -- it needs to be handled specially since it does not
      * simply shift.
      */
-    private static final String[] KEY_STEMS = {
-        "TFORM",
-        "TZERO",
-        "TNULL",
-        "TTYPE",
-        "TUNIT"
+    private static final IFitsHeader[] KEY_STEMS = {
+        TFORMn,
+        TZEROn,
+        TNULLn,
+        TTYPEn,
+        TUNITn
     };
 
     /**
@@ -108,7 +118,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      * @return <CODE>true</CODE> if this is an ascii table header.
      */
     public static boolean isHeader(Header header) {
-        return header.getStringValue("XTENSION").trim().equals("TABLE");
+        return header.getStringValue(XTENSION).trim().equals("TABLE");
     }
 
     /**
@@ -161,12 +171,12 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         Cursor<String, HeaderCard> iter = this.myHeader.positionAfterIndex("TBCOL", this.myData.getNCols());
 
         int rowlen = this.myData.addColInfo(getNCols() - 1, iter);
-        int oldRowlen = this.myHeader.getIntValue("NAXIS1");
+        int oldRowlen = this.myHeader.getIntValue(NAXISn.n(1));
         this.myHeader.setNaxis(1, rowlen + oldRowlen);
 
-        int oldTfields = this.myHeader.getIntValue("TFIELDS");
+        int oldTfields = this.myHeader.getIntValue(TFIELDS);
         try {
-            this.myHeader.addValue("TFIELDS", oldTfields + 1, "ntf::asciitablehdu:tfields:1");
+            this.myHeader.addValue(TFIELDS, oldTfields + 1);
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Impossible exception at addColumn", e);
         }
@@ -174,7 +184,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     @Override
-    protected String[] columnKeyStems() {
+    protected IFitsHeader[] columnKeyStems() {
         return KEY_STEMS;
     }
 
@@ -182,9 +192,9 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     public void info(PrintStream stream) {
         stream.println("ASCII Table:");
         stream.println("  Header:");
-        stream.println("    Number of fields:" + this.myHeader.getIntValue("TFIELDS"));
-        stream.println("    Number of rows:  " + this.myHeader.getIntValue("NAXIS2"));
-        stream.println("    Length of row:   " + this.myHeader.getIntValue("NAXIS1"));
+        stream.println("    Number of fields:" + this.myHeader.getIntValue(TFIELDS));
+        stream.println("    Number of rows:  " + this.myHeader.getIntValue(NAXISn.n(2)));
+        stream.println("    Length of row:   " + this.myHeader.getIntValue(NAXISn.n(1)));
         stream.println("  Data:");
         Object[] data = (Object[]) getKernel();
         for (int i = 0; i < getNCols(); i += 1) {
@@ -216,7 +226,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     public void setNull(int row, int col, boolean flag) {
 
         if (flag) {
-            String nullStr = this.myHeader.getStringValue("TNULL" + (col + 1));
+            String nullStr = this.myHeader.getStringValue(TNULLn.n(col + 1));
             if (nullStr == null) {
                 setNullString(col, "NULL");
             }
@@ -235,7 +245,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     public void setNullString(int col, String newNull) {
         this.myHeader.positionAfterIndex("TBCOL", col + 1);
         try {
-            this.myHeader.addValue("TNULL" + (col + 1), newNull, "ntf::asciitablehdu:tnullN:1");
+            this.myHeader.addValue(TNULLn.n(col + 1), newNull);
         } catch (HeaderCardException e) {
             LOG.log(Level.SEVERE, "Impossible exception in setNullString" + e);
         }

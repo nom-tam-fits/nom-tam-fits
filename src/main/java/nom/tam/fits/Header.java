@@ -512,6 +512,18 @@ public class Header implements FitsElement {
      * @return <code>true</code> if the specified keyword is present in this
      *         table; <code>false</code> otherwise.
      */
+    public final boolean containsKey(IFitsHeader key) {
+        return this.cards.containsKey(key.key());
+    }
+
+    /**
+     * Tests if the specified keyword is present in this table.
+     * 
+     * @param key
+     *            the keyword to be found.
+     * @return <code>true</code> if the specified keyword is present in this
+     *         table; <code>false</code> otherwise.
+     */
     public final boolean containsKey(String key) {
         return this.cards.containsKey(key);
     }
@@ -1364,8 +1376,23 @@ public class Header implements FitsElement {
      * @exception HeaderCardException
      *                If <CODE>newKey</CODE> is not a valid FITS keyword.
      */
-    boolean replaceKey(String oldKey, String newKey) throws HeaderCardException {
+    boolean replaceKey(IFitsHeader oldKey, IFitsHeader newKey) throws HeaderCardException {
+        return replaceKey(oldKey.key(), newKey.key());
+    }
 
+    /**
+     * Replace the key with a new key. Typically this is used when deleting or
+     * inserting columns so that TFORMx -> TFORMx-1
+     * 
+     * @param oldKey
+     *            The old header keyword.
+     * @param newKey
+     *            the new header keyword.
+     * @return <CODE>true</CODE> if the card was replaced.
+     * @exception HeaderCardException
+     *                If <CODE>newKey</CODE> is not a valid FITS keyword.
+     */
+    boolean replaceKey(String oldKey, String newKey) throws HeaderCardException {
         HeaderCard oldCard = findCard(oldKey);
         if (oldCard == null) {
             return false;
@@ -1373,9 +1400,7 @@ public class Header implements FitsElement {
         if (!this.cards.replaceKey(oldKey, newKey)) {
             throw new HeaderCardException("Duplicate key in replace");
         }
-
         oldCard.setKey(newKey);
-
         return true;
     }
 

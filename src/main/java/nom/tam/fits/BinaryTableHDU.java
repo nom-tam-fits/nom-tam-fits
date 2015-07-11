@@ -31,8 +31,18 @@ package nom.tam.fits;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.TDIMn;
+import static nom.tam.fits.header.Standard.TDISPn;
+import static nom.tam.fits.header.Standard.TFORMn;
+import static nom.tam.fits.header.Standard.TNULLn;
+import static nom.tam.fits.header.Standard.TSCALn;
+import static nom.tam.fits.header.Standard.TTYPEn;
+import static nom.tam.fits.header.Standard.TUNITn;
+import static nom.tam.fits.header.Standard.TZEROn;
+
 import java.io.PrintStream;
 
+import nom.tam.fits.header.IFitsHeader;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 
@@ -40,15 +50,15 @@ import nom.tam.util.ArrayFuncs;
 public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     /** The standard column keywords for a binary table. */
-    private static final String[] KEY_STEMS = {
-        "TTYPE",
-        "TFORM",
-        "TUNIT",
-        "TNULL",
-        "TSCAL",
-        "TZERO",
-        "TDISP",
-        "TDIM"
+    private static final IFitsHeader[] KEY_STEMS = {
+        TTYPEn,
+        TFORMn,
+        TUNITn,
+        TNULLn,
+        TSCALn,
+        TZEROn,
+        TDISPn,
+        TDIMn
     };
 
     /**
@@ -153,7 +163,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      * What are the standard column stems for a binary table?
      */
     @Override
-    protected String[] columnKeyStems() {
+    protected IFitsHeader[] columnKeyStems() {
         return BinaryTableHDU.KEY_STEMS;
     }
 

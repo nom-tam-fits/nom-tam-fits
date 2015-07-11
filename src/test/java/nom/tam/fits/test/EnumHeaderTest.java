@@ -35,7 +35,12 @@ import static nom.tam.fits.header.InstrumentDescription.FILTER;
 import static nom.tam.fits.header.Standard.INSTRUME;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.extra.NOAOExt.WATn_nnn;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -46,6 +51,8 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.header.Checksum;
 import nom.tam.fits.header.DataDescription;
+import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.HierarchicalGrouping;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.InstrumentDescription;
@@ -169,5 +176,26 @@ public class EnumHeaderTest {
 
         Assert.assertEquals(Standard.SIMPLE, Synonyms.primaryKeyword(Standard.SIMPLE));
         Assert.assertEquals("SIMPLE", Synonyms.primaryKeyword("SIMPLE"));
+    }
+
+    @Test
+    public void testGenericKeyPrivate() throws Exception {
+        Constructor<?>[] constrs = GenericKey.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+
+    @Test
+    public void testReuseStandard() throws Exception {
+        IFitsHeader[] result = GenericKey.create(new String[]{
+            "BITPIX",
+            "SIMPLE",
+            "UNKOWN"
+        });
+        assertSame(Standard.BITPIX, result[0]);
+        assertSame(Standard.SIMPLE, result[1]);
+        assertTrue(result[2] instanceof FitsHeaderImpl);
     }
 }

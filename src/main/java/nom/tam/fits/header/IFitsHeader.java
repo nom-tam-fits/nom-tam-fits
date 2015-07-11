@@ -139,7 +139,8 @@ public interface IFitsHeader {
         LOGICAL,
         NONE,
         REAL,
-        STRING
+        STRING,
+        ANY
     }
 
     String comment();

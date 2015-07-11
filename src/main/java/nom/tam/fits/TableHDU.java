@@ -1,5 +1,10 @@
 package nom.tam.fits;
 
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.TFIELDS;
+import nom.tam.fits.header.GenericKey;
+import nom.tam.fits.header.IFitsHeader;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -72,9 +77,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *             if the operation failed
      */
     public int addRow(Object[] newRow) throws FitsException {
-
         int row = this.myData.addRow(newRow);
-        this.myHeader.addValue("NAXIS2", row, "ntf::tablehdu:naxis2:1");
+        this.myHeader.addValue(NAXISn.n(2), row);
         return row;
     }
 
@@ -83,7 +87,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *         Users can supplement this with their own and call the appropriate
      *         deleteColumns fields.
      */
-    protected abstract String[] columnKeyStems();
+    protected abstract IFitsHeader[] columnKeyStems();
 
     /**
      * Delete a set of columns from a table.
@@ -112,7 +116,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *             if the operation failed
      */
     public void deleteColumnsIndexOne(int column, int len, String[] fields) throws FitsException {
-        deleteColumnsIndexZero(column - 1, len, fields);
+        deleteColumnsIndexZero(column - 1, len, GenericKey.create(fields));
     }
 
     /**
@@ -141,7 +145,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @throws FitsException
      *             if the operation failed
      */
-    public void deleteColumnsIndexZero(int column, int len, String[] fields) throws FitsException {
+    public void deleteColumnsIndexZero(int column, int len, IFitsHeader[] fields) throws FitsException {
 
         if (column < 0 || len < 0 || column + len > getNCols()) {
             throw new FitsException("Illegal columns deletion request- Start:" + column + " Len:" + len + " from table with " + getNCols() + " columns");
@@ -156,24 +160,23 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
         // Get rid of the keywords for the deleted columns
         for (int col = column; col < column + len; col += 1) {
-            for (String field : fields) {
-                String key = field + (col + 1);
-                this.myHeader.deleteKey(key);
+            for (IFitsHeader field : fields) {
+                this.myHeader.deleteKey(field.n(col + 1));
             }
         }
 
         // Shift the keywords for the columns after the deleted columns
         for (int col = column + len; col < ncol; col += 1) {
-            for (String field : fields) {
-                String oldKey = field + (col + 1);
-                String newKey = field + (col + 1 - len);
+            for (IFitsHeader field : fields) {
+                IFitsHeader oldKey = field.n(col + 1);
+                IFitsHeader newKey = field.n(col + 1 - len);
                 if (this.myHeader.containsKey(oldKey)) {
                     this.myHeader.replaceKey(oldKey, newKey);
                 }
             }
         }
         // Update the number of fields.
-        this.myHeader.addValue("TFIELDS", getNCols(), "ntf::tablehdu:tfields:1");
+        this.myHeader.addValue(TFIELDS, getNCols());
 
         // Give the data sections a chance to update the header too.
         this.myData.updateAfterDelete(ncol, this.myHeader);
