@@ -183,19 +183,29 @@ public class HeaderCard implements CursorValue<String> {
         return new BufferedDataInputStream(new ByteArrayInputStream(bytes));
     }
 
-    /** The keyword part of the card (set to null if there's no keyword) */
+    /**
+     * The keyword part of the card (set to null if there's no keyword)
+     */
     private String key;
 
-    /** The value part of the card (set to null if there's no value) */
+    /**
+     * The value part of the card (set to null if there's no value)
+     */
     private String value;
 
-    /** The comment part of the card (set to null if there's no comment) */
+    /**
+     * The comment part of the card (set to null if there's no comment)
+     */
     private String comment;
 
-    /** Does this card represent a nullable field. ? */
+    /**
+     * Does this card represent a nullable field. ?
+     */
     private boolean nullable;
 
-    /** A flag indicating whether or not this is a string value */
+    /**
+     * A flag indicating whether or not this is a string value
+     */
     private boolean isString;
 
     public HeaderCard(ArrayDataInput dis) throws TruncatedFileException, IOException {
@@ -656,6 +666,66 @@ public class HeaderCard implements CursorValue<String> {
      */
     public void setValue(String update) {
         this.value = update;
+    }
+
+    /**
+     * Set the value for this card.
+     * 
+     * @param update
+     *            the new value to set
+     */
+    public void setValue(boolean update) {
+        this.value = update ? "T" : "F";
+    }
+
+    /**
+     * Set the value for this card.
+     * 
+     * @param update
+     *            the new value to set
+     */
+    public void setValue(int update) {
+        this.value = String.valueOf(update);
+    }
+
+    /**
+     * Set the value for this card.
+     * 
+     * @param update
+     *            the new value to set
+     */
+    public void setValue(long update) {
+        this.value = String.valueOf(update);
+    }
+
+    /**
+     * Set the value for this card.
+     * 
+     * @param update
+     *            the new value to set
+     */
+    public void setValue(float update) {
+        this.value = dblString(update);
+    }
+
+    /**
+     * Set the value for this card.
+     * 
+     * @param update
+     *            the new value to set
+     */
+    public void setValue(double update) {
+        this.value = dblString(update);
+    }
+
+    /**
+     * set the comment of a card.
+     * 
+     * @param comment
+     *            the comment to set.
+     */
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     /**

@@ -386,6 +386,17 @@ public class Header implements FitsElement {
     }
 
     /**
+     * get a builder for filling the header cards using the builder pattern.
+     * 
+     * @param key
+     *            the key for the first card.
+     * @return the builder for header cards.
+     */
+    public HeaderCardBuilder card(IFitsHeader key) {
+        return new HeaderCardBuilder(this, key);
+    }
+
+    /**
      * Check if the given key is the next one available in the header.
      */
     private void cardCheck(String key) throws FitsException {
@@ -529,12 +540,24 @@ public class Header implements FitsElement {
      *         HeaderCard object otherwise.
      */
     public HeaderCard findCard(String key) {
-
         HeaderCard card = (HeaderCard) this.cards.get(key);
         if (card != null) {
             this.iter.setKey(key);
         }
         return card;
+    }
+
+    /**
+     * Find the card associated with a given key. If found this sets the mark to
+     * the card, otherwise it unsets the mark.
+     * 
+     * @param key
+     *            The header key.
+     * @return <CODE>null</CODE> if the keyword could not be found; return the
+     *         HeaderCard object otherwise.
+     */
+    public HeaderCard findCard(IFitsHeader key) {
+        return this.findCard(key.key());
     }
 
     /**

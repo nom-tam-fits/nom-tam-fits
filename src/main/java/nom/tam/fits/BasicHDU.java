@@ -295,6 +295,17 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
+     * get a builder for filling the header cards using the builder pattern.
+     * 
+     * @param key
+     *            the key for the first card.
+     * @return the builder for header cards.
+     */
+    public HeaderCardBuilder card(IFitsHeader key) {
+        return this.myHeader.card(key);
+    }
+
+    /**
      * Get the name of the instrument which was used to acquire the data in this
      * FITS file.
      * 
