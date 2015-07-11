@@ -31,6 +31,14 @@ package nom.tam.fits;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.PCOUNT;
+import static nom.tam.fits.header.Standard.TBCOLn;
+import static nom.tam.fits.header.Standard.TFIELDS;
+import static nom.tam.fits.header.Standard.TFORMn;
+import static nom.tam.fits.header.Standard.TNULLn;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -47,7 +55,9 @@ import nom.tam.util.FormatException;
 import nom.tam.util.RandomAccess;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-/** This class represents the data in an ASCII table */
+/**
+ * This class represents the data in an ASCII table
+ */
 public class AsciiTable extends AbstractTableData {
 
     private static final int MAX_INTEGER_LENGTH = 10;
@@ -126,9 +136,9 @@ public class AsciiTable extends AbstractTableData {
      */
     public AsciiTable(Header hdr) throws FitsException {
 
-        this.nRows = hdr.getIntValue("NAXIS2");
-        this.nFields = hdr.getIntValue("TFIELDS");
-        this.rowLen = hdr.getIntValue("NAXIS1");
+        this.nRows = hdr.getIntValue(NAXISn.n(2));
+        this.nFields = hdr.getIntValue(TFIELDS);
+        this.rowLen = hdr.getIntValue(NAXISn.n(1));
 
         this.types = new Class[this.nFields];
         this.offsets = new int[this.nFields];
@@ -136,8 +146,8 @@ public class AsciiTable extends AbstractTableData {
         this.nulls = new String[this.nFields];
 
         for (int i = 0; i < this.nFields; i += 1) {
-            this.offsets[i] = hdr.getIntValue("TBCOL" + (i + 1)) - 1;
-            String s = hdr.getStringValue("TFORM" + (i + 1));
+            this.offsets[i] = hdr.getIntValue(TBCOLn.n(i + 1)) - 1;
+            String s = hdr.getStringValue(TFORMn.n(i + 1));
             if (this.offsets[i] < 0 || s == null) {
                 throw new FitsException("Invalid Specification for column:" + (i + 1));
             }
@@ -171,7 +181,7 @@ public class AsciiTable extends AbstractTableData {
                     throw new FitsException("could not parse column type of ascii table");
             }
 
-            this.nulls[i] = hdr.getStringValue("TNULL" + (i + 1));
+            this.nulls[i] = hdr.getStringValue(TNULLn.n(i + 1));
             if (this.nulls[i] != null) {
                 this.nulls[i] = this.nulls[i].trim();
             }
@@ -190,11 +200,8 @@ public class AsciiTable extends AbstractTableData {
         } else if (this.types[col] == double.class) {
             tform = "D" + this.lengths[col] + ".0";
         }
-        String key;
-        key = "TFORM" + (col + 1);
-        iter.add(new HeaderCard(key, tform, "ntf::asciitable:tformN:1"));
-        key = "TBCOL" + (col + 1);
-        iter.add(new HeaderCard(key, this.offsets[col] + 1, "ntf::asciitable:tbcolN:1"));
+        iter.add(new HeaderCard(TFORMn.n(col + 1).key(), tform, "ntf::asciitable:tformN:1"));
+        iter.add(new HeaderCard(TBCOLn.n(col + 1).key(), this.offsets[col] + 1, "ntf::asciitable:tbcolN:1"));
         return this.lengths[col];
     }
 
@@ -524,11 +531,11 @@ public class AsciiTable extends AbstractTableData {
             hdr.setNaxis(1, this.rowLen);
             hdr.setNaxis(2, this.nRows);
             Cursor<String, HeaderCard> iter = hdr.iterator();
-            iter.setKey("NAXIS2");
+            iter.setKey(NAXISn.n(2).key());
             iter.next();
-            iter.add(new HeaderCard("PCOUNT", 0, "ntf::asciitable:pcount:1"));
-            iter.add(new HeaderCard("GCOUNT", 1, "ntf::asciitable:gcount:1"));
-            iter.add(new HeaderCard("TFIELDS", this.nFields, "ntf::asciitable:tfields:1"));
+            iter.add(new HeaderCard(PCOUNT.key(), 0, "ntf::asciitable:pcount:1"));
+            iter.add(new HeaderCard(GCOUNT.key(), 1, "ntf::asciitable:gcount:1"));
+            iter.add(new HeaderCard(TFIELDS.key(), this.nFields, "ntf::asciitable:tfields:1"));
 
             for (int i = 0; i < this.nFields; i += 1) {
                 addColInfo(i, iter);
@@ -991,14 +998,14 @@ public class AsciiTable extends AbstractTableData {
         int offset = 0;
         for (int i = 0; i < this.nFields; i += 1) {
             this.offsets[i] = offset;
-            hdr.addValue("TBCOL" + (i + 1), offset + 1, "ntf::asciitable:tbcolN:2");
+            hdr.addValue(TBCOLn.n(i + 1), offset + 1);
             offset += this.lengths[i] + 1;
         }
         for (int i = this.nFields; i < oldNCol; i += 1) {
-            hdr.deleteKey("TBCOL" + (i + 1));
+            hdr.deleteKey(TBCOLn.n(i + 1));
         }
 
-        hdr.addValue("NAXIS1", this.rowLen, "ntf::asciitable:naxis1:1");
+        hdr.addValue(NAXISn.n(1), this.rowLen);
     }
 
     /**

@@ -256,6 +256,21 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Add or replace a key with the given long value and comment. Note that
+     * int's will be promoted to long's.
+     * 
+     * @param key
+     *            The header key.
+     * @param val
+     *            The long value.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(IFitsHeader key, int val) throws HeaderCardException {
+        addValue(key.key(), val, key.comment());
+    }
+
+    /**
      * Add or replace a key with the given string value and comment.
      * 
      * @param key
@@ -499,6 +514,17 @@ public class Header implements FitsElement {
      */
     public final boolean containsKey(String key) {
         return this.cards.containsKey(key);
+    }
+
+    /**
+     * Delete the card associated with the given key. Nothing occurs if the key
+     * is not found.
+     * 
+     * @param key
+     *            The header key.
+     */
+    public void deleteKey(IFitsHeader key) {
+        deleteKey(key.key());
     }
 
     /**
