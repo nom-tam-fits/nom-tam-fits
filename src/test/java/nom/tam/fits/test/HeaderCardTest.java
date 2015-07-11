@@ -147,6 +147,12 @@ public class HeaderCardTest {
     }
 
     @Test
+    public void testDefault() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", (String) null, "dummy");
+        assertEquals(Integer.valueOf(5), hc.getValue(int.class, 5));
+    }
+
+    @Test
     public void testBigDecimal1() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", new BigDecimal("1234567890123456789012345678901234567890123456789012345678901234567.890"), "dummy");
         assertEquals(BigInteger.class, hc.valueType());

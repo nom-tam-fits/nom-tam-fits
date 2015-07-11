@@ -82,5 +82,26 @@ public class BuilderApiTest {
         Assert.assertEquals(1, header.getIntValue(DATAMIN));
         Assert.assertEquals(3d, header.getDoubleValue(DATAMAX), 0.000001d);
         Assert.assertEquals(true, header.getBooleanValue(AUTHOR));
+
+        date = new FitsDate("2015-07-12T05:21:25.446").toDate();
+        BasicHDU<?> hdu = Fits.makeHDU(header);
+        hdu.card(DATE_OBS).value(date).comment("observation date")//
+                .card(INSTRUME).value("The very very best")//
+                .card(ORIGIN).value("other")//
+                .card(COMMENT).comment("something else to comment")//
+                .card(DATAMIN).value(100)//
+                .card(DATAMAX).value(200f)//
+                .card(AUTHOR).value(false);
+
+        Assert.assertEquals("2015-07-12T05:21:25.446", header.getStringValue(DATE_OBS));
+        Assert.assertEquals("observation date", header.findCard(DATE_OBS).getComment());
+        Assert.assertEquals("The very very best", header.getStringValue(INSTRUME));
+        Assert.assertEquals("other", header.getStringValue(ORIGIN));
+        Assert.assertEquals("something else to comment", header.findCard(COMMENT).getComment());
+        Assert.assertEquals(null, header.getStringValue(COMMENT));
+        Assert.assertEquals(100, header.getIntValue(DATAMIN));
+        Assert.assertEquals(200d, header.getDoubleValue(DATAMAX), 0.000001d);
+        Assert.assertEquals(false, header.getBooleanValue(AUTHOR));
+
     }
 }
