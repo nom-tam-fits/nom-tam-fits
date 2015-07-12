@@ -48,60 +48,189 @@ package nom.tam.fits;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.EXTEND;
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.GROUPS;
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.PCOUNT;
+import static nom.tam.fits.header.Standard.SIMPLE;
+import static nom.tam.fits.header.Standard.TBCOLn;
+import static nom.tam.fits.header.Standard.TDIMn;
+import static nom.tam.fits.header.Standard.TFIELDS;
+import static nom.tam.fits.header.Standard.TFORMn;
+import static nom.tam.fits.header.Standard.THEAP;
+import static nom.tam.fits.header.Standard.XTENSION;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class HeaderCommentsMap {
 
-    private static Map<String, String> commentMap = new HashMap<String, String>();
+    static class StdCommentReplacement {
+
+        private String key;
+
+        private Class<?> context;
+
+        private String ref;
+
+        private String comment;
+
+        public StdCommentReplacement(String ref, String key, Class<?> context, String comment) {
+            this.ref = ref;
+            this.key = key;
+            this.context = context;
+            this.comment = comment;
+        }
+
+        public StdCommentReplacement(String ref, String key, String comment) {
+            this.ref = ref;
+            this.key = key;
+            this.context = Object.class;
+            this.comment = comment;
+        }
+
+        public StdCommentReplacement(String ref, String key, Class<?> context) {
+            this.ref = ref;
+            this.key = key;
+            this.context = context;
+            this.comment = null;
+        }
+
+        public StdCommentReplacement(String ref, String key) {
+            this.ref = ref;
+            this.key = key;
+            this.context = Object.class;
+            this.comment = null;
+        }
+    }
+
+    private static final Map<String, String> COMMENT_MAP = new HashMap<String, String>();
+
+    private static final Map<String, List<StdCommentReplacement>> COMMENT_KEYS = new HashMap<>();
     static {
-        HeaderCommentsMap.commentMap.put("header:extend:1", "Extensions are permitted");
-        HeaderCommentsMap.commentMap.put("header:simple:1", "Java FITS: " + new java.util.Date());
-        HeaderCommentsMap.commentMap.put("header:xtension:1", "Java FITS: " + new java.util.Date());
-        HeaderCommentsMap.commentMap.put("header:naxis:1", "Dimensionality");
-        HeaderCommentsMap.commentMap.put("header:extend:2", "Extensions are permitted");
-        HeaderCommentsMap.commentMap.put("asciitable:pcount:1", "No group data");
-        HeaderCommentsMap.commentMap.put("asciitable:gcount:1", "One group");
-        HeaderCommentsMap.commentMap.put("asciitable:tfields:1", "Number of fields in table");
-        HeaderCommentsMap.commentMap.put("asciitable:tbcolN:1", "Column offset");
-        HeaderCommentsMap.commentMap.put("asciitable:naxis1:1", "Size of row in bytes");
-        HeaderCommentsMap.commentMap.put("undefineddata:naxis1:1", "Number of Bytes");
-        HeaderCommentsMap.commentMap.put("undefineddata:extend:1", "Extensions are permitted");
-        HeaderCommentsMap.commentMap.put("binarytablehdu:pcount:1", "Includes heap");
-        HeaderCommentsMap.commentMap.put("binarytable:naxis1:1", "Bytes per row");
-        HeaderCommentsMap.commentMap.put("fits:checksum:1", "as of " + FitsDate.getFitsDateString());
-        HeaderCommentsMap.commentMap.put("basichdu:extend:1", "Allow extensions");
-        HeaderCommentsMap.commentMap.put("basichdu:gcount:1", "Required value");
-        HeaderCommentsMap.commentMap.put("basichdu:pcount:1", "Required value");
-        HeaderCommentsMap.commentMap.put("imagedata:extend:1", "Extension permitted");
-        HeaderCommentsMap.commentMap.put("imagedata:pcount:1", "No extra parameters");
-        HeaderCommentsMap.commentMap.put("imagedata:gcount:1", "One group");
-        HeaderCommentsMap.commentMap.put("tablehdu:tfields:1", "Number of table fields");
-        /*
-         * Null entries: header:bitpix:1 header:simple:2 header:bitpix:2
-         * header:naxisN:1 header:naxis:2 undefineddata:pcount:1
-         * undefineddata:gcount:1 randomgroupsdata:naxis1:1
-         * randomgroupsdata:naxisN:1 randomgroupsdata:groups:1
-         * randomgroupsdata:gcount:1 randomgroupsdata:pcount:1
-         * binarytablehdu:theap:1 binarytablehdu:tdimN:1 asciitable:tformN:1
-         * asciitablehdu:tnullN:1 asciitablehdu:tfields:1 binarytable:pcount:1
-         * binarytable:gcount:1 binarytable:tfields:1 binarytable:tformN:1
-         * binarytable:tdimN:1 tablehdu:naxis2:1
-         */
+        addCommentRepacement(new StdCommentReplacement("asciitable:gcount", GCOUNT.key(), AsciiTable.class));
+        addCommentRepacement(new StdCommentReplacement("asciitablehdu:tfields", TFIELDS.key(), AsciiTable.class));
+        addCommentRepacement(new StdCommentReplacement("asciitable:naxis1", NAXISn.key(), AsciiTable.class, "Size of row in bytes"));
+        addCommentRepacement(new StdCommentReplacement("asciitable:pcount", PCOUNT.key(), AsciiTable.class, "No group data"));
+        addCommentRepacement(new StdCommentReplacement("asciitable:tbcolN", TBCOLn.key(), AsciiTable.class, "Column offset"));
+        addCommentRepacement(new StdCommentReplacement("asciitable:tfields", TFIELDS.key(), AsciiTable.class, "Number of fields in table"));
+        addCommentRepacement(new StdCommentReplacement("asciitable:tformN", TFORMn.key(), AsciiTable.class));
+        addCommentRepacement(new StdCommentReplacement("basichdu:extend", EXTEND.key(), "Allow extensions"));
+        addCommentRepacement(new StdCommentReplacement("basichdu:gcount", GCOUNT.key(), "Required value"));
+        addCommentRepacement(new StdCommentReplacement("basichdu:pcount", PCOUNT.key(), "Required value"));
+        addCommentRepacement(new StdCommentReplacement("binarytable:gcount", GCOUNT.key(), BinaryTable.class));
+        addCommentRepacement(new StdCommentReplacement("binarytablehdu:pcount", PCOUNT.key(), BinaryTable.class, "Includes heap"));
+        addCommentRepacement(new StdCommentReplacement("binarytablehdu:tdimN", TDIMn.key(), BinaryTable.class));
+        addCommentRepacement(new StdCommentReplacement("binarytablehdu:theap", THEAP.key(), BinaryTable.class));
+        addCommentRepacement(new StdCommentReplacement("binarytable:naxis1", NAXISn.key(), BinaryTable.class, "Bytes per row"));
+        addCommentRepacement(new StdCommentReplacement("binarytable:pcount", PCOUNT.key(), BinaryTable.class));
+        addCommentRepacement(new StdCommentReplacement("binarytable:tfields", TFIELDS.key(), BinaryTable.class));
+        addCommentRepacement(new StdCommentReplacement("binarytable:tformN", TFORMn.key(), BinaryTable.class));
+        addCommentRepacement(new StdCommentReplacement("header:bitpix", BITPIX.key()));
+        addCommentRepacement(new StdCommentReplacement("headercard:tdimN", TDIMn.key()));
+        addCommentRepacement(new StdCommentReplacement("header:extend", EXTEND.key(), "Extensions are permitted"));
+        addCommentRepacement(new StdCommentReplacement("header:naxis", NAXIS.key(), "Dimensionality"));
+        addCommentRepacement(new StdCommentReplacement("header:naxisN", NAXISn.key()));
+        addCommentRepacement(new StdCommentReplacement("header:simple", SIMPLE.key(), "Java FITS: " + new java.util.Date()));
+        addCommentRepacement(new StdCommentReplacement("header:xtension", XTENSION.key(), "Java FITS: " + new java.util.Date()));
+        addCommentRepacement(new StdCommentReplacement("imagedata:extend", EXTEND.key(), ImageData.class, "Extension permitted"));
+        addCommentRepacement(new StdCommentReplacement("imagedata:gcount", GCOUNT.key(), ImageData.class, "No extra parameters"));
+        addCommentRepacement(new StdCommentReplacement("imagedata:pcount", PCOUNT.key(), ImageData.class, "One group"));
+        addCommentRepacement(new StdCommentReplacement("randomgroupsdata:gcount", GCOUNT.key(), RandomGroupsData.class));
+        addCommentRepacement(new StdCommentReplacement("randomgroupsdata:groups", GROUPS.key(), RandomGroupsData.class));
+        addCommentRepacement(new StdCommentReplacement("randomgroupsdata:naxis1", NAXISn.key(), RandomGroupsData.class));
+        addCommentRepacement(new StdCommentReplacement("randomgroupsdata:naxisN", NAXISn.key(), RandomGroupsData.class));
+        addCommentRepacement(new StdCommentReplacement("randomgroupsdata:pcount", PCOUNT.key(), RandomGroupsData.class));
+        addCommentRepacement(new StdCommentReplacement("tablehdu:naxis2", NAXISn.key(), TableData.class));
+        addCommentRepacement(new StdCommentReplacement("tablehdu:tfields", TFIELDS.key(), TableData.class, "Number of table fields"));
+        addCommentRepacement(new StdCommentReplacement("undefineddata:extend", EXTEND.key(), UndefinedData.class, "Extensions are permitted"));
+        addCommentRepacement(new StdCommentReplacement("undefineddata:gcount", GCOUNT.key(), UndefinedData.class));
+        addCommentRepacement(new StdCommentReplacement("undefineddata:naxis1", NAXISn.key(), UndefinedData.class, "Number of Bytes"));
+        addCommentRepacement(new StdCommentReplacement("undefineddata:pcount", PCOUNT.key(), UndefinedData.class));
+    };
+
+    private static final ThreadLocal<Class<?>> CONTEXT = new ThreadLocal<>();
+
+    public static void set(Class<?> clazz) {
+        CONTEXT.set(clazz);
+    }
+
+    private static void addCommentRepacement(StdCommentReplacement stdCommentReplacement) {
+        List<StdCommentReplacement> listOfCommentReplace = COMMENT_KEYS.get(stdCommentReplacement.key);
+        if (listOfCommentReplace == null) {
+            listOfCommentReplace = new ArrayList<>();
+            COMMENT_KEYS.put(stdCommentReplacement.key, listOfCommentReplace);
+        }
+        if (stdCommentReplacement.context == Object.class) {
+            listOfCommentReplace.add(0, stdCommentReplacement);
+        } else {
+            listOfCommentReplace.add(stdCommentReplacement);
+        }
+        COMMENT_MAP.put(stdCommentReplacement.ref, stdCommentReplacement.comment);
     }
 
     private HeaderCommentsMap() {
     }
 
     public static void deleteComment(String key) {
-        HeaderCommentsMap.commentMap.remove(key);
+        key = simplyfyKey(key);
+        setStdCommentText(key, "");
+        HeaderCommentsMap.COMMENT_MAP.remove(key);
+    }
+
+    private static void setStdCommentText(String key, String commentText) {
+        for (List<StdCommentReplacement> commentList : COMMENT_KEYS.values()) {
+            for (StdCommentReplacement replacement : commentList) {
+                if (replacement.ref.equals(key)) {
+                    replacement.comment = commentText;
+                }
+            }
+        }
     }
 
     public static String getComment(String key) {
-        return HeaderCommentsMap.commentMap.get(key);
+        key = simplyfyKey(key);
+        return HeaderCommentsMap.COMMENT_MAP.get(key);
     }
 
     public static void updateComment(String key, String comment) {
-        HeaderCommentsMap.commentMap.put(key, comment);
+        key = simplyfyKey(key);
+        setStdCommentText(key, comment);
+        HeaderCommentsMap.COMMENT_MAP.put(key, comment);
+    }
+
+    private static String simplyfyKey(String key) {
+        int firstDbPoint = key.indexOf(':');
+        if (firstDbPoint > 0) {
+            int secondDoublePoint = key.indexOf(':', firstDbPoint + 1);
+            if (secondDoublePoint > 0) {
+                return key.substring(0, secondDoublePoint);
+            }
+        }
+        return key;
+    }
+
+    public static String getUserdefinedComment(String key, String comment) {
+        List<StdCommentReplacement> comments = COMMENT_KEYS.get(key);
+        if (comments != null) {
+            Class<?> contextClass = CONTEXT.get();
+            if (contextClass == null) {
+                contextClass = Object.class;
+            }
+            for (StdCommentReplacement stdCommentReplacement : comments) {
+                if (stdCommentReplacement.context.isAssignableFrom(contextClass)) {
+                    comment = stdCommentReplacement.comment;
+                    if (comment != null) {
+                        return comment;
+                    }
+                }
+            }
+        }
+        return comment;
     }
 }

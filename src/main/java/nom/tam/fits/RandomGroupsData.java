@@ -76,7 +76,7 @@ public class RandomGroupsData extends Data {
         if (this.dataArray.length <= 0 || this.dataArray[0].length != 2) {
             throw new FitsException("Data not conformable to Random Groups");
         }
-
+        HeaderCommentsMap.set(RandomGroupsData.class);
         Object paraSamp = this.dataArray[0][0];
         Object dataSamp = this.dataArray[0][1];
 
@@ -122,6 +122,7 @@ public class RandomGroupsData extends Data {
         h.addValue("GROUPS", true, "ntf::randomgroupsdata:groups:1");
         h.addValue("GCOUNT", this.dataArray.length, "ntf::randomgroupsdata:gcount:1");
         h.addValue("PCOUNT", pdims[0], "ntf::randomgroupsdata:pcount:1");
+        HeaderCommentsMap.set(null);
     }
 
     @Override

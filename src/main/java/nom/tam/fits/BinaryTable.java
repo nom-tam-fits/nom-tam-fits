@@ -1059,8 +1059,8 @@ public class BinaryTable extends AbstractTableData {
      */
     @Override
     public void fillHeader(Header h) throws FitsException {
-
         try {
+            HeaderCommentsMap.set(BinaryTable.class);
             h.setXtension("BINTABLE");
             h.setBitpix(BasicHDU.BITPIX_BYTE);
             h.setNaxes(2);
@@ -1080,6 +1080,8 @@ public class BinaryTable extends AbstractTableData {
             }
         } catch (HeaderCardException e) {
             System.err.println("Error updating BinaryTableHeader:" + e);
+        } finally {
+            HeaderCommentsMap.set(null);
         }
     }
 

@@ -526,6 +526,7 @@ public class AsciiTable extends AbstractTableData {
     @Override
     public void fillHeader(Header hdr) {
         try {
+            HeaderCommentsMap.set(AsciiTable.class);
             hdr.setXtension("TABLE");
             hdr.setBitpix(BasicHDU.BITPIX_BYTE);
             hdr.setNaxes(2);
@@ -534,15 +535,17 @@ public class AsciiTable extends AbstractTableData {
             Cursor<String, HeaderCard> iter = hdr.iterator();
             iter.setKey(NAXIS2.key());
             iter.next();
-            iter.add(new HeaderCard(PCOUNT.key(), 0, "ntf::asciitable:pcount:1"));
-            iter.add(new HeaderCard(GCOUNT.key(), 1, "ntf::asciitable:gcount:1"));
-            iter.add(new HeaderCard(TFIELDS.key(), this.nFields, "ntf::asciitable:tfields:1"));
+            iter.add(new HeaderCard(PCOUNT.key(), 0, PCOUNT.comment()));
+            iter.add(new HeaderCard(GCOUNT.key(), 1, GCOUNT.comment()));
+            iter.add(new HeaderCard(TFIELDS.key(), this.nFields, TFIELDS.comment()));
 
             for (int i = 0; i < this.nFields; i += 1) {
                 addColInfo(i, iter);
             }
         } catch (HeaderCardException e) {
             LOG.log(Level.SEVERE, "ImpossibleException in fillHeader:" + e.getMessage(), e);
+        } finally {
+            HeaderCommentsMap.set(null);
         }
     }
 

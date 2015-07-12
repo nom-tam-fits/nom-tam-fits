@@ -166,6 +166,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     @Override
     public int addColumn(Object newCol) throws FitsException {
+        HeaderCommentsMap.set(AsciiTable.class);
         this.myData.addColumn(newCol);
         // Move the iterator to point after all the data describing
         // the previous column.
@@ -182,6 +183,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Impossible exception at addColumn", e);
         }
+        HeaderCommentsMap.set(null);
         return getNCols();
     }
 

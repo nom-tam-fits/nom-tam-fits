@@ -142,7 +142,9 @@ public class EnumHeaderTest {
         for (Class<?> class1 : classes) {
             for (Object enumConst : class1.getEnumConstants()) {
                 IFitsHeader iFitsHeader = (IFitsHeader) enumConst;
-                Assert.assertNotNull(iFitsHeader.comment());
+                if (class1 != Standard.class) {
+                    Assert.assertNotNull(iFitsHeader.comment());
+                }
                 String key = iFitsHeader.key();
                 Assert.assertNotNull(key);
                 Assert.assertNotNull(iFitsHeader.status());

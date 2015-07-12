@@ -1,5 +1,7 @@
 package nom.tam.fits.header;
 
+import nom.tam.fits.HeaderCommentsMap;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -561,7 +563,7 @@ public enum Standard implements IFitsHeader {
 
     @Override
     public String comment() {
-        return this.key.comment();
+        return HeaderCommentsMap.getUserdefinedComment(this.key(), this.key.comment());
     }
 
     @Override

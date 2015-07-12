@@ -155,6 +155,7 @@ public class ImageData extends Data {
             return;
         }
 
+        HeaderCommentsMap.set(ImageData.class);
         String classname = this.dataArray.getClass().getName();
 
         int[] dimens = ArrayFuncs.getDimensions(this.dataArray);
@@ -204,6 +205,7 @@ public class ImageData extends Data {
         head.addValue("PCOUNT", 0, "ntf::imagedata:pcount:1");
         head.addValue("GCOUNT", 1, "ntf::imagedata:gcount:1");
 
+        HeaderCommentsMap.set(null);
     }
 
     /**

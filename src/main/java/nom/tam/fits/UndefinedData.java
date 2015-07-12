@@ -91,6 +91,7 @@ public class UndefinedData extends Data {
     protected void fillHeader(Header head) {
 
         try {
+            HeaderCommentsMap.set(UndefinedData.class);
             head.setXtension("UNKNOWN");
             head.setBitpix(BasicHDU.BITPIX_BYTE);
             head.setNaxes(1);
@@ -102,6 +103,9 @@ public class UndefinedData extends Data {
                                                                           // case!
         } catch (HeaderCardException e) {
             System.err.println("Unable to create unknown header:" + e);
+        } finally {
+            HeaderCommentsMap.set(null);
+
         }
 
     }
