@@ -31,6 +31,21 @@ package nom.tam.fits;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.COMMENT;
+import static nom.tam.fits.header.Standard.END;
+import static nom.tam.fits.header.Standard.EXTEND;
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.GROUPS;
+import static nom.tam.fits.header.Standard.HISTORY;
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.PCOUNT;
+import static nom.tam.fits.header.Standard.SIMPLE;
+import static nom.tam.fits.header.Standard.TFIELDS;
+import static nom.tam.fits.header.Standard.XTENSION;
+import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -190,7 +205,7 @@ public class Header implements FitsElement {
     }
 
     private void addDuplicate(HeaderCard dup) {
-        if (!"COMMENT".equals(dup.getKey()) && !"HISTORY".equals(dup.getKey())) {
+        if (!COMMENT.key().equals(dup.getKey()) && !HISTORY.key().equals(dup.getKey())) {
             System.err.println("Warning: multiple occurrences of key:" + dup.getKey());
             if (this.duplicates == null) {
                 this.duplicates = new ArrayList<HeaderCard>();
@@ -395,7 +410,7 @@ public class Header implements FitsElement {
      * Forchi
      */
     void afterExtend() {
-        if (findCard("EXTEND") != null) {
+        if (findCard(EXTEND) != null) {
             nextCard();
         }
     }
@@ -409,6 +424,13 @@ public class Header implements FitsElement {
      */
     public HeaderCardBuilder card(IFitsHeader key) {
         return new HeaderCardBuilder(this, key);
+    }
+
+    /**
+     * Check if the given key is the next one available in the header.
+     */
+    private void cardCheck(IFitsHeader key) throws FitsException {
+        cardCheck(key.key());
     }
 
     /**
@@ -430,47 +452,40 @@ public class Header implements FitsElement {
      * do not check the values of these keywords.
      */
     void checkBeginning() throws FitsException {
-
         this.iter = iterator();
-
         if (!this.iter.hasNext()) {
             throw new FitsException("Empty Header");
         }
         HeaderCard card = this.iter.next();
         String key = card.getKey();
-        if (!key.equals("SIMPLE") && !key.equals("XTENSION")) {
+        if (!key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {
             throw new FitsException("No SIMPLE or XTENSION at beginning of Header");
         }
         boolean isTable = false;
         boolean isExtension = false;
-        if (key.equals("XTENSION")) {
+        if (key.equals(XTENSION.key())) {
             String value = card.getValue();
             if (value == null || value.isEmpty()) {
                 throw new FitsException("Empty XTENSION keyword");
             }
-
             isExtension = true;
-
             if (value.equals("BINTABLE") || value.equals("A3DTABLE") || value.equals("TABLE")) {
                 isTable = true;
             }
         }
 
-        cardCheck("BITPIX");
-        cardCheck("NAXIS");
-
-        int nax = getIntValue("NAXIS");
+        cardCheck(BITPIX);
+        cardCheck(NAXIS);
+        int nax = getIntValue(NAXIS);
         this.iter.next();
-
         for (int i = 1; i <= nax; i += 1) {
-            cardCheck("NAXIS" + i);
+            cardCheck(NAXISn.n(i));
         }
-
         if (isExtension) {
-            cardCheck("PCOUNT");
-            cardCheck("GCOUNT");
+            cardCheck(PCOUNT);
+            cardCheck(GCOUNT);
             if (isTable) {
-                cardCheck("TFIELDS");
+                cardCheck(TFIELDS);
             }
         }
         // This does not check for the EXTEND keyword which
@@ -492,13 +507,13 @@ public class Header implements FitsElement {
 
         while (this.iter.hasNext()) {
             card = this.iter.next();
-            if (!card.isKeyValuePair() && card.getKey().equals("END")) {
+            if (!card.isKeyValuePair() && card.getKey().equals(END.key())) {
                 this.iter.remove();
             }
         }
         try {
             // End cannot have a comment
-            this.iter.add(new HeaderCard("END", (String) null, null));
+            this.iter.add(new HeaderCard(END.key(), (String) null, null));
         } catch (HeaderCardException e) {
             LOG.severe("can not happen");
         }
@@ -1108,7 +1123,7 @@ public class Header implements FitsElement {
      *                If the parameter is not a valid FITS comment.
      */
     public void insertComment(String value) throws HeaderCardException {
-        insertCommentStyle("COMMENT", value);
+        insertCommentStyle(COMMENT.key(), value);
     }
 
     /**
@@ -1140,7 +1155,7 @@ public class Header implements FitsElement {
      *                If the parameter is not a valid FITS comment.
      */
     public void insertHistory(String value) throws HeaderCardException {
-        insertCommentStyle("HISTORY", value);
+        insertCommentStyle(HISTORY.key(), value);
     }
 
     /**
@@ -1154,23 +1169,22 @@ public class Header implements FitsElement {
             return false;
         }
         this.iter = iterator();
-
         String key = this.iter.next().getKey();
-        if (!key.equals("SIMPLE") && !key.equals("XTENSION")) {
+        if (!key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {
             return false;
         }
         key = this.iter.next().getKey();
-        if (!key.equals("BITPIX")) {
+        if (!key.equals(BITPIX.key())) {
             return false;
         }
         key = this.iter.next().getKey();
-        if (!key.equals("NAXIS")) {
+        if (!key.equals(NAXIS.key())) {
             return false;
         }
         while (this.iter.hasNext()) {
             key = this.iter.next().getKey();
         }
-        if (!key.equals("END")) {
+        if (!key.equals(END.key())) {
             return false;
         }
         return true;
@@ -1218,10 +1232,10 @@ public class Header implements FitsElement {
     void nullImage() {
         this.iter = iterator();
         try {
-            addValue("SIMPLE", true, "ntf::header:simple:2");
-            addValue("BITPIX", BasicHDU.BITPIX_BYTE, "ntf::header:bitpix:2");
-            addValue("NAXIS", 0, "ntf::header:naxis:2");
-            addValue("EXTEND", true, "ntf::header:extend:2");
+            addValue(SIMPLE, true);
+            addValue(BITPIX, BasicHDU.BITPIX_BYTE);
+            addValue(NAXIS, 0);
+            addValue(EXTEND, true);
         } catch (HeaderCardException e) {
             LOG.log(Level.SEVERE, "could not create null image, should not be possible", e);
         }
@@ -1299,7 +1313,7 @@ public class Header implements FitsElement {
 
                     String key = fcard.getKey();
 
-                    if (key == null || !key.equals("SIMPLE") && !key.equals("XTENSION")) {
+                    if (key == null || !key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {
                         if (this.fileOffset > 0 && FitsFactory.getAllowTerminalJunk()) {
                             throw new EOFException("Not FITS format at " + this.fileOffset + ":" + key);
                         } else {
@@ -1318,14 +1332,14 @@ public class Header implements FitsElement {
                 // wants to be sure that long strings are disabled,
                 // they can call setLongStringsEnabled(false) after
                 // reading the header.
-                if ("LONGSTRN".equals(key)) {
+                if (LONGSTRN.key().equals(key)) {
                     FitsFactory.setLongStringsEnabled(true);
                 }
                 // save card
 
                 this.originalCardCount++; // RBH ADDED
                 addLine(fcard);
-                if ("END".equals(key)) {
+                if (END.key().equals(key)) {
                     break; // Out of reading the header.
                 }
             }
@@ -1475,7 +1489,7 @@ public class Header implements FitsElement {
         this.iter = iterator();
         this.iter.next();
         try {
-            this.iter.add(new HeaderCard("BITPIX", val, "ntf::header:bitpix:1"));
+            this.iter.add(new HeaderCard(BITPIX.key(), val, BITPIX.comment()));
         } catch (HeaderCardException e) {
             System.err.println("Impossible exception at setBitpix " + e);
         }
@@ -1488,13 +1502,13 @@ public class Header implements FitsElement {
      *            The dimensionality of the data.
      */
     public void setNaxes(int val) {
-        this.iter.setKey("BITPIX");
+        this.iter.setKey(BITPIX.key());
         if (this.iter.hasNext()) {
             this.iter.next();
         }
 
         try {
-            this.iter.add(new HeaderCard("NAXIS", val, "ntf::header:naxis:1"));
+            this.iter.add(new HeaderCard(NAXIS.key(), val, NAXIS.comment()));
         } catch (HeaderCardException e) {
             System.err.println("Impossible exception at setNaxes " + e);
         }
@@ -1515,15 +1529,16 @@ public class Header implements FitsElement {
             return;
         }
         if (axis == 1) {
-            this.iter.setKey("NAXIS");
+            this.iter.setKey(NAXIS.key());
         } else if (axis > 1) {
-            this.iter.setKey("NAXIS" + (axis - 1));
+            this.iter.setKey(NAXISn.n(axis - 1).key());
         }
         if (this.iter.hasNext()) {
             this.iter.next();
         }
         try {
-            this.iter.add(new HeaderCard("NAXIS" + axis, dim, "ntf::header:naxisN:1"));
+            IFitsHeader naxisKey = NAXISn.n(axis);
+            this.iter.add(new HeaderCard(naxisKey.key(), dim, naxisKey.comment()));
         } catch (HeaderCardException e) {
             LOG.log(Level.SEVERE, "Impossible exception at setNaxis", e);
         }
@@ -1536,23 +1551,23 @@ public class Header implements FitsElement {
      *            The boolean value -- Should be true for FITS data.
      */
     public void setSimple(boolean val) {
-        deleteKey("SIMPLE");
-        deleteKey("XTENSION");
+        deleteKey(SIMPLE);
+        deleteKey(XTENSION);
 
         // If we're flipping back to and from the primary header
         // we need to add in the EXTEND keyword whenever we become
         // a primary, because it's not permitted in the extensions
         // (at least not where it needs to be in the primary array).
-        if (findCard("NAXIS") != null) {
-            int nax = getIntValue("NAXIS");
+        if (findCard(NAXIS) != null) {
+            int nax = getIntValue(NAXIS);
 
             this.iter = iterator();
 
-            if (findCard("NAXIS" + nax) != null) {
+            if (findCard(NAXISn.n(nax)) != null) {
                 this.iter.next();
                 try {
                     deleteKey("EXTEND");
-                    this.iter.add(new HeaderCard("EXTEND", true, "ntf::header:extend:1"));
+                    this.iter.add(new HeaderCard(EXTEND.key(), true, EXTEND.comment()));
                 } catch (Exception e) {
                     LOG.log(Level.FINE, "exception ignored in setSimple", e);
                 }
@@ -1560,7 +1575,7 @@ public class Header implements FitsElement {
         }
         this.iter = iterator();
         try {
-            this.iter.add(new HeaderCard("SIMPLE", val, "ntf::header:simple:1"));
+            this.iter.add(new HeaderCard(SIMPLE.key(), val, SIMPLE.comment()));
         } catch (HeaderCardException e) {
             LOG.log(Level.FINE, "Impossible exception at setSimple ", e);
         }
@@ -1574,12 +1589,12 @@ public class Header implements FitsElement {
      *            supported.
      */
     public void setXtension(String val) {
-        deleteKey("SIMPLE");
-        deleteKey("XTENSION");
-        deleteKey("EXTEND");
+        deleteKey(SIMPLE);
+        deleteKey(XTENSION);
+        deleteKey(EXTEND);
         this.iter = iterator();
         try {
-            this.iter.add(new HeaderCard("XTENSION", val, "ntf::header:xtension:1"));
+            this.iter.add(new HeaderCard(XTENSION.key(), val, XTENSION.comment()));
         } catch (HeaderCardException e) {
             System.err.println("Impossible exception at setXtension " + e);
         }
@@ -1607,25 +1622,25 @@ public class Header implements FitsElement {
             return 0;
         }
 
-        int naxis = getIntValue("NAXIS", 0);
+        int naxis = getIntValue(NAXIS, 0);
 
         // If there are no axes then there is no data.
         if (naxis == 0) {
             return 0;
         }
 
-        getIntValue("BITPIX");
+        getIntValue(BITPIX);
 
         int[] axes = new int[naxis];
 
         for (int axis = 1; axis <= naxis; axis += 1) {
-            axes[axis - 1] = getIntValue("NAXIS" + axis, 0);
+            axes[axis - 1] = getIntValue(NAXISn.n(axis), 0);
         }
 
-        boolean isGroup = getBooleanValue("GROUPS", false);
+        boolean isGroup = getBooleanValue(GROUPS, false);
 
-        int pcount = getIntValue("PCOUNT", 0);
-        int gcount = getIntValue("GCOUNT", 1);
+        int pcount = getIntValue(PCOUNT, 0);
+        int gcount = getIntValue(GCOUNT, 1);
 
         int startAxis = 0;
 
@@ -1643,7 +1658,7 @@ public class Header implements FitsElement {
 
         // Now multiply by the number of bits per pixel and
         // convert to bytes.
-        size *= Math.abs(getIntValue("BITPIX", 0)) / FitsIO.BITS_OF_1_BYTE;
+        size *= Math.abs(getIntValue(BITPIX, 0)) / FitsIO.BITS_OF_1_BYTE;
 
         return size;
     }
@@ -1695,9 +1710,9 @@ public class Header implements FitsElement {
             HeaderCard nextHCard = j.next();
             // updateLine() doesn't work with COMMENT and HISTORYs because
             // this would allow only one COMMENT in total in each header
-            if (nextHCard.getKey().equals("COMMENT")) {
+            if (nextHCard.getKey().equals(COMMENT.key())) {
                 insertComment(nextHCard.getComment());
-            } else if (nextHCard.getKey().equals("HISTORY")) {
+            } else if (nextHCard.getKey().equals(HISTORY.key())) {
                 insertHistory(nextHCard.getComment());
             } else {
                 updateLine(nextHCard.getKey(), nextHCard);

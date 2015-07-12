@@ -136,8 +136,6 @@ public class FitsHeap implements FitsElement {
      *             if the operation failed
      */
     public void getData(int offset, Object array) throws FitsException {
-        // System.out.println("FitsHeap getting at:"+offset+" to "+array+" "+heapOffset);
-
         allocate();
         try {
             // Can we reuse the existing byte stream?
