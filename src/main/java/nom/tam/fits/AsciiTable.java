@@ -32,7 +32,8 @@ package nom.tam.fits;
  */
 
 import static nom.tam.fits.header.Standard.GCOUNT;
-import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.NAXIS1;
+import static nom.tam.fits.header.Standard.NAXIS2;
 import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.fits.header.Standard.TBCOLn;
 import static nom.tam.fits.header.Standard.TFIELDS;
@@ -136,9 +137,9 @@ public class AsciiTable extends AbstractTableData {
      */
     public AsciiTable(Header hdr) throws FitsException {
 
-        this.nRows = hdr.getIntValue(NAXISn.n(2));
+        this.nRows = hdr.getIntValue(NAXIS2);
         this.nFields = hdr.getIntValue(TFIELDS);
-        this.rowLen = hdr.getIntValue(NAXISn.n(1));
+        this.rowLen = hdr.getIntValue(NAXIS1);
 
         this.types = new Class[this.nFields];
         this.offsets = new int[this.nFields];
@@ -531,7 +532,7 @@ public class AsciiTable extends AbstractTableData {
             hdr.setNaxis(1, this.rowLen);
             hdr.setNaxis(2, this.nRows);
             Cursor<String, HeaderCard> iter = hdr.iterator();
-            iter.setKey(NAXISn.n(2).key());
+            iter.setKey(NAXIS2.key());
             iter.next();
             iter.add(new HeaderCard(PCOUNT.key(), 0, "ntf::asciitable:pcount:1"));
             iter.add(new HeaderCard(GCOUNT.key(), 1, "ntf::asciitable:gcount:1"));
@@ -1005,7 +1006,7 @@ public class AsciiTable extends AbstractTableData {
             hdr.deleteKey(TBCOLn.n(i + 1));
         }
 
-        hdr.addValue(NAXISn.n(1), this.rowLen);
+        hdr.addValue(NAXIS1, this.rowLen);
     }
 
     /**

@@ -2,6 +2,7 @@ package nom.tam.fits;
 
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.TFIELDS;
+import static nom.tam.fits.header.Standard.TFORMn;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
 
@@ -475,10 +476,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public void setCurrentColumn(int col, boolean after) {
         if (after) {
-            this.myHeader.positionAfterIndex("TFORM", col + 1);
+            this.myHeader.positionAfterIndex(TFORMn, col + 1);
         } else {
-            String tform = "TFORM" + (col + 1);
-            this.myHeader.findCard(tform);
+            this.myHeader.findCard(TFORMn.n(col + 1));
         }
     }
 

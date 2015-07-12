@@ -547,11 +547,12 @@ public class Header implements FitsElement {
      *            The header key.
      */
     public void deleteKey(String key) {
-
-        this.iter.setKey(key);
-        if (this.iter.hasNext()) {
-            this.iter.next();
-            this.iter.remove();
+        if (containsKey(key)) {
+            this.iter.setKey(key);
+            if (this.iter.hasNext()) {
+                this.iter.next();
+                this.iter.remove();
+            }
         }
     }
 
@@ -730,6 +731,24 @@ public class Header implements FitsElement {
      * @return the associated value.
      */
     public boolean getBooleanValue(String key, boolean dft) {
+        HeaderCard fcard = findCard(key);
+        if (fcard == null) {
+            return dft;
+        }
+        return fcard.getValue(Boolean.class, dft).booleanValue();
+    }
+
+    /**
+     * Get the <CODE>boolean</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
+     * @param dft
+     *            The value to be returned if the key cannot be found or if the
+     *            parameter does not seem to be a boolean.
+     * @return the associated value.
+     */
+    public boolean getBooleanValue(IFitsHeader key, boolean dft) {
         HeaderCard fcard = findCard(key);
         if (fcard == null) {
             return dft;
@@ -1229,26 +1248,20 @@ public class Header implements FitsElement {
      * specified. The user should specify a prefix to a keyword that is
      * guaranteed to be present.
      */
-    Cursor<String, HeaderCard> positionAfterIndex(String prefix, int col) {
-        String colnum = "" + col;
-
-        this.iter.setKey(prefix + colnum);
-
+    Cursor<String, HeaderCard> positionAfterIndex(IFitsHeader prefix, int col) {
+        String colnum = String.valueOf(col);
+        this.iter.setKey(prefix.n(col).key());
         if (this.iter.hasNext()) {
-
             // Bug fix (references to forward) here by Laurent Borges
-            boolean forward = false;
-
-            String key;
+            boolean toFar = false;
             while (this.iter.hasNext()) {
-
-                key = this.iter.next().getKey().trim();
+                String key = this.iter.next().getKey().trim();
                 if (key == null || key.length() <= colnum.length() || !key.substring(key.length() - colnum.length()).equals(colnum)) {
-                    forward = true;
+                    toFar = true;
                     break;
                 }
             }
-            if (forward) {
+            if (toFar) {
                 this.iter.prev(); // Gone one too far, so skip back an element.
             }
         }
@@ -1355,13 +1368,7 @@ public class Header implements FitsElement {
      *             if the operation failed
      */
     public void removeCard(String key) throws HeaderCardException {
-        if (this.cards.containsKey(key)) {
-            this.iter.setKey(key);
-            if (this.iter.hasNext()) {
-                this.iter.next();
-                this.iter.remove();
-            }
-        }
+        deleteKey(key);
     }
 
     /**
@@ -1651,6 +1658,21 @@ public class Header implements FitsElement {
      */
     public void updateLine(String key, HeaderCard card) throws HeaderCardException {
         removeCard(key);
+        this.iter.add(card);
+    }
+
+    /**
+     * Update a line in the header
+     * 
+     * @param key
+     *            The key of the card to be replaced.
+     * @param card
+     *            A new card
+     * @throws HeaderCardException
+     *             if the operation failed
+     */
+    public void updateLine(IFitsHeader key, HeaderCard card) throws HeaderCardException {
+        deleteKey(key);
         this.iter.add(card);
     }
 

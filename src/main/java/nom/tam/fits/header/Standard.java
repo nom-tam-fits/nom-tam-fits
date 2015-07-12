@@ -544,6 +544,10 @@ public enum Standard implements IFitsHeader {
      */
     XTENSION(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.STRING, "marks beginning of new HDU");
 
+    public static final IFitsHeader NAXIS1 = NAXISn.n(1);
+
+    public static final IFitsHeader NAXIS2 = NAXISn.n(2);
+
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 

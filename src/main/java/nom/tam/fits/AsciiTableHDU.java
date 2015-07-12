@@ -31,7 +31,9 @@ package nom.tam.fits;
  * #L%
  */
 
-import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.NAXIS1;
+import static nom.tam.fits.header.Standard.NAXIS2;
+import static nom.tam.fits.header.Standard.TBCOLn;
 import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.TNULLn;
@@ -168,10 +170,10 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         // Move the iterator to point after all the data describing
         // the previous column.
 
-        Cursor<String, HeaderCard> iter = this.myHeader.positionAfterIndex("TBCOL", this.myData.getNCols());
+        Cursor<String, HeaderCard> iter = this.myHeader.positionAfterIndex(TBCOLn, this.myData.getNCols());
 
         int rowlen = this.myData.addColInfo(getNCols() - 1, iter);
-        int oldRowlen = this.myHeader.getIntValue(NAXISn.n(1));
+        int oldRowlen = this.myHeader.getIntValue(NAXIS1);
         this.myHeader.setNaxis(1, rowlen + oldRowlen);
 
         int oldTfields = this.myHeader.getIntValue(TFIELDS);
@@ -193,8 +195,8 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         stream.println("ASCII Table:");
         stream.println("  Header:");
         stream.println("    Number of fields:" + this.myHeader.getIntValue(TFIELDS));
-        stream.println("    Number of rows:  " + this.myHeader.getIntValue(NAXISn.n(2)));
-        stream.println("    Length of row:   " + this.myHeader.getIntValue(NAXISn.n(1)));
+        stream.println("    Number of rows:  " + this.myHeader.getIntValue(NAXIS2));
+        stream.println("    Length of row:   " + this.myHeader.getIntValue(NAXIS1));
         stream.println("  Data:");
         Object[] data = (Object[]) getKernel();
         for (int i = 0; i < getNCols(); i += 1) {
@@ -243,7 +245,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      *            the String representing null
      */
     public void setNullString(int col, String newNull) {
-        this.myHeader.positionAfterIndex("TBCOL", col + 1);
+        this.myHeader.positionAfterIndex(TBCOLn, col + 1);
         try {
             this.myHeader.addValue(TNULLn.n(col + 1), newNull);
         } catch (HeaderCardException e) {

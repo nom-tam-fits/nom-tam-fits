@@ -31,6 +31,30 @@ package nom.tam.fits;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.AUTHOR;
+import static nom.tam.fits.header.Standard.BLANK;
+import static nom.tam.fits.header.Standard.BSCALE;
+import static nom.tam.fits.header.Standard.BUNIT;
+import static nom.tam.fits.header.Standard.BZERO;
+import static nom.tam.fits.header.Standard.DATAMAX;
+import static nom.tam.fits.header.Standard.DATAMIN;
+import static nom.tam.fits.header.Standard.DATE;
+import static nom.tam.fits.header.Standard.DATE_OBS;
+import static nom.tam.fits.header.Standard.EPOCH;
+import static nom.tam.fits.header.Standard.EQUINOX;
+import static nom.tam.fits.header.Standard.EXTEND;
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.GROUPS;
+import static nom.tam.fits.header.Standard.INSTRUME;
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.OBJECT;
+import static nom.tam.fits.header.Standard.OBSERVER;
+import static nom.tam.fits.header.Standard.ORIGIN;
+import static nom.tam.fits.header.Standard.PCOUNT;
+import static nom.tam.fits.header.Standard.REFERENC;
+import static nom.tam.fits.header.Standard.TELESCOP;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
@@ -176,11 +200,11 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public String getAuthor() {
-        return getTrimmedString("AUTHOR");
+        return getTrimmedString(AUTHOR);
     }
 
     public int[] getAxes() throws FitsException {
-        int nAxis = this.myHeader.getIntValue("NAXIS", 0);
+        int nAxis = this.myHeader.getIntValue(NAXIS, 0);
         if (nAxis < 0) {
             throw new FitsException("Negative NAXIS value " + nAxis);
         }
@@ -194,7 +218,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
         int[] axes = new int[nAxis];
         for (int i = 1; i <= nAxis; i++) {
-            axes[nAxis - i] = this.myHeader.getIntValue("NAXIS" + i, 0);
+            axes[nAxis - i] = this.myHeader.getIntValue(NAXISn.n(i), 0);
         }
 
         return axes;
@@ -217,22 +241,22 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     public int getBlankValue() throws FitsException {
-        if (!this.myHeader.containsKey("BLANK")) {
+        if (!this.myHeader.containsKey(BLANK.key())) {
             throw new FitsException("BLANK undefined");
         }
-        return this.myHeader.getIntValue("BLANK");
+        return this.myHeader.getIntValue(BLANK);
     }
 
     public double getBScale() {
-        return this.myHeader.getDoubleValue("BSCALE", 1.0);
+        return this.myHeader.getDoubleValue(BSCALE, 1.0);
     }
 
     public String getBUnit() {
-        return getTrimmedString("BUNIT");
+        return getTrimmedString(BUNIT);
     }
 
     public double getBZero() {
-        return this.myHeader.getDoubleValue("BZERO", 0.0);
+        return this.myHeader.getDoubleValue(BZERO, 0.0);
     }
 
     /**
@@ -242,7 +266,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      */
     public Date getCreationDate() {
         try {
-            return new FitsDate(this.myHeader.getStringValue("DATE")).toDate();
+            return new FitsDate(this.myHeader.getStringValue(DATE)).toDate();
         } catch (FitsException e) {
             return null;
         }
@@ -264,7 +288,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      */
     @Deprecated
     public double getEpoch() {
-        return this.myHeader.getDoubleValue("EPOCH", -1.0);
+        return this.myHeader.getDoubleValue(EPOCH, -1.0);
     }
 
     /**
@@ -274,7 +298,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public double getEquinox() {
-        return this.myHeader.getDoubleValue("EQUINOX", -1.0);
+        return this.myHeader.getDoubleValue(EQUINOX, -1.0);
     }
 
     /** Get the starting offset of the HDU */
@@ -284,7 +308,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     public int getGroupCount() {
-        return this.myHeader.getIntValue("GCOUNT", 1);
+        return this.myHeader.getIntValue(GCOUNT, 1);
     }
 
     /**
@@ -312,7 +336,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public String getInstrument() {
-        return getTrimmedString("INSTRUME");
+        return getTrimmedString(INSTRUME);
     }
 
     /**
@@ -332,7 +356,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return minimum value.
      */
     public double getMaximumValue() {
-        return this.myHeader.getDoubleValue("DATAMAX");
+        return this.myHeader.getDoubleValue(DATAMAX);
     }
 
     /**
@@ -341,7 +365,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return minimum value.
      */
     public double getMinimumValue() {
-        return this.myHeader.getDoubleValue("DATAMIN");
+        return this.myHeader.getDoubleValue(DATAMIN);
     }
 
     /**
@@ -350,7 +374,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public String getObject() {
-        return getTrimmedString("OBJECT");
+        return getTrimmedString(OBJECT);
     }
 
     /**
@@ -360,7 +384,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      */
     public Date getObservationDate() {
         try {
-            return new FitsDate(this.myHeader.getStringValue("DATE-OBS")).toDate();
+            return new FitsDate(this.myHeader.getStringValue(DATE_OBS)).toDate();
         } catch (FitsException e) {
             return null;
         }
@@ -372,7 +396,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public String getObserver() {
-        return getTrimmedString("OBSERVER");
+        return getTrimmedString(OBSERVER);
     }
 
     /**
@@ -381,11 +405,11 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public String getOrigin() {
-        return getTrimmedString("ORIGIN");
+        return getTrimmedString(ORIGIN);
     }
 
     public int getParameterCount() {
-        return this.myHeader.getIntValue("PCOUNT", 0);
+        return this.myHeader.getIntValue(PCOUNT, 0);
     }
 
     /**
@@ -395,7 +419,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public String getReference() {
-        return getTrimmedString("REFERENC");
+        return getTrimmedString(REFERENC);
     }
 
     @Override
@@ -418,7 +442,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public String getTelescope() {
-        return getTrimmedString("TELESCOP");
+        return getTrimmedString(TELESCOP);
     }
 
     /**
@@ -430,6 +454,22 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *         stripped.
      */
     public String getTrimmedString(String keyword) {
+        String s = this.myHeader.getStringValue(keyword);
+        if (s != null) {
+            s = s.trim();
+        }
+        return s;
+    }
+
+    /**
+     * Get the String value associated with <CODE>keyword</CODE>.
+     * 
+     * @param keyword
+     *            the FITS keyword
+     * @return either <CODE>null</CODE> or a String with leading/trailing blanks
+     *         stripped.
+     */
+    public String getTrimmedString(IFitsHeader keyword) {
         String s = this.myHeader.getStringValue(keyword);
         if (s != null) {
             s = s.trim();
@@ -493,18 +533,18 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         // Some FITS readers don't like the PCOUNT and GCOUNT keywords
         // in a primary array or they EXTEND keyword in extensions.
 
-        if (this.isPrimary && !this.myHeader.getBooleanValue("GROUPS", false)) {
-            this.myHeader.deleteKey("PCOUNT");
-            this.myHeader.deleteKey("GCOUNT");
+        if (this.isPrimary && !this.myHeader.getBooleanValue(GROUPS, false)) {
+            this.myHeader.deleteKey(PCOUNT);
+            this.myHeader.deleteKey(GCOUNT);
         }
 
         if (this.isPrimary) {
-            HeaderCard card = this.myHeader.findCard("EXTEND");
+            HeaderCard card = this.myHeader.findCard(EXTEND);
             if (card == null) {
                 getAxes(); // Leaves the iterator pointing to the last NAXISn
                            // card.
                 this.myHeader.nextCard();
-                this.myHeader.addValue("EXTEND", true, "ntf::basichdu:extend:1");
+                this.myHeader.addValue(EXTEND, true);
             }
         }
 
@@ -512,19 +552,19 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
             this.myHeader.iterator();
 
-            int pcount = this.myHeader.getIntValue("PCOUNT", 0);
-            int gcount = this.myHeader.getIntValue("GCOUNT", 1);
-            int naxis = this.myHeader.getIntValue("NAXIS", 0);
-            this.myHeader.deleteKey("EXTEND");
-            HeaderCard pcard = this.myHeader.findCard("PCOUNT");
-            HeaderCard gcard = this.myHeader.findCard("GCOUNT");
+            int pcount = this.myHeader.getIntValue(PCOUNT, 0);
+            int gcount = this.myHeader.getIntValue(GCOUNT, 1);
+            int naxis = this.myHeader.getIntValue(NAXIS, 0);
+            this.myHeader.deleteKey(EXTEND);
+            HeaderCard pcard = this.myHeader.findCard(PCOUNT);
+            HeaderCard gcard = this.myHeader.findCard(GCOUNT);
 
             this.myHeader.getCard(2 + naxis);
             if (pcard == null) {
-                this.myHeader.addValue("PCOUNT", pcount, "ntf::basichdu:pcount:1");
+                this.myHeader.addValue(PCOUNT, pcount);
             }
             if (gcard == null) {
-                this.myHeader.addValue("GCOUNT", gcount, "ntf::basichdu:gcount:1");
+                this.myHeader.addValue(GCOUNT, gcount);
             }
             this.myHeader.iterator();
         }
