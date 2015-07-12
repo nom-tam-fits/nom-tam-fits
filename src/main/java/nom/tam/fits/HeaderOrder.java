@@ -1,5 +1,16 @@
 package nom.tam.fits;
 
+import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.BLOCKED;
+import static nom.tam.fits.header.Standard.END;
+import static nom.tam.fits.header.Standard.EXTEND;
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.PCOUNT;
+import static nom.tam.fits.header.Standard.SIMPLE;
+import static nom.tam.fits.header.Standard.TFIELDS;
+import static nom.tam.fits.header.Standard.XTENSION;
+
 import java.io.Serializable;
 
 import nom.tam.fits.header.Standard;
@@ -70,24 +81,24 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
         // Now search in the order in which cards must appear
         // in the header.
 
-        if (c1.equals("SIMPLE") || c1.equals("XTENSION")) {
+        if (c1.equals(SIMPLE.key()) || c1.equals(XTENSION.key())) {
             return -1;
         }
-        if (c2.equals("SIMPLE") || c2.equals("XTENSION")) {
+        if (c2.equals(SIMPLE.key()) || c2.equals(XTENSION.key())) {
             return 1;
         }
 
-        if (c1.equals("BITPIX")) {
+        if (c1.equals(BITPIX.key())) {
             return -1;
         }
-        if (c2.equals("BITPIX")) {
+        if (c2.equals(BITPIX.key())) {
             return 1;
         }
 
-        if (c1.equals("NAXIS")) {
+        if (c1.equals(NAXIS.key())) {
             return -1;
         }
-        if (c2.equals("NAXIS")) {
+        if (c2.equals(NAXIS.key())) {
             return 1;
         }
 
@@ -112,50 +123,50 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
         // The EXTEND keyword is no longer required in the FITS standard
         // but in earlier versions of the standard it was required to
         // be here if present in the primary data array.
-        if (c1.equals("EXTEND")) {
+        if (c1.equals(EXTEND.key())) {
             return -1;
         }
-        if (c2.equals("EXTEND")) {
+        if (c2.equals(EXTEND.key())) {
             return 1;
         }
 
-        if (c1.equals("PCOUNT")) {
+        if (c1.equals(PCOUNT.key())) {
             return -1;
         }
-        if (c2.equals("PCOUNT")) {
+        if (c2.equals(PCOUNT.key())) {
             return 1;
         }
 
-        if (c1.equals("GCOUNT")) {
+        if (c1.equals(GCOUNT.key())) {
             return -1;
         }
-        if (c2.equals("GCOUNT")) {
+        if (c2.equals(GCOUNT.key())) {
             return 1;
         }
 
-        if (c1.equals("TFIELDS")) {
+        if (c1.equals(TFIELDS.key())) {
             return -1;
         }
-        if (c2.equals("TFIELDS")) {
+        if (c2.equals(TFIELDS.key())) {
             return 1;
         }
 
         // In principal this only needs to be in the first 36 cards,
         // but we put it here since it's convenient. BLOCKED is
         // deprecated currently.
-        if (c1.equals("BLOCKED")) {
+        if (c1.equals(BLOCKED.key())) {
             return -1;
         }
-        if (c2.equals("BLOCKED")) {
+        if (c2.equals(BLOCKED.key())) {
             return 1;
         }
 
         // Note that this must be at the end, so the
         // values returned are inverted.
-        if (c1.equals("END")) {
+        if (c1.equals(END.key())) {
             return 1;
         }
-        if (c2.equals("END")) {
+        if (c2.equals(END.key())) {
             return -1;
         }
 

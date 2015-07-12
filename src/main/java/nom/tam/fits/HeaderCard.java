@@ -1,5 +1,9 @@
 package nom.tam.fits;
 
+import static nom.tam.fits.header.NonStandard.CONTINUE;
+import static nom.tam.fits.header.Standard.COMMENT;
+import static nom.tam.fits.header.Standard.HISTORY;
+
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -54,6 +58,8 @@ import nom.tam.util.CursorValue;
  */
 public class HeaderCard implements CursorValue<String> {
 
+    private static final String CONTINUE_CARD_PREFIX = CONTINUE.key() + "  '";
+
     private static final int STRING_SPLIT_POSITION_FOR_EXTRA_COMMENT_SPACE = 35;
 
     private static final int HIERARCH_ALIGN_POSITION = 39;
@@ -66,6 +72,9 @@ public class HeaderCard implements CursorValue<String> {
 
     private static final int NORMAL_SMALL_STRING_ALIGN_POSITION = 19;
 
+    /**
+     * TODO: this should be deleted as soon as #36 is ready
+     */
     private static final String NTF_PREFIX = "ntf::";
 
     private static final int NTF_PREFIX_LENGTH = NTF_PREFIX.length();
@@ -242,7 +251,7 @@ public class HeaderCard implements CursorValue<String> {
         }
 
         // Non-key/value pair lines are treated as keyed comments
-        if (this.key.equals("COMMENT") || this.key.equals("HISTORY") || !card.substring(MAX_KEYWORD_LENGTH, MAX_KEYWORD_LENGTH + 2).equals("= ")) {
+        if (this.key.equals(COMMENT.key()) || this.key.equals(HISTORY.key()) || !card.substring(MAX_KEYWORD_LENGTH, MAX_KEYWORD_LENGTH + 2).equals("= ")) {
             this.comment = card.substring(MAX_KEYWORD_LENGTH).trim();
             return;
         }
@@ -613,7 +622,7 @@ public class HeaderCard implements CursorValue<String> {
                 longValue.setLength(longValue.length() - 1);
                 dis.mark(FITS_HEADER_CARD_SIZE);
                 String card = readOneHeaderLine(dis);
-                if (card.startsWith("CONTINUE")) {
+                if (card.startsWith(CONTINUE.key())) {
                     // extract the value/comment part of the string
                     continueCard = FitsHeaderCardParser.parseCardValue(card);
                 } else {
@@ -873,7 +882,7 @@ public class HeaderCard implements CursorValue<String> {
         while (stringValue.length() > 0) {
             stringValue.getAdjustedLength(MAX_LONG_STRING_VALUE_LENGTH);
             if (stringValue.fullLength() > MAX_LONG_STRING_VALUE_LENGTH) {
-                buf.append("CONTINUE  '");
+                buf.append(CONTINUE_CARD_PREFIX);
                 buf.append(stringValue);
                 buf.append("&'");
                 stringValue.rest();
@@ -882,18 +891,18 @@ public class HeaderCard implements CursorValue<String> {
                     // ok comment does not fit lets give it a little more room
                     stringValue.getAdjustedLength(STRING_SPLIT_POSITION_FOR_EXTRA_COMMENT_SPACE);
                     if (stringValue.fullLength() > stringValue.length()) {
-                        buf.append("CONTINUE  '");
+                        buf.append(CONTINUE_CARD_PREFIX);
                         buf.append(stringValue);
                         buf.append("&'");
                     } else {
-                        buf.append("CONTINUE  '");
+                        buf.append(CONTINUE_CARD_PREFIX);
                         buf.append(stringValue);
                         buf.append("'");
                     }
                     int spaceForComment = buf.spaceLeftInLine() - MAX_LONG_STRING_CONTINUE_OVERHEAD;
                     commentValue.getAdjustedLength(spaceForComment);
                 } else {
-                    buf.append("CONTINUE  '");
+                    buf.append(CONTINUE_CARD_PREFIX);
                     buf.append(stringValue);
                     buf.append('\'');
                 }

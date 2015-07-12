@@ -72,13 +72,27 @@ public final class HeaderCommentsMap {
 
     static class StdCommentReplacement {
 
-        private String key;
+        private String comment;
 
         private Class<?> context;
 
+        private String key;
+
         private String ref;
 
-        private String comment;
+        public StdCommentReplacement(String ref, String key) {
+            this.ref = ref;
+            this.key = key;
+            this.context = Object.class;
+            this.comment = null;
+        }
+
+        public StdCommentReplacement(String ref, String key, Class<?> context) {
+            this.ref = ref;
+            this.key = key;
+            this.context = context;
+            this.comment = null;
+        }
 
         public StdCommentReplacement(String ref, String key, Class<?> context, String comment) {
             this.ref = ref;
@@ -93,25 +107,15 @@ public final class HeaderCommentsMap {
             this.context = Object.class;
             this.comment = comment;
         }
-
-        public StdCommentReplacement(String ref, String key, Class<?> context) {
-            this.ref = ref;
-            this.key = key;
-            this.context = context;
-            this.comment = null;
-        }
-
-        public StdCommentReplacement(String ref, String key) {
-            this.ref = ref;
-            this.key = key;
-            this.context = Object.class;
-            this.comment = null;
-        }
     }
 
-    private static final Map<String, String> COMMENT_MAP = new HashMap<String, String>();
-
     private static final Map<String, List<StdCommentReplacement>> COMMENT_KEYS = new HashMap<>();
+
+    // TODO: this map should not be nessesary anymore when all the keywords are
+    // repaced.
+    private static final Map<String, String> COMMENT_MAP = new HashMap<String, String>();
+    private static final ThreadLocal<Class<?>> CONTEXT = new ThreadLocal<>();;
+
     static {
         addCommentRepacement(new StdCommentReplacement("asciitable:gcount", GCOUNT.key(), AsciiTable.class));
         addCommentRepacement(new StdCommentReplacement("asciitablehdu:tfields", TFIELDS.key(), AsciiTable.class));
@@ -152,12 +156,6 @@ public final class HeaderCommentsMap {
         addCommentRepacement(new StdCommentReplacement("undefineddata:gcount", GCOUNT.key(), UndefinedData.class));
         addCommentRepacement(new StdCommentReplacement("undefineddata:naxis1", NAXISn.key(), UndefinedData.class, "Number of Bytes"));
         addCommentRepacement(new StdCommentReplacement("undefineddata:pcount", PCOUNT.key(), UndefinedData.class));
-    };
-
-    private static final ThreadLocal<Class<?>> CONTEXT = new ThreadLocal<>();
-
-    public static void set(Class<?> clazz) {
-        CONTEXT.set(clazz);
     }
 
     private static void addCommentRepacement(StdCommentReplacement stdCommentReplacement) {
@@ -174,45 +172,15 @@ public final class HeaderCommentsMap {
         COMMENT_MAP.put(stdCommentReplacement.ref, stdCommentReplacement.comment);
     }
 
-    private HeaderCommentsMap() {
-    }
-
     public static void deleteComment(String key) {
         key = simplyfyKey(key);
         setStdCommentText(key, "");
         HeaderCommentsMap.COMMENT_MAP.remove(key);
     }
 
-    private static void setStdCommentText(String key, String commentText) {
-        for (List<StdCommentReplacement> commentList : COMMENT_KEYS.values()) {
-            for (StdCommentReplacement replacement : commentList) {
-                if (replacement.ref.equals(key)) {
-                    replacement.comment = commentText;
-                }
-            }
-        }
-    }
-
     public static String getComment(String key) {
         key = simplyfyKey(key);
         return HeaderCommentsMap.COMMENT_MAP.get(key);
-    }
-
-    public static void updateComment(String key, String comment) {
-        key = simplyfyKey(key);
-        setStdCommentText(key, comment);
-        HeaderCommentsMap.COMMENT_MAP.put(key, comment);
-    }
-
-    private static String simplyfyKey(String key) {
-        int firstDbPoint = key.indexOf(':');
-        if (firstDbPoint > 0) {
-            int secondDoublePoint = key.indexOf(':', firstDbPoint + 1);
-            if (secondDoublePoint > 0) {
-                return key.substring(0, secondDoublePoint);
-            }
-        }
-        return key;
     }
 
     public static String getUserdefinedComment(String key, String comment) {
@@ -232,5 +200,39 @@ public final class HeaderCommentsMap {
             }
         }
         return comment;
+    }
+
+    public static void set(Class<?> clazz) {
+        CONTEXT.set(clazz);
+    }
+
+    private static void setStdCommentText(String key, String commentText) {
+        for (List<StdCommentReplacement> commentList : COMMENT_KEYS.values()) {
+            for (StdCommentReplacement replacement : commentList) {
+                if (replacement.ref.equals(key)) {
+                    replacement.comment = commentText;
+                }
+            }
+        }
+    }
+
+    private static String simplyfyKey(String key) {
+        int firstDbPoint = key.indexOf(':');
+        if (firstDbPoint > 0) {
+            int secondDoublePoint = key.indexOf(':', firstDbPoint + 1);
+            if (secondDoublePoint > 0) {
+                return key.substring(0, secondDoublePoint);
+            }
+        }
+        return key;
+    }
+
+    public static void updateComment(String key, String comment) {
+        key = simplyfyKey(key);
+        setStdCommentText(key, comment);
+        HeaderCommentsMap.COMMENT_MAP.put(key, comment);
+    }
+
+    private HeaderCommentsMap() {
     }
 }
