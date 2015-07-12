@@ -298,7 +298,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, BigDecimal val, String comment) throws HeaderCardException {
-        removeCard(key);
+        deleteKey(key);
         this.iter.add(new HeaderCard(key, val, comment));
     }
 
@@ -316,7 +316,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, BigInteger val, String comment) throws HeaderCardException {
-        removeCard(key);
+        deleteKey(key);
         this.iter.add(new HeaderCard(key, val, comment));
     }
 
@@ -333,7 +333,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
-        removeCard(key);
+        deleteKey(key);
         this.iter.add(new HeaderCard(key, val, comment));
     }
 
@@ -351,7 +351,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, double val, String comment) throws HeaderCardException {
-        removeCard(key);
+        deleteKey(key);
         this.iter.add(new HeaderCard(key, val, comment));
     }
 
@@ -369,7 +369,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, long val, String comment) throws HeaderCardException {
-        removeCard(key);
+        deleteKey(key);
         this.iter.add(new HeaderCard(key, val, comment));
     }
 
@@ -386,7 +386,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, String val, String comment) throws HeaderCardException {
-        removeCard(key);
+        deleteKey(key);
         this.iter.add(new HeaderCard(key, val, comment));
     }
 
@@ -1366,7 +1366,9 @@ public class Header implements FitsElement {
      *            The header key.
      * @throws HeaderCardException
      *             if the operation failed
+     * @deprecated see {@link #deleteKey(String)}
      */
+    @Deprecated
     public void removeCard(String key) throws HeaderCardException {
         deleteKey(key);
     }
@@ -1549,7 +1551,7 @@ public class Header implements FitsElement {
             if (findCard("NAXIS" + nax) != null) {
                 this.iter.next();
                 try {
-                    removeCard("EXTEND");
+                    deleteKey("EXTEND");
                     this.iter.add(new HeaderCard("EXTEND", true, "ntf::header:extend:1"));
                 } catch (Exception e) {
                     LOG.log(Level.FINE, "exception ignored in setSimple", e);
@@ -1657,7 +1659,7 @@ public class Header implements FitsElement {
      *             if the operation failed
      */
     public void updateLine(String key, HeaderCard card) throws HeaderCardException {
-        removeCard(key);
+        deleteKey(key);
         this.iter.add(card);
     }
 

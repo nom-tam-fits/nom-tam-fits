@@ -31,14 +31,20 @@ package nom.tam.fits;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.NAXIS1;
+import static nom.tam.fits.header.Standard.NAXIS2;
+import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.fits.header.Standard.TDIMn;
 import static nom.tam.fits.header.Standard.TDISPn;
+import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
+import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.Standard.TNULLn;
 import static nom.tam.fits.header.Standard.TSCALn;
 import static nom.tam.fits.header.Standard.TTYPEn;
 import static nom.tam.fits.header.Standard.TUNITn;
 import static nom.tam.fits.header.Standard.TZEROn;
+import static nom.tam.fits.header.Standard.XTENSION;
 
 import java.io.PrintStream;
 
@@ -98,7 +104,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      * @return <CODE>true</CODE> if this is a binary table header.
      */
     public static boolean isHeader(Header header) {
-        String xten = header.getStringValue("XTENSION");
+        String xten = header.getStringValue(XTENSION);
         if (xten == null) {
             return false;
         }
@@ -178,18 +184,18 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         stream.println("  Binary Table");
         stream.println("      Header Information:");
 
-        int nhcol = this.myHeader.getIntValue("TFIELDS", -1);
-        int nrow = this.myHeader.getIntValue("NAXIS2", -1);
-        int rowsize = this.myHeader.getIntValue("NAXIS1", -1);
+        int nhcol = this.myHeader.getIntValue(TFIELDS, -1);
+        int nrow = this.myHeader.getIntValue(NAXIS2, -1);
+        int rowsize = this.myHeader.getIntValue(NAXIS1, -1);
 
         stream.print("          " + nhcol + " fields");
         stream.println(", " + nrow + " rows of length " + rowsize);
 
         for (int i = 1; i <= nhcol; i += 1) {
             stream.print("           " + i + ":");
-            prtField(stream, "Name", "TTYPE" + i);
-            prtField(stream, "Format", "TFORM" + i);
-            prtField(stream, "Dimens", "TDIM" + i);
+            prtField(stream, "Name", TTYPEn.n(i).key());
+            prtField(stream, "Format", TFORMn.n(i).key());
+            prtField(stream, "Dimens", TDIMn.n(i).key());
             stream.println("");
         }
 
@@ -263,7 +269,6 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
             if (colDesc.getBase() == double.class) {
                 suffix = "M";
             }
-
             // Worry about variable length columns.
             String prefix = "";
             if (this.myData.getDescriptor(index).isVarying()) {
@@ -273,21 +278,20 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
                     prefix = "Q";
                 }
             }
-
             // Now update the header.
-            this.myHeader.findCard("TFORM" + (index + 1));
+            this.myHeader.findCard(TFORMn.n(index + 1));
             HeaderCard hc = this.myHeader.nextCard();
             String oldComment = hc.getComment();
             if (oldComment == null) {
                 oldComment = "Column converted to complex";
             }
-            this.myHeader.addValue("TFORM" + (index + 1), dim + prefix + suffix, oldComment);
+            this.myHeader.card(TFORMn.n(index + 1)).value(dim + prefix + suffix).comment(oldComment);
             if (tdim.length() > 0) {
-                this.myHeader.addValue("TDIM" + (index + 1), "(" + tdim + ")", "ntf::binarytablehdu:tdimN:1");
+                this.myHeader.addValue(TDIMn.n(index + 1), "(" + tdim + ")");
             } else {
                 // Just in case there used to be a TDIM card that's no longer
                 // needed.
-                this.myHeader.removeCard("TDIM" + (index + 1));
+                this.myHeader.deleteKey(TDIMn.n(index + 1));
             }
             status = true;
         }
@@ -298,17 +302,17 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     @Override
     public void write(ArrayDataOutput ado) throws FitsException {
 
-        int oldSize = this.myHeader.getIntValue("PCOUNT");
+        int oldSize = this.myHeader.getIntValue(PCOUNT);
         if (oldSize != this.myData.getHeapSize()) {
-            this.myHeader.addValue("PCOUNT", this.myData.getHeapSize(), "ntf::binarytablehdu:pcount:1");
+            this.myHeader.addValue(PCOUNT, this.myData.getHeapSize());
         }
 
-        if (this.myHeader.getIntValue("PCOUNT") == 0) {
-            this.myHeader.deleteKey("THEAP");
+        if (this.myHeader.getIntValue(PCOUNT) == 0) {
+            this.myHeader.deleteKey(THEAP);
         } else {
-            this.myHeader.getIntValue("TFIELDS");
-            int offset = this.myHeader.getIntValue("NAXIS1") * this.myHeader.getIntValue("NAXIS2") + this.myData.getHeapOffset();
-            this.myHeader.addValue("THEAP", offset, "ntf::binarytablehdu:theap:1");
+            this.myHeader.getIntValue(TFIELDS);
+            int offset = this.myHeader.getIntValue(NAXIS1) * this.myHeader.getIntValue(NAXIS2) + this.myData.getHeapOffset();
+            this.myHeader.addValue(THEAP, offset);
         }
 
         super.write(ado);
