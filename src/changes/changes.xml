@@ -2,7 +2,25 @@
 	<body>
 		<release version="1.13.0" date="2015-07-11" description="This is a stability release, before the new fits standard will be implemented in version 2.0">
 			<action type="update">
-				Some more detailed general text about this version if nesessary.
+				Major updates to the util package including a set of routines for efficient
+				copyying of arrays of all types.  Some of the special FITS values are
+				collected in the FitsIO class.  New buffering utility classes have also been created.
+				Some methods that were public in the util package but which were not used in
+				the FITS library have been removed.
+			</action>
+			<action type="update">
+				Added utilty class for updating checksums
+			</action>
+			<action type="update">
+				Added examples in utilities package for how to use new Header enumerations.
+			</action>
+			<action type="fix" issue="24">
+				Fixed handling of binary tables built from an empty state row by row.  Fixed coupling of binary
+				tables and the FITS heap to allow copying of binary tables using the internal
+				ColumnTable representation.
+			</action>
+			<action type="update">
+			        Reorganized compression and added internal compression package.	
 			</action>
 			<action type="remove" dev="ritchieGitHub" issue="23">
 				Tile compression, will be implemented from scratch in 2.0 and is not yet available in 1.13.0
