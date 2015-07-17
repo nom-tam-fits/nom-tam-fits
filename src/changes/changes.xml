@@ -56,6 +56,12 @@
 			<action type="update" dev="ritchieGitHub" issue="36">
 				All internally used keyword references are now enumerations.
 			</action>
+			<action type="update" dev="ritchieGitHub" issue="37">
+				Comment mapping is now moved to the standard keyword enumeration.
+			</action>
+			<action type="update" dev="ritchieGitHub" issue="21">
+				The settings of FitsFactory are now changeable to thread local specific settings.
+			</action>
 		</release>
 		<release version="1.12.0" date="2015-02-20">
 			<action type="add" dev="ritchieGitHub">
