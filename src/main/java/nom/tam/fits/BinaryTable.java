@@ -48,6 +48,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
@@ -1060,7 +1061,7 @@ public class BinaryTable extends AbstractTableData {
     @Override
     public void fillHeader(Header h) throws FitsException {
         try {
-            HeaderCommentsMap.set(BinaryTable.class);
+            Standard.context(BinaryTable.class);
             h.setXtension("BINTABLE");
             h.setBitpix(BasicHDU.BITPIX_BYTE);
             h.setNaxes(2);
@@ -1081,7 +1082,7 @@ public class BinaryTable extends AbstractTableData {
         } catch (HeaderCardException e) {
             System.err.println("Error updating BinaryTableHeader:" + e);
         } finally {
-            HeaderCommentsMap.set(null);
+            Standard.context(null);
         }
     }
 

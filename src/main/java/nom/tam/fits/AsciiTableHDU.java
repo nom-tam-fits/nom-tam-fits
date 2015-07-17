@@ -47,6 +47,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.Cursor;
 
@@ -166,7 +167,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     @Override
     public int addColumn(Object newCol) throws FitsException {
-        HeaderCommentsMap.set(AsciiTable.class);
+        Standard.context(AsciiTable.class);
         this.myData.addColumn(newCol);
         // Move the iterator to point after all the data describing
         // the previous column.
@@ -183,7 +184,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Impossible exception at addColumn", e);
         }
-        HeaderCommentsMap.set(null);
+        Standard.context(null);
         return getNCols();
     }
 

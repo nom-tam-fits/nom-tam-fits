@@ -49,6 +49,7 @@ import static nom.tam.fits.header.Standard.XTENSION;
 import java.io.PrintStream;
 
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 
@@ -247,7 +248,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      *             if the header could not be adapted
      */
     public boolean setComplexColumn(int index) throws FitsException {
-        HeaderCommentsMap.set(BinaryTable.class);
+        Standard.context(BinaryTable.class);
         boolean status = false;
         if (this.myData.setComplexColumn(index)) {
             // No problem with the data. Make sure the header
@@ -296,7 +297,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
             }
             status = true;
         }
-        HeaderCommentsMap.set(null);
+        Standard.context(null);
         return status;
     }
 

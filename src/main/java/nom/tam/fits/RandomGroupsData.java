@@ -39,6 +39,7 @@ import static nom.tam.fits.header.Standard.PCOUNT;
 import java.io.EOFException;
 import java.io.IOException;
 
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
@@ -81,7 +82,7 @@ public class RandomGroupsData extends Data {
         if (this.dataArray.length <= 0 || this.dataArray[0].length != 2) {
             throw new FitsException("Data not conformable to Random Groups");
         }
-        HeaderCommentsMap.set(RandomGroupsData.class);
+        Standard.context(RandomGroupsData.class);
         Object paraSamp = this.dataArray[0][0];
         Object dataSamp = this.dataArray[0][1];
 
@@ -127,7 +128,7 @@ public class RandomGroupsData extends Data {
         h.addValue(GROUPS, true);
         h.addValue(GCOUNT, this.dataArray.length);
         h.addValue(PCOUNT, pdims[0]);
-        HeaderCommentsMap.set(null);
+        Standard.context(null);
     }
 
     @Override

@@ -41,6 +41,7 @@ import static nom.tam.fits.header.Standard.PCOUNT;
 import java.io.EOFException;
 import java.io.IOException;
 
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
@@ -96,9 +97,8 @@ public class UndefinedData extends Data {
      */
     @Override
     protected void fillHeader(Header head) {
-
         try {
-            HeaderCommentsMap.set(UndefinedData.class);
+            Standard.context(UndefinedData.class);
             head.setXtension("UNKNOWN");
             head.setBitpix(BasicHDU.BITPIX_BYTE);
             head.setNaxes(1);
@@ -110,10 +110,8 @@ public class UndefinedData extends Data {
         } catch (HeaderCardException e) {
             System.err.println("Unable to create unknown header:" + e);
         } finally {
-            HeaderCommentsMap.set(null);
-
+            Standard.context(null);
         }
-
     }
 
     @Override

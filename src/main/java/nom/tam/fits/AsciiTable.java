@@ -46,6 +46,8 @@ import java.lang.reflect.Array;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
@@ -201,8 +203,12 @@ public class AsciiTable extends AbstractTableData {
         } else if (this.types[col] == double.class) {
             tform = "D" + this.lengths[col] + ".0";
         }
-        iter.add(new HeaderCard(TFORMn.n(col + 1).key(), tform, "ntf::asciitable:tformN:1"));
-        iter.add(new HeaderCard(TBCOLn.n(col + 1).key(), this.offsets[col] + 1, "ntf::asciitable:tbcolN:1"));
+        Standard.context(AsciiTable.class);
+        IFitsHeader key = TFORMn.n(col + 1);
+        iter.add(new HeaderCard(key.key(), tform, key.comment()));
+        key = TBCOLn.n(col + 1);
+        iter.add(new HeaderCard(key.key(), this.offsets[col] + 1, key.comment()));
+        Standard.context(null);
         return this.lengths[col];
     }
 
@@ -526,7 +532,7 @@ public class AsciiTable extends AbstractTableData {
     @Override
     public void fillHeader(Header hdr) {
         try {
-            HeaderCommentsMap.set(AsciiTable.class);
+            Standard.context(AsciiTable.class);
             hdr.setXtension("TABLE");
             hdr.setBitpix(BasicHDU.BITPIX_BYTE);
             hdr.setNaxes(2);
@@ -545,7 +551,7 @@ public class AsciiTable extends AbstractTableData {
         } catch (HeaderCardException e) {
             LOG.log(Level.SEVERE, "ImpossibleException in fillHeader:" + e.getMessage(), e);
         } finally {
-            HeaderCommentsMap.set(null);
+            Standard.context(null);
         }
     }
 

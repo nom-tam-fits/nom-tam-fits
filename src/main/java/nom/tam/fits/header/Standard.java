@@ -1,6 +1,12 @@
 package nom.tam.fits.header;
 
-import nom.tam.fits.HeaderCommentsMap;
+import nom.tam.fits.AsciiTable;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.BinaryTable;
+import nom.tam.fits.ImageData;
+import nom.tam.fits.RandomGroupsData;
+import nom.tam.fits.TableData;
+import nom.tam.fits.UndefinedData;
 
 /*
  * #%L
@@ -56,7 +62,9 @@ public enum Standard implements IFitsHeader {
      * computing the sizes of data structures. It shall specify the number of
      * bits that represent a data value. RANGE: -64,-32,8,16,32
      */
-    BITPIX(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "bits per data value"),
+    BITPIX(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "bits per data value" //
+            , replaceable("header:bitpix", Object.class) //
+    ),
     /**
      * This keyword shall be used only in primary array headers or IMAGE
      * extension headers with positive values of BITPIX (i.e., in arrays with
@@ -237,7 +245,13 @@ public enum Standard implements IFitsHeader {
      * NAXIS=0, the NAXIS card image. The presence of this keyword with the
      * value T in the primary key does not require that extensions be present.
      */
-    EXTEND(SOURCE.RESERVED, HDU.PRIMARY, VALUE.LOGICAL, "may the FITS file contain extensions?"),
+    EXTEND(SOURCE.RESERVED, HDU.PRIMARY, VALUE.LOGICAL, "may the FITS file contain extensions?" //
+            , replaceable("basichdu:extend", BasicHDU.class, "Allow extensions") //
+            , replaceable("header:extend", Object.class, "Extensions are permitted") //
+            , replaceable("imagedata:extend", ImageData.class, "Extension permitted") //
+            , replaceable("undefineddata:extend", UndefinedData.class, "Extensions are permitted")
+
+    ),
 
     /**
      * The value field shall contain an integer, specifying the level in a
@@ -277,14 +291,24 @@ public enum Standard implements IFitsHeader {
      * where it specifies the number of random groups present. In most other
      * cases this keyword will have the value 1.
      */
-    GCOUNT(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.INTEGER, "group count"),
+    GCOUNT(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.INTEGER, "group count" //
+            , replaceable("randomgroupsdata:gcount", RandomGroupsData.class) //
+            , replaceable("asciitable:gcount", AsciiTable.class) //
+            , replaceable("basichdu:gcount", Object.class, "Required value") //
+            , replaceable("binarytable:gcount", BinaryTable.class) //
+            , replaceable("imagedata:gcount", ImageData.class, "No extra parameters") //
+            , replaceable("undefineddata:gcount", UndefinedData.class)
+
+    ),
 
     /**
      * The value field shall contain the logical constant T. The value T
      * associated with this keyword implies that random groups records are
      * present.
      */
-    GROUPS(SOURCE.MANDATORY, HDU.GROUPS, VALUE.LOGICAL, "indicates random groups structure"),
+    GROUPS(SOURCE.MANDATORY, HDU.GROUPS, VALUE.LOGICAL, "indicates random groups structure" //
+            , replaceable("randomgroupsdata:groups", RandomGroupsData.class) //
+    ),
 
     /**
      * This keyword shall have no associated value; columns 9-80 may contain any
@@ -307,7 +331,9 @@ public enum Standard implements IFitsHeader {
      * FITS 'TABLE' or 'BINTABLE' extensions, the value of NAXIS is always
      * 2.RANGE: [0:999]
      */
-    NAXIS(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "number of axes"),
+    NAXIS(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "number of axes" //
+            , replaceable("header:naxis", Object.class) //
+    ),
 
     /**
      * The value field of this indexed keyword shall contain a non-negative
@@ -317,7 +343,17 @@ public enum Standard implements IFitsHeader {
      * that no data follow the key in the HDU. If NAXIS is equal to 0, there
      * should not be any NAXISn keywords.RANGE: [0:]
      */
-    NAXISn(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "size of the axis"),
+    NAXISn(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "size of the n'th axis" //
+            , replaceable("asciitable:naxis1", AsciiTable.class, "Size of row in bytes") //
+            , replaceable("binarytable:naxis1", BinaryTable.class, "Bytes per row") //
+            , replaceable("randomgroupsdata:naxis1", RandomGroupsData.class) //
+            , replaceable("randomgroupsdata:naxisN", RandomGroupsData.class) //
+            , replaceable("tablehdu:naxis2", TableData.class) //
+            , replaceable("header:naxisN", Object.class) //
+            , replaceable("undefineddata:naxis1", UndefinedData.class, "Number of Bytes") //
+    )
+
+    ,
 
     /**
      * The value field shall contain a character string giving a name for the
@@ -346,7 +382,16 @@ public enum Standard implements IFitsHeader {
      * data heap following the main data table. In most other cases its value
      * will be zero.
      */
-    PCOUNT(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.INTEGER, "parameter count"),
+    PCOUNT(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.INTEGER, "parameter count" //
+            , replaceable("asciitable:pcount", AsciiTable.class, "No group data") //
+            , replaceable("basichdu:pcount", Object.class, "Required value") //
+            , replaceable("binarytablehdu:pcount", BinaryTable.class, "Includes heap") //
+            , replaceable("binarytable:pcount", BinaryTable.class) //
+            , replaceable("imagedata:pcount", ImageData.class, "One group") //
+            , replaceable("randomgroupsdata:pcount", RandomGroupsData.class) //
+            , replaceable("undefineddata:pcount", UndefinedData.class) //
+
+    ),
 
     /**
      * This keyword is reserved for use within the FITS Random Groups structure.
@@ -413,14 +458,18 @@ public enum Standard implements IFitsHeader {
      * mandatory for the primary key and is not permitted in extension headers.
      * A value of F signifies that the file does not conform to this standard.
      */
-    SIMPLE(SOURCE.MANDATORY, HDU.PRIMARY, VALUE.LOGICAL, "does file conform to the Standard?"),
+    SIMPLE(SOURCE.MANDATORY, HDU.PRIMARY, VALUE.LOGICAL, "does file conform to the Standard?" //
+            , replaceable("header:simple", Object.class, "Java FITS: " + new java.util.Date()) //
+    ),
 
     /**
      * The value field of this indexed keyword shall contain an integer
      * specifying the column in which field n starts in an ASCII TABLE
      * extension. The first column of a row is numbered 1.RANGE: [1:]
      */
-    TBCOLn(SOURCE.MANDATORY, HDU.ASCII_TABLE, VALUE.INTEGER, "begining column number"),
+    TBCOLn(SOURCE.MANDATORY, HDU.ASCII_TABLE, VALUE.INTEGER, "begining column number" //
+            , replaceable("asciitable:tbcolN", AsciiTable.class, "Column offset") //
+    ),
 
     /**
      * The value field of this indexed keyword shall contain a character string
@@ -431,7 +480,10 @@ public enum Standard implements IFitsHeader {
      * which the value string has the format '(l,m,n...)' where l, m, n,... are
      * the dimensions of the array.
      */
-    TDIMn(SOURCE.RESERVED, HDU.BINTABLE, VALUE.STRING, "dimensionality of the array "),
+    TDIMn(SOURCE.RESERVED, HDU.BINTABLE, VALUE.STRING, "dimensionality of the array " //
+            , replaceable("binarytablehdu:tdimN", BinaryTable.class) //
+            , replaceable("headercard:tdimN", Object.class) //
+    ),
 
     /**
      * The value field of this indexed keyword shall contain a character string
@@ -462,13 +514,22 @@ public enum Standard implements IFitsHeader {
      * number of fields in each row of a 'TABLE' or 'BINTABLE' extension. The
      * maximum permissible value is 999. RANGE: [0:999]
      */
-    TFIELDS(SOURCE.MANDATORY, HDU.TABLE, VALUE.INTEGER, "number of columns in the table"),
+    TFIELDS(SOURCE.MANDATORY, HDU.TABLE, VALUE.INTEGER, "number of columns in the table" //
+            , replaceable("asciitablehdu:tfields", AsciiTable.class) //
+            , replaceable("binarytable:tfields", BinaryTable.class) //
+            , replaceable("tablehdu:tfields", TableData.class, "Number of table fields") //
+            , replaceable("asciitable:tfields", AsciiTable.class, "Number of fields in table") //
+    ),
     /**
      * The value field of this indexed keyword shall contain a character string
      * describing the format in which field n is encoded in a 'TABLE' or
      * 'BINTABLE' extension.
      */
-    TFORMn(SOURCE.MANDATORY, HDU.TABLE, VALUE.STRING, "column data format"),
+    TFORMn(SOURCE.MANDATORY, HDU.TABLE, VALUE.STRING, "column data format" //
+            , replaceable("asciitable:tformN", AsciiTable.class) //
+            , replaceable("binarytable:tformN", BinaryTable.class) //
+
+    ),
 
     /**
      * The value field of this keyword shall contain an integer providing the
@@ -478,7 +539,9 @@ public enum Standard implements IFitsHeader {
      * shall not be used if the value of PCOUNT is zero. A proposed application
      * of this keyword is presented in Appendix B.1 of the FITS Standard.
      */
-    THEAP(SOURCE.RESERVED, HDU.BINTABLE, VALUE.INTEGER, "offset to starting data heap address"),
+    THEAP(SOURCE.RESERVED, HDU.BINTABLE, VALUE.INTEGER, "offset to starting data heap address" //
+            , replaceable("binarytablehdu:theap", BinaryTable.class) //
+    ),
 
     /**
      * In ASCII 'TABLE' extensions, the value field for this indexed keyword
@@ -550,20 +613,37 @@ public enum Standard implements IFitsHeader {
 
     public static final IFitsHeader NAXIS2 = NAXISn.n(2);
 
+    private static final ThreadLocal<Class<?>> COMMENT_CONTEXT = new ThreadLocal<>();
+
+    private final StandardCommentReplacement[] commentReplacements;
+
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
-    private Standard(SOURCE status, HDU hdu, VALUE valueType, String comment) {
+    private Standard(SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {
         this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+        this.commentReplacements = replacements;
     }
 
-    private Standard(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {
+    private Standard(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {
         this.key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
+        this.commentReplacements = replacements;
     }
 
     @Override
     public String comment() {
-        return HeaderCommentsMap.getUserdefinedComment(this.key(), this.key.comment());
+        Class<?> contextClass = COMMENT_CONTEXT.get();
+        if (contextClass == null) {
+            contextClass = Object.class;
+        }
+        for (StandardCommentReplacement stdCommentReplacement : commentReplacements) {
+            if (stdCommentReplacement.getContext().isAssignableFrom(contextClass)) {
+                if (stdCommentReplacement.getComment() != null) {
+                    return stdCommentReplacement.getComment();
+                }
+            }
+        }
+        return this.key.comment();
     }
 
     @Override
@@ -590,6 +670,56 @@ public enum Standard implements IFitsHeader {
     @SuppressWarnings("CPD-END")
     public VALUE valueType() {
         return this.key.valueType();
+    }
+
+    public static void context(Class<?> clazz) {
+        COMMENT_CONTEXT.set(clazz);
+    }
+
+    /**
+     * scan for a comment with the specified reference key.
+     * 
+     * @param commentKey
+     *            the reference key
+     * @return the comment for the reference key
+     */
+    public String getCommentByKey(String commentKey) {
+        for (StandardCommentReplacement commentReplacement : commentReplacements) {
+            if (commentReplacement.getRef().equals(commentKey)) {
+                String foundcommentReplacement = commentReplacement.getComment();
+                if (foundcommentReplacement == null) {
+                    return comment();
+                } else {
+                    return foundcommentReplacement;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * set the comment for the specified reference key.
+     * 
+     * @param commentKey
+     *            the reference key
+     * @param value
+     *            the comment to set when the fits key is used.
+     */
+    public void setCommentByKey(String commentKey, String value) {
+        for (StandardCommentReplacement commentReplacement : commentReplacements) {
+            if (commentReplacement.getRef().equals(commentKey)) {
+                commentReplacement.setComment(value);
+                return;
+            }
+        }
+    }
+
+    private static StandardCommentReplacement replaceable(String string, Class<?> clazz) {
+        return new StandardCommentReplacement(string, clazz);
+    }
+
+    private static StandardCommentReplacement replaceable(String string, Class<?> clazz, String comment) {
+        return new StandardCommentReplacement(string, clazz, comment);
     }
 
 }

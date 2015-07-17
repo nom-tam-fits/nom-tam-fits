@@ -41,6 +41,7 @@ import static nom.tam.fits.header.Standard.PCOUNT;
 import java.io.EOFException;
 import java.io.IOException;
 
+import nom.tam.fits.header.Standard;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -162,7 +163,7 @@ public class ImageData extends Data {
             return;
         }
 
-        HeaderCommentsMap.set(ImageData.class);
+        Standard.context(ImageData.class);
         String classname = this.dataArray.getClass().getName();
 
         int[] dimens = ArrayFuncs.getDimensions(this.dataArray);
@@ -213,7 +214,7 @@ public class ImageData extends Data {
         head.addValue(PCOUNT, 0);
         head.addValue(GCOUNT, 1);
 
-        HeaderCommentsMap.set(null);
+        Standard.context(null);
     }
 
     /**

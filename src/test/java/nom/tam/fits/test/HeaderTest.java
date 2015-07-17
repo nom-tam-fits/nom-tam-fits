@@ -580,7 +580,7 @@ public class HeaderTest {
         assertTrue(result.indexOf("NAXIS1  =                  300") >= 0);
         assertTrue(result.indexOf("NAXIS2  =                  300") >= 0);
 
-        assertEquals("NAXIS1  =                  300 / size of the axis", hdr.findKey("NAXIS1").trim());
+        assertEquals("NAXIS1  =                  300 / size of the n'th axis", hdr.findKey("NAXIS1").trim());
 
         assertEquals("SIMPLE", hdr.getKey(0));
         assertEquals(7, hdr.size());

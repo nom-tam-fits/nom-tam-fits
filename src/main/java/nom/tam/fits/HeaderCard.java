@@ -72,13 +72,6 @@ public class HeaderCard implements CursorValue<String> {
 
     private static final int NORMAL_SMALL_STRING_ALIGN_POSITION = 19;
 
-    /**
-     * TODO: this should be deleted as soon as #36 is ready
-     */
-    private static final String NTF_PREFIX = "ntf::";
-
-    private static final int NTF_PREFIX_LENGTH = NTF_PREFIX.length();
-
     private static final String HIERARCH_WITH_DOT = "HIERARCH.";
 
     private static final String HIERARCH_WITH_BLANK = "HIERARCH ";
@@ -439,11 +432,6 @@ public class HeaderCard implements CursorValue<String> {
      */
     private HeaderCard(String key, String value, String comment, boolean nullable, boolean isString) throws HeaderCardException {
         this.isString = isString;
-        if (comment != null && comment.startsWith(NTF_PREFIX)) {
-            String ckey = comment.substring(NTF_PREFIX_LENGTH); // Get rid of
-                                                                // ntf:: prefix
-            comment = HeaderCommentsMap.getComment(ckey);
-        }
         if (key == null && value != null) {
             throw new HeaderCardException("Null keyword with non-null value");
         } else if (key != null && key.length() > HeaderCard.MAX_KEYWORD_LENGTH && //
