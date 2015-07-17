@@ -1,6 +1,6 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
-		<release version="1.13.0" date="2015-07-11" description="This is a stability release, before the new fits standard will be implemented in version 2.0">
+		<release version="1.13.0" date="2015-07-17" description="This is a stability release, before the new fits standard will be implemented in version 2.0">
 			<action type="update">
 				Major updates to the util package including a set of routines for efficient
 				copyying of arrays of all types.  Some of the special FITS values are
@@ -14,12 +14,15 @@
 			<action type="update">
 				Added examples in utilities package for how to use new Header enumerations.
 			</action>
+			<action type="update" dev="ritchieGitHub" issue="35">
+			    Builder pattern for the creation of cards introduced.	
+			</action>
 			<action type="fix" issue="24">
 				Fixed handling of binary tables built from an empty state row by row.  Fixed coupling of binary
 				tables and the FITS heap to allow copying of binary tables using the internal
 				ColumnTable representation.
 			</action>
-			<action type="update">
+			<action type="update" dev="ritchieGitHub" issue="23">
 			        Reorganized compression and added internal compression package.	
 			</action>
 			<action type="remove" dev="ritchieGitHub" issue="23">
@@ -33,6 +36,24 @@
 			</action>
 			<action type="fix" dev="ritchieGitHub" issue="20">
 				Compression dependecy to apache compression is now optional again.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="12">
+				When reading/writing the same card the comment moved one blank to the right.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="29">
+				All javadoc's are now java-8 compatible and produce no warnings.
+			</action>
+			<action type="update" dev="ritchieGitHub" issue="15">
+				Support for biginteger and bigdecimal.
+			</action>
+			<action type="update" dev="ritchieGitHub" issue="14">
+				Generic detection of the value type of a card.
+			</action>
+			<action type="update" dev="ritchieGitHub" issue="7">
+				Insert a header card at a specific position.
+			</action>
+			<action type="update" dev="ritchieGitHub" issue="36">
+				All internally used keyword references are now enumerations.
 			</action>
 		</release>
 		<release version="1.12.0" date="2015-02-20">
