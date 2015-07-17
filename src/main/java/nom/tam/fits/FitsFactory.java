@@ -41,17 +41,44 @@ package nom.tam.fits;
  */
 public final class FitsFactory {
 
+    private static class FitsSettings {
+
+        private boolean useAsciiTables = true;
+
+        private boolean useHierarch = false;
+
+        private boolean checkAsciiStrings = false;
+
+        private boolean allowTerminalJunk = false;
+
+        private boolean longStringsEnabled = false;
+
+        private FitsSettings copy() {
+            FitsSettings settings = new FitsSettings();
+            settings.useAsciiTables = useAsciiTables;
+            settings.useHierarch = useHierarch;
+            settings.checkAsciiStrings = checkAsciiStrings;
+            settings.allowTerminalJunk = allowTerminalJunk;
+            settings.longStringsEnabled = longStringsEnabled;
+            return settings;
+        }
+
+    }
+
+    private static final FitsSettings GLOBAL_SETTINGS = new FitsSettings();
+
+    private static final ThreadLocal<FitsSettings> LOCAL_SETTINGS = new ThreadLocal<>();
+
+    private static FitsSettings current() {
+        FitsSettings settings = LOCAL_SETTINGS.get();
+        if (settings == null) {
+            return GLOBAL_SETTINGS;
+        } else {
+            return settings;
+        }
+    }
+
     public static final int FITS_BLOCK_SIZE = 2880;
-
-    private static boolean useAsciiTables = true;
-
-    private static boolean useHierarch = false;
-
-    private static boolean checkAsciiStrings = false;
-
-    private static boolean allowTerminalJunk = false;
-
-    private static boolean longStringsEnabled = false;
 
     private FitsFactory() {
     }
@@ -72,7 +99,7 @@ public final class FitsFactory {
             return d;
         } else if (RandomGroupsHDU.isHeader(hdr)) {
             return RandomGroupsHDU.manufactureData(hdr);
-        } else if (FitsFactory.useAsciiTables && AsciiTableHDU.isHeader(hdr)) {
+        } else if (current().useAsciiTables && AsciiTableHDU.isHeader(hdr)) {
             return AsciiTableHDU.manufactureData(hdr);
         } else if (BinaryTableHDU.isHeader(hdr)) {
             return BinaryTableHDU.manufactureData(hdr);
@@ -89,28 +116,28 @@ public final class FitsFactory {
      *         allowed.
      */
     public static boolean getAllowTerminalJunk() {
-        return FitsFactory.allowTerminalJunk;
+        return current().allowTerminalJunk;
     }
 
     /**
      * @return Get the current status for string checking.
      */
     static boolean getCheckAsciiStrings() {
-        return FitsFactory.checkAsciiStrings;
+        return current().checkAsciiStrings;
     }
 
     /**
      * @return Get the current status of ASCII table writing
      */
     static boolean getUseAsciiTables() {
-        return FitsFactory.useAsciiTables;
+        return current().useAsciiTables;
     }
 
     /**
      * @return <code>true</code> if we are processing HIERARCH style keywords
      */
     public static boolean getUseHierarch() {
-        return FitsFactory.useHierarch;
+        return current().useHierarch;
     }
 
     /**
@@ -130,7 +157,7 @@ public final class FitsFactory {
             return (BasicHDU<DataClass>) new ImageHDU(hdr, (ImageData) d);
         } else if (d instanceof RandomGroupsData) {
             return (BasicHDU<DataClass>) new RandomGroupsHDU(hdr, (RandomGroupsData) d);
-        } else if (FitsFactory.useAsciiTables && d instanceof AsciiTable) {
+        } else if (current().useAsciiTables && d instanceof AsciiTable) {
             return (BasicHDU<DataClass>) new AsciiTableHDU(hdr, (AsciiTable) d);
         } else if (d instanceof BinaryTable) {
             return (BasicHDU<DataClass>) new BinaryTableHDU(hdr, (BinaryTable) d);
@@ -199,7 +226,7 @@ public final class FitsFactory {
         } else if (RandomGroupsHDU.isData(o)) {
             d = RandomGroupsHDU.encapsulate(o);
             h = RandomGroupsHDU.manufactureHeader(d);
-        } else if (FitsFactory.useAsciiTables && AsciiTableHDU.isData(o)) {
+        } else if (current().useAsciiTables && AsciiTableHDU.isData(o)) {
             d = AsciiTableHDU.encapsulate(o);
             h = AsciiTableHDU.manufactureHeader(d);
         } else if (BinaryTableHDU.isData(o)) {
@@ -219,7 +246,7 @@ public final class FitsFactory {
      * @return <code>true</code> If long string support is enabled.
      */
     public static boolean isLongStringsEnabled() {
-        return FitsFactory.longStringsEnabled;
+        return current().longStringsEnabled;
     }
 
     /**
@@ -229,7 +256,7 @@ public final class FitsFactory {
      *            value to set
      */
     public static void setAllowTerminalJunk(boolean allowTerminalJunk) {
-        FitsFactory.allowTerminalJunk = allowTerminalJunk;
+        current().allowTerminalJunk = allowTerminalJunk;
     }
 
     /**
@@ -242,7 +269,7 @@ public final class FitsFactory {
      *            value to set
      */
     public static void setCheckAsciiStrings(boolean checkAsciiStrings) {
-        FitsFactory.checkAsciiStrings = checkAsciiStrings;
+        current().checkAsciiStrings = checkAsciiStrings;
     }
 
     /**
@@ -252,7 +279,7 @@ public final class FitsFactory {
      *            value to set
      */
     public static void setLongStringsEnabled(boolean longStringsEnabled) {
-        FitsFactory.longStringsEnabled = longStringsEnabled;
+        current().longStringsEnabled = longStringsEnabled;
     }
 
     /**
@@ -262,7 +289,7 @@ public final class FitsFactory {
      *            value to set
      */
     public static void setUseAsciiTables(boolean useAsciiTables) {
-        FitsFactory.useAsciiTables = useAsciiTables;
+        current().useAsciiTables = useAsciiTables;
     }
 
     /**
@@ -272,6 +299,22 @@ public final class FitsFactory {
      *            value to set
      */
     public static void setUseHierarch(boolean useHierarch) {
-        FitsFactory.useHierarch = useHierarch;
+        current().useHierarch = useHierarch;
+    }
+
+    /**
+     * Use thread local settings for the curretn thread instead of the lobal
+     * ones if the parameter is set to true, else use the shared global
+     * settings.
+     * 
+     * @param useThreadSettings
+     *            true if the thread should not share the global settings.
+     */
+    public static void useThreadLocalSettings(boolean useThreadSettings) {
+        if (useThreadSettings) {
+            LOCAL_SETTINGS.set(GLOBAL_SETTINGS.copy());
+        } else {
+            LOCAL_SETTINGS.remove();
+        }
     }
 }
