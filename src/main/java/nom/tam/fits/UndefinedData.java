@@ -31,6 +31,13 @@ package nom.tam.fits;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.EXTEND;
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.PCOUNT;
+
 import java.io.EOFException;
 import java.io.IOException;
 
@@ -55,17 +62,17 @@ public class UndefinedData extends Data {
          * Just get a byte buffer to hold the data.
          */
         // Bug fix by Vincenzo Forzi.
-        int naxis = h.getIntValue("NAXIS");
+        int naxis = h.getIntValue(NAXIS);
 
         int size = naxis > 0 ? 1 : 0;
         for (int i = 0; i < naxis; i += 1) {
-            size *= h.getIntValue("NAXIS" + (i + 1));
+            size *= h.getIntValue(NAXISn.n(i + 1));
         }
-        size += h.getIntValue("PCOUNT");
-        if (h.getIntValue("GCOUNT") > 1) {
-            size *= h.getIntValue("GCOUNT");
+        size += h.getIntValue(PCOUNT);
+        if (h.getIntValue(GCOUNT) > 1) {
+            size *= h.getIntValue(GCOUNT);
         }
-        size *= Math.abs(h.getIntValue("BITPIX") / BITS_PER_BYTE);
+        size *= Math.abs(h.getIntValue(BITPIX) / BITS_PER_BYTE);
 
         this.data = new byte[size];
     }
@@ -95,12 +102,11 @@ public class UndefinedData extends Data {
             head.setXtension("UNKNOWN");
             head.setBitpix(BasicHDU.BITPIX_BYTE);
             head.setNaxes(1);
-            head.addValue("NAXIS1", this.data.length, "ntf::undefineddata:naxis1:1");
-            head.addValue("PCOUNT", 0, "ntf::undefineddata:pcount:1");
-            head.addValue("GCOUNT", 1, "ntf::undefineddata:gcount:1");
-            head.addValue("EXTEND", true, "ntf::undefineddata:extend:1"); // Just
-                                                                          // in
-                                                                          // case!
+            head.addValue(NAXISn.n(1), this.data.length);
+            head.addValue(PCOUNT, 0);
+            head.addValue(GCOUNT, 1);
+            // Just in case!
+            head.addValue(EXTEND, true);
         } catch (HeaderCardException e) {
             System.err.println("Unable to create unknown header:" + e);
         } finally {

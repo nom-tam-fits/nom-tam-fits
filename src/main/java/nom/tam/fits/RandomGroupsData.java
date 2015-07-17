@@ -31,6 +31,11 @@ package nom.tam.fits;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.GROUPS;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.PCOUNT;
+
 import java.io.EOFException;
 import java.io.IOException;
 
@@ -114,14 +119,14 @@ public class RandomGroupsData extends Data {
         }
 
         h.setNaxes(ddims.length + 1);
-        h.addValue("NAXIS1", 0, "ntf::randomgroupsdata:naxis1:1");
+        h.addValue(NAXISn.n(1), 0);
         for (int i = 2; i <= ddims.length + 1; i += 1) {
-            h.addValue("NAXIS" + i, ddims[i - 2], "ntf::randomgroupsdata:naxisN:1");
+            h.addValue(NAXISn.n(i), ddims[i - 2]);
         }
 
-        h.addValue("GROUPS", true, "ntf::randomgroupsdata:groups:1");
-        h.addValue("GCOUNT", this.dataArray.length, "ntf::randomgroupsdata:gcount:1");
-        h.addValue("PCOUNT", pdims[0], "ntf::randomgroupsdata:pcount:1");
+        h.addValue(GROUPS, true);
+        h.addValue(GCOUNT, this.dataArray.length);
+        h.addValue(PCOUNT, pdims[0]);
         HeaderCommentsMap.set(null);
     }
 

@@ -6,7 +6,8 @@
 				copyying of arrays of all types.  Some of the special FITS values are
 				collected in the FitsIO class.  New buffering utility classes have also been created.
 				Some methods that were public in the util package but which were not used in
-				the FITS library have been removed.
+				the FITS library have been removed. The logging is now using java.util.logging, no
+				standard out or stanard error is used anymore.
 			</action>
 			<action type="update">
 				Added utilty class for updating checksums

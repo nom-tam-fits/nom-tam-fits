@@ -31,6 +31,13 @@ package nom.tam.fits;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.EXTEND;
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.PCOUNT;
+
 import java.io.EOFException;
 import java.io.IOException;
 
@@ -200,10 +207,11 @@ public class ImageData extends Data {
             }
             head.setNaxis(i, dimens[dimens.length - i]);
         }
-        head.addValue("EXTEND", true, "ntf::imagedata:extend:1"); // Just in
-                                                                  // case!
-        head.addValue("PCOUNT", 0, "ntf::imagedata:pcount:1");
-        head.addValue("GCOUNT", 1, "ntf::imagedata:gcount:1");
+        // Just in case!
+        head.addValue(EXTEND, true);
+
+        head.addValue(PCOUNT, 0);
+        head.addValue(GCOUNT, 1);
 
         HeaderCommentsMap.set(null);
     }
@@ -248,13 +256,13 @@ public class ImageData extends Data {
 
         Class<?> baseClass;
 
-        int gCount = h.getIntValue("GCOUNT", 1);
-        int pCount = h.getIntValue("PCOUNT", 0);
+        int gCount = h.getIntValue(GCOUNT, 1);
+        int pCount = h.getIntValue(PCOUNT, 0);
         if (gCount > 1 || pCount != 0) {
             throw new FitsException("Group data treated as images");
         }
 
-        bitpix = h.getIntValue("BITPIX", 0);
+        bitpix = h.getIntValue(BITPIX, 0);
 
         if (bitpix == BasicHDU.BITPIX_BYTE) {
             baseClass = Byte.TYPE;
@@ -272,7 +280,7 @@ public class ImageData extends Data {
             throw new FitsException("Invalid BITPIX:" + bitpix);
         }
 
-        ndim = h.getIntValue("NAXIS", 0);
+        ndim = h.getIntValue(NAXIS, 0);
         dims = new int[ndim];
 
         // Note that we have to invert the order of the axes
@@ -281,7 +289,7 @@ public class ImageData extends Data {
 
         this.byteSize = 1;
         for (i = 0; i < ndim; i += 1) {
-            int cdim = h.getIntValue("NAXIS" + (i + 1), 0);
+            int cdim = h.getIntValue(NAXISn.n(i + 1), 0);
             if (cdim < 0) {
                 throw new FitsException("Invalid array dimension:" + cdim);
             }

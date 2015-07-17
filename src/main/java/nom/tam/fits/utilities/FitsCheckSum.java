@@ -31,6 +31,8 @@ package nom.tam.fits.utilities;
  * #L%
  */
 
+import static nom.tam.fits.header.Checksum.CHECKSUM;
+import static nom.tam.fits.header.Checksum.DATASUM;
 import static nom.tam.util.FitsIO.BYTE_1_OF_LONG_MASK;
 import static nom.tam.util.FitsIO.BYTE_2_OF_LONG_MASK;
 import static nom.tam.util.FitsIO.BYTE_3_OF_LONG_MASK;
@@ -44,8 +46,6 @@ import java.util.logging.Logger;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCommentsMap;
-import nom.tam.fits.header.Checksum;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.FitsIO;
@@ -78,11 +78,11 @@ public final class FitsCheckSum {
      * adding approximately 140G short values (=2^47) (280GBytes) or more. We
      * assume for now that this routine here is never called to swallow FITS
      * files of that size or larger. by R J Mathar
+     * {@link nom.tam.fits.header.Checksum#CHECKSUM}
      * 
      * @param data
      *            the byte sequence
      * @return the 32bit checksum in the range from 0 to 2^32-1
-     * @see Checksum#CHECKSUM
      * @since 2005-10-05
      */
     public static long checksum(final byte[] data) {
@@ -210,7 +210,7 @@ public final class FitsCheckSum {
          * expected PCOUNT and found DATE.
          */
         Header hdr = hdu.getHeader();
-        hdr.deleteKey(Checksum.CHECKSUM.key());
+        hdr.deleteKey(CHECKSUM);
         /*
          * jThis would need org.nevec.utils.DateUtils compiled before
          * org.nevec.prima.fits .... final String doneAt =
@@ -219,8 +219,7 @@ public final class FitsCheckSum {
          * calculated and needs to be re-inserted again - with the same string -
          * when the second/final call to addValue() is made below.
          */
-        final String doneAt = HeaderCommentsMap.getComment("fits:checksum:1");
-        hdr.addValue(Checksum.CHECKSUM.key(), "0000000000000000", doneAt);
+        hdr.addValue(CHECKSUM, "0000000000000000");
 
         /*
          * Convert the entire sequence of 2880 byte header cards into a byte
@@ -243,7 +242,7 @@ public final class FitsCheckSum {
         checksum(data);
         hdu.write(new BufferedDataOutputStream(hduByteImage));
         long csd = checksum(data);
-        hdu.getHeader().addValue("DATASUM", "" + csd, "Checksum of data");
+        hdu.getHeader().addValue(DATASUM, Long.toString(csd));
 
         // We already have the checsum of the data. Lets compute it for
         // the header.
@@ -271,6 +270,6 @@ public final class FitsCheckSum {
          * independent to a permutation of the 80-byte records within the
          * header.
          */
-        hdr.addValue("CHECKSUM", checksumEnc(cshdu, true), doneAt);
+        hdr.addValue(CHECKSUM, checksumEnc(cshdu, true));
     }
 }

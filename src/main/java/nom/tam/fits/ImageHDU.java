@@ -31,13 +31,22 @@ package nom.tam.fits;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.GROUPS;
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.SIMPLE;
+import static nom.tam.fits.header.Standard.XTENSION;
+
 import java.io.PrintStream;
 
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.PrimitiveTypeEnum;
 
-/** FITS image header/data unit */
+/**
+ * FITS image header/data unit
+ */
 public class ImageHDU extends BasicHDU<ImageData> {
 
     /**
@@ -76,9 +85,9 @@ public class ImageHDU extends BasicHDU<ImageData> {
      * @return <CODE>true</CODE> if this HDU has a valid header.
      */
     public static boolean isHeader(Header hdr) {
-        boolean found = hdr.getBooleanValue("SIMPLE");
+        boolean found = hdr.getBooleanValue(SIMPLE);
         if (!found) {
-            String s = hdr.getStringValue("XTENSION");
+            String s = hdr.getStringValue(XTENSION);
             if (s != null && //
                     (s.trim().equals("IMAGE") || s.trim().equals("IUEIMAGE"))) {
                 found = true;
@@ -87,7 +96,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
         if (!found) {
             return false;
         }
-        return !hdr.getBooleanValue("GROUPS");
+        return !hdr.getBooleanValue(GROUPS);
     }
 
     public static Data manufactureData(Header hdr) throws FitsException {
@@ -150,11 +159,11 @@ public class ImageHDU extends BasicHDU<ImageData> {
         }
 
         stream.println("      Header Information:");
-        stream.println("         BITPIX=" + this.myHeader.getIntValue("BITPIX", -1));
-        int naxis = this.myHeader.getIntValue("NAXIS", -1);
+        stream.println("         BITPIX=" + this.myHeader.getIntValue(BITPIX, -1));
+        int naxis = this.myHeader.getIntValue(NAXIS, -1);
         stream.println("         NAXIS=" + naxis);
         for (int i = 1; i <= naxis; i += 1) {
-            stream.println("         NAXIS" + i + "=" + this.myHeader.getIntValue("NAXIS" + i, -1));
+            stream.println("         NAXIS" + i + "=" + this.myHeader.getIntValue(NAXISn.n(i), -1));
         }
 
         stream.println("      Data information:");

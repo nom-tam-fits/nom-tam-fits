@@ -3,6 +3,7 @@ package nom.tam.fits;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
+import static nom.tam.fits.header.Standard.TTYPEn;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
 
@@ -239,7 +240,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
         for (int i = 0; i < getNCols(); i += 1) {
 
-            String val = this.myHeader.getStringValue("TTYPE" + (i + 1));
+            String val = this.myHeader.getStringValue(TTYPEn.n(i + 1));
             if (val != null && val.trim().equals(colName)) {
                 return i;
             }
@@ -280,12 +281,12 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *             if an invalid index was requested.
      */
     public String getColumnFormat(int index) throws FitsException {
-        int flds = this.myHeader.getIntValue("TFIELDS", 0);
+        int flds = this.myHeader.getIntValue(TFIELDS, 0);
         if (index < 0 || index >= flds) {
             throw new FitsException("Bad column index " + index + " (only " + flds + " columns)");
         }
 
-        return this.myHeader.getStringValue("TFORM" + (index + 1)).trim();
+        return this.myHeader.getStringValue(TFORMn.n(index + 1)).trim();
     }
 
     /**
@@ -312,7 +313,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public String getColumnName(int index) {
 
-        String ttype = this.myHeader.getStringValue("TTYPE" + (index + 1));
+        String ttype = this.myHeader.getStringValue(TTYPEn.n(index + 1));
         if (ttype != null) {
             ttype = ttype.trim();
         }
@@ -442,13 +443,40 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @throws FitsException
      *             if the header could not be updated
      */
+    public void setColumnMeta(int index, IFitsHeader key, String value, String comment, boolean after) throws FitsException {
+        setCurrentColumn(index, after);
+        this.myHeader.addValue(key.n(index + 1).key(), value, comment);
+    }
+
+    /**
+     * Specify column metadata for a given column in a way that allows all of
+     * the column metadata for a given column to be organized together.
+     * 
+     * @param index
+     *            The 0-based index of the column
+     * @param key
+     *            The column key. I.e., the keyword will be key+(index+1)
+     * @param value
+     *            The value to be placed in the header.
+     * @param comment
+     *            The comment for the header
+     * @param after
+     *            Should the header card be after the current column metadata
+     *            block (true), or immediately before the TFORM card (false). @throws
+     *            FitsException if the operation failed
+     * @throws FitsException
+     *             if the header could not be updated
+     * @deprecated use
+     *             {@link #setColumnMeta(int, IFitsHeader, String, String, boolean)}
+     */
+    @Deprecated
     public void setColumnMeta(int index, String key, String value, String comment, boolean after) throws FitsException {
         setCurrentColumn(index, after);
         this.myHeader.addValue(key + (index + 1), value, comment);
     }
 
     public void setColumnName(int index, String name, String comment) throws FitsException {
-        setColumnMeta(index, "TTYPE", name, comment, true);
+        setColumnMeta(index, TTYPEn, name, comment, true);
     }
 
     /**
