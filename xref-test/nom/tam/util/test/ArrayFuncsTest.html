@@ -201,7 +201,7 @@
 <a class="jxr_linenumber" name="L193" href="#L193">193</a>                 6
 <a class="jxr_linenumber" name="L194" href="#L194">194</a>             }
 <a class="jxr_linenumber" name="L195" href="#L195">195</a>         };
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>         Class newType = <strong class="jxr_keyword">double</strong>.<strong class="jxr_keyword">class</strong>;
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>         Class&lt;?&gt; newType = <strong class="jxr_keyword">double</strong>.<strong class="jxr_keyword">class</strong>;
 <a class="jxr_linenumber" name="L197" href="#L197">197</a> 
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>         <strong class="jxr_keyword">boolean</strong> reuse = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L199" href="#L199">199</a>         <strong class="jxr_keyword">double</strong>[][] dres = (<strong class="jxr_keyword">double</strong>[][]) ArrayFuncs.convertArray(array, newType, reuse);
@@ -210,7 +210,7 @@
 <a class="jxr_linenumber" name="L202" href="#L202">202</a> 
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>         newType = <strong class="jxr_keyword">int</strong>.<strong class="jxr_keyword">class</strong>;
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>         <strong class="jxr_keyword">int</strong>[][] ires = (<strong class="jxr_keyword">int</strong>[][]) ArrayFuncs.convertArray(array, newType, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>         assertEquals(array, ires);
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>         assertArrayEquals(array, ires);
 <a class="jxr_linenumber" name="L206" href="#L206">206</a> 
 <a class="jxr_linenumber" name="L207" href="#L207">207</a>         ires = (<strong class="jxr_keyword">int</strong>[][]) ArrayFuncs.convertArray(array, newType, false);
 <a class="jxr_linenumber" name="L208" href="#L208">208</a>         assertNotSame(array, ires);
@@ -450,7 +450,7 @@
 <a class="jxr_linenumber" name="L442" href="#L442">442</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGenerateArray() {
 <a class="jxr_linenumber" name="L443" href="#L443">443</a>         System.out.println(<span class="jxr_string">"generateArray"</span>);
 <a class="jxr_linenumber" name="L444" href="#L444">444</a> 
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>         Class baseType = <strong class="jxr_keyword">int</strong>.<strong class="jxr_keyword">class</strong>;
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>         Class&lt;?&gt; baseType = <strong class="jxr_keyword">int</strong>.<strong class="jxr_keyword">class</strong>;
 <a class="jxr_linenumber" name="L446" href="#L446">446</a>         <strong class="jxr_keyword">int</strong>[] dims = {
 <a class="jxr_linenumber" name="L447" href="#L447">447</a>             2,
 <a class="jxr_linenumber" name="L448" href="#L448">448</a>             3,
@@ -577,7 +577,7 @@
 <a class="jxr_linenumber" name="L569" href="#L569">569</a>         System.out.println(<span class="jxr_string">"mimicArray"</span>);
 <a class="jxr_linenumber" name="L570" href="#L570">570</a> 
 <a class="jxr_linenumber" name="L571" href="#L571">571</a>         <strong class="jxr_keyword">int</strong>[][] array = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[2][3];
-<a class="jxr_linenumber" name="L572" href="#L572">572</a>         Class newType = <strong class="jxr_keyword">double</strong>.<strong class="jxr_keyword">class</strong>;
+<a class="jxr_linenumber" name="L572" href="#L572">572</a>         Class&lt;?&gt; newType = <strong class="jxr_keyword">double</strong>.<strong class="jxr_keyword">class</strong>;
 <a class="jxr_linenumber" name="L573" href="#L573">573</a> 
 <a class="jxr_linenumber" name="L574" href="#L574">574</a>         <strong class="jxr_keyword">double</strong>[][] result = (<strong class="jxr_keyword">double</strong>[][]) nom.tam.util.ArrayFuncs.mimicArray(array, newType);
 <a class="jxr_linenumber" name="L575" href="#L575">575</a>         assertEquals(result.length, array.length);

@@ -93,7 +93,7 @@ public class FitsDate {
      * @return the current date in FITS date format
      */
     public static String getFitsDateString() {
-<span class="fc" id="L96">        return getFitsDateString(new Date(), true);</span>
+<span class="nc" id="L96">        return getFitsDateString(new Date(), true);</span>
     }
 
     /**
@@ -248,7 +248,7 @@ public class FitsDate {
                 } else {
 <span class="fc" id="L249">                    cal.set(Calendar.MILLISECOND, this.millisecond);</span>
                 }
-<span class="pc bpc" id="L251" title="1 of 2 branches missed.">                if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">                if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
 <span class="fc" id="L252">                    FitsDate.LOG.log(Level.FINEST, &quot;3At this point:&quot; + cal.getTime());</span>
                 }
             }

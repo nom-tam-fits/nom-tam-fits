@@ -31,6 +31,9 @@
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.XTENSION;
+
 import java.io.PrintStream;
 
 import nom.tam.util.ArrayFuncs;
@@ -47,8 +50,8 @@ public class UndefinedHDU extends BasicHDU&lt;UndefinedData&gt; {
      * @throws FitsException
      *             if the operation failed
      */
-    public static Data encapsulate(Object o) throws FitsException {
-<span class="fc" id="L51">        return new UndefinedData(o);</span>
+    public static UndefinedData encapsulate(Object o) throws FitsException {
+<span class="fc" id="L54">        return new UndefinedData(o);</span>
     }
 
     /**
@@ -61,7 +64,7 @@ public class UndefinedHDU extends BasicHDU&lt;UndefinedData&gt; {
      * @return true if o can be an Undefined FITS block.
      */
     public static boolean isData(Object o) {
-<span class="nc bnc" id="L64" title="All 2 branches missed.">        return ArrayFuncs.computeLSize(o) &gt; 0;</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        return ArrayFuncs.computeLSize(o) &gt; 0;</span>
     }
 
     /**
@@ -72,14 +75,14 @@ public class UndefinedHDU extends BasicHDU&lt;UndefinedData&gt; {
      * @return &lt;CODE&gt;true&lt;/CODE&gt; if this HDU has a valid header.
      */
     public static boolean isHeader(Header hdr) {
-<span class="pc bpc" id="L75" title="2 of 4 branches missed.">        if (hdr.getStringValue(&quot;XTENSION&quot;) != null &amp;&amp; hdr.getIntValue(&quot;NAXIS&quot;, -1) &gt;= 0) {</span>
-<span class="fc" id="L76">            return true;</span>
+<span class="pc bpc" id="L78" title="2 of 4 branches missed.">        if (hdr.getStringValue(XTENSION) != null &amp;&amp; hdr.getIntValue(NAXIS, -1) &gt;= 0) {</span>
+<span class="fc" id="L79">            return true;</span>
         }
-<span class="nc" id="L78">        return false;</span>
+<span class="nc" id="L81">        return false;</span>
     }
 
     public static Data manufactureData(Header hdr) throws FitsException {
-<span class="fc" id="L82">        return new UndefinedData(hdr);</span>
+<span class="fc" id="L85">        return new UndefinedData(hdr);</span>
     }
 
     /**
@@ -91,10 +94,10 @@ public class UndefinedHDU extends BasicHDU&lt;UndefinedData&gt; {
      */
     public static Header manufactureHeader(Data d) throws FitsException {
 
-<span class="fc" id="L94">        Header h = new Header();</span>
-<span class="fc" id="L95">        d.fillHeader(h);</span>
+<span class="fc" id="L97">        Header h = new Header();</span>
+<span class="fc" id="L98">        d.fillHeader(h);</span>
 
-<span class="fc" id="L97">        return h;</span>
+<span class="fc" id="L100">        return h;</span>
     }
 
     /**
@@ -107,17 +110,16 @@ public class UndefinedHDU extends BasicHDU&lt;UndefinedData&gt; {
      * @throws FitsException
      *             if there was a problem with the data.
      */
-<span class="fc" id="L110">    public UndefinedHDU(Header h, Data d) throws FitsException {</span>
-<span class="fc" id="L111">        this.myData = (UndefinedData) d;</span>
-<span class="fc" id="L112">        this.myHeader = h;</span>
+    public UndefinedHDU(Header h, UndefinedData d) throws FitsException {
+<span class="fc" id="L114">        super(h, d);</span>
 
-<span class="fc" id="L114">    }</span>
+<span class="fc" id="L116">    }</span>
 
     @Override
     public void info(PrintStream stream) {
-<span class="fc" id="L118">        stream.println(&quot;  Unhandled/Undefined/Unknown Type&quot;);</span>
-<span class="fc" id="L119">        stream.println(&quot;  XTENSION=&quot; + this.myHeader.getStringValue(&quot;XTENSION&quot;).trim());</span>
-<span class="fc" id="L120">        stream.println(&quot;  Apparent size:&quot; + this.myData.getTrueSize());</span>
-<span class="fc" id="L121">    }</span>
+<span class="fc" id="L120">        stream.println(&quot;  Unhandled/Undefined/Unknown Type&quot;);</span>
+<span class="fc" id="L121">        stream.println(&quot;  XTENSION=&quot; + this.myHeader.getStringValue(XTENSION).trim());</span>
+<span class="fc" id="L122">        stream.println(&quot;  Apparent size:&quot; + this.myData.getTrueSize());</span>
+<span class="fc" id="L123">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

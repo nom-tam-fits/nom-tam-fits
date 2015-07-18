@@ -181,7 +181,7 @@
 <a class="jxr_linenumber" name="L173" href="#L173">173</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L174" href="#L174">174</a> 
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>     <strong class="jxr_keyword">public</strong> byte[] quantize(Object input, <a href="../../../../nom/tam/image/comp/TileDescriptor.html">TileDescriptor</a> td, <strong class="jxr_keyword">int</strong> tileIndex) {
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>         Class cs = ArrayFuncs.getBaseClass(input);
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>         Class&lt;?&gt; cs = ArrayFuncs.getBaseClass(input);
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>         <strong class="jxr_keyword">if</strong> (cs == <strong class="jxr_keyword">float</strong>.<strong class="jxr_keyword">class</strong>) {
 <a class="jxr_linenumber" name="L178" href="#L178">178</a>             <strong class="jxr_keyword">this</strong>.isFloat = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>         } <strong class="jxr_keyword">else</strong> {

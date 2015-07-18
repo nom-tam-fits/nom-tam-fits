@@ -136,31 +136,29 @@ public class FitsHeap implements FitsElement {
      *             if the operation failed
      */
     public void getData(int offset, Object array) throws FitsException {
-        // System.out.println(&quot;FitsHeap getting at:&quot;+offset+&quot; to &quot;+array+&quot; &quot;+heapOffset);
-
-<span class="fc" id="L141">        allocate();</span>
+<span class="fc" id="L139">        allocate();</span>
         try {
             // Can we reuse the existing byte stream?
-<span class="fc bfc" id="L144" title="All 4 branches covered.">            if (this.bstr == null || this.heapOffset &gt; offset) {</span>
-<span class="fc" id="L145">                this.heapOffset = 0;</span>
-<span class="fc" id="L146">                this.bstr = new BufferedDataInputStream(new ByteArrayInputStream(this.heap));</span>
+<span class="fc bfc" id="L142" title="All 4 branches covered.">            if (this.bstr == null || this.heapOffset &gt; offset) {</span>
+<span class="fc" id="L143">                this.heapOffset = 0;</span>
+<span class="fc" id="L144">                this.bstr = new BufferedDataInputStream(new ByteArrayInputStream(this.heap));</span>
             }
 
-<span class="fc" id="L149">            this.bstr.skipAllBytes(offset - this.heapOffset);</span>
-<span class="fc" id="L150">            this.heapOffset = offset;</span>
-<span class="fc" id="L151">            this.heapOffset += this.bstr.readLArray(array);</span>
+<span class="fc" id="L147">            this.bstr.skipAllBytes(offset - this.heapOffset);</span>
+<span class="fc" id="L148">            this.heapOffset = offset;</span>
+<span class="fc" id="L149">            this.heapOffset += this.bstr.readLArray(array);</span>
 
-<span class="nc" id="L153">        } catch (IOException e) {</span>
-<span class="nc" id="L154">            throw new FitsException(&quot;Error decoding heap area at offset=&quot; + offset + &quot;.  Exception: Exception &quot; + e);</span>
-<span class="fc" id="L155">        }</span>
-<span class="fc" id="L156">    }</span>
+<span class="nc" id="L151">        } catch (IOException e) {</span>
+<span class="nc" id="L152">            throw new FitsException(&quot;Error decoding heap area at offset=&quot; + offset + &quot;.  Exception: Exception &quot; + e);</span>
+<span class="fc" id="L153">        }</span>
+<span class="fc" id="L154">    }</span>
 
     /**
      * Get the file offset of the heap
      */
     @Override
     public long getFileOffset() {
-<span class="fc" id="L163">        throw new IllegalStateException(&quot;FitsHeap should only be reset from inside its parent, never alone&quot;);</span>
+<span class="fc" id="L161">        throw new IllegalStateException(&quot;FitsHeap should only be reset from inside its parent, never alone&quot;);</span>
     }
 
     /**
@@ -168,7 +166,7 @@ public class FitsHeap implements FitsElement {
      */
     @Override
     public long getSize() {
-<span class="fc" id="L171">        return size();</span>
+<span class="fc" id="L169">        return size();</span>
     }
 
     /**
@@ -176,28 +174,28 @@ public class FitsHeap implements FitsElement {
      */
     int putData(Object data) throws FitsException {
 
-<span class="fc" id="L179">        long lsize = ArrayFuncs.computeLSize(data);</span>
-<span class="pc bpc" id="L180" title="1 of 2 branches missed.">        if (lsize &gt; Integer.MAX_VALUE) {</span>
-<span class="nc" id="L181">            throw new FitsException(&quot;FITS Heap &gt; 2 G&quot;);</span>
+<span class="fc" id="L177">        long lsize = ArrayFuncs.computeLSize(data);</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">        if (lsize &gt; Integer.MAX_VALUE) {</span>
+<span class="nc" id="L179">            throw new FitsException(&quot;FITS Heap &gt; 2 G&quot;);</span>
         }
-<span class="fc" id="L183">        int size = (int) lsize;</span>
-<span class="fc" id="L184">        expandHeap(size);</span>
-<span class="fc" id="L185">        ByteArrayOutputStream bo = new ByteArrayOutputStream(size);</span>
+<span class="fc" id="L181">        int size = (int) lsize;</span>
+<span class="fc" id="L182">        expandHeap(size);</span>
+<span class="fc" id="L183">        ByteArrayOutputStream bo = new ByteArrayOutputStream(size);</span>
 
         try {
-<span class="fc" id="L188">            BufferedDataOutputStream o = new BufferedDataOutputStream(bo);</span>
-<span class="fc" id="L189">            o.writeArray(data);</span>
-<span class="fc" id="L190">            o.flush();</span>
-<span class="fc" id="L191">            o.close();</span>
-<span class="nc" id="L192">        } catch (IOException e) {</span>
-<span class="nc" id="L193">            throw new FitsException(&quot;Unable to write variable column length data&quot;);</span>
-<span class="fc" id="L194">        }</span>
+<span class="fc" id="L186">            BufferedDataOutputStream o = new BufferedDataOutputStream(bo);</span>
+<span class="fc" id="L187">            o.writeArray(data);</span>
+<span class="fc" id="L188">            o.flush();</span>
+<span class="fc" id="L189">            o.close();</span>
+<span class="nc" id="L190">        } catch (IOException e) {</span>
+<span class="nc" id="L191">            throw new FitsException(&quot;Unable to write variable column length data&quot;);</span>
+<span class="fc" id="L192">        }</span>
 
-<span class="fc" id="L196">        System.arraycopy(bo.toByteArray(), 0, this.heap, this.heapSize, size);</span>
-<span class="fc" id="L197">        int oldOffset = this.heapSize;</span>
-<span class="fc" id="L198">        this.heapSize += size;</span>
+<span class="fc" id="L194">        System.arraycopy(bo.toByteArray(), 0, this.heap, this.heapSize, size);</span>
+<span class="fc" id="L195">        int oldOffset = this.heapSize;</span>
+<span class="fc" id="L196">        this.heapSize += size;</span>
 
-<span class="fc" id="L200">        return oldOffset;</span>
+<span class="fc" id="L198">        return oldOffset;</span>
     }
 
     /**
@@ -206,38 +204,38 @@ public class FitsHeap implements FitsElement {
     @SuppressFBWarnings(value = &quot;RR_NOT_CHECKED&quot;, justification = &quot;this read will never return less than the requested length&quot;)
     @Override
     public void read(ArrayDataInput str) throws FitsException {
-<span class="fc bfc" id="L209" title="All 2 branches covered.">        if (this.heapSize &gt; 0) {</span>
-<span class="fc" id="L210">            allocate();</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">        if (this.heapSize &gt; 0) {</span>
+<span class="fc" id="L208">            allocate();</span>
             try {
-<span class="fc" id="L212">                str.read(this.heap, 0, this.heapSize);</span>
-<span class="nc" id="L213">            } catch (IOException e) {</span>
-<span class="nc" id="L214">                throw new FitsException(&quot;Error reading heap:&quot; + e);</span>
-<span class="fc" id="L215">            }</span>
+<span class="fc" id="L210">                str.read(this.heap, 0, this.heapSize);</span>
+<span class="nc" id="L211">            } catch (IOException e) {</span>
+<span class="nc" id="L212">                throw new FitsException(&quot;Error reading heap:&quot; + e);</span>
+<span class="fc" id="L213">            }</span>
         }
 
-<span class="fc" id="L218">        this.bstr = null;</span>
-<span class="fc" id="L219">    }</span>
+<span class="fc" id="L216">        this.bstr = null;</span>
+<span class="fc" id="L217">    }</span>
 
     @Override
     public boolean reset() {
-<span class="fc" id="L223">        throw new IllegalStateException(&quot;FitsHeap should only be reset from inside its parent, never alone&quot;);</span>
+<span class="fc" id="L221">        throw new IllegalStateException(&quot;FitsHeap should only be reset from inside its parent, never alone&quot;);</span>
     }
 
     @Override
     public void rewrite() throws IOException, FitsException {
-<span class="fc" id="L228">        throw new FitsException(&quot;FitsHeap should only be rewritten from inside its parent, never alone&quot;);</span>
+<span class="fc" id="L226">        throw new FitsException(&quot;FitsHeap should only be rewritten from inside its parent, never alone&quot;);</span>
     }
 
     @Override
     public boolean rewriteable() {
-<span class="nc" id="L233">        return false;</span>
+<span class="nc" id="L231">        return false;</span>
     }
 
     /**
      * @return the size of the Heap
      */
     public int size() {
-<span class="fc" id="L240">        return this.heapSize;</span>
+<span class="fc" id="L238">        return this.heapSize;</span>
     }
 
     /**
@@ -245,12 +243,12 @@ public class FitsHeap implements FitsElement {
      */
     @Override
     public void write(ArrayDataOutput str) throws FitsException {
-<span class="fc" id="L248">        allocate();</span>
+<span class="fc" id="L246">        allocate();</span>
         try {
-<span class="fc" id="L250">            str.write(this.heap, 0, this.heapSize);</span>
-<span class="nc" id="L251">        } catch (IOException e) {</span>
-<span class="nc" id="L252">            throw new FitsException(&quot;Error writing heap:&quot; + e);</span>
-<span class="fc" id="L253">        }</span>
-<span class="fc" id="L254">    }</span>
+<span class="fc" id="L248">            str.write(this.heap, 0, this.heapSize);</span>
+<span class="nc" id="L249">        } catch (IOException e) {</span>
+<span class="nc" id="L250">            throw new FitsException(&quot;Error writing heap:&quot; + e);</span>
+<span class="fc" id="L251">        }</span>
+<span class="fc" id="L252">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

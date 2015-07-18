@@ -144,7 +144,7 @@
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> 
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>         Fits f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/at1.fits"</span>);
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> 
-<a class="jxr_linenumber" name="L139" href="#L139">139</a>         TableHDU th = (TableHDU) f.getHDU(1);
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>         TableHDU&lt;?&gt; th = (TableHDU&lt;?&gt;) f.getHDU(1);
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>         assertEquals(<span class="jxr_string">"delrBef"</span>, 50, th.getNRows());
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>         th.deleteRows(2, 2);
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>         assertEquals(<span class="jxr_string">"delrAft"</span>, 48, th.getNRows());
@@ -153,7 +153,7 @@
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>         bf.close();
 <a class="jxr_linenumber" name="L146" href="#L146">146</a> 
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>         f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/at1y.fits"</span>);
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>         th = (TableHDU) f.getHDU(1);
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>         th = (TableHDU&lt;?&gt;) f.getHDU(1);
 <a class="jxr_linenumber" name="L149" href="#L149">149</a>         assertEquals(<span class="jxr_string">"delrAft2"</span>, 48, th.getNRows());
 <a class="jxr_linenumber" name="L150" href="#L150">150</a> 
 <a class="jxr_linenumber" name="L151" href="#L151">151</a>         assertEquals(<span class="jxr_string">"delcBef"</span>, 5, th.getNCols());
@@ -166,7 +166,7 @@
 <a class="jxr_linenumber" name="L158" href="#L158">158</a>         bf.close();
 <a class="jxr_linenumber" name="L159" href="#L159">159</a> 
 <a class="jxr_linenumber" name="L160" href="#L160">160</a>         f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/at1z.fits"</span>);
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>         th = (TableHDU) f.getHDU(1);
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>         th = (TableHDU&lt;?&gt;) f.getHDU(1);
 <a class="jxr_linenumber" name="L162" href="#L162">162</a>         assertEquals(<span class="jxr_string">"delcAft3"</span>, 1, th.getNCols());
 <a class="jxr_linenumber" name="L163" href="#L163">163</a>     }
 <a class="jxr_linenumber" name="L164" href="#L164">164</a> 
@@ -238,7 +238,7 @@
 <a class="jxr_linenumber" name="L230" href="#L230">230</a>         Object[] samp = getSampleCols();
 <a class="jxr_linenumber" name="L231" href="#L231">231</a> 
 <a class="jxr_linenumber" name="L232" href="#L232">232</a>         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>         AsciiTable data = (AsciiTable) hdu.getData();
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>         AsciiTable data = hdu.getData();
 <a class="jxr_linenumber" name="L234" href="#L234">234</a>         <strong class="jxr_keyword">float</strong>[] f1 = (<strong class="jxr_keyword">float</strong>[]) data.getColumn(0);
 <a class="jxr_linenumber" name="L235" href="#L235">235</a>         <strong class="jxr_keyword">float</strong>[] f2 = f1.clone();
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; f2.length; i += 1) {
@@ -377,263 +377,267 @@
 <a class="jxr_linenumber" name="L369" href="#L369">369</a>             }
 <a class="jxr_linenumber" name="L370" href="#L370">370</a>         };
 <a class="jxr_linenumber" name="L371" href="#L371">371</a> 
-<a class="jxr_linenumber" name="L372" href="#L372">372</a>         BasicHDU ahdu = FitsFactory.hduFactory(o);
-<a class="jxr_linenumber" name="L373" href="#L373">373</a>         Fits f = <strong class="jxr_keyword">new</strong> Fits();
-<a class="jxr_linenumber" name="L374" href="#L374">374</a>         f.addHDU(ahdu);
-<a class="jxr_linenumber" name="L375" href="#L375">375</a>         f.write(bf);
-<a class="jxr_linenumber" name="L376" href="#L376">376</a>         bf.close();
-<a class="jxr_linenumber" name="L377" href="#L377">377</a> 
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>         f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/at3.fits"</span>);
-<a class="jxr_linenumber" name="L379" href="#L379">379</a>         BasicHDU bhdu = f.getHDU(1);
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>         Header hdr = bhdu.getHeader();
-<a class="jxr_linenumber" name="L381" href="#L381">381</a>         assertEquals(hdr.getStringValue(<span class="jxr_string">"TFORM1"</span>), <span class="jxr_string">"A1"</span>);
-<a class="jxr_linenumber" name="L382" href="#L382">382</a>         assertEquals(hdr.getStringValue(<span class="jxr_string">"TFORM2"</span>), <span class="jxr_string">"A1"</span>);
-<a class="jxr_linenumber" name="L383" href="#L383">383</a>         assertEquals(hdr.getStringValue(<span class="jxr_string">"TFORM3"</span>), <span class="jxr_string">"A1"</span>);
-<a class="jxr_linenumber" name="L384" href="#L384">384</a>         assertEquals(hdr.getStringValue(<span class="jxr_string">"TFORM4"</span>), <span class="jxr_string">"A1"</span>);
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>         assertEquals(hdr.getStringValue(<span class="jxr_string">"TFORM5"</span>), <span class="jxr_string">"A3"</span>);
-<a class="jxr_linenumber" name="L386" href="#L386">386</a>     }
-<a class="jxr_linenumber" name="L387" href="#L387">387</a> 
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> readByColumn() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L389" href="#L389">389</a>         Fits f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/at1.fits"</span>);
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
-<a class="jxr_linenumber" name="L391" href="#L391">391</a>         AsciiTable data = (AsciiTable) hdu.getData();
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>         Object[] cols = getSampleCols();
-<a class="jxr_linenumber" name="L393" href="#L393">393</a> 
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>         assertEquals(<span class="jxr_string">"Number of rows"</span>, data.getNRows(), 50);
-<a class="jxr_linenumber" name="L395" href="#L395">395</a>         assertEquals(<span class="jxr_string">"Number of columns"</span>, data.getNCols(), 5);
-<a class="jxr_linenumber" name="L396" href="#L396">396</a> 
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = 0; j &lt; data.getNCols(); j += 1) {
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>             Object col = data.getColumn(j);
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>             <strong class="jxr_keyword">if</strong> (j == 4) {
-<a class="jxr_linenumber" name="L400" href="#L400">400</a>                 String[] st = (String[]) col;
-<a class="jxr_linenumber" name="L401" href="#L401">401</a>                 <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; st.length; i += 1) {
-<a class="jxr_linenumber" name="L402" href="#L402">402</a>                     st[i] = st[i].trim();
-<a class="jxr_linenumber" name="L403" href="#L403">403</a>                 }
-<a class="jxr_linenumber" name="L404" href="#L404">404</a>             }
-<a class="jxr_linenumber" name="L405" href="#L405">405</a>             assertEquals(<span class="jxr_string">"Ascii Columns:"</span> + j, <strong class="jxr_keyword">true</strong>, TestArrayFuncs.arrayEquals(cols[j], col, 1.e-6, 1.e-14));
-<a class="jxr_linenumber" name="L406" href="#L406">406</a>         }
-<a class="jxr_linenumber" name="L407" href="#L407">407</a>     }
-<a class="jxr_linenumber" name="L408" href="#L408">408</a> 
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> readByElement() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> 
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>         Fits f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/at2.fits"</span>);
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>         AsciiTable data = (AsciiTable) hdu.getData();
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>         BasicHDU&lt;?&gt; ahdu = FitsFactory.hduFactory(o);
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>         <strong class="jxr_keyword">try</strong>(Fits f = <strong class="jxr_keyword">new</strong> Fits()) {
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> 	        f.addHDU(ahdu);
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> 	        f.write(bf);
+<a class="jxr_linenumber" name="L376" href="#L376">376</a>         }
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>         bf.close();
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> 
+<a class="jxr_linenumber" name="L379" href="#L379">379</a>         BasicHDU&lt;?&gt; bhdu;
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>         <strong class="jxr_keyword">try</strong>(Fits f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/at3.fits"</span>)) {
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>         	bhdu = f.getHDU(1);
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>         }
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>         Header hdr = bhdu.getHeader();
+<a class="jxr_linenumber" name="L384" href="#L384">384</a>         assertEquals(hdr.getStringValue(<span class="jxr_string">"TFORM1"</span>), <span class="jxr_string">"A1"</span>);
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>         assertEquals(hdr.getStringValue(<span class="jxr_string">"TFORM2"</span>), <span class="jxr_string">"A1"</span>);
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>         assertEquals(hdr.getStringValue(<span class="jxr_string">"TFORM3"</span>), <span class="jxr_string">"A1"</span>);
+<a class="jxr_linenumber" name="L387" href="#L387">387</a>         assertEquals(hdr.getStringValue(<span class="jxr_string">"TFORM4"</span>), <span class="jxr_string">"A1"</span>);
+<a class="jxr_linenumber" name="L388" href="#L388">388</a>         assertEquals(hdr.getStringValue(<span class="jxr_string">"TFORM5"</span>), <span class="jxr_string">"A3"</span>);
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>     }
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> 
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> readByColumn() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>         <strong class="jxr_keyword">try</strong> (Fits f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/at1.fits"</span>)) {
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>         	AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+<a class="jxr_linenumber" name="L394" href="#L394">394</a> 	        AsciiTable data = hdu.getData();
+<a class="jxr_linenumber" name="L395" href="#L395">395</a> 	        Object[] cols = getSampleCols();
+<a class="jxr_linenumber" name="L396" href="#L396">396</a> 	
+<a class="jxr_linenumber" name="L397" href="#L397">397</a> 	        assertEquals(<span class="jxr_string">"Number of rows"</span>, data.getNRows(), 50);
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> 	        assertEquals(<span class="jxr_string">"Number of columns"</span>, data.getNCols(), 5);
+<a class="jxr_linenumber" name="L399" href="#L399">399</a> 	
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> 	        <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = 0; j &lt; data.getNCols(); j += 1) {
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> 	            Object col = data.getColumn(j);
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> 	            <strong class="jxr_keyword">if</strong> (j == 4) {
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> 	                String[] st = (String[]) col;
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> 	                <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; st.length; i += 1) {
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> 	                    st[i] = st[i].trim();
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> 	                }
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> 	            }
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> 	            assertEquals(<span class="jxr_string">"Ascii Columns:"</span> + j, <strong class="jxr_keyword">true</strong>, TestArrayFuncs.arrayEquals(cols[j], col, 1.e-6, 1.e-14));
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> 	        }
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>         }
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>     }
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> 
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> readByElement() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L414" href="#L414">414</a> 
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; data.getNRows(); i += 1) {
-<a class="jxr_linenumber" name="L416" href="#L416">416</a>             Object[] row = data.getRow(i);
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = 0; j &lt; data.getNCols(); j += 1) {
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>                 Object val = data.getElement(i, j);
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>                 assertEquals(<span class="jxr_string">"Ascii readElement"</span>, <strong class="jxr_keyword">true</strong>, TestArrayFuncs.arrayEquals(val, row[j]));
-<a class="jxr_linenumber" name="L420" href="#L420">420</a>             }
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>         }
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>     }
-<a class="jxr_linenumber" name="L423" href="#L423">423</a> 
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> readByRow() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L425" href="#L425">425</a> 
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>         Fits f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/at1.fits"</span>);
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>         Object[] cols = getSampleCols();
-<a class="jxr_linenumber" name="L428" href="#L428">428</a> 
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>         AsciiTable data = (AsciiTable) hdu.getData();
-<a class="jxr_linenumber" name="L431" href="#L431">431</a> 
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; data.getNRows(); i += 1) {
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>             assertEquals(<span class="jxr_string">"Rows:"</span> + i, 50, data.getNRows());
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>             Object[] row = data.getRow(i);
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>             assertEquals(<span class="jxr_string">"Ascii Rows: float"</span> + i, 1.F, ((<strong class="jxr_keyword">float</strong>[]) cols[0])[i] / ((<strong class="jxr_keyword">float</strong>[]) row[0])[0], 1.e-6);
-<a class="jxr_linenumber" name="L436" href="#L436">436</a>             assertEquals(<span class="jxr_string">"Ascii Rows: int"</span> + i, ((<strong class="jxr_keyword">int</strong>[]) cols[1])[i], ((<strong class="jxr_keyword">int</strong>[]) row[1])[0]);
-<a class="jxr_linenumber" name="L437" href="#L437">437</a>             assertEquals(<span class="jxr_string">"Ascii Rows: long"</span> + i, ((<strong class="jxr_keyword">long</strong>[]) cols[2])[i], ((<strong class="jxr_keyword">long</strong>[]) row[2])[0]);
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>             assertEquals(<span class="jxr_string">"Ascii Rows: double"</span> + i, 1., ((<strong class="jxr_keyword">double</strong>[]) cols[3])[i] / ((<strong class="jxr_keyword">double</strong>[]) row[3])[0], 1.e-14);
-<a class="jxr_linenumber" name="L439" href="#L439">439</a>             String[] st = (String[]) row[4];
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>             st[0] = st[0].trim();
-<a class="jxr_linenumber" name="L441" href="#L441">441</a>             assertEquals(<span class="jxr_string">"Ascii Rows: Str"</span> + i, ((String[]) cols[4])[i], ((String[]) row[4])[0]);
-<a class="jxr_linenumber" name="L442" href="#L442">442</a>         }
-<a class="jxr_linenumber" name="L443" href="#L443">443</a>     }
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> 
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>     @Before
-<a class="jxr_linenumber" name="L446" href="#L446">446</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setup() {
-<a class="jxr_linenumber" name="L447" href="#L447">447</a>         FitsFactory.setUseAsciiTables(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>     }
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> 
-<a class="jxr_linenumber" name="L450" href="#L450">450</a>     @Test
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> test() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>         createByColumn();
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>         createByRow();
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>         readByRow();
-<a class="jxr_linenumber" name="L455" href="#L455">455</a>         readByColumn();
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>         readByElement();
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>         modifyTable();
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>         delete();
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>     }
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> 
-<a class="jxr_linenumber" name="L461" href="#L461">461</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeFile(Fits f, String name) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L462" href="#L462">462</a>         BufferedFile bf = <strong class="jxr_keyword">new</strong> BufferedFile(name, <span class="jxr_string">"rw"</span>);
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>         f.write(bf);
-<a class="jxr_linenumber" name="L464" href="#L464">464</a>         bf.flush();
-<a class="jxr_linenumber" name="L465" href="#L465">465</a>         bf.close();
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>     }
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> 
-<a class="jxr_linenumber" name="L468" href="#L468">468</a>     @Test
-<a class="jxr_linenumber" name="L469" href="#L469">469</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testBadCases() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L470" href="#L470">470</a>         <em class="jxr_comment">// Create a table row by row .</em>
-<a class="jxr_linenumber" name="L471" href="#L471">471</a>         Fits f = <strong class="jxr_keyword">new</strong> Fits();
-<a class="jxr_linenumber" name="L472" href="#L472">472</a>         AsciiTable data = <strong class="jxr_keyword">new</strong> AsciiTable();
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>         Object[] row = <strong class="jxr_keyword">new</strong> Object[4];
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> 
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 50; i += 1) {
-<a class="jxr_linenumber" name="L476" href="#L476">476</a>             data.addRow(getRow(i));
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>         }
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>         Fits f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/at2.fits"</span>);
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>         AsciiTable data = hdu.getData();
+<a class="jxr_linenumber" name="L418" href="#L418">418</a> 
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; data.getNRows(); i += 1) {
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>             Object[] row = data.getRow(i);
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = 0; j &lt; data.getNCols(); j += 1) {
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>                 Object val = data.getElement(i, j);
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>                 assertEquals(<span class="jxr_string">"Ascii readElement"</span>, <strong class="jxr_keyword">true</strong>, TestArrayFuncs.arrayEquals(val, row[j]));
+<a class="jxr_linenumber" name="L424" href="#L424">424</a>             }
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>         }
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>     }
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> 
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> readByRow() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> 
+<a class="jxr_linenumber" name="L430" href="#L430">430</a>         Fits f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/at1.fits"</span>);
+<a class="jxr_linenumber" name="L431" href="#L431">431</a>         Object[] cols = getSampleCols();
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> 
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>         AsciiTable data = hdu.getData();
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> 
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; data.getNRows(); i += 1) {
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>             assertEquals(<span class="jxr_string">"Rows:"</span> + i, 50, data.getNRows());
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>             Object[] row = data.getRow(i);
+<a class="jxr_linenumber" name="L439" href="#L439">439</a>             assertEquals(<span class="jxr_string">"Ascii Rows: float"</span> + i, 1.F, ((<strong class="jxr_keyword">float</strong>[]) cols[0])[i] / ((<strong class="jxr_keyword">float</strong>[]) row[0])[0], 1.e-6);
+<a class="jxr_linenumber" name="L440" href="#L440">440</a>             assertEquals(<span class="jxr_string">"Ascii Rows: int"</span> + i, ((<strong class="jxr_keyword">int</strong>[]) cols[1])[i], ((<strong class="jxr_keyword">int</strong>[]) row[1])[0]);
+<a class="jxr_linenumber" name="L441" href="#L441">441</a>             assertEquals(<span class="jxr_string">"Ascii Rows: long"</span> + i, ((<strong class="jxr_keyword">long</strong>[]) cols[2])[i], ((<strong class="jxr_keyword">long</strong>[]) row[2])[0]);
+<a class="jxr_linenumber" name="L442" href="#L442">442</a>             assertEquals(<span class="jxr_string">"Ascii Rows: double"</span> + i, 1., ((<strong class="jxr_keyword">double</strong>[]) cols[3])[i] / ((<strong class="jxr_keyword">double</strong>[]) row[3])[0], 1.e-14);
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>             String[] st = (String[]) row[4];
+<a class="jxr_linenumber" name="L444" href="#L444">444</a>             st[0] = st[0].trim();
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>             assertEquals(<span class="jxr_string">"Ascii Rows: Str"</span> + i, ((String[]) cols[4])[i], ((String[]) row[4])[0]);
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>         }
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>     }
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> 
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>     @Before
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setup() {
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>         FitsFactory.setUseAsciiTables(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L452" href="#L452">452</a>     }
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> 
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>     @Test
+<a class="jxr_linenumber" name="L455" href="#L455">455</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> test() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>         createByColumn();
+<a class="jxr_linenumber" name="L457" href="#L457">457</a>         createByRow();
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>         readByRow();
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>         readByColumn();
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>         readByElement();
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>         modifyTable();
+<a class="jxr_linenumber" name="L462" href="#L462">462</a>         delete();
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>     }
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> 
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeFile(Fits f, String name) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L466" href="#L466">466</a>         BufferedFile bf = <strong class="jxr_keyword">new</strong> BufferedFile(name, <span class="jxr_string">"rw"</span>);
+<a class="jxr_linenumber" name="L467" href="#L467">467</a>         f.write(bf);
+<a class="jxr_linenumber" name="L468" href="#L468">468</a>         bf.flush();
+<a class="jxr_linenumber" name="L469" href="#L469">469</a>         bf.close();
+<a class="jxr_linenumber" name="L470" href="#L470">470</a>     }
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> 
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>     @Test
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testBadCases() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>         <em class="jxr_comment">// Create a table row by row .</em>
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>         Fits f = <strong class="jxr_keyword">new</strong> Fits();
+<a class="jxr_linenumber" name="L476" href="#L476">476</a>         AsciiTable data = <strong class="jxr_keyword">new</strong> AsciiTable();
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>         Object[] row = <strong class="jxr_keyword">new</strong> Object[4];
 <a class="jxr_linenumber" name="L478" href="#L478">478</a> 
-<a class="jxr_linenumber" name="L479" href="#L479">479</a>         f.addHDU(Fits.makeHDU(data));
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> 
-<a class="jxr_linenumber" name="L481" href="#L481">481</a>         Exception actual = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L483" href="#L483">483</a>             data.addRow(<strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>             actual = e;
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>         }
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>         Assert.assertNotNull(actual);
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>         Assert.assertTrue(actual instanceof FitsException);
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>         Assert.assertTrue(actual.getCause() instanceof NullPointerException);
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> 
-<a class="jxr_linenumber" name="L491" href="#L491">491</a>         setFieldNull(data, <span class="jxr_string">"data"</span>);
-<a class="jxr_linenumber" name="L492" href="#L492">492</a>         actual = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>             data.deleteRows(1, 1);
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>             actual = e;
-<a class="jxr_linenumber" name="L497" href="#L497">497</a>         }
-<a class="jxr_linenumber" name="L498" href="#L498">498</a>         Assert.assertNotNull(actual);
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>         Assert.assertTrue(actual instanceof FitsException);
-<a class="jxr_linenumber" name="L500" href="#L500">500</a>         Assert.assertTrue(actual.getCause() instanceof IOException);
-<a class="jxr_linenumber" name="L501" href="#L501">501</a> 
-<a class="jxr_linenumber" name="L502" href="#L502">502</a>         setFieldNull(data, <span class="jxr_string">"types"</span>);
-<a class="jxr_linenumber" name="L503" href="#L503">503</a>         actual = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>         <em class="jxr_comment">// nothing should happen.</em>
-<a class="jxr_linenumber" name="L505" href="#L505">505</a>         data.deleteRows(1, -1);
-<a class="jxr_linenumber" name="L506" href="#L506">506</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L507" href="#L507">507</a>             data.deleteRows(1, 1);
-<a class="jxr_linenumber" name="L508" href="#L508">508</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L509" href="#L509">509</a>             actual = e;
-<a class="jxr_linenumber" name="L510" href="#L510">510</a>         }
-<a class="jxr_linenumber" name="L511" href="#L511">511</a>         Assert.assertNotNull(actual);
-<a class="jxr_linenumber" name="L512" href="#L512">512</a>         Assert.assertTrue(actual instanceof FitsException);
-<a class="jxr_linenumber" name="L513" href="#L513">513</a>         Assert.assertTrue(actual.getCause() instanceof NullPointerException);
-<a class="jxr_linenumber" name="L514" href="#L514">514</a> 
-<a class="jxr_linenumber" name="L515" href="#L515">515</a>         actual = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L516" href="#L516">516</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L517" href="#L517">517</a>             data.addRow(<strong class="jxr_keyword">new</strong> Object[5]);
-<a class="jxr_linenumber" name="L518" href="#L518">518</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L519" href="#L519">519</a>             actual = e;
-<a class="jxr_linenumber" name="L520" href="#L520">520</a>         }
-<a class="jxr_linenumber" name="L521" href="#L521">521</a>         Assert.assertNotNull(actual);
-<a class="jxr_linenumber" name="L522" href="#L522">522</a>         Assert.assertTrue(actual instanceof FitsException);
-<a class="jxr_linenumber" name="L523" href="#L523">523</a>         Assert.assertTrue(actual.getCause() instanceof NullPointerException);
-<a class="jxr_linenumber" name="L524" href="#L524">524</a> 
-<a class="jxr_linenumber" name="L525" href="#L525">525</a>         <strong class="jxr_keyword">final</strong> List&lt;LogRecord&gt; logs = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L526" href="#L526">526</a>         Logger.getLogger(AsciiTable.<strong class="jxr_keyword">class</strong>.getName()).addHandler(<strong class="jxr_keyword">new</strong> Handler() {
-<a class="jxr_linenumber" name="L527" href="#L527">527</a> 
-<a class="jxr_linenumber" name="L528" href="#L528">528</a>             @Override
-<a class="jxr_linenumber" name="L529" href="#L529">529</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> publish(LogRecord record) {
-<a class="jxr_linenumber" name="L530" href="#L530">530</a>                 logs.add(record);
-<a class="jxr_linenumber" name="L531" href="#L531">531</a>             }
-<a class="jxr_linenumber" name="L532" href="#L532">532</a> 
-<a class="jxr_linenumber" name="L533" href="#L533">533</a>             @Override
-<a class="jxr_linenumber" name="L534" href="#L534">534</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> flush() {
+<a class="jxr_linenumber" name="L479" href="#L479">479</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 50; i += 1) {
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>             data.addRow(getRow(i));
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>         }
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> 
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>         f.addHDU(Fits.makeHDU(data));
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> 
+<a class="jxr_linenumber" name="L485" href="#L485">485</a>         Exception actual = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L486" href="#L486">486</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>             data.addRow(<strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L488" href="#L488">488</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>             actual = e;
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>         }
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>         Assert.assertNotNull(actual);
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>         Assert.assertTrue(actual instanceof FitsException);
+<a class="jxr_linenumber" name="L493" href="#L493">493</a>         Assert.assertTrue(actual.getCause() instanceof NullPointerException);
+<a class="jxr_linenumber" name="L494" href="#L494">494</a> 
+<a class="jxr_linenumber" name="L495" href="#L495">495</a>         setFieldNull(data, <span class="jxr_string">"data"</span>);
+<a class="jxr_linenumber" name="L496" href="#L496">496</a>         actual = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L497" href="#L497">497</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L498" href="#L498">498</a>             data.deleteRows(1, 1);
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L500" href="#L500">500</a>             actual = e;
+<a class="jxr_linenumber" name="L501" href="#L501">501</a>         }
+<a class="jxr_linenumber" name="L502" href="#L502">502</a>         Assert.assertNotNull(actual);
+<a class="jxr_linenumber" name="L503" href="#L503">503</a>         Assert.assertTrue(actual instanceof FitsException);
+<a class="jxr_linenumber" name="L504" href="#L504">504</a>         Assert.assertTrue(actual.getCause() instanceof IOException);
+<a class="jxr_linenumber" name="L505" href="#L505">505</a> 
+<a class="jxr_linenumber" name="L506" href="#L506">506</a>         setFieldNull(data, <span class="jxr_string">"types"</span>);
+<a class="jxr_linenumber" name="L507" href="#L507">507</a>         actual = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>         <em class="jxr_comment">// nothing should happen.</em>
+<a class="jxr_linenumber" name="L509" href="#L509">509</a>         data.deleteRows(1, -1);
+<a class="jxr_linenumber" name="L510" href="#L510">510</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L511" href="#L511">511</a>             data.deleteRows(1, 1);
+<a class="jxr_linenumber" name="L512" href="#L512">512</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L513" href="#L513">513</a>             actual = e;
+<a class="jxr_linenumber" name="L514" href="#L514">514</a>         }
+<a class="jxr_linenumber" name="L515" href="#L515">515</a>         Assert.assertNotNull(actual);
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>         Assert.assertTrue(actual instanceof FitsException);
+<a class="jxr_linenumber" name="L517" href="#L517">517</a>         Assert.assertTrue(actual.getCause() instanceof NullPointerException);
+<a class="jxr_linenumber" name="L518" href="#L518">518</a> 
+<a class="jxr_linenumber" name="L519" href="#L519">519</a>         actual = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L520" href="#L520">520</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L521" href="#L521">521</a>             data.addRow(<strong class="jxr_keyword">new</strong> Object[5]);
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L523" href="#L523">523</a>             actual = e;
+<a class="jxr_linenumber" name="L524" href="#L524">524</a>         }
+<a class="jxr_linenumber" name="L525" href="#L525">525</a>         Assert.assertNotNull(actual);
+<a class="jxr_linenumber" name="L526" href="#L526">526</a>         Assert.assertTrue(actual instanceof FitsException);
+<a class="jxr_linenumber" name="L527" href="#L527">527</a>         Assert.assertTrue(actual.getCause() instanceof NullPointerException);
+<a class="jxr_linenumber" name="L528" href="#L528">528</a> 
+<a class="jxr_linenumber" name="L529" href="#L529">529</a>         <strong class="jxr_keyword">final</strong> List&lt;LogRecord&gt; logs = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L530" href="#L530">530</a>         Logger.getLogger(AsciiTable.<strong class="jxr_keyword">class</strong>.getName()).addHandler(<strong class="jxr_keyword">new</strong> Handler() {
+<a class="jxr_linenumber" name="L531" href="#L531">531</a> 
+<a class="jxr_linenumber" name="L532" href="#L532">532</a>             @Override
+<a class="jxr_linenumber" name="L533" href="#L533">533</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> publish(LogRecord record) {
+<a class="jxr_linenumber" name="L534" href="#L534">534</a>                 logs.add(record);
 <a class="jxr_linenumber" name="L535" href="#L535">535</a>             }
 <a class="jxr_linenumber" name="L536" href="#L536">536</a> 
 <a class="jxr_linenumber" name="L537" href="#L537">537</a>             @Override
-<a class="jxr_linenumber" name="L538" href="#L538">538</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() <strong class="jxr_keyword">throws</strong> SecurityException {
+<a class="jxr_linenumber" name="L538" href="#L538">538</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> flush() {
 <a class="jxr_linenumber" name="L539" href="#L539">539</a>             }
-<a class="jxr_linenumber" name="L540" href="#L540">540</a>         });
-<a class="jxr_linenumber" name="L541" href="#L541">541</a>         data.fillHeader(<strong class="jxr_keyword">new</strong> Header() {
-<a class="jxr_linenumber" name="L542" href="#L542">542</a> 
-<a class="jxr_linenumber" name="L543" href="#L543">543</a>             @Override
-<a class="jxr_linenumber" name="L544" href="#L544">544</a>             <strong class="jxr_keyword">public</strong> Cursor&lt;String, HeaderCard&gt; iterator() {
-<a class="jxr_linenumber" name="L545" href="#L545">545</a>                 AsciiTableTest.&lt;RuntimeException&gt; throwAny(<strong class="jxr_keyword">new</strong> HeaderCardException(<span class="jxr_string">"all is broken"</span>));
-<a class="jxr_linenumber" name="L546" href="#L546">546</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L547" href="#L547">547</a>             }
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>         });
-<a class="jxr_linenumber" name="L549" href="#L549">549</a>         Assert.assertEquals(1, logs.size());
-<a class="jxr_linenumber" name="L550" href="#L550">550</a>         Assert.assertEquals(<span class="jxr_string">"all is broken"</span>, logs.get(0).getThrown().getMessage());
-<a class="jxr_linenumber" name="L551" href="#L551">551</a>     }
-<a class="jxr_linenumber" name="L552" href="#L552">552</a> 
-<a class="jxr_linenumber" name="L553" href="#L553">553</a>     @Test
-<a class="jxr_linenumber" name="L554" href="#L554">554</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testBadCases2() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L555" href="#L555">555</a>         <em class="jxr_comment">// Create a table row by row .</em>
-<a class="jxr_linenumber" name="L556" href="#L556">556</a>         Fits f = <strong class="jxr_keyword">new</strong> Fits();
-<a class="jxr_linenumber" name="L557" href="#L557">557</a>         AsciiTable data = <strong class="jxr_keyword">new</strong> AsciiTable();
-<a class="jxr_linenumber" name="L558" href="#L558">558</a>         Object[] row = <strong class="jxr_keyword">new</strong> Object[4];
-<a class="jxr_linenumber" name="L559" href="#L559">559</a> 
-<a class="jxr_linenumber" name="L560" href="#L560">560</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 50; i += 1) {
-<a class="jxr_linenumber" name="L561" href="#L561">561</a>             data.addRow(getRow(i));
-<a class="jxr_linenumber" name="L562" href="#L562">562</a>         }
+<a class="jxr_linenumber" name="L540" href="#L540">540</a> 
+<a class="jxr_linenumber" name="L541" href="#L541">541</a>             @Override
+<a class="jxr_linenumber" name="L542" href="#L542">542</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() <strong class="jxr_keyword">throws</strong> SecurityException {
+<a class="jxr_linenumber" name="L543" href="#L543">543</a>             }
+<a class="jxr_linenumber" name="L544" href="#L544">544</a>         });
+<a class="jxr_linenumber" name="L545" href="#L545">545</a>         data.fillHeader(<strong class="jxr_keyword">new</strong> Header() {
+<a class="jxr_linenumber" name="L546" href="#L546">546</a> 
+<a class="jxr_linenumber" name="L547" href="#L547">547</a>             @Override
+<a class="jxr_linenumber" name="L548" href="#L548">548</a>             <strong class="jxr_keyword">public</strong> Cursor&lt;String, HeaderCard&gt; iterator() {
+<a class="jxr_linenumber" name="L549" href="#L549">549</a>                 AsciiTableTest.&lt;RuntimeException&gt; throwAny(<strong class="jxr_keyword">new</strong> HeaderCardException(<span class="jxr_string">"all is broken"</span>));
+<a class="jxr_linenumber" name="L550" href="#L550">550</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L551" href="#L551">551</a>             }
+<a class="jxr_linenumber" name="L552" href="#L552">552</a>         });
+<a class="jxr_linenumber" name="L553" href="#L553">553</a>         Assert.assertEquals(1, logs.size());
+<a class="jxr_linenumber" name="L554" href="#L554">554</a>         Assert.assertEquals(<span class="jxr_string">"all is broken"</span>, logs.get(0).getThrown().getMessage());
+<a class="jxr_linenumber" name="L555" href="#L555">555</a>     }
+<a class="jxr_linenumber" name="L556" href="#L556">556</a> 
+<a class="jxr_linenumber" name="L557" href="#L557">557</a>     @Test
+<a class="jxr_linenumber" name="L558" href="#L558">558</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testBadCases2() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L559" href="#L559">559</a>         <em class="jxr_comment">// Create a table row by row .</em>
+<a class="jxr_linenumber" name="L560" href="#L560">560</a>         Fits f = <strong class="jxr_keyword">new</strong> Fits();
+<a class="jxr_linenumber" name="L561" href="#L561">561</a>         AsciiTable data = <strong class="jxr_keyword">new</strong> AsciiTable();
+<a class="jxr_linenumber" name="L562" href="#L562">562</a>         Object[] row = <strong class="jxr_keyword">new</strong> Object[4];
 <a class="jxr_linenumber" name="L563" href="#L563">563</a> 
-<a class="jxr_linenumber" name="L564" href="#L564">564</a>         f.addHDU(Fits.makeHDU(data));
-<a class="jxr_linenumber" name="L565" href="#L565">565</a> 
-<a class="jxr_linenumber" name="L566" href="#L566">566</a>         Exception actual = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L567" href="#L567">567</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L568" href="#L568">568</a>             data.addColumn(<strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L569" href="#L569">569</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L570" href="#L570">570</a>             actual = e;
-<a class="jxr_linenumber" name="L571" href="#L571">571</a>         }
-<a class="jxr_linenumber" name="L572" href="#L572">572</a>         Assert.assertNotNull(actual);
-<a class="jxr_linenumber" name="L573" href="#L573">573</a>         Assert.assertTrue(actual instanceof FitsException);
-<a class="jxr_linenumber" name="L574" href="#L574">574</a> 
-<a class="jxr_linenumber" name="L575" href="#L575">575</a>         actual = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L576" href="#L576">576</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L577" href="#L577">577</a>             data.addColumn(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[10], 99);
-<a class="jxr_linenumber" name="L578" href="#L578">578</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L579" href="#L579">579</a>             actual = e;
-<a class="jxr_linenumber" name="L580" href="#L580">580</a>         }
-<a class="jxr_linenumber" name="L581" href="#L581">581</a>         Assert.assertNotNull(actual);
-<a class="jxr_linenumber" name="L582" href="#L582">582</a>         Assert.assertTrue(actual instanceof FitsException);
-<a class="jxr_linenumber" name="L583" href="#L583">583</a> 
-<a class="jxr_linenumber" name="L584" href="#L584">584</a>     }
-<a class="jxr_linenumber" name="L585" href="#L585">585</a> 
-<a class="jxr_linenumber" name="L586" href="#L586">586</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> &lt;E <strong class="jxr_keyword">extends</strong> Throwable&gt; <strong class="jxr_keyword">void</strong> throwAny(Throwable e) <strong class="jxr_keyword">throws</strong> E {
-<a class="jxr_linenumber" name="L587" href="#L587">587</a>         <strong class="jxr_keyword">throw</strong> (E) e;
+<a class="jxr_linenumber" name="L564" href="#L564">564</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 50; i += 1) {
+<a class="jxr_linenumber" name="L565" href="#L565">565</a>             data.addRow(getRow(i));
+<a class="jxr_linenumber" name="L566" href="#L566">566</a>         }
+<a class="jxr_linenumber" name="L567" href="#L567">567</a> 
+<a class="jxr_linenumber" name="L568" href="#L568">568</a>         f.addHDU(Fits.makeHDU(data));
+<a class="jxr_linenumber" name="L569" href="#L569">569</a> 
+<a class="jxr_linenumber" name="L570" href="#L570">570</a>         Exception actual = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L571" href="#L571">571</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L572" href="#L572">572</a>             data.addColumn(<strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L573" href="#L573">573</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L574" href="#L574">574</a>             actual = e;
+<a class="jxr_linenumber" name="L575" href="#L575">575</a>         }
+<a class="jxr_linenumber" name="L576" href="#L576">576</a>         Assert.assertNotNull(actual);
+<a class="jxr_linenumber" name="L577" href="#L577">577</a>         Assert.assertTrue(actual instanceof FitsException);
+<a class="jxr_linenumber" name="L578" href="#L578">578</a> 
+<a class="jxr_linenumber" name="L579" href="#L579">579</a>         actual = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L580" href="#L580">580</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L581" href="#L581">581</a>             data.addColumn(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[10], 99);
+<a class="jxr_linenumber" name="L582" href="#L582">582</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L583" href="#L583">583</a>             actual = e;
+<a class="jxr_linenumber" name="L584" href="#L584">584</a>         }
+<a class="jxr_linenumber" name="L585" href="#L585">585</a>         Assert.assertNotNull(actual);
+<a class="jxr_linenumber" name="L586" href="#L586">586</a>         Assert.assertTrue(actual instanceof FitsException);
+<a class="jxr_linenumber" name="L587" href="#L587">587</a> 
 <a class="jxr_linenumber" name="L588" href="#L588">588</a>     }
 <a class="jxr_linenumber" name="L589" href="#L589">589</a> 
-<a class="jxr_linenumber" name="L590" href="#L590">590</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> setFieldNull(Object data, String fieldName) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L591" href="#L591">591</a>         Field field = data.getClass().getDeclaredField(fieldName);
-<a class="jxr_linenumber" name="L592" href="#L592">592</a>         field.setAccessible(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L593" href="#L593">593</a>         field.set(data, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L594" href="#L594">594</a>     }
-<a class="jxr_linenumber" name="L595" href="#L595">595</a> 
-<a class="jxr_linenumber" name="L596" href="#L596">596</a>     @Test
-<a class="jxr_linenumber" name="L597" href="#L597">597</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDeleteSpecials() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L598" href="#L598">598</a>         AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
-<a class="jxr_linenumber" name="L599" href="#L599">599</a>         assertEquals(50, hdu.getNRows());
-<a class="jxr_linenumber" name="L600" href="#L600">600</a>         hdu.deleteRows(-1, 1);
-<a class="jxr_linenumber" name="L601" href="#L601">601</a>         assertEquals(50, hdu.getNRows());
-<a class="jxr_linenumber" name="L602" href="#L602">602</a>         hdu.deleteRows(49, 10);
-<a class="jxr_linenumber" name="L603" href="#L603">603</a>         assertEquals(49, hdu.getNRows());
-<a class="jxr_linenumber" name="L604" href="#L604">604</a>     }
-<a class="jxr_linenumber" name="L605" href="#L605">605</a> 
-<a class="jxr_linenumber" name="L606" href="#L606">606</a>     @Test
-<a class="jxr_linenumber" name="L607" href="#L607">607</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSpecials() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L608" href="#L608">608</a>         AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
-<a class="jxr_linenumber" name="L609" href="#L609">609</a>         assertEquals(<span class="jxr_string">"I10"</span>, hdu.getColumnFormat(1));
-<a class="jxr_linenumber" name="L610" href="#L610">610</a>         assertEquals(<span class="jxr_string">"I10"</span>, hdu.getColumnMeta(1, <span class="jxr_string">"TFORM"</span>));
-<a class="jxr_linenumber" name="L611" href="#L611">611</a>         Assert.assertNull(hdu.getColumnName(1));
-<a class="jxr_linenumber" name="L612" href="#L612">612</a> 
-<a class="jxr_linenumber" name="L613" href="#L613">613</a>         hdu.setColumnMeta(1, <span class="jxr_string">"TTYPE"</span>, <span class="jxr_string">"TATA"</span>, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L614" href="#L614">614</a>         assertEquals(<span class="jxr_string">"TATA"</span>, hdu.getColumnName(1));
-<a class="jxr_linenumber" name="L615" href="#L615">615</a>         Object colValue = hdu.getColumn(<span class="jxr_string">"TATA"</span>);
-<a class="jxr_linenumber" name="L616" href="#L616">616</a>         Assert.assertNotNull(colValue);
-<a class="jxr_linenumber" name="L617" href="#L617">617</a>         <strong class="jxr_keyword">int</strong>[] copy = (<strong class="jxr_keyword">int</strong>[]) ArrayFuncs.genericClone(colValue);
-<a class="jxr_linenumber" name="L618" href="#L618">618</a>         copy[0] = 3333;
-<a class="jxr_linenumber" name="L619" href="#L619">619</a>         hdu.setColumn(<span class="jxr_string">"TATA"</span>, copy);
-<a class="jxr_linenumber" name="L620" href="#L620">620</a>         assertEquals(3333, ((<strong class="jxr_keyword">int</strong>[]) hdu.getColumn(<span class="jxr_string">"TATA"</span>))[0]);
-<a class="jxr_linenumber" name="L621" href="#L621">621</a> 
-<a class="jxr_linenumber" name="L622" href="#L622">622</a>         Assert.assertNull(hdu.getHeader().getStringValue(<span class="jxr_string">"TNULL2"</span>));
-<a class="jxr_linenumber" name="L623" href="#L623">623</a>         hdu.setNull(1, 1, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L624" href="#L624">624</a>         assertEquals(<span class="jxr_string">"NULL"</span>, hdu.getHeader().getStringValue(<span class="jxr_string">"TNULL2"</span>));
-<a class="jxr_linenumber" name="L625" href="#L625">625</a>         Assert.assertTrue(hdu.isNull(1, 1));
-<a class="jxr_linenumber" name="L626" href="#L626">626</a> 
-<a class="jxr_linenumber" name="L627" href="#L627">627</a>     }
-<a class="jxr_linenumber" name="L628" href="#L628">628</a> }
+<a class="jxr_linenumber" name="L590" href="#L590">590</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> &lt;E <strong class="jxr_keyword">extends</strong> Throwable&gt; <strong class="jxr_keyword">void</strong> throwAny(Throwable e) <strong class="jxr_keyword">throws</strong> E {
+<a class="jxr_linenumber" name="L591" href="#L591">591</a>         <strong class="jxr_keyword">throw</strong> (E) e;
+<a class="jxr_linenumber" name="L592" href="#L592">592</a>     }
+<a class="jxr_linenumber" name="L593" href="#L593">593</a> 
+<a class="jxr_linenumber" name="L594" href="#L594">594</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> setFieldNull(Object data, String fieldName) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L595" href="#L595">595</a>         Field field = data.getClass().getDeclaredField(fieldName);
+<a class="jxr_linenumber" name="L596" href="#L596">596</a>         field.setAccessible(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L597" href="#L597">597</a>         field.set(data, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L598" href="#L598">598</a>     }
+<a class="jxr_linenumber" name="L599" href="#L599">599</a> 
+<a class="jxr_linenumber" name="L600" href="#L600">600</a>     @Test
+<a class="jxr_linenumber" name="L601" href="#L601">601</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDeleteSpecials() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L602" href="#L602">602</a>         AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
+<a class="jxr_linenumber" name="L603" href="#L603">603</a>         assertEquals(50, hdu.getNRows());
+<a class="jxr_linenumber" name="L604" href="#L604">604</a>         hdu.deleteRows(-1, 1);
+<a class="jxr_linenumber" name="L605" href="#L605">605</a>         assertEquals(50, hdu.getNRows());
+<a class="jxr_linenumber" name="L606" href="#L606">606</a>         hdu.deleteRows(49, 10);
+<a class="jxr_linenumber" name="L607" href="#L607">607</a>         assertEquals(49, hdu.getNRows());
+<a class="jxr_linenumber" name="L608" href="#L608">608</a>     }
+<a class="jxr_linenumber" name="L609" href="#L609">609</a> 
+<a class="jxr_linenumber" name="L610" href="#L610">610</a>     @Test
+<a class="jxr_linenumber" name="L611" href="#L611">611</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSpecials() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L612" href="#L612">612</a>         AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
+<a class="jxr_linenumber" name="L613" href="#L613">613</a>         assertEquals(<span class="jxr_string">"I10"</span>, hdu.getColumnFormat(1));
+<a class="jxr_linenumber" name="L614" href="#L614">614</a>         assertEquals(<span class="jxr_string">"I10"</span>, hdu.getColumnMeta(1, <span class="jxr_string">"TFORM"</span>));
+<a class="jxr_linenumber" name="L615" href="#L615">615</a>         Assert.assertNull(hdu.getColumnName(1));
+<a class="jxr_linenumber" name="L616" href="#L616">616</a> 
+<a class="jxr_linenumber" name="L617" href="#L617">617</a>         hdu.setColumnMeta(1, <span class="jxr_string">"TTYPE"</span>, <span class="jxr_string">"TATA"</span>, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L618" href="#L618">618</a>         assertEquals(<span class="jxr_string">"TATA"</span>, hdu.getColumnName(1));
+<a class="jxr_linenumber" name="L619" href="#L619">619</a>         Object colValue = hdu.getColumn(<span class="jxr_string">"TATA"</span>);
+<a class="jxr_linenumber" name="L620" href="#L620">620</a>         Assert.assertNotNull(colValue);
+<a class="jxr_linenumber" name="L621" href="#L621">621</a>         <strong class="jxr_keyword">int</strong>[] copy = (<strong class="jxr_keyword">int</strong>[]) ArrayFuncs.genericClone(colValue);
+<a class="jxr_linenumber" name="L622" href="#L622">622</a>         copy[0] = 3333;
+<a class="jxr_linenumber" name="L623" href="#L623">623</a>         hdu.setColumn(<span class="jxr_string">"TATA"</span>, copy);
+<a class="jxr_linenumber" name="L624" href="#L624">624</a>         assertEquals(3333, ((<strong class="jxr_keyword">int</strong>[]) hdu.getColumn(<span class="jxr_string">"TATA"</span>))[0]);
+<a class="jxr_linenumber" name="L625" href="#L625">625</a> 
+<a class="jxr_linenumber" name="L626" href="#L626">626</a>         Assert.assertNull(hdu.getHeader().getStringValue(<span class="jxr_string">"TNULL2"</span>));
+<a class="jxr_linenumber" name="L627" href="#L627">627</a>         hdu.setNull(1, 1, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L628" href="#L628">628</a>         assertEquals(<span class="jxr_string">"NULL"</span>, hdu.getHeader().getStringValue(<span class="jxr_string">"TNULL2"</span>));
+<a class="jxr_linenumber" name="L629" href="#L629">629</a>         Assert.assertTrue(hdu.isNull(1, 1));
+<a class="jxr_linenumber" name="L630" href="#L630">630</a> 
+<a class="jxr_linenumber" name="L631" href="#L631">631</a>     }
+<a class="jxr_linenumber" name="L632" href="#L632">632</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>

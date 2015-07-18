@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HeaderCardBuilder.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">HeaderCardBuilder.java</span></div><h1>HeaderCardBuilder.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.util.Date;
+
+import nom.tam.fits.header.IFitsHeader;
+
+/**
+ * builder pattern implementation for easy readable header card creation.
+ * 
+ * @author nir
+ */
+public class HeaderCardBuilder {
+
+    /**
+     * the header to fill.
+     */
+    private final Header header;
+
+    /**
+     * the current card to fill.
+     */
+    private HeaderCard card;
+
+    /**
+     * the current selected key.
+     */
+    private IFitsHeader key;
+
+    /**
+     * constructor to the header card builder.
+     * 
+     * @param header
+     *            the header to fill.
+     * @param key
+     *            the first header card to set.
+     */
+<span class="fc" id="L68">    protected HeaderCardBuilder(Header header, IFitsHeader key) {</span>
+<span class="fc" id="L69">        this.header = header;</span>
+<span class="fc" id="L70">        card(key);</span>
+<span class="fc" id="L71">    }</span>
+
+    /**
+     * switch focus to the card with the specified key. If the card does not
+     * exist the card will be created when the value or the comment is set.
+     * 
+     * @param newKey
+     *            the new card to set
+     * @return this
+     */
+    public HeaderCardBuilder card(IFitsHeader newKey) {
+<span class="fc" id="L82">        this.key = newKey;</span>
+<span class="fc" id="L83">        this.card = header.findCard(this.key);</span>
+<span class="fc" id="L84">        return this;</span>
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(String newValue) throws HeaderCardException {
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L99">            this.card = new HeaderCard(key.key(), newValue, null);</span>
+<span class="fc" id="L100">            header.addLine(this.card);</span>
+        } else {
+<span class="fc" id="L102">            this.card.setValue(newValue);</span>
+        }
+<span class="fc" id="L104">        return this;</span>
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(double newValue) throws HeaderCardException {
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">        if (this.card == null) {</span>
+<span class="nc" id="L119">            this.card = new HeaderCard(key.key(), newValue, null);</span>
+<span class="nc" id="L120">            header.addLine(this.card);</span>
+        } else {
+<span class="fc" id="L122">            this.card.setValue(newValue);</span>
+        }
+<span class="fc" id="L124">        return this;</span>
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(float newValue) throws HeaderCardException {
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L139">            this.card = new HeaderCard(key.key(), newValue, null);</span>
+<span class="fc" id="L140">            header.addLine(this.card);</span>
+        } else {
+<span class="fc" id="L142">            this.card.setValue(newValue);</span>
+        }
+<span class="fc" id="L144">        return this;</span>
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(boolean newValue) throws HeaderCardException {
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L159">            this.card = new HeaderCard(key.key(), newValue, null);</span>
+<span class="fc" id="L160">            header.addLine(this.card);</span>
+        } else {
+<span class="fc" id="L162">            this.card.setValue(newValue);</span>
+        }
+<span class="fc" id="L164">        return this;</span>
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(int newValue) throws HeaderCardException {
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L179">            this.card = new HeaderCard(key.key(), newValue, null);</span>
+<span class="fc" id="L180">            header.addLine(this.card);</span>
+        } else {
+<span class="fc" id="L182">            this.card.setValue(newValue);</span>
+        }
+<span class="fc" id="L184">        return this;</span>
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(long newValue) throws HeaderCardException {
+<span class="nc bnc" id="L198" title="All 2 branches missed.">        if (this.card == null) {</span>
+<span class="nc" id="L199">            this.card = new HeaderCard(key.key(), newValue, null);</span>
+<span class="nc" id="L200">            header.addLine(this.card);</span>
+        } else {
+<span class="nc" id="L202">            this.card.setValue(newValue);</span>
+        }
+<span class="nc" id="L204">        return this;</span>
+    }
+
+    /**
+     * set the value of the current card. If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(Date newValue) throws HeaderCardException {
+<span class="fc" id="L218">        return value(FitsDate.getFitsDateString(newValue));</span>
+    }
+
+    /**
+     * set the comment of the current card. If the card does not exist yet the
+     * card is created with a null value, if the card needs a value use the
+     * value setter first!
+     * 
+     * @param newComment
+     *            the new comment to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder comment(String newComment) throws HeaderCardException {
+<span class="fc bfc" id="L233" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L234">            this.card = new HeaderCard(key.key(), (String) null, null);</span>
+<span class="fc" id="L235">            header.addLine(this.card);</span>
+        }
+<span class="fc" id="L237">        card.setComment(newComment);</span>
+<span class="fc" id="L238">        return this;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

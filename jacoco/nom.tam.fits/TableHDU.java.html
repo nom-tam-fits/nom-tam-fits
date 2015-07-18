@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TableHDU.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">TableHDU.java</span></div><h1>TableHDU.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
 
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.TFIELDS;
+import static nom.tam.fits.header.Standard.TFORMn;
+import static nom.tam.fits.header.Standard.TTYPEn;
+import nom.tam.fits.header.GenericKey;
+import nom.tam.fits.header.IFitsHeader;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -41,12 +48,14 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      * Create the TableHDU. Note that this will normally only be invoked by
      * subclasses in the FITS package.
      * 
+     * @param hdr
+     *            the header
      * @param td
      *            The data for the table.
      */
-<span class="fc" id="L47">    protected TableHDU(T td) {</span>
-<span class="fc" id="L48">        this.myData = td;</span>
-<span class="fc" id="L49">    }</span>
+    protected TableHDU(Header hdr, T td) {
+<span class="fc" id="L57">        super(hdr, td);</span>
+<span class="fc" id="L58">    }</span>
 
     /**
      * Add a column to the table.
@@ -70,10 +79,9 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public int addRow(Object[] newRow) throws FitsException {
-
-<span class="fc" id="L74">        int row = this.myData.addRow(newRow);</span>
-<span class="fc" id="L75">        this.myHeader.addValue(&quot;NAXIS2&quot;, row, &quot;ntf::tablehdu:naxis2:1&quot;);</span>
-<span class="fc" id="L76">        return row;</span>
+<span class="fc" id="L82">        int row = this.myData.addRow(newRow);</span>
+<span class="fc" id="L83">        this.myHeader.addValue(NAXISn.n(2), row);</span>
+<span class="fc" id="L84">        return row;</span>
     }
 
     /**
@@ -81,7 +89,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *         Users can supplement this with their own and call the appropriate
      *         deleteColumns fields.
      */
-    protected abstract String[] columnKeyStems();
+    protected abstract IFitsHeader[] columnKeyStems();
 
     /**
      * Delete a set of columns from a table.
@@ -94,8 +102,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public void deleteColumnsIndexOne(int column, int len) throws FitsException {
-<span class="fc" id="L97">        deleteColumnsIndexZero(column - 1, len);</span>
-<span class="fc" id="L98">    }</span>
+<span class="fc" id="L105">        deleteColumnsIndexZero(column - 1, len);</span>
+<span class="fc" id="L106">    }</span>
 
     /**
      * Delete a set of columns from a table.
@@ -110,8 +118,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public void deleteColumnsIndexOne(int column, int len, String[] fields) throws FitsException {
-<span class="nc" id="L113">        deleteColumnsIndexZero(column - 1, len, fields);</span>
-<span class="nc" id="L114">    }</span>
+<span class="nc" id="L121">        deleteColumnsIndexZero(column - 1, len, GenericKey.create(fields));</span>
+<span class="nc" id="L122">    }</span>
 
     /**
      * Delete a set of columns from a table.
@@ -124,8 +132,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public void deleteColumnsIndexZero(int column, int len) throws FitsException {
-<span class="fc" id="L127">        deleteColumnsIndexZero(column, len, columnKeyStems());</span>
-<span class="fc" id="L128">    }</span>
+<span class="fc" id="L135">        deleteColumnsIndexZero(column, len, columnKeyStems());</span>
+<span class="fc" id="L136">    }</span>
 
     /**
      * Delete a set of columns from a table.
@@ -139,43 +147,42 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      * @throws FitsException
      *             if the operation failed
      */
-    public void deleteColumnsIndexZero(int column, int len, String[] fields) throws FitsException {
+    public void deleteColumnsIndexZero(int column, int len, IFitsHeader[] fields) throws FitsException {
 
-<span class="pc bpc" id="L144" title="3 of 6 branches missed.">        if (column &lt; 0 || len &lt; 0 || column + len &gt; getNCols()) {</span>
-<span class="nc" id="L145">            throw new FitsException(&quot;Illegal columns deletion request- Start:&quot; + column + &quot; Len:&quot; + len + &quot; from table with &quot; + getNCols() + &quot; columns&quot;);</span>
+<span class="pc bpc" id="L152" title="3 of 6 branches missed.">        if (column &lt; 0 || len &lt; 0 || column + len &gt; getNCols()) {</span>
+<span class="nc" id="L153">            throw new FitsException(&quot;Illegal columns deletion request- Start:&quot; + column + &quot; Len:&quot; + len + &quot; from table with &quot; + getNCols() + &quot; columns&quot;);</span>
         }
 
-<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if (len == 0) {</span>
-<span class="nc" id="L149">            return;</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">        if (len == 0) {</span>
+<span class="nc" id="L157">            return;</span>
         }
 
-<span class="fc" id="L152">        int ncol = getNCols();</span>
-<span class="fc" id="L153">        this.myData.deleteColumns(column, len);</span>
+<span class="fc" id="L160">        int ncol = getNCols();</span>
+<span class="fc" id="L161">        this.myData.deleteColumns(column, len);</span>
 
         // Get rid of the keywords for the deleted columns
-<span class="fc bfc" id="L156" title="All 2 branches covered.">        for (int col = column; col &lt; column + len; col += 1) {</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">            for (String field : fields) {</span>
-<span class="fc" id="L158">                String key = field + (col + 1);</span>
-<span class="fc" id="L159">                this.myHeader.deleteKey(key);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        for (int col = column; col &lt; column + len; col += 1) {</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">            for (IFitsHeader field : fields) {</span>
+<span class="fc" id="L166">                this.myHeader.deleteKey(field.n(col + 1));</span>
             }
         }
 
         // Shift the keywords for the columns after the deleted columns
-<span class="fc bfc" id="L164" title="All 2 branches covered.">        for (int col = column + len; col &lt; ncol; col += 1) {</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">            for (String field : fields) {</span>
-<span class="fc" id="L166">                String oldKey = field + (col + 1);</span>
-<span class="fc" id="L167">                String newKey = field + (col + 1 - len);</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">                if (this.myHeader.containsKey(oldKey)) {</span>
-<span class="fc" id="L169">                    this.myHeader.replaceKey(oldKey, newKey);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        for (int col = column + len; col &lt; ncol; col += 1) {</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">            for (IFitsHeader field : fields) {</span>
+<span class="fc" id="L173">                IFitsHeader oldKey = field.n(col + 1);</span>
+<span class="fc" id="L174">                IFitsHeader newKey = field.n(col + 1 - len);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">                if (this.myHeader.containsKey(oldKey)) {</span>
+<span class="fc" id="L176">                    this.myHeader.replaceKey(oldKey, newKey);</span>
                 }
             }
         }
         // Update the number of fields.
-<span class="fc" id="L174">        this.myHeader.addValue(&quot;TFIELDS&quot;, getNCols(), &quot;ntf::tablehdu:tfields:1&quot;);</span>
+<span class="fc" id="L181">        this.myHeader.addValue(TFIELDS, getNCols());</span>
 
         // Give the data sections a chance to update the header too.
-<span class="fc" id="L177">        this.myData.updateAfterDelete(ncol, this.myHeader);</span>
-<span class="fc" id="L178">    }</span>
+<span class="fc" id="L184">        this.myData.updateAfterDelete(ncol, this.myHeader);</span>
+<span class="fc" id="L185">    }</span>
 
     /**
      * Remove all rows from the table starting at some specific index from the
@@ -189,8 +196,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if an error occurs.
      */
     public void deleteRows(final int row) throws FitsException {
-<span class="fc" id="L192">        deleteRows(row, getNRows() - row);</span>
-<span class="fc" id="L193">    }</span>
+<span class="fc" id="L199">        deleteRows(row, getNRows() - row);</span>
+<span class="fc" id="L200">    }</span>
 
     /**
      * Remove a number of adjacent rows from the table. This routine was
@@ -209,18 +216,18 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
     public void deleteRows(final int firstRow, int nRow) throws FitsException {
 
         // Just ignore invalid requests.
-<span class="pc bpc" id="L212" title="3 of 6 branches missed.">        if (nRow &lt;= 0 || firstRow &gt;= getNRows() || nRow &lt;= 0) {</span>
-<span class="nc" id="L213">            return;</span>
+<span class="pc bpc" id="L219" title="3 of 6 branches missed.">        if (nRow &lt;= 0 || firstRow &gt;= getNRows() || nRow &lt;= 0) {</span>
+<span class="nc" id="L220">            return;</span>
         }
 
         /* correct if more rows are requested than available */
-<span class="fc bfc" id="L217" title="All 2 branches covered.">        if (nRow &gt; getNRows() - firstRow) {</span>
-<span class="fc" id="L218">            nRow = getNRows() - firstRow;</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">        if (nRow &gt; getNRows() - firstRow) {</span>
+<span class="fc" id="L225">            nRow = getNRows() - firstRow;</span>
         }
 
-<span class="fc" id="L221">        this.myData.deleteRows(firstRow, nRow);</span>
-<span class="fc" id="L222">        this.myHeader.setNaxis(2, getNRows());</span>
-<span class="fc" id="L223">    }</span>
+<span class="fc" id="L228">        this.myData.deleteRows(firstRow, nRow);</span>
+<span class="fc" id="L229">        this.myHeader.setNaxis(2, getNRows());</span>
+<span class="fc" id="L230">    }</span>
 
     /**
      * Find the 0-based column index corresponding to a particular column name.
@@ -231,14 +238,14 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      */
     public int findColumn(String colName) {
 
-<span class="pc bpc" id="L234" title="1 of 2 branches missed.">        for (int i = 0; i &lt; getNCols(); i += 1) {</span>
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">        for (int i = 0; i &lt; getNCols(); i += 1) {</span>
 
-<span class="fc" id="L236">            String val = this.myHeader.getStringValue(&quot;TTYPE&quot; + (i + 1));</span>
-<span class="pc bpc" id="L237" title="1 of 4 branches missed.">            if (val != null &amp;&amp; val.trim().equals(colName)) {</span>
-<span class="fc" id="L238">                return i;</span>
+<span class="fc" id="L243">            String val = this.myHeader.getStringValue(TTYPEn.n(i + 1));</span>
+<span class="pc bpc" id="L244" title="1 of 4 branches missed.">            if (val != null &amp;&amp; val.trim().equals(colName)) {</span>
+<span class="fc" id="L245">                return i;</span>
             }
         }
-<span class="nc" id="L241">        return -1;</span>
+<span class="nc" id="L248">        return -1;</span>
     }
 
     /**
@@ -249,7 +256,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public Object getColumn(int col) throws FitsException {
-<span class="fc" id="L252">        return this.myData.getColumn(col);</span>
+<span class="fc" id="L259">        return this.myData.getColumn(col);</span>
     }
 
     /**
@@ -261,7 +268,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public Object getColumn(String colName) throws FitsException {
-<span class="fc" id="L264">        return getColumn(findColumn(colName));</span>
+<span class="fc" id="L271">        return getColumn(findColumn(colName));</span>
     }
 
     /**
@@ -274,12 +281,12 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if an invalid index was requested.
      */
     public String getColumnFormat(int index) throws FitsException {
-<span class="fc" id="L277">        int flds = this.myHeader.getIntValue(&quot;TFIELDS&quot;, 0);</span>
-<span class="pc bpc" id="L278" title="2 of 4 branches missed.">        if (index &lt; 0 || index &gt;= flds) {</span>
-<span class="nc" id="L279">            throw new FitsException(&quot;Bad column index &quot; + index + &quot; (only &quot; + flds + &quot; columns)&quot;);</span>
+<span class="fc" id="L284">        int flds = this.myHeader.getIntValue(TFIELDS, 0);</span>
+<span class="pc bpc" id="L285" title="2 of 4 branches missed.">        if (index &lt; 0 || index &gt;= flds) {</span>
+<span class="nc" id="L286">            throw new FitsException(&quot;Bad column index &quot; + index + &quot; (only &quot; + flds + &quot; columns)&quot;);</span>
         }
 
-<span class="fc" id="L282">        return this.myHeader.getStringValue(&quot;TFORM&quot; + (index + 1)).trim();</span>
+<span class="fc" id="L289">        return this.myHeader.getStringValue(TFORMn.n(index + 1)).trim();</span>
     }
 
     /**
@@ -294,7 +301,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *            the key type to get
      */
     public String getColumnMeta(int index, String type) {
-<span class="fc" id="L297">        return this.myHeader.getStringValue(type + (index + 1));</span>
+<span class="fc" id="L304">        return this.myHeader.getStringValue(type + (index + 1));</span>
     }
 
     /**
@@ -306,11 +313,11 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      */
     public String getColumnName(int index) {
 
-<span class="fc" id="L309">        String ttype = this.myHeader.getStringValue(&quot;TTYPE&quot; + (index + 1));</span>
-<span class="fc bfc" id="L310" title="All 2 branches covered.">        if (ttype != null) {</span>
-<span class="fc" id="L311">            ttype = ttype.trim();</span>
+<span class="fc" id="L316">        String ttype = this.myHeader.getStringValue(TTYPEn.n(index + 1));</span>
+<span class="fc bfc" id="L317" title="All 2 branches covered.">        if (ttype != null) {</span>
+<span class="fc" id="L318">            ttype = ttype.trim();</span>
         }
-<span class="fc" id="L313">        return ttype;</span>
+<span class="fc" id="L320">        return ttype;</span>
     }
 
     /**
@@ -319,11 +326,11 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public Object[] getColumns() throws FitsException {
-<span class="nc" id="L322">        Object[] result = new Object[getNCols()];</span>
-<span class="nc bnc" id="L323" title="All 2 branches missed.">        for (int i = 0; i &lt; result.length; i += 1) {</span>
-<span class="nc" id="L324">            result[i] = getColumn(i);</span>
+<span class="nc" id="L329">        Object[] result = new Object[getNCols()];</span>
+<span class="nc bnc" id="L330" title="All 2 branches missed.">        for (int i = 0; i &lt; result.length; i += 1) {</span>
+<span class="nc" id="L331">            result[i] = getColumn(i);</span>
         }
-<span class="nc" id="L326">        return result;</span>
+<span class="nc" id="L333">        return result;</span>
     }
 
     /**
@@ -336,7 +343,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public Object getElement(int row, int col) throws FitsException {
-<span class="fc" id="L339">        return this.myData.getElement(row, col);</span>
+<span class="fc" id="L346">        return this.myData.getElement(row, col);</span>
     }
 
     /**
@@ -345,7 +352,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      * @return The number of columns in the table.
      */
     public int getNCols() {
-<span class="fc" id="L348">        return this.myData.getNCols();</span>
+<span class="fc" id="L355">        return this.myData.getNCols();</span>
     }
 
     /**
@@ -354,7 +361,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      * @return The number of rows in the table.
      */
     public int getNRows() {
-<span class="fc" id="L357">        return this.myData.getNRows();</span>
+<span class="fc" id="L364">        return this.myData.getNRows();</span>
     }
 
     /**
@@ -365,7 +372,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public Object[] getRow(int row) throws FitsException {
-<span class="fc" id="L368">        return this.myData.getRow(row);</span>
+<span class="fc" id="L375">        return this.myData.getRow(row);</span>
     }
 
     /**
@@ -380,8 +387,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public void setColumn(int col, Object newCol) throws FitsException {
-<span class="fc" id="L383">        this.myData.setColumn(col, newCol);</span>
-<span class="fc" id="L384">    }</span>
+<span class="fc" id="L390">        this.myData.setColumn(col, newCol);</span>
+<span class="fc" id="L391">    }</span>
 
     /**
      * Update a column within a table. The new column should have the same
@@ -395,27 +402,27 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public void setColumn(String colName, Object newCol) throws FitsException {
-<span class="fc" id="L398">        setColumn(findColumn(colName), newCol);</span>
-<span class="fc" id="L399">    }</span>
+<span class="fc" id="L405">        setColumn(findColumn(colName), newCol);</span>
+<span class="fc" id="L406">    }</span>
 
     public void setColumnMeta(int index, String key, boolean value, String comment, boolean after) throws FitsException {
-<span class="fc" id="L402">        setCurrentColumn(index, after);</span>
-<span class="fc" id="L403">        this.myHeader.addValue(key + (index + 1), value, comment);</span>
-<span class="fc" id="L404">    }</span>
+<span class="fc" id="L409">        setCurrentColumn(index, after);</span>
+<span class="fc" id="L410">        this.myHeader.addValue(key + (index + 1), value, comment);</span>
+<span class="fc" id="L411">    }</span>
 
     public void setColumnMeta(int index, String key, double value, String comment, boolean after) throws FitsException {
-<span class="fc" id="L407">        setCurrentColumn(index, after);</span>
-<span class="fc" id="L408">        this.myHeader.addValue(key + (index + 1), value, comment);</span>
-<span class="fc" id="L409">    }</span>
+<span class="fc" id="L414">        setCurrentColumn(index, after);</span>
+<span class="fc" id="L415">        this.myHeader.addValue(key + (index + 1), value, comment);</span>
+<span class="fc" id="L416">    }</span>
 
     public void setColumnMeta(int index, String key, long value, String comment, boolean after) throws FitsException {
-<span class="fc" id="L412">        setCurrentColumn(index, after);</span>
-<span class="fc" id="L413">        this.myHeader.addValue(key + (index + 1), value, comment);</span>
-<span class="fc" id="L414">    }</span>
+<span class="fc" id="L419">        setCurrentColumn(index, after);</span>
+<span class="fc" id="L420">        this.myHeader.addValue(key + (index + 1), value, comment);</span>
+<span class="fc" id="L421">    }</span>
 
     public void setColumnMeta(int index, String key, String value, String comment) throws FitsException {
-<span class="fc" id="L417">        setColumnMeta(index, key, value, comment, true);</span>
-<span class="fc" id="L418">    }</span>
+<span class="fc" id="L424">        setColumnMeta(index, key, value, comment, true);</span>
+<span class="fc" id="L425">    }</span>
 
     /**
      * Specify column metadata for a given column in a way that allows all of
@@ -436,14 +443,41 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      * @throws FitsException
      *             if the header could not be updated
      */
+    public void setColumnMeta(int index, IFitsHeader key, String value, String comment, boolean after) throws FitsException {
+<span class="fc" id="L447">        setCurrentColumn(index, after);</span>
+<span class="fc" id="L448">        this.myHeader.addValue(key.n(index + 1).key(), value, comment);</span>
+<span class="fc" id="L449">    }</span>
+
+    /**
+     * Specify column metadata for a given column in a way that allows all of
+     * the column metadata for a given column to be organized together.
+     * 
+     * @param index
+     *            The 0-based index of the column
+     * @param key
+     *            The column key. I.e., the keyword will be key+(index+1)
+     * @param value
+     *            The value to be placed in the header.
+     * @param comment
+     *            The comment for the header
+     * @param after
+     *            Should the header card be after the current column metadata
+     *            block (true), or immediately before the TFORM card (false). @throws
+     *            FitsException if the operation failed
+     * @throws FitsException
+     *             if the header could not be updated
+     * @deprecated use
+     *             {@link #setColumnMeta(int, IFitsHeader, String, String, boolean)}
+     */
+    @Deprecated
     public void setColumnMeta(int index, String key, String value, String comment, boolean after) throws FitsException {
-<span class="fc" id="L440">        setCurrentColumn(index, after);</span>
-<span class="fc" id="L441">        this.myHeader.addValue(key + (index + 1), value, comment);</span>
-<span class="fc" id="L442">    }</span>
+<span class="fc" id="L474">        setCurrentColumn(index, after);</span>
+<span class="fc" id="L475">        this.myHeader.addValue(key + (index + 1), value, comment);</span>
+<span class="fc" id="L476">    }</span>
 
     public void setColumnName(int index, String name, String comment) throws FitsException {
-<span class="fc" id="L445">        setColumnMeta(index, &quot;TTYPE&quot;, name, comment, true);</span>
-<span class="fc" id="L446">    }</span>
+<span class="fc" id="L479">        setColumnMeta(index, TTYPEn, name, comment, true);</span>
+<span class="fc" id="L480">    }</span>
 
     /**
      * Set the cursor in the header to point after the metadata for the
@@ -453,8 +487,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *            The 0-based index of the column
      */
     public void setCurrentColumn(int col) {
-<span class="nc" id="L456">        setCurrentColumn(col, true);</span>
-<span class="nc" id="L457">    }</span>
+<span class="nc" id="L490">        setCurrentColumn(col, true);</span>
+<span class="nc" id="L491">    }</span>
 
     /**
      * Set the cursor in the header to point either before the TFORM value or
@@ -469,13 +503,12 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *            will be placed at the end of current header.
      */
     public void setCurrentColumn(int col, boolean after) {
-<span class="fc bfc" id="L472" title="All 2 branches covered.">        if (after) {</span>
-<span class="fc" id="L473">            this.myHeader.positionAfterIndex(&quot;TFORM&quot;, col + 1);</span>
+<span class="fc bfc" id="L506" title="All 2 branches covered.">        if (after) {</span>
+<span class="fc" id="L507">            this.myHeader.positionAfterIndex(TFORMn, col + 1);</span>
         } else {
-<span class="fc" id="L475">            String tform = &quot;TFORM&quot; + (col + 1);</span>
-<span class="fc" id="L476">            this.myHeader.findCard(tform);</span>
+<span class="fc" id="L509">            this.myHeader.findCard(TFORMn.n(col + 1));</span>
         }
-<span class="fc" id="L478">    }</span>
+<span class="fc" id="L511">    }</span>
 
     /**
      * Update a single element within the table.
@@ -490,8 +523,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public void setElement(int row, int col, Object element) throws FitsException {
-<span class="fc" id="L493">        this.myData.setElement(row, col, element);</span>
-<span class="fc" id="L494">    }</span>
+<span class="fc" id="L526">        this.myData.setElement(row, col, element);</span>
+<span class="fc" id="L527">    }</span>
 
     /**
      * Update a row within a table.
@@ -504,7 +537,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public void setRow(int row, Object[] newRow) throws FitsException {
-<span class="fc" id="L507">        this.myData.setRow(row, newRow);</span>
-<span class="fc" id="L508">    }</span>
+<span class="fc" id="L540">        this.myData.setRow(row, newRow);</span>
+<span class="fc" id="L541">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

@@ -31,6 +31,8 @@
  * #L%
  */
 
+import static nom.tam.fits.header.Checksum.CHECKSUM;
+import static nom.tam.fits.header.Checksum.DATASUM;
 import static nom.tam.util.FitsIO.BYTE_1_OF_LONG_MASK;
 import static nom.tam.util.FitsIO.BYTE_2_OF_LONG_MASK;
 import static nom.tam.util.FitsIO.BYTE_3_OF_LONG_MASK;
@@ -44,8 +46,6 @@ import java.util.logging.Logger;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCommentsMap;
-import nom.tam.fits.header.Checksum;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.FitsIO;
@@ -78,11 +78,11 @@ public final class FitsCheckSum {
      * adding approximately 140G short values (=2^47) (280GBytes) or more. We
      * assume for now that this routine here is never called to swallow FITS
      * files of that size or larger. by R J Mathar
+     * {@link nom.tam.fits.header.Checksum#CHECKSUM}
      * 
      * @param data
      *            the byte sequence
      * @return the 32bit checksum in the range from 0 to 2^32-1
-     * @see Checksum#CHECKSUM
      * @since 2005-10-05
      */
     public static long checksum(final byte[] data) {
@@ -210,7 +210,7 @@ public final class FitsCheckSum {
          * expected PCOUNT and found DATE.
          */
 <span class="fc" id="L212">        Header hdr = hdu.getHeader();</span>
-<span class="fc" id="L213">        hdr.deleteKey(Checksum.CHECKSUM.key());</span>
+<span class="fc" id="L213">        hdr.deleteKey(CHECKSUM);</span>
         /*
          * jThis would need org.nevec.utils.DateUtils compiled before
          * org.nevec.prima.fits .... final String doneAt =
@@ -219,8 +219,7 @@ public final class FitsCheckSum {
          * calculated and needs to be re-inserted again - with the same string -
          * when the second/final call to addValue() is made below.
          */
-<span class="fc" id="L222">        final String doneAt = HeaderCommentsMap.getComment(&quot;fits:checksum:1&quot;);</span>
-<span class="fc" id="L223">        hdr.addValue(Checksum.CHECKSUM.key(), &quot;0000000000000000&quot;, doneAt);</span>
+<span class="fc" id="L222">        hdr.addValue(CHECKSUM, &quot;0000000000000000&quot;);</span>
 
         /*
          * Convert the entire sequence of 2880 byte header cards into a byte
@@ -229,49 +228,49 @@ public final class FitsCheckSum {
          * (Linux/VAX/MIPS vs Hp-UX, Sparc...) supposed that the correct
          * implementation is in the write() interface.
          */
-<span class="fc" id="L232">        ByteArrayOutputStream hduByteImage = new ByteArrayOutputStream();</span>
-<span class="fc" id="L233">        BufferedDataOutputStream bdos = new BufferedDataOutputStream(hduByteImage);</span>
+<span class="fc" id="L231">        ByteArrayOutputStream hduByteImage = new ByteArrayOutputStream();</span>
+<span class="fc" id="L232">        BufferedDataOutputStream bdos = new BufferedDataOutputStream(hduByteImage);</span>
 
         // DATASUM keyword.
-<span class="fc" id="L236">        hdu.getData().write(bdos);</span>
+<span class="fc" id="L235">        hdu.getData().write(bdos);</span>
         try {
-<span class="fc" id="L238">            bdos.flush();</span>
-<span class="nc" id="L239">        } catch (IOException e) {</span>
-<span class="nc" id="L240">            LOG.log(Level.SEVERE, &quot;should not happen&quot;, e);</span>
-<span class="fc" id="L241">        }</span>
-<span class="fc" id="L242">        byte[] data = hduByteImage.toByteArray();</span>
-<span class="fc" id="L243">        checksum(data);</span>
-<span class="fc" id="L244">        hdu.write(new BufferedDataOutputStream(hduByteImage));</span>
-<span class="fc" id="L245">        long csd = checksum(data);</span>
-<span class="fc" id="L246">        hdu.getHeader().addValue(&quot;DATASUM&quot;, &quot;&quot; + csd, &quot;Checksum of data&quot;);</span>
+<span class="fc" id="L237">            bdos.flush();</span>
+<span class="nc" id="L238">        } catch (IOException e) {</span>
+<span class="nc" id="L239">            LOG.log(Level.SEVERE, &quot;should not happen&quot;, e);</span>
+<span class="fc" id="L240">        }</span>
+<span class="fc" id="L241">        byte[] data = hduByteImage.toByteArray();</span>
+<span class="fc" id="L242">        checksum(data);</span>
+<span class="fc" id="L243">        hdu.write(new BufferedDataOutputStream(hduByteImage));</span>
+<span class="fc" id="L244">        long csd = checksum(data);</span>
+<span class="fc" id="L245">        hdu.getHeader().addValue(DATASUM, Long.toString(csd));</span>
 
         // We already have the checsum of the data. Lets compute it for
         // the header.
-<span class="fc" id="L250">        hduByteImage.reset();</span>
-<span class="fc" id="L251">        hdu.getHeader().write(bdos);</span>
+<span class="fc" id="L249">        hduByteImage.reset();</span>
+<span class="fc" id="L250">        hdu.getHeader().write(bdos);</span>
         try {
-<span class="fc" id="L253">            bdos.flush();</span>
-<span class="nc" id="L254">        } catch (IOException e) {</span>
-<span class="nc" id="L255">            LOG.log(Level.SEVERE, &quot;should not happen&quot;, e);</span>
-<span class="fc" id="L256">        }</span>
-<span class="fc" id="L257">        data = hduByteImage.toByteArray();</span>
+<span class="fc" id="L252">            bdos.flush();</span>
+<span class="nc" id="L253">        } catch (IOException e) {</span>
+<span class="nc" id="L254">            LOG.log(Level.SEVERE, &quot;should not happen&quot;, e);</span>
+<span class="fc" id="L255">        }</span>
+<span class="fc" id="L256">        data = hduByteImage.toByteArray();</span>
 
-<span class="fc" id="L259">        long csh = checksum(data);</span>
+<span class="fc" id="L258">        long csh = checksum(data);</span>
 
-<span class="fc" id="L261">        long cshdu = csh + csd;</span>
+<span class="fc" id="L260">        long cshdu = csh + csd;</span>
         // If we had a carry it should go into the
         // beginning.
-<span class="pc bpc" id="L264" title="1 of 2 branches missed.">        while ((cshdu &amp; FitsIO.HIGH_INTEGER_MASK) != 0) {</span>
-<span class="nc" id="L265">            long cshduIntPart = cshdu &amp; FitsIO.INTEGER_MASK;</span>
-<span class="nc" id="L266">            cshdu = cshduIntPart + 1;</span>
-<span class="nc" id="L267">        }</span>
+<span class="pc bpc" id="L263" title="1 of 2 branches missed.">        while ((cshdu &amp; FitsIO.HIGH_INTEGER_MASK) != 0) {</span>
+<span class="nc" id="L264">            long cshduIntPart = cshdu &amp; FitsIO.INTEGER_MASK;</span>
+<span class="nc" id="L265">            cshdu = cshduIntPart + 1;</span>
+<span class="nc" id="L266">        }</span>
         /*
          * This time we do not use a deleteKey() to ensure that the keyword is
          * replaced &quot;in place&quot;. Note that the value of the checksum is actually
          * independent to a permutation of the 80-byte records within the
          * header.
          */
-<span class="fc" id="L274">        hdr.addValue(&quot;CHECKSUM&quot;, checksumEnc(cshdu, true), doneAt);</span>
-<span class="fc" id="L275">    }</span>
+<span class="fc" id="L273">        hdr.addValue(CHECKSUM, checksumEnc(cshdu, true));</span>
+<span class="fc" id="L274">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

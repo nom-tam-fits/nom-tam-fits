@@ -31,9 +31,17 @@
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.EXTEND;
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.PCOUNT;
+
 import java.io.EOFException;
 import java.io.IOException;
 
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
@@ -49,26 +57,26 @@ public class UndefinedData extends Data {
 
     private byte[] data;
 
-<span class="fc" id="L52">    public UndefinedData(Header h) throws FitsException {</span>
+<span class="fc" id="L60">    public UndefinedData(Header h) throws FitsException {</span>
 
         /**
          * Just get a byte buffer to hold the data.
          */
         // Bug fix by Vincenzo Forzi.
-<span class="fc" id="L58">        int naxis = h.getIntValue(&quot;NAXIS&quot;);</span>
+<span class="fc" id="L66">        int naxis = h.getIntValue(NAXIS);</span>
 
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        int size = naxis &gt; 0 ? 1 : 0;</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (int i = 0; i &lt; naxis; i += 1) {</span>
-<span class="fc" id="L62">            size *= h.getIntValue(&quot;NAXIS&quot; + (i + 1));</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">        int size = naxis &gt; 0 ? 1 : 0;</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        for (int i = 0; i &lt; naxis; i += 1) {</span>
+<span class="fc" id="L70">            size *= h.getIntValue(NAXISn.n(i + 1));</span>
         }
-<span class="fc" id="L64">        size += h.getIntValue(&quot;PCOUNT&quot;);</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">        if (h.getIntValue(&quot;GCOUNT&quot;) &gt; 1) {</span>
-<span class="fc" id="L66">            size *= h.getIntValue(&quot;GCOUNT&quot;);</span>
+<span class="fc" id="L72">        size += h.getIntValue(PCOUNT);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (h.getIntValue(GCOUNT) &gt; 1) {</span>
+<span class="fc" id="L74">            size *= h.getIntValue(GCOUNT);</span>
         }
-<span class="fc" id="L68">        size *= Math.abs(h.getIntValue(&quot;BITPIX&quot;) / BITS_PER_BYTE);</span>
+<span class="fc" id="L76">        size *= Math.abs(h.getIntValue(BITPIX) / BITS_PER_BYTE);</span>
 
-<span class="fc" id="L70">        this.data = new byte[size];</span>
-<span class="fc" id="L71">    }</span>
+<span class="fc" id="L78">        this.data = new byte[size];</span>
+<span class="fc" id="L79">    }</span>
 
     /**
      * Create an UndefinedData object using the specified object.
@@ -76,10 +84,10 @@ public class UndefinedData extends Data {
      * @param x
      *            object to create the hdu from
      */
-<span class="fc" id="L79">    public UndefinedData(Object x) {</span>
-<span class="fc" id="L80">        this.data = new byte[(int) ArrayFuncs.computeLSize(x)];</span>
-<span class="fc" id="L81">        ArrayFuncs.copyInto(x, this.data);</span>
-<span class="fc" id="L82">    }</span>
+<span class="fc" id="L87">    public UndefinedData(Object x) {</span>
+<span class="fc" id="L88">        this.data = new byte[(int) ArrayFuncs.computeLSize(x)];</span>
+<span class="fc" id="L89">        ArrayFuncs.copyInto(x, this.data);</span>
+<span class="fc" id="L90">    }</span>
 
     /**
      * Fill header with keywords that describe data.
@@ -89,62 +97,62 @@ public class UndefinedData extends Data {
      */
     @Override
     protected void fillHeader(Header head) {
-
         try {
-<span class="fc" id="L94">            head.setXtension(&quot;UNKNOWN&quot;);</span>
-<span class="fc" id="L95">            head.setBitpix(BasicHDU.BITPIX_BYTE);</span>
-<span class="fc" id="L96">            head.setNaxes(1);</span>
-<span class="fc" id="L97">            head.addValue(&quot;NAXIS1&quot;, this.data.length, &quot;ntf::undefineddata:naxis1:1&quot;);</span>
-<span class="fc" id="L98">            head.addValue(&quot;PCOUNT&quot;, 0, &quot;ntf::undefineddata:pcount:1&quot;);</span>
-<span class="fc" id="L99">            head.addValue(&quot;GCOUNT&quot;, 1, &quot;ntf::undefineddata:gcount:1&quot;);</span>
-<span class="fc" id="L100">            head.addValue(&quot;EXTEND&quot;, true, &quot;ntf::undefineddata:extend:1&quot;); // Just</span>
-                                                                          // in
-                                                                          // case!
-<span class="nc" id="L103">        } catch (HeaderCardException e) {</span>
-<span class="nc" id="L104">            System.err.println(&quot;Unable to create unknown header:&quot; + e);</span>
-<span class="fc" id="L105">        }</span>
-
-<span class="fc" id="L107">    }</span>
+<span class="fc" id="L101">            Standard.context(UndefinedData.class);</span>
+<span class="fc" id="L102">            head.setXtension(&quot;UNKNOWN&quot;);</span>
+<span class="fc" id="L103">            head.setBitpix(BasicHDU.BITPIX_BYTE);</span>
+<span class="fc" id="L104">            head.setNaxes(1);</span>
+<span class="fc" id="L105">            head.addValue(NAXISn.n(1), this.data.length);</span>
+<span class="fc" id="L106">            head.addValue(PCOUNT, 0);</span>
+<span class="fc" id="L107">            head.addValue(GCOUNT, 1);</span>
+            // Just in case!
+<span class="fc" id="L109">            head.addValue(EXTEND, true);</span>
+<span class="nc" id="L110">        } catch (HeaderCardException e) {</span>
+<span class="nc" id="L111">            System.err.println(&quot;Unable to create unknown header:&quot; + e);</span>
+        } finally {
+<span class="pc" id="L113">            Standard.context(null);</span>
+<span class="pc" id="L114">        }</span>
+<span class="fc" id="L115">    }</span>
 
     @Override
     @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;intended exposure of mutable data&quot;)
     public Object getData() {
-<span class="fc" id="L112">        return this.data;</span>
+<span class="fc" id="L120">        return this.data;</span>
     }
 
     /** Get the size in bytes of the data */
     @Override
     protected long getTrueSize() {
-<span class="fc" id="L118">        return this.data.length;</span>
+<span class="fc" id="L126">        return this.data.length;</span>
     }
 
     @Override
     public void read(ArrayDataInput i) throws FitsException {
-<span class="fc" id="L123">        setFileOffset(i);</span>
+<span class="fc" id="L131">        setFileOffset(i);</span>
         try {
-<span class="fc" id="L125">            i.readFully(this.data);</span>
-<span class="nc" id="L126">        } catch (IOException e) {</span>
-<span class="nc" id="L127">            throw new FitsException(&quot;Unable to read unknown data:&quot; + e);</span>
-<span class="fc" id="L128">        }</span>
+<span class="fc" id="L133">            i.readFully(this.data);</span>
+<span class="nc" id="L134">        } catch (IOException e) {</span>
+<span class="nc" id="L135">            throw new FitsException(&quot;Unable to read unknown data:&quot; + e);</span>
+<span class="fc" id="L136">        }</span>
 
-<span class="fc" id="L130">        int pad = FitsUtil.padding(getTrueSize());</span>
+<span class="fc" id="L138">        int pad = FitsUtil.padding(getTrueSize());</span>
         try {
-<span class="fc" id="L132">            i.skipAllBytes(pad);</span>
-<span class="nc" id="L133">        } catch (EOFException e) {</span>
-<span class="nc" id="L134">            throw new PaddingException(&quot;EOF skipping padding in undefined data&quot;, this);</span>
-<span class="nc" id="L135">        } catch (IOException e) {</span>
-<span class="nc" id="L136">            throw new FitsException(&quot;Error skipping padding in undefined data&quot;);</span>
-<span class="fc" id="L137">        }</span>
-<span class="fc" id="L138">    }</span>
+<span class="fc" id="L140">            i.skipAllBytes(pad);</span>
+<span class="nc" id="L141">        } catch (EOFException e) {</span>
+<span class="nc" id="L142">            throw new PaddingException(&quot;EOF skipping padding in undefined data&quot;, this);</span>
+<span class="nc" id="L143">        } catch (IOException e) {</span>
+<span class="nc" id="L144">            throw new FitsException(&quot;Error skipping padding in undefined data&quot;);</span>
+<span class="fc" id="L145">        }</span>
+<span class="fc" id="L146">    }</span>
 
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
         try {
-<span class="fc" id="L143">            o.write(this.data);</span>
-<span class="nc" id="L144">        } catch (IOException e) {</span>
-<span class="nc" id="L145">            throw new FitsException(&quot;IO Error on unknown data write&quot; + e);</span>
-<span class="fc" id="L146">        }</span>
-<span class="fc" id="L147">        FitsUtil.pad(o, getTrueSize());</span>
-<span class="fc" id="L148">    }</span>
+<span class="fc" id="L151">            o.write(this.data);</span>
+<span class="nc" id="L152">        } catch (IOException e) {</span>
+<span class="nc" id="L153">            throw new FitsException(&quot;IO Error on unknown data write&quot; + e);</span>
+<span class="fc" id="L154">        }</span>
+<span class="fc" id="L155">        FitsUtil.pad(o, getTrueSize());</span>
+<span class="fc" id="L156">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

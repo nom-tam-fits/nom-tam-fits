@@ -6,113 +6,96 @@
 </head>
 <body>
 <div id="overview"><a href="../../../../apidocs/nom/tam/fits/HeaderCommentsMap.html">View Javadoc</a></div><pre>
-<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_comment"> * This class provides a modifiable map in which the comment fields for FITS</em>
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_comment"> * header keywords</em>
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * produced by this library are set.  The map is a simple String -&gt; String</em>
-<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * map where the key Strings are normally class:keyword:id where class is</em>
-<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * the class name where the keyword is set, keyword is the keyword set and id</em>
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * is an integer used to distinguish multiple instances.</em>
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * Most users need not worry about this class, but users who wish to customize</em>
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * the appearance of FITS files may update the map.  The code itself is likely</em>
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * to be needed to understand which values in the map must be modified.</em>
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * Note that the Header writing utilities look for the prefix ntf:: in comments</em>
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * and if this is found, the comment is replaced by looking in this map for</em>
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> * a key given by the remainder of the original comment.</em>
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> */</em>
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">package</strong> nom.tam.fits;
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> * #%L</em>
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment"> * nom.tam FITS library</em>
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment"> * Copyright (C) 2004 - 2015 nom-tam-fits</em>
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_comment"> * </em>
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_comment"> * Anyone is free to copy, modify, publish, use, compile, sell, or</em>
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_comment"> * distribute this software, either in source code form or as a compiled</em>
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_comment"> * binary, for any purpose, commercial or non-commercial, and by any</em>
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_comment"> * means.</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_comment"> * </em>
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_comment"> * In jurisdictions that recognize copyright laws, the author or authors</em>
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_comment"> * of this software dedicate any and all copyright interest in the</em>
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_comment"> * software to the public domain. We make this dedication for the benefit</em>
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_comment"> * of the public at large and to the detriment of our heirs and</em>
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_comment"> * successors. We intend this dedication to be an overt act of</em>
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_comment"> * relinquishment in perpetuity of all present and future rights to this</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_comment"> * software under copyright law.</em>
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_comment"> * </em>
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_comment"> * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_comment"> * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</em>
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_comment"> * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</em>
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_comment"> * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR</em>
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_comment"> * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,</em>
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_comment"> * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR</em>
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_comment"> * OTHER DEALINGS IN THE SOFTWARE.</em>
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_comment"> * #L%</em>
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_comment"> */</em>
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/fits/HeaderCommentsMap.html">HeaderCommentsMap</a> {
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Map&lt;String, String&gt; commentMap = <strong class="jxr_keyword">new</strong> HashMap&lt;String, String&gt;();
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">static</strong> {
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"header:extend:1"</span>, <span class="jxr_string">"Extensions are permitted"</span>);
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"header:simple:1"</span>, <span class="jxr_string">"Java FITS: "</span> + <strong class="jxr_keyword">new</strong> java.util.Date());
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"header:xtension:1"</span>, <span class="jxr_string">"Java FITS: "</span> + <strong class="jxr_keyword">new</strong> java.util.Date());
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"header:naxis:1"</span>, <span class="jxr_string">"Dimensionality"</span>);
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"header:extend:2"</span>, <span class="jxr_string">"Extensions are permitted"</span>);
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"asciitable:pcount:1"</span>, <span class="jxr_string">"No group data"</span>);
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"asciitable:gcount:1"</span>, <span class="jxr_string">"One group"</span>);
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"asciitable:tfields:1"</span>, <span class="jxr_string">"Number of fields in table"</span>);
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"asciitable:tbcolN:1"</span>, <span class="jxr_string">"Column offset"</span>);
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"asciitable:naxis1:1"</span>, <span class="jxr_string">"Size of row in bytes"</span>);
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"undefineddata:naxis1:1"</span>, <span class="jxr_string">"Number of Bytes"</span>);
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"undefineddata:extend:1"</span>, <span class="jxr_string">"Extensions are permitted"</span>);
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"binarytablehdu:pcount:1"</span>, <span class="jxr_string">"Includes heap"</span>);
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"binarytable:naxis1:1"</span>, <span class="jxr_string">"Bytes per row"</span>);
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"fits:checksum:1"</span>, <span class="jxr_string">"as of "</span> + FitsDate.getFitsDateString());
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"basichdu:extend:1"</span>, <span class="jxr_string">"Allow extensions"</span>);
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"basichdu:gcount:1"</span>, <span class="jxr_string">"Required value"</span>);
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"basichdu:pcount:1"</span>, <span class="jxr_string">"Required value"</span>);
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"imagedata:extend:1"</span>, <span class="jxr_string">"Extension permitted"</span>);
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"imagedata:pcount:1"</span>, <span class="jxr_string">"No extra parameters"</span>);
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"imagedata:gcount:1"</span>, <span class="jxr_string">"One group"</span>);
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          HeaderCommentsMap.commentMap.put(<span class="jxr_string">"tablehdu:tfields:1"</span>, <span class="jxr_string">"Number of table fields"</span>);
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>          <em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>  <em class="jxr_comment">         * Null entries: header:bitpix:1 header:simple:2 header:bitpix:2</em>
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>  <em class="jxr_comment">         * header:naxisN:1 header:naxis:2 undefineddata:pcount:1</em>
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_comment">         * undefineddata:gcount:1 randomgroupsdata:naxis1:1</em>
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_comment">         * randomgroupsdata:naxisN:1 randomgroupsdata:groups:1</em>
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_comment">         * randomgroupsdata:gcount:1 randomgroupsdata:pcount:1</em>
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_comment">         * binarytablehdu:theap:1 binarytablehdu:tdimN:1 asciitable:tformN:1</em>
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_comment">         * asciitablehdu:tnullN:1 asciitablehdu:tfields:1 binarytable:pcount:1</em>
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_comment">         * binarytable:gcount:1 binarytable:tfields:1 binarytable:tformN:1</em>
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_comment">         * binarytable:tdimN:1 tablehdu:naxis2:1</em>
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_comment">         */</em>
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>      }
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>      <strong class="jxr_keyword">private</strong> <a href="../../../nom/tam/fits/HeaderCommentsMap.html">HeaderCommentsMap</a>() {
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>      }
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>  
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> deleteComment(String key) {
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>          HeaderCommentsMap.commentMap.remove(key);
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>      }
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>  
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String getComment(String key) {
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>         <strong class="jxr_keyword">return</strong> HeaderCommentsMap.commentMap.get(key);
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>     }
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> 
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> updateComment(String key, String comment) {
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>         HeaderCommentsMap.commentMap.put(key, comment);
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>     }
-<a class="jxr_linenumber" name="L107" href="#L107">107</a> }
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> nom.tam.fits;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * #%L</em>
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * nom.tam FITS library</em>
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * %%</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 2004 - 2015 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * </em>
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * Anyone is free to copy, modify, publish, use, compile, sell, or</em>
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * distribute this software, either in source code form or as a compiled</em>
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * binary, for any purpose, commercial or non-commercial, and by any</em>
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * means.</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> * </em>
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> * In jurisdictions that recognize copyright laws, the author or authors</em>
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> * of this software dedicate any and all copyright interest in the</em>
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_comment"> * software to the public domain. We make this dedication for the benefit</em>
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_comment"> * of the public at large and to the detriment of our heirs and</em>
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_comment"> * successors. We intend this dedication to be an overt act of</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> * relinquishment in perpetuity of all present and future rights to this</em>
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment"> * software under copyright law.</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> * </em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment"> * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_comment"> * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment"> * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_comment"> * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_comment"> * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,</em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_comment"> * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR</em>
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_comment"> * OTHER DEALINGS IN THE SOFTWARE.</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_comment"> * #L%</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_comment"> */</em>
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.Standard;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment"> * This class provides a modifiable map in which the comment fields for FITS</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> * header keywords produced by this library are set. The map is a simple String</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> * -&amp;gt; String map where the key Strings are normally class:keyword:id where</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment"> * class is the class name where the keyword is set, keyword is the keyword set</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> * and id is an integer used to distinguish multiple instances. Most users need</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment"> * not worry about this class, but users who wish to customize the appearance of</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment"> * FITS files may update the map. The code itself is likely to be needed to</em>
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment"> * understand which values in the map must be modified.</em>
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  @Deprecated
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/fits/HeaderCommentsMap.html">HeaderCommentsMap</a> {
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      @Deprecated
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> deleteComment(String key) {
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          key = simplyfyKey(key);
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>          <strong class="jxr_keyword">for</strong> (Standard value : Standard.values()) {
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>              value.setCommentByKey(key, <span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          }
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>      }
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      @Deprecated
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String getComment(String key) {
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          key = simplyfyKey(key);
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          <strong class="jxr_keyword">for</strong> (Standard value : Standard.values()) {
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>              String comment = value.getCommentByKey(key);
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>              <strong class="jxr_keyword">if</strong> (comment != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>                  <strong class="jxr_keyword">return</strong> comment;
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>              }
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          }
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      }
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String simplyfyKey(String key) {
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          <strong class="jxr_keyword">int</strong> firstDbPoint = key.indexOf(':');
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          <strong class="jxr_keyword">if</strong> (firstDbPoint &gt; 0) {
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>              <strong class="jxr_keyword">int</strong> secondDoublePoint = key.indexOf(':', firstDbPoint + 1);
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>              <strong class="jxr_keyword">if</strong> (secondDoublePoint &gt; 0) {
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>                  <strong class="jxr_keyword">return</strong> key.substring(0, secondDoublePoint);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>              }
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          }
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">return</strong> key;
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>      }
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>      @Deprecated
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> updateComment(String key, String comment) {
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>          key = simplyfyKey(key);
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>          <strong class="jxr_keyword">for</strong> (Standard value : Standard.values()) {
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>              value.setCommentByKey(key, comment);
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>          }
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>      }
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>      <strong class="jxr_keyword">private</strong> <a href="../../../nom/tam/fits/HeaderCommentsMap.html">HeaderCommentsMap</a>() {
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>      }
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>

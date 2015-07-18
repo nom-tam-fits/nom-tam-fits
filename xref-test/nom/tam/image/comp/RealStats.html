@@ -80,7 +80,7 @@
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">     * Get the statistics on an n-dimensional real array.</em>
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/image/comp/RealStats.html">RealStats</a>(Object input) {
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          Class base = ArrayFuncs.getBaseClass(input);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>          Class&lt;?&gt; base = ArrayFuncs.getBaseClass(input);
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">this</strong>.flt = false;
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">if</strong> (base == <strong class="jxr_keyword">float</strong>.<strong class="jxr_keyword">class</strong>) {
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>              <strong class="jxr_keyword">this</strong>.flt = <strong class="jxr_keyword">true</strong>;

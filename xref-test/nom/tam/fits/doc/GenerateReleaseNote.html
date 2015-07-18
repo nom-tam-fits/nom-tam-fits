@@ -115,19 +115,20 @@
 <a class="jxr_linenumber" name="L107" href="#L107">107</a>     }
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> 
 <a class="jxr_linenumber" name="L109" href="#L109">109</a>     <strong class="jxr_keyword">static</strong> List&lt;String&gt; limitString(String string, <strong class="jxr_keyword">int</strong> size) {
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>         List&lt;String&gt; result = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>         <strong class="jxr_keyword">while</strong> (string.length() &gt; 80) {
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>             <strong class="jxr_keyword">int</strong> split = 80;
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>             <strong class="jxr_keyword">while</strong> (!Character.isWhitespace(string.charAt(split))) {
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>                 split--;
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>             }
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>             result.add(string.substring(0, split));
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>             string = string.substring(split + 1);
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>         }
-<a class="jxr_linenumber" name="L119" href="#L119">119</a>         result.add(string);
-<a class="jxr_linenumber" name="L120" href="#L120">120</a>         <strong class="jxr_keyword">return</strong> result;
-<a class="jxr_linenumber" name="L121" href="#L121">121</a>     }
-<a class="jxr_linenumber" name="L122" href="#L122">122</a> }
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>         string = string.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').replace(<span class="jxr_string">"  "</span>, <span class="jxr_string">" "</span>).replace(<span class="jxr_string">"  "</span>, <span class="jxr_string">" "</span>).replace(<span class="jxr_string">"  "</span>, <span class="jxr_string">" "</span>);
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>         List&lt;String&gt; result = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>         <strong class="jxr_keyword">while</strong> (string.length() &gt; 80) {
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>             <strong class="jxr_keyword">int</strong> split = 80;
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>             <strong class="jxr_keyword">while</strong> (!Character.isWhitespace(string.charAt(split))) {
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>                 split--;
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>             }
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>             result.add(string.substring(0, split));
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>             string = string.substring(split + 1);
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>         }
+<a class="jxr_linenumber" name="L120" href="#L120">120</a>         result.add(string);
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>         <strong class="jxr_keyword">return</strong> result;
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>     }
+<a class="jxr_linenumber" name="L123" href="#L123">123</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>

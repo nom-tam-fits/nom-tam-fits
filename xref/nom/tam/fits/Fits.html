@@ -145,7 +145,7 @@
 <a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">     * @param data</em>
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">     *            The data to be described in this HDU.</em>
 <a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     * @param &lt;DataClass&gt;</em>
-<a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     *            the class of the hdu</em>
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     *            the class of the HDU</em>
 <a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     * @throws FitsException</em>
 <a class="jxr_linenumber" name="L142" href="#L142">142</a> <em class="jxr_javadoccomment">     *             if the operation failed</em>
 <a class="jxr_linenumber" name="L143" href="#L143">143</a> <em class="jxr_javadoccomment">     */</em>
@@ -160,7 +160,7 @@
 <a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_javadoccomment">     * @param h</em>
 <a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_javadoccomment">     *            The header which describes the FITS extension</em>
 <a class="jxr_linenumber" name="L154" href="#L154">154</a> <em class="jxr_javadoccomment">     * @throws FitsException</em>
-<a class="jxr_linenumber" name="L155" href="#L155">155</a> <em class="jxr_javadoccomment">     *             if the header could not be converted to a hdu.</em>
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> <em class="jxr_javadoccomment">     *             if the header could not be converted to a HDU.</em>
 <a class="jxr_linenumber" name="L156" href="#L156">156</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L157" href="#L157">157</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> BasicHDU&lt;?&gt; makeHDU(<a href="../../../nom/tam/fits/Header.html">Header</a> h) <strong class="jxr_keyword">throws</strong> FitsException {
 <a class="jxr_linenumber" name="L158" href="#L158">158</a>         <a href="../../../nom/tam/fits/Data.html">Data</a> d = FitsFactory.dataFactory(h);
@@ -172,7 +172,7 @@
 <a class="jxr_linenumber" name="L164" href="#L164">164</a> <em class="jxr_javadoccomment">     * @param o</em>
 <a class="jxr_linenumber" name="L165" href="#L165">165</a> <em class="jxr_javadoccomment">     *            The data to be described in this HDU.</em>
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     * @throws FitsException</em>
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> <em class="jxr_javadoccomment">     *             if the parameter could not be converted to a hdu.</em>
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> <em class="jxr_javadoccomment">     *             if the parameter could not be converted to a HDU.</em>
 <a class="jxr_linenumber" name="L168" href="#L168">168</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> BasicHDU&lt;?&gt; makeHDU(Object o) <strong class="jxr_keyword">throws</strong> FitsException {
 <a class="jxr_linenumber" name="L170" href="#L170">170</a>         <strong class="jxr_keyword">return</strong> FitsFactory.hduFactory(o);
@@ -302,7 +302,7 @@
 <a class="jxr_linenumber" name="L294" href="#L294">294</a>     @Deprecated
 <a class="jxr_linenumber" name="L295" href="#L295">295</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/Fits.html">Fits</a>(InputStream str, <strong class="jxr_keyword">boolean</strong> compressed) <strong class="jxr_keyword">throws</strong> FitsException {
 <a class="jxr_linenumber" name="L296" href="#L296">296</a>         <strong class="jxr_keyword">this</strong>(str);
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>         LOG.log(Level.INFO, <span class="jxr_string">"compresseion ignored, will be autodetected. was set to "</span> + compressed);
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>         LOG.log(Level.INFO, <span class="jxr_string">"compression ignored, will be autodetected. was set to "</span> + compressed);
 <a class="jxr_linenumber" name="L298" href="#L298">298</a>     }
 <a class="jxr_linenumber" name="L299" href="#L299">299</a> 
 <a class="jxr_linenumber" name="L300" href="#L300">300</a>     <em class="jxr_javadoccomment">/**</em>
@@ -406,7 +406,7 @@
 <a class="jxr_linenumber" name="L398" href="#L398">398</a>     @Deprecated
 <a class="jxr_linenumber" name="L399" href="#L399">399</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/Fits.html">Fits</a>(URL myURL, <strong class="jxr_keyword">boolean</strong> compressed) <strong class="jxr_keyword">throws</strong> FitsException {
 <a class="jxr_linenumber" name="L400" href="#L400">400</a>         <strong class="jxr_keyword">this</strong>(myURL);
-<a class="jxr_linenumber" name="L401" href="#L401">401</a>         LOG.log(Level.INFO, <span class="jxr_string">"compresseion ignored, will be autodetected. was set to "</span> + compressed);
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>         LOG.log(Level.INFO, <span class="jxr_string">"compression ignored, will be autodetected. was set to "</span> + compressed);
 <a class="jxr_linenumber" name="L402" href="#L402">402</a>     }
 <a class="jxr_linenumber" name="L403" href="#L403">403</a> 
 <a class="jxr_linenumber" name="L404" href="#L404">404</a>     <em class="jxr_javadoccomment">/**</em>
@@ -417,7 +417,7 @@
 <a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">     * @param myHDU</em>
 <a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">     *            The HDU to be added to the end of the FITS object.</em>
 <a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">     * @throws FitsException</em>
-<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">     *             if the hdu could not be inserted.</em>
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">     *             if the HDU could not be inserted.</em>
 <a class="jxr_linenumber" name="L413" href="#L413">413</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L414" href="#L414">414</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addHDU(BasicHDU&lt;?&gt; myHDU) <strong class="jxr_keyword">throws</strong> FitsException {
 <a class="jxr_linenumber" name="L415" href="#L415">415</a>         insertHDU(myHDU, getNumberOfHDUs());
@@ -431,7 +431,7 @@
 <a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L424" href="#L424">424</a>     @Deprecated
 <a class="jxr_linenumber" name="L425" href="#L425">425</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> currentSize() {
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.hduList.size();
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>         <strong class="jxr_keyword">return</strong> getNumberOfHDUs();
 <a class="jxr_linenumber" name="L427" href="#L427">427</a>     }
 <a class="jxr_linenumber" name="L428" href="#L428">428</a> 
 <a class="jxr_linenumber" name="L429" href="#L429">429</a>     <em class="jxr_javadoccomment">/**</em>
@@ -443,7 +443,7 @@
 <a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">     *            from an image to primary HDU if possible. If not a dummy</em>
 <a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">     *            header HDU will then be inserted.</em>
 <a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">     * @throws FitsException</em>
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     *             if the hdu could not be deleted.</em>
+<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     *             if the HDU could not be deleted.</em>
 <a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L440" href="#L440">440</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> deleteHDU(<strong class="jxr_keyword">int</strong> n) <strong class="jxr_keyword">throws</strong> FitsException {
 <a class="jxr_linenumber" name="L441" href="#L441">441</a>         <strong class="jxr_keyword">int</strong> size = getNumberOfHDUs();
@@ -494,7 +494,7 @@
 <a class="jxr_linenumber" name="L486" href="#L486">486</a> <em class="jxr_javadoccomment">     * @throws FitsException</em>
 <a class="jxr_linenumber" name="L487" href="#L487">487</a> <em class="jxr_javadoccomment">     *             if the header could not be read</em>
 <a class="jxr_linenumber" name="L488" href="#L488">488</a> <em class="jxr_javadoccomment">     * @throws IOException</em>
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> <em class="jxr_javadoccomment">     *             if the undelaying buffer thowed an error</em>
+<a class="jxr_linenumber" name="L489" href="#L489">489</a> <em class="jxr_javadoccomment">     *             if the underlying buffer threw an error</em>
 <a class="jxr_linenumber" name="L490" href="#L490">490</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L491" href="#L491">491</a>     <strong class="jxr_keyword">public</strong> BasicHDU&lt;?&gt; getHDU(<strong class="jxr_keyword">int</strong> n) <strong class="jxr_keyword">throws</strong> FitsException, IOException {
 <a class="jxr_linenumber" name="L492" href="#L492">492</a>         <strong class="jxr_keyword">int</strong> size = getNumberOfHDUs();
@@ -535,7 +535,7 @@
 <a class="jxr_linenumber" name="L527" href="#L527">527</a> <em class="jxr_javadoccomment">     * @param position</em>
 <a class="jxr_linenumber" name="L528" href="#L528">528</a> <em class="jxr_javadoccomment">     *            The location at which the HDU is to be inserted.</em>
 <a class="jxr_linenumber" name="L529" href="#L529">529</a> <em class="jxr_javadoccomment">     * @throws FitsException</em>
-<a class="jxr_linenumber" name="L530" href="#L530">530</a> <em class="jxr_javadoccomment">     *             if the hdu could not be inserted.</em>
+<a class="jxr_linenumber" name="L530" href="#L530">530</a> <em class="jxr_javadoccomment">     *             if the HDU could not be inserted.</em>
 <a class="jxr_linenumber" name="L531" href="#L531">531</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L532" href="#L532">532</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> insertHDU(BasicHDU&lt;?&gt; myHDU, <strong class="jxr_keyword">int</strong> position) <strong class="jxr_keyword">throws</strong> FitsException {
 <a class="jxr_linenumber" name="L533" href="#L533">533</a>         <strong class="jxr_keyword">if</strong> (myHDU == <strong class="jxr_keyword">null</strong>) {
@@ -642,7 +642,7 @@
 <a class="jxr_linenumber" name="L634" href="#L634">634</a> <em class="jxr_javadoccomment">     * @throws FitsException</em>
 <a class="jxr_linenumber" name="L635" href="#L635">635</a> <em class="jxr_javadoccomment">     *             if the header could not be read</em>
 <a class="jxr_linenumber" name="L636" href="#L636">636</a> <em class="jxr_javadoccomment">     * @throws IOException</em>
-<a class="jxr_linenumber" name="L637" href="#L637">637</a> <em class="jxr_javadoccomment">     *             if the undelaying buffer thowed an error</em>
+<a class="jxr_linenumber" name="L637" href="#L637">637</a> <em class="jxr_javadoccomment">     *             if the underlying buffer threw an error</em>
 <a class="jxr_linenumber" name="L638" href="#L638">638</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L639" href="#L639">639</a>     <strong class="jxr_keyword">public</strong> BasicHDU&lt;?&gt; readHDU() <strong class="jxr_keyword">throws</strong> FitsException, IOException {
 <a class="jxr_linenumber" name="L640" href="#L640">640</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.dataStr == <strong class="jxr_keyword">null</strong> || <strong class="jxr_keyword">this</strong>.atEOF) {
@@ -664,7 +664,7 @@
 <a class="jxr_linenumber" name="L656" href="#L656">656</a>             <strong class="jxr_keyword">throw</strong> e;
 <a class="jxr_linenumber" name="L657" href="#L657">657</a>         }
 <a class="jxr_linenumber" name="L658" href="#L658">658</a>         <strong class="jxr_keyword">this</strong>.lastFileOffset = FitsUtil.findOffset(<strong class="jxr_keyword">this</strong>.dataStr);
-<a class="jxr_linenumber" name="L659" href="#L659">659</a>         BasicHDU&lt;?&gt; nextHDU = FitsFactory.hduFactory(hdr, data);
+<a class="jxr_linenumber" name="L659" href="#L659">659</a>         BasicHDU&lt;Data&gt; nextHDU = FitsFactory.hduFactory(hdr, data);
 <a class="jxr_linenumber" name="L660" href="#L660">660</a>         <strong class="jxr_keyword">this</strong>.hduList.add(nextHDU);
 <a class="jxr_linenumber" name="L661" href="#L661">661</a>         <strong class="jxr_keyword">return</strong> nextHDU;
 <a class="jxr_linenumber" name="L662" href="#L662">662</a>     }
@@ -751,7 +751,7 @@
 <a class="jxr_linenumber" name="L743" href="#L743">743</a> <em class="jxr_javadoccomment">     * Skip the next HDU on the default input stream.</em>
 <a class="jxr_linenumber" name="L744" href="#L744">744</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L745" href="#L745">745</a> <em class="jxr_javadoccomment">     * @throws FitsException</em>
-<a class="jxr_linenumber" name="L746" href="#L746">746</a> <em class="jxr_javadoccomment">     *             if the hdu could not be skipped</em>
+<a class="jxr_linenumber" name="L746" href="#L746">746</a> <em class="jxr_javadoccomment">     *             if the HDU could not be skipped</em>
 <a class="jxr_linenumber" name="L747" href="#L747">747</a> <em class="jxr_javadoccomment">     * @throws IOException</em>
 <a class="jxr_linenumber" name="L748" href="#L748">748</a> <em class="jxr_javadoccomment">     *             if the underlying stream failed</em>
 <a class="jxr_linenumber" name="L749" href="#L749">749</a> <em class="jxr_javadoccomment">     */</em>
@@ -774,7 +774,7 @@
 <a class="jxr_linenumber" name="L766" href="#L766">766</a> <em class="jxr_javadoccomment">     * @param n</em>
 <a class="jxr_linenumber" name="L767" href="#L767">767</a> <em class="jxr_javadoccomment">     *            The number of HDUs to be skipped.</em>
 <a class="jxr_linenumber" name="L768" href="#L768">768</a> <em class="jxr_javadoccomment">     * @throws FitsException</em>
-<a class="jxr_linenumber" name="L769" href="#L769">769</a> <em class="jxr_javadoccomment">     *             if the hdu could not be skipped</em>
+<a class="jxr_linenumber" name="L769" href="#L769">769</a> <em class="jxr_javadoccomment">     *             if the HDU could not be skipped</em>
 <a class="jxr_linenumber" name="L770" href="#L770">770</a> <em class="jxr_javadoccomment">     * @throws IOException</em>
 <a class="jxr_linenumber" name="L771" href="#L771">771</a> <em class="jxr_javadoccomment">     *             if the underlying stream failed</em>
 <a class="jxr_linenumber" name="L772" href="#L772">772</a> <em class="jxr_javadoccomment">     */</em>
@@ -876,10 +876,10 @@
 <a class="jxr_linenumber" name="L868" href="#L868">868</a>     }
 <a class="jxr_linenumber" name="L869" href="#L869">869</a> 
 <a class="jxr_linenumber" name="L870" href="#L870">870</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L871" href="#L871">871</a> <em class="jxr_javadoccomment">     * set the checksum of a hdu.</em>
+<a class="jxr_linenumber" name="L871" href="#L871">871</a> <em class="jxr_javadoccomment">     * set the checksum of a HDU.</em>
 <a class="jxr_linenumber" name="L872" href="#L872">872</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L873" href="#L873">873</a> <em class="jxr_javadoccomment">     * @param hdu</em>
-<a class="jxr_linenumber" name="L874" href="#L874">874</a> <em class="jxr_javadoccomment">     *            the hdu to add a checksum</em>
+<a class="jxr_linenumber" name="L874" href="#L874">874</a> <em class="jxr_javadoccomment">     *            the HDU to add a checksum</em>
 <a class="jxr_linenumber" name="L875" href="#L875">875</a> <em class="jxr_javadoccomment">     * @throws FitsException</em>
 <a class="jxr_linenumber" name="L876" href="#L876">876</a> <em class="jxr_javadoccomment">     *             the checksum could not be added to the header</em>
 <a class="jxr_linenumber" name="L877" href="#L877">877</a> <em class="jxr_javadoccomment">     * @deprecated use {@link FitsCheckSum#setChecksum(BasicHDU)}</em>

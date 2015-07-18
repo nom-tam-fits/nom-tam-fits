@@ -87,11 +87,6 @@ public class ByteParser {
     private static final double NUMBER_BASE_DOUBLE = 10.;
 
     /**
-     * Do we fill up fields?
-     */
-<span class="fc" id="L92">    private boolean fillFields = false;</span>
-
-    /**
      * Did we find a sign last time we checked?
      */
     private boolean foundSign;
@@ -119,10 +114,10 @@ public class ByteParser {
      *            re-used by refilling its contents and resetting the offset.
      */
     @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;intended exposure of mutable data&quot;)
-<span class="fc" id="L122">    public ByteParser(byte[] input) {</span>
-<span class="fc" id="L123">        this.input = input;</span>
-<span class="fc" id="L124">        this.offset = 0;</span>
-<span class="fc" id="L125">    }</span>
+<span class="fc" id="L117">    public ByteParser(byte[] input) {</span>
+<span class="fc" id="L118">        this.input = input;</span>
+<span class="fc" id="L119">        this.offset = 0;</span>
+<span class="fc" id="L120">    }</span>
 
     /**
      * Find the sign for a number . This routine looks for a sign (+/-) at the
@@ -131,19 +126,19 @@ public class ByteParser {
      */
     private int checkSign() {
 
-<span class="fc" id="L134">        this.foundSign = false;</span>
+<span class="fc" id="L129">        this.foundSign = false;</span>
 
-<span class="fc bfc" id="L136" title="All 2 branches covered.">        if (this.input[this.offset] == '+') {</span>
-<span class="fc" id="L137">            this.foundSign = true;</span>
-<span class="fc" id="L138">            this.offset++;</span>
-<span class="fc" id="L139">            return 1;</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">        } else if (this.input[this.offset] == '-') {</span>
-<span class="fc" id="L141">            this.foundSign = true;</span>
-<span class="fc" id="L142">            this.offset++;</span>
-<span class="fc" id="L143">            return -1;</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        if (this.input[this.offset] == '+') {</span>
+<span class="fc" id="L132">            this.foundSign = true;</span>
+<span class="fc" id="L133">            this.offset++;</span>
+<span class="fc" id="L134">            return 1;</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        } else if (this.input[this.offset] == '-') {</span>
+<span class="fc" id="L136">            this.foundSign = true;</span>
+<span class="fc" id="L137">            this.offset++;</span>
+<span class="fc" id="L138">            return -1;</span>
         }
 
-<span class="fc" id="L146">        return 1;</span>
+<span class="fc" id="L141">        return 1;</span>
     }
 
     /**
@@ -158,18 +153,18 @@ public class ByteParser {
      */
     private double getBareInteger(int length) {
 
-<span class="fc" id="L161">        int startOffset = this.offset;</span>
-<span class="fc" id="L162">        double number = 0;</span>
+<span class="fc" id="L156">        int startOffset = this.offset;</span>
+<span class="fc" id="L157">        double number = 0;</span>
 
-<span class="pc bpc" id="L164" title="1 of 6 branches missed.">        while (length &gt; 0 &amp;&amp; this.input[this.offset] &gt;= '0' &amp;&amp; this.input[this.offset] &lt;= '9') {</span>
+<span class="pc bpc" id="L159" title="1 of 6 branches missed.">        while (length &gt; 0 &amp;&amp; this.input[this.offset] &gt;= '0' &amp;&amp; this.input[this.offset] &lt;= '9') {</span>
 
-<span class="fc" id="L166">            number *= ByteParser.NUMBER_BASE;</span>
-<span class="fc" id="L167">            number += this.input[this.offset] - '0';</span>
-<span class="fc" id="L168">            this.offset++;</span>
-<span class="fc" id="L169">            length--;</span>
+<span class="fc" id="L161">            number *= ByteParser.NUMBER_BASE;</span>
+<span class="fc" id="L162">            number += this.input[this.offset] - '0';</span>
+<span class="fc" id="L163">            this.offset++;</span>
+<span class="fc" id="L164">            length--;</span>
         }
-<span class="fc" id="L171">        this.numberLength = this.offset - startOffset;</span>
-<span class="fc" id="L172">        return number;</span>
+<span class="fc" id="L166">        this.numberLength = this.offset - startOffset;</span>
+<span class="fc" id="L167">        return number;</span>
     }
 
     /**
@@ -178,7 +173,7 @@ public class ByteParser {
      *             if the double was in an unknown format
      */
     public boolean getBoolean() throws FormatException {
-<span class="fc" id="L181">        return getBoolean(this.input.length - this.offset);</span>
+<span class="fc" id="L176">        return getBoolean(this.input.length - this.offset);</span>
     }
 
     /**
@@ -190,34 +185,23 @@ public class ByteParser {
      */
     public boolean getBoolean(int length) throws FormatException {
 
-<span class="fc" id="L193">        int startOffset = this.offset;</span>
-<span class="fc" id="L194">        length -= skipWhite(length);</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">        if (length == 0) {</span>
-<span class="fc" id="L196">            throw new FormatException(&quot;Blank boolean field&quot;);</span>
+<span class="fc" id="L188">        int startOffset = this.offset;</span>
+<span class="fc" id="L189">        length -= skipWhite(length);</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        if (length == 0) {</span>
+<span class="fc" id="L191">            throw new FormatException(&quot;Blank boolean field&quot;);</span>
         }
 
-<span class="fc" id="L199">        boolean value = false;</span>
-<span class="pc bpc" id="L200" title="1 of 4 branches missed.">        if (this.input[this.offset] == 'T' || this.input[this.offset] == 't') {</span>
-<span class="fc" id="L201">            value = true;</span>
-<span class="pc bpc" id="L202" title="1 of 4 branches missed.">        } else if (this.input[this.offset] != 'F' &amp;&amp; this.input[this.offset] != 'f') {</span>
-<span class="fc" id="L203">            this.numberLength = 0;</span>
-<span class="fc" id="L204">            this.offset = startOffset;</span>
-<span class="fc" id="L205">            throw new FormatException(&quot;Invalid boolean value&quot;);</span>
+<span class="fc" id="L194">        boolean value = false;</span>
+<span class="pc bpc" id="L195" title="1 of 4 branches missed.">        if (this.input[this.offset] == 'T' || this.input[this.offset] == 't') {</span>
+<span class="fc" id="L196">            value = true;</span>
+<span class="pc bpc" id="L197" title="1 of 4 branches missed.">        } else if (this.input[this.offset] != 'F' &amp;&amp; this.input[this.offset] != 'f') {</span>
+<span class="fc" id="L198">            this.numberLength = 0;</span>
+<span class="fc" id="L199">            this.offset = startOffset;</span>
+<span class="fc" id="L200">            throw new FormatException(&quot;Invalid boolean value&quot;);</span>
         }
-<span class="fc" id="L207">        this.offset++;</span>
-<span class="fc" id="L208">        length--;</span>
-
-<span class="pc bpc" id="L210" title="1 of 4 branches missed.">        if (this.fillFields &amp;&amp; length &gt; 0) {</span>
-<span class="fc bfc" id="L211" title="All 2 branches covered.">            if (isWhite(length)) {</span>
-<span class="fc" id="L212">                this.offset += length;</span>
-            } else {
-<span class="fc" id="L214">                this.numberLength = 0;</span>
-<span class="fc" id="L215">                this.offset = startOffset;</span>
-<span class="fc" id="L216">                throw new FormatException(&quot;Non-white following boolean&quot;);</span>
-            }
-        }
-<span class="fc" id="L219">        this.numberLength = this.offset - startOffset;</span>
-<span class="fc" id="L220">        return value;</span>
+<span class="fc" id="L202">        this.offset++;</span>
+<span class="fc" id="L203">        this.numberLength = this.offset - startOffset;</span>
+<span class="fc" id="L204">        return value;</span>
     }
 
     /**
@@ -225,7 +209,7 @@ public class ByteParser {
      */
     @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;intended exposure of mutable data&quot;)
     public byte[] getBuffer() {
-<span class="fc" id="L228">        return this.input;</span>
+<span class="fc" id="L212">        return this.input;</span>
     }
 
     /**
@@ -237,7 +221,7 @@ public class ByteParser {
      *             if the double was in an unknown format
      */
     public double getDouble() throws FormatException {
-<span class="fc" id="L240">        return getDouble(this.input.length - this.offset);</span>
+<span class="fc" id="L224">        return getDouble(this.input.length - this.offset);</span>
     }
 
     /**
@@ -250,100 +234,84 @@ public class ByteParser {
      *             if the double was in an unknown format
      */
     public double getDouble(int length) throws FormatException {
-<span class="fc" id="L253">        int startOffset = this.offset;</span>
-<span class="fc" id="L254">        boolean error = true;</span>
-<span class="fc" id="L255">        double number = 0;</span>
+<span class="fc" id="L237">        int startOffset = this.offset;</span>
+<span class="fc" id="L238">        boolean error = true;</span>
+<span class="fc" id="L239">        double number = 0;</span>
         // Skip initial blanks.
-<span class="fc" id="L257">        length -= skipWhite(length);</span>
-<span class="fc bfc" id="L258" title="All 2 branches covered.">        if (length == 0) {</span>
-<span class="fc" id="L259">            this.numberLength = this.offset - startOffset;</span>
-<span class="fc" id="L260">            return 0;</span>
+<span class="fc" id="L241">        length -= skipWhite(length);</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">        if (length == 0) {</span>
+<span class="fc" id="L243">            this.numberLength = this.offset - startOffset;</span>
+<span class="fc" id="L244">            return 0;</span>
         }
-<span class="fc" id="L262">        double mantissaSign = checkSign();</span>
-<span class="fc bfc" id="L263" title="All 2 branches covered.">        if (this.foundSign) {</span>
-<span class="fc" id="L264">            length--;</span>
+<span class="fc" id="L246">        double mantissaSign = checkSign();</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">        if (this.foundSign) {</span>
+<span class="fc" id="L248">            length--;</span>
         }
         // Look for the special strings NaN, Inf,
-<span class="fc bfc" id="L267" title="All 2 branches covered.">        if (isCaseInsensitiv(length, ByteParser.NOT_A_NUMBER_LENGTH, ByteParser.NOT_A_NUMBER_LOWER, ByteParser.NOT_A_NUMBER_UPPER)) {</span>
-<span class="fc" id="L268">            number = Double.NaN;</span>
-<span class="fc" id="L269">            length -= ByteParser.NOT_A_NUMBER_LENGTH;</span>
-<span class="fc" id="L270">            this.offset += ByteParser.NOT_A_NUMBER_LENGTH;</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">        if (isCaseInsensitiv(length, ByteParser.NOT_A_NUMBER_LENGTH, ByteParser.NOT_A_NUMBER_LOWER, ByteParser.NOT_A_NUMBER_UPPER)) {</span>
+<span class="fc" id="L252">            number = Double.NaN;</span>
+<span class="fc" id="L253">            this.offset += ByteParser.NOT_A_NUMBER_LENGTH;</span>
             // Look for the longer string first then try the shorter.
-<span class="fc bfc" id="L272" title="All 2 branches covered.">        } else if (isCaseInsensitiv(length, ByteParser.INFINITY_LENGTH, ByteParser.INFINITY_LOWER, ByteParser.INFINITY_UPPER)) {</span>
-<span class="fc" id="L273">            number = Double.POSITIVE_INFINITY;</span>
-<span class="fc" id="L274">            length -= ByteParser.INFINITY_LENGTH;</span>
-<span class="fc" id="L275">            this.offset += ByteParser.INFINITY_LENGTH;</span>
-<span class="fc bfc" id="L276" title="All 2 branches covered.">        } else if (isCaseInsensitiv(length, ByteParser.INFINITY_SHORTCUT_LENGTH, ByteParser.INFINITY_LOWER, ByteParser.INFINITY_UPPER)) {</span>
-<span class="fc" id="L277">            number = Double.POSITIVE_INFINITY;</span>
-<span class="fc" id="L278">            length -= ByteParser.INFINITY_SHORTCUT_LENGTH;</span>
-<span class="fc" id="L279">            this.offset += ByteParser.INFINITY_SHORTCUT_LENGTH;</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        } else if (isCaseInsensitiv(length, ByteParser.INFINITY_LENGTH, ByteParser.INFINITY_LOWER, ByteParser.INFINITY_UPPER)) {</span>
+<span class="fc" id="L256">            number = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L257">            this.offset += ByteParser.INFINITY_LENGTH;</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">        } else if (isCaseInsensitiv(length, ByteParser.INFINITY_SHORTCUT_LENGTH, ByteParser.INFINITY_LOWER, ByteParser.INFINITY_UPPER)) {</span>
+<span class="fc" id="L259">            number = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L260">            this.offset += ByteParser.INFINITY_SHORTCUT_LENGTH;</span>
         } else {
-<span class="fc" id="L281">            number = getBareInteger(length); // This will update offset</span>
-<span class="fc" id="L282">            length -= this.numberLength; // Set by getBareInteger</span>
-<span class="fc bfc" id="L283" title="All 2 branches covered.">            if (this.numberLength &gt; 0) {</span>
-<span class="fc" id="L284">                error = false;</span>
+<span class="fc" id="L262">            number = getBareInteger(length); // This will update offset</span>
+<span class="fc" id="L263">            length -= this.numberLength; // Set by getBareInteger</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">            if (this.numberLength &gt; 0) {</span>
+<span class="fc" id="L265">                error = false;</span>
             }
             // Check for fractional values after decimal
-<span class="pc bpc" id="L287" title="1 of 4 branches missed.">            if (length &gt; 0 &amp;&amp; this.input[this.offset] == '.') {</span>
-<span class="fc" id="L288">                this.offset++;</span>
-<span class="fc" id="L289">                length--;</span>
-<span class="fc" id="L290">                double numerator = getBareInteger(length);</span>
-<span class="fc bfc" id="L291" title="All 2 branches covered.">                if (numerator &gt; 0) {</span>
-<span class="fc" id="L292">                    number += numerator / Math.pow(ByteParser.NUMBER_BASE_DOUBLE, this.numberLength);</span>
+<span class="pc bpc" id="L268" title="1 of 4 branches missed.">            if (length &gt; 0 &amp;&amp; this.input[this.offset] == '.') {</span>
+<span class="fc" id="L269">                this.offset++;</span>
+<span class="fc" id="L270">                length--;</span>
+<span class="fc" id="L271">                double numerator = getBareInteger(length);</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">                if (numerator &gt; 0) {</span>
+<span class="fc" id="L273">                    number += numerator / Math.pow(ByteParser.NUMBER_BASE_DOUBLE, this.numberLength);</span>
                 }
-<span class="fc" id="L294">                length -= this.numberLength;</span>
-<span class="pc bpc" id="L295" title="1 of 2 branches missed.">                if (this.numberLength &gt; 0) {</span>
-<span class="fc" id="L296">                    error = false;</span>
+<span class="fc" id="L275">                length -= this.numberLength;</span>
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">                if (this.numberLength &gt; 0) {</span>
+<span class="fc" id="L277">                    error = false;</span>
                 }
             }
 
-<span class="fc bfc" id="L300" title="All 2 branches covered.">            if (error) {</span>
-<span class="fc" id="L301">                this.offset = startOffset;</span>
-<span class="fc" id="L302">                this.numberLength = 0;</span>
-<span class="fc" id="L303">                throw new FormatException(&quot;Invalid real field&quot;);</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">            if (error) {</span>
+<span class="fc" id="L282">                this.offset = startOffset;</span>
+<span class="fc" id="L283">                this.numberLength = 0;</span>
+<span class="fc" id="L284">                throw new FormatException(&quot;Invalid real field&quot;);</span>
             }
 
             // Look for an exponent ,Our Fortran heritage means that we allow
             // 'D' for the exponent
             // indicator.
-<span class="pc bpc" id="L309" title="4 of 10 branches missed.">            if (length &gt; 0 &amp;&amp; (this.input[this.offset] == 'e' || this.input[this.offset] == 'E' || this.input[this.offset] == 'd' || this.input[this.offset] == 'D')) {</span>
-<span class="fc" id="L310">                this.offset++;</span>
-<span class="fc" id="L311">                length--;</span>
-<span class="pc bpc" id="L312" title="1 of 2 branches missed.">                if (length &gt; 0) {</span>
-<span class="fc" id="L313">                    int sign = checkSign();</span>
-<span class="fc bfc" id="L314" title="All 2 branches covered.">                    if (this.foundSign) {</span>
-<span class="fc" id="L315">                        length--;</span>
+<span class="pc bpc" id="L290" title="4 of 10 branches missed.">            if (length &gt; 0 &amp;&amp; (this.input[this.offset] == 'e' || this.input[this.offset] == 'E' || this.input[this.offset] == 'd' || this.input[this.offset] == 'D')) {</span>
+<span class="fc" id="L291">                this.offset++;</span>
+<span class="fc" id="L292">                length--;</span>
+<span class="pc bpc" id="L293" title="1 of 2 branches missed.">                if (length &gt; 0) {</span>
+<span class="fc" id="L294">                    int sign = checkSign();</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">                    if (this.foundSign) {</span>
+<span class="fc" id="L296">                        length--;</span>
                     }
 
-<span class="fc" id="L318">                    int exponent = (int) getBareInteger(length);</span>
+<span class="fc" id="L299">                    int exponent = (int) getBareInteger(length);</span>
 
                     // For very small numbers we try to miminize
                     // effects of denormalization.
-<span class="fc bfc" id="L322" title="All 2 branches covered.">                    if (exponent * sign &gt; ByteParser.EXPONENT_DENORMALISATION_CORR_LIMIT) {</span>
-<span class="fc" id="L323">                        number *= Math.pow(ByteParser.NUMBER_BASE_DOUBLE, exponent * sign);</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">                    if (exponent * sign &gt; ByteParser.EXPONENT_DENORMALISATION_CORR_LIMIT) {</span>
+<span class="fc" id="L304">                        number *= Math.pow(ByteParser.NUMBER_BASE_DOUBLE, exponent * sign);</span>
                     } else {
-<span class="fc" id="L325">                        number =</span>
+<span class="fc" id="L306">                        number =</span>
                                 ByteParser.EXPONENT_DENORMALISATION_FACTOR
                                         * (number * Math.pow(ByteParser.NUMBER_BASE_DOUBLE, exponent * sign + ByteParser.EXPONENT_DENORMALISATION_CORR_LIMIT * -1));
                     }
-<span class="fc" id="L329">                    length -= this.numberLength;</span>
                 }
             }
         }
-
-<span class="fc bfc" id="L334" title="All 4 branches covered.">        if (this.fillFields &amp;&amp; length &gt; 0) {</span>
-
-<span class="fc bfc" id="L336" title="All 2 branches covered.">            if (isWhite(length)) {</span>
-<span class="fc" id="L337">                this.offset += length;</span>
-            } else {
-<span class="fc" id="L339">                this.numberLength = 0;</span>
-<span class="fc" id="L340">                this.offset = startOffset;</span>
-<span class="fc" id="L341">                throw new FormatException(&quot;Non-blanks following real.&quot;);</span>
-            }
-        }
-
-<span class="fc" id="L345">        this.numberLength = this.offset - startOffset;</span>
-<span class="fc" id="L346">        return mantissaSign * number;</span>
+<span class="fc" id="L313">        this.numberLength = this.offset - startOffset;</span>
+<span class="fc" id="L314">        return mantissaSign * number;</span>
     }
 
     /**
@@ -352,7 +320,7 @@ public class ByteParser {
      *             if the float was in an unknown format
      */
     public float getFloat() throws FormatException {
-<span class="fc" id="L355">        return (float) getDouble(this.input.length - this.offset);</span>
+<span class="fc" id="L323">        return (float) getDouble(this.input.length - this.offset);</span>
     }
 
     /**
@@ -363,7 +331,7 @@ public class ByteParser {
      *             if the float was in an unknown format
      */
     public float getFloat(int length) throws FormatException {
-<span class="fc" id="L366">        return (float) getDouble(length);</span>
+<span class="fc" id="L334">        return (float) getDouble(length);</span>
     }
 
     /**
@@ -372,7 +340,7 @@ public class ByteParser {
      *             if the integer was in an unknown format
      */
     public int getInt() throws FormatException {
-<span class="fc" id="L375">        return getInt(this.input.length - this.offset);</span>
+<span class="fc" id="L343">        return getInt(this.input.length - this.offset);</span>
     }
 
     /**
@@ -384,47 +352,36 @@ public class ByteParser {
      *             if the integer was in an unknown format
      */
     public int getInt(int length) throws FormatException {
-<span class="fc" id="L387">        int startOffset = this.offset;</span>
+<span class="fc" id="L355">        int startOffset = this.offset;</span>
 
-<span class="fc" id="L389">        length -= skipWhite(length);</span>
-<span class="fc bfc" id="L390" title="All 2 branches covered.">        if (length == 0) {</span>
-<span class="fc" id="L391">            this.numberLength = this.offset - startOffset;</span>
-<span class="fc" id="L392">            return 0;</span>
+<span class="fc" id="L357">        length -= skipWhite(length);</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">        if (length == 0) {</span>
+<span class="fc" id="L359">            this.numberLength = this.offset - startOffset;</span>
+<span class="fc" id="L360">            return 0;</span>
         }
 
-<span class="fc" id="L395">        int number = 0;</span>
-<span class="fc" id="L396">        boolean error = true;</span>
+<span class="fc" id="L363">        int number = 0;</span>
+<span class="fc" id="L364">        boolean error = true;</span>
 
-<span class="fc" id="L398">        int sign = checkSign();</span>
-<span class="fc bfc" id="L399" title="All 2 branches covered.">        if (this.foundSign) {</span>
-<span class="fc" id="L400">            length--;</span>
+<span class="fc" id="L366">        int sign = checkSign();</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">        if (this.foundSign) {</span>
+<span class="fc" id="L368">            length--;</span>
         }
 
-<span class="fc bfc" id="L403" title="All 6 branches covered.">        while (length &gt; 0 &amp;&amp; this.input[this.offset] &gt;= '0' &amp;&amp; this.input[this.offset] &lt;= '9') {</span>
-<span class="fc" id="L404">            number = number * ByteParser.NUMBER_BASE + this.input[this.offset] - '0';</span>
-<span class="fc" id="L405">            this.offset++;</span>
-<span class="fc" id="L406">            length--;</span>
-<span class="fc" id="L407">            error = false;</span>
+<span class="fc bfc" id="L371" title="All 6 branches covered.">        while (length &gt; 0 &amp;&amp; this.input[this.offset] &gt;= '0' &amp;&amp; this.input[this.offset] &lt;= '9') {</span>
+<span class="fc" id="L372">            number = number * ByteParser.NUMBER_BASE + this.input[this.offset] - '0';</span>
+<span class="fc" id="L373">            this.offset++;</span>
+<span class="fc" id="L374">            length--;</span>
+<span class="fc" id="L375">            error = false;</span>
         }
 
-<span class="fc bfc" id="L410" title="All 2 branches covered.">        if (error) {</span>
-<span class="fc" id="L411">            this.numberLength = 0;</span>
-<span class="fc" id="L412">            this.offset = startOffset;</span>
-<span class="fc" id="L413">            throw new FormatException(&quot;Invalid Integer&quot;);</span>
+<span class="fc bfc" id="L378" title="All 2 branches covered.">        if (error) {</span>
+<span class="fc" id="L379">            this.numberLength = 0;</span>
+<span class="fc" id="L380">            this.offset = startOffset;</span>
+<span class="fc" id="L381">            throw new FormatException(&quot;Invalid Integer&quot;);</span>
         }
-
-<span class="fc bfc" id="L416" title="All 4 branches covered.">        if (length &gt; 0 &amp;&amp; this.fillFields) {</span>
-<span class="fc bfc" id="L417" title="All 2 branches covered.">            if (isWhite(length)) {</span>
-<span class="fc" id="L418">                this.offset += length;</span>
-            } else {
-<span class="fc" id="L420">                this.numberLength = 0;</span>
-<span class="fc" id="L421">                this.offset = startOffset;</span>
-<span class="fc" id="L422">                throw new FormatException(&quot;Non-white following integer&quot;);</span>
-            }
-        }
-
-<span class="fc" id="L426">        this.numberLength = this.offset - startOffset;</span>
-<span class="fc" id="L427">        return sign * number;</span>
+<span class="fc" id="L383">        this.numberLength = this.offset - startOffset;</span>
+<span class="fc" id="L384">        return sign * number;</span>
     }
 
     /**
@@ -436,47 +393,37 @@ public class ByteParser {
      */
     public long getLong(int length) throws FormatException {
 
-<span class="fc" id="L439">        int startOffset = this.offset;</span>
+<span class="fc" id="L396">        int startOffset = this.offset;</span>
 
         // Skip white space.
-<span class="fc" id="L442">        length -= skipWhite(length);</span>
-<span class="fc bfc" id="L443" title="All 2 branches covered.">        if (length == 0) {</span>
-<span class="fc" id="L444">            this.numberLength = this.offset - startOffset;</span>
-<span class="fc" id="L445">            return 0;</span>
+<span class="fc" id="L399">        length -= skipWhite(length);</span>
+<span class="fc bfc" id="L400" title="All 2 branches covered.">        if (length == 0) {</span>
+<span class="fc" id="L401">            this.numberLength = this.offset - startOffset;</span>
+<span class="fc" id="L402">            return 0;</span>
         }
 
-<span class="fc" id="L448">        long number = 0;</span>
-<span class="fc" id="L449">        boolean error = true;</span>
+<span class="fc" id="L405">        long number = 0;</span>
+<span class="fc" id="L406">        boolean error = true;</span>
 
-<span class="fc" id="L451">        long sign = checkSign();</span>
-<span class="fc bfc" id="L452" title="All 2 branches covered.">        if (this.foundSign) {</span>
-<span class="fc" id="L453">            length--;</span>
+<span class="fc" id="L408">        long sign = checkSign();</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">        if (this.foundSign) {</span>
+<span class="fc" id="L410">            length--;</span>
         }
 
-<span class="fc bfc" id="L456" title="All 6 branches covered.">        while (length &gt; 0 &amp;&amp; this.input[this.offset] &gt;= '0' &amp;&amp; this.input[this.offset] &lt;= '9') {</span>
-<span class="fc" id="L457">            number = number * ByteParser.NUMBER_BASE + this.input[this.offset] - '0';</span>
-<span class="fc" id="L458">            error = false;</span>
-<span class="fc" id="L459">            this.offset++;</span>
-<span class="fc" id="L460">            length--;</span>
+<span class="fc bfc" id="L413" title="All 6 branches covered.">        while (length &gt; 0 &amp;&amp; this.input[this.offset] &gt;= '0' &amp;&amp; this.input[this.offset] &lt;= '9') {</span>
+<span class="fc" id="L414">            number = number * ByteParser.NUMBER_BASE + this.input[this.offset] - '0';</span>
+<span class="fc" id="L415">            error = false;</span>
+<span class="fc" id="L416">            this.offset++;</span>
+<span class="fc" id="L417">            length--;</span>
         }
 
-<span class="fc bfc" id="L463" title="All 2 branches covered.">        if (error) {</span>
-<span class="fc" id="L464">            this.numberLength = 0;</span>
-<span class="fc" id="L465">            this.offset = startOffset;</span>
-<span class="fc" id="L466">            throw new FormatException(&quot;Invalid long number&quot;);</span>
+<span class="fc bfc" id="L420" title="All 2 branches covered.">        if (error) {</span>
+<span class="fc" id="L421">            this.numberLength = 0;</span>
+<span class="fc" id="L422">            this.offset = startOffset;</span>
+<span class="fc" id="L423">            throw new FormatException(&quot;Invalid long number&quot;);</span>
         }
-
-<span class="fc bfc" id="L469" title="All 4 branches covered.">        if (length &gt; 0 &amp;&amp; this.fillFields) {</span>
-<span class="fc bfc" id="L470" title="All 2 branches covered.">            if (isWhite(length)) {</span>
-<span class="fc" id="L471">                this.offset += length;</span>
-            } else {
-<span class="fc" id="L473">                this.offset = startOffset;</span>
-<span class="fc" id="L474">                this.numberLength = 0;</span>
-<span class="fc" id="L475">                throw new FormatException(&quot;Non-white following long&quot;);</span>
-            }
-        }
-<span class="fc" id="L478">        this.numberLength = this.offset - startOffset;</span>
-<span class="fc" id="L479">        return sign * number;</span>
+<span class="fc" id="L425">        this.numberLength = this.offset - startOffset;</span>
+<span class="fc" id="L426">        return sign * number;</span>
     }
 
     /**
@@ -484,7 +431,7 @@ public class ByteParser {
      *         the length of the previous String returned).
      */
     public int getNumberLength() {
-<span class="fc" id="L487">        return this.numberLength;</span>
+<span class="fc" id="L434">        return this.numberLength;</span>
     }
 
     /**
@@ -493,7 +440,7 @@ public class ByteParser {
      * @return The current offset within the buffer.
      */
     public int getOffset() {
-<span class="fc" id="L496">        return this.offset;</span>
+<span class="fc" id="L443">        return this.offset;</span>
     }
 
     /**
@@ -503,34 +450,22 @@ public class ByteParser {
      */
     public String getString(int length) {
 
-<span class="fc" id="L506">        String s = AsciiFuncs.asciiString(this.input, this.offset, length);</span>
-<span class="fc" id="L507">        this.offset += length;</span>
-<span class="fc" id="L508">        this.numberLength = length;</span>
-<span class="fc" id="L509">        return s;</span>
+<span class="fc" id="L453">        String s = AsciiFuncs.asciiString(this.input, this.offset, length);</span>
+<span class="fc" id="L454">        this.offset += length;</span>
+<span class="fc" id="L455">        this.numberLength = length;</span>
+<span class="fc" id="L456">        return s;</span>
     }
 
     private boolean isCaseInsensitiv(int length, int constantLength, byte[] lowerConstant, byte[] upperConstant) {
-<span class="pc bpc" id="L513" title="1 of 2 branches missed.">        if (length &lt; constantLength) {</span>
-<span class="nc" id="L514">            return false;</span>
+<span class="pc bpc" id="L460" title="1 of 2 branches missed.">        if (length &lt; constantLength) {</span>
+<span class="nc" id="L461">            return false;</span>
         }
-<span class="fc bfc" id="L516" title="All 2 branches covered.">        for (int i = 0; i &lt; constantLength; i++) {</span>
-<span class="fc bfc" id="L517" title="All 4 branches covered.">            if (this.input[this.offset + i] != lowerConstant[i] &amp;&amp; this.input[this.offset + i] != upperConstant[i]) {</span>
-<span class="fc" id="L518">                return false;</span>
+<span class="fc bfc" id="L463" title="All 2 branches covered.">        for (int i = 0; i &lt; constantLength; i++) {</span>
+<span class="fc bfc" id="L464" title="All 4 branches covered.">            if (this.input[this.offset + i] != lowerConstant[i] &amp;&amp; this.input[this.offset + i] != upperConstant[i]) {</span>
+<span class="fc" id="L465">                return false;</span>
             }
         }
-<span class="fc" id="L521">        return true;</span>
-    }
-
-    /**
-     * @return if a region is blank?
-     * @param length
-     *            The length of the region to be tested
-     */
-    private boolean isWhite(int length) {
-<span class="fc" id="L530">        int oldOffset = this.offset;</span>
-<span class="fc bfc" id="L531" title="All 2 branches covered.">        boolean value = skipWhite(length) == length;</span>
-<span class="fc" id="L532">        this.offset = oldOffset;</span>
-<span class="fc" id="L533">        return value;</span>
+<span class="fc" id="L468">        return true;</span>
     }
 
     /**
@@ -541,20 +476,9 @@ public class ByteParser {
      */
     @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;intended exposure of mutable data&quot;)
     public void setBuffer(byte[] buf) {
-<span class="fc" id="L544">        this.input = buf;</span>
-<span class="fc" id="L545">        this.offset = 0;</span>
-<span class="fc" id="L546">    }</span>
-
-    /**
-     * Do we require a field to completely fill up the specified length (with
-     * optional leading and trailing white space.
-     * 
-     * @param flag
-     *            Is filling required?
-     */
-    public void setFillFields(boolean flag) {
-<span class="fc" id="L556">        this.fillFields = flag;</span>
-<span class="fc" id="L557">    }</span>
+<span class="fc" id="L479">        this.input = buf;</span>
+<span class="fc" id="L480">        this.offset = 0;</span>
+<span class="fc" id="L481">    }</span>
 
     /**
      * Set the offset into the array.
@@ -563,8 +487,8 @@ public class ByteParser {
      *            The desired offset from the beginning of the array.
      */
     public void setOffset(int offset) {
-<span class="fc" id="L566">        this.offset = offset;</span>
-<span class="fc" id="L567">    }</span>
+<span class="fc" id="L490">        this.offset = offset;</span>
+<span class="fc" id="L491">    }</span>
 
     /**
      * Skip bytes in the buffer.
@@ -573,8 +497,8 @@ public class ByteParser {
      *            number of bytes to skip
      */
     public void skip(int nBytes) {
-<span class="fc" id="L576">        this.offset += nBytes;</span>
-<span class="fc" id="L577">    }</span>
+<span class="fc" id="L500">        this.offset += nBytes;</span>
+<span class="fc" id="L501">    }</span>
 
     /**
      * Skip white space. This routine skips with space in the input .
@@ -586,13 +510,13 @@ public class ByteParser {
      */
     public int skipWhite(int length) {
         int i;
-<span class="fc bfc" id="L589" title="All 2 branches covered.">        for (i = 0; i &lt; length; i++) {</span>
-<span class="pc bpc" id="L590" title="3 of 8 branches missed.">            if (this.input[this.offset + i] != ' ' &amp;&amp; this.input[this.offset + i] != '\t' &amp;&amp; this.input[this.offset + i] != '\n' &amp;&amp; this.input[this.offset + i] != '\r') {</span>
-<span class="fc" id="L591">                break;</span>
+<span class="fc bfc" id="L513" title="All 2 branches covered.">        for (i = 0; i &lt; length; i++) {</span>
+<span class="pc bpc" id="L514" title="3 of 8 branches missed.">            if (this.input[this.offset + i] != ' ' &amp;&amp; this.input[this.offset + i] != '\t' &amp;&amp; this.input[this.offset + i] != '\n' &amp;&amp; this.input[this.offset + i] != '\r') {</span>
+<span class="fc" id="L515">                break;</span>
             }
         }
-<span class="fc" id="L594">        this.offset += i;</span>
-<span class="fc" id="L595">        return i;</span>
+<span class="fc" id="L518">        this.offset += i;</span>
+<span class="fc" id="L519">        return i;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

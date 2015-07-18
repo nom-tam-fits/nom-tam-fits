@@ -1,21 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HeaderCommentsMap.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">HeaderCommentsMap.java</span></div><h1>HeaderCommentsMap.java</h1><pre class="source lang-java linenums">/*
- * This class provides a modifiable map in which the comment fields for FITS
- * header keywords
- * produced by this library are set.  The map is a simple String -&gt; String
- * map where the key Strings are normally class:keyword:id where class is
- * the class name where the keyword is set, keyword is the keyword set and id
- * is an integer used to distinguish multiple instances.
- *
- * Most users need not worry about this class, but users who wish to customize
- * the appearance of FITS files may update the map.  The code itself is likely
- * to be needed to understand which values in the map must be modified.
- *
- * Note that the Header writing utilities look for the prefix ntf:: in comments
- * and if this is found, the comment is replaced by looking in this map for
- * a key given by the remainder of the original comment.
- */
-
-package nom.tam.fits;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HeaderCommentsMap.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">HeaderCommentsMap.java</span></div><h1>HeaderCommentsMap.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
 
 /*
  * #%L
@@ -48,61 +31,61 @@ package nom.tam.fits;
  * #L%
  */
 
-import java.util.HashMap;
-import java.util.Map;
+import nom.tam.fits.header.Standard;
 
+/**
+ * This class provides a modifiable map in which the comment fields for FITS
+ * header keywords produced by this library are set. The map is a simple String
+ * -&amp;gt; String map where the key Strings are normally class:keyword:id where
+ * class is the class name where the keyword is set, keyword is the keyword set
+ * and id is an integer used to distinguish multiple instances. Most users need
+ * not worry about this class, but users who wish to customize the appearance of
+ * FITS files may update the map. The code itself is likely to be needed to
+ * understand which values in the map must be modified.
+ */
+@Deprecated
 public final class HeaderCommentsMap {
 
-<span class="fc" id="L56">    private static Map&lt;String, String&gt; commentMap = new HashMap&lt;String, String&gt;();</span>
-    static {
-<span class="fc" id="L58">        HeaderCommentsMap.commentMap.put(&quot;header:extend:1&quot;, &quot;Extensions are permitted&quot;);</span>
-<span class="fc" id="L59">        HeaderCommentsMap.commentMap.put(&quot;header:simple:1&quot;, &quot;Java FITS: &quot; + new java.util.Date());</span>
-<span class="fc" id="L60">        HeaderCommentsMap.commentMap.put(&quot;header:xtension:1&quot;, &quot;Java FITS: &quot; + new java.util.Date());</span>
-<span class="fc" id="L61">        HeaderCommentsMap.commentMap.put(&quot;header:naxis:1&quot;, &quot;Dimensionality&quot;);</span>
-<span class="fc" id="L62">        HeaderCommentsMap.commentMap.put(&quot;header:extend:2&quot;, &quot;Extensions are permitted&quot;);</span>
-<span class="fc" id="L63">        HeaderCommentsMap.commentMap.put(&quot;asciitable:pcount:1&quot;, &quot;No group data&quot;);</span>
-<span class="fc" id="L64">        HeaderCommentsMap.commentMap.put(&quot;asciitable:gcount:1&quot;, &quot;One group&quot;);</span>
-<span class="fc" id="L65">        HeaderCommentsMap.commentMap.put(&quot;asciitable:tfields:1&quot;, &quot;Number of fields in table&quot;);</span>
-<span class="fc" id="L66">        HeaderCommentsMap.commentMap.put(&quot;asciitable:tbcolN:1&quot;, &quot;Column offset&quot;);</span>
-<span class="fc" id="L67">        HeaderCommentsMap.commentMap.put(&quot;asciitable:naxis1:1&quot;, &quot;Size of row in bytes&quot;);</span>
-<span class="fc" id="L68">        HeaderCommentsMap.commentMap.put(&quot;undefineddata:naxis1:1&quot;, &quot;Number of Bytes&quot;);</span>
-<span class="fc" id="L69">        HeaderCommentsMap.commentMap.put(&quot;undefineddata:extend:1&quot;, &quot;Extensions are permitted&quot;);</span>
-<span class="fc" id="L70">        HeaderCommentsMap.commentMap.put(&quot;binarytablehdu:pcount:1&quot;, &quot;Includes heap&quot;);</span>
-<span class="fc" id="L71">        HeaderCommentsMap.commentMap.put(&quot;binarytable:naxis1:1&quot;, &quot;Bytes per row&quot;);</span>
-<span class="fc" id="L72">        HeaderCommentsMap.commentMap.put(&quot;fits:checksum:1&quot;, &quot;as of &quot; + FitsDate.getFitsDateString());</span>
-<span class="fc" id="L73">        HeaderCommentsMap.commentMap.put(&quot;basichdu:extend:1&quot;, &quot;Allow extensions&quot;);</span>
-<span class="fc" id="L74">        HeaderCommentsMap.commentMap.put(&quot;basichdu:gcount:1&quot;, &quot;Required value&quot;);</span>
-<span class="fc" id="L75">        HeaderCommentsMap.commentMap.put(&quot;basichdu:pcount:1&quot;, &quot;Required value&quot;);</span>
-<span class="fc" id="L76">        HeaderCommentsMap.commentMap.put(&quot;imagedata:extend:1&quot;, &quot;Extension permitted&quot;);</span>
-<span class="fc" id="L77">        HeaderCommentsMap.commentMap.put(&quot;imagedata:pcount:1&quot;, &quot;No extra parameters&quot;);</span>
-<span class="fc" id="L78">        HeaderCommentsMap.commentMap.put(&quot;imagedata:gcount:1&quot;, &quot;One group&quot;);</span>
-<span class="fc" id="L79">        HeaderCommentsMap.commentMap.put(&quot;tablehdu:tfields:1&quot;, &quot;Number of table fields&quot;);</span>
-        /*
-         * Null entries: header:bitpix:1 header:simple:2 header:bitpix:2
-         * header:naxisN:1 header:naxis:2 undefineddata:pcount:1
-         * undefineddata:gcount:1 randomgroupsdata:naxis1:1
-         * randomgroupsdata:naxisN:1 randomgroupsdata:groups:1
-         * randomgroupsdata:gcount:1 randomgroupsdata:pcount:1
-         * binarytablehdu:theap:1 binarytablehdu:tdimN:1 asciitable:tformN:1
-         * asciitablehdu:tnullN:1 asciitablehdu:tfields:1 binarytable:pcount:1
-         * binarytable:gcount:1 binarytable:tfields:1 binarytable:tformN:1
-         * binarytable:tdimN:1 tablehdu:naxis2:1
-         */
-<span class="fc" id="L91">    }</span>
-
-<span class="fc" id="L93">    private HeaderCommentsMap() {</span>
-<span class="fc" id="L94">    }</span>
-
+    @Deprecated
     public static void deleteComment(String key) {
-<span class="fc" id="L97">        HeaderCommentsMap.commentMap.remove(key);</span>
-<span class="fc" id="L98">    }</span>
+<span class="fc" id="L51">        key = simplyfyKey(key);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (Standard value : Standard.values()) {</span>
+<span class="fc" id="L53">            value.setCommentByKey(key, &quot;&quot;);</span>
+        }
+<span class="fc" id="L55">    }</span>
 
+    @Deprecated
     public static String getComment(String key) {
-<span class="fc" id="L101">        return HeaderCommentsMap.commentMap.get(key);</span>
+<span class="fc" id="L59">        key = simplyfyKey(key);</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        for (Standard value : Standard.values()) {</span>
+<span class="fc" id="L61">            String comment = value.getCommentByKey(key);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            if (comment != null) {</span>
+<span class="fc" id="L63">                return comment;</span>
+            }
+        }
+<span class="nc" id="L66">        return null;</span>
     }
 
+    private static String simplyfyKey(String key) {
+<span class="fc" id="L70">        int firstDbPoint = key.indexOf(':');</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        if (firstDbPoint &gt; 0) {</span>
+<span class="fc" id="L72">            int secondDoublePoint = key.indexOf(':', firstDbPoint + 1);</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">            if (secondDoublePoint &gt; 0) {</span>
+<span class="fc" id="L74">                return key.substring(0, secondDoublePoint);</span>
+            }
+        }
+<span class="nc" id="L77">        return key;</span>
+    }
+
+    @Deprecated
     public static void updateComment(String key, String comment) {
-<span class="fc" id="L105">        HeaderCommentsMap.commentMap.put(key, comment);</span>
-<span class="fc" id="L106">    }</span>
+<span class="fc" id="L82">        key = simplyfyKey(key);</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        for (Standard value : Standard.values()) {</span>
+<span class="fc" id="L84">            value.setCommentByKey(key, comment);</span>
+        }
+<span class="fc" id="L86">    }</span>
+
+<span class="fc" id="L88">    private HeaderCommentsMap() {</span>
+<span class="fc" id="L89">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

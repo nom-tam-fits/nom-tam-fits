@@ -69,7 +69,7 @@
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>              }
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>          }
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          BasicHDU hdu = Fits.makeHDU(bimg);
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          BasicHDU&lt;?&gt; hdu = Fits.makeHDU(bimg);
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>          Header hdr = hdu.getHeader();
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>          hdr.addValue(<span class="jxr_string">"NEWKEY"</span>, <span class="jxr_string">"TESTVALUE"</span>, <span class="jxr_string">"Test keyword"</span>);
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>          BufferedFile bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/padding1.fits"</span>, <span class="jxr_string">"rw"</span>);
@@ -140,7 +140,7 @@
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>             }
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>         }
 <a class="jxr_linenumber" name="L134" href="#L134">134</a> 
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>         BasicHDU hdu = Fits.makeHDU(bimg);
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>         BasicHDU&lt;?&gt; hdu = Fits.makeHDU(bimg);
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>         f.addHDU(hdu);
 <a class="jxr_linenumber" name="L137" href="#L137">137</a> 
 <a class="jxr_linenumber" name="L138" href="#L138">138</a>         <em class="jxr_comment">// First create a FITS file with a truncated second HDU.</em>
@@ -148,11 +148,11 @@
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>         f.write(bf);
 <a class="jxr_linenumber" name="L141" href="#L141">141</a> 
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>         hdu.getHeader().setXtension(<span class="jxr_string">"IMAGE"</span>);
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>         Cursor curs = hdu.getHeader().iterator();
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>         Cursor&lt;String, HeaderCard&gt; curs = hdu.getHeader().iterator();
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>         <strong class="jxr_keyword">int</strong> cnt = 0;
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>         <em class="jxr_comment">// Write the header</em>
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>         <strong class="jxr_keyword">while</strong> (curs.hasNext()) {
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>             bf.write(((HeaderCard) curs.next()).toString().getBytes());
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>             bf.write(curs.next().toString().getBytes());
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>             cnt += 1;
 <a class="jxr_linenumber" name="L149" href="#L149">149</a>         }
 <a class="jxr_linenumber" name="L150" href="#L150">150</a> 

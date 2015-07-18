@@ -94,8 +94,8 @@
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>              <strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>          }
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>          Class xClass = x.getClass();
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>          Class yClass = y.getClass();
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>          Class&lt;?&gt; xClass = x.getClass();
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          Class&lt;?&gt; yClass = y.getClass();
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>          <strong class="jxr_keyword">if</strong> (xClass != yClass) {
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>              <strong class="jxr_keyword">return</strong> false;
@@ -207,7 +207,7 @@
 <a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_javadoccomment">     *            The desired dimensions.</em>
 <a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">     * @return An array object populated with a simple test pattern.</em>
 <a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Object generateArray(Class baseType, <strong class="jxr_keyword">int</strong>[] dims) {
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Object generateArray(Class&lt;?&gt; baseType, <strong class="jxr_keyword">int</strong>[] dims) {
 <a class="jxr_linenumber" name="L203" href="#L203">203</a> 
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>         <em class="jxr_comment">// Generate an array and populate it with a test pattern of</em>
 <a class="jxr_linenumber" name="L205" href="#L205">205</a>         <em class="jxr_comment">// data.</em>

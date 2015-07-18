@@ -31,9 +31,17 @@
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.EXTEND;
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.PCOUNT;
+
 import java.io.EOFException;
 import java.io.IOException;
 
+import nom.tam.fits.header.Standard;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -64,10 +72,10 @@ public class ImageData extends Data {
 
         private Class&lt;?&gt; type;
 
-<span class="fc" id="L67">        ArrayDesc(int[] dims, Class&lt;?&gt; type) {</span>
-<span class="fc" id="L68">            this.dims = dims;</span>
-<span class="fc" id="L69">            this.type = type;</span>
-<span class="fc" id="L70">        }</span>
+<span class="fc" id="L75">        ArrayDesc(int[] dims, Class&lt;?&gt; type) {</span>
+<span class="fc" id="L76">            this.dims = dims;</span>
+<span class="fc" id="L77">            this.type = type;</span>
+<span class="fc" id="L78">        }</span>
     }
 
     /**
@@ -76,13 +84,13 @@ public class ImageData extends Data {
      */
     protected class ImageDataTiler extends StandardImageTiler {
 
-<span class="fc" id="L79">        ImageDataTiler(RandomAccess o, long offset, ArrayDesc d) {</span>
-<span class="fc" id="L80">            super(o, offset, d.dims, d.type);</span>
-<span class="fc" id="L81">        }</span>
+<span class="fc" id="L87">        ImageDataTiler(RandomAccess o, long offset, ArrayDesc d) {</span>
+<span class="fc" id="L88">            super(o, offset, d.dims, d.type);</span>
+<span class="fc" id="L89">        }</span>
 
         @Override
         protected Object getMemoryImage() {
-<span class="fc" id="L85">            return ImageData.this.dataArray;</span>
+<span class="fc" id="L93">            return ImageData.this.dataArray;</span>
         }
     }
 
@@ -106,10 +114,10 @@ public class ImageData extends Data {
     /**
      * Create the equivalent of a null data element.
      */
-<span class="fc" id="L109">    public ImageData() {</span>
-<span class="fc" id="L110">        this.dataArray = new byte[0];</span>
-<span class="fc" id="L111">        this.byteSize = 0;</span>
-<span class="fc" id="L112">    }</span>
+<span class="fc" id="L117">    public ImageData() {</span>
+<span class="fc" id="L118">        this.dataArray = new byte[0];</span>
+<span class="fc" id="L119">        this.byteSize = 0;</span>
+<span class="fc" id="L120">    }</span>
 
     /**
      * Create an array from a header description. This is typically how data
@@ -121,10 +129,10 @@ public class ImageData extends Data {
      * @throws FitsException
      *             if there was a problem with the header description.
      */
-<span class="fc" id="L124">    public ImageData(Header h) throws FitsException {</span>
+<span class="fc" id="L132">    public ImageData(Header h) throws FitsException {</span>
 
-<span class="fc" id="L126">        this.dataDescription = parseHeader(h);</span>
-<span class="fc" id="L127">    }</span>
+<span class="fc" id="L134">        this.dataDescription = parseHeader(h);</span>
+<span class="fc" id="L135">    }</span>
 
     /**
      * Create an ImageData object using the specified object to initialize the
@@ -134,10 +142,10 @@ public class ImageData extends Data {
      *            The initial data array. This should be a primitive array but
      *            this is not checked currently.
      */
-<span class="fc" id="L137">    public ImageData(Object x) {</span>
-<span class="fc" id="L138">        this.dataArray = x;</span>
-<span class="fc" id="L139">        this.byteSize = ArrayFuncs.computeLSize(x);</span>
-<span class="fc" id="L140">    }</span>
+<span class="fc" id="L145">    public ImageData(Object x) {</span>
+<span class="fc" id="L146">        this.dataArray = x;</span>
+<span class="fc" id="L147">        this.byteSize = ArrayFuncs.computeLSize(x);</span>
+<span class="fc" id="L148">    }</span>
 
     /**
      * Fill header with keywords that describe image data.
@@ -150,61 +158,64 @@ public class ImageData extends Data {
     @Override
     protected void fillHeader(Header head) throws FitsException {
 
-<span class="fc bfc" id="L153" title="All 2 branches covered.">        if (this.dataArray == null) {</span>
-<span class="fc" id="L154">            head.nullImage();</span>
-<span class="fc" id="L155">            return;</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">        if (this.dataArray == null) {</span>
+<span class="fc" id="L162">            head.nullImage();</span>
+<span class="fc" id="L163">            return;</span>
         }
 
-<span class="fc" id="L158">        String classname = this.dataArray.getClass().getName();</span>
+<span class="fc" id="L166">        Standard.context(ImageData.class);</span>
+<span class="fc" id="L167">        String classname = this.dataArray.getClass().getName();</span>
 
-<span class="fc" id="L160">        int[] dimens = ArrayFuncs.getDimensions(this.dataArray);</span>
+<span class="fc" id="L169">        int[] dimens = ArrayFuncs.getDimensions(this.dataArray);</span>
 
-<span class="pc bpc" id="L162" title="2 of 4 branches missed.">        if (dimens == null || dimens.length == 0) {</span>
-<span class="nc" id="L163">            throw new FitsException(&quot;Image data object not array&quot;);</span>
+<span class="pc bpc" id="L171" title="2 of 4 branches missed.">        if (dimens == null || dimens.length == 0) {</span>
+<span class="nc" id="L172">            throw new FitsException(&quot;Image data object not array&quot;);</span>
         }
 
         int bitpix;
-<span class="pc bpc" id="L167" title="1 of 7 branches missed.">        switch (classname.charAt(dimens.length)) {</span>
+<span class="pc bpc" id="L176" title="1 of 7 branches missed.">        switch (classname.charAt(dimens.length)) {</span>
             case 'B':
-<span class="fc" id="L169">                bitpix = BasicHDU.BITPIX_BYTE;</span>
-<span class="fc" id="L170">                break;</span>
-            case 'S':
-<span class="fc" id="L172">                bitpix = BasicHDU.BITPIX_SHORT;</span>
-<span class="fc" id="L173">                break;</span>
-            case 'I':
-<span class="fc" id="L175">                bitpix = BasicHDU.BITPIX_INT;</span>
-<span class="fc" id="L176">                break;</span>
-            case 'J':
-<span class="fc" id="L178">                bitpix = BasicHDU.BITPIX_LONG;</span>
+<span class="fc" id="L178">                bitpix = BasicHDU.BITPIX_BYTE;</span>
 <span class="fc" id="L179">                break;</span>
-            case 'F':
-<span class="fc" id="L181">                bitpix = BasicHDU.BITPIX_FLOAT;</span>
+            case 'S':
+<span class="fc" id="L181">                bitpix = BasicHDU.BITPIX_SHORT;</span>
 <span class="fc" id="L182">                break;</span>
-            case 'D':
-<span class="fc" id="L184">                bitpix = BasicHDU.BITPIX_DOUBLE;</span>
+            case 'I':
+<span class="fc" id="L184">                bitpix = BasicHDU.BITPIX_INT;</span>
 <span class="fc" id="L185">                break;</span>
+            case 'J':
+<span class="fc" id="L187">                bitpix = BasicHDU.BITPIX_LONG;</span>
+<span class="fc" id="L188">                break;</span>
+            case 'F':
+<span class="fc" id="L190">                bitpix = BasicHDU.BITPIX_FLOAT;</span>
+<span class="fc" id="L191">                break;</span>
+            case 'D':
+<span class="fc" id="L193">                bitpix = BasicHDU.BITPIX_DOUBLE;</span>
+<span class="fc" id="L194">                break;</span>
             default:
-<span class="nc" id="L187">                throw new FitsException(&quot;Invalid Object Type for FITS data:&quot; + classname.charAt(dimens.length));</span>
+<span class="nc" id="L196">                throw new FitsException(&quot;Invalid Object Type for FITS data:&quot; + classname.charAt(dimens.length));</span>
         }
 
         // if this is neither a primary header nor an image extension,
         // make it a primary header
-<span class="fc" id="L192">        head.setSimple(true);</span>
-<span class="fc" id="L193">        head.setBitpix(bitpix);</span>
-<span class="fc" id="L194">        head.setNaxes(dimens.length);</span>
+<span class="fc" id="L201">        head.setSimple(true);</span>
+<span class="fc" id="L202">        head.setBitpix(bitpix);</span>
+<span class="fc" id="L203">        head.setNaxes(dimens.length);</span>
 
-<span class="fc bfc" id="L196" title="All 2 branches covered.">        for (int i = 1; i &lt;= dimens.length; i += 1) {</span>
-<span class="pc bpc" id="L197" title="1 of 2 branches missed.">            if (dimens[i - 1] == -1) {</span>
-<span class="nc" id="L198">                throw new FitsException(&quot;Unfilled array for dimension: &quot; + i);</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        for (int i = 1; i &lt;= dimens.length; i += 1) {</span>
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">            if (dimens[i - 1] == -1) {</span>
+<span class="nc" id="L207">                throw new FitsException(&quot;Unfilled array for dimension: &quot; + i);</span>
             }
-<span class="fc" id="L200">            head.setNaxis(i, dimens[dimens.length - i]);</span>
+<span class="fc" id="L209">            head.setNaxis(i, dimens[dimens.length - i]);</span>
         }
-<span class="fc" id="L202">        head.addValue(&quot;EXTEND&quot;, true, &quot;ntf::imagedata:extend:1&quot;); // Just in</span>
-                                                                  // case!
-<span class="fc" id="L204">        head.addValue(&quot;PCOUNT&quot;, 0, &quot;ntf::imagedata:pcount:1&quot;);</span>
-<span class="fc" id="L205">        head.addValue(&quot;GCOUNT&quot;, 1, &quot;ntf::imagedata:gcount:1&quot;);</span>
+        // Just in case!
+<span class="fc" id="L212">        head.addValue(EXTEND, true);</span>
 
-<span class="fc" id="L207">    }</span>
+<span class="fc" id="L214">        head.addValue(PCOUNT, 0);</span>
+<span class="fc" id="L215">        head.addValue(GCOUNT, 1);</span>
+
+<span class="fc" id="L217">        Standard.context(null);</span>
+<span class="fc" id="L218">    }</span>
 
     /**
      * Return the actual data. Note that this may return a null when the data is
@@ -215,25 +226,25 @@ public class ImageData extends Data {
     @Override
     public Object getData() {
 
-<span class="pc bpc" id="L218" title="1 of 4 branches missed.">        if (this.dataArray == null &amp;&amp; this.tiler != null) {</span>
+<span class="pc bpc" id="L229" title="1 of 4 branches missed.">        if (this.dataArray == null &amp;&amp; this.tiler != null) {</span>
             try {
-<span class="fc" id="L220">                this.dataArray = this.tiler.getCompleteImage();</span>
-<span class="nc" id="L221">            } catch (Exception e) {</span>
-<span class="nc" id="L222">                return null;</span>
-<span class="fc" id="L223">            }</span>
+<span class="fc" id="L231">                this.dataArray = this.tiler.getCompleteImage();</span>
+<span class="nc" id="L232">            } catch (Exception e) {</span>
+<span class="nc" id="L233">                return null;</span>
+<span class="fc" id="L234">            }</span>
         }
 
-<span class="fc" id="L226">        return this.dataArray;</span>
+<span class="fc" id="L237">        return this.dataArray;</span>
     }
 
     public StandardImageTiler getTiler() {
-<span class="fc" id="L230">        return this.tiler;</span>
+<span class="fc" id="L241">        return this.tiler;</span>
     }
 
     /** Get the size in bytes of the data */
     @Override
     protected long getTrueSize() {
-<span class="fc" id="L236">        return this.byteSize;</span>
+<span class="fc" id="L247">        return this.byteSize;</span>
     }
 
     protected ArrayDesc parseHeader(Header h) throws FitsException {
@@ -246,131 +257,131 @@ public class ImageData extends Data {
 
         Class&lt;?&gt; baseClass;
 
-<span class="fc" id="L249">        int gCount = h.getIntValue(&quot;GCOUNT&quot;, 1);</span>
-<span class="fc" id="L250">        int pCount = h.getIntValue(&quot;PCOUNT&quot;, 0);</span>
-<span class="pc bpc" id="L251" title="2 of 4 branches missed.">        if (gCount &gt; 1 || pCount != 0) {</span>
-<span class="nc" id="L252">            throw new FitsException(&quot;Group data treated as images&quot;);</span>
+<span class="fc" id="L260">        int gCount = h.getIntValue(GCOUNT, 1);</span>
+<span class="fc" id="L261">        int pCount = h.getIntValue(PCOUNT, 0);</span>
+<span class="pc bpc" id="L262" title="2 of 4 branches missed.">        if (gCount &gt; 1 || pCount != 0) {</span>
+<span class="nc" id="L263">            throw new FitsException(&quot;Group data treated as images&quot;);</span>
         }
 
-<span class="fc" id="L255">        bitpix = h.getIntValue(&quot;BITPIX&quot;, 0);</span>
+<span class="fc" id="L266">        bitpix = h.getIntValue(BITPIX, 0);</span>
 
-<span class="fc bfc" id="L257" title="All 2 branches covered.">        if (bitpix == BasicHDU.BITPIX_BYTE) {</span>
-<span class="fc" id="L258">            baseClass = Byte.TYPE;</span>
-<span class="fc bfc" id="L259" title="All 2 branches covered.">        } else if (bitpix == BasicHDU.BITPIX_SHORT) {</span>
-<span class="fc" id="L260">            baseClass = Short.TYPE;</span>
-<span class="fc bfc" id="L261" title="All 2 branches covered.">        } else if (bitpix == BasicHDU.BITPIX_INT) {</span>
-<span class="fc" id="L262">            baseClass = Integer.TYPE;</span>
-<span class="fc bfc" id="L263" title="All 2 branches covered.">        } else if (bitpix == BasicHDU.BITPIX_LONG) {</span>
-<span class="fc" id="L264">            baseClass = Long.TYPE;</span>
-<span class="fc bfc" id="L265" title="All 2 branches covered.">        } else if (bitpix == BasicHDU.BITPIX_FLOAT) {</span>
-<span class="fc" id="L266">            baseClass = Float.TYPE;</span>
-<span class="pc bpc" id="L267" title="1 of 2 branches missed.">        } else if (bitpix == BasicHDU.BITPIX_DOUBLE) {</span>
-<span class="fc" id="L268">            baseClass = Double.TYPE;</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">        if (bitpix == BasicHDU.BITPIX_BYTE) {</span>
+<span class="fc" id="L269">            baseClass = Byte.TYPE;</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">        } else if (bitpix == BasicHDU.BITPIX_SHORT) {</span>
+<span class="fc" id="L271">            baseClass = Short.TYPE;</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">        } else if (bitpix == BasicHDU.BITPIX_INT) {</span>
+<span class="fc" id="L273">            baseClass = Integer.TYPE;</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">        } else if (bitpix == BasicHDU.BITPIX_LONG) {</span>
+<span class="fc" id="L275">            baseClass = Long.TYPE;</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">        } else if (bitpix == BasicHDU.BITPIX_FLOAT) {</span>
+<span class="fc" id="L277">            baseClass = Float.TYPE;</span>
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">        } else if (bitpix == BasicHDU.BITPIX_DOUBLE) {</span>
+<span class="fc" id="L279">            baseClass = Double.TYPE;</span>
         } else {
-<span class="nc" id="L270">            throw new FitsException(&quot;Invalid BITPIX:&quot; + bitpix);</span>
+<span class="nc" id="L281">            throw new FitsException(&quot;Invalid BITPIX:&quot; + bitpix);</span>
         }
 
-<span class="fc" id="L273">        ndim = h.getIntValue(&quot;NAXIS&quot;, 0);</span>
-<span class="fc" id="L274">        dims = new int[ndim];</span>
+<span class="fc" id="L284">        ndim = h.getIntValue(NAXIS, 0);</span>
+<span class="fc" id="L285">        dims = new int[ndim];</span>
 
         // Note that we have to invert the order of the axes
         // for the FITS file to get the order in the array we
         // are generating.
 
-<span class="fc" id="L280">        this.byteSize = 1;</span>
-<span class="fc bfc" id="L281" title="All 2 branches covered.">        for (i = 0; i &lt; ndim; i += 1) {</span>
-<span class="fc" id="L282">            int cdim = h.getIntValue(&quot;NAXIS&quot; + (i + 1), 0);</span>
-<span class="pc bpc" id="L283" title="1 of 2 branches missed.">            if (cdim &lt; 0) {</span>
-<span class="nc" id="L284">                throw new FitsException(&quot;Invalid array dimension:&quot; + cdim);</span>
+<span class="fc" id="L291">        this.byteSize = 1;</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">        for (i = 0; i &lt; ndim; i += 1) {</span>
+<span class="fc" id="L293">            int cdim = h.getIntValue(NAXISn.n(i + 1), 0);</span>
+<span class="pc bpc" id="L294" title="1 of 2 branches missed.">            if (cdim &lt; 0) {</span>
+<span class="nc" id="L295">                throw new FitsException(&quot;Invalid array dimension:&quot; + cdim);</span>
             }
-<span class="fc" id="L286">            this.byteSize *= cdim;</span>
-<span class="fc" id="L287">            dims[ndim - i - 1] = cdim;</span>
+<span class="fc" id="L297">            this.byteSize *= cdim;</span>
+<span class="fc" id="L298">            dims[ndim - i - 1] = cdim;</span>
         }
-<span class="fc" id="L289">        this.byteSize *= Math.abs(bitpix) / FitsIO.BITS_OF_1_BYTE;</span>
-<span class="fc bfc" id="L290" title="All 2 branches covered.">        if (ndim == 0) {</span>
-<span class="fc" id="L291">            this.byteSize = 0;</span>
+<span class="fc" id="L300">        this.byteSize *= Math.abs(bitpix) / FitsIO.BITS_OF_1_BYTE;</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">        if (ndim == 0) {</span>
+<span class="fc" id="L302">            this.byteSize = 0;</span>
         }
-<span class="fc" id="L293">        return new ArrayDesc(dims, baseClass);</span>
+<span class="fc" id="L304">        return new ArrayDesc(dims, baseClass);</span>
     }
 
     @Override
     public void read(ArrayDataInput i) throws FitsException {
 
         // Don't need to read null data (noted by Jens Knudstrup)
-<span class="fc bfc" id="L300" title="All 2 branches covered.">        if (this.byteSize == 0) {</span>
-<span class="fc" id="L301">            return;</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">        if (this.byteSize == 0) {</span>
+<span class="fc" id="L312">            return;</span>
         }
-<span class="fc" id="L303">        setFileOffset(i);</span>
+<span class="fc" id="L314">        setFileOffset(i);</span>
 
-<span class="fc bfc" id="L305" title="All 2 branches covered.">        if (i instanceof RandomAccess) {</span>
-<span class="fc" id="L306">            this.tiler = new ImageDataTiler((RandomAccess) i, ((RandomAccess) i).getFilePointer(), this.dataDescription);</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">        if (i instanceof RandomAccess) {</span>
+<span class="fc" id="L317">            this.tiler = new ImageDataTiler((RandomAccess) i, ((RandomAccess) i).getFilePointer(), this.dataDescription);</span>
             try {
                 // Handle long skips.
-<span class="fc" id="L309">                i.skipAllBytes(this.byteSize);</span>
-<span class="nc" id="L310">            } catch (IOException e) {</span>
-<span class="nc" id="L311">                throw new FitsException(&quot;Unable to skip over image:&quot; + e);</span>
-<span class="fc" id="L312">            }</span>
+<span class="fc" id="L320">                i.skipAllBytes(this.byteSize);</span>
+<span class="nc" id="L321">            } catch (IOException e) {</span>
+<span class="nc" id="L322">                throw new FitsException(&quot;Unable to skip over image:&quot; + e);</span>
+<span class="fc" id="L323">            }</span>
 
         } else {
-<span class="fc" id="L315">            this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);</span>
+<span class="fc" id="L326">            this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);</span>
             try {
-<span class="fc" id="L317">                i.readLArray(this.dataArray);</span>
-<span class="nc" id="L318">            } catch (IOException e) {</span>
-<span class="nc" id="L319">                throw new FitsException(&quot;Unable to read image data:&quot; + e);</span>
-<span class="fc" id="L320">            }</span>
+<span class="fc" id="L328">                i.readLArray(this.dataArray);</span>
+<span class="nc" id="L329">            } catch (IOException e) {</span>
+<span class="nc" id="L330">                throw new FitsException(&quot;Unable to read image data:&quot; + e);</span>
+<span class="fc" id="L331">            }</span>
 
-<span class="fc" id="L322">            this.tiler = new ImageDataTiler(null, 0, this.dataDescription);</span>
+<span class="fc" id="L333">            this.tiler = new ImageDataTiler(null, 0, this.dataDescription);</span>
         }
 
-<span class="fc" id="L325">        int pad = FitsUtil.padding(getTrueSize());</span>
+<span class="fc" id="L336">        int pad = FitsUtil.padding(getTrueSize());</span>
         try {
-<span class="fc" id="L327">            i.skipAllBytes(pad);</span>
-<span class="fc" id="L328">        } catch (EOFException e) {</span>
-<span class="fc" id="L329">            throw new PaddingException(&quot;Error skipping padding after image&quot;, this);</span>
-<span class="nc" id="L330">        } catch (IOException e) {</span>
-<span class="nc" id="L331">            throw new FitsException(&quot;Error skipping padding after image&quot;);</span>
-<span class="fc" id="L332">        }</span>
-<span class="fc" id="L333">    }</span>
+<span class="fc" id="L338">            i.skipAllBytes(pad);</span>
+<span class="fc" id="L339">        } catch (EOFException e) {</span>
+<span class="fc" id="L340">            throw new PaddingException(&quot;Error skipping padding after image&quot;, this);</span>
+<span class="nc" id="L341">        } catch (IOException e) {</span>
+<span class="nc" id="L342">            throw new FitsException(&quot;Error skipping padding after image&quot;);</span>
+<span class="fc" id="L343">        }</span>
+<span class="fc" id="L344">    }</span>
 
     void setTiler(StandardImageTiler tiler) {
-<span class="nc" id="L336">        this.tiler = tiler;</span>
-<span class="nc" id="L337">    }</span>
+<span class="nc" id="L347">        this.tiler = tiler;</span>
+<span class="nc" id="L348">    }</span>
 
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
 
         // Don't need to write null data (noted by Jens Knudstrup)
-<span class="fc bfc" id="L343" title="All 2 branches covered.">        if (this.byteSize == 0) {</span>
-<span class="fc" id="L344">            return;</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">        if (this.byteSize == 0) {</span>
+<span class="fc" id="L355">            return;</span>
         }
 
-<span class="fc bfc" id="L347" title="All 2 branches covered.">        if (this.dataArray == null) {</span>
-<span class="pc bpc" id="L348" title="1 of 2 branches missed.">            if (this.tiler != null) {</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">        if (this.dataArray == null) {</span>
+<span class="pc bpc" id="L359" title="1 of 2 branches missed.">            if (this.tiler != null) {</span>
 
                 // Need to read in the whole image first.
                 try {
-<span class="fc" id="L352">                    this.dataArray = this.tiler.getCompleteImage();</span>
-<span class="nc" id="L353">                } catch (IOException e) {</span>
-<span class="nc" id="L354">                    throw new FitsException(&quot;Error attempting to fill image&quot;);</span>
-<span class="fc" id="L355">                }</span>
+<span class="fc" id="L363">                    this.dataArray = this.tiler.getCompleteImage();</span>
+<span class="nc" id="L364">                } catch (IOException e) {</span>
+<span class="nc" id="L365">                    throw new FitsException(&quot;Error attempting to fill image&quot;);</span>
+<span class="fc" id="L366">                }</span>
 
-<span class="nc bnc" id="L357" title="All 4 branches missed.">            } else if (this.dataArray == null &amp;&amp; this.dataDescription != null) {</span>
+<span class="nc bnc" id="L368" title="All 4 branches missed.">            } else if (this.dataArray == null &amp;&amp; this.dataDescription != null) {</span>
                 // Need to create an array to match a specified header.
-<span class="nc" id="L359">                this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);</span>
+<span class="nc" id="L370">                this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);</span>
 
             } else {
                 // This image isn't ready to be written!
-<span class="nc" id="L363">                throw new FitsException(&quot;Null image data&quot;);</span>
+<span class="nc" id="L374">                throw new FitsException(&quot;Null image data&quot;);</span>
             }
         }
 
         try {
-<span class="fc" id="L368">            o.writeArray(this.dataArray);</span>
-<span class="nc" id="L369">        } catch (IOException e) {</span>
-<span class="nc" id="L370">            throw new FitsException(&quot;IO Error on image write&quot; + e);</span>
-<span class="fc" id="L371">        }</span>
+<span class="fc" id="L379">            o.writeArray(this.dataArray);</span>
+<span class="nc" id="L380">        } catch (IOException e) {</span>
+<span class="nc" id="L381">            throw new FitsException(&quot;IO Error on image write&quot; + e);</span>
+<span class="fc" id="L382">        }</span>
 
-<span class="fc" id="L373">        FitsUtil.pad(o, getTrueSize());</span>
-<span class="fc" id="L374">    }</span>
+<span class="fc" id="L384">        FitsUtil.pad(o, getTrueSize());</span>
+<span class="fc" id="L385">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
