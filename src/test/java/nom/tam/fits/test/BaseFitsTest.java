@@ -103,23 +103,23 @@ public class BaseFitsTest {
 
     @Test
     public void testFitsDeleteHdu() throws Exception {
-		try (Fits fits1 = makeAsciiTable()) {
-			fits1.read();
-			Exception actual = null;
-			try {
-				fits1.deleteHDU(-2);
-			} catch (FitsException ex) {
-				actual = ex;
-			}
-			Assert.assertNotNull(actual);
+        try (Fits fits1 = makeAsciiTable()) {
+            fits1.read();
+            Exception actual = null;
+            try {
+                fits1.deleteHDU(-2);
+            } catch (FitsException ex) {
+                actual = ex;
+            }
+            Assert.assertNotNull(actual);
 
-			Assert.assertNull(fits1.getHDU(99));
-			// will be ignored
-			fits1.insertHDU(null, 99);
-			fits1.deleteHDU(2);
-			fits1.deleteHDU(2);
-			writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
-		}
+            Assert.assertNull(fits1.getHDU(99));
+            // will be ignored
+            fits1.insertHDU(null, 99);
+            fits1.deleteHDU(2);
+            fits1.deleteHDU(2);
+            writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
+        }
 
         Fits fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
         fits1.readHDU();
@@ -151,7 +151,7 @@ public class BaseFitsTest {
 
         fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
         Assert.assertEquals(1, fits1.read().length);
-        Assert.assertEquals("XYZ", fits1.getHDU(0).getHeader().getStringValue("TEST"));
+        Assert.assertEquals("XYZ", fits1.getHDU(0).getTrimmedString("TEST"));
     }
 
     private Fits makeAsciiTable() throws Exception {
@@ -467,6 +467,59 @@ public class BaseFitsTest {
         assertFalse(constrs[0].isAccessible());
         constrs[0].setAccessible(true);
         constrs[0].newInstance();
+    }
+
+    @Test
+    public void testFitsSettings() throws InterruptedException {
+        boolean longstring = FitsFactory.isLongStringsEnabled();
+        final Boolean[] testFitsSettingsVlaue = new Boolean[6];
+        try {
+            FitsFactory.setLongStringsEnabled(true);
+            new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        FitsFactory.useThreadLocalSettings(true);
+                        for (int index = 0; index < testFitsSettingsVlaue.length; index++) {
+                            waitForThread(testFitsSettingsVlaue, 1);
+                            testFitsSettingsVlaue[index++] = FitsFactory.isLongStringsEnabled();
+                            if (testFitsSettingsVlaue[index] != null) {
+                                FitsFactory.setLongStringsEnabled(testFitsSettingsVlaue[index]);
+                            }
+                        }
+                    } catch (InterruptedException e) {
+                        Arrays.fill(testFitsSettingsVlaue, null);
+                    }
+                }
+            }).start();
+            testFitsSettingsVlaue[1] = false;
+            waitForThread(testFitsSettingsVlaue, 0);
+            Assert.assertEquals(Boolean.valueOf(true), testFitsSettingsVlaue[0]);
+            Assert.assertEquals(Boolean.valueOf(false), testFitsSettingsVlaue[1]);
+            Assert.assertEquals(true, FitsFactory.isLongStringsEnabled());
+            testFitsSettingsVlaue[3] = true;
+            waitForThread(testFitsSettingsVlaue, 0);
+            Assert.assertEquals(Boolean.valueOf(false), testFitsSettingsVlaue[2]);
+            Assert.assertEquals(Boolean.valueOf(true), testFitsSettingsVlaue[3]);
+            Assert.assertEquals(true, FitsFactory.isLongStringsEnabled());
+            FitsFactory.setLongStringsEnabled(false);
+            testFitsSettingsVlaue[5] = true;
+            waitForThread(testFitsSettingsVlaue, 0);
+            Assert.assertEquals(Boolean.valueOf(false), testFitsSettingsVlaue[2]);
+            Assert.assertEquals(Boolean.valueOf(true), testFitsSettingsVlaue[3]);
+            Assert.assertEquals(false, FitsFactory.isLongStringsEnabled());
+        } finally {
+            FitsFactory.setLongStringsEnabled(longstring);
+        }
+    }
+
+    private void waitForThread(final Boolean[] testFitsSettingsVlaue, int index) throws InterruptedException {
+        int count = 0;
+        while (testFitsSettingsVlaue[index] == null && count < 100) {
+            Thread.sleep(10);
+            count++;
+        }
     }
 
 }
