@@ -3,12 +3,14 @@ package nom.tam.image.comp;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
+import nom.tam.fits.ImageHDU;
 import nom.tam.util.BufferedFile;
 
 /*
@@ -51,16 +53,51 @@ public class CreateTstImages {
         testDataInt();
         testDataShort();
         testDatabyte();
-        extractCompressedData();
+        extractCompressedData("32");
+        extractCompressedData("16");
+        extractCompressedData("8");
     }
 
-    private static void extractCompressedData() throws Exception {
-        Fits fits = new Fits(new File("target/testData32.fits.fz"));
+    private static void extractCompressedData(String nr) throws Exception {
+        Fits fits = new Fits(new File("target/testData" + nr + ".fits.fz"));
         BasicHDU<?> hdu1 = fits.readHDU();
         BinaryTableHDU hdu2 = (BinaryTableHDU) fits.readHDU();
         byte[] data = (byte[]) hdu2.getData().getElement(0, 0);
-        RandomAccessFile file = new RandomAccessFile("target/testData32.bin", "rw");
+        RandomAccessFile file = new RandomAccessFile("target/testData" + nr + ".rise", "rw");
         file.write(data, 0, data.length);
+        file.close();
+
+        fits = new Fits(new File("target/testData" + nr + ".fits"));
+        ImageHDU hdu = (ImageHDU) fits.readHDU();
+        Object dataOrg = hdu.getData().getData();
+
+        ByteBuffer dataBuffer = ByteBuffer.wrap(new byte[1024 * 1024]);
+        if (dataOrg instanceof int[][]) {
+            int[][] intArray = (int[][]) dataOrg;
+            for (int x = 0; x < intArray.length; x++) {
+                for (int y = 0; y < intArray[0].length; y++) {
+                    dataBuffer.putInt(intArray[x][y]);
+                }
+            }
+        }
+        if (dataOrg instanceof short[][]) {
+            short[][] intArray = (short[][]) dataOrg;
+            for (int x = 0; x < intArray.length; x++) {
+                for (int y = 0; y < intArray[0].length; y++) {
+                    dataBuffer.putShort(intArray[x][y]);
+                }
+            }
+        }
+        if (dataOrg instanceof byte[][]) {
+            byte[][] intArray = (byte[][]) dataOrg;
+            for (int x = 0; x < intArray.length; x++) {
+                for (int y = 0; y < intArray[0].length; y++) {
+                    dataBuffer.put(intArray[x][y]);
+                }
+            }
+        }
+        file = new RandomAccessFile("target/testData" + nr + ".bin", "rw");
+        file.write(dataBuffer.array(), 0, dataBuffer.position());
         file.close();
     }
 
