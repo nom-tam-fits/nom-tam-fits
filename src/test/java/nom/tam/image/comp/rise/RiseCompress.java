@@ -37,35 +37,71 @@ public class RiseCompress {
 
     class BitBuffer {
 
-        public int bits_to_go;
+        ByteBuffer buffer;
 
-        public int bitbuffer;
+        private long position;
 
-        public int current;
+        public BitBuffer(int i) {
+            buffer = ByteBuffer.wrap(new byte[i]);
+        }
 
-        public void limit(int clen) {
-            // TODO Auto-generated method stub
+        public void limit(int newLimit) {
+            buffer.limit(newLimit);
 
         }
 
-        /* write out int value to the next 4 bytes of the buffer */
-        public void write(int i) {
-
+        /**
+         * write out int value to the next 4 bytes of the buffer
+         */
+        public void putInt(int i) {
+            putByte((byte) ((i & 0xFF000000) >>> 24));
+            putByte((byte) ((i & 0x00FF0000) >>> 16));
+            putByte((byte) ((i & 0x0000FF00) >>> 8));
+            putByte((byte) (i & 0x000000FF));
         }
 
-        public boolean write(int i, int fsbits) {
-            // TODO Auto-generated method stub
-            return false;
+        public void putInt(int i, int bits) {
+            if (bits == 0)
+                return;
+            do {
+                if (bits > 7) {
+                    putByte((byte) ((i & (0xFF << (bits - 8))) >>> (bits - 8)));
+                    bits -= 8;
+                } else {
+                    putByte((byte) (i & (0xFF >> -(bits - 8))), bits);
+                    bits = 0;
+                }
+            } while (bits > 0);
         }
 
-        public void write(long l, int bbits) {
-            // TODO Auto-generated method stub
-
+        public void putLong(long l, int bits) {
+            if (bits == 0)
+                return;
+            do {
+                if (bits > 31) {
+                    putInt((int) ((l & (0xFFFFFFFFL << (bits - 32L))) >>> (bits - 32L)));
+                    bits -= 32;
+                } else {
+                    putInt((int) (l & (0xFFFFFFFFL >> -(bits - 32L))), bits);
+                    bits = 0;
+                }
+            } while (bits > 0);
         }
 
-        public void writeByte(int i) {
-            // TODO Auto-generated method stub
+        public void putByte(byte b, int bits) {// ((byte)-66) &0xFF
+            b = (byte) (0xFF & ((b & (0xFF >>> (8 - bits))) << (8 - bits)));
+            buffer.put((int) (position / 8), (byte) (0xFF & ((buffer.get((int) (position / 8)) & (0xFF << (8 - position % 8))) | ((b & 0xFF) >>> (position % 8)))));
+            if (8 - (position % 8) < bits)
+                buffer.put((int) ((position / 8) + 1), (byte) (0xFF & ((b & 0xFF) << (8 - position % 8))));
+            position += bits;
+        }
 
+        public void putByte(byte b) {
+            byte old = (byte) (buffer.get((int) (position / 8)) & (byte) ~(0xFF >>> (position % 8)));
+            buffer.put((int) (position / 8), (byte) (old | (byte) ((b & 0xFF) >>> (position % 8))));
+            if (position % 8 > 0)
+                buffer.put((int) ((position / 8) + 1), (byte) ((b & 0xFF) << (8 - (position % 8))));
+            position += 8;
         }
 
         /*
@@ -76,30 +112,31 @@ public class RiseCompress {
         /* Initialize for bit output */
 
         void start_outputing_bits() {
-            /*
-             * Buffer is empty to start with
-             */
-            bitbuffer = 0;
-            bits_to_go = 8;
+            position = 0;
         }
 
         /* Flush out the last bits */
 
-        int done_outputing_bits() {
-            if (bits_to_go < 8) {
-                writeByte(bitbuffer << bits_to_go);
+        void done_outputing_bits() {
+            if (position % 8 != 0) {
+                putByte((byte) 0, (int) (8 - position % 8));
             }
-            return (0);
+        }
+
+        public int bitbuffer() {
+            return buffer.get((int) (position / 8));
+        }
+
+        public int missingBitsInCurrentByte() {
+            return (int) (8 - position % 8);
         }
     }/*---------------------------------------------------------------------------*/
 
-    int fits_rcomp(int a[], /* input array */
+    ByteBuffer fits_rcomp(int a[], /* input array */
             int nx, /* number of input pixels */
-            byte[] c, /* output buffer */
-            int clen, /* max length of output */
             int nblock) /* coding block size */
     {
-        BitBuffer buffer = null;
+        BitBuffer buffer = new BitBuffer(a.length * 4);
         /* int bsize; */
         int i, j, thisblock;
         int lastpix, nextpix;
@@ -114,24 +151,13 @@ public class RiseCompress {
         fsmax = 25;
 
         bbits = 1 << fsbits;
-
-        /*
-         * Set up buffer pointers
-         */
-        buffer.limit(clen);
-
-        buffer.bits_to_go = 8;
         /*
          * array for differences mapped to non-negative values
          */
         diff = new long[nblock];
-        /*
-         * Code in blocks of nblock pixels
-         */
-        buffer.start_outputing_bits();
 
         /* write out first int value to the first 4 bytes of the buffer */
-        buffer.write(a[0]);
+        buffer.putInt(a[0]);
 
         lastpix = a[0]; /* the first difference will always be zero */
 
@@ -153,7 +179,7 @@ public class RiseCompress {
             for (j = 0; j < thisblock; j++) {
                 nextpix = a[i + j];
                 long pdiff = nextpix - lastpix;
-                diff[j] = ((pdiff < 0) ? ~((pdiff) << 1) : ((pdiff) << 1));
+                diff[j] = Math.abs(((pdiff < 0) ? ~((pdiff) << 1) : ((pdiff) << 1)));
                 pixelsum += diff[j];
                 lastpix = nextpix;
             }
@@ -161,7 +187,7 @@ public class RiseCompress {
             /*
              * compute number of bits to split from sum
              */
-            dpsum = (pixelsum - (thisblock / 2) - 1) / thisblock;
+            dpsum = (pixelsum - (thisblock / 2d) - 1d) / thisblock;
             if (dpsum < 0)
                 dpsum = 0.0;
             psum = ((long) dpsum) >> 1;
@@ -176,25 +202,26 @@ public class RiseCompress {
                  * Special high entropy case when FS >= fsmax Just write pixel
                  * difference values directly, no Rice coding at all.
                  */
-                buffer.write(fsmax + 1, fsbits);
+                buffer.putInt(fsmax + 1, fsbits);
                 for (j = 0; j < thisblock; j++) {
-                    buffer.write(diff[j], bbits);
+                    buffer.putLong(diff[j], bbits);
                 }
             } else if (fs == 0 && pixelsum == 0) {
                 /*
                  * special low entropy case when FS = 0 and pixelsum=0 (all
                  * pixels in block are zero.) Output a 0 and return
                  */
-                buffer.write(0, fsbits);
-            } else {
+                buffer.putInt(0, fsbits);
+            } else {// buffer.buffer.array()
                 /* normal case: not either very high or very low entropy */
-                buffer.write(fs + 1, fsbits);
+                buffer.putInt(fs + 1, fsbits);
                 fsmask = (1 << fs) - 1;
                 /*
                  * local copies of bit buffer to improve optimization
                  */
-                lbitbuffer = buffer.bitbuffer;
-                lbits_to_go = buffer.bits_to_go;
+                lbitbuffer = buffer.bitbuffer();
+                lbits_to_go = buffer.missingBitsInCurrentByte();
+                buffer.position = buffer.position - (buffer.position % 8);
                 for (j = 0; j < thisblock; j++) {
                     v = (int) diff[j];
                     top = v >> fs;
@@ -207,10 +234,9 @@ public class RiseCompress {
                         lbits_to_go -= top + 1;
                     } else {
                         lbitbuffer <<= lbits_to_go;
-                        buffer.writeByte(lbitbuffer & 0xff);
-
+                        buffer.putByte((byte) (lbitbuffer & 0xff));
                         for (top -= lbits_to_go; top >= 8; top -= 8) {
-                            buffer.writeByte(0);
+                            buffer.putByte((byte) 0);
                         }
                         lbitbuffer = 1;
                         lbits_to_go = 7 - top;
@@ -226,20 +252,16 @@ public class RiseCompress {
                         lbitbuffer |= v & fsmask;
                         lbits_to_go -= fs;
                         while (lbits_to_go <= 0) {
-                            buffer.writeByte((lbitbuffer >> (-lbits_to_go)) & 0xff);
+                            buffer.putByte((byte) ((lbitbuffer >> (-lbits_to_go)) & 0xff));
                             lbits_to_go += 8;
                         }
                     }
                 }
-
-                buffer.bitbuffer = lbitbuffer;
-                buffer.bits_to_go = lbits_to_go;
+                buffer.position = buffer.position - lbits_to_go;
             }
         }
         buffer.done_outputing_bits();
-        /*
-         * return number of bytes used
-         */
-        return buffer.current;
+        buffer.buffer.position((int) (buffer.position / 8));
+        return buffer.buffer;
     }
 }
