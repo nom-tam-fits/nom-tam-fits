@@ -55,7 +55,7 @@ import java.io.OutputStream;
  * may wish to compare the the implementation of write(int[], int, int) with
  * write(float[], int, int).
  * <p>
- * Testing and timing for this class is peformed in the
+ * Testing and timing for this class is performed in the
  * nom.tam.util.test.BufferedFileTester class.
  */
 public class BufferedDataOutputStream extends BufferedOutputStream implements ArrayDataOutput {

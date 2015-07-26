@@ -51,9 +51,10 @@ package nom.tam.util;
  * Version 1.1 October 12, 2000: Fixed handling of EOF in array reads so that a
  * partial array will be returned when an EOF is detected. Excess bytes that
  * cannot be used to construct array elements will be discarded (e.g., if there
- * are 2 bytes left and the user is reading an int array). Version 1.2 December
- * 8, 2002: Added getChannel method. Version 1.3 March 2, 2007: Added File based
- * constructors. Version 1.4 July 20, 2009: Added support for >2G Object reads.
+ * are 2 bytes left and the user is reading an int array).<br/>
+ * Version 1.2 December 8, 2002: Added getChannel method.<br/>
+ * Version 1.3 March 2, 2007: Added File based constructors.<br/>
+ * Version 1.4 July 20, 2009: Added support for >2G Object reads.
  * This is still a bit problematic in that we do not support primitive arrays
  * larger than 2 GB/atomsize. However except in the case of bytes this is not
  * currently a major issue.
@@ -236,7 +237,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      * (substantially smaller than bufferSize.
      * 
      * @param needBytes
-     *            the number of bytes needed for the next operation.
+     *            the number of bytes needed for the next read operation.
      * @throws IOException
      *             if the dataBuffer.buffer could not be filled
      */
