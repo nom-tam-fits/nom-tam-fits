@@ -38,42 +38,133 @@ import java.nio.ByteBuffer;
  * 
  * @author ritchie
  */
-public class RiseCompress {
+public abstract class RiseCompress {
 
-    private static final int BYTE_MASK = 0xff;
+    private static class ByteArrayRiseCompress extends RiseCompress {
+
+        public ByteArrayRiseCompress(int blockSize) {
+            super(FS_BITS_FOR_BYTE, FS_MAX_FOR_BYTE, blockSize, BITS_PER_BYTE);
+        }
+
+        @Override
+        protected int get(Object array, int index) {
+            return ((byte[]) array)[index];
+        }
+
+        @Override
+        protected int length(Object array) {
+            return ((byte[]) array).length;
+        }
+    }
+
+    private static class IntArrayRiseCompress extends RiseCompress {
+
+        public IntArrayRiseCompress(int blockSize) {
+            super(FS_BITS_FOR_INT, FS_MAX_FOR_INT, blockSize, BITS_PER_INT);
+        }
+
+        @Override
+        protected int get(Object array, int index) {
+            return ((int[]) array)[index];
+        }
+
+        @Override
+        protected int length(Object array) {
+            return ((int[]) array).length;
+        }
+    }
+
+    private static class ShortArrayRiseCompress extends RiseCompress {
+
+        public ShortArrayRiseCompress(int blockSize) {
+            super(FS_BITS_FOR_SHORT, FS_MAX_FOR_SHORT, blockSize, BITS_PER_SHORT);
+        }
+
+        @Override
+        protected int get(Object array, int index) {
+            return ((short[]) array)[index];
+        }
+
+        @Override
+        protected int length(Object array) {
+            return ((short[]) array).length;
+        }
+    }
 
     private static final int BITS_OF_1_BYTE = 8;
 
-    private static final int FS_BITS = 5;
+    private static final int BITS_PER_BYTE = 8;
 
-    private static final int FSMAX = 25;
+    private static final int BITS_PER_INT = 32;
 
-    private static final int BBITS = 1 << RiseCompress.FS_BITS;
+    private static final int BITS_PER_SHORT = 16;
+
+    private static final int BYTE_MASK = 0xff;
+
+    private static final int FS_BITS_FOR_BYTE = 3;
+
+    private static final int FS_BITS_FOR_INT = 5;
+
+    private static final int FS_BITS_FOR_SHORT = 4;
+
+    private static final int FS_MAX_FOR_BYTE = 6;
+
+    private static final int FS_MAX_FOR_INT = 25;
+
+    private static final int FS_MAX_FOR_SHORT = 14;
+
+    public static RiseCompress createCompressor(Object data, int blockSize) {
+        if (data instanceof int[]) {
+            return new IntArrayRiseCompress(blockSize);
+        } else if (data instanceof short[]) {
+            return new ShortArrayRiseCompress(blockSize);
+        } else if (data instanceof byte[]) {
+            return new ByteArrayRiseCompress(blockSize);
+        }
+        return null;
+    }
+
+    private final int bBits;
+
+    private final int bitsPerPixel;
+
+    private final int blockSize;
+
+    private final int fsBits;
+
+    private final int fsMax;
+
+    private RiseCompress(int fsBits, int fsMax, int blockSize, int bitsPerPixel) {
+        this.fsBits = fsBits;
+        this.fsMax = fsMax;
+        this.blockSize = blockSize;
+        this.bitsPerPixel = bitsPerPixel;
+        this.bBits = 1 << fsBits;
+    }
 
     /**
      * compress the integer array on a rise compressed byte buffer.
      * 
      * @param dataToCompress
      *            the integer array to compress
-     * @param blockSize
-     *            the block size to use
      * @param writeBuffer
      *            the buffer to write to
      */
-    public void compress(int[] dataToCompress, int blockSize, ByteBuffer writeBuffer) {
+    public void compress(Object dataToCompress, ByteBuffer writeBuffer) {
         BitBuffer buffer = new BitBuffer(writeBuffer);
 
-        /* write out first int value to the first 4 bytes of the buffer */
-        buffer.putInt(dataToCompress[0]);
         /* the first difference will always be zero */
-        int lastpix = dataToCompress[0];
+        int lastpix = get(dataToCompress, 0);
+        /* write out first int value to the first 4 bytes of the buffer */
+        buffer.putInt(lastpix, this.bitsPerPixel);
 
-        int thisblock = blockSize;
+        int thisblock = this.blockSize;
 
-        for (int i = 0; i < dataToCompress.length; i += blockSize) {
+        int dataLength = length(dataToCompress);
+        for (int i = 0; i < dataLength; i += this.blockSize) {
             /* last block may be shorter */
-            if (dataToCompress.length - i < blockSize) {
-                thisblock = dataToCompress.length - i;
+            if (dataLength - i < this.blockSize) {
+                thisblock = dataLength - i;
             }
             /*
              * Compute differences of adjacent pixels and map them to unsigned
@@ -84,15 +175,14 @@ public class RiseCompress {
              * passed as an int.) compute sum of mapped pixel values at same
              * time use double precision for sum to allow 32-bit integer inputs
              */
-            long[] diff = new long[blockSize];
+            long[] diff = new long[this.blockSize];
             double pixelsum = 0.0;
             int nextpix;
             /*
              * array for differences mapped to non-negative values
              */
-
             for (int j = 0; j < thisblock; j++) {
-                nextpix = dataToCompress[i + j];
+                nextpix = get(dataToCompress, i + j);
                 long pdiff = nextpix - lastpix;
                 diff[j] = Math.abs(pdiff < 0 ? ~(pdiff << 1) : pdiff << 1);
                 pixelsum += diff[j];
@@ -115,24 +205,24 @@ public class RiseCompress {
             /*
              * write the codes fsbits ID bits used to indicate split level
              */
-            if (fs >= RiseCompress.FSMAX) {
+            if (fs >= fsMax) {
                 /*
                  * Special high entropy case when FS >= fsmax Just write pixel
                  * difference values directly, no Rice coding at all.
                  */
-                buffer.putInt(RiseCompress.FSMAX + 1, RiseCompress.FS_BITS);
+                buffer.putInt(fsMax + 1, fsBits);
                 for (int j = 0; j < thisblock; j++) {
-                    buffer.putLong(diff[j], RiseCompress.BBITS);
+                    buffer.putLong(diff[j], bBits);
                 }
             } else if (fs == 0 && pixelsum == 0) {
                 /*
                  * special low entropy case when FS = 0 and pixelsum=0 (all
                  * pixels in block are zero.) Output a 0 and return
                  */
-                buffer.putInt(0, RiseCompress.FS_BITS);
+                buffer.putInt(0, fsBits);
             } else {
                 /* normal case: not either very high or very low entropy */
-                buffer.putInt(fs + 1, RiseCompress.FS_BITS);
+                buffer.putInt(fs + 1, fsBits);
                 int fsmask = (1 << fs) - 1;
                 /*
                  * local copies of bit buffer to improve optimization
@@ -181,4 +271,8 @@ public class RiseCompress {
         }
         buffer.close();
     }
+
+    protected abstract int get(Object array, int index);
+
+    protected abstract int length(Object array);
 }

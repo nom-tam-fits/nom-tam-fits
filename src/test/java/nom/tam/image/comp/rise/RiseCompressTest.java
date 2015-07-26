@@ -35,6 +35,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class RiseCompressTest {
@@ -53,7 +54,56 @@ public class RiseCompressTest {
             int[] intArray = new int[bytes.length / 4];
             ByteBuffer.wrap(bytes).asIntBuffer().get(intArray);
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
-            new RiseCompress().compress(intArray, 32, compressed);
+            RiseCompress.createCompressor(intArray, 32).compress(intArray, compressed);
+
+            byte[] compressedArray = new byte[compressed.position()];
+            compressed.position(0);
+            compressed.get(compressedArray, 0, compressedArray.length);
+            Assert.assertArrayEquals(expectedBytes, compressedArray);
+
+        }
+
+    }
+
+    @Test
+    public void testRiseShort() throws Exception {
+        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/testData16.bin", "r");//
+                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/testData16.rise", "r");//
+
+        ) {
+            byte[] bytes = new byte[(int) file.length()];
+            file.read(bytes);
+            byte[] expectedBytes = new byte[(int) expected.length()];
+            expected.read(expectedBytes);
+
+            short[] shortArray = new short[bytes.length / 2];
+            ByteBuffer.wrap(bytes).asShortBuffer().get(shortArray);
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
+            RiseCompress.createCompressor(shortArray, 32).compress(shortArray, compressed);
+
+            byte[] compressedArray = new byte[compressed.position()];
+            compressed.position(0);
+            compressed.get(compressedArray, 0, compressedArray.length);
+            Assert.assertArrayEquals(expectedBytes, compressedArray);
+
+        }
+
+    }
+
+    @Test
+    @Ignore
+    public void testRiseByte() throws Exception {
+        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/testData8.bin", "r");//
+                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/testData8.rise", "r");//
+
+        ) {
+            byte[] bytes = new byte[(int) file.length()];
+            file.read(bytes);
+            byte[] expectedBytes = new byte[(int) expected.length()];
+            expected.read(expectedBytes);
+
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
+            RiseCompress.createCompressor(bytes, 32).compress(bytes, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
