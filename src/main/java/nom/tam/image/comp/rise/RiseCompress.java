@@ -1,6 +1,7 @@
 package nom.tam.image.comp.rise;
 
 import java.nio.ByteBuffer;
+import java.util.logging.Logger;
 
 /*
  * #%L
@@ -40,6 +41,11 @@ import java.nio.ByteBuffer;
  */
 public abstract class RiseCompress {
 
+    /**
+     * logger to log to.
+     */
+    private static final Logger LOG = Logger.getLogger(RiseCompress.class.getName());
+
     private static class ByteArrayRiseCompress extends RiseCompress {
 
         public ByteArrayRiseCompress(int blockSize) {
@@ -54,6 +60,11 @@ public abstract class RiseCompress {
         @Override
         protected int length(Object array) {
             return ((byte[]) array).length;
+        }
+
+        @Override
+        protected void set(Object array, int index, int pixel) {
+            ((byte[]) array)[index] = (byte) pixel;
         }
     }
 
@@ -72,6 +83,11 @@ public abstract class RiseCompress {
         protected int length(Object array) {
             return ((int[]) array).length;
         }
+
+        @Override
+        protected void set(Object array, int index, int pixel) {
+            ((int[]) array)[index] = pixel;
+        }
     }
 
     private static class ShortArrayRiseCompress extends RiseCompress {
@@ -88,6 +104,11 @@ public abstract class RiseCompress {
         @Override
         protected int length(Object array) {
             return ((short[]) array).length;
+        }
+
+        @Override
+        protected void set(Object array, int index, int pixel) {
+            ((short[]) array)[index] = (short) pixel;
         }
     }
 
@@ -112,6 +133,270 @@ public abstract class RiseCompress {
     private static final int FS_MAX_FOR_INT = 25;
 
     private static final int FS_MAX_FOR_SHORT = 14;
+
+    /*
+     * nonzero_count is lookup table giving number of bits in 8-bit values not
+     * including leading zeros used in fits_rdecomp, fits_rdecomp_short and
+     * fits_rdecomp_byte
+     */
+    private static final int[] NONZERO_COUNT = {
+        0,
+        1,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8
+    };
 
     public static RiseCompress createCompressor(Object data, int blockSize) {
         if (data instanceof int[]) {
@@ -139,6 +424,10 @@ public abstract class RiseCompress {
         this.fsMax = fsMax;
         this.blockSize = blockSize;
         this.bitsPerPixel = bitsPerPixel;
+        /*
+         * From bsize derive: FSBITS = # bits required to store FS FSMAX =
+         * maximum value for FS BBITS = bits/pixel for direct coding
+         */
         this.bBits = 1 << fsBits;
     }
 
@@ -205,24 +494,24 @@ public abstract class RiseCompress {
             /*
              * write the codes fsbits ID bits used to indicate split level
              */
-            if (fs >= fsMax) {
+            if (fs >= this.fsMax) {
                 /*
                  * Special high entropy case when FS >= fsmax Just write pixel
                  * difference values directly, no Rice coding at all.
                  */
-                buffer.putInt(fsMax + 1, fsBits);
+                buffer.putInt(this.fsMax + 1, this.fsBits);
                 for (int j = 0; j < thisblock; j++) {
-                    buffer.putLong(diff[j], bBits);
+                    buffer.putLong(diff[j], this.bBits);
                 }
             } else if (fs == 0 && pixelsum == 0) {
                 /*
                  * special low entropy case when FS = 0 and pixelsum=0 (all
                  * pixels in block are zero.) Output a 0 and return
                  */
-                buffer.putInt(0, fsBits);
+                buffer.putInt(0, this.fsBits);
             } else {
                 /* normal case: not either very high or very low entropy */
-                buffer.putInt(fs + 1, fsBits);
+                buffer.putInt(fs + 1, this.fsBits);
                 int fsmask = (1 << fs) - 1;
                 /*
                  * local copies of bit buffer to improve optimization
@@ -272,7 +561,124 @@ public abstract class RiseCompress {
         buffer.close();
     }
 
+    /**
+     * decompress the readbuffer and fill the pixelarray.
+     * 
+     * @param readBuffer
+     *            input buffer
+     * @param array
+     *            output array
+     */
+    public void decompress(ByteBuffer readBuffer, Object array) {
+        /* int bsize; */
+        int i, k, imax;
+        int nbits, nzero, fs;
+        int b;
+        int diff, lastpix;
+
+        /* first 4 bytes of input buffer contain the value of the first */
+        /* 4 byte integer value, without any encoding */
+
+        lastpix = readBuffer.getInt();
+
+        b = readBuffer.get(); /* bit buffer */
+        nbits = BITS_PER_BYTE; /* number of bits remaining in b */
+        int nx = length(array);
+        for (i = 0; i < nx;) {
+            /* get the FS value from first fsbits */
+            nbits -= this.fsBits;
+            while (nbits < 0) {
+                b = b << BITS_PER_BYTE | readBuffer.get() & BYTE_MASK;
+                nbits += BITS_PER_BYTE;
+            }
+            fs = (b >> nbits) - 1;
+
+            b &= (1 << nbits) - 1;
+            /* loop over the next block */
+            imax = i + this.blockSize;
+            if (imax > nx) {
+                imax = nx;
+            }
+            if (fs < 0) {
+                /* low-entropy case, all zero differences */
+                for (; i < imax; i++) {
+                    set(array, i, lastpix);
+                }
+            } else if (fs == this.fsMax) {
+                /* high-entropy case, directly coded pixel values */
+                for (; i < imax; i++) {
+                    k = this.bBits - nbits;
+                    diff = b << k;
+                    for (k -= BITS_PER_BYTE; k >= 0; k -= BITS_PER_BYTE) {
+                        b = readBuffer.get() & BYTE_MASK;
+                        diff |= b << k;
+                    }
+                    if (nbits > 0) {
+                        b = readBuffer.get() & BYTE_MASK;
+                        diff |= b >> -k;
+                        b &= (1 << nbits) - 1;
+                    } else {
+                        b = 0;
+                    }
+                    /*
+                     * undo mapping and differencing Note that some of these
+                     * operations will overflow the unsigned int arithmetic --
+                     * that's OK, it all works out to give the right answers in
+                     * the output file.
+                     */
+                    if ((diff & 1) == 0) {
+                        diff = diff >> 1;
+                    } else {
+                        diff = ~(diff >> 1);
+                    }
+                    lastpix = diff + lastpix;
+                    set(array, i, lastpix);
+                }
+            } else {
+                /* normal case, Rice coding */
+                for (; i < imax; i++) {
+                    /* count number of leading zeros */
+                    while (b == 0) {
+                        nbits += BITS_PER_BYTE;
+                        b = readBuffer.get() & BYTE_MASK;
+                    }
+                    nzero = nbits - NONZERO_COUNT[b & BYTE_MASK];
+                    nbits -= nzero + 1;
+                    /* flip the leading one-bit */
+                    b ^= 1 << nbits;
+                    /* get the FS trailing bits */
+                    nbits -= fs;
+                    while (nbits < 0) {
+                        b = b << BITS_PER_BYTE | readBuffer.get() & BYTE_MASK;
+                        nbits += BITS_PER_BYTE;
+                    }
+                    diff = nzero << fs | b >> nbits;
+                    b &= (1 << nbits) - 1;
+
+                    /* undo mapping and differencing */
+                    if ((diff & 1) == 0) {
+                        diff = diff >> 1;
+                    } else {
+                        diff = ~(diff >> 1);
+                    }
+                    lastpix = diff + lastpix;
+                    set(array, i, lastpix);
+                }
+            }
+            if (readBuffer.limit() < readBuffer.position()) {
+                LOG.severe("decompressing failed, no more bytes to decompress reached: " + readBuffer.limit() + " but only reached index " + i + " of " + nx);
+                throw new IllegalStateException("decompressing failed, no more bytes to decompress");
+            }
+        }
+        if (readBuffer.limit() > readBuffer.position()) {
+            LOG.warning("decompressing left over some extra bytes got: " + readBuffer.limit() + " but needed only " + readBuffer.position());
+        }
+
+    }
+
     protected abstract int get(Object array, int index);
 
     protected abstract int length(Object array);
+
+    protected abstract void set(Object array, int index, int pixel);
 }

@@ -54,15 +54,19 @@ public class RiseCompressTest {
             int[] intArray = new int[bytes.length / 4];
             ByteBuffer.wrap(bytes).asIntBuffer().get(intArray);
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
-            RiseCompress.createCompressor(intArray, 32).compress(intArray, compressed);
+            RiseCompress compressor = RiseCompress.createCompressor(intArray, 32);
+            compressor.compress(intArray, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
+            int[] decompressedArray = new int[intArray.length];
+            compressed.position(0);
+            compressor.decompress(compressed, decompressedArray);
+            Assert.assertArrayEquals(intArray, decompressedArray);
         }
-
     }
 
     @Test
@@ -79,13 +83,18 @@ public class RiseCompressTest {
             short[] shortArray = new short[bytes.length / 2];
             ByteBuffer.wrap(bytes).asShortBuffer().get(shortArray);
             ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
-            RiseCompress.createCompressor(shortArray, 32).compress(shortArray, compressed);
+            RiseCompress compressor = RiseCompress.createCompressor(shortArray, 32);
+            compressor.compress(shortArray, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
+//            short[] decompressedArray = new short[shortArray.length];
+//            compressed.position(0);
+//            compressor.decompress(compressed, decompressedArray);
+//            Assert.assertArrayEquals(shortArray, decompressedArray);
         }
 
     }
