@@ -53,17 +53,29 @@ public class CreateTstImages {
         testDataInt();
         testDataShort();
         testDatabyte();
-        extractCompressedData("32");
-        extractCompressedData("16");
-        extractCompressedData("8");
+        extractCompressedData("32", "rise");
+        extractCompressedData("16", "rise");
+        extractCompressedData("8", "rise");
+        extractCompressedData("-64", "huf");
+        extractCompressedData("-32", "huf");
+        extractCompressedData("64", "huf");
+        extractCompressedData("32", "huf");
+        extractCompressedData("16", "huf");
+        extractCompressedData("8", "huf");
     }
 
-    private static void extractCompressedData(String nr) throws Exception {
-        Fits fits = new Fits(new File("target/testData" + nr + ".fits.fz"));
+    private static void extractCompressedData(String nr,String type) throws Exception {
+        File fitsFile = new File("target/testData" + type + nr + ".fits.fz");
+        if (!fitsFile.exists()) {
+            System.out.println("ignoring " + fitsFile.getName());
+            return;
+        }
+        Fits fits = new Fits(fitsFile);
+
         BasicHDU<?> hdu1 = fits.readHDU();
         BinaryTableHDU hdu2 = (BinaryTableHDU) fits.readHDU();
         byte[] data = (byte[]) hdu2.getData().getElement(0, 0);
-        RandomAccessFile file = new RandomAccessFile("target/testData" + nr + ".rise", "rw");
+        RandomAccessFile file = new RandomAccessFile("target/testData" + nr + "." + type, "rw");
         file.write(data, 0, data.length);
         file.close();
 

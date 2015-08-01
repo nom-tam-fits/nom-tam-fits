@@ -1,0 +1,210 @@
+XTENSION= 'BINTABLE'           / binary table extension                         
+BITPIX  =                    8 / 8-bit bytes                                    
+NAXIS   =                    2 / 2-dimensional binary table                     
+NAXIS1  =                   24 / width of table in bytes                        
+NAXIS2  =                    1 / number of rows in table                        
+PCOUNT  =                18653 / size of special data area                      
+GCOUNT  =                    1 / one data group (required keyword)              
+TFIELDS =                    3 / number of fields in each row                   
+TTYPE1  = 'COMPRESSED_DATA'    / label for field   1                            
+TFORM1  = '1PB(18653)'         / data format of field: variable length array    
+TTYPE2  = 'ZSCALE  '           / label for field   2                            
+TFORM2  = '1D      '           / data format of field: 8-byte DOUBLE            
+TTYPE3  = 'ZZERO   '           / label for field   3                            
+TFORM3  = '1D      '           / data format of field: 8-byte DOUBLE            
+ZIMAGE  =                    T / extension contains compressed image            
+ZTILE1  =                  100 / size of tiles to be compressed                 
+ZTILE2  =                  100 / size of tiles to be compressed                 
+ZCMPTYPE= 'HCOMPRESS_1'        / compression algorithm                          
+ZNAME1  = 'SCALE   '           / HCOMPRESS scale factor                         
+ZVAL1   =        0.0000000E+00 / HCOMPRESS scale factor                         
+ZNAME2  = 'SMOOTH  '           / HCOMPRESS smooth option                        
+ZVAL2   =                    0 / HCOMPRESS smooth option                        
+EXTNAME = 'COMPRESSED_IMAGE'                                                    
+ZSIMPLE =                    T / Java FITS: Sat Aug 01 07:55:21 CEST 2015       
+ZBITPIX =                  -64 / bits per data value                            
+ZNAXIS  =                    2 / number of axes                                 
+ZNAXIS1 =                  100 / size of the n'th axis                          
+ZNAXIS2 =                  100 / size of the n'th axis                          
+ZEXTEND =                    T / Extensions are permitted                       
+ZQUANTIZ= 'SUBTRACTIVE_DITHER_1' / Pixel Quantization Algorithm                 
+HISTORY Image was compressed by CFITSIO using scaled integer quantization:      
+HISTORY q = 4.000000 / quantized level scaling parameter                        
+HISTORY 'SUBTRACTIVE_DITHER_1' / Pixel Quantization Algorithm                   
+ZDITHER0=                 8700 / dithering offset when quantizing floats        
+CHECKSUM= 'Ml5NMl4KMl4KMl4K'   / HDU checksum updated 2015-08-01T05:58:17       
+DATASUM = '3852669492'         / data unit checksum updated 2015-08-01T05:58:17 
+END                                                                             
+
+
+
+
+
+
+XTENSION= 'BINTABLE'           / binary table extension                         
+BITPIX  =                    8 / 8-bit bytes                                    
+NAXIS   =                    2 / 2-dimensional binary table                     
+NAXIS1  =                   24 / width of table in bytes                        
+NAXIS2  =                    1 / number of rows in table                        
+PCOUNT  =                18641 / size of special data area                      
+GCOUNT  =                    1 / one data group (required keyword)              
+TFIELDS =                    3 / number of fields in each row                   
+TTYPE1  = 'COMPRESSED_DATA'    / label for field   1                            
+TFORM1  = '1PB(18641)'         / data format of field: variable length array    
+TTYPE2  = 'ZSCALE  '           / label for field   2                            
+TFORM2  = '1D      '           / data format of field: 8-byte DOUBLE            
+TTYPE3  = 'ZZERO   '           / label for field   3                            
+TFORM3  = '1D      '           / data format of field: 8-byte DOUBLE            
+ZIMAGE  =                    T / extension contains compressed image            
+ZTILE1  =                  100 / size of tiles to be compressed                 
+ZTILE2  =                  100 / size of tiles to be compressed                 
+ZCMPTYPE= 'HCOMPRESS_1'        / compression algorithm                          
+ZNAME1  = 'SCALE   '           / HCOMPRESS scale factor                         
+ZVAL1   =        0.0000000E+00 / HCOMPRESS scale factor                         
+ZNAME2  = 'SMOOTH  '           / HCOMPRESS smooth option                        
+ZVAL2   =                    0 / HCOMPRESS smooth option                        
+EXTNAME = 'COMPRESSED_IMAGE'                                                    
+ZSIMPLE =                    T / Java FITS: Sat Aug 01 07:55:21 CEST 2015       
+ZBITPIX =                  -32 / bits per data value                            
+ZNAXIS  =                    2 / number of axes                                 
+ZNAXIS1 =                  100 / size of the n'th axis                          
+ZNAXIS2 =                  100 / size of the n'th axis                          
+ZEXTEND =                    T / Extensions are permitted                       
+ZQUANTIZ= 'SUBTRACTIVE_DITHER_1' / Pixel Quantization Algorithm                 
+HISTORY Image was compressed by CFITSIO using scaled integer quantization:      
+HISTORY q = 4.000000 / quantized level scaling parameter                        
+HISTORY 'SUBTRACTIVE_DITHER_1' / Pixel Quantization Algorithm                   
+ZDITHER0=                 8699 / dithering offset when quantizing floats        
+CHECKSUM= 'QaU9TWR9QaR9QWR9'   / HDU checksum updated 2015-08-01T05:58:17       
+DATASUM = '858871075'          / data unit checksum updated 2015-08-01T05:58:17 
+END                                                                             
+
+
+
+
+
+XTENSION= 'BINTABLE'           / binary table extension                         
+BITPIX  =                    8 / 8-bit bytes                                    
+NAXIS   =                    2 / 2-dimensional binary table                     
+NAXIS1  =                    8 / width of table in bytes                        
+NAXIS2  =                    1 / number of rows in table                        
+PCOUNT  =                30112 / size of special data area                      
+GCOUNT  =                    1 / one data group (required keyword)              
+TFIELDS =                    1 / number of fields in each row                   
+TTYPE1  = 'COMPRESSED_DATA'    / label for field   1                            
+TFORM1  = '1PB(30112)'         / data format of field: variable length array    
+ZIMAGE  =                    T / extension contains compressed image            
+ZTILE1  =                  100 / size of tiles to be compressed                 
+ZTILE2  =                  100 / size of tiles to be compressed                 
+ZCMPTYPE= 'HCOMPRESS_1'        / compression algorithm                          
+ZNAME1  = 'SCALE   '           / HCOMPRESS scale factor                         
+ZVAL1   =        0.0000000E+00 / HCOMPRESS scale factor                         
+ZNAME2  = 'SMOOTH  '           / HCOMPRESS smooth option                        
+ZVAL2   =                    0 / HCOMPRESS smooth option                        
+EXTNAME = 'COMPRESSED_IMAGE'                                                    
+ZSIMPLE =                    T / Java FITS: Sat Aug 01 07:55:21 CEST 2015       
+ZBITPIX =                   32 / bits per data value                            
+ZNAXIS  =                    2 / number of axes                                 
+ZNAXIS1 =                  100 / size of the n'th axis                          
+ZNAXIS2 =                  100 / size of the n'th axis                          
+ZEXTEND =                    T / Extensions are permitted                       
+CHECKSUM= 'Z8FAf696Z6EAf693'   / HDU checksum updated 2015-08-01T05:58:17       
+DATASUM = '37163358'           / data unit checksum updated 2015-08-01T05:58:17 
+END                                                                             
+
+
+
+
+
+
+
+
+
+
+XTENSION= 'BINTABLE'           / binary table extension                         
+BITPIX  =                    8 / 8-bit bytes                                    
+NAXIS   =                    2 / 2-dimensional binary table                     
+NAXIS1  =                    8 / width of table in bytes                        
+NAXIS2  =                    1 / number of rows in table                        
+PCOUNT  =                10170 / size of special data area                      
+GCOUNT  =                    1 / one data group (required keyword)              
+TFIELDS =                    1 / number of fields in each row                   
+TTYPE1  = 'COMPRESSED_DATA'    / label for field   1                            
+TFORM1  = '1PB(10170)'         / data format of field: variable length array    
+ZIMAGE  =                    T / extension contains compressed image            
+ZTILE1  =                  100 / size of tiles to be compressed                 
+ZTILE2  =                  100 / size of tiles to be compressed                 
+ZCMPTYPE= 'HCOMPRESS_1'        / compression algorithm                          
+ZNAME1  = 'SCALE   '           / HCOMPRESS scale factor                         
+ZVAL1   =        0.0000000E+00 / HCOMPRESS scale factor                         
+ZNAME2  = 'SMOOTH  '           / HCOMPRESS smooth option                        
+ZVAL2   =                    0 / HCOMPRESS smooth option                        
+EXTNAME = 'COMPRESSED_IMAGE'                                                    
+ZSIMPLE =                    T / Java FITS: Sat Aug 01 07:55:21 CEST 2015       
+ZBITPIX =                   16 / bits per data value                            
+ZNAXIS  =                    2 / number of axes                                 
+ZNAXIS1 =                  100 / size of the n'th axis                          
+ZNAXIS2 =                  100 / size of the n'th axis                          
+ZEXTEND =                    T / Extensions are permitted                       
+CHECKSUM= '9gJ59Z939dG39Z93'   / HDU checksum updated 2015-08-01T05:58:17       
+DATASUM = '1160065527'         / data unit checksum updated 2015-08-01T05:58:17 
+END                                                                             
+
+
+
+
+
+
+
+XTENSION= 'BINTABLE'           / binary table extension                         
+BITPIX  =                    8 / 8-bit bytes                                    
+NAXIS   =                    2 / 2-dimensional binary table                     
+NAXIS1  =                    8 / width of table in bytes                        
+NAXIS2  =                    1 / number of rows in table                        
+PCOUNT  =                 2501 / size of special data area                      
+GCOUNT  =                    1 / one data group (required keyword)              
+TFIELDS =                    1 / number of fields in each row                   
+TTYPE1  = 'COMPRESSED_DATA'    / label for field   1                            
+TFORM1  = '1PB(2501)'          / data format of field: variable length array    
+ZIMAGE  =                    T / extension contains compressed image            
+ZTILE1  =                  100 / size of tiles to be compressed                 
+ZTILE2  =                  100 / size of tiles to be compressed                 
+ZCMPTYPE= 'HCOMPRESS_1'        / compression algorithm                          
+ZNAME1  = 'SCALE   '           / HCOMPRESS scale factor                         
+ZVAL1   =        0.0000000E+00 / HCOMPRESS scale factor                         
+ZNAME2  = 'SMOOTH  '           / HCOMPRESS smooth option                        
+ZVAL2   =                    0 / HCOMPRESS smooth option                        
+EXTNAME = 'COMPRESSED_IMAGE'                                                    
+ZSIMPLE =                    T / Java FITS: Sat Aug 01 07:55:21 CEST 2015       
+ZBITPIX =                    8 / bits per data value                            
+ZNAXIS  =                    2 / number of axes                                 
+ZNAXIS1 =                  100 / size of the n'th axis                          
+ZNAXIS2 =                  100 / size of the n'th axis                          
+ZEXTEND =                    T / Extensions are permitted                       
+CHECKSUM= '9JaVGHTU9HYUGHYU'   / HDU checksum updated 2015-08-01T05:58:42       
+DATASUM = '3167857617'         / data unit checksum updated 2015-08-01T05:58:42 
+END                                                                             
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
