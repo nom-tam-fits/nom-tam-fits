@@ -66,6 +66,11 @@ public abstract class RiseCompress {
         protected void set(Object array, int index, int pixel) {
             ((byte[]) array)[index] = (byte) pixel;
         }
+
+        @Override
+        protected int readOnePixel(ByteBuffer readBuffer) {
+            return readBuffer.get();
+        }
     }
 
     private static class IntArrayRiseCompress extends RiseCompress {
@@ -88,6 +93,12 @@ public abstract class RiseCompress {
         protected void set(Object array, int index, int pixel) {
             ((int[]) array)[index] = pixel;
         }
+
+        @Override
+        protected int readOnePixel(ByteBuffer readBuffer) {
+            return readBuffer.getInt();
+        }
+
     }
 
     private static class ShortArrayRiseCompress extends RiseCompress {
@@ -109,6 +120,11 @@ public abstract class RiseCompress {
         @Override
         protected void set(Object array, int index, int pixel) {
             ((short[]) array)[index] = (short) pixel;
+        }
+
+        @Override
+        protected int readOnePixel(ByteBuffer readBuffer) {
+            return readBuffer.getShort();
         }
     }
 
@@ -554,8 +570,7 @@ public abstract class RiseCompress {
                         }
                     }
                 }
-                buffer.movePosition(-bitsToGo);
-                buffer.putByte((byte) (bitBuffer & BYTE_MASK));
+                buffer.putByte((byte) (bitBuffer & BYTE_MASK), BITS_OF_1_BYTE - bitsToGo);
             }
         }
         buffer.close();
@@ -576,10 +591,10 @@ public abstract class RiseCompress {
         int b;
         int diff, lastpix;
 
-        /* first 4 bytes of input buffer contain the value of the first */
-        /* 4 byte integer value, without any encoding */
+        /* first x bytes of input buffer contain the value of the first */
+        /* x byte integer value, without any encoding */
 
-        lastpix = readBuffer.getInt();
+        lastpix = readOnePixel(readBuffer);
 
         b = readBuffer.get(); /* bit buffer */
         nbits = BITS_PER_BYTE; /* number of bits remaining in b */
@@ -675,6 +690,8 @@ public abstract class RiseCompress {
         }
 
     }
+
+    protected abstract int readOnePixel(ByteBuffer readBuffer);
 
     protected abstract int get(Object array, int index);
 

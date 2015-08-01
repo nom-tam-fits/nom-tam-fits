@@ -91,16 +91,15 @@ public class RiseCompressTest {
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-//            short[] decompressedArray = new short[shortArray.length];
-//            compressed.position(0);
-//            compressor.decompress(compressed, decompressedArray);
-//            Assert.assertArrayEquals(shortArray, decompressedArray);
+            short[] decompressedArray = new short[shortArray.length];
+            compressed.position(0);
+            compressor.decompress(compressed, decompressedArray);
+            Assert.assertArrayEquals(shortArray, decompressedArray);
         }
 
     }
 
     @Test
-    @Ignore
     public void testRiseByte() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/testData8.bin", "r");//
                 RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/testData8.rise", "r");//
@@ -112,14 +111,31 @@ public class RiseCompressTest {
             expected.read(expectedBytes);
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
-            RiseCompress.createCompressor(bytes, 32).compress(bytes, compressed);
+            RiseCompress compressor = RiseCompress.createCompressor(bytes, 32);
+            compressor.compress(bytes, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
-
+            
+            byte[] decompressedArray = new byte[bytes.length];
+            compressed.position(0);
+            compressor.decompress(compressed, decompressedArray);
+            Assert.assertArrayEquals(bytes, decompressedArray);
         }
 
+    }
+
+    /**
+     * debug routine
+     * 
+     * @param value
+     * @return
+     */
+    private String binaryString(byte value) {
+        String binaryString = Integer.toBinaryString(value & 0xFF);
+        binaryString = "000000000000000000000000000000000000000000000000000000".subSequence(0, 8 - binaryString.length()) + binaryString;
+        return binaryString;
     }
 }
