@@ -64,7 +64,7 @@ public class CreateTstImages {
         extractCompressedData("8", "huf");
     }
 
-    private static void extractCompressedData(String nr,String type) throws Exception {
+    private static void extractCompressedData(String nr, String type) throws Exception {
         File fitsFile = new File("target/testData" + type + nr + ".fits.fz");
         if (!fitsFile.exists()) {
             System.out.println("ignoring " + fitsFile.getName());
