@@ -74,7 +74,7 @@ public class HCompress {
     }
 
     /* ---------------------------------------------------------------------- */
-    void fits_hcompress(int[] aa, int ny, int nx, int scale, ByteBuffer output, long nbytes) {
+    public void fits_hcompress(int[] aa, int ny, int nx, int scale, ByteBuffer output, long nbytes) {
         /*
          * compress the input image using the H-compress algorithm a - input
          * image array nx - size of X axis of image ny - size of Y axis of image
@@ -217,7 +217,7 @@ public class HCompress {
             /*
              * now shuffle in each dimension to group coefficients by order
              */
-            // achtung eigenlich pinter nach a
+            // achtung eigenlich pointer nach a
             for (i = 0; i < nxtop; i++) {
                 shuffle(a, ny * i, nytop, 1, tmp);
             }
@@ -261,7 +261,7 @@ public class HCompress {
          * copy odd elements to tmp
          */
         pt = tmp;
-        ptOffset = aOffet;
+        ptOffset = 0;
         p1 = a;
         p1Offset = aOffet + n2;
         for (i = 1; i < n; i += 2) {
@@ -285,6 +285,7 @@ public class HCompress {
          * put odd elements into 2nd half
          */
         pt = tmp;
+        ptOffset = 0;
         for (i = 1; i < n; i += 2) {
             p1[p1Offset] = pt[ptOffset];
             p1Offset += n2;
@@ -305,7 +306,7 @@ public class HCompress {
      */
 
     /* ######################################################################### */
-    static void digitize(IntArP a, int aOffset, int nx, int ny, int scale) {
+    void digitize(IntArP a, int aOffset, int nx, int ny, int scale) {
         int d;
         IntArP p;
 
@@ -350,7 +351,6 @@ public class HCompress {
          * write magic value
          */
         outfile.put(code_magic);
-        outfile.putInt(nx);
         outfile.putInt(nx); /* size of image */
         outfile.putInt(ny);
         outfile.putInt(scale); /* scale factor for digitization */
@@ -359,6 +359,8 @@ public class HCompress {
          * does not compress well)
          */
         outfile.putLong(a.get());
+        System.out.println(binaryString(a.get()));
+        System.out.println(binaryString(a.get() & 0xffffffffL));
 
         a.set(0);
         /*
@@ -1084,4 +1086,15 @@ public class HCompress {
         bitcount += n;
     }
 
+    /**
+     * debug routine
+     * 
+     * @param value
+     * @return
+     */
+    private String binaryString(long value) {
+        String binaryString = Long.toBinaryString(value);
+        binaryString = "000000000000000000000000000000000000000000000000000000".subSequence(0, 64 - binaryString.length()) + binaryString;
+        return binaryString;
+    }
 }
