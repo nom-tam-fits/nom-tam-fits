@@ -35,7 +35,6 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class HCompressTest {
@@ -56,8 +55,8 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
 
-            new HCompress().fits_hcompress(intArray, 100, 100, 0, compressed, compressed.limit());
-          
+            HCompress.createCompressor(intArray).compress(intArray, 100, 100, 0, compressed);
+
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
