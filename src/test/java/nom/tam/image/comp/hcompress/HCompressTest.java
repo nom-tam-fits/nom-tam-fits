@@ -41,7 +41,6 @@ import org.junit.Test;
 public class HCompressTest {
 
     @Test
-    @Ignore
     public void testHcompressInt() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/testData32.bin", "r");//
                 RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/testData32.huf", "r");//
@@ -52,18 +51,13 @@ public class HCompressTest {
             byte[] expectedBytes = new byte[(int) expected.length()];
             expected.read(expectedBytes);
 
-            for (int index = 0; index < (2 + 4 + 4 + 4 + 8); index++) {
-                System.out.println(binaryString(expectedBytes[index]));
-
-            }
-
             int[] intArray = new int[bytes.length / 4];
             ByteBuffer.wrap(bytes).asIntBuffer().get(intArray);
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
 
             new HCompress().fits_hcompress(intArray, 100, 100, 0, compressed, compressed.limit());
-
+          
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);

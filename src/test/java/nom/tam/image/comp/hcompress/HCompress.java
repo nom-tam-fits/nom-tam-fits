@@ -2,6 +2,8 @@ package nom.tam.image.comp.hcompress;
 
 import java.nio.ByteBuffer;
 
+import nom.tam.util.ArrayFuncs;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -37,7 +39,7 @@ public class HCompress {
 
     static class IntArP {
 
-        int[] a;
+        long[] a;
 
         int offset;
 
@@ -48,19 +50,19 @@ public class HCompress {
             return intAP;
         }
 
-        public int get() {
+        public long get() {
             return a[offset];
         }
 
-        public void set(int value) {
+        public void set(long value) {
             a[offset] = value;
         }
 
-        public int get(int i) {
-            return a[offset + 1];
+        public long get(int i) {
+            return a[offset + i];
         }
 
-        public void set(int i, int value) {
+        public void set(int i, long value) {
             a[offset + i] = value;
 
         }
@@ -71,10 +73,22 @@ public class HCompress {
             intAP.offset = offset + extraOffset;
             return intAP;
         }
+
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            for (int index = offset; index < Math.min(code.length, offset + 10); index++) {
+                String hextString = Long.toHexString(a[index]);
+                hextString = "00000000000000000000000000000000".substring(0, 16 - hextString.length()) + hextString + " " + a[index];
+                builder.append(hextString);
+                builder.append('\n');
+            }
+            return builder.toString();
+        }
     }
 
     /* ---------------------------------------------------------------------- */
-    public void fits_hcompress(int[] aa, int ny, int nx, int scale, ByteBuffer output, long nbytes) {
+    public void fits_hcompress(long[] aa, int ny, int nx, int scale, ByteBuffer output, long nbytes) {
         /*
          * compress the input image using the H-compress algorithm a - input
          * image array nx - size of X axis of image ny - size of Y axis of image
@@ -117,12 +131,12 @@ public class HCompress {
      */
 
     /* ######################################################################### */
-    int htrans(int a[], int nx, int ny) {
-        int nmax, log2n, h0, hx, hy, hc, nxtop, nytop, i, j, k;
+    int htrans(long a[], int nx, int ny) {
+        int nmax, log2n, nxtop, nytop, i, j, k;
         int oddx, oddy;
-        int shift, mask, mask2, prnd, prnd2, nrnd2;
         int s10, s00;
-        int[] tmp;
+        long h0, hx, hy, hc, shift, mask, mask2, prnd, prnd2, nrnd2;
+        long[] tmp;
 
         /*
          * log2n is log2 of max(nx,ny) rounded up to next power of 2
@@ -135,7 +149,7 @@ public class HCompress {
         /*
          * get temporary storage for shuffling elements
          */
-        tmp = new int[(nmax + 1) / 2];
+        tmp = new long[(nmax + 1) / 2];
 
         /*
          * set up rounding and shifting masks
@@ -245,7 +259,7 @@ public class HCompress {
         return (0);
     }
 
-    void shuffle(int[] a, int aOffet, int n, int n2, int tmp[]) {
+    void shuffle(long[] a, int aOffet, int n, int n2, long tmp[]) {
 
         /*
          * int a[]; array to shuffle int n; number of elements to shuffle int
@@ -253,7 +267,7 @@ public class HCompress {
          */
 
         int i;
-        int[] p1, p2, pt;
+        long[] p1, p2, pt;
         int p1Offset = 0;
         int ptOffset = 0;
         int p2Offset = 0;
@@ -306,8 +320,8 @@ public class HCompress {
      */
 
     /* ######################################################################### */
-    void digitize(IntArP a, int aOffset, int nx, int ny, int scale) {
-        int d;
+    void digitize(IntArP a, int aOffset, int nx, int ny, long scale) {
+        long d;
         IntArP p;
 
         /*
@@ -337,7 +351,7 @@ public class HCompress {
          */
         long nlength;
         int nel, nx2, ny2, i, j, k, q, nsign, bits_to_go;
-        int[] vmax = new int[3];
+        long[] vmax = new long[3];
         byte[] nbitplanes = new byte[3];
         byte[] signbits;
         int stat;
@@ -359,14 +373,12 @@ public class HCompress {
          * does not compress well)
          */
         outfile.putLong(a.get());
-        System.out.println(binaryString(a.get()));
-        System.out.println(binaryString(a.get() & 0xffffffffL));
 
         a.set(0);
         /*
          * allocate array for sign bits and save values, 8 per byte
          */
-        signbits = new byte[(nel + 7) / 8];
+        signbits = new byte[(nel / 8) + 1];
 
         nsign = 0;
         bits_to_go = 8;
@@ -378,7 +390,7 @@ public class HCompress {
                  */
                 signbits[nsign] <<= 1;
                 bits_to_go -= 1;
-            } else if (a.get(1) < 0) {
+            } else if (a.get(i) < 0) {
                 /*
                  * negative element, shift in a one
                  */
@@ -422,13 +434,7 @@ public class HCompress {
         j = 0; /* column counter */
         k = 0; /* row counter */
         for (i = 0; i < nel; i++) {
-            q = 0;
-            if (j >= ny2) {
-                q++;
-            }
-            if (k >= nx2) {
-                q++;
-            }
+            q = (j >= ny2 ? 1 : 0) + (k >= nx2 ? 1 : 0);
             if (vmax[q] < a.get(i))
                 vmax[q] = a.get(i);
             if (++j >= ny) {
@@ -587,7 +593,8 @@ public class HCompress {
          * to output
          */
 
-        int log2n, i, k, bit, b, bmax, nqmax, nqx2, nqy2, nx, ny;
+        int log2n, i, k, bit, b, nqmax, nqx2, nqy2, nx, ny;
+        long bmax;
         byte[] scratch, buffer;
 
         /*
@@ -609,8 +616,8 @@ public class HCompress {
          * 2-D with dimensions (nqx/2,nqy/2) rounded up. Buffer is used to store
          * string of codes for output.
          */
-        scratch = new byte[2 * bmax];
-        buffer = new byte[bmax];
+        scratch = new byte[(int) (2 * bmax)];
+        buffer = new byte[(int) bmax];
 
         /*
          * now encode each bit plane, starting with the top
@@ -688,13 +695,13 @@ public class HCompress {
 
     void qtree_onebit(IntArP a, int n, int nx, int ny, byte[] b, int bit) {
         int i, j, k;
-        int b0, b1, b2, b3;
+        long b0, b1, b2, b3;
         int s10, s00;
 
         /*
          * use selected bit to get amount to shift
          */
-        b0 = 1 << bit;
+        b0 = 1L << bit;
         b1 = b0 << 1;
         b2 = b0 << 2;
         b3 = b0 << 3;
@@ -708,30 +715,10 @@ public class HCompress {
             s10 = s00 + n; /* s10 is index of a[i+1,j] */
             for (j = 0; j < ny - 1; j += 2) {
 
-                /*
-                 * this was not any faster.. b[k] = (a[s00] & b0) ? (a[s00+1] &
-                 * b0) ? (a[s10] & b0) ? (a[s10+1] & b0) ? 15 : 14 : (a[s10+1] &
-                 * b0) ? 13 : 12 : (a[s10] & b0) ? (a[s10+1] & b0) ? 11 : 10 :
-                 * (a[s10+1] & b0) ? 9 : 8 : (a[s00+1] & b0) ? (a[s10] & b0) ?
-                 * (a[s10+1] & b0) ? 7 : 6 : (a[s10+1] & b0) ? 5 : 4 : (a[s10] &
-                 * b0) ? (a[s10+1] & b0) ? 3 : 2 : (a[s10+1] & b0) ? 1 : 0;
-                 */
-
-                /*
-                 * this alternative way of calculating b[k] was slowwer than the
-                 * original code if ( a[s00] & b0) if ( a[s00+1] & b0) if (
-                 * a[s10] & b0) if ( a[s10+1] & b0) b[k] = 15; else b[k] = 14;
-                 * else if ( a[s10+1] & b0) b[k] = 13; else b[k] = 12; else if (
-                 * a[s10] & b0) if ( a[s10+1] & b0) b[k] = 11; else b[k] = 10;
-                 * else if ( a[s10+1] & b0) b[k] = 9; else b[k] = 8; else if (
-                 * a[s00+1] & b0) if ( a[s10] & b0) if ( a[s10+1] & b0) b[k] =
-                 * 7; else b[k] = 6; else if ( a[s10+1] & b0) b[k] = 5; else
-                 * b[k] = 4; else if ( a[s10] & b0) if ( a[s10+1] & b0) b[k] =
-                 * 3; else b[k] = 2; else if ( a[s10+1] & b0) b[k] = 1; else
-                 * b[k] = 0;
-                 */
-
-                b[k] = (byte) (((a.get(s10 + 1) & b0) | ((a.get(s10) << 1) & b1) | ((a.get(s00 + 1) << 2) & b2) | ((a.get(s00) << 3) & b3)) >> bit);
+                b[k] = (byte) (((a.get(s10 + 1) & b0) //
+                        | ((a.get(s10) << 1) & b1) //
+                        | ((a.get(s00 + 1) << 2) & b2) //
+                | ((a.get(s00) << 3) & b3)) >> bit);
 
                 k += 1;
                 s00 += 2;
@@ -940,7 +927,7 @@ public class HCompress {
         bitcount += 4;
     }
 
-    int bufcopy(byte[] a, int n, byte[] buffer, int b, int bmax) {
+    int bufcopy(byte[] a, int n, byte[] buffer, int b, long bmax) {
         int i;
 
         for (i = 0; i < n; i++) {
@@ -1096,5 +1083,11 @@ public class HCompress {
         String binaryString = Long.toBinaryString(value);
         binaryString = "000000000000000000000000000000000000000000000000000000".subSequence(0, 64 - binaryString.length()) + binaryString;
         return binaryString;
+    }
+
+    public void fits_hcompress(int[] intArray, int ny, int nx, int scale, ByteBuffer compressed, int limit) {
+        long[] longArray = new long[intArray.length];
+        ArrayFuncs.copyInto(intArray, longArray);
+        fits_hcompress(longArray, ny, nx, scale, compressed, limit);
     }
 }
