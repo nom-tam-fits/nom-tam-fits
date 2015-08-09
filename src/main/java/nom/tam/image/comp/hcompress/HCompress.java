@@ -48,6 +48,32 @@ public abstract class HCompress {
         }
     }
 
+    private static class ShortHCompress extends HCompress {
+
+        @Override
+        protected void compress(Object array, int ny, int nx, int scale, ByteBuffer compressed) {
+            short[] shortArray = (short[]) array;
+            long[] longArray = new long[shortArray.length];
+            ArrayFuncs.copyInto(shortArray, longArray);
+            compress(longArray, ny, nx, scale, compressed);
+        }
+    }
+
+    private static class ByteHCompress extends HCompress {
+
+        private static final long BYTE_MASK_FOR_LONG = 0xFFL;
+
+        @Override
+        protected void compress(Object array, int ny, int nx, int scale, ByteBuffer compressed) {
+            byte[] byteArray = (byte[]) array;
+            long[] longArray = new long[byteArray.length];
+            for (int index = 0; index < longArray.length; index++) {
+                longArray[index] = byteArray[index] & BYTE_MASK_FOR_LONG;
+            }
+            compress(longArray, ny, nx, scale, compressed);
+        }
+    }
+
     private static class LongArrayPointer {
 
         private long[] a;
@@ -170,6 +196,10 @@ public abstract class HCompress {
     public static HCompress createCompressor(Object data) {
         if (data instanceof int[]) {
             return new IntHCompress();
+        } else if (data instanceof short[]) {
+            return new ShortHCompress();
+        } else if (data instanceof byte[]) {
+            return new ByteHCompress();
         }
         return null;
     }
@@ -259,9 +289,10 @@ public abstract class HCompress {
         if (scale <= 1) {
             return;
         }
-        d = (scale + 1) / 2 - 1;
-        for (p = a.copy(); p.offset <= a.offset + nx * ny - 1; p.offset++) {
-            p.set((p.offset > 0 ? p.get() + d : p.get() - d) / scale);
+        d = (scale + 1L) / 2L - 1L;
+        for (int index = 0; index < a.a.length; index++) {
+            long current = a.get(index);
+            a.set(index, (current > 0 ? current + d : current - d) / scale);
         }
     }
 
