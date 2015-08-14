@@ -466,10 +466,7 @@ public class HeaderCard implements CursorValue<String> {
      */
     public int cardSize() {
         if (this.isString && this.value != null && FitsFactory.isLongStringsEnabled()) {
-            int maxStringValueLength = HeaderCard.MAX_STRING_VALUE_LENGTH;
-            if (FitsFactory.getUseHierarch() && getKey().length() > MAX_KEYWORD_LENGTH) {
-                maxStringValueLength -= getKey().length() - MAX_KEYWORD_LENGTH;
-            }
+            int maxStringValueLength = maxStringValueLength();
             String stringValue = this.value.replace("'", "''");
             if (stringValue.length() > maxStringValueLength) {
                 // this is very bad for performance but it is to difficult to
@@ -761,7 +758,7 @@ public class HeaderCard implements CursorValue<String> {
 
                 if (this.isString) {
                     String stringValue = this.value.replace("'", "''");
-                    if (FitsFactory.isLongStringsEnabled() && stringValue.length() > HeaderCard.MAX_STRING_VALUE_LENGTH) {
+                    if (FitsFactory.isLongStringsEnabled() && stringValue.length() > maxStringValueLength()) {
                         writeLongStringValue(buf, stringValue);
                         commentHandled = true;
                     } else {
@@ -803,6 +800,14 @@ public class HeaderCard implements CursorValue<String> {
         }
         buf.completeLine();
         return buf.toString();
+    }
+
+    private int maxStringValueLength() {
+        int maxStringValueLength = HeaderCard.MAX_STRING_VALUE_LENGTH;
+        if (FitsFactory.getUseHierarch() && getKey().length() > MAX_KEYWORD_LENGTH) {
+            maxStringValueLength -= getKey().length() - MAX_KEYWORD_LENGTH;
+        }
+        return maxStringValueLength;
     }
 
     /**

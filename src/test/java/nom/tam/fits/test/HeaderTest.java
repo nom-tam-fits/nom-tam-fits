@@ -719,4 +719,53 @@ public class HeaderTest {
 
         assertTrue(actual.getMessage().indexOf("terminates before") > 0);
     }
+
+    @Test
+    public void testHierarchLongStringIssue44() throws Exception {
+        boolean useHierarch = FitsFactory.getUseHierarch();
+        boolean longStringsEnabled = FitsFactory.isLongStringsEnabled();
+        try {
+            FitsFactory.setUseHierarch(true);
+            FitsFactory.setLongStringsEnabled(true);
+
+            Fits f = new Fits();
+            BasicHDU primaryHdu = FitsFactory.hduFactory(new float[0]);
+
+            primaryHdu.getHeader().addValue("HIERARCH.TEST.THIS.LONG.HEADER", "aaaaaaaabbbbbbbbbcccccccccccdddddddddddeeeeeeeeeee", "");
+
+            for (int index = 1; index < 60; index++) {
+                StringBuilder buildder = new StringBuilder();
+                for (int charIndex = 0; charIndex < index; charIndex++) {
+                    buildder.append((char) ('A' + (charIndex % 26)));
+                }
+                primaryHdu.getHeader().addValue("HIERARCH.X" + buildder.toString(), "_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!", buildder.toString());
+            }
+
+            f.addHDU(primaryHdu);
+            String filename = "target/testHierarchLongString.fits";
+            BufferedFile bf = new BufferedFile(filename, "rw");
+            f.write(bf);
+            bf.close();
+
+            /*
+             * This will fail ...
+             */
+            Header headerRewriter = new Fits(filename).getHDU(0).getHeader();
+            assertEquals("aaaaaaaabbbbbbbbbcccccccccccdddddddddddeeeeeeeeeee", headerRewriter.findCard("HIERARCH.TEST.THIS.LONG.HEADER").getValue());
+            for (int index = 1; index < 60; index++) {
+                StringBuilder buildder = new StringBuilder();
+                for (int charIndex = 0; charIndex < index; charIndex++) {
+                    buildder.append((char) ('A' + (charIndex % 26)));
+                }
+                HeaderCard card = headerRewriter.findCard("HIERARCH.X" + buildder.toString());
+                assertEquals("_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!", card.getValue());
+                if (card.getComment() != null) {
+                    assertTrue(buildder.toString().startsWith(card.getComment()));
+                }
+            }
+        } finally {
+            FitsFactory.setUseHierarch(useHierarch);
+            FitsFactory.setLongStringsEnabled(longStringsEnabled);
+        }
+    }
 }

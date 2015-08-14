@@ -93,7 +93,7 @@ public final class FitsHeaderCardParser {
     /**
      * pattern to match FITS keywords, specially to parse hirarchical keywords.
      */
-    private static final Pattern KEYWORD_PATTERN = Pattern.compile("([A-Z|0-9|_|-]+)([ |\\|.]*=?)");
+    private static final Pattern KEYWORD_PATTERN = Pattern.compile("([A-Z|0-9|_|-]+)([ |\\.]*=?)");
 
     /**
      * pattern to match a quoted string where 2 quotes are used to escape a
