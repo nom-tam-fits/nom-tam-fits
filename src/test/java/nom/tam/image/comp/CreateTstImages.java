@@ -47,12 +47,12 @@ import nom.tam.util.BufferedFile;
 public class CreateTstImages {
 
     public static void main(String[] args) throws Exception {
-        testDataDouble();
-        testDataFloat();
-        testDataLong();
-        testDataInt();
-        testDataShort();
-        testDatabyte();
+        // testDataDouble();
+        // testDataFloat();
+        // testDataLong();
+        // testDataInt();
+        // testDataShort();
+        // testDatabyte();
         extractCompressedData("32", "rise");
         extractCompressedData("16", "rise");
         extractCompressedData("8", "rise");
