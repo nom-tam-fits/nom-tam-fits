@@ -372,7 +372,7 @@ public abstract class HCompress {
         /*
          * allocate array for sign bits and save values, 8 per byte
          */
-        signbits = new byte[nel / BITS_OF_1_BYTE + 1];
+        signbits = new byte[(nel + BITS_OF_1_BYTE - 1) / BITS_OF_1_BYTE];
 
         nsign = 0;
         bitsToGo = BITS_OF_1_BYTE;
