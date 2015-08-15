@@ -1165,9 +1165,9 @@ public class HDecompress {
     {
         int i, j, k;
         int s00;
-        int plane_val;
+        long plane_val;
 
-        plane_val = 1 << bit;
+        plane_val = 1L << bit;
 
         /*
          * expand each 2x2 block

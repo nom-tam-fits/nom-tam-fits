@@ -37,6 +37,7 @@ import java.nio.ByteBuffer;
 import nom.tam.util.ArrayFuncs;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class HCompressTest {
@@ -64,8 +65,8 @@ public class HCompressTest {
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            expectedUncompressed.read(bytes);
-            ByteBuffer.wrap(bytes).asIntBuffer().get(intArray);
+//            expectedUncompressed.read(bytes);
+//            ByteBuffer.wrap(bytes).asIntBuffer().get(intArray);
 
             long[] decompressedLongArray = new long[intArray.length];
             new HDecompress().fits_hdecompress64(ByteBuffer.wrap(expectedBytes), 0, decompressedLongArray);
@@ -95,7 +96,7 @@ public class HCompressTest {
 
             HCompress.createCompressor(intArray).compress(intArray, 100, 100, 0x231a, compressed);
 
-            byte[] compressedArray = new byte[compressed.position()];
+            byte[] compressedArray = new byte[expectedBytes.length];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
@@ -249,6 +250,43 @@ public class HCompressTest {
             byte[] decompressedArray = new byte[byteArray.length];
             ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
             Assert.assertArrayEquals(byteArray, decompressedArray);
+        }
+    }
+
+    @Test @Ignore
+    public void testHcompressFloat() throws Exception {
+        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/testData-32.bin", "r");//
+                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/testData-32.huf", "r");//
+                RandomAccessFile expectedUncompressed = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/testData-32.huf.uncompressed", "r");//
+        ) {
+            byte[] bytes = new byte[(int) file.length()];
+            file.read(bytes);
+            byte[] expectedBytes = new byte[(int) expected.length()];
+            expected.read(expectedBytes);
+
+            float[] intArray = new float[bytes.length / 4];
+            ByteBuffer.wrap(bytes).asFloatBuffer().get(intArray);
+
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
+
+            
+          //  imcomp_convert_tile_tfloat must be ported;
+            
+            HCompress.createCompressor(intArray).compress(intArray, 100, 100, 0, compressed);
+
+            byte[] compressedArray = new byte[compressed.position()];
+            compressed.position(0);
+            compressed.get(compressedArray, 0, compressedArray.length);
+            Assert.assertArrayEquals(expectedBytes, compressedArray);
+
+            expectedUncompressed.read(bytes);
+            ByteBuffer.wrap(bytes).asFloatBuffer().get(intArray);
+
+            long[] decompressedLongArray = new long[intArray.length];
+            new HDecompress().fits_hdecompress64(ByteBuffer.wrap(expectedBytes), 0, decompressedLongArray);
+            float[] decompressedArray = new float[intArray.length];
+            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
+            Assert.assertArrayEquals(intArray, decompressedArray, 0.00000f);
         }
     }
 
