@@ -46,7 +46,6 @@ public class HCompressTest {
     public void testHcompressInt() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/testData32.bin", "r");//
                 RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/testData32.huf", "r");//
-                RandomAccessFile expectedUncompressed = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/testData32.huf.uncompressed", "r");//
         ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
@@ -65,11 +64,39 @@ public class HCompressTest {
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-//            expectedUncompressed.read(bytes);
-//            ByteBuffer.wrap(bytes).asIntBuffer().get(intArray);
+            long[] decompressedLongArray = new long[intArray.length];
+            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
+            int[] decompressedArray = new int[intArray.length];
+            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
+            Assert.assertArrayEquals(intArray, decompressedArray);
+
+        }
+    }
+
+    @Test
+    public void testHcompressIntOdd() throws Exception {
+        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data32.bin", "r");//
+                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data32.huf", "r");//
+        ) {
+            byte[] bytes = new byte[(int) file.length()];
+            file.read(bytes);
+            byte[] expectedBytes = new byte[(int) expected.length()];
+            expected.read(expectedBytes);
+
+            int[] intArray = new int[bytes.length / 4];
+            ByteBuffer.wrap(bytes).asIntBuffer().get(intArray);
+
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
+
+            HCompress.createCompressor(intArray).compress(intArray, 99, 99, 0, compressed);
+
+            byte[] compressedArray = new byte[compressed.position()];
+            compressed.position(0);
+            compressed.get(compressedArray, 0, compressedArray.length);
+            Assert.assertArrayEquals(expectedBytes, compressedArray);
 
             long[] decompressedLongArray = new long[intArray.length];
-            new HDecompress().fits_hdecompress64(ByteBuffer.wrap(expectedBytes), 0, decompressedLongArray);
+            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             int[] decompressedArray = new int[intArray.length];
             ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
             Assert.assertArrayEquals(intArray, decompressedArray);
@@ -105,10 +132,23 @@ public class HCompressTest {
             ByteBuffer.wrap(bytes).asIntBuffer().get(intArray);
 
             long[] decompressedLongArray = new long[intArray.length];
-            new HDecompress().fits_hdecompress64(ByteBuffer.wrap(expectedBytes), 0, decompressedLongArray);
+            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             int[] decompressedArray = new int[intArray.length];
             ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
             Assert.assertArrayEquals(intArray, decompressedArray);
+
+            decompressedLongArray = new long[intArray.length];
+            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), true, decompressedLongArray);
+            decompressedArray = new int[intArray.length];
+            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
+
+            double sum1 = 0;
+            double sum2 = 0;
+            for (int index = 0; index < intArray.length; index++) {
+                sum1 += intArray[index];
+                sum2 += decompressedArray[index];
+            }
+            Assert.assertEquals(sum1 / intArray.length, sum2 / intArray.length, 0.5d);
         }
     }
 
@@ -116,7 +156,6 @@ public class HCompressTest {
     public void testHcompressShort() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/testData16.bin", "r");//
                 RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/testData16.huf", "r");//
-                RandomAccessFile expectedUncompressed = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/testData16.huf.uncompressed", "r");//
 
         ) {
             byte[] bytes = new byte[(int) file.length()];
@@ -136,11 +175,40 @@ public class HCompressTest {
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            expectedUncompressed.read(bytes);
+            long[] decompressedLongArray = new long[shortArray.length];
+            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
+            short[] decompressedArray = new short[shortArray.length];
+            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
+            Assert.assertArrayEquals(shortArray, decompressedArray);
+
+        }
+    }
+
+    @Test
+    public void testHcompressShortOdd() throws Exception {
+        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data16.bin", "r");//
+                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data16.huf", "r");//
+
+        ) {
+            byte[] bytes = new byte[(int) file.length()];
+            file.read(bytes);
+            byte[] expectedBytes = new byte[(int) expected.length()];
+            expected.read(expectedBytes);
+
+            short[] shortArray = new short[bytes.length / 2];
             ByteBuffer.wrap(bytes).asShortBuffer().get(shortArray);
 
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
+
+            HCompress.createCompressor(shortArray).compress(shortArray, 99, 99, 0, compressed);
+
+            byte[] compressedArray = new byte[compressed.position()];
+            compressed.position(0);
+            compressed.get(compressedArray, 0, compressedArray.length);
+            Assert.assertArrayEquals(expectedBytes, compressedArray);
+
             long[] decompressedLongArray = new long[shortArray.length];
-            new HDecompress().fits_hdecompress64(ByteBuffer.wrap(expectedBytes), 0, decompressedLongArray);
+            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             short[] decompressedArray = new short[shortArray.length];
             ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
             Assert.assertArrayEquals(shortArray, decompressedArray);
@@ -152,7 +220,6 @@ public class HCompressTest {
     public void testHcompressShortScale4() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/testData16.bin", "r");//
                 RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale4/testData16.huf", "r");//
-                RandomAccessFile expectedUncompressed = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale4/testData16.huf.uncompressed", "r");//
 
         ) {
             byte[] bytes = new byte[(int) file.length()];
@@ -172,11 +239,8 @@ public class HCompressTest {
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            expectedUncompressed.read(bytes);
-            ByteBuffer.wrap(bytes).asShortBuffer().get(shortArray);
-
             long[] decompressedLongArray = new long[shortArray.length];
-            new HDecompress().fits_hdecompress64(ByteBuffer.wrap(expectedBytes), 0, decompressedLongArray);
+            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             short[] decompressedArray = new short[shortArray.length];
             ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
             Assert.assertArrayEquals(shortArray, decompressedArray);
@@ -187,7 +251,6 @@ public class HCompressTest {
     public void testHcompressByte() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/testData8.bin", "r");//
                 RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/testData8.huf", "r");//
-                RandomAccessFile expectedUncompressed = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/testData8.huf.uncompressed", "r");//
 
         ) {
             byte[] bytes = new byte[(int) file.length()];
@@ -207,11 +270,39 @@ public class HCompressTest {
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            expectedUncompressed.read(bytes);
+            long[] decompressedLongArray = new long[byteArray.length];
+            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
+            byte[] decompressedArray = new byte[byteArray.length];
+            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
+            Assert.assertArrayEquals(byteArray, decompressedArray);
+        }
+    }
+
+    @Test
+    public void testHcompressByteOdd() throws Exception {
+        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data8.bin", "r");//
+                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data8.huf", "r");//
+
+        ) {
+            byte[] bytes = new byte[(int) file.length()];
+            file.read(bytes);
+            byte[] expectedBytes = new byte[(int) expected.length()];
+            expected.read(expectedBytes);
+
+            byte[] byteArray = new byte[bytes.length];
             ByteBuffer.wrap(bytes).get(byteArray);
 
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[byteArray.length]);
+
+            HCompress.createCompressor(byteArray).compress(byteArray, 99, 99, 0, compressed);
+
+            byte[] compressedArray = new byte[compressed.position()];
+            compressed.position(0);
+            compressed.get(compressedArray, 0, compressedArray.length);
+            Assert.assertArrayEquals(expectedBytes, compressedArray);
+
             long[] decompressedLongArray = new long[byteArray.length];
-            new HDecompress().fits_hdecompress64(ByteBuffer.wrap(expectedBytes), 0, decompressedLongArray);
+            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             byte[] decompressedArray = new byte[byteArray.length];
             ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
             Assert.assertArrayEquals(byteArray, decompressedArray);
@@ -222,7 +313,6 @@ public class HCompressTest {
     public void testHcompressByteScale4() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/testData8.bin", "r");//
                 RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale4/testData8.huf", "r");//
-                RandomAccessFile expectedUncompressed = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale4/testData8.huf.uncompressed", "r");//
 
         ) {
             byte[] bytes = new byte[(int) file.length()];
@@ -242,18 +332,22 @@ public class HCompressTest {
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            expectedUncompressed.read(bytes);
-            ByteBuffer.wrap(bytes).get(byteArray);
-
             long[] decompressedLongArray = new long[byteArray.length];
-            new HDecompress().fits_hdecompress64(ByteBuffer.wrap(expectedBytes), 0, decompressedLongArray);
+            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             byte[] decompressedArray = new byte[byteArray.length];
+            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
+            Assert.assertArrayEquals(byteArray, decompressedArray);
+
+            decompressedLongArray = new long[byteArray.length];
+            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), true, decompressedLongArray);
+            decompressedArray = new byte[byteArray.length];
             ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
             Assert.assertArrayEquals(byteArray, decompressedArray);
         }
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void testHcompressFloat() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/testData-32.bin", "r");//
                 RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/testData-32.huf", "r");//
@@ -269,9 +363,8 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
 
-            
-          //  imcomp_convert_tile_tfloat must be ported;
-            
+            // imcomp_convert_tile_tfloat must be ported;
+
             HCompress.createCompressor(intArray).compress(intArray, 100, 100, 0, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -283,7 +376,7 @@ public class HCompressTest {
             ByteBuffer.wrap(bytes).asFloatBuffer().get(intArray);
 
             long[] decompressedLongArray = new long[intArray.length];
-            new HDecompress().fits_hdecompress64(ByteBuffer.wrap(expectedBytes), 0, decompressedLongArray);
+            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             float[] decompressedArray = new float[intArray.length];
             ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
             Assert.assertArrayEquals(intArray, decompressedArray, 0.00000f);

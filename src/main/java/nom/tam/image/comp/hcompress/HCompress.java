@@ -115,15 +115,15 @@ public abstract class HCompress {
 
     private static final int HTRANS_START_MASK = -2;
 
-    private static final double ROUNDING_HALF = 0.5;
+    protected static final double ROUNDING_HALF = 0.5;
 
-    private static final int BITS_OF_1_BYTE = 8;
+    protected static final int BITS_OF_1_BYTE = 8;
 
-    private static final int BITS_OF_1_NYBBLE = 4;
+    protected static final int BITS_OF_1_NYBBLE = 4;
 
-    private static final int BYTE_MASK = 0xff;
+    protected static final int BYTE_MASK = 0xff;
 
-    private static final int NYBBLE_MASK = 0xF;
+    protected static final int NYBBLE_MASK = 0xF;
 
     /**
      * to be refactored to a good name.
