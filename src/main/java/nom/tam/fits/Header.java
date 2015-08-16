@@ -1301,18 +1301,12 @@ public class Header implements FitsElement {
         }
 
         boolean firstCard = true;
-        int count = 0;
-
+        HeaderCardCountingArrayDataInput cardCountingArray = new HeaderCardCountingArrayDataInput(dis);
         try {
             while (true) {
-                HeaderCard fcard = new HeaderCard(dis);
-                int cardSize = fcard.cardSize();
-                count = count + cardSize;
-
+                HeaderCard fcard = new HeaderCard(cardCountingArray);
                 if (firstCard) {
-
                     String key = fcard.getKey();
-
                     if (key == null || !key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {
                         if (this.fileOffset > 0 && FitsFactory.getAllowTerminalJunk()) {
                             throw new EOFException("Not FITS format at " + this.fileOffset + ":" + key);
@@ -1336,14 +1330,11 @@ public class Header implements FitsElement {
                     FitsFactory.setLongStringsEnabled(true);
                 }
                 // save card
-
-                this.originalCardCount += cardSize; // RBH ADDED
                 addLine(fcard);
                 if (END.key().equals(key)) {
                     break; // Out of reading the header.
                 }
             }
-
         } catch (EOFException e) {
             if (!firstCard) {
                 throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage()));
@@ -1363,11 +1354,11 @@ public class Header implements FitsElement {
         if (this.fileOffset >= 0) {
             this.input = dis;
         }
-
+        this.originalCardCount = cardCountingArray.getPhysicalCardsRead();
         // Read to the end of the current FITS block.
         //
         try {
-            dis.skipAllBytes(FitsUtil.padding(count * HeaderCard.FITS_HEADER_CARD_SIZE));
+            dis.skipAllBytes(FitsUtil.padding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE));
         } catch (IOException e) {
             throw new TruncatedFileException(e.getMessage());
         }

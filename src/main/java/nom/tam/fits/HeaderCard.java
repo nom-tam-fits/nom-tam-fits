@@ -211,6 +211,10 @@ public class HeaderCard implements CursorValue<String> {
     private boolean isString;
 
     public HeaderCard(ArrayDataInput dis) throws TruncatedFileException, IOException {
+        this(new HeaderCardCountingArrayDataInput(dis));
+    }
+
+    public HeaderCard(HeaderCardCountingArrayDataInput dis) throws TruncatedFileException, IOException {
         this.key = null;
         this.value = null;
         this.comment = null;
@@ -477,7 +481,7 @@ public class HeaderCard implements CursorValue<String> {
         return 1;
     }
 
-    private void extractValueCommentFromString(ArrayDataInput dis, String card) throws IOException, TruncatedFileException {
+    private void extractValueCommentFromString(HeaderCardCountingArrayDataInput dis, String card) throws IOException, TruncatedFileException {
         // extract the value/comment part of the string
         ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
 
@@ -566,7 +570,7 @@ public class HeaderCard implements CursorValue<String> {
      * 
      * @param dis
      */
-    private void hierarchCard(String card, ArrayDataInput dis) throws IOException, TruncatedFileException {
+    private void hierarchCard(String card, HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
 
         this.key = FitsHeaderCardParser.parseCardKey(card);
 
@@ -587,7 +591,7 @@ public class HeaderCard implements CursorValue<String> {
         return this.isString;
     }
 
-    private void longStringCard(ArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException {
+    private void longStringCard(HeaderCardCountingArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException {
         // ok this is a longString now read over all continues.
         StringBuilder longValue = new StringBuilder();
         StringBuilder longComment = new StringBuilder();
@@ -605,7 +609,7 @@ public class HeaderCard implements CursorValue<String> {
             continueCard = null;
             if (longValue.charAt(longValue.length() - 1) == '&') {
                 longValue.setLength(longValue.length() - 1);
-                dis.mark(FITS_HEADER_CARD_SIZE);
+                dis.in().mark(FITS_HEADER_CARD_SIZE);
                 String card = readOneHeaderLine(dis);
                 if (card.startsWith(CONTINUE.key())) {
                     // extract the value/comment part of the string
@@ -614,7 +618,7 @@ public class HeaderCard implements CursorValue<String> {
                     // the & was part of the string put it back.
                     longValue.append('&');
                     // ok move the imputstream one card back.
-                    dis.reset();
+                    dis.in().reset();
                 }
             }
         } while (continueCard != null);
@@ -623,14 +627,13 @@ public class HeaderCard implements CursorValue<String> {
         this.isString = true;
     }
 
-    private String readOneHeaderLine(ArrayDataInput dis) throws IOException, TruncatedFileException {
+    private String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
         byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
         int len;
         int need = FITS_HEADER_CARD_SIZE;
         try {
-
             while (need > 0) {
-                len = dis.read(buffer, FITS_HEADER_CARD_SIZE - need, need);
+                len = dis.in().read(buffer, FITS_HEADER_CARD_SIZE - need, need);
                 if (len == 0) {
                     throw new TruncatedFileException("nothing to read left");
                 }
@@ -642,6 +645,7 @@ public class HeaderCard implements CursorValue<String> {
             }
             throw new TruncatedFileException(e.getMessage());
         }
+        dis.cardRead();
         return AsciiFuncs.asciiString(buffer);
     }
 

@@ -1,4 +1,4 @@
-package nom.tam.fits.test;
+package nom.tam.fits;
 
 /*
  * #%L
@@ -31,32 +31,49 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import nom.tam.fits.Fits;
-import nom.tam.fits.FitsFactory;
-import nom.tam.fits.Header;
+import nom.tam.util.ArrayDataInput;
 
-import org.junit.Test;
+/**
+ * A helper class to keep track of the number of physical cards for a logical
+ * card.
+ * 
+ * @author Richard van Nieuwenhoven
+ */
+public class HeaderCardCountingArrayDataInput {
 
-public class UserProvidedTest {
+    /**
+     * the input stream.
+     */
+    private final ArrayDataInput input;
 
-    @Test
-    public void testRewriteableHierarchImageWithLongStrings() throws Exception {
-        boolean longStringsEnabled = FitsFactory.isLongStringsEnabled();
-        boolean useHierarch = FitsFactory.getUseHierarch();
-        try {
-            FitsFactory.setUseHierarch(true);
-            FitsFactory.setLongStringsEnabled(true);
+    /**
+     * the number of 80 byte cards read.
+     */
+    private int physicalCardsRead;
 
-            String filename = "src/test/resources/nom/tam/image/provided/issue49test.fits";
-            Fits fits = new Fits(filename);
-            Header headerRewriter = fits.getHDU(0).getHeader();
-            // the real test is if this throws an exception, it should not!
-            headerRewriter.rewrite();
-            fits.close();
-        } finally {
-            FitsFactory.setLongStringsEnabled(longStringsEnabled);
-            FitsFactory.setUseHierarch(useHierarch);
-
-        }
+    protected HeaderCardCountingArrayDataInput(ArrayDataInput input) {
+        this.input = input;
     }
+
+    /**
+     * @return the number of cards realy read form the stream
+     */
+    protected int getPhysicalCardsRead() {
+        return physicalCardsRead;
+    }
+
+    /**
+     * @return the stream to read the cards from
+     */
+    protected ArrayDataInput in() {
+        return input;
+    }
+
+    /**
+     * report a readed card.
+     */
+    public void cardRead() {
+        physicalCardsRead++;
+    }
+
 }
