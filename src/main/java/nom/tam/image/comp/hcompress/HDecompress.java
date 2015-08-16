@@ -99,6 +99,16 @@ public class HDecompress {
         255
     };
 
+    private static final byte ZERO = 0;
+
+    private static final byte BIT_ONE = 1;
+
+    private static final byte BIT_TWO = 2;
+
+    private static final byte BIT_THREE = 4;
+
+    private static final byte BIT_FOUR = 8;
+
     /**
      * these N constants are boscuring the algorithm and should get some
      * explenaining javadoc if somebody understands the algorithm.
@@ -803,7 +813,19 @@ public class HDecompress {
             // variable
             // s10 = s00+n; *//* s10 is index of b[i+1,j]
             for (j = 0; j < lny - 1; j += 2) {
-                qtreeBitins64Switch1(b, n, s00, planeVal, k);
+                byte value = k.get();
+                if ((value & BIT_ONE) != ZERO) {
+                    b.bitOr(s00 + n + 1, planeVal);
+                }
+                if ((value & BIT_TWO) != ZERO) {
+                    b.bitOr(s00 + n, planeVal);
+                }
+                if ((value & BIT_THREE) != ZERO) {
+                    b.bitOr(s00 + 1, planeVal);
+                }
+                if ((value & BIT_FOUR) != ZERO) {
+                    b.bitOr(s00, planeVal);
+                }
                 // b.bitOr(s10+1, ((LONGLONG) ( a[k] & 1)) << bit; b.bitOr(s10 ,
                 // ((((LONGLONG)a[k])>>1) & 1) << bit; b.bitOr(s00+1,
                 // ((((LONGLONG)a[k])>>2) & 1) << bit; b.bitOr(s00
@@ -814,7 +836,13 @@ public class HDecompress {
             if (j < lny) {
                 // row size is odd, do last element in row s00+1, s10+1 are off
                 // edge
-                qtreeBitins64Switch2(b, n, s00, planeVal, k);
+                byte value = k.get();
+                if ((value & BIT_TWO) != ZERO) {
+                    b.bitOr(s00 + n, planeVal);
+                }
+                if ((value & BIT_FOUR) != ZERO) {
+                    b.bitOr(s00, planeVal);
+                }
                 // b.bitOr(s10 , ((((LONGLONG)a[k])>>1) & 1) << bit; b.bitOr(s00
                 // , ((((LONGLONG)a[k])>>3) & 1) << bit;
             }
@@ -823,241 +851,24 @@ public class HDecompress {
             // column size is odd, do last row s10, s10+1 are off edge
             s00 = n * i;
             for (j = 0; j < lny - 1; j += 2) {
-                qtreeBitins64Switch3(b, s00, planeVal, k);
-                // b.bitOr(s00+1, ((((LONGLONG)a[k])>>2) & 1) << bit;
-                // b.bitOr(s00 , ((((LONGLONG)a[k])>>3) & 1) << bit;
+                byte value = k.get();
+                if ((value & BIT_THREE) != ZERO) {
+                    b.bitOr(s00 + 1, planeVal);
+                }
+                if ((value & BIT_FOUR) != ZERO) {
+                    b.bitOr(s00, planeVal);
+                } // b.bitOr(s00+1, ((((LONGLONG)a[k])>>2) & 1) << bit;
+                  // b.bitOr(s00 , ((((LONGLONG)a[k])>>3) & 1) << bit;
                 s00 += 2;
             }
             if (j < lny) {
                 // both row and column size are odd, do corner element s00+1,
                 // s10, s10+1 are off edge
-                qtreeBitins64Switch4(b, s00, planeVal, k);
+                if ((k.get() & BIT_FOUR) != ZERO) {
+                    b.bitOr(s00, planeVal);
+                }
                 // b.bitOr(s00 , ((((LONGLONG)a[k])>>3) & 1) << bit;
             }
-        }
-    }
-
-    private void qtreeBitins64Switch4(LongArrayPointer b, int s00, long planeVal, ByteBuffer k) {
-        switch (k.get()) {
-            case 0:
-                break;
-            case 1:
-                break;
-            case 2:
-                break;
-            case N03:
-                break;
-            case N04:
-                break;
-            case N05:
-                break;
-            case N06:
-                break;
-            case N07:
-                break;
-            case N08:
-                b.bitOr(s00, planeVal);
-                break;
-            case N09:
-                b.bitOr(s00, planeVal);
-                break;
-            case N10:
-                b.bitOr(s00, planeVal);
-                break;
-            case N11:
-                b.bitOr(s00, planeVal);
-                break;
-            case N12:
-                b.bitOr(s00, planeVal);
-                break;
-            case N13:
-                b.bitOr(s00, planeVal);
-                break;
-            case N14:
-                b.bitOr(s00, planeVal);
-                break;
-            case N15:
-                b.bitOr(s00, planeVal);
-                break;
-            default:
-        }
-    }
-
-    private void qtreeBitins64Switch3(LongArrayPointer b, int s00, long planeVal, ByteBuffer k) {
-        switch (k.get()) {
-            case 0:
-                break;
-            case 1:
-                break;
-            case 2:
-                break;
-            case N03:
-                break;
-            case N04:
-                b.bitOr(s00 + 1, planeVal);
-                break;
-            case N05:
-                b.bitOr(s00 + 1, planeVal);
-                break;
-            case N06:
-                b.bitOr(s00 + 1, planeVal);
-                break;
-            case N07:
-                b.bitOr(s00 + 1, planeVal);
-                break;
-            case N08:
-                b.bitOr(s00, planeVal);
-                break;
-            case N09:
-                b.bitOr(s00, planeVal);
-                break;
-            case N10:
-                b.bitOr(s00, planeVal);
-                break;
-            case N11:
-                b.bitOr(s00, planeVal);
-                break;
-            case N12:
-                b.bitOr(s00 + 1, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            case N13:
-                b.bitOr(s00 + 1, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            case N14:
-                b.bitOr(s00 + 1, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            case N15:
-                b.bitOr(s00 + 1, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            default:
-        }
-    }
-
-    private void qtreeBitins64Switch2(LongArrayPointer b, int n, int s00, long planeVal, ByteBuffer k) {
-        switch (k.get()) {
-            case 0:
-                break;
-            case 1:
-                break;
-            case 2:
-                b.bitOr(s00 + n, planeVal);
-                break;
-            case N03:
-                b.bitOr(s00 + n, planeVal);
-                break;
-            case N04:
-                break;
-            case N05:
-                break;
-            case N06:
-                b.bitOr(s00 + n, planeVal);
-                break;
-            case N07:
-                b.bitOr(s00 + n, planeVal);
-                break;
-            case N08:
-                b.bitOr(s00, planeVal);
-                break;
-            case N09:
-                b.bitOr(s00, planeVal);
-                break;
-            case N10:
-                b.bitOr(s00 + n, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            case N11:
-                b.bitOr(s00 + n, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            case N12:
-                b.bitOr(s00, planeVal);
-                break;
-            case N13:
-                b.bitOr(s00, planeVal);
-                break;
-            case N14:
-                b.bitOr(s00 + n, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            case N15:
-                b.bitOr(s00 + n, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            default:
-        }
-    }
-
-    private void qtreeBitins64Switch1(LongArrayPointer b, int n, int s00, long planeVal, ByteBuffer k) {
-        switch (k.get()) {
-            case 0:
-                break;
-            case 1:
-                b.bitOr(s00 + n + 1, planeVal);
-                break;
-            case 2:
-                b.bitOr(s00 + n, planeVal);
-                break;
-            case N03:
-                b.bitOr(s00 + n + 1, planeVal);
-                b.bitOr(s00 + n, planeVal);
-                break;
-            case N04:
-                b.bitOr(s00 + 1, planeVal);
-                break;
-            case N05:
-                b.bitOr(s00 + n + 1, planeVal);
-                b.bitOr(s00 + 1, planeVal);
-                break;
-            case N06:
-                b.bitOr(s00 + n, planeVal);
-                b.bitOr(s00 + 1, planeVal);
-                break;
-            case N07:
-                b.bitOr(s00 + n + 1, planeVal);
-                b.bitOr(s00 + n, planeVal);
-                b.bitOr(s00 + 1, planeVal);
-                break;
-            case N08:
-                b.bitOr(s00, planeVal);
-                break;
-            case N09:
-                b.bitOr(s00 + n + 1, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            case N10:
-                b.bitOr(s00 + n, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            case N11:
-                b.bitOr(s00 + n + 1, planeVal);
-                b.bitOr(s00 + n, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            case N12:
-                b.bitOr(s00 + 1, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            case N13:
-                b.bitOr(s00 + n + 1, planeVal);
-                b.bitOr(s00 + 1, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            case N14:
-                b.bitOr(s00 + n, planeVal);
-                b.bitOr(s00 + 1, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            case N15:
-                b.bitOr(s00 + n + 1, planeVal);
-                b.bitOr(s00 + n, planeVal);
-                b.bitOr(s00 + 1, planeVal);
-                b.bitOr(s00, planeVal);
-                break;
-            default:
         }
     }
 
@@ -1087,107 +898,10 @@ public class HDecompress {
             s00 = n * i; // s00 is index of b[i,j]
             s10 = s00 + n; // s10 is index of b[i+1,j]
             for (j = 0; j < lny - 1; j += 2) {
-                switch (b[s00]) {
-                    case 0:
-                        b[s10 + 1] = 0;
-                        b[s10] = 0;
-                        b[s00 + 1] = 0;
-                        b[s00] = 0;
-                        break;
-                    case 1:
-                        b[s10 + 1] = 1;
-                        b[s10] = 0;
-                        b[s00 + 1] = 0;
-                        b[s00] = 0;
-                        break;
-                    case 2:
-                        b[s10 + 1] = 0;
-                        b[s10] = 1;
-                        b[s00 + 1] = 0;
-                        b[s00] = 0;
-                        break;
-                    case N03:
-                        b[s10 + 1] = 1;
-                        b[s10] = 1;
-                        b[s00 + 1] = 0;
-                        b[s00] = 0;
-                        break;
-                    case N04:
-                        b[s10 + 1] = 0;
-                        b[s10] = 0;
-                        b[s00 + 1] = 1;
-                        b[s00] = 0;
-                        break;
-                    case N05:
-                        b[s10 + 1] = 1;
-                        b[s10] = 0;
-                        b[s00 + 1] = 1;
-                        b[s00] = 0;
-                        break;
-                    case N06:
-                        b[s10 + 1] = 0;
-                        b[s10] = 1;
-                        b[s00 + 1] = 1;
-                        b[s00] = 0;
-                        break;
-                    case N07:
-                        b[s10 + 1] = 1;
-                        b[s10] = 1;
-                        b[s00 + 1] = 1;
-                        b[s00] = 0;
-                        break;
-                    case N08:
-                        b[s10 + 1] = 0;
-                        b[s10] = 0;
-                        b[s00 + 1] = 0;
-                        b[s00] = 1;
-                        break;
-                    case N09:
-                        b[s10 + 1] = 1;
-                        b[s10] = 0;
-                        b[s00 + 1] = 0;
-                        b[s00] = 1;
-                        break;
-                    case N10:
-                        b[s10 + 1] = 0;
-                        b[s10] = 1;
-                        b[s00 + 1] = 0;
-                        b[s00] = 1;
-                        break;
-                    case N11:
-                        b[s10 + 1] = 1;
-                        b[s10] = 1;
-                        b[s00 + 1] = 0;
-                        b[s00] = 1;
-                        break;
-                    case N12:
-                        b[s10 + 1] = 0;
-                        b[s10] = 0;
-                        b[s00 + 1] = 1;
-                        b[s00] = 1;
-                        break;
-                    case N13:
-                        b[s10 + 1] = 1;
-                        b[s10] = 0;
-                        b[s00 + 1] = 1;
-                        b[s00] = 1;
-                        break;
-                    case N14:
-                        b[s10 + 1] = 0;
-                        b[s10] = 1;
-                        b[s00 + 1] = 1;
-                        b[s00] = 1;
-                        break;
-                    case N15:
-                        b[s10 + 1] = 1;
-                        b[s10] = 1;
-                        b[s00 + 1] = 1;
-                        b[s00] = 1;
-                        break;
-                    default:
-                }
-                // b[s10+1] = b[s00] & 1; b[s10 ] = (b[s00]>>1) & 1; b[s00+1] =
-                // (b[s00]>>2) & 1; b[s00 ] = (b[s00]>>3) & 1;
+                b[s10 + 1] = (b[s00] & BIT_ONE) == ZERO ? ZERO : BIT_ONE;
+                b[s10] = (b[s00] & BIT_TWO) == ZERO ? ZERO : BIT_ONE;
+                b[s00 + 1] = (b[s00] & BIT_THREE) == ZERO ? ZERO : BIT_ONE;
+                b[s00] = (b[s00] & BIT_FOUR) == ZERO ? ZERO : BIT_ONE;
                 s00 += 2;
                 s10 += 2;
             }
