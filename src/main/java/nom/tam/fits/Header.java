@@ -1305,9 +1305,9 @@ public class Header implements FitsElement {
 
         try {
             while (true) {
-
                 HeaderCard fcard = new HeaderCard(dis);
-                count = count + fcard.cardSize();
+                int cardSize = fcard.cardSize();
+                count = count + cardSize;
 
                 if (firstCard) {
 
@@ -1337,7 +1337,7 @@ public class Header implements FitsElement {
                 }
                 // save card
 
-                this.originalCardCount++; // RBH ADDED
+                this.originalCardCount += cardSize; // RBH ADDED
                 addLine(fcard);
                 if (END.key().equals(key)) {
                     break; // Out of reading the header.
