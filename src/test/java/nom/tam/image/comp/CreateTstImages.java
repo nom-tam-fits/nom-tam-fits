@@ -141,6 +141,25 @@ public class CreateTstImages {
         riseFile.delete();
         compressedFile.renameTo(riseFile);
         types.add("rise");
+
+        if (nr.equals("8") || nr.equals("16")) {
+            wait(Runtime.getRuntime().exec(new String[]{
+                FPACK,
+                "-w",
+                "-p",
+                fitsFile.getAbsolutePath()
+            }));
+            wait(Runtime.getRuntime().exec(new String[]{
+                FUNPACK,
+                compressedFile.getAbsolutePath(),
+                "-O",
+                new File("target/compress/test" + edge + "Dataplio" + nr + ".fits.uncompressed").getAbsolutePath()
+            }));
+            File plioFile = new File("target/compress/test" + edge + "Dataplio" + nr + ".fits.fz");
+            plioFile.delete();
+            compressedFile.renameTo(plioFile);
+            types.add("plio");
+        }
         for (String type : types) {
             fitsFile = new File("target/compress/test" + edge + "Data" + type + nr + ".fits.fz");
             if (!fitsFile.exists()) {
@@ -150,7 +169,16 @@ public class CreateTstImages {
             Fits fits = new Fits(fitsFile);
             BasicHDU<?> hdu1 = fits.readHDU();
             BinaryTableHDU hdu2 = (BinaryTableHDU) fits.readHDU();
-            byte[] data = (byte[]) hdu2.getData().getElement(0, 0);
+            Object element = hdu2.getData().getElement(0, 0);
+
+            byte[] data;
+            if (element instanceof byte[]) {
+                data = (byte[]) element;
+            } else {
+                short[] shorts = (short[]) element;
+                data = new byte[shorts.length * 2];
+                ByteBuffer.wrap(data).asShortBuffer().put(shorts);
+            }
             RandomAccessFile file = new RandomAccessFile("target/compress/test" + edge + "Data" + nr + "." + type, "rw");
             file.write(data, 0, data.length);
             file.close();
@@ -193,7 +221,7 @@ public class CreateTstImages {
                     fits = new Fits(uncompressed);
                     hdu1 = fits.readHDU();
                     hdu2 = (BinaryTableHDU) fits.readHDU();
-                    byte[] data2 = (byte[]) hdu2.getData().getElement(0, 0);
+                    byte[] data2 = (byte[]) element;
                     if (notEqual(data, data2)) {
                         System.out.println(fitsFile + ".uncompressed");
                     }
