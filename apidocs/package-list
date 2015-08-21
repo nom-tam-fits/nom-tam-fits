@@ -4,5 +4,8 @@ nom.tam.fits.header
 nom.tam.fits.header.extra
 nom.tam.fits.utilities
 nom.tam.image
+nom.tam.image.comp.hcompress
+nom.tam.image.comp.plio
+nom.tam.image.comp.rise
 nom.tam.util
 nom.tam.util.array

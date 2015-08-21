@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>BitBuffer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.comp.rise</a> &gt; <span class="el_source">BitBuffer.java</span></div><h1>BitBuffer.java</h1><pre class="source lang-java linenums">package nom.tam.image.comp.rise;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.nio.ByteBuffer;
+
+/**
+ * A bit wise reader writer around a bytebuffer.
+ * 
+ * @author Ritchie
+ */
+public class BitBuffer {
+
+    private static final int BITS_OF_4_BYTES = 32;
+
+    private static final int BYTE_MASK = 0xFF;
+
+    private static final long INTEGER_MASK = 0xFFFFFFFFL;
+
+    private static final int BITS_OF_1_BYTE = 8;
+
+    private static final int BITS_OF_2_BYTES = 16;
+
+    private static final int BITS_OF_3_BYTES = 24;
+
+    private static final int BYTE_1_OF_INT = 0x000000FF;
+
+    private static final int BYTE_2_OF_INT = 0x0000FF00;
+
+    private static final int BYTE_3_OF_INT = 0x00FF0000;
+
+    private static final int BYTE_4_OF_INT = 0xFF000000;
+
+    private final ByteBuffer buffer;
+
+    private long position;
+
+<span class="fc" id="L67">    public BitBuffer(ByteBuffer writeBuffer) {</span>
+<span class="fc" id="L68">        this.buffer = writeBuffer;</span>
+<span class="fc" id="L69">    }</span>
+
+    public ByteBuffer asByteBuffer() {
+<span class="nc" id="L72">        return this.buffer;</span>
+    }
+
+    public int bitbuffer() {
+<span class="fc" id="L76">        return this.buffer.get((int) (this.position / BITS_OF_1_BYTE));</span>
+    }
+
+    void close() {
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (this.position % BITS_OF_1_BYTE != 0) {</span>
+<span class="fc" id="L81">            putByte((byte) 0, (int) (BITS_OF_1_BYTE - this.position % BITS_OF_1_BYTE));</span>
+        }
+<span class="fc" id="L83">        this.buffer.position((int) (this.position / BITS_OF_1_BYTE));</span>
+<span class="fc" id="L84">    }</span>
+
+    public void limit(int newLimit) {
+<span class="nc" id="L87">        this.buffer.limit(newLimit);</span>
+<span class="nc" id="L88">    }</span>
+
+    public int missingBitsInCurrentByte() {
+<span class="fc" id="L91">        return (int) (BITS_OF_1_BYTE - this.position % BITS_OF_1_BYTE);</span>
+    }
+
+    public void movePosition(int i) {
+<span class="fc" id="L95">        this.position += i;</span>
+<span class="fc" id="L96">    }</span>
+
+    public void putByte(byte byteToAdd) {
+<span class="fc" id="L99">        final int bytePosition = (int) (this.position / BITS_OF_1_BYTE);</span>
+<span class="fc" id="L100">        final int positionInByte = (int) (this.position % BITS_OF_1_BYTE);</span>
+<span class="fc" id="L101">        final byte old = (byte) (this.buffer.get(bytePosition) &amp; (byte) ~(BYTE_MASK &gt;&gt;&gt; positionInByte));</span>
+<span class="fc" id="L102">        final int byteAsInt = byteToAdd &amp; BYTE_MASK;</span>
+<span class="fc" id="L103">        this.buffer.put(bytePosition, (byte) (old | (byte) (byteAsInt &gt;&gt;&gt; positionInByte)));</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        if (positionInByte &gt; 0) {</span>
+<span class="fc" id="L105">            this.buffer.put(bytePosition + 1, (byte) (byteAsInt &lt;&lt; BITS_OF_1_BYTE - positionInByte));</span>
+        }
+<span class="fc" id="L107">        this.position += BITS_OF_1_BYTE;</span>
+<span class="fc" id="L108">    }</span>
+
+    public void putByte(byte byteToAdd, int bits) {
+<span class="fc" id="L111">        final int bytePosition = (int) (this.position / BITS_OF_1_BYTE);</span>
+<span class="fc" id="L112">        final int positionInByte = (int) (this.position % BITS_OF_1_BYTE);</span>
+<span class="fc" id="L113">        final byte old = this.buffer.get(bytePosition);</span>
+<span class="fc" id="L114">        final int byteAsInt = BYTE_MASK &amp; (byteToAdd &amp; BYTE_MASK &gt;&gt;&gt; BITS_OF_1_BYTE - bits) &lt;&lt; BITS_OF_1_BYTE - bits;</span>
+<span class="fc" id="L115">        this.buffer.put(bytePosition, (byte) (BYTE_MASK &amp; //</span>
+                (old &amp; BYTE_MASK &lt;&lt; BITS_OF_1_BYTE - positionInByte | byteAsInt &gt;&gt;&gt; positionInByte)));
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        if (BITS_OF_1_BYTE - positionInByte &lt; bits) {</span>
+<span class="fc" id="L118">            this.buffer.put(bytePosition + 1, (byte) (BYTE_MASK &amp; byteAsInt &lt;&lt; BITS_OF_1_BYTE - positionInByte));</span>
+        }
+<span class="fc" id="L120">        this.position += bits;</span>
+<span class="fc" id="L121">    }</span>
+
+    /**
+     * write out int value to the next 4 bytes of the buffer
+     * 
+     * @param i
+     *            integer to write
+     */
+    public void putInt(int i) {
+<span class="fc" id="L130">        putByte((byte) ((i &amp; BYTE_4_OF_INT) &gt;&gt;&gt; BITS_OF_3_BYTES));</span>
+<span class="fc" id="L131">        putByte((byte) ((i &amp; BYTE_3_OF_INT) &gt;&gt;&gt; BITS_OF_2_BYTES));</span>
+<span class="fc" id="L132">        putByte((byte) ((i &amp; BYTE_2_OF_INT) &gt;&gt;&gt; BITS_OF_1_BYTE));</span>
+<span class="fc" id="L133">        putByte((byte) (i &amp; BYTE_1_OF_INT));</span>
+<span class="fc" id="L134">    }</span>
+
+    public void putInt(int i, int bits) {
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">        if (bits == 0) {</span>
+<span class="nc" id="L138">            return;</span>
+        }
+        do {
+<span class="fc bfc" id="L141" title="All 2 branches covered.">            if (bits &gt;= BITS_OF_1_BYTE) {</span>
+<span class="fc" id="L142">                putByte((byte) (((i &amp; BYTE_MASK &lt;&lt; bits - BITS_OF_1_BYTE) &gt;&gt;&gt; bits - BITS_OF_1_BYTE) &amp; BYTE_MASK));</span>
+<span class="fc" id="L143">                bits -= BITS_OF_1_BYTE;</span>
+            } else {
+<span class="fc" id="L145">                putByte((byte) (i &amp; BYTE_MASK &gt;&gt; -(bits - BITS_OF_1_BYTE)), bits);</span>
+<span class="fc" id="L146">                bits = 0;</span>
+            }
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        } while (bits &gt; 0);</span>
+<span class="fc" id="L149">    }</span>
+
+    public void putLong(long l, int bits) {
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        if (bits == 0) {</span>
+<span class="nc" id="L153">            return;</span>
+        }
+        do {
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">            if (bits &gt;= BITS_OF_4_BYTES) {</span>
+<span class="fc" id="L157">                putInt((int) ((l &amp; INTEGER_MASK &lt;&lt; bits - BITS_OF_4_BYTES) &gt;&gt;&gt; bits - BITS_OF_4_BYTES));</span>
+<span class="fc" id="L158">                bits -= BITS_OF_4_BYTES;</span>
+            } else {
+<span class="nc" id="L160">                putInt((int) (l &amp; INTEGER_MASK &gt;&gt; -(bits - BITS_OF_4_BYTES)), bits);</span>
+<span class="nc" id="L161">                bits = 0;</span>
+            }
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">        } while (bits &gt; 0);</span>
+<span class="fc" id="L164">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

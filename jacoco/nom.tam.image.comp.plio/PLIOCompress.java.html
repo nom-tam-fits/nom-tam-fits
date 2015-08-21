@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PLIOCompress.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.comp.plio</a> &gt; <span class="el_source">PLIOCompress.java</span></div><h1>PLIOCompress.java</h1><pre class="source lang-java linenums">package nom.tam.image.comp.plio;
+
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+<span class="fc" id="L37">public class PLIOCompress {</span>
+
+    private static final int FIRST_VALUE_WITH_13_BIT = 4096;
+
+    private static final int FIRST_VALUE_WITH_14_BIT = 8192;
+
+    private static final int FIRST_VALUE_WITH_15_BIT = 16384;
+
+    private static final int FIRST_VALUE_WITH_16_BIT = 32768;
+
+    private static final int HEADER_SIZE_FIELD1 = 3;
+
+    private static final int HEADER_SIZE_FIELD2 = 4;
+
+    private static final int LAST_VALUE_FITTING_IN_12_BIT = FIRST_VALUE_WITH_13_BIT - 1;
+
+    private static final int MINI_HEADER_SIZE = 3;
+
+    private static final int MINI_HEADER_SIZE_FIELD = 2;
+
+    /**
+     * The exact meening of this var is not clear at the moment of porting the
+     * algorithm to java.
+     */
+    private static final int N20481 = 20481;
+
+    private static final int OPCODE_1 = 1;
+
+    private static final int OPCODE_2 = 2;
+
+    private static final int OPCODE_3 = 3;
+
+    private static final int OPCODE_4 = 4;
+
+    private static final int OPCODE_5 = 5;
+
+    private static final int OPCODE_6 = 6;
+
+    private static final int OPCODE_7 = 7;
+
+    private static final int OPCODE_8 = 8;
+
+<span class="fc" id="L79">    private static final short[] PLIO_HEADER = {</span>
+        (short) 0,
+        (short) 7,
+        (short) -100,
+        (short) 0,
+        (short) 0,
+        (short) 0,
+        (short) 0
+    };
+
+    private static final int SHIFT_12_BITS = 12;
+
+    private static final int SHIFT_15_BITS = 15;
+
+    private static final int VALUE_OF_BIT_13_AND14_ON = 12288;
+
+    /**
+     * PL_P2L -- Convert a pixel array to a line list. The length of the list is
+     * returned as the function value.
+     * 
+     * @param pixelData
+     *            input pixel array
+     * @param compressedData
+     *            encoded line list
+     * @param npix
+     *            number of pixels to convert
+     */
+    public void compress(IntBuffer pixelData, ShortBuffer compressedData, int npix) {
+<span class="fc" id="L107">        compressedData.position(0);</span>
+<span class="fc" id="L108">        compressedData.put(PLIO_HEADER);</span>
+<span class="fc" id="L109">        final int xe = npix - 1;</span>
+<span class="fc" id="L110">        int op = PLIO_HEADER.length;</span>
+        /* Computing MAX */
+<span class="fc" id="L112">        int pv = Math.max(0, pixelData.get(0));</span>
+<span class="fc" id="L113">        int x1 = 0;</span>
+<span class="fc" id="L114">        int iz = 0;</span>
+<span class="fc" id="L115">        int hi = 1;</span>
+<span class="fc" id="L116">        int nv = 0;</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        for (int ip = 0; ip &lt;= xe; ++ip) {</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            if (ip &lt; xe) {</span>
+                /* Computing MAX */
+<span class="fc" id="L120">                nv = Math.max(0, pixelData.get(ip + 1));</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">                if (nv == pv) {</span>
+<span class="fc" id="L122">                    continue;</span>
+                }
+<span class="fc bfc" id="L124" title="All 2 branches covered.">                if (pv == 0) {</span>
+<span class="fc" id="L125">                    pv = nv;</span>
+<span class="fc" id="L126">                    x1 = ip + 1;</span>
+<span class="fc" id="L127">                    continue;</span>
+                }
+            } else {
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">                if (pv == 0) {</span>
+<span class="fc" id="L131">                    x1 = xe + 1;</span>
+                }
+            }
+
+<span class="fc" id="L135">            int np = ip - x1 + 1;</span>
+<span class="fc" id="L136">            int nz = x1 - iz;</span>
+<span class="fc" id="L137">            boolean skip = false;</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">            if (pv &gt; 0) {</span>
+<span class="fc" id="L139">                int dv = pv - hi;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">                if (dv != 0) {</span>
+<span class="fc" id="L141">                    hi = pv;</span>
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">                    if (Math.abs(dv) &gt; LAST_VALUE_FITTING_IN_12_BIT) {</span>
+<span class="nc" id="L143">                        compressedData.put(op, (short) ((pv &amp; LAST_VALUE_FITTING_IN_12_BIT) + FIRST_VALUE_WITH_13_BIT));</span>
+<span class="nc" id="L144">                        ++op;</span>
+<span class="nc" id="L145">                        compressedData.put(op, (short) (pv / FIRST_VALUE_WITH_13_BIT));</span>
+<span class="nc" id="L146">                        ++op;</span>
+                    } else {
+<span class="fc bfc" id="L148" title="All 2 branches covered.">                        if (dv &lt; 0) {</span>
+<span class="fc" id="L149">                            compressedData.put(op, (short) (-dv + VALUE_OF_BIT_13_AND14_ON));</span>
+                        } else {
+<span class="fc" id="L151">                            compressedData.put(op, (short) (dv + FIRST_VALUE_WITH_14_BIT));</span>
+                        }
+<span class="fc" id="L153">                        ++op;</span>
+<span class="fc bfc" id="L154" title="All 4 branches covered.">                        if (np == 1 &amp;&amp; nz == 0) {</span>
+<span class="fc" id="L155">                            int v = compressedData.get(op - 1);</span>
+<span class="fc" id="L156">                            compressedData.put(op - 1, (short) (v | FIRST_VALUE_WITH_15_BIT));</span>
+<span class="fc" id="L157">                            skip = true;</span>
+                        }
+                    }
+                }
+            }
+<span class="fc bfc" id="L162" title="All 2 branches covered.">            if (!skip) {</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">                if (nz &gt; 0) {</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">                    while (nz &gt; 0) {</span>
+<span class="fc" id="L165">                        compressedData.put(op, (short) Math.min(LAST_VALUE_FITTING_IN_12_BIT, nz));</span>
+<span class="fc" id="L166">                        ++op;</span>
+<span class="fc" id="L167">                        nz += -LAST_VALUE_FITTING_IN_12_BIT;</span>
+                    }
+<span class="pc bpc" id="L169" title="1 of 4 branches missed.">                    if (np == 1 &amp;&amp; pv &gt; 0) {</span>
+<span class="fc" id="L170">                        compressedData.put(op - 1, (short) (compressedData.get(op - 1) + N20481));</span>
+<span class="fc" id="L171">                        skip = true;</span>
+                    }
+                }
+            }
+<span class="fc bfc" id="L175" title="All 2 branches covered.">            if (!skip) {</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">                while (np &gt; 0) {</span>
+<span class="fc" id="L177">                    compressedData.put(op, (short) (Math.min(LAST_VALUE_FITTING_IN_12_BIT, np) + FIRST_VALUE_WITH_15_BIT));</span>
+<span class="fc" id="L178">                    ++op;</span>
+<span class="fc" id="L179">                    np += -LAST_VALUE_FITTING_IN_12_BIT;</span>
+                }
+            }
+<span class="fc" id="L182">            x1 = ip + 1;</span>
+<span class="fc" id="L183">            iz = x1;</span>
+<span class="fc" id="L184">            pv = nv;</span>
+        }
+<span class="fc" id="L186">        compressedData.put(HEADER_SIZE_FIELD1, (short) (op % FIRST_VALUE_WITH_16_BIT));</span>
+<span class="fc" id="L187">        compressedData.put(HEADER_SIZE_FIELD2, (short) (op / FIRST_VALUE_WITH_16_BIT));</span>
+<span class="fc" id="L188">        compressedData.position(op);</span>
+<span class="fc" id="L189">    }</span>
+
+    /**
+     * PL_L2PI -- Translate a PLIO line list into an integer pixel array. The
+     * number of pixels output (always npix) is returned as the function value.
+     * 
+     * @param compressedData
+     *            encoded line list
+     * @param pixelData
+     *            output pixel array
+     * @param npix
+     *            number of pixels to convert
+     */
+    public void decompress(ShortBuffer compressedData, IntBuffer pixelData, int npix) {
+        int llfirt;
+        int lllen;
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        if (!(compressedData.get(2) &gt; 0)) {</span>
+<span class="fc" id="L206">            lllen = (compressedData.get(HEADER_SIZE_FIELD2) &lt;&lt; SHIFT_15_BITS) + compressedData.get(HEADER_SIZE_FIELD1);</span>
+<span class="fc" id="L207">            llfirt = compressedData.get(1);</span>
+        } else {
+<span class="fc" id="L209">            lllen = compressedData.get(MINI_HEADER_SIZE_FIELD);</span>
+<span class="fc" id="L210">            llfirt = MINI_HEADER_SIZE;</span>
+        }
+<span class="fc" id="L212">        final int xe = npix - 1;</span>
+<span class="fc" id="L213">        int op = 0;</span>
+<span class="fc" id="L214">        int x1 = 1;</span>
+<span class="fc" id="L215">        int pv = 1;</span>
+<span class="pc bpc" id="L216" title="1 of 2 branches missed.">        for (int ip = llfirt; ip &lt;= lllen; ++ip) {</span>
+<span class="fc" id="L217">            final int opcode = compressedData.get(ip) / FIRST_VALUE_WITH_13_BIT;</span>
+<span class="fc" id="L218">            final int data = compressedData.get(ip) &amp; LAST_VALUE_FITTING_IN_12_BIT;</span>
+<span class="fc" id="L219">            final int sw0001 = opcode + 1;</span>
+<span class="fc bfc" id="L220" title="All 6 branches covered.">            if (sw0001 == OPCODE_1 || sw0001 == OPCODE_5 || sw0001 == OPCODE_6) {</span>
+<span class="fc" id="L221">                final int x2 = x1 + data - 1;</span>
+<span class="fc" id="L222">                final int i2 = Math.min(x2, xe);</span>
+<span class="fc" id="L223">                final int np = i2 - Math.max(x1, 0) + 1;</span>
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">                if (np &gt; 0) {</span>
+<span class="fc" id="L225">                    final int otop = op + np - 1;</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">                    if (!(opcode == OPCODE_4)) {</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">                        for (int index = op; index &lt;= otop; ++index) {</span>
+<span class="fc" id="L228">                            pixelData.put(index, 0);</span>
+                        }
+<span class="pc bpc" id="L230" title="1 of 4 branches missed.">                        if (opcode == OPCODE_5 &amp;&amp; i2 == x2) {</span>
+<span class="fc" id="L231">                            pixelData.put(otop, pv);</span>
+                        }
+                    } else {
+<span class="fc bfc" id="L234" title="All 2 branches covered.">                        for (int index = op; index &lt;= otop; ++index) {</span>
+<span class="fc" id="L235">                            pixelData.put(index, pv);</span>
+                        }
+                    }
+<span class="fc" id="L238">                    op = otop + 1;</span>
+                }
+<span class="fc" id="L240">                x1 = x2 + 1;</span>
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">            } else if (sw0001 == OPCODE_2) {</span>
+<span class="nc" id="L242">                pv = (compressedData.get(ip + 1) &lt;&lt; SHIFT_12_BITS) + data;</span>
+<span class="nc" id="L243">                ++ip;</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">            } else if (sw0001 == OPCODE_3) {</span>
+<span class="fc" id="L245">                pv += data;</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">            } else if (sw0001 == OPCODE_4) {</span>
+<span class="fc" id="L247">                pv -= data;</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">            } else if (sw0001 == OPCODE_7) {</span>
+<span class="fc" id="L249">                pv += data;</span>
+<span class="pc bpc" id="L250" title="2 of 4 branches missed.">                if (x1 &gt;= 0 &amp;&amp; x1 &lt;= xe) {</span>
+<span class="fc" id="L251">                    pixelData.put(op, pv);</span>
+<span class="fc" id="L252">                    ++op;</span>
+                }
+<span class="fc" id="L254">                ++x1;</span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">            } else if (sw0001 == OPCODE_8) {</span>
+<span class="fc" id="L256">                pv -= data;</span>
+<span class="pc bpc" id="L257" title="2 of 4 branches missed.">                if (x1 &gt;= 0 &amp;&amp; x1 &lt;= xe) {</span>
+<span class="fc" id="L258">                    pixelData.put(op, pv);</span>
+<span class="fc" id="L259">                    ++op;</span>
+                }
+<span class="fc" id="L261">                ++x1;</span>
+            }
+<span class="fc bfc" id="L263" title="All 2 branches covered.">            if (x1 &gt; xe) {</span>
+<span class="fc" id="L264">                break;</span>
+            }
+        }
+<span class="fc bfc" id="L267" title="All 2 branches covered.">        for (int index = op; index &lt; npix; ++index) {</span>
+<span class="fc" id="L268">            pixelData.put(index, 0);</span>
+        }
+<span class="fc" id="L270">        pixelData.position(npix);</span>
+<span class="fc" id="L271">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

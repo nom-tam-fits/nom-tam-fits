@@ -1,0 +1,702 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>RiseCompress.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.comp.rise</a> &gt; <span class="el_source">RiseCompress.java</span></div><h1>RiseCompress.java</h1><pre class="source lang-java linenums">package nom.tam.image.comp.rise;
+
+import java.nio.ByteBuffer;
+import java.util.logging.Logger;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+/**
+ * Rise compression algorithm, originally ported from cfitsio.
+ * 
+ * @author ritchie
+ */
+public abstract class RiseCompress {
+
+    /**
+     * logger to log to.
+     */
+<span class="fc" id="L47">    private static final Logger LOG = Logger.getLogger(RiseCompress.class.getName());</span>
+
+    private static class ByteArrayRiseCompress extends RiseCompress {
+
+        public ByteArrayRiseCompress(int blockSize) {
+<span class="fc" id="L52">            super(FS_BITS_FOR_BYTE, FS_MAX_FOR_BYTE, blockSize, BITS_PER_BYTE);</span>
+<span class="fc" id="L53">        }</span>
+
+        @Override
+        protected int get(Object array, int index) {
+<span class="fc" id="L57">            return ((byte[]) array)[index];</span>
+        }
+
+        @Override
+        protected int length(Object array) {
+<span class="fc" id="L62">            return ((byte[]) array).length;</span>
+        }
+
+        @Override
+        protected void set(Object array, int index, int pixel) {
+<span class="fc" id="L67">            ((byte[]) array)[index] = (byte) pixel;</span>
+<span class="fc" id="L68">        }</span>
+
+        @Override
+        protected int readOnePixel(ByteBuffer readBuffer) {
+<span class="fc" id="L72">            return readBuffer.get();</span>
+        }
+    }
+
+    private static class IntArrayRiseCompress extends RiseCompress {
+
+        public IntArrayRiseCompress(int blockSize) {
+<span class="fc" id="L79">            super(FS_BITS_FOR_INT, FS_MAX_FOR_INT, blockSize, BITS_PER_INT);</span>
+<span class="fc" id="L80">        }</span>
+
+        @Override
+        protected int get(Object array, int index) {
+<span class="fc" id="L84">            return ((int[]) array)[index];</span>
+        }
+
+        @Override
+        protected int length(Object array) {
+<span class="fc" id="L89">            return ((int[]) array).length;</span>
+        }
+
+        @Override
+        protected void set(Object array, int index, int pixel) {
+<span class="fc" id="L94">            ((int[]) array)[index] = pixel;</span>
+<span class="fc" id="L95">        }</span>
+
+        @Override
+        protected int readOnePixel(ByteBuffer readBuffer) {
+<span class="fc" id="L99">            return readBuffer.getInt();</span>
+        }
+
+    }
+
+    private static class ShortArrayRiseCompress extends RiseCompress {
+
+        public ShortArrayRiseCompress(int blockSize) {
+<span class="fc" id="L107">            super(FS_BITS_FOR_SHORT, FS_MAX_FOR_SHORT, blockSize, BITS_PER_SHORT);</span>
+<span class="fc" id="L108">        }</span>
+
+        @Override
+        protected int get(Object array, int index) {
+<span class="fc" id="L112">            return ((short[]) array)[index];</span>
+        }
+
+        @Override
+        protected int length(Object array) {
+<span class="fc" id="L117">            return ((short[]) array).length;</span>
+        }
+
+        @Override
+        protected void set(Object array, int index, int pixel) {
+<span class="fc" id="L122">            ((short[]) array)[index] = (short) pixel;</span>
+<span class="fc" id="L123">        }</span>
+
+        @Override
+        protected int readOnePixel(ByteBuffer readBuffer) {
+<span class="fc" id="L127">            return readBuffer.getShort();</span>
+        }
+    }
+
+    private static final int BITS_OF_1_BYTE = 8;
+
+    private static final int BITS_PER_BYTE = 8;
+
+    private static final int BITS_PER_INT = 32;
+
+    private static final int BITS_PER_SHORT = 16;
+
+    private static final int BYTE_MASK = 0xff;
+
+    private static final int FS_BITS_FOR_BYTE = 3;
+
+    private static final int FS_BITS_FOR_INT = 5;
+
+    private static final int FS_BITS_FOR_SHORT = 4;
+
+    private static final int FS_MAX_FOR_BYTE = 6;
+
+    private static final int FS_MAX_FOR_INT = 25;
+
+    private static final int FS_MAX_FOR_SHORT = 14;
+
+    /*
+     * nonzero_count is lookup table giving number of bits in 8-bit values not
+     * including leading zeros used in fits_rdecomp, fits_rdecomp_short and
+     * fits_rdecomp_byte
+     */
+<span class="fc" id="L158">    private static final int[] NONZERO_COUNT = {</span>
+        0,
+        1,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8
+    };
+
+    public static RiseCompress createCompressor(Object data, int blockSize) {
+<span class="fc bfc" id="L418" title="All 2 branches covered.">        if (data instanceof int[]) {</span>
+<span class="fc" id="L419">            return new IntArrayRiseCompress(blockSize);</span>
+<span class="fc bfc" id="L420" title="All 2 branches covered.">        } else if (data instanceof short[]) {</span>
+<span class="fc" id="L421">            return new ShortArrayRiseCompress(blockSize);</span>
+<span class="pc bpc" id="L422" title="1 of 2 branches missed.">        } else if (data instanceof byte[]) {</span>
+<span class="fc" id="L423">            return new ByteArrayRiseCompress(blockSize);</span>
+        }
+<span class="nc" id="L425">        return null;</span>
+    }
+
+    private final int bBits;
+
+    private final int bitsPerPixel;
+
+    private final int blockSize;
+
+    private final int fsBits;
+
+    private final int fsMax;
+
+<span class="fc" id="L438">    private RiseCompress(int fsBits, int fsMax, int blockSize, int bitsPerPixel) {</span>
+<span class="fc" id="L439">        this.fsBits = fsBits;</span>
+<span class="fc" id="L440">        this.fsMax = fsMax;</span>
+<span class="fc" id="L441">        this.blockSize = blockSize;</span>
+<span class="fc" id="L442">        this.bitsPerPixel = bitsPerPixel;</span>
+        /*
+         * From bsize derive: FSBITS = # bits required to store FS FSMAX =
+         * maximum value for FS BBITS = bits/pixel for direct coding
+         */
+<span class="fc" id="L447">        this.bBits = 1 &lt;&lt; fsBits;</span>
+<span class="fc" id="L448">    }</span>
+
+    /**
+     * compress the integer array on a rise compressed byte buffer.
+     * 
+     * @param dataToCompress
+     *            the integer array to compress
+     * @param writeBuffer
+     *            the buffer to write to
+     */
+    public void compress(Object dataToCompress, ByteBuffer writeBuffer) {
+<span class="fc" id="L459">        BitBuffer buffer = new BitBuffer(writeBuffer);</span>
+
+        /* the first difference will always be zero */
+<span class="fc" id="L462">        int lastpix = get(dataToCompress, 0);</span>
+        /* write out first int value to the first 4 bytes of the buffer */
+<span class="fc" id="L464">        buffer.putInt(lastpix, this.bitsPerPixel);</span>
+
+<span class="fc" id="L466">        int thisblock = this.blockSize;</span>
+
+<span class="fc" id="L468">        int dataLength = length(dataToCompress);</span>
+<span class="fc bfc" id="L469" title="All 2 branches covered.">        for (int i = 0; i &lt; dataLength; i += this.blockSize) {</span>
+            /* last block may be shorter */
+<span class="fc bfc" id="L471" title="All 2 branches covered.">            if (dataLength - i &lt; this.blockSize) {</span>
+<span class="fc" id="L472">                thisblock = dataLength - i;</span>
+            }
+            /*
+             * Compute differences of adjacent pixels and map them to unsigned
+             * values. Note that this may overflow the integer variables --
+             * that's OK, because we can recover when decompressing. If we were
+             * compressing shorts or bytes, would want to do this arithmetic
+             * with short/byte working variables (though diff will still be
+             * passed as an int.) compute sum of mapped pixel values at same
+             * time use double precision for sum to allow 32-bit integer inputs
+             */
+<span class="fc" id="L483">            long[] diff = new long[this.blockSize];</span>
+<span class="fc" id="L484">            double pixelsum = 0.0;</span>
+            int nextpix;
+            /*
+             * array for differences mapped to non-negative values
+             */
+<span class="fc bfc" id="L489" title="All 2 branches covered.">            for (int j = 0; j &lt; thisblock; j++) {</span>
+<span class="fc" id="L490">                nextpix = get(dataToCompress, i + j);</span>
+<span class="fc" id="L491">                long pdiff = nextpix - lastpix;</span>
+<span class="fc bfc" id="L492" title="All 2 branches covered.">                diff[j] = Math.abs(pdiff &lt; 0 ? ~(pdiff &lt;&lt; 1) : pdiff &lt;&lt; 1);</span>
+<span class="fc" id="L493">                pixelsum += diff[j];</span>
+<span class="fc" id="L494">                lastpix = nextpix;</span>
+            }
+
+            /*
+             * compute number of bits to split from sum
+             */
+<span class="fc" id="L500">            double dpsum = (pixelsum - thisblock / 2d - 1d) / thisblock;</span>
+<span class="fc bfc" id="L501" title="All 2 branches covered.">            if (dpsum &lt; 0) {</span>
+<span class="fc" id="L502">                dpsum = 0.0;</span>
+            }
+<span class="fc" id="L504">            long psum = (long) dpsum &gt;&gt; 1;</span>
+            int fs;
+<span class="fc bfc" id="L506" title="All 2 branches covered.">            for (fs = 0; psum &gt; 0; fs++) {</span>
+<span class="fc" id="L507">                psum &gt;&gt;= 1;</span>
+            }
+
+            /*
+             * write the codes fsbits ID bits used to indicate split level
+             */
+<span class="fc bfc" id="L513" title="All 2 branches covered.">            if (fs &gt;= this.fsMax) {</span>
+                /*
+                 * Special high entropy case when FS &gt;= fsmax Just write pixel
+                 * difference values directly, no Rice coding at all.
+                 */
+<span class="fc" id="L518">                buffer.putInt(this.fsMax + 1, this.fsBits);</span>
+<span class="fc bfc" id="L519" title="All 2 branches covered.">                for (int j = 0; j &lt; thisblock; j++) {</span>
+<span class="fc" id="L520">                    buffer.putLong(diff[j], this.bBits);</span>
+                }
+<span class="fc bfc" id="L522" title="All 4 branches covered.">            } else if (fs == 0 &amp;&amp; pixelsum == 0) {</span>
+                /*
+                 * special low entropy case when FS = 0 and pixelsum=0 (all
+                 * pixels in block are zero.) Output a 0 and return
+                 */
+<span class="fc" id="L527">                buffer.putInt(0, this.fsBits);</span>
+            } else {
+                /* normal case: not either very high or very low entropy */
+<span class="fc" id="L530">                buffer.putInt(fs + 1, this.fsBits);</span>
+<span class="fc" id="L531">                int fsmask = (1 &lt;&lt; fs) - 1;</span>
+                /*
+                 * local copies of bit buffer to improve optimization
+                 */
+<span class="fc" id="L535">                int bitsToGo = buffer.missingBitsInCurrentByte();</span>
+<span class="fc" id="L536">                int bitBuffer = buffer.bitbuffer() &gt;&gt; bitsToGo;</span>
+<span class="fc" id="L537">                buffer.movePosition(bitsToGo - BITS_OF_1_BYTE);</span>
+<span class="fc bfc" id="L538" title="All 2 branches covered.">                for (int j = 0; j &lt; thisblock; j++) {</span>
+<span class="fc" id="L539">                    int v = (int) diff[j];</span>
+<span class="fc" id="L540">                    int top = v &gt;&gt; fs;</span>
+                    /*
+                     * top is coded by top zeros + 1
+                     */
+<span class="fc bfc" id="L544" title="All 2 branches covered.">                    if (bitsToGo &gt;= top + 1) {</span>
+<span class="fc" id="L545">                        bitBuffer &lt;&lt;= top + 1;</span>
+<span class="fc" id="L546">                        bitBuffer |= 1;</span>
+<span class="fc" id="L547">                        bitsToGo -= top + 1;</span>
+                    } else {
+<span class="fc" id="L549">                        bitBuffer &lt;&lt;= bitsToGo;</span>
+<span class="fc" id="L550">                        buffer.putByte((byte) (bitBuffer &amp; BYTE_MASK));</span>
+<span class="fc bfc" id="L551" title="All 2 branches covered.">                        for (top -= bitsToGo; top &gt;= BITS_OF_1_BYTE; top -= BITS_OF_1_BYTE) {</span>
+<span class="fc" id="L552">                            buffer.putByte((byte) 0);</span>
+                        }
+<span class="fc" id="L554">                        bitBuffer = 1;</span>
+<span class="fc" id="L555">                        bitsToGo = BITS_OF_1_BYTE - 1 - top;</span>
+                    }
+                    /*
+                     * bottom FS bits are written without coding code is
+                     * output_nbits, moved into this routine to reduce overheads
+                     * This code potentially breaks if FS&gt;24, so I am limiting
+                     * FS to 24 by choice of FSMAX above.
+                     */
+<span class="fc bfc" id="L563" title="All 2 branches covered.">                    if (fs &gt; 0) {</span>
+<span class="fc" id="L564">                        bitBuffer &lt;&lt;= fs;</span>
+<span class="fc" id="L565">                        bitBuffer |= v &amp; fsmask;</span>
+<span class="fc" id="L566">                        bitsToGo -= fs;</span>
+<span class="fc bfc" id="L567" title="All 2 branches covered.">                        while (bitsToGo &lt;= 0) {</span>
+<span class="fc" id="L568">                            buffer.putByte((byte) (bitBuffer &gt;&gt; -bitsToGo &amp; BYTE_MASK));</span>
+<span class="fc" id="L569">                            bitsToGo += BITS_OF_1_BYTE;</span>
+                        }
+                    }
+                }
+<span class="fc" id="L573">                buffer.putByte((byte) (bitBuffer &amp; BYTE_MASK), BITS_OF_1_BYTE - bitsToGo);</span>
+            }
+        }
+<span class="fc" id="L576">        buffer.close();</span>
+<span class="fc" id="L577">    }</span>
+
+    /**
+     * decompress the readbuffer and fill the pixelarray.
+     * 
+     * @param readBuffer
+     *            input buffer
+     * @param array
+     *            output array
+     */
+    public void decompress(ByteBuffer readBuffer, Object array) {
+        /* int bsize; */
+        int i, k, imax;
+        int nbits, nzero, fs;
+        int b;
+        int diff, lastpix;
+
+        /* first x bytes of input buffer contain the value of the first */
+        /* x byte integer value, without any encoding */
+
+<span class="fc" id="L597">        lastpix = readOnePixel(readBuffer);</span>
+
+<span class="fc" id="L599">        b = readBuffer.get(); /* bit buffer */</span>
+<span class="fc" id="L600">        nbits = BITS_PER_BYTE; /* number of bits remaining in b */</span>
+<span class="fc" id="L601">        int nx = length(array);</span>
+<span class="fc bfc" id="L602" title="All 2 branches covered.">        for (i = 0; i &lt; nx;) {</span>
+            /* get the FS value from first fsbits */
+<span class="fc" id="L604">            nbits -= this.fsBits;</span>
+<span class="fc bfc" id="L605" title="All 2 branches covered.">            while (nbits &lt; 0) {</span>
+<span class="fc" id="L606">                b = b &lt;&lt; BITS_PER_BYTE | readBuffer.get() &amp; BYTE_MASK;</span>
+<span class="fc" id="L607">                nbits += BITS_PER_BYTE;</span>
+            }
+<span class="fc" id="L609">            fs = (b &gt;&gt; nbits) - 1;</span>
+
+<span class="fc" id="L611">            b &amp;= (1 &lt;&lt; nbits) - 1;</span>
+            /* loop over the next block */
+<span class="fc" id="L613">            imax = i + this.blockSize;</span>
+<span class="fc bfc" id="L614" title="All 2 branches covered.">            if (imax &gt; nx) {</span>
+<span class="fc" id="L615">                imax = nx;</span>
+            }
+<span class="fc bfc" id="L617" title="All 2 branches covered.">            if (fs &lt; 0) {</span>
+                /* low-entropy case, all zero differences */
+<span class="fc bfc" id="L619" title="All 2 branches covered.">                for (; i &lt; imax; i++) {</span>
+<span class="fc" id="L620">                    set(array, i, lastpix);</span>
+                }
+<span class="fc bfc" id="L622" title="All 2 branches covered.">            } else if (fs == this.fsMax) {</span>
+                /* high-entropy case, directly coded pixel values */
+<span class="fc bfc" id="L624" title="All 2 branches covered.">                for (; i &lt; imax; i++) {</span>
+<span class="fc" id="L625">                    k = this.bBits - nbits;</span>
+<span class="fc" id="L626">                    diff = b &lt;&lt; k;</span>
+<span class="fc bfc" id="L627" title="All 2 branches covered.">                    for (k -= BITS_PER_BYTE; k &gt;= 0; k -= BITS_PER_BYTE) {</span>
+<span class="fc" id="L628">                        b = readBuffer.get() &amp; BYTE_MASK;</span>
+<span class="fc" id="L629">                        diff |= b &lt;&lt; k;</span>
+                    }
+<span class="fc bfc" id="L631" title="All 2 branches covered.">                    if (nbits &gt; 0) {</span>
+<span class="fc" id="L632">                        b = readBuffer.get() &amp; BYTE_MASK;</span>
+<span class="fc" id="L633">                        diff |= b &gt;&gt; -k;</span>
+<span class="fc" id="L634">                        b &amp;= (1 &lt;&lt; nbits) - 1;</span>
+                    } else {
+<span class="fc" id="L636">                        b = 0;</span>
+                    }
+                    /*
+                     * undo mapping and differencing Note that some of these
+                     * operations will overflow the unsigned int arithmetic --
+                     * that's OK, it all works out to give the right answers in
+                     * the output file.
+                     */
+<span class="fc bfc" id="L644" title="All 2 branches covered.">                    if ((diff &amp; 1) == 0) {</span>
+<span class="fc" id="L645">                        diff = diff &gt;&gt; 1;</span>
+                    } else {
+<span class="fc" id="L647">                        diff = ~(diff &gt;&gt; 1);</span>
+                    }
+<span class="fc" id="L649">                    lastpix = diff + lastpix;</span>
+<span class="fc" id="L650">                    set(array, i, lastpix);</span>
+                }
+            } else {
+                /* normal case, Rice coding */
+<span class="fc bfc" id="L654" title="All 2 branches covered.">                for (; i &lt; imax; i++) {</span>
+                    /* count number of leading zeros */
+<span class="fc bfc" id="L656" title="All 2 branches covered.">                    while (b == 0) {</span>
+<span class="fc" id="L657">                        nbits += BITS_PER_BYTE;</span>
+<span class="fc" id="L658">                        b = readBuffer.get() &amp; BYTE_MASK;</span>
+                    }
+<span class="fc" id="L660">                    nzero = nbits - NONZERO_COUNT[b &amp; BYTE_MASK];</span>
+<span class="fc" id="L661">                    nbits -= nzero + 1;</span>
+                    /* flip the leading one-bit */
+<span class="fc" id="L663">                    b ^= 1 &lt;&lt; nbits;</span>
+                    /* get the FS trailing bits */
+<span class="fc" id="L665">                    nbits -= fs;</span>
+<span class="fc bfc" id="L666" title="All 2 branches covered.">                    while (nbits &lt; 0) {</span>
+<span class="fc" id="L667">                        b = b &lt;&lt; BITS_PER_BYTE | readBuffer.get() &amp; BYTE_MASK;</span>
+<span class="fc" id="L668">                        nbits += BITS_PER_BYTE;</span>
+                    }
+<span class="fc" id="L670">                    diff = nzero &lt;&lt; fs | b &gt;&gt; nbits;</span>
+<span class="fc" id="L671">                    b &amp;= (1 &lt;&lt; nbits) - 1;</span>
+
+                    /* undo mapping and differencing */
+<span class="fc bfc" id="L674" title="All 2 branches covered.">                    if ((diff &amp; 1) == 0) {</span>
+<span class="fc" id="L675">                        diff = diff &gt;&gt; 1;</span>
+                    } else {
+<span class="fc" id="L677">                        diff = ~(diff &gt;&gt; 1);</span>
+                    }
+<span class="fc" id="L679">                    lastpix = diff + lastpix;</span>
+<span class="fc" id="L680">                    set(array, i, lastpix);</span>
+                }
+            }
+<span class="pc bpc" id="L683" title="1 of 2 branches missed.">            if (readBuffer.limit() &lt; readBuffer.position()) {</span>
+<span class="nc" id="L684">                LOG.severe(&quot;decompressing failed, no more bytes to decompress reached: &quot; + readBuffer.limit() + &quot; but only reached index &quot; + i + &quot; of &quot; + nx);</span>
+<span class="nc" id="L685">                throw new IllegalStateException(&quot;decompressing failed, no more bytes to decompress&quot;);</span>
+            }
+        }
+<span class="pc bpc" id="L688" title="1 of 2 branches missed.">        if (readBuffer.limit() &gt; readBuffer.position()) {</span>
+<span class="fc" id="L689">            LOG.warning(&quot;decompressing left over some extra bytes got: &quot; + readBuffer.limit() + &quot; but needed only &quot; + readBuffer.position());</span>
+        }
+
+<span class="fc" id="L692">    }</span>
+
+    protected abstract int readOnePixel(ByteBuffer readBuffer);
+
+    protected abstract int get(Object array, int index);
+
+    protected abstract int length(Object array);
+
+    protected abstract void set(Object array, int index, int pixel);
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

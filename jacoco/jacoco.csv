@@ -77,13 +77,21 @@ nom.tam FITS library,nom.tam.fits.header.extra,CXCStclSharedExt,21,159,0,0,3,20,
 nom.tam FITS library,nom.tam.fits.header.extra,SBFitsExt,5,402,0,0,0,41,1,10,1,10
 nom.tam FITS library,nom.tam.fits.header.extra,MaxImDLExt,5,569,0,0,0,55,1,10,1,10
 nom.tam FITS library,nom.tam.fits.header.extra,CXCExt,5,379,0,0,0,40,1,9,1,9
+nom.tam FITS library,nom.tam.image.comp.hcompress,HCompress.IntHCompress,0,22,0,0,0,6,0,2,0,2
+nom.tam FITS library,nom.tam.image.comp.hcompress,HDecompress.LongArrayPointer,0,65,0,0,0,15,0,7,0,7
+nom.tam FITS library,nom.tam.image.comp.hcompress,HCompress,47,2076,13,163,10,312,13,96,0,21
+nom.tam FITS library,nom.tam.image.comp.hcompress,HDecompress,43,2323,15,199,9,391,15,117,0,21
+nom.tam FITS library,nom.tam.image.comp.hcompress,HCompress.ShortHCompress,0,22,0,0,0,6,0,2,0,2
+nom.tam FITS library,nom.tam.image.comp.hcompress,HCompress.ByteHCompress,0,36,0,2,0,7,0,3,0,2
+nom.tam FITS library,nom.tam.image.comp.hcompress,HCompress.LongArrayPointer,0,63,0,0,0,15,0,7,0,7
+nom.tam FITS library,nom.tam.fits,HeaderCardCountingArrayDataInput,0,19,0,0,0,7,0,4,0,4
 nom.tam FITS library,nom.tam.fits,FitsException,0,9,0,0,0,4,0,2,0,2
 nom.tam FITS library,nom.tam.fits,BinaryTable,473,3204,78,337,84,666,73,204,3,63
 nom.tam FITS library,nom.tam.fits,FitsUtil,93,390,9,63,12,87,7,45,0,16
 nom.tam FITS library,nom.tam.fits,UndefinedData,59,152,1,5,10,39,1,9,0,7
 nom.tam FITS library,nom.tam.fits,ImageData.ArrayDesc,0,9,0,0,0,4,0,1,0,1
 nom.tam FITS library,nom.tam.fits,HeaderCommentsMap,4,98,3,9,2,20,3,8,0,5
-nom.tam FITS library,nom.tam.fits,Header,148,1803,30,170,36,415,30,173,2,101
+nom.tam FITS library,nom.tam.fits,Header,148,1800,30,170,36,414,30,173,2,101
 nom.tam FITS library,nom.tam.fits,TableHDU,79,511,13,29,13,82,15,38,3,29
 nom.tam FITS library,nom.tam.fits,ImageData,140,368,14,43,23,103,13,29,1,10
 nom.tam FITS library,nom.tam.fits,HeaderCardBuilder,41,161,3,11,7,36,3,14,1,9
@@ -109,8 +117,13 @@ nom.tam FITS library,nom.tam.fits,Fits,144,732,18,72,30,196,20,64,2,37
 nom.tam FITS library,nom.tam.fits,FitsFactory.FitsSettings,0,44,0,0,0,13,0,2,0,2
 nom.tam FITS library,nom.tam.fits,AsciiTableHDU,18,336,1,21,4,56,1,23,0,13
 nom.tam FITS library,nom.tam.fits,BinaryTable.ColumnDesc,6,30,1,1,2,9,1,6,0,6
-nom.tam FITS library,nom.tam.fits,HeaderCard,74,1172,24,164,20,283,26,107,3,36
+nom.tam FITS library,nom.tam.fits,HeaderCard,74,1190,24,164,20,288,26,109,3,38
 nom.tam FITS library,nom.tam.image,StandardImageTiler,110,473,20,54,17,92,20,26,0,9
+nom.tam FITS library,nom.tam.image.comp.rise,RiseCompress.ByteArrayRiseCompress,0,30,0,0,0,7,0,5,0,5
+nom.tam FITS library,nom.tam.image.comp.rise,RiseCompress.ShortArrayRiseCompress,0,30,0,0,0,7,0,5,0,5
+nom.tam FITS library,nom.tam.image.comp.rise,RiseCompress,26,1650,3,65,3,127,3,36,0,5
+nom.tam FITS library,nom.tam.image.comp.rise,RiseCompress.IntArrayRiseCompress,0,29,0,0,0,7,0,5,0,5
+nom.tam FITS library,nom.tam.image.comp.rise,BitBuffer,25,294,5,13,7,48,7,14,2,10
 nom.tam FITS library,nom.tam.util,BufferedDataOutputStream.new DataOutputStream() {...},0,10,0,0,0,3,0,2,0,2
 nom.tam FITS library,nom.tam.util,BufferedDataOutputStream.new BufferEncoder() {...},0,38,0,0,0,8,0,3,0,3
 nom.tam FITS library,nom.tam.util,BufferDecoder.PrimitiveArrayRecurse,35,183,4,18,4,29,4,13,0,2
@@ -150,6 +163,7 @@ nom.tam FITS library,nom.tam.fits.utilities,FitsHeaderCardParser.ParsedValue,0,2
 nom.tam FITS library,nom.tam.fits.utilities,FitsCopy,0,59,0,6,0,18,0,5,0,2
 nom.tam FITS library,nom.tam.fits.utilities,FitsLineAppender,0,181,0,12,0,42,0,16,0,10
 nom.tam FITS library,nom.tam.fits.utilities,FitsCheckSum,27,426,4,24,8,69,4,15,0,5
-nom.tam FITS library,nom.tam.fits.utilities,FitsHeaderCardParser,0,226,3,29,0,53,3,20,0,7
+nom.tam FITS library,nom.tam.fits.utilities,FitsHeaderCardParser,0,228,3,29,0,53,3,20,0,7
 nom.tam FITS library,nom.tam.fits.utilities,FitsReader,0,46,0,6,0,15,0,5,0,2
 nom.tam FITS library,nom.tam.fits.utilities,Main,0,57,0,10,0,12,0,8,0,3
+nom.tam FITS library,nom.tam.image.comp.plio,PLIOCompress,33,475,12,68,6,110,12,32,0,4
