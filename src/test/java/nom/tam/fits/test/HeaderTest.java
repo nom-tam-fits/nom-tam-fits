@@ -428,7 +428,16 @@ public class HeaderTest {
 
     @Test
     public void testHierachKeyWordParsing() {
-        String keyword = FitsHeaderCardParser.parseCardKey("HIERARCH ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier");
+        String keyword = FitsHeaderCardParser.parseCardKey("HIERARCH test this = 'bla bla' ");
+        assertEquals("HIERARCH.TEST.THIS", keyword);
+
+        keyword = FitsHeaderCardParser.parseCardKey("HIERARCH test this= 'bla bla' ");
+        assertEquals("HIERARCH.TEST.THIS", keyword);
+
+        keyword = FitsHeaderCardParser.parseCardKey("HIERARCH.test.this= 'bla bla' ");
+        assertEquals("HIERARCH.TEST.THIS", keyword);
+
+        keyword = FitsHeaderCardParser.parseCardKey("HIERARCH ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier");
         assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
 
         keyword = FitsHeaderCardParser.parseCardKey("HIERARCH ESO INS. OPTI-3 ID = 'ESO#427 ' / Optical element identifier");

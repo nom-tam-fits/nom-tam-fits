@@ -1,10 +1,29 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
+		<release version="1.13.1" date="2015-08-21" description="Maintenance release with fixes for hierarch/longstring and rewrite bugs">
+			<action type="update">
+				Maintenance release with fixes for hierarch/longstring and rewrite bugs.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="46">
+				After the correction of #44 the padding calculation of the fits header was wrong, now the calculation is consistent.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="44">
+				Improved the calculation of the number of cards to be used for a longstring in case of a hierarch
+				cards because it was wrong when some special string lengths where used. Now rewriting is useing the
+				new calculation to see if the header fits in place.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="43">
+				More variants of the hierarch keywords as in #16.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="16">
+				More variants of the hierarch keywords allowed (lowercase and dot), but writing will convert the keywords back to the standard.
+			</action>
+		</release>
 		<release version="1.13.0" date="2015-07-17" description="This is a stability release, before the new fits standard will be implemented in version 2.0">
 			<action type="update">
 				Major updates to the util package including a set of routines for efficient
-				copyying of arrays of all types.  Some of the special FITS values are
-				collected in the FitsIO class.  New buffering utility classes have also been created.
+				copyying of arrays of all types. Some of the special FITS values are
+				collected in the FitsIO class. New buffering utility classes have also been created.
 				Some methods that were public in the util package but which were not used in
 				the FITS library have been removed. The logging is now using java.util.logging, no
 				standard out or stanard error is used anymore.
@@ -16,15 +35,15 @@
 				Added examples in utilities package for how to use new Header enumerations.
 			</action>
 			<action type="update" dev="ritchieGitHub" issue="35">
-			    Builder pattern for the creation of cards introduced.	
+				Builder pattern for the creation of cards introduced.
 			</action>
 			<action type="fix" issue="24">
-				Fixed handling of binary tables built from an empty state row by row.  Fixed coupling of binary
+				Fixed handling of binary tables built from an empty state row by row. Fixed coupling of binary
 				tables and the FITS heap to allow copying of binary tables using the internal
 				ColumnTable representation.
 			</action>
 			<action type="update" dev="ritchieGitHub" issue="23">
-			        Reorganized compression and added internal compression package.	
+				Reorganized compression and added internal compression package.
 			</action>
 			<action type="remove" dev="ritchieGitHub" issue="23">
 				Tile compression, will be implemented from scratch in 2.0 and is not yet available in 1.13.0

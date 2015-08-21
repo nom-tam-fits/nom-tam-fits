@@ -31,6 +31,7 @@ package nom.tam.fits.utilities;
  * #L%
  */
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,7 +94,7 @@ public final class FitsHeaderCardParser {
     /**
      * pattern to match FITS keywords, specially to parse hirarchical keywords.
      */
-    private static final Pattern KEYWORD_PATTERN = Pattern.compile("([A-Z|0-9|_|-]+)([ |\\.]*=?)");
+    private static final Pattern KEYWORD_PATTERN = Pattern.compile("([A-Z|a-z|0-9|_|-]+)([ |\\.]*=?)");
 
     /**
      * pattern to match a quoted string where 2 quotes are used to escape a
@@ -160,7 +161,7 @@ public final class FitsHeaderCardParser {
             if (builder.length() != 0) {
                 builder.append('.');
             }
-            builder.append(kewordMatcher.group(1));
+            builder.append(kewordMatcher.group(1).toUpperCase(Locale.US));
             if (kewordMatcher.group(2).endsWith("=")) {
                 break;
             }
