@@ -34,6 +34,18 @@ import java.nio.ShortBuffer;
  * #L%
  */
 
+/**
+ * The original decompression code was written by Doug Tody, NRAO and included
+ * (ported to c and adapted) in cfitsio by William Pence, NASA/GSFC. That code
+ * was then ported to java by R. van Nieuwenhoven. Later it was massively
+ * refactored to harmonizered the different compression algorithms and reduce
+ * the duplicate code peaces without obscuring the algorithm itself as good as
+ * possible.
+ * 
+ * @author Doug Tody
+ * @author William Pence
+ * @author Richard van Nieuwenhoven
+ */
 public class PLIOCompress {
 
     private static final int FIRST_VALUE_WITH_13_BIT = 4096;

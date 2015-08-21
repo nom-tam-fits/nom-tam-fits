@@ -35,9 +35,16 @@ import java.util.logging.Logger;
  */
 
 /**
- * Rise compression algorithm, originally ported from cfitsio.
+ * The original compression was designed by Rice, Yeh, and Miller the code was
+ * written by Richard White at STSc at the STScI and included (ported to c and
+ * adapted) in cfitsio by William Pence, NASA/GSFC. That code was then ported to
+ * java by R. van Nieuwenhoven. Later it was massively refactored to
+ * harmonizered the different compression algorithms and reduce the duplicate
+ * code peaces without obscuring the algorithm itself as good as possible.
  * 
- * @author ritchie
+ * @author Richard White
+ * @author William Pence
+ * @author Richard van Nieuwenhoven
  */
 public abstract class RiseCompress {
 

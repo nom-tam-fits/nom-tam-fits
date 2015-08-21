@@ -39,6 +39,22 @@ import static nom.tam.image.comp.hcompress.HCompress.ROUNDING_HALF;
 
 import java.nio.ByteBuffer;
 
+/**
+ * The original decompression code was written by R. White at the STScI and
+ * included (ported to c and adapted) in cfitsio by William Pence, NASA/GSFC.
+ * That code was then ported to java by R. van Nieuwenhoven. Later it was
+ * massively refactored to harmonizered the different compression algorithms and
+ * reduce the duplicate code peaces without obscuring the algorithm itself as
+ * good as possible. The original site for the algorithm is
+ * 
+ * <pre>
+ *  @see <a href="http://www.stsci.edu/software/hcompress.html">http://www.stsci.edu/software/hcompress.html</a>
+ * </pre>
+ * 
+ * @author Richard White
+ * @author William Pence
+ * @author Richard van Nieuwenhoven
+ */
 public class HDecompress {
 
     private static class LongArrayPointer {
