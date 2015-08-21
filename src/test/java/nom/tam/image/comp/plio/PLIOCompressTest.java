@@ -35,6 +35,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
 
 import nom.tam.util.ArrayFuncs;
 
@@ -73,6 +74,18 @@ public class PLIOCompressTest {
             IntBuffer px_dst = IntBuffer.allocate(intArray.length);
             new PLIOCompress().decompress(asShortBuffer, px_dst, intArray.length);
 
+            Assert.assertArrayEquals(intArray, px_dst.array());
+
+            // now lets try the mini header variant.
+
+            ShortBuffer smallShortBuffer = ByteBuffer.wrap(expectedCompressedBytes, 8, expectedCompressedBytes.length - 8).asShortBuffer();
+            smallShortBuffer.put(0, (short) 0);
+            smallShortBuffer.put(1, (short) 0);
+            smallShortBuffer.put(2, asShortBuffer.get(3));
+
+            Arrays.fill(px_dst.array(), 0);
+
+            new PLIOCompress().decompress(smallShortBuffer, px_dst, intArray.length);
             Assert.assertArrayEquals(intArray, px_dst.array());
         }
     }
