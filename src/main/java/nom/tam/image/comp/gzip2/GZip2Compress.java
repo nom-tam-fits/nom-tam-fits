@@ -36,13 +36,13 @@ import java.nio.ByteBuffer;
 
 import nom.tam.image.comp.gzip.GZipCompress;
 
-public class Gzip2Compress extends GZipCompress {
+public class GZip2Compress extends GZipCompress {
 
-    private final int elementSize;
+    private final int primitivSize;
 
-    public Gzip2Compress(int elementSize) {
+    public GZip2Compress(int elementSize) {
         super();
-        this.elementSize = elementSize;
+        this.primitivSize = elementSize;
     }
 
     @Override
@@ -51,33 +51,28 @@ public class Gzip2Compress extends GZipCompress {
     }
 
     public byte[] shuffle(byte[] byteArray) {
-        if (elementSize == 1) {
+        if (primitivSize == 1) {
             return byteArray;
         }
         byte[] result = new byte[byteArray.length];
-        if (elementSize == 2) {
-            int resultIndex = 0;
-            int offset = byteArray.length / 2;
-            for (int index = 0; index < byteArray.length; index += 2) {
-                result[resultIndex] = byteArray[index];
-                result[resultIndex + offset] = byteArray[index + 1];
-                resultIndex++;
+        int resultIndex = 0;
+        int[] offset = calculateOffsets(byteArray);
+        for (int index = 0; index < byteArray.length; index += primitivSize) {
+            for (int primitivIndex = 0; primitivIndex < primitivSize; primitivIndex++) {
+                result[resultIndex + offset[primitivIndex]] = byteArray[index + primitivIndex];
             }
-        }
-        if (elementSize == 4) {
-            int resultIndex = 0;
-            int offset = byteArray.length / 4;
-            int offset2 = offset * 2;
-            int offset3 = offset * 3;
-            for (int index = 0; index < byteArray.length; index += 4) {
-                result[resultIndex] = byteArray[index];
-                result[resultIndex + offset] = byteArray[index + 1];
-                result[resultIndex + offset2] = byteArray[index + 2];
-                result[resultIndex + offset3] = byteArray[index + 3];
-                resultIndex++;
-            }
+            resultIndex++;
         }
         return result;
+    }
+
+    private int[] calculateOffsets(byte[] byteArray) {
+        int[] offset = new int[primitivSize];
+        offset[0] = 0;
+        for (int primitivIndex = 1; primitivIndex < primitivSize; primitivIndex++) {
+            offset[primitivIndex] = offset[primitivIndex - 1] + (byteArray.length / primitivSize);
+        }
+        return offset;
     }
 
     @Override
@@ -89,31 +84,17 @@ public class Gzip2Compress extends GZipCompress {
     }
 
     public byte[] unshuffle(byte[] byteArray) {
-        if (elementSize == 1) {
+        if (primitivSize == 1) {
             return byteArray;
         }
         byte[] result = new byte[byteArray.length];
-        if (elementSize == 2) {
-            int resultIndex = 0;
-            int offset = byteArray.length / 2;
-            for (int index = 0; index < byteArray.length; index += 2) {
-                result[index] = byteArray[resultIndex];
-                result[index + 1] = byteArray[resultIndex + offset];
-                resultIndex++;
+        int resultIndex = 0;
+        int[] offset = calculateOffsets(byteArray);
+        for (int index = 0; index < byteArray.length; index += primitivSize) {
+            for (int primitivIndex = 0; primitivIndex < primitivSize; primitivIndex++) {
+                result[index + primitivIndex] = byteArray[resultIndex + offset[primitivIndex]];
             }
-        }
-        if (elementSize == 4) {
-            int resultIndex = 0;
-            int offset = byteArray.length / 4;
-            int offset2 = offset * 2;
-            int offset3 = offset * 3;
-            for (int index = 0; index < byteArray.length; index += 4) {
-                result[index] = byteArray[resultIndex];
-                result[index + 1] = byteArray[resultIndex + offset];
-                result[index + 2] = byteArray[resultIndex + offset2];
-                result[index + 3] = byteArray[resultIndex + offset3];
-                resultIndex++;
-            }
+            resultIndex++;
         }
         return result;
     }
