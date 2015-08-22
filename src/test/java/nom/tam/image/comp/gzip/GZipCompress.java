@@ -1,5 +1,12 @@
 package nom.tam.image.comp.gzip;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -32,5 +39,70 @@ package nom.tam.image.comp.gzip;
  */
 
 public class GZipCompress {
+
+    static class ByteBufferWappedOutputStream extends OutputStream {
+
+        private final ByteBuffer buffer;
+
+        public ByteBufferWappedOutputStream(ByteBuffer buffer) {
+            this.buffer = buffer;
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            buffer.put((byte) b);
+        }
+
+        @Override
+        public void write(byte[] b, int off, int len) throws IOException {
+            buffer.put(b, off, len);
+        }
+
+    }
+
+    static class ByteBufferWrappedInputStream extends InputStream {
+
+        private final ByteBuffer buf;
+
+        public ByteBufferWrappedInputStream(ByteBuffer buffer) {
+            super();
+            this.buf = buffer;
+        }
+
+        @Override
+        public int read() throws IOException {
+            if (!buf.hasRemaining()) {
+                return -1;
+            }
+            return buf.get() & 0xFF;
+        }
+
+        @Override
+        public int read(byte[] bytes, int off, int len) throws IOException {
+            if (!buf.hasRemaining()) {
+                return -1;
+            }
+
+            len = Math.min(len, buf.remaining());
+            buf.get(bytes, off, len);
+            return len;
+        }
+    }
+
+    public static void compress(byte[] byteArray, ByteBuffer compressed) throws IOException {
+        GZIPOutputStream zip = new GZIPOutputStream(new ByteBufferWappedOutputStream(compressed), Math.min(byteArray.length, 256 * 256));
+        zip.write(byteArray);
+        zip.close();
+    }
+
+    public static void decompress(ByteBuffer buffer, byte[] decompressedArray) throws IOException {
+        GZIPInputStream zip = new GZIPInputStream(new ByteBufferWrappedInputStream(buffer), Math.min(buffer.limit() * 2, 256 * 256));
+        int count = zip.read(decompressedArray);
+        int offset = 0;
+        while (count >= 0 && offset < decompressedArray.length) {
+            offset += count;
+            count = zip.read(decompressedArray, offset, decompressedArray.length - offset);
+        }
+    }
 
 }
