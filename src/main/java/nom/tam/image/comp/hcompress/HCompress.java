@@ -296,16 +296,13 @@ public abstract class HCompress {
     protected abstract void compress(Object aa, int ny, int nx, int scale, ByteBuffer output);
 
     private void digitize(LongArrayPointer a, int aOffset, int nx, int ny, long scale) {
-        long d;
-        LongArrayPointer p;
-
         /*
          * round to multiple of scale
          */
         if (scale <= 1) {
             return;
         }
-        d = (scale + 1L) / 2L - 1L;
+        long d = (scale + 1L) / 2L - 1L;
         for (int index = 0; index < a.a.length; index++) {
             long current = a.get(index);
             a.set(index, (current > 0 ? current + d : current - d) / scale);

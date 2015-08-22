@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import nom.tam.fits.BasicHDU;
@@ -86,85 +87,44 @@ public class CreateTstImages {
 
     private static void extractCompressedData(int edge, String nr) throws Exception {
         List<String> types = new ArrayList<>();
+
         File fitsFile = new File("target/compress/test" + edge + "Data" + nr + ".fits");
         File compressedFile = new File("target/compress/test" + edge + "Data" + nr + ".fits.fz");
-        compressedFile.delete();
-        wait(Runtime.getRuntime().exec(new String[]{
-            FPACK,
-            "-w",
+
+        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[]{
             "-h",
             "-s",
             "0",
-            fitsFile.getAbsolutePath()
-        }));
-        wait(Runtime.getRuntime().exec(new String[]{
-            FUNPACK,
-            compressedFile.getAbsolutePath(),
-            "-O",
-            new File("target/compress/test" + edge + "Datahuf" + nr + ".fits.uncompressed").getAbsolutePath()
-        }));
-        File huf0File = new File("target/compress/test" + edge + "Datahuf" + nr + ".fits.fz");
-        huf0File.delete();
-        compressedFile.renameTo(huf0File);
-        types.add("huf");
-        wait(Runtime.getRuntime().exec(new String[]{
-            FPACK,
-            "-w",
+        }, "huf");
+
+        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[]{
             "-h",
             "-s",
-            "-4",
-            fitsFile.getAbsolutePath()
-        }));
-        wait(Runtime.getRuntime().exec(new String[]{
-            FUNPACK,
-            compressedFile.getAbsolutePath(),
-            "-O",
-            new File("target/compress/test" + edge + "Data4huf" + nr + ".fits.uncompressed").getAbsolutePath()
-        }));
-        File hufFile = new File("target/compress/test" + edge + "Data4huf" + nr + ".fits.fz");
-        hufFile.delete();
-        compressedFile.renameTo(hufFile);
-        types.add("4huf");
-        wait(Runtime.getRuntime().exec(new String[]{
-            FPACK,
-            "-w",
-            "-r",
-            fitsFile.getAbsolutePath()
-        }));
-        wait(Runtime.getRuntime().exec(new String[]{
-            FUNPACK,
-            compressedFile.getAbsolutePath(),
-            "-O",
-            new File("target/compress/test" + edge + "Datarise" + nr + ".fits.uncompressed").getAbsolutePath()
-        }));
-        File riseFile = new File("target/compress/test" + edge + "Datarise" + nr + ".fits.fz");
-        riseFile.delete();
-        compressedFile.renameTo(riseFile);
-        types.add("rise");
+            "4",
+        }, "4huf");
+
+        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[]{
+            "-r"
+        }, "rise");
+
+        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[]{
+            "-g2"
+        }, "gzip2");
+
+        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[]{
+            "-g1"
+        }, "gzip1");
 
         if (nr.equals("8") || nr.equals("16")) {
-            wait(Runtime.getRuntime().exec(new String[]{
-                FPACK,
-                "-w",
+            createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[]{
                 "-p",
-                fitsFile.getAbsolutePath()
-            }));
-            wait(Runtime.getRuntime().exec(new String[]{
-                FUNPACK,
-                compressedFile.getAbsolutePath(),
-                "-O",
-                new File("target/compress/test" + edge + "Dataplio" + nr + ".fits.uncompressed").getAbsolutePath()
-            }));
-            File plioFile = new File("target/compress/test" + edge + "Dataplio" + nr + ".fits.fz");
-            plioFile.delete();
-            compressedFile.renameTo(plioFile);
-            types.add("plio");
+            }, "plio");
         }
         for (String type : types) {
             fitsFile = new File("target/compress/test" + edge + "Data" + type + nr + ".fits.fz");
             if (!fitsFile.exists()) {
                 System.out.println("ignoring " + fitsFile.getName());
-                return;
+                continue;
             }
             Fits fits = new Fits(fitsFile);
             BasicHDU<?> hdu1 = fits.readHDU();
@@ -179,7 +139,9 @@ public class CreateTstImages {
                 data = new byte[shorts.length * 2];
                 ByteBuffer.wrap(data).asShortBuffer().put(shorts);
             }
-            RandomAccessFile file = new RandomAccessFile("target/compress/test" + edge + "Data" + nr + "." + type, "rw");
+            File compressedDataFile = new File("target/compress/test" + edge + "Data" + nr + "." + type);
+            compressedDataFile.delete();
+            RandomAccessFile file = new RandomAccessFile(compressedDataFile, "rw");
             file.write(data, 0, data.length);
             file.close();
 
@@ -187,48 +149,80 @@ public class CreateTstImages {
             ImageHDU hdu = (ImageHDU) fits.readHDU();
             Object dataOrg = hdu.getData().getData();
 
-            ByteBuffer dataBuffer = ByteBuffer.wrap(new byte[1024 * 1024]);
-            if (dataOrg instanceof int[][]) {
-                int[][] intArray = (int[][]) dataOrg;
-                for (int x = 0; x < intArray.length; x++) {
-                    for (int y = 0; y < intArray[0].length; y++) {
-                        dataBuffer.putInt(intArray[x][y]);
-                    }
-                }
-            }
-            if (dataOrg instanceof short[][]) {
-                short[][] intArray = (short[][]) dataOrg;
-                for (int x = 0; x < intArray.length; x++) {
-                    for (int y = 0; y < intArray[0].length; y++) {
-                        dataBuffer.putShort(intArray[x][y]);
-                    }
-                }
-            }
-            if (dataOrg instanceof byte[][]) {
-                byte[][] intArray = (byte[][]) dataOrg;
-                for (int x = 0; x < intArray.length; x++) {
-                    for (int y = 0; y < intArray[0].length; y++) {
-                        dataBuffer.put(intArray[x][y]);
-                    }
-                }
-            }
+            ByteBuffer dataBuffer = getByteData(dataOrg);
             file = new RandomAccessFile("target/compress/test" + edge + "Data" + nr + ".bin", "rw");
             file.write(dataBuffer.array(), 0, dataBuffer.position());
             file.close();
             {// check uncompressed differes
-                File uncompressed = new File("target/compress/test" + edge + "Data" + nr + ".fits.uncompressed");
+                File uncompressed = new File("target/compress/test" + edge + "Data" + type + nr + ".fits.uncompressed");
                 if (uncompressed.exists()) {
                     fits = new Fits(uncompressed);
                     hdu1 = fits.readHDU();
-                    hdu2 = (BinaryTableHDU) fits.readHDU();
-                    byte[] data2 = (byte[]) element;
-                    if (notEqual(data, data2)) {
-                        System.out.println(fitsFile + ".uncompressed");
+                    Object data2Org = hdu1.getData().getData();
+                    ByteBuffer data2Buffer = getByteData(data2Org);
+                    if (notEqual(dataBuffer.array(), data2Buffer.array())) {
+                        file = new RandomAccessFile("target/compress/test" + edge + "Data" + type + nr + ".uncompressed", "rw");
+                        file.write(data2Buffer.array(), 0, dataBuffer.position());
+                        file.close();
                     }
                     fits.close();
+                    uncompressed.deleteOnExit();
+                } else {
+                    System.out.println("****************missing uncompress " + uncompressed);
+                }
+            }
+            fitsFile.deleteOnExit();
+        }
+    }
+
+    private static ByteBuffer getByteData(Object dataOrg) {
+        ByteBuffer dataBuffer = ByteBuffer.wrap(new byte[1024 * 1024]);
+        if (dataOrg instanceof int[][]) {
+            int[][] intArray = (int[][]) dataOrg;
+            for (int x = 0; x < intArray.length; x++) {
+                for (int y = 0; y < intArray[0].length; y++) {
+                    dataBuffer.putInt(intArray[x][y]);
                 }
             }
         }
+        if (dataOrg instanceof short[][]) {
+            short[][] intArray = (short[][]) dataOrg;
+            for (int x = 0; x < intArray.length; x++) {
+                for (int y = 0; y < intArray[0].length; y++) {
+                    dataBuffer.putShort(intArray[x][y]);
+                }
+            }
+        }
+        if (dataOrg instanceof byte[][]) {
+            byte[][] intArray = (byte[][]) dataOrg;
+            for (int x = 0; x < intArray.length; x++) {
+                for (int y = 0; y < intArray[0].length; y++) {
+                    dataBuffer.put(intArray[x][y]);
+                }
+            }
+        }
+        return dataBuffer;
+    }
+
+    private static void createCompressedData(int edge, String nr, List<String> types, File fitsFile, File compressedFile, String[] options, String type) throws Exception,
+            IOException {
+        compressedFile.delete();
+        String[] cmdarray = new String[options.length + 3];
+        cmdarray[0] = FPACK;
+        cmdarray[1] = "-w";
+        cmdarray[cmdarray.length - 1] = fitsFile.getAbsolutePath();
+
+        System.arraycopy(options, 0, cmdarray, 2, options.length);
+        wait(Runtime.getRuntime().exec(cmdarray));
+        File gzip2File = new File("target/compress/test" + edge + "Data" + type + nr + ".fits.fz");
+        gzip2File.delete();
+        compressedFile.renameTo(gzip2File);
+        wait(Runtime.getRuntime().exec(new String[]{
+            FUNPACK,
+            gzip2File.getAbsolutePath()
+        }));
+        new File("target/compress/test" + edge + "Data" + type + nr + ".fits").renameTo(new File("target/compress/test" + edge + "Data" + type + nr + ".fits.uncompressed"));
+        types.add(type);
     }
 
     private static boolean notEqual(byte[] data, byte[] data2) {
