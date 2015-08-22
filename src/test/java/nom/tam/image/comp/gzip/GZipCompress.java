@@ -89,13 +89,13 @@ public class GZipCompress {
         }
     }
 
-    public static void compress(byte[] byteArray, ByteBuffer compressed) throws IOException {
+    public void compress(byte[] byteArray, ByteBuffer compressed) throws IOException {
         GZIPOutputStream zip = new GZIPOutputStream(new ByteBufferWappedOutputStream(compressed), Math.min(byteArray.length, 256 * 256));
         zip.write(byteArray);
         zip.close();
     }
 
-    public static void decompress(ByteBuffer buffer, byte[] decompressedArray) throws IOException {
+    public void decompress(ByteBuffer buffer, byte[] decompressedArray) throws IOException {
         GZIPInputStream zip = new GZIPInputStream(new ByteBufferWrappedInputStream(buffer), Math.min(buffer.limit() * 2, 256 * 256));
         int count = zip.read(decompressedArray);
         int offset = 0;
