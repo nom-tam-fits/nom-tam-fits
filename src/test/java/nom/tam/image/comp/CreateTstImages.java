@@ -2,13 +2,13 @@ package nom.tam.image.comp;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import nom.tam.fits.BasicHDU;
@@ -150,9 +150,7 @@ public class CreateTstImages {
             Object dataOrg = hdu.getData().getData();
 
             ByteBuffer dataBuffer = getByteData(dataOrg);
-            file = new RandomAccessFile("target/compress/test" + edge + "Data" + nr + ".bin", "rw");
-            file.write(dataBuffer.array(), 0, dataBuffer.position());
-            file.close();
+            writeBinData(edge, nr, dataBuffer);
             {// check uncompressed differes
                 File uncompressed = new File("target/compress/test" + edge + "Data" + type + nr + ".fits.uncompressed");
                 if (uncompressed.exists()) {
@@ -172,6 +170,18 @@ public class CreateTstImages {
                 }
             }
             fitsFile.deleteOnExit();
+        }
+    }
+
+    private static void writeBinData(int edge, String nr, ByteBuffer dataBuffer) throws FileNotFoundException, IOException {
+        File binFileName = new File("target/compress/test" + edge + "Data" + nr + ".bin");
+        if (!binFileName.exists()) {
+            if (nr.equals("-64")) {
+                "".toString();
+            }
+            RandomAccessFile binfile = new RandomAccessFile(binFileName, "rw");
+            binfile.write(dataBuffer.array(), 0, dataBuffer.position());
+            binfile.close();
         }
     }
 
@@ -198,6 +208,30 @@ public class CreateTstImages {
             for (int x = 0; x < intArray.length; x++) {
                 for (int y = 0; y < intArray[0].length; y++) {
                     dataBuffer.put(intArray[x][y]);
+                }
+            }
+        }
+        if (dataOrg instanceof long[][]) {
+            long[][] intArray = (long[][]) dataOrg;
+            for (int x = 0; x < intArray.length; x++) {
+                for (int y = 0; y < intArray[0].length; y++) {
+                    dataBuffer.putLong(intArray[x][y]);
+                }
+            }
+        }
+        if (dataOrg instanceof float[][]) {
+            float[][] intArray = (float[][]) dataOrg;
+            for (int x = 0; x < intArray.length; x++) {
+                for (int y = 0; y < intArray[0].length; y++) {
+                    dataBuffer.putFloat(intArray[x][y]);
+                }
+            }
+        }
+        if (dataOrg instanceof double[][]) {
+            double[][] intArray = (double[][]) dataOrg;
+            for (int x = 0; x < intArray.length; x++) {
+                for (int y = 0; y < intArray[0].length; y++) {
+                    dataBuffer.putDouble(intArray[x][y]);
                 }
             }
         }
