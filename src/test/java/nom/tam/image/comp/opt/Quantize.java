@@ -35,11 +35,28 @@ import java.util.Arrays;
 
 public class Quantize {
 
+    private static final double MAX_INT_AS_DOUBLE = 2147483647.0;
+
+    private static final int LAST_RANDOM_VALUE = 1043618065;
+
+    public enum Dither {
+        NO_DITHER(-1),
+        SUBTRACTIVE_DITHER_1(1),
+        SUBTRACTIVE_DITHER_2(2);
+
+        private final int value;
+
+        private Dither(int value) {
+            this.value = value;
+        }
+
+    }
+
     class DoubleArrayPointer {
 
         private final double[] array;
 
-        int startIndex;
+        private int startIndex;
 
         public DoubleArrayPointer(double[] arrayIn) {
             this.array = arrayIn;
@@ -56,38 +73,30 @@ public class Quantize {
         }
     }
 
-    private static final int N_RANDOM = 10000;/*
-                                               * DO NOT CHANGE THIS; used when
-                                               * quantizing real numbers
-                                               */
+    /**
+     * DO NOT CHANGE THIS; used when quantizing real numbers
+     */
+    private static final int N_RANDOM = 10000;
 
-    private static final long N_RESERVED_VALUES = 10; /*
-                                                       * number of reserved
-                                                       * values, starting with
-                                                       */
+    /**
+     * number of reserved values, starting with
+     */
+    private static final long N_RESERVED_VALUES = 10;
 
-    private static final int NULL_VALUE = -2147483647; /*
-                                                        * value used to
-                                                        * represent undefined
-                                                        * pixels
-                                                        */
+    /**
+     * and including NULL_VALUE. These values may not be used to represent the
+     * quantized and scaled floating point pixel values If lossy Hcompression is
+     * used, and the array contains null values, then it is also possible for
+     * the compressed values to slightly exceed the range of the actual
+     * (lossless) values so we must reserve a little more space value used to
+     * represent undefined pixels
+     */
+    private static final int NULL_VALUE = -2147483647;
 
-    private static final int SUBTRACTIVE_DITHER_2 = 2;
-
-    private static final int ZERO_VALUE = -2147483646; /*
-                                                        * value used to
-                                                        * represent zero-valued
-                                                        * pixels
-                                                        */
-
-    /* and including NULL_VALUE. These values */
-    /* may not be used to represent the quantized */
-    /* and scaled floating point pixel values */
-    /* If lossy Hcompression is used, and the */
-    /* array contains null values, then it is also */
-    /* possible for the compressed values to slightly */
-    /* exceed the range of the actual (lossless) values */
-    /* so we must reserve a little more space */
+    /**
+     * value used to represent zero-valued pixels
+     */
+    private static final int ZERO_VALUE = -2147483646;
 
     private static float[] initRandoms() {
 
@@ -95,11 +104,11 @@ public class Quantize {
 
         int ii;
         double a = 16807.0;
-        double m = 2147483647.0;
+        double m = MAX_INT_AS_DOUBLE;
         double temp, seed;
 
         /* allocate array for the random number sequence */
-        float[] fits_rand_value = new float[N_RANDOM];
+        float[] randomValue = new float[N_RANDOM];
 
         /*
          * We need a portable algorithm that anyone can use to generate this
@@ -116,7 +125,7 @@ public class Quantize {
         for (ii = 0; ii < N_RANDOM; ii++) {
             temp = a * seed;
             seed = temp - m * (int) (temp / m);
-            fits_rand_value[ii] = (float) (seed / m);
+            randomValue[ii] = (float) (seed / m);
         }
 
         /*
@@ -124,10 +133,10 @@ public class Quantize {
          * if the algorithm has been implemented correctly
          */
 
-        if ((int) seed != 1043618065) {
-            throw new IllegalArgumentException("fits_init_randoms generated incorrect random number sequence");
+        if ((int) seed != LAST_RANDOM_VALUE) {
+            throw new IllegalArgumentException("randomValue generated incorrect random number sequence");
         }
-        return fits_rand_value;
+        return randomValue;
     }
 
     private double bScale;
@@ -138,17 +147,39 @@ public class Quantize {
 
     private int intMinValue;
 
-    private double maxValue; /* maximum non-null value */
+    /**
+     * maximum non-null value
+     */
+    private double maxValue;
 
-    private double minValue; /* minimum non-null value */
+    /**
+     * minimum non-null value
+     */
+    private double minValue;
 
-    private long ngood; /* number of good, non-null pixels? */
+    /**
+     * number of good, non-null pixels?
+     */
+    private long ngood;
 
-    private double noise2; /* returned 2nd order MAD of all non-null pixels */
+    /**
+     * returned 2nd order MAD of all non-null pixels
+     */
+    private double noise2;
 
-    private double noise3; /* returned 3rd order MAD of all non-null pixels */
+    /**
+     * returned 3rd order MAD of all non-null pixels
+     */
+    private double noise3;
 
-    private double noise5; /* returned 5th order MAD of all non-null pixels */
+    /* returned 5th order MAD of all non-null pixels */
+    private double noise5;
+
+    private int[] intData;
+
+    public int[] getIntData() {
+        return intData;
+    }
 
     private final float[] randomValues;
 
@@ -156,10 +187,10 @@ public class Quantize {
         this.randomValues = initRandoms();
     }
 
-    private void ELEM_SWAP(double[] arr, int low, int hh) {
-        double value = arr[low];
-        arr[low] = arr[hh];
-        arr[hh] = value;
+    private void swapElements(double[] array, int one, int second) {
+        double value = array[one];
+        array[one] = array[second];
+        array[second] = value;
     }
 
     /**
@@ -178,15 +209,14 @@ public class Quantize {
      * idata * bscale + bzero. If the function value is zero, the data were not
      * copied to idata.
      */
-    public int fits_quantize_double(long row, double[] fdata, int nxpix, int nypix, boolean nullcheck, double in_null_value, float qlevel, int dither_method, int idata[]) {
-
-        int iseed = 0;
+    public int quantize(long row, double[] fdata, int nxpix, int nypix, boolean nullcheck, double nullValue, float qlevel, Dither ditherMethod) {
+        intData = new int[fdata.length];
         int i;
+        int iseed = 0;
         long nx;
-        double stdev; /*
-                       * MAD 2nd, 3rd, and 5th order noise values
-                       */
-        double delta; /* bscale, 1 in idata = delta in fdata */
+        // MAD 2nd, 3rd, and 5th order noise values
+        double stdev;
+        double delta; /* bscale, 1 in intdata = delta in fdata */
         double zeropt; /* bzero */
         double temp;
         int nextrand = 0;
@@ -198,26 +228,18 @@ public class Quantize {
             this.bZero = 0.;
             return 0;
         }
-
         if (qlevel >= 0.) {
-
             /* estimate background noise using MAD pixel differences */
-            FnNoise5_double(fdata, nxpix, nypix, nullcheck, in_null_value);
-
-            if (nullcheck && this.ngood == 0) { /*
-                                                 * special case of an image
-                                                 * filled with Nulls
-                                                 */
+            calculateNoise(fdata, nxpix, nypix, nullcheck, nullValue);
+            // special case of an image filled with Nulls
+            if (nullcheck && this.ngood == 0) {
                 /* set parameters to dummy values, which are not used */
                 this.minValue = 0.;
                 this.maxValue = 1.;
                 stdev = 1;
             } else {
-
-                /*
-                 * use the minimum of noise2, noise3, and noise5 as the best
-                 * noise value
-                 */
+                // use the minimum of noise2, noise3, and noise5 as the best
+                // noise value
                 stdev = this.noise3;
                 if (this.noise2 != 0. && this.noise2 < stdev) {
                     stdev = this.noise2;
@@ -226,30 +248,24 @@ public class Quantize {
                     stdev = this.noise5;
                 }
             }
-
             if (qlevel == 0.) {
                 delta = stdev / 4.; /* default quantization */
             } else {
                 delta = stdev / qlevel;
             }
-
             if (delta == 0.) {
                 return 0; /* don't quantize */
             }
-
         } else {
             /* negative value represents the absolute quantization level */
             delta = -qlevel;
-
             /* only nned to calculate the min and max values */
-            FnNoise5_double(fdata, nxpix, nypix, nullcheck, in_null_value);
+            calculateNoise(fdata, nxpix, nypix, nullcheck, nullValue);
         }
-
         /* check that the range of quantized levels is not > range of int */
-        if ((this.maxValue - this.minValue) / delta > 2. * 2147483647. - N_RESERVED_VALUES) {
+        if ((this.maxValue - this.minValue) / delta > 2. * MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
             return 0; /* don't quantize */
         }
-
         if (row > 0) { /* we need to dither the quantized values */
             if (this.randomValues == null) {
                 initRandoms();
@@ -258,40 +274,35 @@ public class Quantize {
             iseed = (int) ((row - 1) % N_RANDOM);
             nextrand = (int) (this.randomValues[iseed] * 500);
         }
-
         if (this.ngood == nx) { /* don't have to check for nulls */
             /* return all positive values, if possible since some */
             /* compression algorithms either only work for positive integers, */
             /* or are more efficient. */
 
-            if (dither_method == SUBTRACTIVE_DITHER_2) {
+            if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2) {
                 /*
                  * shift the range to be close to the value used to represent
                  * zeros
                  */
                 zeropt = this.minValue - delta * (NULL_VALUE + N_RESERVED_VALUES);
-            } else if ((this.maxValue - this.minValue) / delta < 2147483647. - N_RESERVED_VALUES) {
+            } else if ((this.maxValue - this.minValue) / delta < MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
                 zeropt = this.minValue;
-                /* fudge the zero point so it is an integer multiple of delta */
-                /*
-                 * This helps to ensure the same scaling will be performed if
-                 * the
-                 */
-                /* file undergoes multiple fpack/funpack cycles */
+                // fudge the zero point so it is an integer multiple of delta
+                // This helps to ensure the same scaling will be performed if
+                // the file undergoes multiple fpack/funpack cycles
                 iqfactor = (long) (zeropt / delta + 0.5);
                 zeropt = iqfactor * delta;
             } else {
                 /* center the quantized levels around zero */
                 zeropt = (this.minValue + this.maxValue) / 2.;
             }
-
             if (row > 0) { /* dither the values when quantizing */
                 for (i = 0; i < nx; i++) {
 
-                    if (dither_method == SUBTRACTIVE_DITHER_2 && fdata[i] == 0.0) {
-                        idata[i] = ZERO_VALUE;
+                    if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2 && fdata[i] == 0.0) {
+                        intData[i] = ZERO_VALUE;
                     } else {
-                        idata[i] = nint((fdata[i] - zeropt) / delta + this.randomValues[nextrand] - 0.5);
+                        intData[i] = nint((fdata[i] - zeropt) / delta + this.randomValues[nextrand] - 0.5);
                     }
 
                     nextrand++;
@@ -301,26 +312,24 @@ public class Quantize {
                     }
                 }
             } else { /* do not dither the values */
-
                 for (i = 0; i < nx; i++) {
-                    idata[i] = nint((fdata[i] - zeropt) / delta);
+                    intData[i] = nint((fdata[i] - zeropt) / delta);
                 }
             }
         } else {
             /* data contains null values; shift the range to be */
             /* close to the value used to represent null values */
             zeropt = this.minValue - delta * (NULL_VALUE + N_RESERVED_VALUES);
-
             if (row > 0) { /* dither the values */
                 for (i = 0; i < nx; i++) {
-                    if (fdata[i] != in_null_value) {
-                        if (dither_method == SUBTRACTIVE_DITHER_2 && fdata[i] == 0.0) {
-                            idata[i] = ZERO_VALUE;
+                    if (fdata[i] != nullValue) {
+                        if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2 && fdata[i] == 0.0) {
+                            intData[i] = ZERO_VALUE;
                         } else {
-                            idata[i] = nint((fdata[i] - zeropt) / delta + this.randomValues[nextrand] - 0.5);
+                            intData[i] = nint((fdata[i] - zeropt) / delta + this.randomValues[nextrand] - 0.5);
                         }
                     } else {
-                        idata[i] = NULL_VALUE;
+                        intData[i] = NULL_VALUE;
                     }
 
                     /* increment the random number index, regardless */
@@ -332,24 +341,21 @@ public class Quantize {
                 }
             } else { /* do not dither the values */
                 for (i = 0; i < nx; i++) {
-                    if (fdata[i] != in_null_value) {
-                        idata[i] = nint((fdata[i] - zeropt) / delta);
+                    if (fdata[i] != nullValue) {
+                        intData[i] = nint((fdata[i] - zeropt) / delta);
                     } else {
-                        idata[i] = NULL_VALUE;
+                        intData[i] = NULL_VALUE;
                     }
                 }
             }
         }
-
         /* calc min and max values */
         temp = (this.minValue - zeropt) / delta;
         this.intMinValue = nint(temp);
         temp = (this.maxValue - zeropt) / delta;
         this.intMaxValue = nint(temp);
-
         this.bScale = delta;
         this.bZero = zeropt;
-
         return 1; /* yes, data have been quantized */
     }
 
@@ -375,7 +381,7 @@ public class Quantize {
      *            value of null pixels, if nullcheck is true
      * @return error status
      */
-    private void FnNoise5_double(double[] arrayIn, int nx, int ny, boolean nullcheck, double nullvalue) {
+    private void calculateNoise(double[] arrayIn, int nx, int ny, boolean nullcheck, double nullvalue) {
         DoubleArrayPointer array = new DoubleArrayPointer(arrayIn);
         DoubleArrayPointer rowpix;
         int ii, nvals, nvals2, nrows = 0, nrows2 = 0;
@@ -383,16 +389,13 @@ public class Quantize {
         double[] differences2, differences3, differences5;
         double v1, v2, v3, v4, v5, v6, v7, v8, v9;
         double xminval = Double.MAX_VALUE, xmaxval = Double.MIN_VALUE;
-        int do_range = 0;
         double[] diffs2, diffs3, diffs5;
         double xnoise2 = 0, xnoise3 = 0, xnoise5 = 0;
-
         if (nx < 5) {
             /* treat entire array as an image with a single row */
             nx = nx * ny;
             ny = 1;
         }
-
         /* rows must have at least 9 pixels */
         if (nx < 9) {
 
@@ -416,9 +419,6 @@ public class Quantize {
             this.noise3 = 0.;
             this.noise5 = 0.;
         }
-
-        /* do we need to compute the min and max value? */
-        do_range = 1;
 
         /* allocate arrays used to compute the median and noise estimates */
         differences2 = new double[nx];
@@ -447,13 +447,11 @@ public class Quantize {
             }
             v1 = rowpix.get(ii); /* store the good pixel value */
 
-            if (do_range != 0) {
-                if (v1 < xminval) {
-                    xminval = v1;
-                }
-                if (v1 > xmaxval) {
-                    xmaxval = v1;
-                }
+            if (v1 < xminval) {
+                xminval = v1;
+            }
+            if (v1 > xmaxval) {
+                xmaxval = v1;
             }
 
             /***** find the 2nd valid pixel in row (which we will skip over) */
@@ -469,13 +467,11 @@ public class Quantize {
             }
             v2 = rowpix.get(ii); /* store the good pixel value */
 
-            if (do_range != 0) {
-                if (v2 < xminval) {
-                    xminval = v2;
-                }
-                if (v2 > xmaxval) {
-                    xmaxval = v2;
-                }
+            if (v2 < xminval) {
+                xminval = v2;
+            }
+            if (v2 > xmaxval) {
+                xmaxval = v2;
             }
 
             /***** find the 3rd valid pixel in row */
@@ -491,13 +487,11 @@ public class Quantize {
             }
             v3 = rowpix.get(ii); /* store the good pixel value */
 
-            if (do_range != 0) {
-                if (v3 < xminval) {
-                    xminval = v3;
-                }
-                if (v3 > xmaxval) {
-                    xmaxval = v3;
-                }
+            if (v3 < xminval) {
+                xminval = v3;
+            }
+            if (v3 > xmaxval) {
+                xmaxval = v3;
             }
 
             /* find the 4nd valid pixel in row (to be skipped) */
@@ -513,13 +507,11 @@ public class Quantize {
             }
             v4 = rowpix.get(ii); /* store the good pixel value */
 
-            if (do_range != 0) {
-                if (v4 < xminval) {
-                    xminval = v4;
-                }
-                if (v4 > xmaxval) {
-                    xmaxval = v4;
-                }
+            if (v4 < xminval) {
+                xminval = v4;
+            }
+            if (v4 > xmaxval) {
+                xmaxval = v4;
             }
 
             /* find the 5th valid pixel in row (to be skipped) */
@@ -535,13 +527,11 @@ public class Quantize {
             }
             v5 = rowpix.get(ii); /* store the good pixel value */
 
-            if (do_range != 0) {
-                if (v5 < xminval) {
-                    xminval = v5;
-                }
-                if (v5 > xmaxval) {
-                    xmaxval = v5;
-                }
+            if (v5 < xminval) {
+                xminval = v5;
+            }
+            if (v5 > xmaxval) {
+                xmaxval = v5;
             }
 
             /* find the 6th valid pixel in row (to be skipped) */
@@ -557,13 +547,11 @@ public class Quantize {
             }
             v6 = rowpix.get(ii); /* store the good pixel value */
 
-            if (do_range != 0) {
-                if (v6 < xminval) {
-                    xminval = v6;
-                }
-                if (v6 > xmaxval) {
-                    xmaxval = v6;
-                }
+            if (v6 < xminval) {
+                xminval = v6;
+            }
+            if (v6 > xmaxval) {
+                xmaxval = v6;
             }
 
             /* find the 7th valid pixel in row (to be skipped) */
@@ -579,13 +567,11 @@ public class Quantize {
             }
             v7 = rowpix.get(ii); /* store the good pixel value */
 
-            if (do_range != 0) {
-                if (v7 < xminval) {
-                    xminval = v7;
-                }
-                if (v7 > xmaxval) {
-                    xmaxval = v7;
-                }
+            if (v7 < xminval) {
+                xminval = v7;
+            }
+            if (v7 > xmaxval) {
+                xmaxval = v7;
             }
 
             /* find the 8th valid pixel in row (to be skipped) */
@@ -601,14 +587,13 @@ public class Quantize {
             }
             v8 = rowpix.get(ii); /* store the good pixel value */
 
-            if (do_range != 0) {
-                if (v8 < xminval) {
-                    xminval = v8;
-                }
-                if (v8 > xmaxval) {
-                    xmaxval = v8;
-                }
+            if (v8 < xminval) {
+                xminval = v8;
             }
+            if (v8 > xmaxval) {
+                xmaxval = v8;
+            }
+
             /* now populate the differences arrays */
             /* for the remaining pixels in the row */
             nvals = 0;
@@ -627,13 +612,11 @@ public class Quantize {
                 }
                 v9 = rowpix.get(ii); /* store the good pixel value */
 
-                if (do_range != 0) {
-                    if (v9 < xminval) {
-                        xminval = v9;
-                    }
-                    if (v9 > xmaxval) {
-                        xmaxval = v9;
-                    }
+                if (v9 < xminval) {
+                    xminval = v9;
+                }
+                if (v9 > xmaxval) {
+                    xmaxval = v9;
                 }
 
                 /* construct array of absolute differences */
@@ -683,12 +666,12 @@ public class Quantize {
             } else {
                 /* quick_select returns the median MUCH faster than using qsort */
                 if (nvals2 > 1) {
-                    diffs2[nrows2] = quick_select_double(differences2, nvals);
+                    diffs2[nrows2] = quickSelect(differences2, nvals);
                     nrows2++;
                 }
 
-                diffs3[nrows] = quick_select_double(differences3, nvals);
-                diffs5[nrows] = quick_select_double(differences5, nvals);
+                diffs3[nrows] = quickSelect(differences3, nvals);
+                diffs5[nrows] = quickSelect(differences5, nvals);
             }
 
             nrows++;
@@ -702,8 +685,8 @@ public class Quantize {
             xnoise3 = diffs3[0];
             xnoise5 = diffs5[0];
         } else {
-            qsort(diffs3, nrows);
-            qsort(diffs5, nrows);
+            Arrays.sort(diffs3, 0, nrows);
+            Arrays.sort(diffs5, 0, nrows);
             xnoise3 = (diffs3[(nrows - 1) / 2] + diffs3[nrows / 2]) / 2.;
             xnoise5 = (diffs5[(nrows - 1) / 2] + diffs5[nrows / 2]) / 2.;
         }
@@ -713,7 +696,7 @@ public class Quantize {
         } else if (nrows2 == 1) {
             xnoise2 = diffs2[0];
         } else {
-            qsort(diffs2, nrows2);
+            Arrays.sort(diffs2, 0, nrows2);
             xnoise2 = (diffs2[(nrows2 - 1) / 2] + diffs2[nrows2 / 2]) / 2.;
         }
         this.ngood = ngoodpix;
@@ -756,11 +739,7 @@ public class Quantize {
         return x >= 0. ? (int) (x + 0.5) : (int) (x - 0.5);
     }
 
-    private void qsort(double[] array, int nrows) {
-        Arrays.sort(array, 0, nrows);
-    }
-
-    private double quick_select_double(double arr[], int n) {
+    private double quickSelect(double arr[], int n) {
         int low, high;
         int median;
         int middle, ll, hh;
@@ -775,7 +754,7 @@ public class Quantize {
 
             if (high == low + 1) { /* Two elements only */
                 if (arr[low] > arr[high]) {
-                    ELEM_SWAP(arr, low, high);
+                    swapElements(arr, low, high);
                 }
                 return arr[median];
             }
@@ -783,17 +762,17 @@ public class Quantize {
             /* Find median of low, middle and high items; swap into position low */
             middle = (low + high) / 2;
             if (arr[middle] > arr[high]) {
-                ELEM_SWAP(arr, middle, high);
+                swapElements(arr, middle, high);
             }
             if (arr[low] > arr[high]) {
-                ELEM_SWAP(arr, low, high);
+                swapElements(arr, low, high);
             }
             if (arr[middle] > arr[low]) {
-                ELEM_SWAP(arr, middle, low);
+                swapElements(arr, middle, low);
             }
 
             /* Swap low item (now in position middle) into position (low+1) */
-            ELEM_SWAP(arr, middle, low + 1);
+            swapElements(arr, middle, low + 1);
 
             /* Nibble from each end towards middle, swapping items when stuck */
             ll = low + 1;
@@ -810,11 +789,11 @@ public class Quantize {
                     break;
                 }
 
-                ELEM_SWAP(arr, ll, hh);
+                swapElements(arr, ll, hh);
             }
 
             /* Swap middle item (in position low) back into correct position */
-            ELEM_SWAP(arr, low, hh);
+            swapElements(arr, low, hh);
 
             /* Re-set active partition */
             if (hh <= median) {

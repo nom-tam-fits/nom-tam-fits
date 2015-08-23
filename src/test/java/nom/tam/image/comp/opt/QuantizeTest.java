@@ -34,6 +34,7 @@ package nom.tam.image.comp.opt;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
+import nom.tam.image.comp.opt.Quantize.Dither;
 import nom.tam.util.ArrayFuncs;
 
 import org.junit.Assert;
@@ -50,14 +51,11 @@ public class QuantizeTest {
             file.read(bytes);
             ByteBuffer.wrap(bytes).asDoubleBuffer().get(doubles);
 
-            int[] idata = new int[doubles.length];
-
             float qlevel = 4f;
             boolean nullcheck = false;
-            int dither_method = 1;
             double in_null_value = -9.1191291391491004e-36;
             Quantize quantize = new Quantize();
-            quantize.fits_quantize_double(8864L, doubles, 100, 100, nullcheck, in_null_value, qlevel, dither_method, idata);
+            quantize.quantize(8864L, doubles, 100, 100, nullcheck, in_null_value, qlevel, Dither.SUBTRACTIVE_DITHER_1);
 
             // values extracted from cfitsio debugging
             Assert.assertEquals(1.2435136069284944e+17, quantize.getNoise2(), 1e-19);
@@ -82,14 +80,11 @@ public class QuantizeTest {
             ByteBuffer.wrap(bytes).asFloatBuffer().get(floats);
             ArrayFuncs.copyInto(floats, doubles);
 
-            int[] idata = new int[doubles.length];
-
             float qlevel = 4f;
             boolean nullcheck = false;
-            int dither_method = 1;
             double in_null_value = -9.1191291391491004e-36;
             Quantize quantize = new Quantize();
-            quantize.fits_quantize_double(3942L, doubles, 100, 100, nullcheck, in_null_value, qlevel, dither_method, idata);
+            quantize.quantize(3942L, doubles, 100, 100, nullcheck, in_null_value, qlevel, Dither.SUBTRACTIVE_DITHER_1);
 
             // values extracted from cfitsio debugging (but adapted a little
             // because we convert the float back to doubles) and assume they are
