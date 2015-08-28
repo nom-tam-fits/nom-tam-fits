@@ -49,7 +49,7 @@ public class GZipCompress {
         }
     }
 
-    private GZIPOutputStream createGZipOutputStream(byte[] byteArray, ByteBuffer compressed) throws IOException {
+    protected GZIPOutputStream createGZipOutputStream(byte[] byteArray, ByteBuffer compressed) throws IOException {
         return new GZIPOutputStream(new ByteBufferOutputStream(compressed), Math.min(byteArray.length, DEFAULT_GZIP_BUFFER_SIZE));
     }
 
@@ -64,7 +64,7 @@ public class GZipCompress {
         }
     }
 
-    private GZIPInputStream createGZipInputStream(ByteBuffer buffer) throws IOException {
+    protected GZIPInputStream createGZipInputStream(ByteBuffer buffer) throws IOException {
         return new GZIPInputStream(new ByteBufferInputStream(buffer), Math.min(buffer.limit() * 2, DEFAULT_GZIP_BUFFER_SIZE));
     }
 }

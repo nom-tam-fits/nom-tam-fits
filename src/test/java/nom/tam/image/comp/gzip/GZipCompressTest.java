@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.util.zip.GZIPOutputStream;
 
 import nom.tam.util.ByteBufferInputStream;
 import nom.tam.util.ByteBufferOutputStream;
@@ -45,6 +46,36 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class GZipCompressTest {
+
+    @Test(expected = NullPointerException.class)
+    public void testNullVariantCompress() throws Exception {
+        new GZipCompress() {
+
+            protected java.util.zip.GZIPInputStream createGZipInputStream(ByteBuffer buffer) throws java.io.IOException {
+                return null;
+            };
+
+            @Override
+            protected GZIPOutputStream createGZipOutputStream(byte[] byteArray, ByteBuffer compressed) throws IOException {
+                return null;
+            }
+        }.compress(new byte[10], ByteBuffer.wrap(new byte[100]));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testNullVariantDecompress() throws Exception {
+        new GZipCompress() {
+
+            protected java.util.zip.GZIPInputStream createGZipInputStream(ByteBuffer buffer) throws java.io.IOException {
+                return null;
+            };
+
+            @Override
+            protected GZIPOutputStream createGZipOutputStream(byte[] byteArray, ByteBuffer compressed) throws IOException {
+                return null;
+            }
+        }.decompress(ByteBuffer.wrap(new byte[10]), new byte[100]);
+    }
 
     @Test
     public void testByteBuffers() throws Exception {

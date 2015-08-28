@@ -105,7 +105,7 @@ public class QuantizeTest {
 
         quantize = new Quantize(false, -9.1191291391491004e-36);
         matrix = initMatrix();
-        Assert.assertTrue(quantize.quantize(0L, matrix, 20, 20, -4f, Dither.SUBTRACTIVE_DITHER_2));
+        Assert.assertTrue(quantize.quantize(3942L, matrix, 20, 20, -4f, Dither.SUBTRACTIVE_DITHER_2));
 
         quantize = new Quantize(false, -9.1191291391491004e-36);
         matrix = initMatrix();
