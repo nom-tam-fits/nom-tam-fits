@@ -43,6 +43,8 @@ import org.junit.Test;
 
 public class QuantizeTest {
 
+    private static final double NULL_VALUE = -9.1191291391491004e-36;
+
     @Test
     public void testQuant1Double() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-64.bin", "r");//
@@ -53,7 +55,7 @@ public class QuantizeTest {
             ByteBuffer.wrap(bytes).asDoubleBuffer().get(doubles);
 
             float qlevel = 4f;
-            Quantize quantize = new Quantize(false, -9.1191291391491004e-36);
+            Quantize quantize = new Quantize(false, NULL_VALUE);
             quantize.quantize(8864L, doubles, 100, 100, qlevel, Dither.SUBTRACTIVE_DITHER_1);
 
             // values extracted from cfitsio debugging
@@ -80,7 +82,7 @@ public class QuantizeTest {
             ArrayFuncs.copyInto(floats, doubles);
 
             float qlevel = 4f;
-            Quantize quantize = new Quantize(false, -9.1191291391491004e-36);
+            Quantize quantize = new Quantize(false, NULL_VALUE);
             quantize.quantize(3942L, doubles, 100, 100, qlevel, Dither.SUBTRACTIVE_DITHER_1);
 
             // values extracted from cfitsio debugging (but adapted a little
@@ -100,56 +102,54 @@ public class QuantizeTest {
 
     @Test
     public void testDifferentQuantCases() {
+        int xsize = 12;
+        int ysize = 2;
         double[] matrix = initMatrix();
         Quantize quantize;
 
-        quantize = new Quantize(false, -9.1191291391491004e-36);
+        quantize = new Quantize(false, NULL_VALUE);
         matrix = initMatrix();
-        Assert.assertTrue(quantize.quantize(3942L, matrix, 20, 20, -4f, Dither.SUBTRACTIVE_DITHER_2));
+        Assert.assertTrue(quantize.quantize(3942L, matrix, xsize, ysize, -4f, Dither.SUBTRACTIVE_DITHER_2));
 
-        quantize = new Quantize(false, -9.1191291391491004e-36);
+        quantize = new Quantize(false, NULL_VALUE);
         matrix = initMatrix();
-        Assert.assertTrue(quantize.quantize(0L, matrix, 20, 20, -0f, Dither.SUBTRACTIVE_DITHER_2));
+        Assert.assertTrue(quantize.quantize(0L, matrix, xsize - 3, ysize, -0f, Dither.SUBTRACTIVE_DITHER_2));
 
-        quantize = new Quantize(false, -9.1191291391491004e-36);
+        quantize = new Quantize(false, NULL_VALUE);
         matrix = initMatrix();
         Assert.assertFalse(quantize.quantize(0L, matrix, 3, 2, 4f, Dither.SUBTRACTIVE_DITHER_1));
 
-        quantize = new Quantize(true, -9.1191291391491004e-36);
+        quantize = new Quantize(true, NULL_VALUE);
         matrix = initMatrix();
-        matrix[5] = -9.1191291391491004e-36;
+        matrix[5] = NULL_VALUE;
         Assert.assertFalse(quantize.quantize(0L, matrix, 3, 2, 4f, Dither.SUBTRACTIVE_DITHER_1));
 
-        quantize = new Quantize(true, -9.1191291391491004e-36);
+        quantize = new Quantize(true, NULL_VALUE);
         matrix = initMatrix();
-        for (int index = 11; index < 21; index++) {
-            matrix[index] = -9.1191291391491004e-36;
-        }
-        Assert.assertTrue(quantize.quantize(0L, matrix, 20, 20, 4f, Dither.SUBTRACTIVE_DITHER_1));
-        Assert.assertEquals(400, quantize.getIntData().length);
+        Arrays.fill(matrix, 11, xsize + 1, NULL_VALUE);
+        Assert.assertTrue(quantize.quantize(0L, matrix, xsize, ysize, 4f, Dither.SUBTRACTIVE_DITHER_1));
+        Assert.assertEquals(xsize * ysize, quantize.getIntData().length);
 
-        quantize = new Quantize(true, -9.1191291391491004e-36);
+        quantize = new Quantize(true, NULL_VALUE);
         matrix = initMatrix();
-        for (int index = 11; index < 21; index++) {
-            matrix[index] = -9.1191291391491004e-36;
-        }
-        Assert.assertTrue(quantize.quantize(0L, matrix, 20, 20, 4f, Dither.SUBTRACTIVE_DITHER_1));
+        Arrays.fill(matrix, 11, xsize + 1, NULL_VALUE);
+        Assert.assertTrue(quantize.quantize(0L, matrix, xsize, ysize, 4f, Dither.SUBTRACTIVE_DITHER_1));
 
         // test very small image
-        quantize = new Quantize(true, -9.1191291391491004e-36);
+        quantize = new Quantize(true, NULL_VALUE);
         matrix = initMatrix();
         Assert.assertFalse(quantize.quantize(0L, matrix, 1, 1, 4f, Dither.SUBTRACTIVE_DITHER_1));
 
         // test null image
-        quantize = new Quantize(true, -9.1191291391491004e-36);
-        Arrays.fill(matrix, -9.1191291391491004e-36);
-        Assert.assertTrue(quantize.quantize(0L, matrix, 20, 20, 4f, Dither.SUBTRACTIVE_DITHER_1));
+        quantize = new Quantize(true, NULL_VALUE);
+        Arrays.fill(matrix, NULL_VALUE);
+        Assert.assertTrue(quantize.quantize(0L, matrix, xsize, ysize, 4f, Dither.SUBTRACTIVE_DITHER_1));
 
         for (int index = 8; index > 0; index--) {
-            quantize = new Quantize(true, -9.1191291391491004e-36);
+            quantize = new Quantize(true, NULL_VALUE);
             matrix = initMatrix();
-            Arrays.fill(matrix, index, 20, -9.1191291391491004e-36);
-            Assert.assertTrue(quantize.quantize(3942L, matrix, 20, 20, 4f, index % 2 == 1 ? Dither.SUBTRACTIVE_DITHER_1 : Dither.SUBTRACTIVE_DITHER_2));
+            Arrays.fill(matrix, index, xsize, NULL_VALUE);
+            Assert.assertTrue(quantize.quantize(3942L, matrix, xsize, ysize, 4f, index % 2 == 1 ? Dither.SUBTRACTIVE_DITHER_1 : Dither.SUBTRACTIVE_DITHER_2));
         }
     }
 
