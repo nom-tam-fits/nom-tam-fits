@@ -459,42 +459,42 @@ public class Quantize {
             int ii = 0;
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ii);
             if (ii == nx) {
-                break; /* hit end of row */
+                continue; /* hit end of row */
             }
             double v1 = getNextPixelAndCheckMinMax(rowpix, ii);
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
             if (ii == nx) {
-                break; /* hit end of row */
+                continue; /* hit end of row */
             }
             double v2 = getNextPixelAndCheckMinMax(rowpix, ii);
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
             if (ii == nx) {
-                break; /* hit end of row */
+                continue; /* hit end of row */
             }
             double v3 = getNextPixelAndCheckMinMax(rowpix, ii);
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
             if (ii == nx) {
-                break; /* hit end of row */
+                continue; /* hit end of row */
             }
             double v4 = getNextPixelAndCheckMinMax(rowpix, ii);
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
             if (ii == nx) {
-                break; /* hit end of row */
+                continue; /* hit end of row */
             }
             double v5 = getNextPixelAndCheckMinMax(rowpix, ii);
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
             if (ii == nx) {
-                break; /* hit end of row */
+                continue; /* hit end of row */
             }
             double v6 = getNextPixelAndCheckMinMax(rowpix, ii);
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
             if (ii == nx) {
-                break; /* hit end of row */
+                continue; /* hit end of row */
             }
             double v7 = getNextPixelAndCheckMinMax(rowpix, ii);
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
             if (ii == nx) {
-                break; /* hit end of row */
+                continue; /* hit end of row */
             }
             double v8 = getNextPixelAndCheckMinMax(rowpix, ii);
             /* now populate the differences arrays */
@@ -504,7 +504,7 @@ public class Quantize {
             for (ii++; ii < nx; ii++) {
                 ii = findNextValidPixelWithNullCheck(nx, rowpix, ii);
                 if (ii == nx) {
-                    break; /* hit end of row */
+                    continue; /* hit end of row */
                 }
                 double v9 = getNextPixelAndCheckMinMax(rowpix, ii);
                 /* construct array of absolute differences */
