@@ -31,29 +31,34 @@ package nom.tam.image.comp.filter;
  * #L%
  */
 
-/**
- * dithering algorithm to use
- * 
- * @author ritchie
- */
-public enum Dither {
-    /**
-     * no dithering active.
-     */
-    NO_DITHER(-1),
-    /**
-     * substractive dithering version 1.
-     */
-    SUBTRACTIVE_DITHER_1(1),
-    /**
-     * substractive dithering version 2.
-     */
-    SUBTRACTIVE_DITHER_2(2);
+public class NoDither implements IDither {
 
-    private final int value;
-
-    private Dither(int value) {
-        this.value = value;
+    @Override
+    public boolean centerOnZero() {
+        return false;
     }
 
+    @Override
+    public void incrementRandom() {
+    }
+
+    @Override
+    public boolean isActive() {
+        return false;
+    }
+
+    @Override
+    public boolean isZeroValue(double d) {
+        return false;
+    }
+
+    @Override
+    public boolean isZeroValue(int i, int zeroValue) {
+        return false;
+    }
+
+    @Override
+    public double nextRandom() {
+        return 0f;
+    }
 }

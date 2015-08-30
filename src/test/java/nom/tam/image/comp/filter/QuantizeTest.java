@@ -102,8 +102,8 @@ public class QuantizeTest {
             ByteBuffer.wrap(bytes).asDoubleBuffer().get(doubles);
 
             float qlevel = 4f;
-            Quantize quantize = new Quantize(nullCheckOff);
-            quantize.quantize(8864L, doubles, 100, 100, qlevel, Dither.SUBTRACTIVE_DITHER_1);
+            Quantize quantize = new Quantize(nullCheckOff.set(IDither.class, new SubtractiveDither(8864L)));
+            quantize.quantize(doubles, 100, 100, qlevel);
 
             // values extracted from cfitsio debugging
             Assert.assertEquals(1.2435136069284944e+17, quantize.getNoise2(), 1e-19);
@@ -129,8 +129,8 @@ public class QuantizeTest {
             ArrayFuncs.copyInto(floats, doubles);
 
             float qlevel = 4f;
-            Quantize quantize = new Quantize(nullCheckOff);
-            quantize.quantize(3942L, doubles, 100, 100, qlevel, Dither.SUBTRACTIVE_DITHER_1);
+            Quantize quantize = new Quantize(nullCheckOff.set(IDither.class, new SubtractiveDither(3942L)));
+            quantize.quantize(doubles, 100, 100, qlevel);
 
             // values extracted from cfitsio debugging (but adapted a little
             // because we convert the float back to doubles) and assume they are
@@ -154,7 +154,7 @@ public class QuantizeTest {
         double[] matrix = initMatrix();
         Quantize quantize;
 
-        quantize = new Quantize(nullCheckOff);
+        quantize = new Quantize(nullCheckOff.set(IDither.class, new SubtractiveDither2(3942L)));
         matrix = initMatrix();
         // matrix 0.00000000000000000000e+00, 9.99983333416666475557e+00,
         // 1.99986666933330816676e+01, 2.99955002024956591811e+01,
@@ -169,7 +169,7 @@ public class QuantizeTest {
         // 1.98669330795061227946e+02, 2.08459899846099546039e+02,
         // 2.18229623080869316709e+02, 2.27977523535188396409e+02
 
-        Assert.assertTrue(quantize.quantize(3942L, matrix, xsize, ysize, -4f, Dither.SUBTRACTIVE_DITHER_2));
+        Assert.assertTrue(quantize.quantize(matrix, xsize, ysize, -4f));
         Assert.assertArrayEquals(new int[]{
             -2147483646,
             -2147483634,
@@ -202,9 +202,9 @@ public class QuantizeTest {
         Assert.assertEquals(-2147483637, quantize.getIntMinValue(), 1e-20);
         Assert.assertEquals(-2147483580, quantize.getIntMaxValue(), 1e-20);
 
-        quantize = new Quantize(nullCheckOff);
+        quantize = new Quantize(nullCheckOff.set(IDither.class, new NoDither2()));
         matrix = initMatrix();
-        Assert.assertTrue(quantize.quantize(0L, matrix, xsize - 3, ysize, -0f, Dither.SUBTRACTIVE_DITHER_2));
+        Assert.assertTrue(quantize.quantize(matrix, xsize - 3, ysize, -0f));
         Assert.assertArrayEquals(new int[]{
             -2147483637,
             -2130848351,
@@ -231,19 +231,19 @@ public class QuantizeTest {
         Assert.assertEquals(-2147483637, quantize.getIntMinValue(), 1e-20);
         Assert.assertEquals(-1866039268, quantize.getIntMaxValue(), 1e-20);
 
-        quantize = new Quantize(nullCheckOff);
+        quantize = new Quantize(nullCheckOff.set(IDither.class, new NoDither()));
         matrix = initMatrix();
-        Assert.assertFalse(quantize.quantize(0L, matrix, 3, 2, 4f, Dither.SUBTRACTIVE_DITHER_1));
+        Assert.assertFalse(quantize.quantize(matrix, 3, 2, 4f));
 
-        quantize = new Quantize(nullCheckValue);
+        quantize = new Quantize(nullCheckValue.set(IDither.class, new NoDither()));
         matrix = initMatrix();
         matrix[5] = NULL_VALUE;
-        Assert.assertFalse(quantize.quantize(0L, matrix, 3, 2, 4f, Dither.SUBTRACTIVE_DITHER_1));
+        Assert.assertFalse(quantize.quantize(matrix, 3, 2, 4f));
 
-        quantize = new Quantize(nullCheckValue);
+        quantize = new Quantize(nullCheckValue.set(IDither.class, new NoDither()));
         matrix = initMatrix();
         Arrays.fill(matrix, 11, xsize + 1, NULL_VALUE);
-        Assert.assertTrue(quantize.quantize(0L, matrix, xsize, ysize, 4f, Dither.SUBTRACTIVE_DITHER_1));
+        Assert.assertTrue(quantize.quantize(matrix, xsize, ysize, 4f));
         Assert.assertEquals(xsize * ysize, quantize.getIntData().length);
         Assert.assertArrayEquals(new int[]{
             -2147483637,
@@ -277,10 +277,10 @@ public class QuantizeTest {
         Assert.assertEquals(-2147483637, quantize.getIntMinValue(), 1e-20);
         Assert.assertEquals(-1866576064, quantize.getIntMaxValue(), 1e-20);
 
-        quantize = new Quantize(nullCheckValue);
+        quantize = new Quantize(nullCheckValue.set(IDither.class, new NoDither()));
         matrix = initMatrix();
         Arrays.fill(matrix, 11, xsize + 1, NULL_VALUE);
-        Assert.assertTrue(quantize.quantize(0L, matrix, xsize, ysize, 4f, Dither.SUBTRACTIVE_DITHER_1));
+        Assert.assertTrue(quantize.quantize(matrix, xsize, ysize, 4f));
         Assert.assertArrayEquals(new int[]{
             -2147483637,
             -2135162120,
@@ -314,14 +314,14 @@ public class QuantizeTest {
         Assert.assertEquals(-1866576064, quantize.getIntMaxValue(), 1e-20);
 
         // test very small image
-        quantize = new Quantize(nullCheckValue);
+        quantize = new Quantize(nullCheckValue.set(IDither.class, new NoDither()));
         matrix = initMatrix();
-        Assert.assertFalse(quantize.quantize(0L, matrix, 1, 1, 4f, Dither.SUBTRACTIVE_DITHER_1));
+        Assert.assertFalse(quantize.quantize(matrix, 1, 1, 4f));
 
         // test null image
-        quantize = new Quantize(nullCheckValue);
+        quantize = new Quantize(nullCheckValue.set(IDither.class, new NoDither()));
         Arrays.fill(matrix, NULL_VALUE);
-        Assert.assertTrue(quantize.quantize(0L, matrix, xsize, ysize, 4f, Dither.SUBTRACTIVE_DITHER_1));
+        Assert.assertTrue(quantize.quantize(matrix, xsize, ysize, 4f));
         Assert.assertArrayEquals(new int[]{
             -2147483647,
             -2147483647,
@@ -566,10 +566,10 @@ public class QuantizeTest {
         };
         int expectedIndex = 0;
         for (int index = 8; index > 0; index--) {
-            quantize = new Quantize(nullCheckValue);
+            quantize = new Quantize(nullCheckValue.set(IDither.class, index % 2 == 1 ? new SubtractiveDither(3942L) : new SubtractiveDither2(3942L)));
             matrix = initMatrix();
             Arrays.fill(matrix, index, xsize, NULL_VALUE);
-            Assert.assertTrue(quantize.quantize(3942L, matrix, xsize, ysize, 4f, index % 2 == 1 ? Dither.SUBTRACTIVE_DITHER_1 : Dither.SUBTRACTIVE_DITHER_2));
+            Assert.assertTrue(quantize.quantize(matrix, xsize, ysize, 4f));
             Assert.assertArrayEquals(expectedData[expectedIndex], quantize.getIntData());
 
             Assert.assertEquals(1.19911703788955035348e-06, quantize.getBScale(), 1e-20);

@@ -60,9 +60,16 @@ public class Quantize {
         }
     }
 
-    private static final double RANDOM_START_VALUE = 16807.0;
+    private static final double DEFAULT_QUANT_LEVEL = 4.;
+
+    private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
 
     private static final int MINIMUM_PIXEL_WIDTH = 9;
+
+    /**
+     * number of reserved values, starting with
+     */
+    private static final long N_RESERVED_VALUES = 10;
 
     private static final int N4 = 4;
 
@@ -70,31 +77,11 @@ public class Quantize {
 
     private static final int N8 = 8;
 
-    private static final double NOISE_5_MULTIPLICATOR = 0.1772048;
+    private static final double NOISE_2_MULTIPLICATOR = 1.0483579;
 
     private static final double NOISE_3_MULTIPLICATOR = 0.6052697;
 
-    private static final double NOISE_2_MULTIPLICATOR = 1.0483579;
-
-    private static final double ROUNDING_HALF = 0.5;
-
-    private static final int RANDOM_MULTIPLICATOR = 500;
-
-    private static final double DEFAULT_QUANT_LEVEL = 4.;
-
-    private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
-
-    private static final int LAST_RANDOM_VALUE = 1043618065;
-
-    /**
-     * DO NOT CHANGE THIS; used when quantizing real numbers
-     */
-    private static final int N_RANDOM = 10000;
-
-    /**
-     * number of reserved values, starting with
-     */
-    private static final long N_RESERVED_VALUES = 10;
+    private static final double NOISE_5_MULTIPLICATOR = 0.1772048;
 
     /**
      * and including NULL_VALUE. These values may not be used to represent the
@@ -106,55 +93,20 @@ public class Quantize {
      */
     private static final int NULL_VALUE = Integer.MIN_VALUE + 1;
 
+    private static final double ROUNDING_HALF = 0.5;
+
     /**
      * value used to represent zero-valued pixels
      */
     private static final int ZERO_VALUE = Integer.MIN_VALUE + 2;
 
-    private static float[] initRandoms() {
-
-        /* initialize an array of random numbers */
-
-        int ii;
-        double a = RANDOM_START_VALUE;
-        double m = MAX_INT_AS_DOUBLE;
-        double temp, seed;
-
-        /* allocate array for the random number sequence */
-        float[] randomValue = new float[N_RANDOM];
-
-        /*
-         * We need a portable algorithm that anyone can use to generate this
-         * exact same sequence of random number. The C 'rand' function is not
-         * suitable because it is not available to Fortran or Java programmers.
-         * Instead, use a well known simple algorithm published here:
-         * "Random number generators: good ones are hard to find",
-         * Communications of the ACM, Volume 31 , Issue 10 (October 1988) Pages:
-         * 1192 - 1201
-         */
-
-        /* initialize the random numbers */
-        seed = 1;
-        for (ii = 0; ii < N_RANDOM; ii++) {
-            temp = a * seed;
-            seed = temp - m * (int) (temp / m);
-            randomValue[ii] = (float) (seed / m);
-        }
-
-        /*
-         * IMPORTANT NOTE: the 10000th seed value must have the value 1043618065
-         * if the algorithm has been implemented correctly
-         */
-
-        if ((int) seed != LAST_RANDOM_VALUE) {
-            throw new IllegalArgumentException("randomValue generated incorrect random number sequence");
-        }
-        return randomValue;
-    }
-
     private double bScale;
 
     private double bZero;
+
+    private final IDither dither;
+
+    private int[] intData;
 
     private int intMaxValue;
 
@@ -188,11 +140,11 @@ public class Quantize {
     /* returned 5th order MAD of all non-null pixels */
     private double noise5;
 
-    private int[] intData;
-
-    private double xminval;
+    private final INullCheck nullCheck;
 
     private double xmaxval;
+
+    private double xminval;
 
     private double xnoise2;
 
@@ -200,13 +152,9 @@ public class Quantize {
 
     private double xnoise5;
 
-    private final INullCheck nullCheck;
-
-    private final float[] randomValues;
-
     public Quantize(CompParameter compParameter) {
-        this.randomValues = initRandoms();
         this.nullCheck = compParameter.get(INullCheck.class);
+        this.dither = compParameter.get(IDither.class);
     }
 
     /**
@@ -491,8 +439,6 @@ public class Quantize {
      * idata * bscale + bzero. If the function value is zero, the data were not
      * copied to idata.
      * 
-     * @param ditherSeed
-     *            seed for the dithering
      * @param fdata
      *            the data to quantinize
      * @param nxpix
@@ -501,19 +447,15 @@ public class Quantize {
      *            the image hight
      * @param qlevel
      *            the quantification level to use
-     * @param ditherMethod
-     *            the dithering method to use
      * @return true if the quantification was possible
      */
-    public boolean quantize(long ditherSeed, double[] fdata, int nxpix, int nypix, double qlevel, Dither ditherMethod) {
+    public boolean quantize(double[] fdata, int nxpix, int nypix, double qlevel) {
         int i;
-        int iseed = 0;
         long nx;
         // MAD 2nd, 3rd, and 5th order noise values
         double stdev;
         double delta; /* bscale, 1 in intdata = delta in fdata */
         double zeropt; /* bzero */
-        int nextRandom = 0;
         long iqfactor;
 
         nx = (long) nxpix * (long) nypix;
@@ -561,18 +503,12 @@ public class Quantize {
         if ((this.maxValue - this.minValue) / delta > 2. * MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
             return false; /* don't quantize */
         }
-        if (ditherSeed > 0) {
-            /* we need to dither the quantized values */
-            /* initialize the index to the next random number in the list */
-            iseed = (int) ((ditherSeed - 1) % N_RANDOM);
-            nextRandom = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
-        }
         if (this.ngood == nx) { /* don't have to check for nulls */
             /* return all positive values, if possible since some */
             /* compression algorithms either only work for positive integers, */
             /* or are more efficient. */
 
-            if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2) {
+            if (this.dither.centerOnZero()) {
                 /*
                  * shift the range to be close to the value used to represent
                  * zeros
@@ -589,20 +525,15 @@ public class Quantize {
                 /* center the quantized levels around zero */
                 zeropt = (this.minValue + this.maxValue) / 2.;
             }
-            if (ditherSeed > 0) { /* dither the values when quantizing */
+            if (this.dither.isActive()) { /* dither the values when quantizing */
                 for (i = 0; i < nx; i++) {
 
-                    if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2 && fdata[i] == 0.0) {
+                    if (this.dither.isZeroValue(fdata[i])) {
                         this.intData[i] = ZERO_VALUE;
                     } else {
-                        this.intData[i] = nint((fdata[i] - zeropt) / delta + this.randomValues[nextRandom] - ROUNDING_HALF);
+                        this.intData[i] = nint((fdata[i] - zeropt) / delta + this.dither.nextRandom() - ROUNDING_HALF);
                     }
-
-                    nextRandom++;
-                    if (nextRandom == N_RANDOM) {
-                        iseed++;
-                        nextRandom = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
-                    }
+                    this.dither.incrementRandom();
                 }
             } else { /* do not dither the values */
                 for (i = 0; i < nx; i++) {
@@ -613,24 +544,19 @@ public class Quantize {
             /* data contains null values; shift the range to be */
             /* close to the value used to represent null values */
             zeropt = this.minValue - delta * (NULL_VALUE + N_RESERVED_VALUES);
-            if (ditherSeed > 0) { /* dither the values */
+            if (this.dither.isActive()) { /* dither the values */
                 for (i = 0; i < nx; i++) {
                     if (!this.nullCheck.isNull(fdata[i])) {
-                        if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2 && fdata[i] == 0.0) {
+                        if (this.dither.isZeroValue(fdata[i])) {
                             this.intData[i] = ZERO_VALUE;
                         } else {
-                            this.intData[i] = nint((fdata[i] - zeropt) / delta + this.randomValues[nextRandom] - ROUNDING_HALF);
+                            this.intData[i] = nint((fdata[i] - zeropt) / delta + this.dither.nextRandom() - ROUNDING_HALF);
                         }
                     } else {
                         this.intData[i] = NULL_VALUE;
                     }
 
-                    /* increment the random number index, regardless */
-                    nextRandom++;
-                    if (nextRandom == N_RANDOM) {
-                        iseed++;
-                        nextRandom = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
-                    }
+                    this.dither.incrementRandom();
                 }
             } else { /* do not dither the values */
                 for (i = 0; i < nx; i++) {
@@ -734,8 +660,6 @@ public class Quantize {
     /**
      * Unquantize int integer values into the scaled floating point values
      * 
-     * @param ditherSeed
-     *            tile number = row number in table
      * @param input
      *            array of values to be converted
      * @param ntodo
@@ -744,52 +668,31 @@ public class Quantize {
      *            FITS TSCALn or BSCALE value
      * @param zero
      *            FITS TZEROn or BZERO value
-     * @param ditherMethod
-     *            dithering method to use
      * @param output
      *            array of converted pixels
      */
-    public void unquantize(long ditherSeed, int[] input, long ntodo, double scale, double zero, Dither ditherMethod, double[] output) {
-        /* initialize the index to the next random number in the list */
-        int iseed = (int) ((ditherSeed - 1) % N_RANDOM);
-        int nextrand = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
-
-        if (!nullCheck.isActive()) { // no null checking required
+    public void unquantize(int[] input, long ntodo, double scale, double zero, double[] output) {
+        if (!this.nullCheck.isActive()) { // no null checking required
             for (int ii = 0; ii < ntodo; ii++) {
-                if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2 && input[ii] == ZERO_VALUE) {
+                if (this.dither.isZeroValue(input[ii], ZERO_VALUE)) {
                     output[ii] = 0.0;
                 } else {
-                    output[ii] = ((double) input[ii] - this.randomValues[nextrand] + ROUNDING_HALF) * scale + zero;
+                    output[ii] = (input[ii] - this.dither.nextRandom() + ROUNDING_HALF) * scale + zero;
                 }
-
-                nextrand++;
-                if (nextrand == N_RANDOM) {
-                    iseed++;
-                    if (iseed == N_RANDOM) {
-                        iseed = 0;
-                    }
-                    nextrand = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
-                }
+                this.dither.incrementRandom();
             }
         } else { // must check for null values
             for (int ii = 0; ii < ntodo; ii++) {
-                if (nullCheck.isNull(input[ii])) {
-                    output[ii] = nullCheck.setNull(ii);
+                if (this.nullCheck.isNull(input[ii])) {
+                    output[ii] = this.nullCheck.setNull(ii);
                 } else {
-                    if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2 && input[ii] == ZERO_VALUE) {
+                    if (this.dither.isZeroValue(input[ii], ZERO_VALUE)) {
                         output[ii] = 0.0;
                     } else {
-                        output[ii] = ((double) input[ii] - this.randomValues[nextrand] + ROUNDING_HALF) * scale + zero;
+                        output[ii] = (input[ii] - this.dither.nextRandom() + ROUNDING_HALF) * scale + zero;
                     }
                 }
-                nextrand++;
-                if (nextrand == N_RANDOM) {
-                    iseed++;
-                    if (iseed == N_RANDOM) {
-                        iseed = 0;
-                    }
-                    nextrand = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
-                }
+                this.dither.incrementRandom();
             }
         }
     }
