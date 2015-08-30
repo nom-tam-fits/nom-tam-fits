@@ -664,20 +664,16 @@ public class Quantize {
      *            array of values to be converted
      * @param ntodo
      *            number of elements in the array
-     * @param scale
-     *            FITS TSCALn or BSCALE value
-     * @param zero
-     *            FITS TZEROn or BZERO value
      * @param output
      *            array of converted pixels
      */
-    public void unquantize(int[] input, long ntodo, double scale, double zero, double[] output) {
+    public void unquantize(int[] input, long ntodo, double[] output) {
         if (!this.nullCheck.isActive()) { // no null checking required
             for (int ii = 0; ii < ntodo; ii++) {
                 if (this.dither.isZeroValue(input[ii], ZERO_VALUE)) {
                     output[ii] = 0.0;
                 } else {
-                    output[ii] = (input[ii] - this.dither.nextRandom() + ROUNDING_HALF) * scale + zero;
+                    output[ii] = (input[ii] - this.dither.nextRandom() + ROUNDING_HALF) * bScale + bZero;
                 }
                 this.dither.incrementRandom();
             }
@@ -689,7 +685,7 @@ public class Quantize {
                     if (this.dither.isZeroValue(input[ii], ZERO_VALUE)) {
                         output[ii] = 0.0;
                     } else {
-                        output[ii] = (input[ii] - this.dither.nextRandom() + ROUNDING_HALF) * scale + zero;
+                        output[ii] = (input[ii] - this.dither.nextRandom() + ROUNDING_HALF) * bScale + bZero;
                     }
                 }
                 this.dither.incrementRandom();

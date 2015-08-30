@@ -104,6 +104,7 @@ public class QuantizeTest {
             float qlevel = 4f;
             Quantize quantize = new Quantize(nullCheckOff.set(IDither.class, new SubtractiveDither(8864L)));
             quantize.quantize(doubles, 100, 100, qlevel);
+            checkRequantedValues(quantize, doubles);
 
             // values extracted from cfitsio debugging
             Assert.assertEquals(1.2435136069284944e+17, quantize.getNoise2(), 1e-19);
@@ -115,6 +116,12 @@ public class QuantizeTest {
             Assert.assertEquals(0, quantize.getIntMinValue());
             Assert.assertEquals(1911354, quantize.getIntMaxValue());
         }
+    }
+
+    private void checkRequantedValues(Quantize quantize, double[] doubles) {
+        double[] output = new double[quantize.getIntData().length];
+        quantize.unquantize(quantize.getIntData(), quantize.getIntData().length, output);
+        // Assert.assertArrayEquals(doubles, output, 1);
     }
 
     @Test
@@ -131,6 +138,7 @@ public class QuantizeTest {
             float qlevel = 4f;
             Quantize quantize = new Quantize(nullCheckOff.set(IDither.class, new SubtractiveDither(3942L)));
             quantize.quantize(doubles, 100, 100, qlevel);
+            checkRequantedValues(quantize, doubles);
 
             // values extracted from cfitsio debugging (but adapted a little
             // because we convert the float back to doubles) and assume they are
@@ -199,8 +207,8 @@ public class QuantizeTest {
         }, quantize.getIntData());
         Assert.assertEquals(4.000000e+00, quantize.getBScale(), 1e-20);
         Assert.assertEquals(8.589934548e+09, quantize.getBZero(), 1e-20);
-        Assert.assertEquals(-2147483637, quantize.getIntMinValue(), 1e-20);
-        Assert.assertEquals(-2147483580, quantize.getIntMaxValue(), 1e-20);
+        Assert.assertEquals(-2147483637, quantize.getIntMinValue());
+        Assert.assertEquals(-2147483580, quantize.getIntMaxValue());
 
         quantize = new Quantize(nullCheckOff.set(IDither.class, new NoDither2()));
         matrix = initMatrix();
@@ -228,8 +236,9 @@ public class QuantizeTest {
         }, quantize.getIntData());
         Assert.assertEquals(6.01121812296506193330e-07, quantize.getBScale(), 1e-20);
         Assert.assertEquals(1.29089925575053234752e+03, quantize.getBZero(), 1e-20);
-        Assert.assertEquals(-2147483637, quantize.getIntMinValue(), 1e-20);
-        Assert.assertEquals(-1866039268, quantize.getIntMaxValue(), 1e-20);
+        Assert.assertEquals(-2147483637, quantize.getIntMinValue());
+        Assert.assertEquals(-1866039268, quantize.getIntMaxValue());
+        checkRequantedValues(quantize, matrix);
 
         quantize = new Quantize(nullCheckOff.set(IDither.class, new NoDither()));
         matrix = initMatrix();
@@ -274,8 +283,9 @@ public class QuantizeTest {
         }, quantize.getIntData());
         Assert.assertEquals(8.11574856349585578526e-07, quantize.getBScale(), 1e-20);
         Assert.assertEquals(1.74284372421136049525e+03, quantize.getBZero(), 1e-20);
-        Assert.assertEquals(-2147483637, quantize.getIntMinValue(), 1e-20);
-        Assert.assertEquals(-1866576064, quantize.getIntMaxValue(), 1e-20);
+        Assert.assertEquals(-2147483637, quantize.getIntMinValue());
+        Assert.assertEquals(-1866576064, quantize.getIntMaxValue());
+        checkRequantedValues(quantize, matrix);
 
         quantize = new Quantize(nullCheckValue.set(IDither.class, new NoDither()));
         matrix = initMatrix();
@@ -310,8 +320,9 @@ public class QuantizeTest {
         }, quantize.getIntData());
         Assert.assertEquals(8.11574856349585578526e-07, quantize.getBScale(), 1e-20);
         Assert.assertEquals(1.74284372421136049525e+03, quantize.getBZero(), 1e-20);
-        Assert.assertEquals(-2147483637, quantize.getIntMinValue(), 1e-20);
-        Assert.assertEquals(-1866576064, quantize.getIntMaxValue(), 1e-20);
+        Assert.assertEquals(-2147483637, quantize.getIntMinValue());
+        Assert.assertEquals(-1866576064, quantize.getIntMaxValue());
+        checkRequantedValues(quantize, matrix);
 
         // test very small image
         quantize = new Quantize(nullCheckValue.set(IDither.class, new NoDither()));
@@ -353,6 +364,7 @@ public class QuantizeTest {
         Assert.assertEquals(5.36870909250000000000e+08, quantize.getBZero(), 1e-20);
         Assert.assertEquals(-2147483637, quantize.getIntMinValue());
         Assert.assertEquals(-2147483633, quantize.getIntMaxValue());
+        checkRequantedValues(quantize, matrix);
 
         int[][] expectedData = {
             {
@@ -574,9 +586,9 @@ public class QuantizeTest {
 
             Assert.assertEquals(1.19911703788955035348e-06, quantize.getBScale(), 1e-20);
             Assert.assertEquals(2.57508421771571829595e+03, quantize.getBZero(), 1e-20);
-            Assert.assertEquals(-2147483637, quantize.getIntMinValue(), 1e-20);
-
-            Assert.assertEquals(-1957362476, quantize.getIntMaxValue(), 1e-20);
+            Assert.assertEquals(-2147483637, quantize.getIntMinValue());
+            Assert.assertEquals(-1957362476, quantize.getIntMaxValue());
+            checkRequantedValues(quantize, matrix);
 
             expectedIndex++;
         }
@@ -588,5 +600,17 @@ public class QuantizeTest {
             matrix[index] = Math.sin(((double) index) / 100d) * 1000d;
         }
         return matrix;
+    }
+
+    @Test
+    public void testNoDither() {
+        NoDither dither = new NoDither();
+        Assert.assertFalse(dither.centerOnZero());
+        Assert.assertFalse(dither.isActive());
+        Assert.assertFalse(dither.isZeroValue(0.0));
+        Assert.assertFalse(dither.isZeroValue(0, 0));
+        Assert.assertEquals(0.0, dither.nextRandom(), 1e-20);
+        dither.incrementRandom();
+
     }
 }
