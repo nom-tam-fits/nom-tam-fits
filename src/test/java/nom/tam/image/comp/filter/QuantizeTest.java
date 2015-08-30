@@ -1,4 +1,4 @@
-package nom.tam.image.comp.opt;
+package nom.tam.image.comp.filter;
 
 /*
  * #%L
@@ -35,7 +35,8 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import nom.tam.image.comp.opt.Quantize.Dither;
+import nom.tam.image.comp.CompParameter;
+import nom.tam.image.comp.INullCheck;
 import nom.tam.util.ArrayFuncs;
 
 import org.junit.Assert;
@@ -44,6 +45,52 @@ import org.junit.Test;
 public class QuantizeTest {
 
     private static final double NULL_VALUE = -9.1191291391491004e-36;
+
+    CompParameter nullCheckOff = CompParameter.create(INullCheck.class, new INullCheck() {
+
+        @Override
+        public double setNull(int index) {
+            return 0;
+        }
+
+        @Override
+        public boolean isNull(double d) {
+            return false;
+        }
+
+        @Override
+        public boolean isActive() {
+            return false;
+        }
+
+        @Override
+        public boolean isNull(int integer) {
+            return false;
+        }
+    });
+
+    CompParameter nullCheckValue = CompParameter.create(INullCheck.class, new INullCheck() {
+
+        @Override
+        public double setNull(int index) {
+            return NULL_VALUE;
+        }
+
+        @Override
+        public boolean isNull(double d) {
+            return d == NULL_VALUE;
+        }
+
+        @Override
+        public boolean isActive() {
+            return true;
+        }
+
+        @Override
+        public boolean isNull(int integer) {
+            return (Integer.MIN_VALUE + 1) == integer;
+        }
+    });
 
     @Test
     public void testQuant1Double() throws Exception {
@@ -55,7 +102,7 @@ public class QuantizeTest {
             ByteBuffer.wrap(bytes).asDoubleBuffer().get(doubles);
 
             float qlevel = 4f;
-            Quantize quantize = new Quantize(false, NULL_VALUE);
+            Quantize quantize = new Quantize(nullCheckOff);
             quantize.quantize(8864L, doubles, 100, 100, qlevel, Dither.SUBTRACTIVE_DITHER_1);
 
             // values extracted from cfitsio debugging
@@ -82,7 +129,7 @@ public class QuantizeTest {
             ArrayFuncs.copyInto(floats, doubles);
 
             float qlevel = 4f;
-            Quantize quantize = new Quantize(false, NULL_VALUE);
+            Quantize quantize = new Quantize(nullCheckOff);
             quantize.quantize(3942L, doubles, 100, 100, qlevel, Dither.SUBTRACTIVE_DITHER_1);
 
             // values extracted from cfitsio debugging (but adapted a little
@@ -107,7 +154,7 @@ public class QuantizeTest {
         double[] matrix = initMatrix();
         Quantize quantize;
 
-        quantize = new Quantize(false, NULL_VALUE);
+        quantize = new Quantize(nullCheckOff);
         matrix = initMatrix();
         // matrix 0.00000000000000000000e+00, 9.99983333416666475557e+00,
         // 1.99986666933330816676e+01, 2.99955002024956591811e+01,
@@ -155,7 +202,7 @@ public class QuantizeTest {
         Assert.assertEquals(-2147483637, quantize.getIntMinValue(), 1e-20);
         Assert.assertEquals(-2147483580, quantize.getIntMaxValue(), 1e-20);
 
-        quantize = new Quantize(false, NULL_VALUE);
+        quantize = new Quantize(nullCheckOff);
         matrix = initMatrix();
         Assert.assertTrue(quantize.quantize(0L, matrix, xsize - 3, ysize, -0f, Dither.SUBTRACTIVE_DITHER_2));
         Assert.assertArrayEquals(new int[]{
@@ -184,16 +231,16 @@ public class QuantizeTest {
         Assert.assertEquals(-2147483637, quantize.getIntMinValue(), 1e-20);
         Assert.assertEquals(-1866039268, quantize.getIntMaxValue(), 1e-20);
 
-        quantize = new Quantize(false, NULL_VALUE);
+        quantize = new Quantize(nullCheckOff);
         matrix = initMatrix();
         Assert.assertFalse(quantize.quantize(0L, matrix, 3, 2, 4f, Dither.SUBTRACTIVE_DITHER_1));
 
-        quantize = new Quantize(true, NULL_VALUE);
+        quantize = new Quantize(nullCheckValue);
         matrix = initMatrix();
         matrix[5] = NULL_VALUE;
         Assert.assertFalse(quantize.quantize(0L, matrix, 3, 2, 4f, Dither.SUBTRACTIVE_DITHER_1));
 
-        quantize = new Quantize(true, NULL_VALUE);
+        quantize = new Quantize(nullCheckValue);
         matrix = initMatrix();
         Arrays.fill(matrix, 11, xsize + 1, NULL_VALUE);
         Assert.assertTrue(quantize.quantize(0L, matrix, xsize, ysize, 4f, Dither.SUBTRACTIVE_DITHER_1));
@@ -230,7 +277,7 @@ public class QuantizeTest {
         Assert.assertEquals(-2147483637, quantize.getIntMinValue(), 1e-20);
         Assert.assertEquals(-1866576064, quantize.getIntMaxValue(), 1e-20);
 
-        quantize = new Quantize(true, NULL_VALUE);
+        quantize = new Quantize(nullCheckValue);
         matrix = initMatrix();
         Arrays.fill(matrix, 11, xsize + 1, NULL_VALUE);
         Assert.assertTrue(quantize.quantize(0L, matrix, xsize, ysize, 4f, Dither.SUBTRACTIVE_DITHER_1));
@@ -267,12 +314,12 @@ public class QuantizeTest {
         Assert.assertEquals(-1866576064, quantize.getIntMaxValue(), 1e-20);
 
         // test very small image
-        quantize = new Quantize(true, NULL_VALUE);
+        quantize = new Quantize(nullCheckValue);
         matrix = initMatrix();
         Assert.assertFalse(quantize.quantize(0L, matrix, 1, 1, 4f, Dither.SUBTRACTIVE_DITHER_1));
 
         // test null image
-        quantize = new Quantize(true, NULL_VALUE);
+        quantize = new Quantize(nullCheckValue);
         Arrays.fill(matrix, NULL_VALUE);
         Assert.assertTrue(quantize.quantize(0L, matrix, xsize, ysize, 4f, Dither.SUBTRACTIVE_DITHER_1));
         Assert.assertArrayEquals(new int[]{
@@ -519,7 +566,7 @@ public class QuantizeTest {
         };
         int expectedIndex = 0;
         for (int index = 8; index > 0; index--) {
-            quantize = new Quantize(true, NULL_VALUE);
+            quantize = new Quantize(nullCheckValue);
             matrix = initMatrix();
             Arrays.fill(matrix, index, xsize, NULL_VALUE);
             Assert.assertTrue(quantize.quantize(3942L, matrix, xsize, ysize, 4f, index % 2 == 1 ? Dither.SUBTRACTIVE_DITHER_1 : Dither.SUBTRACTIVE_DITHER_2));

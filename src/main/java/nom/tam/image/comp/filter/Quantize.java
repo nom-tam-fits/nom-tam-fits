@@ -1,4 +1,4 @@
-package nom.tam.image.comp.opt;
+package nom.tam.image.comp.filter;
 
 /*
  * #%L
@@ -33,9 +33,32 @@ package nom.tam.image.comp.opt;
 
 import java.util.Arrays;
 
+import nom.tam.image.comp.CompParameter;
+import nom.tam.image.comp.INullCheck;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class Quantize {
+
+    class DoubleArrayPointer {
+
+        private final double[] array;
+
+        private int startIndex;
+
+        public DoubleArrayPointer(double[] arrayIn) {
+            this.array = arrayIn;
+        }
+
+        public DoubleArrayPointer copy(long l) {
+            DoubleArrayPointer result = new DoubleArrayPointer(this.array);
+            result.startIndex = (int) l;
+            return result;
+        }
+
+        public double get(int ii) {
+            return this.array[ii + this.startIndex];
+        }
+    }
 
     private static final double RANDOM_START_VALUE = 16807.0;
 
@@ -59,43 +82,9 @@ public class Quantize {
 
     private static final double DEFAULT_QUANT_LEVEL = 4.;
 
-    private static final double MAX_INT_AS_DOUBLE = (double) Integer.MAX_VALUE;
+    private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
 
     private static final int LAST_RANDOM_VALUE = 1043618065;
-
-    public enum Dither {
-        NO_DITHER(-1),
-        SUBTRACTIVE_DITHER_1(1),
-        SUBTRACTIVE_DITHER_2(2);
-
-        private final int value;
-
-        private Dither(int value) {
-            this.value = value;
-        }
-
-    }
-
-    class DoubleArrayPointer {
-
-        private final double[] array;
-
-        private int startIndex;
-
-        public DoubleArrayPointer(double[] arrayIn) {
-            this.array = arrayIn;
-        }
-
-        public DoubleArrayPointer copy(long l) {
-            DoubleArrayPointer result = new DoubleArrayPointer(this.array);
-            result.startIndex = (int) l;
-            return result;
-        }
-
-        public double get(int ii) {
-            return this.array[ii + this.startIndex];
-        }
-    }
 
     /**
      * DO NOT CHANGE THIS; used when quantizing real numbers
@@ -211,203 +200,13 @@ public class Quantize {
 
     private double xnoise5;
 
-    private final boolean nullcheck;
-
-    private final double nullValue;
-
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
-    public int[] getIntData() {
-        return intData;
-    }
+    private final INullCheck nullCheck;
 
     private final float[] randomValues;
 
-    public Quantize(boolean nullcheck, double nullValue) {
+    public Quantize(CompParameter compParameter) {
         this.randomValues = initRandoms();
-        this.nullcheck = nullcheck;
-        this.nullValue = nullValue;
-
-    }
-
-    private void swapElements(double[] array, int one, int second) {
-        double value = array[one];
-        array[one] = array[second];
-        array[second] = value;
-    }
-
-    /**
-     * arguments: long row i: tile number = row number in the binary table
-     * double fdata[] i: array of image pixels to be compressed long nxpix i:
-     * number of pixels in each row of fdata long nypix i: number of rows in
-     * fdata nullcheck i: check for nullvalues in fdata? double in_null_value i:
-     * value used to represent undefined pixels in fdata float qlevel i:
-     * quantization level int dither_method i; which dithering method to use int
-     * idata[] o: values of fdata after applying bzero and bscale double bscale
-     * o: scale factor double bzero o: zero offset int iminval o: minimum
-     * quantized value that is returned int imaxval o: maximum quantized value
-     * that is returned The function value will be one if the input fdata were
-     * copied to idata; in this case the parameters bscale and bzero can be used
-     * to convert back to nearly the original floating point values: fdata ~=
-     * idata * bscale + bzero. If the function value is zero, the data were not
-     * copied to idata.
-     * 
-     * @param ditherSeed
-     *            seed for the dithering
-     * @param fdata
-     *            the data to quantinize
-     * @param nxpix
-     *            the image width
-     * @param nypix
-     *            the image hight
-     * @param qlevel
-     *            the quantification level to use
-     * @param ditherMethod
-     *            the dithering method to use
-     * @return true if the quantification was possible
-     */
-    public boolean quantize(long ditherSeed, double[] fdata, int nxpix, int nypix, float qlevel, Dither ditherMethod) {
-        int i;
-        int iseed = 0;
-        long nx;
-        // MAD 2nd, 3rd, and 5th order noise values
-        double stdev;
-        double delta; /* bscale, 1 in intdata = delta in fdata */
-        double zeropt; /* bzero */
-        int nextRandom = 0;
-        long iqfactor;
-
-        nx = (long) nxpix * (long) nypix;
-        this.intData = new int[(int) nx];
-        if (nx <= 1L) {
-            this.bScale = 1.;
-            this.bZero = 0.;
-            return false;
-        }
-        if (qlevel >= 0.) {
-            /* estimate background noise using MAD pixel differences */
-            calculateNoise(fdata, nxpix, nypix);
-            // special case of an image filled with Nulls
-            if (nullcheck && this.ngood == 0) {
-                /* set parameters to dummy values, which are not used */
-                this.minValue = 0.;
-                this.maxValue = 1.;
-                stdev = 1;
-            } else {
-                // use the minimum of noise2, noise3, and noise5 as the best
-                // noise value
-                stdev = this.noise3;
-                if (this.noise2 != 0. && this.noise2 < stdev) {
-                    stdev = this.noise2;
-                }
-                if (this.noise5 != 0. && this.noise5 < stdev) {
-                    stdev = this.noise5;
-                }
-            }
-            if (qlevel == 0.) {
-                delta = stdev / DEFAULT_QUANT_LEVEL; /* default quantization */
-            } else {
-                delta = stdev / qlevel;
-            }
-            if (delta == 0.) {
-                return false; /* don't quantize */
-            }
-        } else {
-            /* negative value represents the absolute quantization level */
-            delta = -qlevel;
-            /* only nned to calculate the min and max values */
-            calculateNoise(fdata, nxpix, nypix);
-        }
-        /* check that the range of quantized levels is not > range of int */
-        if ((this.maxValue - this.minValue) / delta > 2. * MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
-            return false; /* don't quantize */
-        }
-        if (ditherSeed > 0) {
-            /* we need to dither the quantized values */
-            /* initialize the index to the next random number in the list */
-            iseed = (int) ((ditherSeed - 1) % N_RANDOM);
-            nextRandom = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
-        }
-        if (this.ngood == nx) { /* don't have to check for nulls */
-            /* return all positive values, if possible since some */
-            /* compression algorithms either only work for positive integers, */
-            /* or are more efficient. */
-
-            if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2) {
-                /*
-                 * shift the range to be close to the value used to represent
-                 * zeros
-                 */
-                zeropt = this.minValue - delta * (NULL_VALUE + N_RESERVED_VALUES);
-            } else if ((this.maxValue - this.minValue) / delta < MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
-                zeropt = this.minValue;
-                // fudge the zero point so it is an integer multiple of delta
-                // This helps to ensure the same scaling will be performed if
-                // the file undergoes multiple fpack/funpack cycles
-                iqfactor = (long) (zeropt / delta + ROUNDING_HALF);
-                zeropt = iqfactor * delta;
-            } else {
-                /* center the quantized levels around zero */
-                zeropt = (this.minValue + this.maxValue) / 2.;
-            }
-            if (ditherSeed > 0) { /* dither the values when quantizing */
-                for (i = 0; i < nx; i++) {
-
-                    if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2 && fdata[i] == 0.0) {
-                        intData[i] = ZERO_VALUE;
-                    } else {
-                        intData[i] = nint((fdata[i] - zeropt) / delta + this.randomValues[nextRandom] - ROUNDING_HALF);
-                    }
-
-                    nextRandom++;
-                    if (nextRandom == N_RANDOM) {
-                        iseed++;
-                        nextRandom = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
-                    }
-                }
-            } else { /* do not dither the values */
-                for (i = 0; i < nx; i++) {
-                    intData[i] = nint((fdata[i] - zeropt) / delta);
-                }
-            }
-        } else {
-            /* data contains null values; shift the range to be */
-            /* close to the value used to represent null values */
-            zeropt = this.minValue - delta * (NULL_VALUE + N_RESERVED_VALUES);
-            if (ditherSeed > 0) { /* dither the values */
-                for (i = 0; i < nx; i++) {
-                    if (fdata[i] != nullValue) {
-                        if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2 && fdata[i] == 0.0) {
-                            intData[i] = ZERO_VALUE;
-                        } else {
-                            intData[i] = nint((fdata[i] - zeropt) / delta + this.randomValues[nextRandom] - ROUNDING_HALF);
-                        }
-                    } else {
-                        intData[i] = NULL_VALUE;
-                    }
-
-                    /* increment the random number index, regardless */
-                    nextRandom++;
-                    if (nextRandom == N_RANDOM) {
-                        iseed++;
-                        nextRandom = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
-                    }
-                }
-            } else { /* do not dither the values */
-                for (i = 0; i < nx; i++) {
-                    if (fdata[i] != nullValue) {
-                        intData[i] = nint((fdata[i] - zeropt) / delta);
-                    } else {
-                        intData[i] = NULL_VALUE;
-                    }
-                }
-            }
-        }
-        /* calc min and max values */
-        this.intMinValue = nint((this.minValue - zeropt) / delta);
-        this.intMaxValue = nint((this.maxValue - zeropt) / delta);
-        this.bScale = delta;
-        this.bZero = zeropt;
-        return true; /* yes, data have been quantized */
+        this.nullCheck = compParameter.get(INullCheck.class);
     }
 
     /**
@@ -556,24 +355,24 @@ public class Quantize {
         } /* end of loop over rows */
         /* compute median of the values for each row */
         if (nrows == 0) {
-            xnoise3 = 0;
-            xnoise5 = 0;
+            this.xnoise3 = 0;
+            this.xnoise5 = 0;
         } else if (nrows == 1) {
-            xnoise3 = diffs3[0];
-            xnoise5 = diffs5[0];
+            this.xnoise3 = diffs3[0];
+            this.xnoise5 = diffs5[0];
         } else {
             Arrays.sort(diffs3, 0, nrows);
             Arrays.sort(diffs5, 0, nrows);
-            xnoise3 = (diffs3[(nrows - 1) / 2] + diffs3[nrows / 2]) / 2.;
-            xnoise5 = (diffs5[(nrows - 1) / 2] + diffs5[nrows / 2]) / 2.;
+            this.xnoise3 = (diffs3[(nrows - 1) / 2] + diffs3[nrows / 2]) / 2.;
+            this.xnoise5 = (diffs5[(nrows - 1) / 2] + diffs5[nrows / 2]) / 2.;
         }
         if (nrows2 == 0) {
-            xnoise2 = 0;
+            this.xnoise2 = 0;
         } else if (nrows2 == 1) {
-            xnoise2 = diffs2[0];
+            this.xnoise2 = diffs2[0];
         } else {
             Arrays.sort(diffs2, 0, nrows2);
-            xnoise2 = (diffs2[(nrows2 - 1) / 2] + diffs2[nrows2 / 2]) / 2.;
+            this.xnoise2 = (diffs2[(nrows2 - 1) / 2] + diffs2[nrows2 / 2]) / 2.;
         }
         setNoiseResult(ngoodpix);
     }
@@ -583,14 +382,14 @@ public class Quantize {
         if (nx < MINIMUM_PIXEL_WIDTH) {
             int ngoodpix = 0;
             for (int index = 0; index < nx; index++) {
-                if (nullcheck && array.get(index) == nullValue) {
+                if (this.nullCheck.isNull(array.get(index))) {
                     continue;
                 } else {
-                    if (array.get(index) < xminval) {
-                        xminval = array.get(index);
+                    if (array.get(index) < this.xminval) {
+                        this.xminval = array.get(index);
                     }
-                    if (array.get(index) > xmaxval) {
-                        xmaxval = array.get(index);
+                    if (array.get(index) > this.xmaxval) {
+                        this.xmaxval = array.get(index);
                     }
                     ngoodpix++;
                 }
@@ -599,34 +398,6 @@ public class Quantize {
             return true;
         }
         return false;
-    }
-
-    private void setNoiseResult(long ngoodpix) {
-        this.minValue = xminval;
-        this.maxValue = xmaxval;
-        this.ngood = ngoodpix;
-        this.noise2 = NOISE_2_MULTIPLICATOR * xnoise2;
-        this.noise3 = NOISE_3_MULTIPLICATOR * xnoise3;
-        this.noise5 = NOISE_5_MULTIPLICATOR * xnoise5;
-    }
-
-    private void initializeNoise() {
-        xnoise2 = 0;
-        xnoise3 = 0;
-        xnoise5 = 0;
-        xminval = Double.MAX_VALUE;
-        xmaxval = Double.MIN_VALUE;
-    }
-
-    private double getNextPixelAndCheckMinMax(DoubleArrayPointer rowpix, int ii) {
-        double pixelValue = rowpix.get(ii); /* store the good pixel value */
-        if (pixelValue < xminval) {
-            xminval = pixelValue;
-        }
-        if (pixelValue > xmaxval) {
-            xmaxval = pixelValue;
-        }
-        return pixelValue;
     }
 
     /**
@@ -640,8 +411,8 @@ public class Quantize {
      * @return
      */
     private int findNextValidPixelWithNullCheck(int nx, DoubleArrayPointer rowpix, int ii) {
-        if (nullcheck) {
-            while (ii < nx && rowpix.get(ii) == nullValue) {
+        if (this.nullCheck.isActive()) {
+            while (ii < nx && this.nullCheck.isNull(rowpix.get(ii))) {
                 ii++;
             }
         }
@@ -656,12 +427,28 @@ public class Quantize {
         return this.bZero;
     }
 
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
+    public int[] getIntData() {
+        return this.intData;
+    }
+
     public int getIntMaxValue() {
         return this.intMaxValue;
     }
 
     public int getIntMinValue() {
         return this.intMinValue;
+    }
+
+    private double getNextPixelAndCheckMinMax(DoubleArrayPointer rowpix, int ii) {
+        double pixelValue = rowpix.get(ii); /* store the good pixel value */
+        if (pixelValue < this.xminval) {
+            this.xminval = pixelValue;
+        }
+        if (pixelValue > this.xmaxval) {
+            this.xmaxval = pixelValue;
+        }
+        return pixelValue;
     }
 
     protected double getNoise2() {
@@ -676,8 +463,191 @@ public class Quantize {
         return this.noise5;
     }
 
+    private void initializeNoise() {
+        this.xnoise2 = 0;
+        this.xnoise3 = 0;
+        this.xnoise5 = 0;
+        this.xminval = Double.MAX_VALUE;
+        this.xmaxval = Double.MIN_VALUE;
+    }
+
     private int nint(double x) {
         return x >= 0. ? (int) (x + ROUNDING_HALF) : (int) (x - ROUNDING_HALF);
+    }
+
+    /**
+     * arguments: long row i: tile number = row number in the binary table
+     * double fdata[] i: array of image pixels to be compressed long nxpix i:
+     * number of pixels in each row of fdata long nypix i: number of rows in
+     * fdata nullcheck i: check for nullvalues in fdata? double in_null_value i:
+     * value used to represent undefined pixels in fdata float qlevel i:
+     * quantization level int dither_method i; which dithering method to use int
+     * idata[] o: values of fdata after applying bzero and bscale double bscale
+     * o: scale factor double bzero o: zero offset int iminval o: minimum
+     * quantized value that is returned int imaxval o: maximum quantized value
+     * that is returned The function value will be one if the input fdata were
+     * copied to idata; in this case the parameters bscale and bzero can be used
+     * to convert back to nearly the original floating point values: fdata ~=
+     * idata * bscale + bzero. If the function value is zero, the data were not
+     * copied to idata.
+     * 
+     * @param ditherSeed
+     *            seed for the dithering
+     * @param fdata
+     *            the data to quantinize
+     * @param nxpix
+     *            the image width
+     * @param nypix
+     *            the image hight
+     * @param qlevel
+     *            the quantification level to use
+     * @param ditherMethod
+     *            the dithering method to use
+     * @return true if the quantification was possible
+     */
+    public boolean quantize(long ditherSeed, double[] fdata, int nxpix, int nypix, double qlevel, Dither ditherMethod) {
+        int i;
+        int iseed = 0;
+        long nx;
+        // MAD 2nd, 3rd, and 5th order noise values
+        double stdev;
+        double delta; /* bscale, 1 in intdata = delta in fdata */
+        double zeropt; /* bzero */
+        int nextRandom = 0;
+        long iqfactor;
+
+        nx = (long) nxpix * (long) nypix;
+        this.intData = new int[(int) nx];
+        if (nx <= 1L) {
+            this.bScale = 1.;
+            this.bZero = 0.;
+            return false;
+        }
+        if (qlevel >= 0.) {
+            /* estimate background noise using MAD pixel differences */
+            calculateNoise(fdata, nxpix, nypix);
+            // special case of an image filled with Nulls
+            if (this.nullCheck.isActive() && this.ngood == 0) {
+                /* set parameters to dummy values, which are not used */
+                this.minValue = 0.;
+                this.maxValue = 1.;
+                stdev = 1;
+            } else {
+                // use the minimum of noise2, noise3, and noise5 as the best
+                // noise value
+                stdev = this.noise3;
+                if (this.noise2 != 0. && this.noise2 < stdev) {
+                    stdev = this.noise2;
+                }
+                if (this.noise5 != 0. && this.noise5 < stdev) {
+                    stdev = this.noise5;
+                }
+            }
+            if (qlevel == 0.) {
+                delta = stdev / DEFAULT_QUANT_LEVEL; /* default quantization */
+            } else {
+                delta = stdev / qlevel;
+            }
+            if (delta == 0.) {
+                return false; /* don't quantize */
+            }
+        } else {
+            /* negative value represents the absolute quantization level */
+            delta = -qlevel;
+            /* only nned to calculate the min and max values */
+            calculateNoise(fdata, nxpix, nypix);
+        }
+        /* check that the range of quantized levels is not > range of int */
+        if ((this.maxValue - this.minValue) / delta > 2. * MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
+            return false; /* don't quantize */
+        }
+        if (ditherSeed > 0) {
+            /* we need to dither the quantized values */
+            /* initialize the index to the next random number in the list */
+            iseed = (int) ((ditherSeed - 1) % N_RANDOM);
+            nextRandom = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
+        }
+        if (this.ngood == nx) { /* don't have to check for nulls */
+            /* return all positive values, if possible since some */
+            /* compression algorithms either only work for positive integers, */
+            /* or are more efficient. */
+
+            if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2) {
+                /*
+                 * shift the range to be close to the value used to represent
+                 * zeros
+                 */
+                zeropt = this.minValue - delta * (NULL_VALUE + N_RESERVED_VALUES);
+            } else if ((this.maxValue - this.minValue) / delta < MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
+                zeropt = this.minValue;
+                // fudge the zero point so it is an integer multiple of delta
+                // This helps to ensure the same scaling will be performed if
+                // the file undergoes multiple fpack/funpack cycles
+                iqfactor = (long) (zeropt / delta + ROUNDING_HALF);
+                zeropt = iqfactor * delta;
+            } else {
+                /* center the quantized levels around zero */
+                zeropt = (this.minValue + this.maxValue) / 2.;
+            }
+            if (ditherSeed > 0) { /* dither the values when quantizing */
+                for (i = 0; i < nx; i++) {
+
+                    if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2 && fdata[i] == 0.0) {
+                        this.intData[i] = ZERO_VALUE;
+                    } else {
+                        this.intData[i] = nint((fdata[i] - zeropt) / delta + this.randomValues[nextRandom] - ROUNDING_HALF);
+                    }
+
+                    nextRandom++;
+                    if (nextRandom == N_RANDOM) {
+                        iseed++;
+                        nextRandom = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
+                    }
+                }
+            } else { /* do not dither the values */
+                for (i = 0; i < nx; i++) {
+                    this.intData[i] = nint((fdata[i] - zeropt) / delta);
+                }
+            }
+        } else {
+            /* data contains null values; shift the range to be */
+            /* close to the value used to represent null values */
+            zeropt = this.minValue - delta * (NULL_VALUE + N_RESERVED_VALUES);
+            if (ditherSeed > 0) { /* dither the values */
+                for (i = 0; i < nx; i++) {
+                    if (!this.nullCheck.isNull(fdata[i])) {
+                        if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2 && fdata[i] == 0.0) {
+                            this.intData[i] = ZERO_VALUE;
+                        } else {
+                            this.intData[i] = nint((fdata[i] - zeropt) / delta + this.randomValues[nextRandom] - ROUNDING_HALF);
+                        }
+                    } else {
+                        this.intData[i] = NULL_VALUE;
+                    }
+
+                    /* increment the random number index, regardless */
+                    nextRandom++;
+                    if (nextRandom == N_RANDOM) {
+                        iseed++;
+                        nextRandom = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
+                    }
+                }
+            } else { /* do not dither the values */
+                for (i = 0; i < nx; i++) {
+                    if (!this.nullCheck.isNull(fdata[i])) {
+                        this.intData[i] = nint((fdata[i] - zeropt) / delta);
+                    } else {
+                        this.intData[i] = NULL_VALUE;
+                    }
+                }
+            }
+        }
+        /* calc min and max values */
+        this.intMinValue = nint((this.minValue - zeropt) / delta);
+        this.intMaxValue = nint((this.maxValue - zeropt) / delta);
+        this.bScale = delta;
+        this.bZero = zeropt;
+        return true; /* yes, data have been quantized */
     }
 
     private double quickSelect(double[] arr, int n) {
@@ -687,7 +657,7 @@ public class Quantize {
 
         low = 0;
         high = n - 1;
-        median = (low + high) >>> 1; // was (low + high) / 2;
+        median = low + high >>> 1; // was (low + high) / 2;
         for (;;) {
             if (high <= low) {
                 return arr[median];
@@ -701,7 +671,7 @@ public class Quantize {
             }
 
             /* Find median of low, middle and high items; swap into position low */
-            middle = (low + high) >>> 1; // was (low + high) / 2;
+            middle = low + high >>> 1; // was (low + high) / 2;
             if (arr[middle] > arr[high]) {
                 swapElements(arr, middle, high);
             }
@@ -742,6 +712,84 @@ public class Quantize {
             }
             if (hh >= median) {
                 high = hh - 1;
+            }
+        }
+    }
+
+    private void setNoiseResult(long ngoodpix) {
+        this.minValue = this.xminval;
+        this.maxValue = this.xmaxval;
+        this.ngood = ngoodpix;
+        this.noise2 = NOISE_2_MULTIPLICATOR * this.xnoise2;
+        this.noise3 = NOISE_3_MULTIPLICATOR * this.xnoise3;
+        this.noise5 = NOISE_5_MULTIPLICATOR * this.xnoise5;
+    }
+
+    private void swapElements(double[] array, int one, int second) {
+        double value = array[one];
+        array[one] = array[second];
+        array[second] = value;
+    }
+
+    /**
+     * Unquantize int integer values into the scaled floating point values
+     * 
+     * @param ditherSeed
+     *            tile number = row number in table
+     * @param input
+     *            array of values to be converted
+     * @param ntodo
+     *            number of elements in the array
+     * @param scale
+     *            FITS TSCALn or BSCALE value
+     * @param zero
+     *            FITS TZEROn or BZERO value
+     * @param ditherMethod
+     *            dithering method to use
+     * @param output
+     *            array of converted pixels
+     */
+    public void unquantize(long ditherSeed, int[] input, long ntodo, double scale, double zero, Dither ditherMethod, double[] output) {
+        /* initialize the index to the next random number in the list */
+        int iseed = (int) ((ditherSeed - 1) % N_RANDOM);
+        int nextrand = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
+
+        if (!nullCheck.isActive()) { // no null checking required
+            for (int ii = 0; ii < ntodo; ii++) {
+                if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2 && input[ii] == ZERO_VALUE) {
+                    output[ii] = 0.0;
+                } else {
+                    output[ii] = ((double) input[ii] - this.randomValues[nextrand] + ROUNDING_HALF) * scale + zero;
+                }
+
+                nextrand++;
+                if (nextrand == N_RANDOM) {
+                    iseed++;
+                    if (iseed == N_RANDOM) {
+                        iseed = 0;
+                    }
+                    nextrand = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
+                }
+            }
+        } else { // must check for null values
+            for (int ii = 0; ii < ntodo; ii++) {
+                if (nullCheck.isNull(input[ii])) {
+                    output[ii] = nullCheck.setNull(ii);
+                } else {
+                    if (ditherMethod == Dither.SUBTRACTIVE_DITHER_2 && input[ii] == ZERO_VALUE) {
+                        output[ii] = 0.0;
+                    } else {
+                        output[ii] = ((double) input[ii] - this.randomValues[nextrand] + ROUNDING_HALF) * scale + zero;
+                    }
+                }
+                nextrand++;
+                if (nextrand == N_RANDOM) {
+                    iseed++;
+                    if (iseed == N_RANDOM) {
+                        iseed = 0;
+                    }
+                    nextrand = (int) (this.randomValues[iseed] * RANDOM_MULTIPLICATOR);
+                }
             }
         }
     }
