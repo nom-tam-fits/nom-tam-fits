@@ -1,4 +1,4 @@
-package nom.tam.image.comp;
+package nom.tam.image.comp.filter;
 
 /*
  * #%L
@@ -31,35 +31,60 @@ package nom.tam.image.comp;
  * #L%
  */
 
-import java.util.HashMap;
-import java.util.Map;
+public class QuantizeParameter {
 
-public final class CompParameter {
+    private double qlevel;
 
-    public static <T> CompParameter create(Class<T> clazz, T impl) {
-        return new CompParameter().set(clazz, impl);
+    private double bScale;
+
+    private double bZero;
+
+    private int intMaxValue;
+
+    private int intMinValue;
+
+    public double getBScale() {
+        return this.bScale;
     }
 
-    private final Map<Class<?>, Object> impls;
-
-    private CompParameter() {
-        this.impls = new HashMap<Class<?>, Object>();
+    public double getBZero() {
+        return this.bZero;
     }
 
-    public <T> T get(Class<T> clazz) {
-        return clazz.cast(this.impls.get(clazz));
+    public int getIntMaxValue() {
+        return this.intMaxValue;
     }
 
-    public <T> CompParameter set(Class<T> clazz, T impl) {
-        this.impls.put(clazz, impl);
+    public int getIntMinValue() {
+        return this.intMinValue;
+    }
+
+    public double getQLevel() {
+        return this.qlevel;
+    }
+
+    public QuantizeParameter setBScale(double value) {
+        this.bScale = value;
         return this;
     }
 
-    public <T> CompParameter set(T impl) {
-        this.impls.put(impl.getClass(), impl);
-        for (Class<?> interf : impl.getClass().getInterfaces()) {
-            this.impls.put(interf, impl);
-        }
+    public QuantizeParameter setBZero(double value) {
+        this.bZero = value;
+        return this;
+    }
+
+    public QuantizeParameter setIntMaxValue(int value) {
+        this.intMaxValue = value;
+        return this;
+    }
+
+    public QuantizeParameter setIntMinValue(int value) {
+        this.intMinValue = value;
+        return this;
+    }
+
+    public QuantizeParameter setQLevel(double value) {
+        this.qlevel = value;
         return this;
     }
 }

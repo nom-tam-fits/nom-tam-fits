@@ -100,17 +100,11 @@ public class Quantize {
      */
     private static final int ZERO_VALUE = Integer.MIN_VALUE + 2;
 
-    private double bScale;
-
-    private double bZero;
-
     private final IDither dither;
 
+    private final QuantizeParameter parameter;
+
     private int[] intData;
-
-    private int intMaxValue;
-
-    private int intMinValue;
 
     /**
      * maximum non-null value
@@ -155,6 +149,7 @@ public class Quantize {
     public Quantize(CompParameter compParameter) {
         this.nullCheck = compParameter.get(INullCheck.class);
         this.dither = compParameter.get(IDither.class);
+        this.parameter = compParameter.get(QuantizeParameter.class);
     }
 
     /**
@@ -367,25 +362,9 @@ public class Quantize {
         return ii;
     }
 
-    public double getBScale() {
-        return this.bScale;
-    }
-
-    public double getBZero() {
-        return this.bZero;
-    }
-
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public int[] getIntData() {
         return this.intData;
-    }
-
-    public int getIntMaxValue() {
-        return this.intMaxValue;
-    }
-
-    public int getIntMinValue() {
-        return this.intMinValue;
     }
 
     private double getNextPixelAndCheckMinMax(DoubleArrayPointer rowpix, int ii) {
@@ -445,13 +424,12 @@ public class Quantize {
      *            the image width
      * @param nypix
      *            the image hight
-     * @param qlevel
-     *            the quantification level to use
      * @return true if the quantification was possible
      */
-    public boolean quantize(double[] fdata, int nxpix, int nypix, double qlevel) {
+    public boolean quantize(double[] fdata, int nxpix, int nypix) {
         int i;
         long nx;
+        double qlevel = this.parameter.getQLevel();
         // MAD 2nd, 3rd, and 5th order noise values
         double stdev;
         double delta; /* bscale, 1 in intdata = delta in fdata */
@@ -461,8 +439,8 @@ public class Quantize {
         nx = (long) nxpix * (long) nypix;
         this.intData = new int[(int) nx];
         if (nx <= 1L) {
-            this.bScale = 1.;
-            this.bZero = 0.;
+            this.parameter.setBScale(1.);
+            this.parameter.setBZero(0.);
             return false;
         }
         if (qlevel >= 0.) {
@@ -569,10 +547,10 @@ public class Quantize {
             }
         }
         /* calc min and max values */
-        this.intMinValue = nint((this.minValue - zeropt) / delta);
-        this.intMaxValue = nint((this.maxValue - zeropt) / delta);
-        this.bScale = delta;
-        this.bZero = zeropt;
+        this.parameter.setIntMinValue(nint((this.minValue - zeropt) / delta));
+        this.parameter.setIntMaxValue(nint((this.maxValue - zeropt) / delta));
+        this.parameter.setBScale(delta);
+        this.parameter.setBZero(zeropt);
         return true; /* yes, data have been quantized */
     }
 
@@ -668,6 +646,8 @@ public class Quantize {
      *            array of converted pixels
      */
     public void unquantize(int[] input, long ntodo, double[] output) {
+        final double bScale = this.parameter.getBScale();
+        final double bZero = this.parameter.getBZero();
         if (!this.nullCheck.isActive()) { // no null checking required
             for (int ii = 0; ii < ntodo; ii++) {
                 if (this.dither.isZeroValue(input[ii], ZERO_VALUE)) {
