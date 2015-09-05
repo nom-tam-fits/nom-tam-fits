@@ -1,7 +1,9 @@
 package nom.tam.image.comp.plio;
 
-import java.nio.IntBuffer;
+import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
+
+import nom.tam.image.comp.ITileCompressor;
 
 /*
  * #%L
@@ -46,7 +48,63 @@ import java.nio.ShortBuffer;
  * @author William Pence
  * @author Richard van Nieuwenhoven
  */
-public class PLIOCompress {
+public abstract class PLIOCompress {
+
+    public static class BytePLIOCompress extends PLIOCompress implements ITileCompressor<ByteBuffer> {
+
+        private ByteBuffer pixelData;
+
+        @Override
+        public void compress(ByteBuffer buffer, ByteBuffer compressed) {
+            this.pixelData = buffer;
+            compress(compressed.asShortBuffer(), this.pixelData.limit());
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, ByteBuffer buffer) {
+            this.pixelData = buffer;
+            decompress(compressed.asShortBuffer(), this.pixelData.limit());
+        }
+
+        @Override
+        protected int nextPixel() {
+            return this.pixelData.get();
+        }
+
+        @Override
+        protected void put(int index, int pixel) {
+            this.pixelData.put(index, (byte) pixel);
+
+        }
+
+    }
+
+    public static class ShortPLIOCompress extends PLIOCompress implements ITileCompressor<ShortBuffer> {
+
+        private ShortBuffer pixelData;
+
+        @Override
+        public void compress(ShortBuffer buffer, ByteBuffer compressed) {
+            this.pixelData = buffer;
+            super.compress(compressed.asShortBuffer(), this.pixelData.limit());
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, ShortBuffer buffer) {
+            this.pixelData = buffer;
+            decompress(compressed.asShortBuffer(), this.pixelData.limit());
+        }
+
+        @Override
+        protected int nextPixel() {
+            return this.pixelData.get();
+        }
+
+        @Override
+        protected void put(int index, int pixel) {
+            this.pixelData.put(index, (short) pixel);
+        }
+    }
 
     private static final int FIRST_VALUE_WITH_13_BIT = 4096;
 
@@ -108,20 +166,17 @@ public class PLIOCompress {
      * PL_P2L -- Convert a pixel array to a line list. The length of the list is
      * returned as the function value.
      * 
-     * @param pixelData
-     *            input pixel array
      * @param compressedData
      *            encoded line list
      * @param npix
      *            number of pixels to convert
      */
-    public void compress(IntBuffer pixelData, ShortBuffer compressedData, int npix) {
-        compressedData.position(0);
+    protected void compress(ShortBuffer compressedData, int npix) {
         compressedData.put(PLIO_HEADER);
         final int xe = npix - 1;
         int op = PLIO_HEADER.length;
         /* Computing MAX */
-        int pv = Math.max(0, pixelData.get(0));
+        int pv = Math.max(0, nextPixel());
         int x1 = 0;
         int iz = 0;
         int hi = 1;
@@ -129,7 +184,7 @@ public class PLIOCompress {
         for (int ip = 0; ip <= xe; ++ip) {
             if (ip < xe) {
                 /* Computing MAX */
-                nv = Math.max(0, pixelData.get(ip + 1));
+                nv = Math.max(0, nextPixel());
                 if (nv == pv) {
                     continue;
                 }
@@ -206,12 +261,10 @@ public class PLIOCompress {
      * 
      * @param compressedData
      *            encoded line list
-     * @param pixelData
-     *            output pixel array
      * @param npix
      *            number of pixels to convert
      */
-    public void decompress(ShortBuffer compressedData, IntBuffer pixelData, int npix) {
+    protected int decompress(ShortBuffer compressedData, int npix) {
         int llfirt;
         int lllen;
         if (!(compressedData.get(2) > 0)) {
@@ -237,14 +290,14 @@ public class PLIOCompress {
                     final int otop = op + np - 1;
                     if (!(opcode == OPCODE_4)) {
                         for (int index = op; index <= otop; ++index) {
-                            pixelData.put(index, 0);
+                            put(index, 0);
                         }
                         if (opcode == OPCODE_5 && i2 == x2) {
-                            pixelData.put(otop, pv);
+                            put(otop, pv);
                         }
                     } else {
                         for (int index = op; index <= otop; ++index) {
-                            pixelData.put(index, pv);
+                            put(index, pv);
                         }
                     }
                     op = otop + 1;
@@ -260,14 +313,14 @@ public class PLIOCompress {
             } else if (sw0001 == OPCODE_7) {
                 pv += data;
                 if (x1 >= 0 && x1 <= xe) {
-                    pixelData.put(op, pv);
+                    put(op, pv);
                     ++op;
                 }
                 ++x1;
             } else if (sw0001 == OPCODE_8) {
                 pv -= data;
                 if (x1 >= 0 && x1 <= xe) {
-                    pixelData.put(op, pv);
+                    put(op, pv);
                     ++op;
                 }
                 ++x1;
@@ -277,9 +330,13 @@ public class PLIOCompress {
             }
         }
         for (int index = op; index < npix; ++index) {
-            pixelData.put(index, 0);
+            put(index, 0);
         }
-        pixelData.position(npix);
+        return npix;
     }
+
+    protected abstract int nextPixel();
+
+    protected abstract void put(int index, int pixel);
 
 }
