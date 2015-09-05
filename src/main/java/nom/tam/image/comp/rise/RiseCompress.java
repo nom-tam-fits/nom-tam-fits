@@ -1,6 +1,8 @@
 package nom.tam.image.comp.rise;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.logging.Logger;
 
 /*
@@ -53,85 +55,90 @@ public abstract class RiseCompress {
      */
     private static final Logger LOG = Logger.getLogger(RiseCompress.class.getName());
 
-    private static class ByteArrayRiseCompress extends RiseCompress {
+    public static class ByteRiseCompress extends RiseCompress {
 
-        public ByteArrayRiseCompress(int blockSize) {
+        private ByteBuffer pixelBuffer;
+
+        public ByteRiseCompress(int blockSize) {
             super(FS_BITS_FOR_BYTE, FS_MAX_FOR_BYTE, blockSize, BITS_PER_BYTE);
         }
 
         @Override
-        protected int get(Object array, int index) {
-            return ((byte[]) array)[index];
+        protected int get(int index) {
+            return pixelBuffer.get(index);
         }
 
         @Override
-        protected int length(Object array) {
-            return ((byte[]) array).length;
+        protected void set(int index, int pixel) {
+            pixelBuffer.put(index, (byte) pixel);
         }
 
-        @Override
-        protected void set(Object array, int index, int pixel) {
-            ((byte[]) array)[index] = (byte) pixel;
+        public void compress(ByteBuffer buffer, ByteBuffer writeBuffer) {
+            this.pixelBuffer = buffer;
+            super.compress(buffer.limit(), new BitBuffer(writeBuffer));
         }
 
-        @Override
-        protected int readOnePixel(ByteBuffer readBuffer) {
-            return readBuffer.get();
+        public void decompress(ByteBuffer readBuffer, ByteBuffer buffer) {
+            this.pixelBuffer = buffer;
+            super.decompressBuffer(readBuffer, readBuffer.get(), buffer.limit());
         }
     }
 
-    private static class IntArrayRiseCompress extends RiseCompress {
+    public static class IntRiseCompress extends RiseCompress {
 
-        public IntArrayRiseCompress(int blockSize) {
+        private IntBuffer pixelBuffer;
+
+        public IntRiseCompress(int blockSize) {
             super(FS_BITS_FOR_INT, FS_MAX_FOR_INT, blockSize, BITS_PER_INT);
         }
 
         @Override
-        protected int get(Object array, int index) {
-            return ((int[]) array)[index];
+        protected int get(int index) {
+            return pixelBuffer.get(index);
         }
 
         @Override
-        protected int length(Object array) {
-            return ((int[]) array).length;
+        protected void set(int index, int pixel) {
+            pixelBuffer.put(index, pixel);
         }
 
-        @Override
-        protected void set(Object array, int index, int pixel) {
-            ((int[]) array)[index] = pixel;
+        public void compress(IntBuffer buffer, ByteBuffer writeBuffer) {
+            this.pixelBuffer = buffer;
+            super.compress(buffer.limit(), new BitBuffer(writeBuffer));
         }
 
-        @Override
-        protected int readOnePixel(ByteBuffer readBuffer) {
-            return readBuffer.getInt();
+        public void decompress(ByteBuffer readBuffer, IntBuffer buffer) {
+            this.pixelBuffer = buffer;
+            super.decompressBuffer(readBuffer, readBuffer.getInt(), buffer.limit());
         }
-
     }
 
-    private static class ShortArrayRiseCompress extends RiseCompress {
+    public static class ShortRiseCompress extends RiseCompress {
 
-        public ShortArrayRiseCompress(int blockSize) {
+        private ShortBuffer pixelBuffer;
+
+        public ShortRiseCompress(int blockSize) {
             super(FS_BITS_FOR_SHORT, FS_MAX_FOR_SHORT, blockSize, BITS_PER_SHORT);
         }
 
         @Override
-        protected int get(Object array, int index) {
-            return ((short[]) array)[index];
+        protected int get(int index) {
+            return pixelBuffer.get(index);
         }
 
         @Override
-        protected int length(Object array) {
-            return ((short[]) array).length;
+        protected void set(int index, int pixel) {
+            pixelBuffer.put(index, (short) pixel);
         }
 
-        @Override
-        protected void set(Object array, int index, int pixel) {
-            ((short[]) array)[index] = (short) pixel;
+        public void compress(ShortBuffer buffer, ByteBuffer writeBuffer) {
+            this.pixelBuffer = buffer;
+            super.compress(buffer.limit(), new BitBuffer(writeBuffer));
         }
 
-        @Override
-        protected int readOnePixel(ByteBuffer readBuffer) {
-            return readBuffer.getShort();
+        public void decompress(ByteBuffer readBuffer, ShortBuffer buffer) {
+            this.pixelBuffer = buffer;
+            super.decompressBuffer(readBuffer, readBuffer.getShort(), buffer.limit());
         }
     }
 
@@ -421,17 +428,6 @@ public abstract class RiseCompress {
         8
     };
 
-    public static RiseCompress createCompressor(Object data, int blockSize) {
-        if (data instanceof int[]) {
-            return new IntArrayRiseCompress(blockSize);
-        } else if (data instanceof short[]) {
-            return new ShortArrayRiseCompress(blockSize);
-        } else if (data instanceof byte[]) {
-            return new ByteArrayRiseCompress(blockSize);
-        }
-        return null;
-    }
-
     private final int bBits;
 
     private final int bitsPerPixel;
@@ -457,22 +453,19 @@ public abstract class RiseCompress {
     /**
      * compress the integer array on a rise compressed byte buffer.
      * 
-     * @param dataToCompress
-     *            the integer array to compress
-     * @param writeBuffer
+     * @param dataLength
+     *            length of the data to compress
+     * @param buffer
      *            the buffer to write to
      */
-    public void compress(Object dataToCompress, ByteBuffer writeBuffer) {
-        BitBuffer buffer = new BitBuffer(writeBuffer);
-
+    protected void compress(final int dataLength, BitBuffer buffer) {
         /* the first difference will always be zero */
-        int lastpix = get(dataToCompress, 0);
+        int lastpix = get(0);
         /* write out first int value to the first 4 bytes of the buffer */
         buffer.putInt(lastpix, this.bitsPerPixel);
 
         int thisblock = this.blockSize;
 
-        int dataLength = length(dataToCompress);
         for (int i = 0; i < dataLength; i += this.blockSize) {
             /* last block may be shorter */
             if (dataLength - i < this.blockSize) {
@@ -494,7 +487,7 @@ public abstract class RiseCompress {
              * array for differences mapped to non-negative values
              */
             for (int j = 0; j < thisblock; j++) {
-                nextpix = get(dataToCompress, i + j);
+                nextpix = get(i + j);
                 long pdiff = nextpix - lastpix;
                 diff[j] = Math.abs(pdiff < 0 ? ~(pdiff << 1) : pdiff << 1);
                 pixelsum += diff[j];
@@ -588,49 +581,42 @@ public abstract class RiseCompress {
      * 
      * @param readBuffer
      *            input buffer
-     * @param array
-     *            output array
+     * @param firstPixel
+     *            the value of the first pixel
+     * @param nx
+     *            the number of pixel to uncompress
      */
-    public void decompress(ByteBuffer readBuffer, Object array) {
-        /* int bsize; */
-        int i, k, imax;
-        int nbits, nzero, fs;
-        int b;
-        int diff, lastpix;
-
+    protected void decompressBuffer(ByteBuffer readBuffer, int firstPixel, int nx) {
         /* first x bytes of input buffer contain the value of the first */
         /* x byte integer value, without any encoding */
-
-        lastpix = readOnePixel(readBuffer);
-
-        b = readBuffer.get(); /* bit buffer */
-        nbits = BITS_PER_BYTE; /* number of bits remaining in b */
-        int nx = length(array);
-        for (i = 0; i < nx;) {
+        int lastpix = firstPixel;
+        int b = readBuffer.get(); /* bit buffer */
+        int nbits = BITS_PER_BYTE; /* number of bits remaining in b */
+        for (int i = 0; i < nx;) {
             /* get the FS value from first fsbits */
             nbits -= this.fsBits;
             while (nbits < 0) {
                 b = b << BITS_PER_BYTE | readBuffer.get() & BYTE_MASK;
                 nbits += BITS_PER_BYTE;
             }
-            fs = (b >> nbits) - 1;
+            int fs = (b >> nbits) - 1;
 
             b &= (1 << nbits) - 1;
             /* loop over the next block */
-            imax = i + this.blockSize;
+            int imax = i + this.blockSize;
             if (imax > nx) {
                 imax = nx;
             }
             if (fs < 0) {
                 /* low-entropy case, all zero differences */
                 for (; i < imax; i++) {
-                    set(array, i, lastpix);
+                    set(i, lastpix);
                 }
             } else if (fs == this.fsMax) {
                 /* high-entropy case, directly coded pixel values */
                 for (; i < imax; i++) {
-                    k = this.bBits - nbits;
-                    diff = b << k;
+                    int k = this.bBits - nbits;
+                    int diff = b << k;
                     for (k -= BITS_PER_BYTE; k >= 0; k -= BITS_PER_BYTE) {
                         b = readBuffer.get() & BYTE_MASK;
                         diff |= b << k;
@@ -654,7 +640,7 @@ public abstract class RiseCompress {
                         diff = ~(diff >> 1);
                     }
                     lastpix = diff + lastpix;
-                    set(array, i, lastpix);
+                    set(i, lastpix);
                 }
             } else {
                 /* normal case, Rice coding */
@@ -664,7 +650,7 @@ public abstract class RiseCompress {
                         nbits += BITS_PER_BYTE;
                         b = readBuffer.get() & BYTE_MASK;
                     }
-                    nzero = nbits - NONZERO_COUNT[b & BYTE_MASK];
+                    int nzero = nbits - NONZERO_COUNT[b & BYTE_MASK];
                     nbits -= nzero + 1;
                     /* flip the leading one-bit */
                     b ^= 1 << nbits;
@@ -674,7 +660,7 @@ public abstract class RiseCompress {
                         b = b << BITS_PER_BYTE | readBuffer.get() & BYTE_MASK;
                         nbits += BITS_PER_BYTE;
                     }
-                    diff = nzero << fs | b >> nbits;
+                    int diff = nzero << fs | b >> nbits;
                     b &= (1 << nbits) - 1;
 
                     /* undo mapping and differencing */
@@ -684,7 +670,7 @@ public abstract class RiseCompress {
                         diff = ~(diff >> 1);
                     }
                     lastpix = diff + lastpix;
-                    set(array, i, lastpix);
+                    set(i, lastpix);
                 }
             }
             if (readBuffer.limit() < readBuffer.position()) {
@@ -698,11 +684,8 @@ public abstract class RiseCompress {
 
     }
 
-    protected abstract int readOnePixel(ByteBuffer readBuffer);
+    protected abstract int get(int index);
 
-    protected abstract int get(Object array, int index);
+    protected abstract void set(int index, int pixel);
 
-    protected abstract int length(Object array);
-
-    protected abstract void set(Object array, int index, int pixel);
 }

@@ -33,6 +33,12 @@ package nom.tam.image.comp.rise;
 
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
+
+import nom.tam.image.comp.rise.RiseCompress.ByteRiseCompress;
+import nom.tam.image.comp.rise.RiseCompress.IntRiseCompress;
+import nom.tam.image.comp.rise.RiseCompress.ShortRiseCompress;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -54,8 +60,8 @@ public class RiseCompressTest {
             int[] intArray = new int[bytes.length / 4];
             ByteBuffer.wrap(bytes).asIntBuffer().get(intArray);
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
-            RiseCompress compressor = RiseCompress.createCompressor(intArray, 32);
-            compressor.compress(intArray, compressed);
+            IntRiseCompress compressor = new IntRiseCompress(32);
+            compressor.compress(IntBuffer.wrap(intArray), compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
@@ -64,7 +70,7 @@ public class RiseCompressTest {
 
             int[] decompressedArray = new int[intArray.length];
             compressed.position(0);
-            compressor.decompress(compressed, decompressedArray);
+            compressor.decompress(compressed, IntBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(intArray, decompressedArray);
         }
     }
@@ -83,8 +89,8 @@ public class RiseCompressTest {
             short[] shortArray = new short[bytes.length / 2];
             ByteBuffer.wrap(bytes).asShortBuffer().get(shortArray);
             ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
-            RiseCompress compressor = RiseCompress.createCompressor(shortArray, 32);
-            compressor.compress(shortArray, compressed);
+            ShortRiseCompress compressor = new ShortRiseCompress( 32);
+            compressor.compress(ShortBuffer.wrap(shortArray), compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
@@ -93,7 +99,7 @@ public class RiseCompressTest {
 
             short[] decompressedArray = new short[shortArray.length];
             compressed.position(0);
-            compressor.decompress(compressed, decompressedArray);
+            compressor.decompress(compressed, ShortBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(shortArray, decompressedArray);
         }
 
@@ -111,8 +117,8 @@ public class RiseCompressTest {
             expected.read(expectedBytes);
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
-            RiseCompress compressor = RiseCompress.createCompressor(bytes, 32);
-            compressor.compress(bytes, compressed);
+            ByteRiseCompress compressor = new ByteRiseCompress( 32);
+            compressor.compress(ByteBuffer.wrap(bytes), compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
@@ -121,7 +127,7 @@ public class RiseCompressTest {
             
             byte[] decompressedArray = new byte[bytes.length];
             compressed.position(0);
-            compressor.decompress(compressed, decompressedArray);
+            compressor.decompress(compressed, ByteBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(bytes, decompressedArray);
         }
 
