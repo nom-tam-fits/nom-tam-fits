@@ -59,8 +59,8 @@ public abstract class RiseCompress {
 
         private ByteBuffer pixelBuffer;
 
-        public ByteRiseCompress(int blockSize) {
-            super(FS_BITS_FOR_BYTE, FS_MAX_FOR_BYTE, blockSize, BITS_PER_BYTE);
+        public ByteRiseCompress(RiseCompressOption option) {
+            super(FS_BITS_FOR_BYTE, FS_MAX_FOR_BYTE, option, BITS_PER_BYTE);
         }
 
         @Override
@@ -88,8 +88,8 @@ public abstract class RiseCompress {
 
         private IntBuffer pixelBuffer;
 
-        public IntRiseCompress(int blockSize) {
-            super(FS_BITS_FOR_INT, FS_MAX_FOR_INT, blockSize, BITS_PER_INT);
+        public IntRiseCompress(RiseCompressOption option) {
+            super(FS_BITS_FOR_INT, FS_MAX_FOR_INT, option, BITS_PER_INT);
         }
 
         @Override
@@ -117,8 +117,8 @@ public abstract class RiseCompress {
 
         private ShortBuffer pixelBuffer;
 
-        public ShortRiseCompress(int blockSize) {
-            super(FS_BITS_FOR_SHORT, FS_MAX_FOR_SHORT, blockSize, BITS_PER_SHORT);
+        public ShortRiseCompress(RiseCompressOption option) {
+            super(FS_BITS_FOR_SHORT, FS_MAX_FOR_SHORT, option, BITS_PER_SHORT);
         }
 
         @Override
@@ -438,10 +438,10 @@ public abstract class RiseCompress {
 
     private final int fsMax;
 
-    private RiseCompress(int fsBits, int fsMax, int blockSize, int bitsPerPixel) {
+    private RiseCompress(int fsBits, int fsMax, RiseCompressOption option, int bitsPerPixel) {
         this.fsBits = fsBits;
         this.fsMax = fsMax;
-        this.blockSize = blockSize;
+        this.blockSize = option.getBlockSize();
         this.bitsPerPixel = bitsPerPixel;
         /*
          * From bsize derive: FSBITS = # bits required to store FS FSMAX =
