@@ -1,6 +1,7 @@
 package nom.tam.image.comp.hcompress;
 
 import java.nio.ByteBuffer;
+import java.nio.LongBuffer;
 
 import nom.tam.util.ArrayFuncs;
 
@@ -88,45 +89,6 @@ public abstract class HCompress {
             }
             compress(longArray, ny, nx, scale, compressed);
         }
-    }
-
-    private static class LongArrayPointer {
-
-        private long[] a;
-
-        private int offset;
-
-        public LongArrayPointer copy() {
-            LongArrayPointer intAP = new LongArrayPointer();
-            intAP.a = this.a;
-            intAP.offset = this.offset;
-            return intAP;
-        }
-
-        public LongArrayPointer copy(int extraOffset) {
-            LongArrayPointer intAP = new LongArrayPointer();
-            intAP.a = this.a;
-            intAP.offset = this.offset + extraOffset;
-            return intAP;
-        }
-
-        public long get() {
-            return this.a[this.offset];
-        }
-
-        public long get(int i) {
-            return this.a[this.offset + i];
-        }
-
-        public void set(int i, long value) {
-            this.a[this.offset + i] = value;
-
-        }
-
-        public void set(long value) {
-            this.a[this.offset] = value;
-        }
-
     }
 
     private static final int HTRANS_START_MASK = -2;
@@ -281,9 +243,7 @@ public abstract class HCompress {
         /* H-transform */
         htrans(aa, nx, ny);
 
-        LongArrayPointer a = new LongArrayPointer();
-        a.a = aa;
-        a.offset = 0;
+        LongBuffer a = LongBuffer.wrap(aa);
 
         /* digitize */
         digitize(a, 0, nx, ny, scale);
@@ -295,7 +255,7 @@ public abstract class HCompress {
 
     protected abstract void compress(Object aa, int ny, int nx, int scale, ByteBuffer output);
 
-    private void digitize(LongArrayPointer a, int aOffset, int nx, int ny, long scale) {
+    private void digitize(LongBuffer a, int aOffset, int nx, int ny, long scale) {
         /*
          * round to multiple of scale
          */
@@ -303,13 +263,13 @@ public abstract class HCompress {
             return;
         }
         long d = (scale + 1L) / 2L - 1L;
-        for (int index = 0; index < a.a.length; index++) {
+        for (int index = 0; index < a.limit(); index++) {
             long current = a.get(index);
-            a.set(index, (current > 0 ? current + d : current - d) / scale);
+            a.put(index, (current > 0 ? current + d : current - d) / scale);
         }
     }
 
-    private void doencode(ByteBuffer outfile, LongArrayPointer a, int nx, int ny, byte[] nbitplanes) {
+    private void doencode(ByteBuffer outfile, LongBuffer a, int nx, int ny, byte[] nbitplanes) {
         /*
          * char *outfile; output data stream int a[]; Array of values to encode
          * int nx,ny; Array dimensions [nx][ny] unsigned char nbitplanes[3];
@@ -327,19 +287,24 @@ public abstract class HCompress {
         /*
          * write out the bit planes for each quadrant
          */
-        qtreeEncode(outfile, a.copy(), ny, nx2, ny2, nbitplanes[0]);
+        qtreeEncode(outfile, copy(a, 0), ny, nx2, ny2, nbitplanes[0]);
 
-        qtreeEncode(outfile, a.copy(ny2), ny, nx2, ny / 2, nbitplanes[1]);
+        qtreeEncode(outfile, copy(a, ny2), ny, nx2, ny / 2, nbitplanes[1]);
 
-        qtreeEncode(outfile, a.copy(ny * nx2), ny, nx / 2, ny2, nbitplanes[1]);
+        qtreeEncode(outfile, copy(a, ny * nx2), ny, nx / 2, ny2, nbitplanes[1]);
 
-        qtreeEncode(outfile, a.copy(ny * nx2 + ny2), ny, nx / 2, ny / 2, nbitplanes[2]);
+        qtreeEncode(outfile, copy(a, ny * nx2 + ny2), ny, nx / 2, ny / 2, nbitplanes[2]);
         /*
          * Add zero as an EOF symbol
          */
         outputNybble(outfile, 0);
         doneOutputingBits(outfile);
 
+    }
+
+    private LongBuffer copy(LongBuffer a, int i) {
+        a.position(i);
+        return a.slice();
     }
 
     private void doneOutputingBits(ByteBuffer outfile) {
@@ -350,7 +315,7 @@ public abstract class HCompress {
         }
     }
 
-    private int encode(ByteBuffer outfile, LongArrayPointer a, int nx, int ny, int scale) {
+    private int encode(ByteBuffer outfile, LongBuffer a, int nx, int ny, int scale) {
 
         /* FILE *outfile; - change outfile to a char array */
         /*
@@ -379,9 +344,9 @@ public abstract class HCompress {
          * write first value of A (sum of all pixels -- the only value which
          * does not compress well)
          */
-        outfile.putLong(a.get());
+        outfile.putLong(a.get(0));
 
-        a.set(0);
+        a.put(0, 0);
         /*
          * allocate array for sign bits and save values, 8 per byte
          */
@@ -407,7 +372,7 @@ public abstract class HCompress {
                 /*
                  * replace a by absolute value
                  */
-                a.set(i, -a.get(i));
+                a.put(i, -a.get(i));
             }
             if (bitsToGo == 0) {
                 /*
@@ -723,7 +688,7 @@ public abstract class HCompress {
     /**
      * macros to write out 4-bit nybble, Huffman code for this value
      */
-    private int qtreeEncode(ByteBuffer outfile, LongArrayPointer a, int n, int nqx, int nqy, int nbitplanes) {
+    private int qtreeEncode(ByteBuffer outfile, LongBuffer a, int n, int nqx, int nqy, int nbitplanes) {
 
         /*
          * int a[]; int n; physical dimension of row in a int nqx; length of row
@@ -831,7 +796,7 @@ public abstract class HCompress {
         return 0;
     }
 
-    private void qtreeOnebit(LongArrayPointer a, int n, int nx, int ny, byte[] b, int bit) {
+    private void qtreeOnebit(LongBuffer a, int n, int nx, int ny, byte[] b, int bit) {
         int i, j, k;
         long b0, b1, b2, b3;
         int s10, s00;
@@ -989,7 +954,7 @@ public abstract class HCompress {
         this.bitsToGo2 = BITS_OF_1_BYTE; /* with */
     }
 
-    private void writeBdirect(ByteBuffer outfile, LongArrayPointer a, int n, int nqx, int nqy, byte[] scratch, int bit) {
+    private void writeBdirect(ByteBuffer outfile, LongBuffer a, int n, int nqx, int nqy, byte[] scratch, int bit) {
 
         /*
          * Write the direct bitmap warning code
