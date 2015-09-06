@@ -59,12 +59,12 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
             super(BYTE_SIZE_OF_SHORT);
         }
 
-        protected void fillPixelBytes(ShortBuffer pixelData, byte[] pixelBytes) {
+        protected void getPixel(ShortBuffer pixelData, byte[] pixelBytes) {
             ShortBuffer shortBuffer = ByteBuffer.wrap(pixelBytes).asShortBuffer();
             shortBuffer.put(pixelData);
         }
 
-        protected void fillPixelBuffer(ShortBuffer pixelData, byte[] pixelBytes) {
+        protected void setPixel(ShortBuffer pixelData, byte[] pixelBytes) {
             pixelData.put(ByteBuffer.wrap(pixelBytes).asShortBuffer());
         }
     }
@@ -77,12 +77,12 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
             super(BYTE_SIZE_OF_INT);
         }
 
-        protected void fillPixelBytes(IntBuffer pixelData, byte[] pixelBytes) {
+        protected void getPixel(IntBuffer pixelData, byte[] pixelBytes) {
             IntBuffer pixelBuffer = ByteBuffer.wrap(pixelBytes).asIntBuffer();
             pixelBuffer.put(pixelData);
         }
 
-        protected void fillPixelBuffer(IntBuffer pixelData, byte[] pixelBytes) {
+        protected void setPixel(IntBuffer pixelData, byte[] pixelBytes) {
             pixelData.put(ByteBuffer.wrap(pixelBytes).asIntBuffer());
         }
     }
@@ -95,12 +95,12 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
             super(BYTE_SIZE_OF_LONG);
         }
 
-        protected void fillPixelBytes(LongBuffer pixelData, byte[] pixelBytes) {
+        protected void getPixel(LongBuffer pixelData, byte[] pixelBytes) {
             LongBuffer pixelBuffer = ByteBuffer.wrap(pixelBytes).asLongBuffer();
             pixelBuffer.put(pixelData);
         }
 
-        protected void fillPixelBuffer(LongBuffer pixelData, byte[] pixelBytes) {
+        protected void setPixel(LongBuffer pixelData, byte[] pixelBytes) {
             pixelData.put(ByteBuffer.wrap(pixelBytes).asLongBuffer());
         }
     }
@@ -109,7 +109,7 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
     public void compress(T pixelData, ByteBuffer compressed) {
         int pixelDataLimit = pixelData.limit();
         byte[] pixelBytes = new byte[pixelDataLimit * primitivSize];
-        fillPixelBytes(pixelData, pixelBytes);
+        getPixel(pixelData, pixelBytes);
         pixelBytes = shuffle(pixelBytes);
         try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {
             zip.write(pixelBytes, 0, pixelBytes.length);
@@ -135,12 +135,8 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
             throw new IllegalStateException("could not un-gzip data", e);
         }
         pixelBytes = unshuffle(pixelBytes);
-        fillPixelBuffer(pixelData, pixelBytes);
+        setPixel(pixelData, pixelBytes);
     }
-
-    protected abstract void fillPixelBytes(T pixelData, byte[] pixelBytes);
-
-    protected abstract void fillPixelBuffer(T pixelData, byte[] pixelBytes);
 
     public byte[] shuffle(byte[] byteArray) {
         byte[] result = new byte[byteArray.length];

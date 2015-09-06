@@ -58,11 +58,13 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
 
     protected T nioBuffer;
 
-    public static class ByteGZipCompress extends GZipCompress<ByteBuffer> {
+    /**
+     * Byte compress is a special case, the only one that does not extends
+     * GZipCompress because it can write the buffer directly.
+     */
+    public static class ByteGZipCompress implements ITileCompressor<ByteBuffer> {
 
-        public ByteGZipCompress() {
-            super(1);
-        }
+        protected byte[] buffer = new byte[DEFAULT_GZIP_BUFFER_SIZE];
 
         @Override
         public void compress(ByteBuffer pixelData, ByteBuffer compressed) {
@@ -88,6 +90,14 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
                 throw new IllegalStateException("could not un-gzip data", e);
             }
         }
+
+        protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
+            return new GZIPOutputStream(new ByteBufferOutputStream(compressed), Math.min(length * 2, DEFAULT_GZIP_BUFFER_SIZE));
+        }
+
+        protected GZIPInputStream createGZipInputStream(ByteBuffer compressed) throws IOException {
+            return new GZIPInputStream(new ByteBufferInputStream(compressed), Math.min(compressed.limit() * 2, DEFAULT_GZIP_BUFFER_SIZE));
+        }
     }
 
     public static class ShortGZipCompress extends GZipCompress<ShortBuffer> {
@@ -100,12 +110,12 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
         }
 
         @Override
-        protected void getPixel(ShortBuffer pixelData) {
+        protected void getPixel(ShortBuffer pixelData, byte[] pixelBytes) {
             nioBuffer.put(pixelData);
         }
 
         @Override
-        protected void setPixel(ShortBuffer pixelData) {
+        protected void setPixel(ShortBuffer pixelData, byte[] pixelBytes) {
             pixelData.put(nioBuffer);
         }
     }
@@ -120,12 +130,12 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
         }
 
         @Override
-        protected void getPixel(IntBuffer pixelData) {
+        protected void getPixel(IntBuffer pixelData, byte[] pixelBytes) {
             nioBuffer.put(pixelData);
         }
 
         @Override
-        protected void setPixel(IntBuffer pixelData) {
+        protected void setPixel(IntBuffer pixelData, byte[] pixelBytes) {
             pixelData.put(nioBuffer);
         }
     }
@@ -140,12 +150,12 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
         }
 
         @Override
-        protected void getPixel(LongBuffer pixelData) {
+        protected void getPixel(LongBuffer pixelData, byte[] pixelBytes) {
             nioBuffer.put(pixelData);
         }
 
         @Override
-        protected void setPixel(LongBuffer pixelData) {
+        protected void setPixel(LongBuffer pixelData, byte[] pixelBytes) {
             pixelData.put(nioBuffer);
         }
     }
@@ -158,7 +168,7 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
             while (pixelData.hasRemaining()) {
                 int count = Math.min(pixelData.remaining(), nioBuffer.capacity());
                 pixelData.limit(pixelData.position() + count);
-                getPixel(pixelData);
+                getPixel(pixelData, null);
                 zip.write(buffer, 0, nioBuffer.position() * primitivSize);
                 nioBuffer.rewind();
                 pixelData.limit(pixelDataLimit);
@@ -176,18 +186,16 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
             while ((count = zip.read(buffer)) >= 0) {
                 nioBuffer.position(0);
                 nioBuffer.limit(count / primitivSize);
-                setPixel(pixelData);
+                setPixel(pixelData, null);
             }
         } catch (IOException e) {
             throw new IllegalStateException("could not un-gzip data", e);
         }
     }
 
-    protected void getPixel(T pixelData) {
-    }
+    protected abstract void getPixel(T pixelData, byte[] pixelBytes);
 
-    protected void setPixel(T pixelData) {
-    }
+    protected abstract void setPixel(T pixelData, byte[] pixelBytes);
 
     protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
         return new GZIPOutputStream(new ByteBufferOutputStream(compressed), Math.min(length * 2, DEFAULT_GZIP_BUFFER_SIZE));

@@ -42,19 +42,50 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.util.zip.GZIPOutputStream;
 
+import nom.tam.image.comp.gzip2.GZip2Compress.ByteGZip2Compress;
+import nom.tam.image.comp.gzip2.GZip2Compress.IntGZip2Compress;
+import nom.tam.image.comp.gzip2.GZip2Compress.LongGZip2Compress;
+import nom.tam.image.comp.gzip2.GZip2Compress.ShortGZip2Compress;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ByteBufferInputStream;
 import nom.tam.util.ByteBufferOutputStream;
-import nom.tam.image.comp.gzip2.GZip2Compress;
-import nom.tam.image.comp.gzip2.GZip2Compress.ByteGZip2Compress;
-import nom.tam.image.comp.gzip2.GZip2Compress.ShortGZip2Compress;
-import nom.tam.image.comp.gzip2.GZip2Compress.IntGZip2Compress;
-import nom.tam.image.comp.gzip2.GZip2Compress.LongGZip2Compress;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 public class GZip2CompressTest {
+
+    @Test(expected = IllegalStateException.class)
+    public void testByteCompressIOException() throws Exception {
+        new ByteGZip2Compress() {
+
+            @Override
+            protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
+                return new GZIPOutputStream(new ByteBufferOutputStream(compressed), 100) {
+
+                    public synchronized void write(byte[] buf, int off, int len) throws IOException {
+                        throw new IOException("something wrong");
+                    }
+                };
+            }
+        }.compress(ByteBuffer.wrap(new byte[10]), ByteBuffer.wrap(new byte[100]));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testShortCompressIOException() throws Exception {
+        new ShortGZip2Compress() {
+
+            @Override
+            protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
+                return new GZIPOutputStream(new ByteBufferOutputStream(compressed), 100) {
+
+                    public synchronized void write(byte[] buf, int off, int len) throws IOException {
+                        throw new IOException("something wrong");
+                    }
+                };
+            }
+        }.compress(ByteBuffer.wrap(new byte[10]).asShortBuffer(), ByteBuffer.wrap(new byte[100]));
+    }
 
     @Test(expected = NullPointerException.class)
     public void testByteNullVariantCompress() throws Exception {
@@ -286,9 +317,9 @@ public class GZip2CompressTest {
             new LongGZip2Compress().compress(byteArray, compressed);
 
             compressed.rewind();
-            
+
             LongBuffer decompressedArray = LongBuffer.wrap(new long[longArray.length]);
-            
+
             new LongGZip2Compress().decompress(compressed, decompressedArray);
             Assert.assertArrayEquals(longArray, decompressedArray.array());
         }

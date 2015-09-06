@@ -70,6 +70,38 @@ public class GZipCompressTest {
         }.compress(ByteBuffer.wrap(new byte[10]), ByteBuffer.wrap(new byte[100]));
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testByteCompressIOException() throws Exception {
+        new ByteGZipCompress() {
+
+            @Override
+            protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
+                return new GZIPOutputStream(new ByteBufferOutputStream(compressed), 100) {
+
+                    public synchronized void write(byte[] buf, int off, int len) throws IOException {
+                        throw new IOException("something wrong");
+                    }
+                };
+            }
+        }.compress(ByteBuffer.wrap(new byte[10]), ByteBuffer.wrap(new byte[100]));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testShortCompressIOException() throws Exception {
+        new ShortGZipCompress() {
+
+            @Override
+            protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
+                return new GZIPOutputStream(new ByteBufferOutputStream(compressed), 100) {
+
+                    public synchronized void write(byte[] buf, int off, int len) throws IOException {
+                        throw new IOException("something wrong");
+                    }
+                };
+            }
+        }.compress(ByteBuffer.wrap(new byte[10]).asShortBuffer(), ByteBuffer.wrap(new byte[100]));
+    }
+
     @Test(expected = NullPointerException.class)
     public void testByteNullVariantDecompress() throws Exception {
         new ByteGZipCompress() {
