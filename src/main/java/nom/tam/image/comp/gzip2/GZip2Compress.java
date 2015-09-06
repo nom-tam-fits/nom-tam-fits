@@ -32,28 +32,117 @@ package nom.tam.image.comp.gzip2;
  */
 
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import nom.tam.image.comp.gzip.GZipCompress;
 
-public class GZip2Compress extends GZipCompress {
+public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
 
-    private final int primitivSize;
+    public GZip2Compress(int primitivSize) {
+        super(primitivSize);
+    }
 
-    public GZip2Compress(int elementSize) {
-        super();
-        this.primitivSize = elementSize;
+    public static class ByteGZip2Compress extends ByteGZipCompress {
+    }
+
+    public static class ShortGZip2Compress extends GZip2Compress<ShortBuffer> {
+
+        protected static final int BYTE_SIZE_OF_SHORT = 2;
+
+        public ShortGZip2Compress() {
+            super(BYTE_SIZE_OF_SHORT);
+        }
+
+        protected void fillPixelBytes(ShortBuffer pixelData, byte[] pixelBytes) {
+            ShortBuffer shortBuffer = ByteBuffer.wrap(pixelBytes).asShortBuffer();
+            shortBuffer.put(pixelData);
+        }
+
+        protected void fillPixelBuffer(ShortBuffer pixelData, byte[] pixelBytes) {
+            pixelData.put(ByteBuffer.wrap(pixelBytes).asShortBuffer());
+        }
+    }
+
+    public static class IntGZip2Compress extends GZip2Compress<IntBuffer> {
+
+        protected static final int BYTE_SIZE_OF_INT = 4;
+
+        public IntGZip2Compress() {
+            super(BYTE_SIZE_OF_INT);
+        }
+
+        protected void fillPixelBytes(IntBuffer pixelData, byte[] pixelBytes) {
+            IntBuffer pixelBuffer = ByteBuffer.wrap(pixelBytes).asIntBuffer();
+            pixelBuffer.put(pixelData);
+        }
+
+        protected void fillPixelBuffer(IntBuffer pixelData, byte[] pixelBytes) {
+            pixelData.put(ByteBuffer.wrap(pixelBytes).asIntBuffer());
+        }
+    }
+
+    public static class LongGZip2Compress extends GZip2Compress<LongBuffer> {
+
+        protected static final int BYTE_SIZE_OF_LONG = 8;
+
+        public LongGZip2Compress() {
+            super(BYTE_SIZE_OF_LONG);
+        }
+
+        protected void fillPixelBytes(LongBuffer pixelData, byte[] pixelBytes) {
+            LongBuffer pixelBuffer = ByteBuffer.wrap(pixelBytes).asLongBuffer();
+            pixelBuffer.put(pixelData);
+        }
+
+        protected void fillPixelBuffer(LongBuffer pixelData, byte[] pixelBytes) {
+            pixelData.put(ByteBuffer.wrap(pixelBytes).asLongBuffer());
+        }
     }
 
     @Override
-    public void compress(byte[] byteArray, ByteBuffer compressed) throws IOException {
-        super.compress(shuffle(byteArray), compressed);
+    public void compress(T pixelData, ByteBuffer compressed) {
+        int pixelDataLimit = pixelData.limit();
+        byte[] pixelBytes = new byte[pixelDataLimit * primitivSize];
+        fillPixelBytes(pixelData, pixelBytes);
+        pixelBytes = shuffle(pixelBytes);
+        try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {
+            zip.write(pixelBytes, 0, pixelBytes.length);
+        } catch (IOException e) {
+            throw new IllegalStateException("could not gzip data", e);
+        }
     }
 
-    public byte[] shuffle(byte[] byteArray) {
-        if (primitivSize == 1) {
-            return byteArray;
+    @Override
+    public void decompress(ByteBuffer compressed, T pixelData) {
+        int pixelDataLimit = pixelData.limit();
+        byte[] pixelBytes = new byte[pixelDataLimit * primitivSize];
+        try (GZIPInputStream zip = createGZipInputStream(compressed)) {
+            int count = 0;
+            int offset = 0;
+            while (offset < pixelBytes.length && count >= 0) {
+                count = zip.read(pixelBytes, offset, pixelBytes.length - offset);
+                if (count >= 0) {
+                    offset = offset + count;
+                }
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("could not un-gzip data", e);
         }
+        pixelBytes = unshuffle(pixelBytes);
+        fillPixelBuffer(pixelData, pixelBytes);
+    }
+
+    protected abstract void fillPixelBytes(T pixelData, byte[] pixelBytes);
+
+    protected abstract void fillPixelBuffer(T pixelData, byte[] pixelBytes);
+
+    public byte[] shuffle(byte[] byteArray) {
         byte[] result = new byte[byteArray.length];
         int resultIndex = 0;
         int[] offset = calculateOffsets(byteArray);
@@ -75,18 +164,7 @@ public class GZip2Compress extends GZipCompress {
         return offset;
     }
 
-    @Override
-    public void decompress(ByteBuffer buffer, byte[] decompressedArray) throws IOException {
-        super.decompress(buffer, decompressedArray);
-        byte[] result = unshuffle(decompressedArray);
-        System.arraycopy(result, 0, decompressedArray, 0, decompressedArray.length);
-
-    }
-
     public byte[] unshuffle(byte[] byteArray) {
-        if (primitivSize == 1) {
-            return byteArray;
-        }
         byte[] result = new byte[byteArray.length];
         int resultIndex = 0;
         int[] offset = calculateOffsets(byteArray);

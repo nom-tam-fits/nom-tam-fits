@@ -37,8 +37,16 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
 import java.util.zip.GZIPOutputStream;
 
+import nom.tam.image.comp.gzip.GZipCompress.ByteGZipCompress;
+import nom.tam.image.comp.gzip.GZipCompress.IntGZipCompress;
+import nom.tam.image.comp.gzip.GZipCompress.LongGZipCompress;
+import nom.tam.image.comp.gzip.GZipCompress.ShortGZipCompress;
+import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ByteBufferInputStream;
 import nom.tam.util.ByteBufferOutputStream;
 
@@ -48,33 +56,87 @@ import org.junit.Test;
 public class GZipCompressTest {
 
     @Test(expected = NullPointerException.class)
-    public void testNullVariantCompress() throws Exception {
-        new GZipCompress() {
+    public void testByteNullVariantCompress() throws Exception {
+        new ByteGZipCompress() {
 
             protected java.util.zip.GZIPInputStream createGZipInputStream(ByteBuffer buffer) throws java.io.IOException {
                 return null;
             };
 
             @Override
-            protected GZIPOutputStream createGZipOutputStream(byte[] byteArray, ByteBuffer compressed) throws IOException {
+            protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
                 return null;
             }
-        }.compress(new byte[10], ByteBuffer.wrap(new byte[100]));
+        }.compress(ByteBuffer.wrap(new byte[10]), ByteBuffer.wrap(new byte[100]));
     }
 
     @Test(expected = NullPointerException.class)
-    public void testNullVariantDecompress() throws Exception {
-        new GZipCompress() {
+    public void testByteNullVariantDecompress() throws Exception {
+        new ByteGZipCompress() {
 
             protected java.util.zip.GZIPInputStream createGZipInputStream(ByteBuffer buffer) throws java.io.IOException {
                 return null;
             };
 
             @Override
-            protected GZIPOutputStream createGZipOutputStream(byte[] byteArray, ByteBuffer compressed) throws IOException {
+            protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
                 return null;
             }
-        }.decompress(ByteBuffer.wrap(new byte[10]), new byte[100]);
+        }.decompress(ByteBuffer.wrap(new byte[10]), ByteBuffer.wrap(new byte[100]));
+    }
+
+    @Test(expected = BufferOverflowException.class)
+    public void testByteGzipCompressFailures1() throws Exception {
+        byte[] byteArray = new byte[100];
+        new ByteGZipCompress().compress(ByteBuffer.wrap(byteArray), ByteBuffer.wrap(new byte[0]));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testByteGzipCompressFailures2() throws Exception {
+        byte[] byteArray = new byte[100];
+        new ByteGZipCompress().decompress(ByteBuffer.wrap(new byte[1]), ByteBuffer.wrap(byteArray));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testShortNullVariantCompress() throws Exception {
+        new ShortGZipCompress() {
+
+            protected java.util.zip.GZIPInputStream createGZipInputStream(ByteBuffer buffer) throws java.io.IOException {
+                return null;
+            };
+
+            @Override
+            protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
+                return null;
+            }
+        }.compress(ByteBuffer.wrap(new byte[16]).asShortBuffer(), ByteBuffer.wrap(new byte[100]));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testShortNullVariantDecompress() throws Exception {
+        new ShortGZipCompress() {
+
+            protected java.util.zip.GZIPInputStream createGZipInputStream(ByteBuffer buffer) throws java.io.IOException {
+                return null;
+            };
+
+            @Override
+            protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
+                return null;
+            }
+        }.decompress(ByteBuffer.wrap(new byte[16]), ByteBuffer.wrap(new byte[100]).asShortBuffer());
+    }
+
+    @Test(expected = BufferOverflowException.class)
+    public void testShortGzipCompressFailures1() throws Exception {
+        byte[] byteArray = new byte[100];
+        new ShortGZipCompress().compress(ByteBuffer.wrap(byteArray).asShortBuffer(), ByteBuffer.wrap(new byte[0]));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testShortGzipCompressFailures2() throws Exception {
+        byte[] byteArray = new byte[100];
+        new ShortGZipCompress().decompress(ByteBuffer.wrap(new byte[1]), ByteBuffer.wrap(byteArray).asShortBuffer());
     }
 
     @Test
@@ -106,18 +168,6 @@ public class GZipCompressTest {
         }
     }
 
-    @Test(expected = BufferOverflowException.class)
-    public void testGzipCompressFailures1() throws Exception {
-        byte[] byteArray = new byte[100];
-        new GZipCompress().compress(byteArray, ByteBuffer.wrap(new byte[0]));
-    }
-
-    @Test(expected = IOException.class)
-    public void testGzipCompressFailures2() throws Exception {
-        byte[] byteArray = new byte[100];
-        new GZipCompress().decompress(ByteBuffer.wrap(new byte[1]), byteArray);
-    }
-
     @Test
     public void testGzipCompressByte() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
@@ -128,24 +178,26 @@ public class GZipCompressTest {
             byte[] expectedBytes = new byte[(int) expected.length()];
             expected.read(expectedBytes);
 
-            byte[] byteArray = new byte[bytes.length];
-            ByteBuffer.wrap(bytes).get(byteArray);
+            ByteBuffer byteArray = ByteBuffer.wrap(bytes);
 
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[byteArray.length]);
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
 
-            new GZipCompress().compress(byteArray, compressed);
+            new ByteGZipCompress().compress(byteArray, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             // Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            byte[] decompressedArray = new byte[byteArray.length];
-            new GZipCompress().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
-            Assert.assertArrayEquals(byteArray, decompressedArray);
+            byte[] decompressedBytes = new byte[bytes.length];
+            ByteBuffer decompressedArray = ByteBuffer.wrap(decompressedBytes);
+            new ByteGZipCompress().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
+            Assert.assertArrayEquals(bytes, decompressedBytes);
 
-            new GZipCompress().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
-            Assert.assertArrayEquals(byteArray, decompressedArray);
+            compressed.rewind();
+            decompressedArray.rewind();
+            new ByteGZipCompress().decompress(compressed, decompressedArray);
+            Assert.assertArrayEquals(bytes, decompressedBytes);
         }
     }
 
@@ -159,24 +211,26 @@ public class GZipCompressTest {
             byte[] expectedBytes = new byte[(int) expected.length()];
             expected.read(expectedBytes);
 
-            byte[] byteArray = new byte[bytes.length];
-            ByteBuffer.wrap(bytes).get(byteArray);
+            ShortBuffer byteArray = ByteBuffer.wrap(bytes).asShortBuffer();
 
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[byteArray.length]);
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
 
-            new GZipCompress().compress(byteArray, compressed);
+            new ShortGZipCompress().compress(byteArray, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             // Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            byte[] decompressedArray = new byte[byteArray.length];
-            new GZipCompress().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
-            Assert.assertArrayEquals(byteArray, decompressedArray);
+            byte[] decompressedBytes = new byte[bytes.length];
+            ShortBuffer decompressedArray = ByteBuffer.wrap(decompressedBytes).asShortBuffer();
+            new ShortGZipCompress().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
+            Assert.assertArrayEquals(bytes, decompressedBytes);
 
-            new GZipCompress().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
-            Assert.assertArrayEquals(byteArray, decompressedArray);
+            compressed.rewind();
+            decompressedArray.rewind();
+            new ShortGZipCompress().decompress(compressed, decompressedArray);
+            Assert.assertArrayEquals(bytes, decompressedBytes);
         }
     }
 
@@ -190,24 +244,52 @@ public class GZipCompressTest {
             byte[] expectedBytes = new byte[(int) expected.length()];
             expected.read(expectedBytes);
 
-            byte[] byteArray = new byte[bytes.length];
-            ByteBuffer.wrap(bytes).get(byteArray);
+            IntBuffer byteArray = ByteBuffer.wrap(bytes).asIntBuffer();
 
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[byteArray.length]);
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
 
-            new GZipCompress().compress(byteArray, compressed);
+            new IntGZipCompress().compress(byteArray, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             // Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            byte[] decompressedArray = new byte[byteArray.length];
-            new GZipCompress().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
-            Assert.assertArrayEquals(byteArray, decompressedArray);
+            byte[] decompressedBytes = new byte[bytes.length];
+            IntBuffer decompressedArray = ByteBuffer.wrap(decompressedBytes).asIntBuffer();
+            new IntGZipCompress().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
+            Assert.assertArrayEquals(bytes, decompressedBytes);
 
-            new GZipCompress().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
-            Assert.assertArrayEquals(byteArray, decompressedArray);
+            compressed.rewind();
+            decompressedArray.rewind();
+            new IntGZipCompress().decompress(compressed, decompressedArray);
+            Assert.assertArrayEquals(bytes, decompressedBytes);
+        }
+    }
+
+    @Test
+    public void testGzipCompressLong() throws Exception {
+        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r")) {
+            byte[] bytes = new byte[(int) file.length()];
+            file.read(bytes);
+            IntBuffer intArray = ByteBuffer.wrap(bytes).asIntBuffer();
+            long[] longArray = new long[bytes.length / 4];
+            int[] tempInts = new int[longArray.length];
+            intArray.get(tempInts);
+            ArrayFuncs.copyInto(tempInts, longArray);
+
+            LongBuffer byteArray = LongBuffer.wrap(longArray);
+
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
+
+            new LongGZipCompress().compress(byteArray, compressed);
+
+            compressed.rewind();
+
+            LongBuffer decompressedArray = LongBuffer.wrap(new long[longArray.length]);
+
+            new LongGZipCompress().decompress(compressed, decompressedArray);
+            Assert.assertArrayEquals(longArray, decompressedArray.array());
         }
     }
 }
