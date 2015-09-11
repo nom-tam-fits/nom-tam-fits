@@ -205,7 +205,6 @@ public class HDecompress {
      * @param a
      */
     private void decode64(ByteBuffer infile, LongArrayPointer a) {
-        long sumall;
         byte[] nbitplanes = new byte[N03];
         byte[] tmagic = new byte[2];
 
@@ -225,7 +224,7 @@ public class HDecompress {
         this.scale = infile.getInt(); /* scale factor for digitization */
 
         /* sum of all pixels */
-        sumall = infile.getLong();
+        long sumall = infile.getLong();
         /* # bits in quadrants */
 
         infile.get(nbitplanes);
@@ -278,16 +277,13 @@ public class HDecompress {
      * nbitplanes[3]; Number of bit planes in quadrants
      */
     private int dodecode64(ByteBuffer infile, LongArrayPointer a, byte[] nbitplanes) {
-        int i, nel, nx2, ny2;
-
-        nel = this.nx * this.ny;
-        nx2 = (this.nx + 1) / 2;
-        ny2 = (this.ny + 1) / 2;
-
+        int nel = this.nx * this.ny;
+        int nx2 = (this.nx + 1) / 2;
+        int ny2 = (this.ny + 1) / 2;
         /*
          * initialize a to zero
          */
-        for (i = 0; i < nel; i++) {
+        for (int i = 0; i < nel; i++) {
             a.set(i, 0);
         }
         /*
@@ -315,7 +311,7 @@ public class HDecompress {
          * now get the sign bits Re-initialize bit input
          */
         startInputingBits();
-        for (i = 0; i < nel; i++) {
+        for (int i = 0; i < nel; i++) {
             if (a.get(i) != 0) {
                 if (inputBit(infile) != 0) {
                     a.set(i, -a.get(i));
@@ -330,8 +326,6 @@ public class HDecompress {
      * used if smoothing is specified
      */
     private int hinv64(LongArrayPointer a, boolean smooth) {
-        int i, j, k, oddx, oddy, s10, s00;
-        long lowbit0, lowbit1, h0, hx, hy, hc;
         int nmax = this.nx > this.ny ? this.nx : this.ny;
         int log2n = calculateLog2N(nmax);
         // get temporary storage for shuffling elements
@@ -359,7 +353,8 @@ public class HDecompress {
         int nxf = this.nx;
         int nyf = this.ny;
         int c = 1 << log2n;
-        for (k = log2n - 1; k >= 0; k--) {
+        int i;
+        for (int k = log2n - 1; k >= 0; k--) {
             // this somewhat cryptic code generates the sequence ntop[k-1] =
             // (ntop[k]+1)/2, where ntop[log2n] = n
             c = c >> 1;
@@ -384,36 +379,36 @@ public class HDecompress {
             for (i = 0; i < nxtop; i++) {
                 unshuffle64(a.copy(this.ny * i), nytop, 1, tmp);
             }
-            for (j = 0; j < nytop; j++) {
+            for (int j = 0; j < nytop; j++) {
                 unshuffle64(a.copy(j), nxtop, this.ny, tmp);
             }
             // smooth by interpolating coefficients if SMOOTH != 0
             if (smooth) {
                 hsmooth64(a, nxtop, nytop);
             }
-            oddx = nxtop % 2;
-            oddy = nytop % 2;
+            int oddx = nxtop % 2;
+            int oddy = nytop % 2;
             for (i = 0; i < nxtop - oddx; i += 2) {
-                s00 = this.ny * i; /* s00 is index of a[i,j] */
-                s10 = s00 + this.ny; /* s10 is index of a[i+1,j] */
-                for (j = 0; j < nytop - oddy; j += 2) {
-                    h0 = a.get(s00);
-                    hx = a.get(s10);
-                    hy = a.get(s00 + 1);
-                    hc = a.get(s10 + 1);
+                int s00 = this.ny * i; /* s00 is index of a[i,j] */
+                int s10 = s00 + this.ny; /* s10 is index of a[i+1,j] */
+                for (int j = 0; j < nytop - oddy; j += 2) {
+                    long h0 = a.get(s00);
+                    long hx = a.get(s10);
+                    long hy = a.get(s00 + 1);
+                    long hc = a.get(s10 + 1);
                     // round hx and hy to multiple of bit1, hc to multiple of
                     // bit0 h0 is already a multiple of bit2
                     hx = hx + (hx >= 0 ? prnd1 : nrnd1) & mask1;
                     hy = hy + (hy >= 0 ? prnd1 : nrnd1) & mask1;
                     hc = hc + (hc >= 0 ? prnd0 : nrnd0) & mask0;
                     // propagate bit0 of hc to hx,hy
-                    lowbit0 = hc & bit0;
+                    long lowbit0 = hc & bit0;
                     hx = hx >= 0 ? hx - lowbit0 : hx + lowbit0;
                     hy = hy >= 0 ? hy - lowbit0 : hy + lowbit0;
                     // Propagate bits 0 and 1 of hc,hx,hy to h0. This could be
                     // simplified if we assume h0>0, but then the inversion
                     // would not be lossless for images with negative pixels.
-                    lowbit1 = (hc ^ hx ^ hy) & bit1;
+                    long lowbit1 = (hc ^ hx ^ hy) & bit1;
                     h0 = h0 >= 0 ? h0 + lowbit0 - lowbit1 : h0 + (lowbit0 == 0 ? lowbit1 : lowbit0 - lowbit1);
                     // Divide sums by 2 (4 last time)
                     a.set(s10 + 1, h0 + hx + hy + hc >> shift);
@@ -426,10 +421,10 @@ public class HDecompress {
                 if (oddy != 0) {
                     // do last element in row if row length is odd s00+1, s10+1
                     // are off edge
-                    h0 = a.get(s00);
-                    hx = a.get(s10);
+                    long h0 = a.get(s00);
+                    long hx = a.get(s10);
                     hx = (hx >= 0 ? hx + prnd1 : hx + nrnd1) & mask1;
-                    lowbit1 = hx & bit1;
+                    long lowbit1 = hx & bit1;
                     h0 = h0 >= 0 ? h0 - lowbit1 : h0 + lowbit1;
                     a.set(s10, h0 + hx >> shift);
                     a.set(s00, h0 - hx >> shift);
@@ -437,12 +432,12 @@ public class HDecompress {
             }
             if (oddx != 0) {
                 // do last row if column length is odd s10, s10+1 are off edge
-                s00 = this.ny * i;
-                for (j = 0; j < nytop - oddy; j += 2) {
-                    h0 = a.get(s00);
-                    hy = a.get(s00 + 1);
+                int s00 = this.ny * i;
+                for (int j = 0; j < nytop - oddy; j += 2) {
+                    long h0 = a.get(s00);
+                    long hy = a.get(s00 + 1);
                     hy = (hy >= 0 ? hy + prnd1 : hy + nrnd1) & mask1;
-                    lowbit1 = hy & bit1;
+                    long lowbit1 = hy & bit1;
                     h0 = h0 >= 0 ? h0 - lowbit1 : h0 + lowbit1;
                     a.set(s00 + 1, h0 + hy >> shift);
                     a.set(s00, h0 - hy >> shift);
@@ -451,7 +446,7 @@ public class HDecompress {
                 if (oddy != 0) {
                     // do corner element if both row and column lengths are odd
                     // s00+1, s10, s10+1 are off edge
-                    h0 = a.get(s00);
+                    long h0 = a.get(s00);
                     a.set(s00, h0 >> shift);
                 }
             }
@@ -484,11 +479,11 @@ public class HDecompress {
          * we rounded during division (see digitize.c), the biggest permitted
          * change is scale/2.
          */
-        smax = scale >> 1;
+        smax = this.scale >> 1;
         if (smax <= 0) {
             return;
         }
-        ny2 = ny << 1;
+        ny2 = this.ny << 1;
         /*
          * We're indexing a as a 2-D array with dimensions (nxtop,ny) of which
          * only (nxtop,nytop) are used. The coefficients on the edge of the
@@ -499,8 +494,8 @@ public class HDecompress {
          * Adjust x difference hx
          */
         for (i = 2; i < nxtop - 2; i += 2) {
-            s00 = ny * i; /* s00 is index of a[i,j] */
-            s10 = s00 + ny; /* s10 is index of a[i+1,j] */
+            s00 = this.ny * i; /* s00 is index of a[i,j] */
+            s10 = s00 + this.ny; /* s10 is index of a[i+1,j] */
             for (j = 0; j < nytop; j += 2) {
                 /*
                  * hp is h0 (mean value) in next x zone, hm is h0 in previous x
@@ -542,8 +537,8 @@ public class HDecompress {
          * Adjust y difference hy
          */
         for (i = 0; i < nxtop; i += 2) {
-            s00 = ny * i + 2;
-            s10 = s00 + ny;
+            s00 = this.ny * i + 2;
+            s10 = s00 + this.ny;
             for (j = 2; j < nytop - 2; j += 2) {
                 hm = a.get(s00 - 2);
                 h0 = a.get(s00);
@@ -566,8 +561,8 @@ public class HDecompress {
          * Adjust curvature difference hc
          */
         for (i = 2; i < nxtop - 2; i += 2) {
-            s00 = ny * i + 2;
-            s10 = s00 + ny;
+            s00 = this.ny * i + 2;
+            s10 = s00 + this.ny;
             for (j = 2; j < nytop - 2; j += 2) {
                 /*
                  * ------------------ y | hmp | | hpp | | ------------------ | |

@@ -3,8 +3,6 @@ package nom.tam.image.comp.hcompress;
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 
-import nom.tam.util.ArrayFuncs;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -52,44 +50,7 @@ import nom.tam.util.ArrayFuncs;
  * @author William Pence
  * @author Richard van Nieuwenhoven
  */
-public abstract class HCompress {
-
-    private static class IntHCompress extends HCompress {
-
-        @Override
-        protected void compress(Object array, int ny, int nx, int scale, ByteBuffer compressed) {
-            int[] intArray = (int[]) array;
-            long[] longArray = new long[intArray.length];
-            ArrayFuncs.copyInto(intArray, longArray);
-            compress(longArray, ny, nx, scale, compressed);
-        }
-    }
-
-    private static class ShortHCompress extends HCompress {
-
-        @Override
-        protected void compress(Object array, int ny, int nx, int scale, ByteBuffer compressed) {
-            short[] shortArray = (short[]) array;
-            long[] longArray = new long[shortArray.length];
-            ArrayFuncs.copyInto(shortArray, longArray);
-            compress(longArray, ny, nx, scale, compressed);
-        }
-    }
-
-    private static class ByteHCompress extends HCompress {
-
-        private static final long BYTE_MASK_FOR_LONG = 0xFFL;
-
-        @Override
-        protected void compress(Object array, int ny, int nx, int scale, ByteBuffer compressed) {
-            byte[] byteArray = (byte[]) array;
-            long[] longArray = new long[byteArray.length];
-            for (int index = 0; index < longArray.length; index++) {
-                longArray[index] = byteArray[index] & BYTE_MASK_FOR_LONG;
-            }
-            compress(longArray, ny, nx, scale, compressed);
-        }
-    }
+public class HCompress {
 
     private static final int HTRANS_START_MASK = -2;
 
@@ -166,22 +127,6 @@ public abstract class HCompress {
         4
     };
 
-    /*
-     * htrans.c H-transform of NX x NY integer image Programmer: R. White Date:
-     * 11 May 1992
-     */
-
-    public static HCompress createCompressor(Object data) {
-        if (data instanceof int[]) {
-            return new IntHCompress();
-        } else if (data instanceof short[]) {
-            return new ShortHCompress();
-        } else if (data instanceof byte[]) {
-            return new ByteHCompress();
-        }
-        return null;
-    }
-
     /**
      * variables for bit output to buffer when Huffman coding
      */
@@ -253,7 +198,10 @@ public abstract class HCompress {
 
     }
 
-    protected abstract void compress(Object aa, int ny, int nx, int scale, ByteBuffer output);
+    private LongBuffer copy(LongBuffer a, int i) {
+        a.position(i);
+        return a.slice();
+    }
 
     private void digitize(LongBuffer a, int aOffset, int nx, int ny, long scale) {
         /*
@@ -269,17 +217,24 @@ public abstract class HCompress {
         }
     }
 
-    private void doencode(ByteBuffer outfile, LongBuffer a, int nx, int ny, byte[] nbitplanes) {
-        /*
-         * char *outfile; output data stream int a[]; Array of values to encode
-         * int nx,ny; Array dimensions [nx][ny] unsigned char nbitplanes[3];
-         * Number of bit planes in quadrants
-         */
+    /**
+     * encode pixels.
+     * 
+     * @param compressedBytes
+     *            compressed data
+     * @param pixels
+     *            pixels to compress
+     * @param nx
+     *            image width dimention
+     * @param ny
+     *            image heigth dimention
+     * @param nbitplanes
+     *            Number of bit planes in quadrants
+     */
+    private void doencode(ByteBuffer compressedBytes, LongBuffer pixels, int nx, int ny, byte[] nbitplanes) {
 
-        int nx2, ny2;
-
-        nx2 = (nx + 1) / 2;
-        ny2 = (ny + 1) / 2;
+        int nx2 = (nx + 1) / 2;
+        int ny2 = (ny + 1) / 2;
         /*
          * Initialize bit output
          */
@@ -287,24 +242,19 @@ public abstract class HCompress {
         /*
          * write out the bit planes for each quadrant
          */
-        qtreeEncode(outfile, copy(a, 0), ny, nx2, ny2, nbitplanes[0]);
+        qtreeEncode(compressedBytes, copy(pixels, 0), ny, nx2, ny2, nbitplanes[0]);
 
-        qtreeEncode(outfile, copy(a, ny2), ny, nx2, ny / 2, nbitplanes[1]);
+        qtreeEncode(compressedBytes, copy(pixels, ny2), ny, nx2, ny / 2, nbitplanes[1]);
 
-        qtreeEncode(outfile, copy(a, ny * nx2), ny, nx / 2, ny2, nbitplanes[1]);
+        qtreeEncode(compressedBytes, copy(pixels, ny * nx2), ny, nx / 2, ny2, nbitplanes[1]);
 
-        qtreeEncode(outfile, copy(a, ny * nx2 + ny2), ny, nx / 2, ny / 2, nbitplanes[2]);
+        qtreeEncode(compressedBytes, copy(pixels, ny * nx2 + ny2), ny, nx / 2, ny / 2, nbitplanes[2]);
         /*
          * Add zero as an EOF symbol
          */
-        outputNybble(outfile, 0);
-        doneOutputingBits(outfile);
+        outputNybble(compressedBytes, 0);
+        doneOutputingBits(compressedBytes);
 
-    }
-
-    private LongBuffer copy(LongBuffer a, int i) {
-        a.position(i);
-        return a.slice();
     }
 
     private void doneOutputingBits(ByteBuffer outfile) {
@@ -315,47 +265,35 @@ public abstract class HCompress {
         }
     }
 
-    private int encode(ByteBuffer outfile, LongBuffer a, int nx, int ny, int scale) {
-
-        /* FILE *outfile; - change outfile to a char array */
-        /*
-         * long * nlength returned length (in bytes) of the encoded array) int
-         * a[]; input H-transform array (nx,ny) int nx,ny; size of H-transform
-         * array int scale; scale factor for digitization
-         */
-        int nel, nx2, ny2, i, j, k, q, nsign, bitsToGo;
+    private int encode(ByteBuffer compressedBytes, LongBuffer a, int nx, int ny, int scale) {
         long[] vmax = new long[N3];
         byte[] nbitplanes = new byte[N3];
-        byte[] signbits;
-
-        long noutchar = 0; /*
-                            * initialize the number of compressed bytes that
-                            * have been written
-                            */
-        nel = nx * ny;
+        // initialize the number of compressed bytes that have been written
+        long noutchar = 0;
+        int nel = nx * ny;
         /*
          * write magic value
          */
-        outfile.put(CODE_MAGIC);
-        outfile.putInt(nx); /* size of image */
-        outfile.putInt(ny);
-        outfile.putInt(scale); /* scale factor for digitization */
+        compressedBytes.put(CODE_MAGIC);
+        compressedBytes.putInt(nx); /* size of image */
+        compressedBytes.putInt(ny);
+        compressedBytes.putInt(scale); /* scale factor for digitization */
         /*
          * write first value of A (sum of all pixels -- the only value which
          * does not compress well)
          */
-        outfile.putLong(a.get(0));
+        compressedBytes.putLong(a.get(0));
 
         a.put(0, 0);
         /*
          * allocate array for sign bits and save values, 8 per byte
          */
-        signbits = new byte[(nel + BITS_OF_1_BYTE - 1) / BITS_OF_1_BYTE];
+        byte[] signbits = new byte[(nel + BITS_OF_1_BYTE - 1) / BITS_OF_1_BYTE];
 
-        nsign = 0;
-        bitsToGo = BITS_OF_1_BYTE;
+        int nsign = 0;
+        int bitsToGo = BITS_OF_1_BYTE;
         signbits[0] = 0;
-        for (i = 0; i < nel; i++) {
+        for (int i = 0; i < nel; i++) {
             if (a.get(i) > 0) {
                 /*
                  * positive element, put zero at end of buffer
@@ -395,18 +333,18 @@ public abstract class HCompress {
          * calculate number of bit planes for 3 quadrants quadrant 0=bottom
          * left, 1=bottom right or top left, 2=top right,
          */
-        for (q = 0; q < N3; q++) {
+        for (int q = 0; q < N3; q++) {
             vmax[q] = 0;
         }
         /*
          * get maximum absolute value in each quadrant
          */
-        nx2 = (nx + 1) / 2;
-        ny2 = (ny + 1) / 2;
-        j = 0; /* column counter */
-        k = 0; /* row counter */
-        for (i = 0; i < nel; i++) {
-            q = (j >= ny2 ? 1 : 0) + (k >= nx2 ? 1 : 0);
+        int nx2 = (nx + 1) / 2;
+        int ny2 = (ny + 1) / 2;
+        int j = 0; /* column counter */
+        int k = 0; /* row counter */
+        for (int i = 0; i < nel; i++) {
+            int q = (j >= ny2 ? 1 : 0) + (k >= nx2 ? 1 : 0);
             if (vmax[q] < a.get(i)) {
                 vmax[q] = a.get(i);
             }
@@ -421,7 +359,7 @@ public abstract class HCompress {
 
         /* this is a more efficient way to do this, */
 
-        for (q = 0; q < N3; q++) {
+        for (int q = 0; q < N3; q++) {
             for (nbitplanes[q] = 0; vmax[q] > 0; vmax[q] = vmax[q] >> 1, nbitplanes[q]++) {
                 // noop for later refactoring
                 "".toString();
@@ -431,18 +369,18 @@ public abstract class HCompress {
         /*
          * write nbitplanes
          */
-        outfile.put(nbitplanes, 0, nbitplanes.length);
+        compressedBytes.put(nbitplanes, 0, nbitplanes.length);
 
         /*
          * write coded array
          */
-        doencode(outfile, a, nx, ny, nbitplanes);
+        doencode(compressedBytes, a, nx, ny, nbitplanes);
         /*
          * write sign bits
          */
 
         if (nsign > 0) {
-            outfile.put(signbits, 0, nsign);
+            compressedBytes.put(signbits, 0, nsign);
         }
 
         return (int) noutchar;
@@ -450,55 +388,50 @@ public abstract class HCompress {
     }
 
     private int htrans(long[] a, int nx, int ny) {
-        int nmax, log2n, nxtop, nytop, i, j, k;
-        int oddx, oddy;
-        int s10, s00;
-        long h0, hx, hy, hc, shift, mask, mask2, prnd, prnd2, nrnd2;
-        long[] tmp;
-
         /*
          * log2n is log2 of max(nx,ny) rounded up to next power of 2
          */
-        nmax = nx > ny ? nx : ny;
-        log2n = log2n(nmax);
+        int nmax = nx > ny ? nx : ny;
+        int log2n = log2n(nmax);
         if (nmax > 1 << log2n) {
             log2n += 1;
         }
         /*
          * get temporary storage for shuffling elements
          */
-        tmp = new long[(nmax + 1) / 2];
+        long[] tmp = new long[(nmax + 1) / 2];
 
         /*
          * set up rounding and shifting masks
          */
-        shift = 0;
-        mask = HTRANS_START_MASK;
-        mask2 = mask << 1;
-        prnd = 1;
-        prnd2 = prnd << 1;
-        nrnd2 = prnd2 - 1;
+        long shift = 0;
+        long mask = HTRANS_START_MASK;
+        long mask2 = mask << 1;
+        long prnd = 1;
+        long prnd2 = prnd << 1;
+        long nrnd2 = prnd2 - 1;
         /*
          * do log2n reductions We're indexing a as a 2-D array with dimensions
          * (nx,ny).
          */
-        nxtop = nx;
-        nytop = ny;
+        int nxtop = nx;
+        int nytop = ny;
 
-        for (k = 0; k < log2n; k++) {
-            oddx = nxtop % 2;
-            oddy = nytop % 2;
-            for (i = 0; i < nxtop - oddx; i += 2) {
-                s00 = i * ny; /* s00 is index of a[i,j] */
-                s10 = s00 + ny; /* s10 is index of a[i+1,j] */
-                for (j = 0; j < nytop - oddy; j += 2) {
+        for (int k = 0; k < log2n; k++) {
+            int oddx = nxtop % 2;
+            int oddy = nytop % 2;
+            int i = 0;
+            for (; i < nxtop - oddx; i += 2) {
+                int s00 = i * ny; /* s00 is index of a[i,j] */
+                int s10 = s00 + ny; /* s10 is index of a[i+1,j] */
+                for (int j = 0; j < nytop - oddy; j += 2) {
                     /*
                      * Divide h0,hx,hy,hc by 2 (1 the first time through).
                      */
-                    h0 = a[s10 + 1] + a[s10] + a[s00 + 1] + a[s00] >> shift;
-                    hx = a[s10 + 1] + a[s10] - a[s00 + 1] - a[s00] >> shift;
-                    hy = a[s10 + 1] - a[s10] + a[s00 + 1] - a[s00] >> shift;
-                    hc = a[s10 + 1] - a[s10] - a[s00 + 1] + a[s00] >> shift;
+                    long h0 = a[s10 + 1] + a[s10] + a[s00 + 1] + a[s00] >> shift;
+                    long hx = a[s10 + 1] + a[s10] - a[s00 + 1] - a[s00] >> shift;
+                    long hy = a[s10 + 1] - a[s10] + a[s00 + 1] - a[s00] >> shift;
+                    long hc = a[s10 + 1] - a[s10] - a[s00 + 1] + a[s00] >> shift;
 
                     /*
                      * Throw away the 2 bottom bits of h0, bottom bit of hx,hy.
@@ -517,8 +450,8 @@ public abstract class HCompress {
                      * do last element in row if row length is odd s00+1, s10+1
                      * are off edge
                      */
-                    h0 = a[s10] + a[s00] << 1 - shift;
-                    hx = a[s10] - a[s00] << 1 - shift;
+                    long h0 = a[s10] + a[s00] << 1 - shift;
+                    long hx = a[s10] - a[s00] << 1 - shift;
                     a[s10] = (hx >= 0 ? hx + prnd : hx) & mask;
                     a[s00] = (h0 >= 0 ? h0 + prnd2 : h0 + nrnd2) & mask2;
                     s00 += 1;
@@ -529,10 +462,10 @@ public abstract class HCompress {
                 /*
                  * do last row if column length is odd s10, s10+1 are off edge
                  */
-                s00 = i * ny;
-                for (j = 0; j < nytop - oddy; j += 2) {
-                    h0 = a[s00 + 1] + a[s00] << 1 - shift;
-                    hy = a[s00 + 1] - a[s00] << 1 - shift;
+                int s00 = i * ny;
+                for (int j = 0; j < nytop - oddy; j += 2) {
+                    long h0 = a[s00 + 1] + a[s00] << 1 - shift;
+                    long hy = a[s00 + 1] - a[s00] << 1 - shift;
                     a[s00 + 1] = (hy >= 0 ? hy + prnd : hy) & mask;
                     a[s00] = (h0 >= 0 ? h0 + prnd2 : h0 + nrnd2) & mask2;
                     s00 += 2;
@@ -542,7 +475,7 @@ public abstract class HCompress {
                      * do corner element if both row and column lengths are odd
                      * s00+1, s10, s10+1 are off edge
                      */
-                    h0 = a[s00] << 2 - shift;
+                    long h0 = a[s00] << 2 - shift;
                     a[s00] = (h0 >= 0 ? h0 + prnd2 : h0 + nrnd2) & mask2;
                 }
             }
@@ -553,7 +486,7 @@ public abstract class HCompress {
             for (i = 0; i < nxtop; i++) {
                 shuffle(a, ny * i, nytop, 1, tmp);
             }
-            for (j = 0; j < nytop; j++) {
+            for (int j = 0; j < nytop; j++) {
                 shuffle(a, j, nxtop, ny, tmp);
             }
             /*
