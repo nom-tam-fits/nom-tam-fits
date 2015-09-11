@@ -458,6 +458,8 @@ public abstract class RiseCompress<T extends Buffer> implements ITileCompressor<
      * 
      * @param dataLength
      *            length of the data to compress
+     * @param firstPixel
+     *            the value of the first pixel
      * @param buffer
      *            the buffer to write to
      */

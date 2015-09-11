@@ -94,7 +94,6 @@ public class ChecksumTest {
     }
 
     @Test
-    @Ignore
     public void testCheckSum2() throws Exception {
         FileInputStream in = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits");
         Fits fits = new Fits();
@@ -102,7 +101,6 @@ public class ChecksumTest {
         fits.read();
         in.close();
         fits.setChecksum();
-
-        assertEquals("98RWE5OV95OVE5OV", fits.getHDU(0).getHeader().getStringValue("CHECKSUM"));
+        assertEquals("kGpMn9mJkEmJk9mJ", fits.getHDU(0).getHeader().getStringValue("CHECKSUM"));
     }
 }

@@ -113,8 +113,8 @@ public final class FitsCheckSum {
         long hicarry = hi >>> FitsIO.BITS_OF_2_BYTES;
         long locarry = lo >>> FitsIO.BITS_OF_2_BYTES;
         while (hicarry != 0 || locarry != 0) {
-            hi = (hi & FitsIO.SHORT_OF_LONG_MASK) | locarry;
-            lo = (lo & FitsIO.SHORT_OF_LONG_MASK) | hicarry;
+            hi = (hi & FitsIO.SHORT_OF_LONG_MASK) + locarry;
+            lo = (lo & FitsIO.SHORT_OF_LONG_MASK) + hicarry;
             hicarry = hi >>> FitsIO.BITS_OF_2_BYTES;
             locarry = lo >>> FitsIO.BITS_OF_2_BYTES;
         }

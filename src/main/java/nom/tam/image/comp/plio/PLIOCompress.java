@@ -263,6 +263,7 @@ public abstract class PLIOCompress {
      *            encoded line list
      * @param npix
      *            number of pixels to convert
+     * @return number of pixels converted
      */
     protected int decompress(ShortBuffer compressedData, int npix) {
         int llfirt;
