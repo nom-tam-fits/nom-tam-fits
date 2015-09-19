@@ -44,4 +44,6 @@ public interface IDither {
     boolean isZeroValue(int i, int zeroValue);
 
     double nextRandom();
+
+    int getSeed();
 }

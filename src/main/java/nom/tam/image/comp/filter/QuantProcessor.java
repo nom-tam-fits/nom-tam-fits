@@ -278,12 +278,15 @@ public class QuantProcessor {
         this.anyNulls = quantizeOption.isHandleNull();
         this.pixelFilter = filter;
         this.centerOnZero = localCenterOnZero;
+        this.bScale = quantizeOption.getBScale();
         if (Double.isNaN(quantizeOption.getBZero())) {
             this.bZero = zeroCenter(quantizeOption.getMinValue(), quantizeOption.getMaxValue());
+            quantizeOption.setIntMinValue(nint((quantizeOption.getMinValue() - this.bZero) / bScale));
+            quantizeOption.setIntMaxValue(nint((quantizeOption.getMaxValue() - this.bZero) / bScale));
+            quantizeOption.setBZero(this.bZero);
         } else {
             this.bZero = quantizeOption.getBZero();
         }
-        this.bScale = quantizeOption.getBScale();
     }
 
     private int nint(double x) {

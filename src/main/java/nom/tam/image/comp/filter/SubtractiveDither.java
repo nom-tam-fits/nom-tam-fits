@@ -139,4 +139,9 @@ public class SubtractiveDither implements IDither {
     public double nextRandom() {
         return this.randomValues[this.nextRandom];
     }
+
+    @Override
+    public int getSeed() {
+        return iseed;
+    }
 }

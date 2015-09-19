@@ -31,6 +31,8 @@ package nom.tam.image.comp.filter;
  * #L%
  */
 
+import java.nio.DoubleBuffer;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import nom.tam.image.comp.CompParameter;
@@ -404,10 +406,6 @@ public class Quantize {
         this.xmaxval = Double.MIN_VALUE;
     }
 
-    private int nint(double x) {
-        return x >= 0. ? (int) (x + ROUNDING_HALF) : (int) (x - ROUNDING_HALF);
-    }
-
     /**
      * arguments: long row i: tile number = row number in the binary table
      * double fdata[] i: array of image pixels to be compressed long nxpix i:
@@ -433,21 +431,18 @@ public class Quantize {
      * @return true if the quantification was possible
      */
     public boolean quantize(double[] fdata, int nxpix, int nypix) {
-        int i;
-        long nx;
-        double qlevel = this.parameter.getQLevel();
         // MAD 2nd, 3rd, and 5th order noise values
         double stdev;
-        double delta; /* bscale, 1 in intdata = delta in fdata */
+        double bScale; /* bscale, 1 in intdata = delta in fdata */
 
-        nx = (long) nxpix * (long) nypix;
+        long nx = (long) nxpix * (long) nypix;
         this.intData = new int[(int) nx];
         if (nx <= 1L) {
             this.parameter.setBScale(1.);
             this.parameter.setBZero(0.);
             return false;
         }
-        if (qlevel >= 0.) {
+        if (this.parameter.getQLevel() >= 0.) {
             /* estimate background noise using MAD pixel differences */
             calculateNoise(fdata, nxpix, nypix);
             // special case of an image filled with Nulls
@@ -467,99 +462,42 @@ public class Quantize {
                     stdev = this.noise5;
                 }
             }
-            if (qlevel == 0.) {
-                delta = stdev / DEFAULT_QUANT_LEVEL; /* default quantization */
+            if (this.parameter.getQLevel() == 0.) {
+                bScale = stdev / DEFAULT_QUANT_LEVEL; /* default quantization */
             } else {
-                delta = stdev / qlevel;
+                bScale = stdev / this.parameter.getQLevel();
             }
-            if (delta == 0.) {
+            if (bScale == 0.) {
                 return false; /* don't quantize */
             }
         } else {
             /* negative value represents the absolute quantization level */
-            delta = -qlevel;
+            bScale = -this.parameter.getQLevel();
             /* only nned to calculate the min and max values */
             calculateNoise(fdata, nxpix, nypix);
         }
         /* check that the range of quantized levels is not > range of int */
-        if ((this.maxValue - this.minValue) / delta > 2. * MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
+        if ((this.maxValue - this.minValue) / bScale > 2. * MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
             return false; /* don't quantize */
         }
 
-        
-        
-        
-        double zeropt; /* bzero */
-        if (this.ngood == nx) { /* don't have to check for nulls */
-            /* return all positive values, if possible since some */
-            /* compression algorithms either only work for positive integers, */
-            /* or are more efficient. */
-
-            if (this.dither.centerOnZero()) {
-                /*
-                 * shift the range to be close to the value used to represent
-                 * zeros
-                 */
-                zeropt = this.minValue - delta * (NULL_VALUE + N_RESERVED_VALUES);
-            } else if ((this.maxValue - this.minValue) / delta < MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
-                zeropt = this.minValue;
-                // fudge the zero point so it is an integer multiple of delta
-                // This helps to ensure the same scaling will be performed if
-                // the file undergoes multiple fpack/funpack cycles
-                long iqfactor = (long) (zeropt / delta + ROUNDING_HALF);
-                zeropt = iqfactor * delta;
-            } else {
-                /* center the quantized levels around zero */
-                zeropt = (this.minValue + this.maxValue) / 2.;
-            }
-            if (this.dither.isActive()) { /* dither the values when quantizing */
-                for (i = 0; i < nx; i++) {
-
-                    if (this.dither.isZeroValue(fdata[i])) {
-                        this.intData[i] = ZERO_VALUE;
-                    } else {
-                        this.intData[i] = nint((fdata[i] - zeropt) / delta + this.dither.nextRandom() - ROUNDING_HALF);
-                    }
-                    this.dither.incrementRandom();
-                }
-            } else { /* do not dither the values */
-                for (i = 0; i < nx; i++) {
-                    this.intData[i] = nint((fdata[i] - zeropt) / delta);
-                }
-            }
-        } else {
-            /* data contains null values; shift the range to be */
-            /* close to the value used to represent null values */
-            zeropt = this.minValue - delta * (NULL_VALUE + N_RESERVED_VALUES);
-            if (this.dither.isActive()) { /* dither the values */
-                for (i = 0; i < nx; i++) {
-                    if (!this.nullCheck.isNull(fdata[i])) {
-                        if (this.dither.isZeroValue(fdata[i])) {
-                            this.intData[i] = ZERO_VALUE;
-                        } else {
-                            this.intData[i] = nint((fdata[i] - zeropt) / delta + this.dither.nextRandom() - ROUNDING_HALF);
-                        }
-                    } else {
-                        this.intData[i] = NULL_VALUE;
-                    }
-
-                    this.dither.incrementRandom();
-                }
-            } else { /* do not dither the values */
-                for (i = 0; i < nx; i++) {
-                    if (!this.nullCheck.isNull(fdata[i])) {
-                        this.intData[i] = nint((fdata[i] - zeropt) / delta);
-                    } else {
-                        this.intData[i] = NULL_VALUE;
-                    }
-                }
-            }
+        this.parameter.setBScale(bScale);
+        this.parameter.setMinValue(minValue);
+        this.parameter.setMaxValue(maxValue);
+        parameter.setHandleNull(// ngood != nx &&
+                nullCheck != null && nullCheck.isActive());
+        parameter.setDither(dither instanceof SubtractiveDither);
+        parameter.setDither2(dither instanceof SubtractiveDither2);
+        parameter.setNullValue(nullCheck.getNullValue());
+        if (dither != null) {
+            parameter.setSeed(dither.getSeed());
         }
+        DoubleBuffer wrapFdata = DoubleBuffer.wrap(fdata);
+        wrapFdata.limit((int) nx);
+        IntBuffer wrapInt = IntBuffer.wrap(intData);
+        wrapInt.limit((int) nx);
+        new QuantProcessor(parameter).quantize(wrapFdata, wrapInt);
         /* calc min and max values */
-        this.parameter.setIntMinValue(nint((this.minValue - zeropt) / delta));
-        this.parameter.setIntMaxValue(nint((this.maxValue - zeropt) / delta));
-        this.parameter.setBScale(delta);
-        this.parameter.setBZero(zeropt);
         return true; /* yes, data have been quantized */
     }
 

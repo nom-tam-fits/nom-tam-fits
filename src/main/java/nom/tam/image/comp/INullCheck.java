@@ -41,4 +41,6 @@ public interface INullCheck {
 
     double setNull(int index);
 
+    double getNullValue();
+
 }

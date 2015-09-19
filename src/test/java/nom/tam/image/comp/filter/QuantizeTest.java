@@ -67,6 +67,11 @@ public class QuantizeTest {
         public boolean isNull(int integer) {
             return false;
         }
+
+        @Override
+        public double getNullValue() {
+            return NULL_VALUE;
+        }
     });
 
     CompParameter nullCheckValue = CompParameter.create(INullCheck.class, new INullCheck() {
@@ -90,6 +95,12 @@ public class QuantizeTest {
         public boolean isNull(int integer) {
             return (Integer.MIN_VALUE + 1) == integer;
         }
+
+        @Override
+        public double getNullValue() {
+            return NULL_VALUE;
+        }
+
     });
 
     @Test

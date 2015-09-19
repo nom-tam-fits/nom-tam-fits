@@ -61,4 +61,9 @@ public class NoDither implements IDither {
     public double nextRandom() {
         return 0f;
     }
+
+    @Override
+    public int getSeed() {
+        return 0;
+    }
 }
