@@ -102,7 +102,7 @@ public class Quantize {
 
     private final IDither dither;
 
-    private final QuantizeParameter parameter;
+    private final QuantizeOption parameter;
 
     private int[] intData;
 
@@ -149,7 +149,13 @@ public class Quantize {
     public Quantize(CompParameter compParameter) {
         this.nullCheck = compParameter.get(INullCheck.class);
         this.dither = compParameter.get(IDither.class);
-        this.parameter = compParameter.get(QuantizeParameter.class);
+        this.parameter = compParameter.get(QuantizeOption.class);
+    }
+
+    public Quantize(QuantizeOption quantizeOption) {
+        this.nullCheck = quantizeOption.getNullCheck();
+        this.dither = quantizeOption.getDither();
+        this.parameter = quantizeOption;
     }
 
     /**
@@ -433,8 +439,6 @@ public class Quantize {
         // MAD 2nd, 3rd, and 5th order noise values
         double stdev;
         double delta; /* bscale, 1 in intdata = delta in fdata */
-        double zeropt; /* bzero */
-        long iqfactor;
 
         nx = (long) nxpix * (long) nypix;
         this.intData = new int[(int) nx];
@@ -481,6 +485,11 @@ public class Quantize {
         if ((this.maxValue - this.minValue) / delta > 2. * MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
             return false; /* don't quantize */
         }
+
+        
+        
+        
+        double zeropt; /* bzero */
         if (this.ngood == nx) { /* don't have to check for nulls */
             /* return all positive values, if possible since some */
             /* compression algorithms either only work for positive integers, */
@@ -497,7 +506,7 @@ public class Quantize {
                 // fudge the zero point so it is an integer multiple of delta
                 // This helps to ensure the same scaling will be performed if
                 // the file undergoes multiple fpack/funpack cycles
-                iqfactor = (long) (zeropt / delta + ROUNDING_HALF);
+                long iqfactor = (long) (zeropt / delta + ROUNDING_HALF);
                 zeropt = iqfactor * delta;
             } else {
                 /* center the quantized levels around zero */

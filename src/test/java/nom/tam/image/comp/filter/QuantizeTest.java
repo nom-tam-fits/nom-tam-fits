@@ -101,7 +101,7 @@ public class QuantizeTest {
             file.read(bytes);
             ByteBuffer.wrap(bytes).asDoubleBuffer().get(doubles);
 
-            QuantizeParameter quantizeParameter = new QuantizeParameter();
+            QuantizeOption quantizeParameter = new QuantizeOption();
             Quantize quantize = new Quantize(nullCheckOff.set(IDither.class, new SubtractiveDither(8864L)).set(quantizeParameter.setQLevel(4)));
             quantize.quantize(doubles, 100, 100);
             checkRequantedValues(quantize, doubles);
@@ -135,7 +135,7 @@ public class QuantizeTest {
             ByteBuffer.wrap(bytes).asFloatBuffer().get(floats);
             ArrayFuncs.copyInto(floats, doubles);
 
-            QuantizeParameter quantizeParameter = new QuantizeParameter();
+            QuantizeOption quantizeParameter = new QuantizeOption();
             Quantize quantize = new Quantize(nullCheckOff.set(IDither.class, new SubtractiveDither(3942L)).set(quantizeParameter.setQLevel(4)));
             quantize.quantize(doubles, 100, 100);
             checkRequantedValues(quantize, doubles);
@@ -161,7 +161,7 @@ public class QuantizeTest {
         int ysize = 2;
         double[] matrix = initMatrix();
         Quantize quantize;
-        QuantizeParameter quantizeParameter = new QuantizeParameter();
+        QuantizeOption quantizeParameter = new QuantizeOption();
 
         quantize = new Quantize(nullCheckOff.set(IDither.class, new SubtractiveDither2(3942L)).set(quantizeParameter.setQLevel(-4.)));
         matrix = initMatrix();
