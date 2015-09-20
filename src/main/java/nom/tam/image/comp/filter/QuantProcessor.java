@@ -255,8 +255,6 @@ public class QuantProcessor {
 
     private final PixelFilter pixelFilter;
 
-    private final boolean anyNulls;
-
     private final double bScale;
 
     private final double bZero;
@@ -279,12 +277,11 @@ public class QuantProcessor {
         if (quantizeOption.isCheckNull()) {
             filter = new NullFilter(quantizeOption.getNullValue(), filter);
         }
-        this.anyNulls = quantizeOption.isCheckNull();
         this.pixelFilter = filter;
         this.centerOnZero = localCenterOnZero;
         this.bScale = quantizeOption.getBScale();
         if (Double.isNaN(quantizeOption.getBZero())) {
-            this.bZero = zeroCenter(quantizeOption.getMinValue(), quantizeOption.getMaxValue());
+            this.bZero = zeroCenter(quantizeOption.isCheckNull(), quantizeOption.getMinValue(), quantizeOption.getMaxValue());
             quantizeOption.setIntMinValue(nint((quantizeOption.getMinValue() - this.bZero) / bScale));
             quantizeOption.setIntMaxValue(nint((quantizeOption.getMaxValue() - this.bZero) / bScale));
             quantizeOption.setBZero(this.bZero);
@@ -311,9 +308,9 @@ public class QuantProcessor {
         }
     }
 
-    private double zeroCenter(final double minValue, final double maxValue) {
+    private double zeroCenter(boolean checknull, final double minValue, final double maxValue) {
         double evaluatedBZero;
-        if (!this.anyNulls && !this.centerOnZero) {
+        if (!checknull && !this.centerOnZero) {
             // don't have to check for nulls
             // return all positive values, if possible since some compression
             // algorithms either only work for positive integers, or are more
@@ -323,7 +320,7 @@ public class QuantProcessor {
                 // fudge the zero point so it is an integer multiple of bScale
                 // This helps to ensure the same scaling will be performed if
                 // the file undergoes multiple fpack/funpack cycles
-                long iqfactor = (long) (this.bZero / this.bScale + ROUNDING_HALF);
+                long iqfactor = (long) (evaluatedBZero / this.bScale + ROUNDING_HALF);
                 evaluatedBZero = iqfactor * this.bScale;
             } else {
                 /* center the quantized levels around zero */

@@ -46,62 +46,66 @@ public class QuantizeTest {
 
     private static final double NULL_VALUE = -9.1191291391491004e-36;
 
-    CompParameter nullCheckOff = CompParameter.create(INullCheck.class, new INullCheck() {
+    private CompParameter nullCheckOff() {
+        return CompParameter.create(INullCheck.class, new INullCheck() {
 
-        @Override
-        public double setNull(int index) {
-            return 0;
-        }
+            @Override
+            public double setNull(int index) {
+                return 0;
+            }
 
-        @Override
-        public boolean isNull(double d) {
-            return false;
-        }
+            @Override
+            public boolean isNull(double d) {
+                return false;
+            }
 
-        @Override
-        public boolean isActive() {
-            return false;
-        }
+            @Override
+            public boolean isActive() {
+                return false;
+            }
 
-        @Override
-        public boolean isNull(int integer) {
-            return false;
-        }
+            @Override
+            public boolean isNull(int integer) {
+                return false;
+            }
 
-        @Override
-        public double getNullValue() {
-            return NULL_VALUE;
-        }
-    });
+            @Override
+            public double getNullValue() {
+                return NULL_VALUE;
+            }
+        });
+    }
 
-    CompParameter nullCheckValue = CompParameter.create(INullCheck.class, new INullCheck() {
+    private CompParameter nullCheckValue() {
+        return CompParameter.create(INullCheck.class, new INullCheck() {
 
-        @Override
-        public double setNull(int index) {
-            return NULL_VALUE;
-        }
+            @Override
+            public double setNull(int index) {
+                return NULL_VALUE;
+            }
 
-        @Override
-        public boolean isNull(double d) {
-            return d == NULL_VALUE;
-        }
+            @Override
+            public boolean isNull(double d) {
+                return d == NULL_VALUE;
+            }
 
-        @Override
-        public boolean isActive() {
-            return true;
-        }
+            @Override
+            public boolean isActive() {
+                return true;
+            }
 
-        @Override
-        public boolean isNull(int integer) {
-            return (Integer.MIN_VALUE + 1) == integer;
-        }
+            @Override
+            public boolean isNull(int integer) {
+                return (Integer.MIN_VALUE + 1) == integer;
+            }
 
-        @Override
-        public double getNullValue() {
-            return NULL_VALUE;
-        }
+            @Override
+            public double getNullValue() {
+                return NULL_VALUE;
+            }
 
-    });
+        });
+    }
 
     @Test
     public void testQuant1Double() throws Exception {
@@ -113,7 +117,7 @@ public class QuantizeTest {
             ByteBuffer.wrap(bytes).asDoubleBuffer().get(doubles);
 
             QuantizeOption quantizeParameter = new QuantizeOption();
-            Quantize quantize = new Quantize(nullCheckOff.set(IDither.class, new SubtractiveDither(8864L)).set(quantizeParameter.setQLevel(4)));
+            Quantize quantize = new Quantize(nullCheckOff().set(IDither.class, new SubtractiveDither(8864L)).set(quantizeParameter.setQLevel(4)));
             quantize.quantize(doubles, 100, 100);
             checkRequantedValues(quantize, doubles);
 
@@ -147,7 +151,7 @@ public class QuantizeTest {
             ArrayFuncs.copyInto(floats, doubles);
 
             QuantizeOption quantizeParameter = new QuantizeOption();
-            Quantize quantize = new Quantize(nullCheckOff.set(IDither.class, new SubtractiveDither(3942L)).set(quantizeParameter.setQLevel(4)));
+            Quantize quantize = new Quantize(nullCheckOff().set(IDither.class, new SubtractiveDither(3942L)).set(quantizeParameter.setQLevel(4)));
             quantize.quantize(doubles, 100, 100);
             checkRequantedValues(quantize, doubles);
 
@@ -167,14 +171,116 @@ public class QuantizeTest {
     }
 
     @Test
+    public void testDifferentQuantCases2() {
+        final int xsize = 12;
+        final int ysize = 2;
+
+        QuantizeOption quantizeParameter = new QuantizeOption();
+        quantizeParameter.setCheckZero(true);
+        Quantize quantize = new Quantize(nullCheckOff().set(IDither.class, new NoDither2()).set(quantizeParameter.setQLevel(0)));
+        double[] matrix = initMatrix();
+        Assert.assertTrue(quantize.quantize(matrix, xsize - 3, ysize));
+      
+        Assert.assertEquals(6.01121812296506193330e-07, quantizeParameter.getBScale(), 1e-20);
+        Assert.assertEquals(1.29089925575053234752e+03, quantizeParameter.getBZero(), 1e-20);
+        Assert.assertEquals(-2147483637, quantizeParameter.getIntMinValue());
+        Assert.assertEquals(-1866039268, quantizeParameter.getIntMaxValue());
+        checkRequantedValues(quantize, matrix);
+    }
+
+    @Test
+    public void testDifferentQuantCases3() {
+        final int xsize = 12;
+        final int ysize = 2;
+
+        QuantizeOption quantizeParameter = new QuantizeOption();
+        Quantize quantize = new Quantize(nullCheckValue().set(IDither.class, new NoDither()).set(quantizeParameter.setQLevel(4)));
+        double[] matrix = initMatrix();
+        Arrays.fill(matrix, 11, xsize + 1, NULL_VALUE);
+        Assert.assertTrue(quantize.quantize(matrix, xsize, ysize));
+        Assert.assertEquals(xsize * ysize, quantize.getIntData().length);
+      
+        Assert.assertEquals(8.11574856349585578526e-07, quantizeParameter.getBScale(), 1e-20);
+        Assert.assertEquals(1.74284372421136049525e+03, quantizeParameter.getBZero(), 1e-20);
+        Assert.assertEquals(-2147483637, quantizeParameter.getIntMinValue());
+        Assert.assertEquals(-1866576064, quantizeParameter.getIntMaxValue());
+        checkRequantedValues(quantize, matrix);
+    }
+
+    @Test
+    public void testDifferentQuantCases4() {
+        final int xsize = 12;
+        final int ysize = 2;
+
+        QuantizeOption quantizeParameter = new QuantizeOption();
+        Quantize quantize = new Quantize(nullCheckValue().set(IDither.class, new NoDither()).set(quantizeParameter.setQLevel(4)));
+        double[] matrix = initMatrix();
+        Arrays.fill(matrix, 11, xsize + 1, NULL_VALUE);
+        Assert.assertTrue(quantize.quantize(matrix, xsize, ysize));
+     
+        Assert.assertEquals(8.11574856349585578526e-07, quantizeParameter.getBScale(), 1e-20);
+        Assert.assertEquals(1.74284372421136049525e+03, quantizeParameter.getBZero(), 1e-20);
+        Assert.assertEquals(-2147483637, quantizeParameter.getIntMinValue());
+        Assert.assertEquals(-1866576064, quantizeParameter.getIntMaxValue());
+        checkRequantedValues(quantize, matrix);
+    }
+
+    @Test
+    public void testDifferentQuantCases5() {
+        final int xsize = 12;
+        final int ysize = 2;
+
+        QuantizeOption quantizeParameter = new QuantizeOption();
+        // test null image
+         Quantize quantize = new Quantize(nullCheckValue().set(IDither.class, new
+         NoDither()).set(quantizeParameter.setQLevel(4)));
+         double[] matrix = initMatrix();
+         Arrays.fill(matrix, NULL_VALUE);
+         Assert.assertTrue(quantize.quantize(matrix, xsize, ysize));
+         Assert.assertArrayEquals(new int[]{
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647,
+         -2147483647
+        
+         }, quantize.getIntData());
+         Assert.assertEquals(2.50000000000000000000e-01,
+         quantizeParameter.getBScale(), 1e-20);
+         Assert.assertEquals(5.36870909250000000000e+08,
+         quantizeParameter.getBZero(), 1e-20);
+         Assert.assertEquals(-2147483637, quantizeParameter.getIntMinValue());
+         Assert.assertEquals(-2147483633, quantizeParameter.getIntMaxValue());
+         checkRequantedValues(quantize, matrix);
+    }
+    @Test
     public void testDifferentQuantCases() {
-        int xsize = 12;
-        int ysize = 2;
+        final int xsize = 12;
+        final int ysize = 2;
         double[] matrix = initMatrix();
         Quantize quantize;
         QuantizeOption quantizeParameter = new QuantizeOption();
 
-        quantize = new Quantize(nullCheckOff.set(IDither.class, new SubtractiveDither2(3942L)).set(quantizeParameter.setQLevel(-4.)));
+        quantize = new Quantize(nullCheckOff().set(IDither.class, new SubtractiveDither2(3942L)).set(quantizeParameter.setQLevel(-4.)));
         matrix = initMatrix();
         // matrix 0.00000000000000000000e+00, 9.99983333416666475557e+00,
         // 1.99986666933330816676e+01, 2.99955002024956591811e+01,
@@ -222,162 +328,34 @@ public class QuantizeTest {
         Assert.assertEquals(-2147483637, quantizeParameter.getIntMinValue());
         Assert.assertEquals(-2147483580, quantizeParameter.getIntMaxValue());
 
-        quantize = new Quantize(nullCheckOff.set(IDither.class, new NoDither2()).set(quantizeParameter.setQLevel(0)));
-        matrix = initMatrix();
-        Assert.assertTrue(quantize.quantize(matrix, xsize - 3, ysize));
-        Assert.assertArrayEquals(new int[]{
-            -2147483637,
-            -2130848351,
-            -2114214728,
-            -2097584433,
-            -2080959127,
-            -2064340473,
-            -2047730134,
-            -2031129770,
-            -2014541041,
-            -1997965607,
-            -1981405124,
-            -1964861249,
-            -1948335636,
-            -1931829938,
-            -1915345804,
-            -1898884885,
-            -1882448825,
-            -1866039268
-
-        }, quantize.getIntData());
-        Assert.assertEquals(6.01121812296506193330e-07, quantizeParameter.getBScale(), 1e-20);
-        Assert.assertEquals(1.29089925575053234752e+03, quantizeParameter.getBZero(), 1e-20);
-        Assert.assertEquals(-2147483637, quantizeParameter.getIntMinValue());
-        Assert.assertEquals(-1866039268, quantizeParameter.getIntMaxValue());
-        checkRequantedValues(quantize, matrix);
-
-        quantize = new Quantize(nullCheckOff.set(IDither.class, new NoDither()).set(quantizeParameter.setQLevel(4)));
+        quantizeParameter = new QuantizeOption();
+        quantize = new Quantize(nullCheckOff().set(IDither.class, new NoDither()).set(quantizeParameter.setQLevel(4)));
         matrix = initMatrix();
         Assert.assertFalse(quantize.quantize(matrix, 3, 2));
 
-        quantize = new Quantize(nullCheckValue.set(IDither.class, new NoDither()).set(quantizeParameter.setQLevel(4)));
+        quantizeParameter = new QuantizeOption();
+        quantize = new Quantize(nullCheckValue().set(IDither.class, new NoDither()).set(quantizeParameter.setQLevel(4)));
         matrix = initMatrix();
         matrix[5] = NULL_VALUE;
         Assert.assertFalse(quantize.quantize(matrix, 3, 2));
 
-        quantize = new Quantize(nullCheckValue.set(IDither.class, new NoDither()).set(quantizeParameter.setQLevel(4)));
-        matrix = initMatrix();
-        Arrays.fill(matrix, 11, xsize + 1, NULL_VALUE);
-        Assert.assertTrue(quantize.quantize(matrix, xsize, ysize));
-        Assert.assertEquals(xsize * ysize, quantize.getIntData().length);
-        Assert.assertArrayEquals(new int[]{
-            -2147483637,
-            -2135162120,
-            -2122841835,
-            -2110524015,
-            -2098209890,
-            -2085900693,
-            -2073597653,
-            -2061302003,
-            -2049014970,
-            -2036737785,
-            -2024471673,
-            -2147483647,
-            -2147483647,
-            -1987752046,
-            -1975542486,
-            -1963350120,
-            -1951176167,
-            -1939021845,
-            -1926888368,
-            -1914776951,
-            -1902688805,
-            -1890625137,
-            -1878587156,
-            -1866576064
-
-        }, quantize.getIntData());
-        Assert.assertEquals(8.11574856349585578526e-07, quantizeParameter.getBScale(), 1e-20);
-        Assert.assertEquals(1.74284372421136049525e+03, quantizeParameter.getBZero(), 1e-20);
-        Assert.assertEquals(-2147483637, quantizeParameter.getIntMinValue());
-        Assert.assertEquals(-1866576064, quantizeParameter.getIntMaxValue());
-        checkRequantedValues(quantize, matrix);
-
-        quantize = new Quantize(nullCheckValue.set(IDither.class, new NoDither()).set(quantizeParameter.setQLevel(4)));
-        matrix = initMatrix();
-        Arrays.fill(matrix, 11, xsize + 1, NULL_VALUE);
-        Assert.assertTrue(quantize.quantize(matrix, xsize, ysize));
-        Assert.assertArrayEquals(new int[]{
-            -2147483637,
-            -2135162120,
-            -2122841835,
-            -2110524015,
-            -2098209890,
-            -2085900693,
-            -2073597653,
-            -2061302003,
-            -2049014970,
-            -2036737785,
-            -2024471673,
-            -2147483647,
-            -2147483647,
-            -1987752046,
-            -1975542486,
-            -1963350120,
-            -1951176167,
-            -1939021845,
-            -1926888368,
-            -1914776951,
-            -1902688805,
-            -1890625137,
-            -1878587156,
-            -1866576064
-
-        }, quantize.getIntData());
-        Assert.assertEquals(8.11574856349585578526e-07, quantizeParameter.getBScale(), 1e-20);
-        Assert.assertEquals(1.74284372421136049525e+03, quantizeParameter.getBZero(), 1e-20);
-        Assert.assertEquals(-2147483637, quantizeParameter.getIntMinValue());
-        Assert.assertEquals(-1866576064, quantizeParameter.getIntMaxValue());
-        checkRequantedValues(quantize, matrix);
-
         // test very small image
-        quantize = new Quantize(nullCheckValue.set(IDither.class, new NoDither()).set(quantizeParameter.setQLevel(4)));
+        quantizeParameter = new QuantizeOption();
+        quantize = new Quantize(nullCheckValue().set(IDither.class, new NoDither()).set(quantizeParameter.setQLevel(4)));
         matrix = initMatrix();
         Assert.assertFalse(quantize.quantize(matrix, 1, 1));
 
-        // test null image
-        quantize = new Quantize(nullCheckValue.set(IDither.class, new NoDither()).set(quantizeParameter.setQLevel(4)));
-        Arrays.fill(matrix, NULL_VALUE);
-        Assert.assertTrue(quantize.quantize(matrix, xsize, ysize));
-        Assert.assertArrayEquals(new int[]{
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647
+      
 
-        }, quantize.getIntData());
-        Assert.assertEquals(2.50000000000000000000e-01, quantizeParameter.getBScale(), 1e-20);
-        Assert.assertEquals(5.36870909250000000000e+08, quantizeParameter.getBZero(), 1e-20);
-        Assert.assertEquals(-2147483637, quantizeParameter.getIntMinValue());
-        Assert.assertEquals(-2147483633, quantizeParameter.getIntMaxValue());
-        checkRequantedValues(quantize, matrix);
+    }
 
+    @Test
+    public void manyDifferentNullCases() {
+        final int xsize = 12;
+        final int ysize = 2;
+        double[] matrix;
+        Quantize quantize;
+        QuantizeOption quantizeParameter;
         int[][] expectedData = {
             {
                 -2147483646,
@@ -590,8 +568,10 @@ public class QuantizeTest {
         };
         int expectedIndex = 0;
         for (int index = 8; index > 0; index--) {
+            quantizeParameter = new QuantizeOption();
+            quantizeParameter.setNullValue(NULL_VALUE);
             quantize =
-                    new Quantize(nullCheckValue.set(IDither.class, (index % 2 == 1 ? new SubtractiveDither(3942L) : new SubtractiveDither2(3942L))).set(
+                    new Quantize(nullCheckValue().set(IDither.class, (index % 2 == 1 ? new SubtractiveDither(3942L) : new SubtractiveDither2(3942L))).set(
                             quantizeParameter.setQLevel(4)));
             matrix = initMatrix();
             Arrays.fill(matrix, index, xsize, NULL_VALUE);

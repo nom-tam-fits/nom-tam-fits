@@ -484,7 +484,7 @@ public class Quantize {
         this.parameter.setBScale(bScale);
         this.parameter.setMinValue(minValue);
         this.parameter.setMaxValue(maxValue);
-        parameter.setCheckNull(// ngood != nx &&
+        parameter.setCheckNull( ngood != nx &&
                 nullCheck != null && nullCheck.isActive());
         parameter.setCheckZero(false);
         parameter.setDither(dither instanceof SubtractiveDither);
