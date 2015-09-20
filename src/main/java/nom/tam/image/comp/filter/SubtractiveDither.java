@@ -87,6 +87,8 @@ public class SubtractiveDither implements IDither {
         return randomValue;
     }
 
+    private final long seed;
+
     private int iseed = 0;
 
     private int nextRandom = 0;
@@ -95,6 +97,7 @@ public class SubtractiveDither implements IDither {
 
     public SubtractiveDither(long seed) {
         this.randomValues = initRandoms();
+        this.seed = seed;
         initialize(seed);
     }
 
@@ -142,6 +145,6 @@ public class SubtractiveDither implements IDither {
 
     @Override
     public int getSeed() {
-        return iseed;
+        return (int) seed;
     }
 }

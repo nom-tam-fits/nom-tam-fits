@@ -484,13 +484,16 @@ public class Quantize {
         this.parameter.setBScale(bScale);
         this.parameter.setMinValue(minValue);
         this.parameter.setMaxValue(maxValue);
-        parameter.setHandleNull(// ngood != nx &&
+        parameter.setCheckNull(// ngood != nx &&
                 nullCheck != null && nullCheck.isActive());
+        parameter.setCheckZero(false);
         parameter.setDither(dither instanceof SubtractiveDither);
         parameter.setDither2(dither instanceof SubtractiveDither2);
         parameter.setNullValue(nullCheck.getNullValue());
         if (dither != null) {
             parameter.setSeed(dither.getSeed());
+            parameter.setCheckZero(dither.isZeroValue(0.0));
+            parameter.setCenterOnZero(dither.centerOnZero());
         }
         DoubleBuffer wrapFdata = DoubleBuffer.wrap(fdata);
         wrapFdata.limit((int) nx);

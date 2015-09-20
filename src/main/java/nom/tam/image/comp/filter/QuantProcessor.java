@@ -263,19 +263,23 @@ public class QuantProcessor {
 
     public QuantProcessor(QuantizeOption quantizeOption) {
         PixelFilter filter = null;
-        boolean localCenterOnZero = false;
+        boolean localCenterOnZero = quantizeOption.isCenterOnZero();
         if (quantizeOption.isDither2()) {
-            filter = new ZeroFilter(new DitherFilter(quantizeOption.getSeed()));
+            filter = new DitherFilter(quantizeOption.getSeed());
             localCenterOnZero = true;
-        } else if (quantizeOption.isDither2()) {
+            quantizeOption.setCheckZero(true);
+        } else if (quantizeOption.isDither()) {
             filter = new DitherFilter(quantizeOption.getSeed());
         } else {
             filter = new BaseFilter();
         }
-        if (quantizeOption.isHandleNull()) {
+        if (quantizeOption.isCheckZero()) {
+            filter = new ZeroFilter(filter);
+        }
+        if (quantizeOption.isCheckNull()) {
             filter = new NullFilter(quantizeOption.getNullValue(), filter);
         }
-        this.anyNulls = quantizeOption.isHandleNull();
+        this.anyNulls = quantizeOption.isCheckNull();
         this.pixelFilter = filter;
         this.centerOnZero = localCenterOnZero;
         this.bScale = quantizeOption.getBScale();

@@ -56,7 +56,10 @@ public class QuantizeOption implements ICompressOption {
 
     private long seed;
 
-    private boolean handleNull;
+    private boolean checkNull;
+
+    private boolean checkZero;
+    private boolean centerOnZero;
 
     private double nullValue;
 
@@ -145,12 +148,26 @@ public class QuantizeOption implements ICompressOption {
         return dither2;
     }
 
+    public boolean isDither() {
+        return dither;
+    }
+
+    public boolean isCenterOnZero() {
+        return centerOnZero;
+    }
+    
+    
+
     public long getSeed() {
         return seed;
     }
 
-    public boolean isHandleNull() {
-        return handleNull;
+    public boolean isCheckNull() {
+        return checkNull;
+    }
+
+    public boolean isCheckZero() {
+        return checkZero;
     }
 
     public double getNullValue() {
@@ -180,13 +197,23 @@ public class QuantizeOption implements ICompressOption {
         return this;
     }
 
+    public QuantizeOption setCenterOnZero(boolean value) {
+        this.centerOnZero = value;
+        return this;
+    }
+
     public QuantizeOption setSeed(long value) {
         this.seed = value;
         return this;
     }
 
-    public QuantizeOption setHandleNull(boolean value) {
-        this.handleNull = value;
+    public QuantizeOption setCheckNull(boolean value) {
+        this.checkNull = value;
+        return this;
+    }
+
+    public QuantizeOption setCheckZero(boolean value) {
+        this.checkZero = value;
         return this;
     }
 
