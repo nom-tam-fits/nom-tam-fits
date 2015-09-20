@@ -62,19 +62,17 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
 
-            new IntHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(0)).compress(asIntBuffer, compressed);
+            IntHCompress intHCompress = new IntHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(0));
+            intHCompress.compress(asIntBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            long[] decompressedLongArray = new long[intArray.length];
-            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             int[] decompressedArray = new int[intArray.length];
-            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
+            intHCompress.decompress(ByteBuffer.wrap(expectedBytes), IntBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(intArray, decompressedArray);
-
         }
     }
 
@@ -94,17 +92,16 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
 
-            new IntHCompress(new HCompressorOption().setNx(99).setNy(99).setScale(0)).compress(asIntBuffer, compressed);
+            IntHCompress intHCompress = new IntHCompress(new HCompressorOption().setNx(99).setNy(99).setScale(0));
+            intHCompress.compress(asIntBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            long[] decompressedLongArray = new long[intArray.length];
-            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             int[] decompressedArray = new int[intArray.length];
-            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
+            intHCompress.decompress(ByteBuffer.wrap(expectedBytes), IntBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(intArray, decompressedArray);
 
         }
@@ -177,19 +174,17 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
 
-            new ShortHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(0)).compress(asShortBuffer, compressed);
+            ShortHCompress shortHCompress = new ShortHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(0));
+            shortHCompress.compress(asShortBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            long[] decompressedLongArray = new long[shortArray.length];
-            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             short[] decompressedArray = new short[shortArray.length];
-            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
+            shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(shortArray, decompressedArray);
-
         }
     }
 
@@ -210,19 +205,17 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
 
-            new ShortHCompress(new HCompressorOption().setNx(99).setNy(99).setScale(0)).compress(asShortBuffer, compressed);
+            ShortHCompress shortHCompress = new ShortHCompress(new HCompressorOption().setNx(99).setNy(99).setScale(0));
+            shortHCompress.compress(asShortBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            long[] decompressedLongArray = new long[shortArray.length];
-            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             short[] decompressedArray = new short[shortArray.length];
-            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
+            shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(shortArray, decompressedArray);
-
         }
     }
 
@@ -243,17 +236,16 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
 
-            new ShortHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(1)).compress(asShortBuffer, compressed);
+            ShortHCompress shortHCompress = new ShortHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(1));
+            shortHCompress.compress(asShortBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            long[] decompressedLongArray = new long[shortArray.length];
-            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             short[] decompressedArray = new short[shortArray.length];
-            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
+            shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(shortArray, decompressedArray);
         }
     }
@@ -275,17 +267,16 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[byteArray.length]);
 
-            new ByteHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(0)).compress(byteBuffer, compressed);
+            ByteHCompress byteHCompress = new ByteHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(0));
+            byteHCompress.compress(byteBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            long[] decompressedLongArray = new long[byteArray.length];
-            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             byte[] decompressedArray = new byte[byteArray.length];
-            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
+            byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(byteArray, decompressedArray);
         }
     }
@@ -307,17 +298,16 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[byteArray.length]);
 
-            new ByteHCompress(new HCompressorOption().setNx(99).setNy(99).setScale(0)).compress(asByteBuffer, compressed);
+            ByteHCompress byteHCompress = new ByteHCompress(new HCompressorOption().setNx(99).setNy(99).setScale(0));
+            byteHCompress.compress(asByteBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            long[] decompressedLongArray = new long[byteArray.length];
-            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             byte[] decompressedArray = new byte[byteArray.length];
-            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
+            byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(byteArray, decompressedArray);
         }
     }
@@ -339,23 +329,16 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[byteArray.length]);
 
-            new ByteHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(1)).compress(asByteBuffer, compressed);
+            ByteHCompress byteHCompress = new ByteHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(1));
+            byteHCompress.compress(asByteBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
             compressed.get(compressedArray, 0, compressedArray.length);
             Assert.assertArrayEquals(expectedBytes, compressedArray);
 
-            long[] decompressedLongArray = new long[byteArray.length];
-            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), false, decompressedLongArray);
             byte[] decompressedArray = new byte[byteArray.length];
-            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
-            Assert.assertArrayEquals(byteArray, decompressedArray);
-
-            decompressedLongArray = new long[byteArray.length];
-            new HDecompress().decompress(ByteBuffer.wrap(expectedBytes), true, decompressedLongArray);
-            decompressedArray = new byte[byteArray.length];
-            ArrayFuncs.copyInto(decompressedLongArray, decompressedArray);
+            byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(byteArray, decompressedArray);
         }
     }
