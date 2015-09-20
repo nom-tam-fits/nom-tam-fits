@@ -31,12 +31,8 @@ package nom.tam.image.comp.filter;
  * #L%
  */
 
-import java.nio.DoubleBuffer;
-import java.nio.IntBuffer;
 import java.util.Arrays;
 
-import nom.tam.image.comp.CompParameter;
-import nom.tam.image.comp.INullCheck;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class Quantize {
@@ -85,25 +81,6 @@ public class Quantize {
 
     private static final double NOISE_5_MULTIPLICATOR = 0.1772048;
 
-    /**
-     * and including NULL_VALUE. These values may not be used to represent the
-     * quantized and scaled floating point pixel values If lossy Hcompression is
-     * used, and the array contains null values, then it is also possible for
-     * the compressed values to slightly exceed the range of the actual
-     * (lossless) values so we must reserve a little more space value used to
-     * represent undefined pixels
-     */
-    private static final int NULL_VALUE = Integer.MIN_VALUE + 1;
-
-    private static final double ROUNDING_HALF = 0.5;
-
-    /**
-     * value used to represent zero-valued pixels
-     */
-    private static final int ZERO_VALUE = Integer.MIN_VALUE + 2;
-
-    private final IDither dither;
-
     private final QuantizeOption parameter;
 
     private int[] intData;
@@ -136,8 +113,6 @@ public class Quantize {
     /* returned 5th order MAD of all non-null pixels */
     private double noise5;
 
-    private final INullCheck nullCheck;
-
     private double xmaxval;
 
     private double xminval;
@@ -148,15 +123,7 @@ public class Quantize {
 
     private double xnoise5;
 
-    public Quantize(CompParameter compParameter) {
-        this.nullCheck = compParameter.get(INullCheck.class);
-        this.dither = compParameter.get(IDither.class);
-        this.parameter = compParameter.get(QuantizeOption.class);
-    }
-
     public Quantize(QuantizeOption quantizeOption) {
-        this.nullCheck = quantizeOption.getNullCheck();
-        this.dither = quantizeOption.getDither();
         this.parameter = quantizeOption;
     }
 
@@ -333,7 +300,7 @@ public class Quantize {
         if (nx < MINIMUM_PIXEL_WIDTH) {
             int ngoodpix = 0;
             for (int index = 0; index < nx; index++) {
-                if (this.nullCheck.isNull(array.get(index))) {
+                if (isNull(array.get(index))) {
                     continue;
                 } else {
                     if (array.get(index) < this.xminval) {
@@ -351,22 +318,11 @@ public class Quantize {
         return false;
     }
 
-    /**
-     * find the 4nd valid pixel in row (to be skipped)
-     * 
-     * @param nx
-     * @param nullcheck
-     * @param nullvalue
-     * @param rowpix
-     * @param ii
-     * @return
-     */
-    private int findNextValidPixelWithNullCheck(int nx, DoubleArrayPointer rowpix, int ii) {
-        if (this.nullCheck.isActive()) {
-            while (ii < nx && this.nullCheck.isNull(rowpix.get(ii))) {
-                ii++;
-            }
-        }
+    protected boolean isNull(double d) {
+        return false;
+    }
+
+    protected int findNextValidPixelWithNullCheck(int nx, DoubleArrayPointer rowpix, int ii) {
         return ii;
     }
 
@@ -446,7 +402,7 @@ public class Quantize {
             /* estimate background noise using MAD pixel differences */
             calculateNoise(fdata, nxpix, nypix);
             // special case of an image filled with Nulls
-            if (this.nullCheck.isActive() && this.ngood == 0) {
+            if (this.parameter.isCheckNull() && this.ngood == 0) {
                 /* set parameters to dummy values, which are not used */
                 this.minValue = 0.;
                 this.maxValue = 1.;
@@ -484,23 +440,7 @@ public class Quantize {
         this.parameter.setBScale(bScale);
         this.parameter.setMinValue(minValue);
         this.parameter.setMaxValue(maxValue);
-        parameter.setCheckNull( ngood != nx &&
-                nullCheck != null && nullCheck.isActive());
-        parameter.setCheckZero(false);
-        parameter.setDither(dither instanceof SubtractiveDither);
-        parameter.setDither2(dither instanceof SubtractiveDither2);
-        parameter.setNullValue(nullCheck.getNullValue());
-        if (dither != null) {
-            parameter.setSeed(dither.getSeed());
-            parameter.setCheckZero(dither.isZeroValue(0.0));
-            parameter.setCenterOnZero(dither.centerOnZero());
-        }
-        DoubleBuffer wrapFdata = DoubleBuffer.wrap(fdata);
-        wrapFdata.limit((int) nx);
-        IntBuffer wrapInt = IntBuffer.wrap(intData);
-        wrapInt.limit((int) nx);
-        new QuantProcessor(parameter).quantize(wrapFdata, wrapInt);
-        /* calc min and max values */
+        parameter.setCheckNull(parameter.isCheckNull() && ngood != nx);
         return true; /* yes, data have been quantized */
     }
 
@@ -583,44 +523,6 @@ public class Quantize {
         double value = array[one];
         array[one] = array[second];
         array[second] = value;
-    }
-
-    /**
-     * Unquantize int integer values into the scaled floating point values
-     * 
-     * @param input
-     *            array of values to be converted
-     * @param ntodo
-     *            number of elements in the array
-     * @param output
-     *            array of converted pixels
-     */
-    public void unquantize(int[] input, long ntodo, double[] output) {
-        final double bScale = this.parameter.getBScale();
-        final double bZero = this.parameter.getBZero();
-        if (!this.nullCheck.isActive()) { // no null checking required
-            for (int ii = 0; ii < ntodo; ii++) {
-                if (this.dither.isZeroValue(input[ii], ZERO_VALUE)) {
-                    output[ii] = 0.0;
-                } else {
-                    output[ii] = (input[ii] - this.dither.nextRandom() + ROUNDING_HALF) * bScale + bZero;
-                }
-                this.dither.incrementRandom();
-            }
-        } else { // must check for null values
-            for (int ii = 0; ii < ntodo; ii++) {
-                if (this.nullCheck.isNull(input[ii])) {
-                    output[ii] = this.nullCheck.setNull(ii);
-                } else {
-                    if (this.dither.isZeroValue(input[ii], ZERO_VALUE)) {
-                        output[ii] = 0.0;
-                    } else {
-                        output[ii] = (input[ii] - this.dither.nextRandom() + ROUNDING_HALF) * bScale + bZero;
-                    }
-                }
-                this.dither.incrementRandom();
-            }
-        }
     }
 
 }

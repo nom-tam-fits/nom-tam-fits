@@ -1,7 +1,6 @@
 package nom.tam.image.comp.filter;
 
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.image.comp.INullCheck;
 
 /*
  * #%L
@@ -59,6 +58,7 @@ public class QuantizeOption implements ICompressOption {
     private boolean checkNull;
 
     private boolean checkZero;
+
     private boolean centerOnZero;
 
     private double nullValue;
@@ -130,16 +130,6 @@ public class QuantizeOption implements ICompressOption {
         return this;
     }
 
-    public INullCheck getNullCheck() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public IDither getDither() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public double getQlevel() {
         return qlevel;
     }
@@ -155,8 +145,6 @@ public class QuantizeOption implements ICompressOption {
     public boolean isCenterOnZero() {
         return centerOnZero;
     }
-    
-    
 
     public long getSeed() {
         return seed;

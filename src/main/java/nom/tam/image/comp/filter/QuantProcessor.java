@@ -176,10 +176,14 @@ public class QuantProcessor {
 
         @Override
         protected int toInt(double pixel) {
-            if (this.nullValue == pixel) {
+            if (isNull(pixel)) {
                 return NULL_VALUE;
             }
             return super.toInt(pixel);
+        }
+
+        public final boolean isNull(double pixel) {
+            return this.nullValue == pixel;
         }
     }
 
@@ -255,11 +259,16 @@ public class QuantProcessor {
 
     private final PixelFilter pixelFilter;
 
-    private final double bScale;
+    private double bScale;
 
-    private final double bZero;
+    private double bZero;
+
+    private Quantize quantize;
+
+    private QuantizeOption quantizeOption;
 
     public QuantProcessor(QuantizeOption quantizeOption) {
+        this.quantizeOption = quantizeOption;
         PixelFilter filter = null;
         boolean localCenterOnZero = quantizeOption.isCenterOnZero();
         if (quantizeOption.isDither2()) {
@@ -275,10 +284,30 @@ public class QuantProcessor {
             filter = new ZeroFilter(filter);
         }
         if (quantizeOption.isCheckNull()) {
-            filter = new NullFilter(quantizeOption.getNullValue(), filter);
+            final NullFilter nullFilter = new NullFilter(quantizeOption.getNullValue(), filter);
+            filter = nullFilter;
+            quantize = new Quantize(quantizeOption) {
+
+                protected int findNextValidPixelWithNullCheck(int nx, DoubleArrayPointer rowpix, int ii) {
+                    while (ii < nx && nullFilter.isNull(rowpix.get(ii))) {
+                        ii++;
+                    }
+                    return ii;
+                }
+
+                @Override
+                protected boolean isNull(double d) {
+                    return nullFilter.isNull(QuantProcessor.this.quantizeOption.getNullValue());
+                }
+            };
+        } else {
+            quantize = new Quantize(quantizeOption);
         }
         this.pixelFilter = filter;
         this.centerOnZero = localCenterOnZero;
+    }
+
+    private void calculateBZeroAndBscale() {
         this.bScale = quantizeOption.getBScale();
         if (Double.isNaN(quantizeOption.getBZero())) {
             this.bZero = zeroCenter(quantizeOption.isCheckNull(), quantizeOption.getMinValue(), quantizeOption.getMaxValue());
@@ -303,7 +332,7 @@ public class QuantProcessor {
 
     public void unquantize(final IntBuffer intData, final DoubleBuffer fdata) {
         while (fdata.hasRemaining()) {
-            fdata.put(this.pixelFilter.toInt(intData.get()));
+            fdata.put(this.pixelFilter.toDouble(intData.get()));
             this.pixelFilter.nextPixel();
         }
     }
@@ -335,4 +364,16 @@ public class QuantProcessor {
         return evaluatedBZero;
     }
 
+    public boolean quantize(double[] doubles, IntBuffer quants) {
+        boolean success = quantize.quantize(doubles, this.quantizeOption.getTileWidth(), this.quantizeOption.getTileHeigth());
+        if (success) {
+            calculateBZeroAndBscale();
+            quantize(DoubleBuffer.wrap(doubles, 0, this.quantizeOption.getTileWidth() * this.quantizeOption.getTileHeigth()), quants);
+        }
+        return success;
+    }
+
+    public Quantize getQuantize() {
+        return quantize;
+    }
 }
