@@ -40,7 +40,6 @@ import java.util.Arrays;
 import nom.tam.util.ArrayFuncs;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class QuantizeTest {
@@ -90,9 +89,6 @@ public class QuantizeTest {
             System.arraycopy(doubles, 0, expected, 0, expected.length);
             Assert.assertArrayEquals(expected, output, option.getBScale() * 1.5);
         }
-    }
-
-    private void checkRequantedValues(Quantize quantize, double[] doubles) {
     }
 
     @Test
@@ -352,8 +348,7 @@ public class QuantizeTest {
     public void testDifferentfailQuantCases() {
         double[] matrix = initMatrix();
 
-        QuantizeOption option;
-        QuantProcessor quantProcessor = new QuantProcessor(option = new QuantizeOption()//
+        QuantProcessor quantProcessor = new QuantProcessor(new QuantizeOption()//
                 .setDither(false)//
                 .setDither2(false)//
                 .setQlevel(4.)//
@@ -365,7 +360,7 @@ public class QuantizeTest {
 
         // test very small image
         matrix = initMatrix();
-        quantProcessor = new QuantProcessor(option = new QuantizeOption()//
+        quantProcessor = new QuantProcessor(new QuantizeOption()//
                 .setDither(false)//
                 .setDither2(false)//
                 .setQlevel(4.)//
@@ -377,13 +372,11 @@ public class QuantizeTest {
     }
 
     @Test
-    @Ignore
     public void testDifferentfailQuantCases2() {
         double[] matrix = initMatrix();
 
-        QuantizeOption option;
         matrix[5] = NULL_VALUE;
-        QuantProcessor quantProcessor = new QuantProcessor(option = new QuantizeOption()//
+        QuantProcessor quantProcessor = new QuantProcessor(new QuantizeOption()//
                 .setDither(false)//
                 .setDither2(false)//
                 .setQlevel(4.)//
@@ -392,14 +385,6 @@ public class QuantizeTest {
                 .setTileWidth(3)//
                 .setTileHeigth(2));
         Assert.assertFalse(quantProcessor.quantize(matrix, null));
-
-        // quantizeParameter = new QuantizeOption();
-        // quantize = new Quantize(nullCheckValue().set(IDither.class, new
-        // NoDither()).set(quantizeParameter.setQLevel(4)));
-        //
-        // matrix[5] = NULL_VALUE;
-        // Assert.assertFalse(quantize.quantize(matrix, 3, 2));
-
     }
 
     @Test

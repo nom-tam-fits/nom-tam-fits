@@ -297,7 +297,7 @@ public class QuantProcessor {
 
                 @Override
                 protected boolean isNull(double d) {
-                    return nullFilter.isNull(QuantProcessor.this.quantizeOption.getNullValue());
+                    return nullFilter.isNull(d);
                 }
             };
         } else {
