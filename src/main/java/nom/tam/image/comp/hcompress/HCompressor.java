@@ -37,6 +37,9 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import nom.tam.image.comp.ITileCompressor;
+import nom.tam.image.comp.filter.QuantProcessor.DoubleQuantCompressor;
+import nom.tam.image.comp.filter.QuantProcessor.FloatQuantCompressor;
+import nom.tam.image.comp.filter.QuantizeOption;
 import nom.tam.util.ArrayFuncs;
 
 public abstract class HCompressor<T extends Buffer> implements ITileCompressor<T> {
@@ -121,6 +124,20 @@ public abstract class HCompressor<T extends Buffer> implements ITileCompressor<T
             }
         }
 
+    }
+
+    public static class FloatHCompress extends FloatQuantCompressor {
+
+        public FloatHCompress(QuantizeOption quantizeOption, HCompressorOption options) {
+            super(quantizeOption, new IntHCompress(options));
+        }
+    }
+
+    public static class DoubleHCompress extends DoubleQuantCompressor {
+
+        public DoubleHCompress(QuantizeOption quantizeOption, HCompressorOption options) {
+            super(quantizeOption, new IntHCompress(options));
+        }
     }
 
     private HCompress compress;

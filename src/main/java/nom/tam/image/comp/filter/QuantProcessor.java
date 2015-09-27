@@ -31,10 +31,80 @@ package nom.tam.image.comp.filter;
  * #L%
  */
 
+import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import nom.tam.image.comp.ITileCompressor;
+
 public class QuantProcessor {
+
+    public static class DoubleQuantCompressor extends QuantProcessor implements ITileCompressor<DoubleBuffer> {
+
+        private final ITileCompressor<IntBuffer> postCompressor;
+
+        public DoubleQuantCompressor(QuantizeOption quantizeOption, ITileCompressor<IntBuffer> postCompressor) {
+            super(quantizeOption);
+            this.postCompressor = postCompressor;
+        }
+
+        @Override
+        public void compress(DoubleBuffer buffer, ByteBuffer compressed) {
+            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()]);
+            this.quantize(buffer, intData);
+            intData.rewind();
+            this.postCompressor.compress(intData, compressed);
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, DoubleBuffer buffer) {
+            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()]);
+            this.postCompressor.decompress(compressed, intData);
+            intData.rewind();
+            this.unquantize(intData, buffer);
+        }
+    }
+
+    /**
+     * TODO this is done very inefficient and should be refactored!
+     */
+    public static class FloatQuantCompressor extends QuantProcessor implements ITileCompressor<FloatBuffer> {
+
+        private final ITileCompressor<IntBuffer> postCompressor;
+
+        public FloatQuantCompressor(QuantizeOption quantizeOption, ITileCompressor<IntBuffer> postCompressor) {
+            super(quantizeOption);
+            this.postCompressor = postCompressor;
+        }
+
+        @Override
+        public void compress(FloatBuffer buffer, ByteBuffer compressed) {
+            float[] floats = new float[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()];
+            double[] doubles = new double[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()];
+            buffer.get(floats);
+            for (int index = 0; index < doubles.length; index++) {
+                doubles[index] = floats[index];
+            }
+            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()]);
+            this.quantize(doubles, intData);
+            intData.rewind();
+            this.postCompressor.compress(intData, compressed);
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, FloatBuffer buffer) {
+            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()]);
+            this.postCompressor.decompress(compressed, intData);
+            intData.rewind();
+            double[] doubles = new double[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()];
+            DoubleBuffer doubleBuffer = DoubleBuffer.wrap(doubles);
+            this.unquantize(intData, doubleBuffer);
+            for (int index = 0; index < doubles.length; index++) {
+                buffer.put((float) doubles[index]);
+            }
+        }
+    }
 
     private class BaseFilter extends PixelFilter {
 
@@ -265,7 +335,7 @@ public class QuantProcessor {
 
     private Quantize quantize;
 
-    private QuantizeOption quantizeOption;
+    protected QuantizeOption quantizeOption;
 
     public QuantProcessor(QuantizeOption quantizeOption) {
         this.quantizeOption = quantizeOption;
