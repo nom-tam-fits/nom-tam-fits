@@ -52,7 +52,9 @@ public class QuantProcessor {
         @Override
         public void compress(DoubleBuffer buffer, ByteBuffer compressed) {
             IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()]);
-            this.quantize(buffer, intData);
+            double[] doubles = new double[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()];
+            buffer.get(doubles);
+            this.quantize(doubles, intData);
             intData.rewind();
             this.postCompressor.compress(intData, compressed);
         }
