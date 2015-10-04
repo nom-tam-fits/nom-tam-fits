@@ -341,6 +341,8 @@ public class QuantProcessor {
 
     public QuantProcessor(QuantizeOption quantizeOption) {
         this.quantizeOption = quantizeOption;
+        this.bScale = quantizeOption.getBScale();
+        this.bZero = quantizeOption.getBZero();
         PixelFilter filter = null;
         boolean localCenterOnZero = quantizeOption.isCenterOnZero();
         if (quantizeOption.isDither2()) {

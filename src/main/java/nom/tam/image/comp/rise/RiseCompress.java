@@ -7,6 +7,9 @@ import java.nio.ShortBuffer;
 import java.util.logging.Logger;
 
 import nom.tam.image.comp.ITileCompressor;
+import nom.tam.image.comp.filter.QuantProcessor.DoubleQuantCompressor;
+import nom.tam.image.comp.filter.QuantProcessor.FloatQuantCompressor;
+import nom.tam.image.comp.filter.QuantizeOption;
 
 /*
  * #%L
@@ -142,6 +145,20 @@ public abstract class RiseCompress<T extends Buffer> implements ITileCompressor<
         public void decompress(ByteBuffer readBuffer, ShortBuffer buffer) {
             this.pixelBuffer = buffer;
             super.decompressBuffer(readBuffer, readBuffer.getShort(), buffer.limit());
+        }
+    }
+
+    public static class FloatRiseCompress extends FloatQuantCompressor {
+
+        public FloatRiseCompress(QuantizeOption quantizeOption, RiseCompressOption options) {
+            super(quantizeOption, new IntRiseCompress(options));
+        }
+    }
+
+    public static class DoubleRiseCompress extends DoubleQuantCompressor {
+
+        public DoubleRiseCompress(QuantizeOption quantizeOption, RiseCompressOption options) {
+            super(quantizeOption, new IntRiseCompress(options));
         }
     }
 

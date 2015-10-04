@@ -275,7 +275,7 @@ public abstract class PLIOCompress {
             lllen = compressedData.get(MINI_HEADER_SIZE_FIELD);
             llfirt = MINI_HEADER_SIZE;
         }
-        final int xe = npix - 1;
+        final int xe = npix;
         int op = 0;
         int x1 = 1;
         int pv = 1;

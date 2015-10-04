@@ -74,7 +74,8 @@ public class HCompressorOption implements ICompressOption {
         return this;
     }
 
-    public void setSmooth(boolean smooth) {
-        this.smooth = smooth;
+    public HCompressorOption setSmooth(boolean value) {
+        this.smooth = value;
+        return this;
     }
 }
