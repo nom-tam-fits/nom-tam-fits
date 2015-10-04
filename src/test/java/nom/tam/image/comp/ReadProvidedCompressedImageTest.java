@@ -31,6 +31,13 @@ package nom.tam.image.comp;
  * #L%
  */
 
+import static nom.tam.fits.header.Compression.COMPRESSED_DATA_COLUMN;
+import static nom.tam.fits.header.Compression.ZNAXIS;
+import static nom.tam.fits.header.Compression.ZNAXISn;
+import static nom.tam.fits.header.Compression.ZSCALE_COLUMN;
+import static nom.tam.fits.header.Compression.ZTILEn;
+import static nom.tam.fits.header.Compression.ZZERO_COLUMN;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -78,18 +85,18 @@ public class ReadProvidedCompressedImageTest {
                 BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
 
                 Header hdr = bhdu.getHeader();
-                int naxis = hdr.getIntValue("ZNAXIS");
+                int naxis = hdr.getIntValue(ZNAXIS);
                 int[] axes = new int[naxis];
                 int[] tiles = new int[axes.length];
                 boolean tilesFound = true;
                 // First look for the ZTILEn keywords.
                 for (int i = 0; i < axes.length; i += 1) {
-                    axes[i] = hdr.getIntValue("ZNAXIS" + (i + 1), -1);
+                    axes[i] = hdr.getIntValue(ZNAXISn.n(i + 1), -1);
                     if (axes[i] == -1) {
                         throw new FitsException("Required ZNAXISn not found");
                     }
                     if (tilesFound) {
-                        tiles[i] = hdr.getIntValue("ZTILE" + (i + 1), -1);
+                        tiles[i] = hdr.getIntValue(ZTILEn.n(i + 1), -1);
                         if (tiles[i] == -1) {
                             tilesFound = false;
                         }
@@ -101,12 +108,12 @@ public class ReadProvidedCompressedImageTest {
                         tiles[i] = 1;
                     }
                 }
-                Object[] rows = (Object[]) bhdu.getColumn("COMPRESSED_DATA");
+                Object[] rows = (Object[]) bhdu.getColumn(COMPRESSED_DATA_COLUMN);
                 double[] zzero = null;
                 double[] zscale = null;
                 try {
-                    zzero = (double[]) bhdu.getColumn("ZZERO");
-                    zscale = (double[]) bhdu.getColumn("ZSCALE");
+                    zzero = (double[]) bhdu.getColumn(ZZERO_COLUMN);
+                    zscale = (double[]) bhdu.getColumn(ZSCALE_COLUMN);
                 } catch (Exception e) {
                     // columns not available
                 }
@@ -209,8 +216,8 @@ public class ReadProvidedCompressedImageTest {
                 HCompressorOption options = new HCompressorOption()//
                         .setScale(0)//
                         .setSmooth(false)//
-                        .setNx(hdr.getIntValue("ZTILE1"))//
-                        .setNy(hdr.getIntValue("ZTILE2"));
+                        .setNx(hdr.getIntValue(ZTILEn.n(1)))//
+                        .setNy(hdr.getIntValue(ZTILEn.n(2)));
                 new ShortHCompress(options).decompress(ByteBuffer.wrap((byte[]) row), decompressed);
             }
 
@@ -260,7 +267,11 @@ public class ReadProvidedCompressedImageTest {
 
                 RiseCompressOption options = new RiseCompressOption()//
                         .setBlockSize(32);
-                QuantizeOption quant = new QuantizeOption().setBScale(this.scale).setBZero(this.zero).setTileHeigth(1).setTileWidth(300);
+                QuantizeOption quant = new QuantizeOption()//
+                        .setBScale(this.scale)//
+                        .setBZero(this.zero)//
+                        .setTileHeigth(1)//
+                        .setTileWidth(300);
                 FloatBuffer wrapedint = FloatBuffer.wrap(new float[300]);
                 new RiseCompress.FloatRiseCompress(quant, options).decompress(ByteBuffer.wrap((byte[]) row), wrapedint);
                 for (int index = 0; index < 300; index++) {
