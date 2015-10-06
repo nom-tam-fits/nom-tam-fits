@@ -1607,17 +1607,17 @@ public class Header implements FitsElement {
      * 
      * @return the unpadded data segment size.
      */
-    int trueDataSize() {
+    long trueDataSize() {
 
         if (!isValidHeader()) {
-            return 0;
+            return 0L;
         }
 
         int naxis = getIntValue(NAXIS, 0);
 
         // If there are no axes then there is no data.
         if (naxis == 0) {
-            return 0;
+            return 0L;
         }
 
         getIntValue(BITPIX);
@@ -1639,7 +1639,7 @@ public class Header implements FitsElement {
             startAxis = 1;
         }
 
-        int size = 1;
+        long size = 1;
         for (int i = startAxis; i < naxis; i += 1) {
             size *= axes[i];
         }
