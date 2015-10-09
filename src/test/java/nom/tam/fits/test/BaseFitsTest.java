@@ -53,9 +53,11 @@ import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCommentsMap;
+import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.UndefinedData;
 import nom.tam.fits.UndefinedHDU;
+import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
@@ -520,6 +522,21 @@ public class BaseFitsTest {
             Thread.sleep(10);
             count++;
         }
+    }
+
+    @Test
+    public void testBigDataSegments() throws FitsException {
+        ImageData data = new ImageData(new float[4][4]);
+
+        Header manufactureHeader = ImageHDU.manufactureHeader(data);
+        manufactureHeader.card(Standard.END).comment("");
+        manufactureHeader.findCard(Standard.NAXIS1).setValue(25000);
+        manufactureHeader.findCard(Standard.NAXIS2).setValue(25000);
+
+        long value = manufactureHeader.getDataSize();
+        int intValue = (int) manufactureHeader.getDataSize();
+        assertEquals(2500001280L, value);
+        Assert.assertTrue(intValue != value);
     }
 
 }
