@@ -32,20 +32,29 @@ package nom.tam.image.comp;
  */
 
 import static nom.tam.fits.header.Compression.COMPRESSED_DATA_COLUMN;
+import static nom.tam.fits.header.Compression.GZIP_COMPRESSED_DATA_COLUMN;
+import static nom.tam.fits.header.Compression.UNCOMPRESSED_DATA_COLUMN;
+import static nom.tam.fits.header.Compression.ZNAMEn;
 import static nom.tam.fits.header.Compression.ZNAXIS;
 import static nom.tam.fits.header.Compression.ZNAXISn;
 import static nom.tam.fits.header.Compression.ZSCALE_COLUMN;
 import static nom.tam.fits.header.Compression.ZTILEn;
+import static nom.tam.fits.header.Compression.ZVALn;
 import static nom.tam.fits.header.Compression.ZZERO_COLUMN;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -55,7 +64,9 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.filter.QuantizeOption;
 import nom.tam.image.comp.gzip.GZipCompress;
 import nom.tam.image.comp.hcompress.HCompressor.ShortHCompress;
@@ -71,41 +82,226 @@ import org.junit.Test;
 
 public class ReadProvidedCompressedImageTest {
 
+    enum TileCompressionType {
+        UNCOMPRESSED,
+        COMPRESSED,
+        GZIP_COMPRESSED
+    }
+
+    static class Tile implements Runnable {
+
+        enum Action {
+            COMPRESS,
+            DECOMPRESS
+        }
+
+        TileArray array;
+
+        int index;
+
+        TileCompressionType compressionType;
+
+        Buffer compressedData;
+
+        Buffer decompressedData;
+
+        double zero = Double.NaN;
+
+        double scale = Double.NaN;
+
+        int width;
+
+        int heigth;
+
+        Action action;
+
+        public Tile(TileArray array) {
+            this.array = array;
+        }
+
+        @Override
+        public void run() {
+
+        }
+
+        public Tile setIndex(int value) {
+            this.index = value;
+            return this;
+        }
+
+        public Tile setCompressed(Object data, TileCompressionType type) {
+            if (data != null) {
+                this.compressionType = type;
+                this.compressedData = convertToBuffer(data);
+            }
+            return this;
+        }
+
+        private Buffer convertToBuffer(Object data) {
+            return null;
+        }
+
+        public Tile setZZero(double value) {
+            this.zero = value;
+            return this;
+        }
+
+        public Tile setZScale(double value) {
+            this.scale = value;
+            return this;
+        }
+
+        public Tile setWidth(int value) {
+            this.width = value;
+            return this;
+        }
+
+        public Tile setHeigth(int value) {
+            this.heigth = value;
+            return this;
+        }
+    }
+
+    static class TileArray {
+
+        Tile[] tiles;
+
+        int[] axes;
+
+        int naxis;
+
+        /**
+         * ZNAMEn = ’BYTEPIX’ value= 1, 2, 4, or 8
+         */
+        int bytePix = 4;
+
+        /**
+         * ZNAMEn = ’BLOCKSIZE’ value= 16 or 32
+         */
+        int blocksize = 32;
+
+        /**
+         * ZNAMEn = ’SCALE’
+         */
+        int scaleFactor = 0;
+
+        /**
+         * ZNAMEn = ’SMOOTH’ A value of 0 means no smoothing, and any other
+         * value means smoothing is recommended.
+         */
+        boolean smooth = false;
+
+        TileArray read(BinaryTableHDU binTable) throws FitsException {
+            Header header = binTable.getHeader();
+            readZVALs(header);
+            int naxis = header.getIntValue(ZNAXIS);
+            int[] axes = new int[naxis];
+            for (int i = 1; i <= naxis; i += 1) {
+                axes[i - 1] = header.getIntValue(ZNAXISn.n(i), -1);
+                if (axes[i - 1] == -1) {
+                    throw new FitsException("Required ZNAXISn not found");
+                }
+            }
+            int[] tileAxes = new int[axes.length];
+            Arrays.fill(tileAxes, 1);
+            tileAxes[0] = axes[0];
+            for (int i = 1; i <= naxis; i += 1) {
+                HeaderCard card = header.findCard(ZTILEn.n(i));
+                if (card != null) {
+                    tileAxes[i - 1] = card.getValue(Integer.class, axes[i - 1]);
+                }
+            }
+            Object[] compressed = getNullableColumn(binTable, Object[].class, COMPRESSED_DATA_COLUMN);
+            Object[] uncompressed = getNullableColumn(binTable, Object[].class, UNCOMPRESSED_DATA_COLUMN);
+            Object[] gzipCompressed = getNullableColumn(binTable, Object[].class, GZIP_COMPRESSED_DATA_COLUMN);
+            double[] zzero = getNullableColumn(binTable, double[].class, ZZERO_COLUMN);
+            double[] zscale = getNullableColumn(binTable, double[].class, ZSCALE_COLUMN);
+
+            int nrOfTilesOnXAxis = BigDecimal.valueOf(axes[0]).divide(BigDecimal.valueOf(tileAxes[0])).round(new MathContext(1, RoundingMode.CEILING)).intValue();
+            int nrOfTilesOnYAxis = BigDecimal.valueOf(axes[1]).divide(BigDecimal.valueOf(tileAxes[1])).round(new MathContext(1, RoundingMode.CEILING)).intValue();
+            int tileIndex = 0;
+            tiles = new Tile[nrOfTilesOnXAxis * nrOfTilesOnYAxis];
+            for (int y = 0; y < axes[1]; y += tileAxes[1]) {
+                boolean lastY = (y + tileAxes[1]) >= axes[1];
+                for (int x = 0; x < axes[0]; x += tileAxes[0]) {
+                    boolean lastX = (x + tileAxes[0]) >= axes[0];
+                    tiles[tileIndex] = new Tile(this)//
+                            .setIndex(tileIndex)//
+                            .setCompressed(compressed[tileIndex], TileCompressionType.COMPRESSED)//
+                            .setCompressed(uncompressed != null ? uncompressed[tileIndex] : null, TileCompressionType.UNCOMPRESSED)//
+                            .setCompressed(gzipCompressed != null ? gzipCompressed[tileIndex] : null, TileCompressionType.GZIP_COMPRESSED)//
+                            .setZZero(zzero == null ? Double.NaN : zzero[tileIndex])//
+                            .setZScale(zscale == null ? Double.NaN : zscale[tileIndex])//
+                            .setWidth(tileAxes[0])//
+                            .setHeigth(tileAxes[1]);
+                    tileIndex++;
+                }
+                tiles[tileIndex - 1].setWidth(0);
+            }
+            return this;
+        }
+
+        private <T> T getNullableColumn(BinaryTableHDU binTable, Class<T> clazz, String columnName) throws FitsException {
+            int index = binTable.findColumn(columnName);
+            if (index >= 0) {
+                return clazz.cast(binTable.getColumn(index));
+            } else {
+                return null;
+            }
+        }
+
+        private void readZVALs(Header header) {
+            int nval = 1;
+            HeaderCard card = header.findCard(ZNAMEn.n(nval));
+            while (card != null) {
+                HeaderCard valueCard = header.findCard(ZVALn.n(nval));
+                if (valueCard != null) {
+                    if (card.getValue().trim().equals(Compression.BYTEPIX)) {
+                        bytePix = valueCard.getValue(Integer.class, 4);
+                    } else if (card.getValue().trim().equals(Compression.BLOCKSIZE)) {
+                        blocksize = valueCard.getValue(Integer.class, 32);
+                    } else if (card.getValue().trim().equals(Compression.SCALE)) {
+                        scaleFactor = valueCard.getValue(Integer.class, 0);
+                    } else if (card.getValue().trim().equals(Compression.SMOOTH)) {
+                        smooth = valueCard.getValue(Integer.class, 0) != 0;
+                    }
+                }
+                card = header.findCard(ZNAMEn.n(++nval));
+            }
+        }
+    }
+
     class ImageReader {
 
         protected double scale;
 
         protected double zero;
 
-        protected void decompressRow(Header hdr, Object row) {
+        protected void decompressRow(Header header, Object row) {
         }
 
         void read(String fileName) throws Exception {
             try (Fits f = new Fits(fileName)) {
                 BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
 
+                TileArray tileArray = new TileArray().read(bhdu);
+
                 Header hdr = bhdu.getHeader();
                 int naxis = hdr.getIntValue(ZNAXIS);
                 int[] axes = new int[naxis];
-                int[] tiles = new int[axes.length];
-                boolean tilesFound = true;
-                // First look for the ZTILEn keywords.
-                for (int i = 0; i < axes.length; i += 1) {
-                    axes[i] = hdr.getIntValue(ZNAXISn.n(i + 1), -1);
-                    if (axes[i] == -1) {
+                for (int i = 1; i <= naxis; i += 1) {
+                    axes[i - 1] = hdr.getIntValue(ZNAXISn.n(i), -1);
+                    if (axes[i - 1] == -1) {
                         throw new FitsException("Required ZNAXISn not found");
                     }
-                    if (tilesFound) {
-                        tiles[i] = hdr.getIntValue(ZTILEn.n(i + 1), -1);
-                        if (tiles[i] == -1) {
-                            tilesFound = false;
-                        }
-                    }
                 }
-                if (!tilesFound) {
-                    tiles[0] = axes[0];
-                    for (int i = 1; i < tiles.length; i += 1) {
-                        tiles[i] = 1;
+                int[] tiles = new int[axes.length];
+                Arrays.fill(tiles, 1);
+                tiles[0] = axes[1];
+                for (int i = 1; i <= naxis; i += 1) {
+                    HeaderCard card = hdr.findCard(ZTILEn.n(i));
+                    if (card != null) {
+                        tiles[i - 1] = card.getValue(Integer.class, axes[i - 1]);
                     }
                 }
                 Object[] rows = (Object[]) bhdu.getColumn(COMPRESSED_DATA_COLUMN);
@@ -117,13 +313,13 @@ public class ReadProvidedCompressedImageTest {
                 } catch (Exception e) {
                     // columns not available
                 }
-                for (int tileIndex = 1; tileIndex <= rows.length; tileIndex++) {
-                    Object row = rows[tileIndex - 1];
+                for (int tileIndex = 0; tileIndex < rows.length; tileIndex++) {
+                    Object row = rows[tileIndex];
                     if (zzero != null) {
-                        this.zero = zzero[tileIndex - 1];
+                        this.zero = zzero[tileIndex];
                     }
                     if (zscale != null) {
-                        this.scale = zscale[tileIndex - 1];
+                        this.scale = zscale[tileIndex];
                     }
                     decompressRow(hdr, row);
                 }

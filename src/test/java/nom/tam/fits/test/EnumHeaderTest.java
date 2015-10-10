@@ -123,7 +123,7 @@ public class EnumHeaderTest {
     }
 
     @Test
-    public void testAllHeaders() throws MalformedURLException {
+    public void testAllHeaders() throws Exception {
         Class<?>[] classes = new Class<?>[]{
             Checksum.class,
             CXCExt.class,
@@ -143,6 +143,7 @@ public class EnumHeaderTest {
         };
         for (Class<?> class1 : classes) {
             for (Object enumConst : class1.getEnumConstants()) {
+                Assert.assertNotNull(class1.getMethod("valueOf", String.class).invoke(class1, enumConst.getClass().getMethod("name").invoke(enumConst)));
                 IFitsHeader iFitsHeader = (IFitsHeader) enumConst;
                 if (class1 != Standard.class) {
                     Assert.assertNotNull(iFitsHeader.comment());

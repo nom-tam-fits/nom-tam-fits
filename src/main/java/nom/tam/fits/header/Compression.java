@@ -230,22 +230,153 @@ public enum Compression implements IFitsHeader {
      */
     ZDITHER0(HDU.ANY, VALUE.INTEGER, "");
 
+    /**
+     * This is the simplest option in which no dithering is performed. The
+     * floating-point pixels are simply quantized using Eq. 1. This option
+     * should be assumed if the ZQUANTIZ keyword is not present in the header of
+     * the compressed floating-point image.
+     */
+    public static final String ZQUANTIZ_NO_DITHER = "NO_DITHER";
+
+    /**
+     * It should be noted that an image that is quantized using this technique
+     * can stil l be unquantized using the simple linear scaling function given
+     * by Eq. 1. The only side effect in this ca se is to introduce slightly
+     * more noise in the image than if the full subtractive dithering algorith m
+     * were applied.
+     */
+    public static final String ZQUANTIZ_SUBTRACTIVE_DITHER_1 = "SUBTRACTIVE_DITHER_1";
+
+    /**
+     * This dithering algorithm is identical to the SUBTRACTIVE DITHER 1
+     * algorithm described above, ex- cept that any pixels in the floating-point
+     * image that are equa l to 0.0 are represented by the reserved value
+     * -2147483647 in the quantized integer array. When the i mage is
+     * subsequently uncompressed and unscaled, these pixels are restored to
+     * their original va lue of 0.0. This dithering option is useful if the
+     * zero-valued pixels have special significance to the da ta analysis
+     * software, so that the value of these pixels must not be dithered.
+     */
+    public static final String ZQUANTIZ_SUBTRACTIVE_DITHER_2 = "SUBTRACTIVE_DITHER_2";
+
+    /**
+     * Gzip is the compression algorithm used in the free GN U software utility
+     * of the same name. It was created by Jean-loup Gailly and Mark Adler and
+     * is based on the DEFLATE algorithm, which is a combination of LZ77 and
+     * Huffman coding. DEFLATE was intended as a replacement for LZW and other
+     * patent-encumbered data compression algor ithms which, at the time,
+     * limited the usability of compress and other popular archivers. Furt her
+     * information about this compression technique is readily available on the
+     * Internet. The gzip alg orithm has no associated parameters that need to
+     * be specified with the ZNAMEn and ZVALn keywords.
+     */
     public static final String ZCMPTYPE_GZIP_1 = "GZIP 1";
 
+    /**
+     * If ZCMPTYPE = ’GZIP 2’ then the bytes in the array of image pixel values
+     * are shuffled in to decreasing order of significance before being
+     * compressed with the gzip algorithm. In other words, bytes are shuffled so
+     * that the most significant byte of every pixel occurs first, in order,
+     * followed by the next most significant byte, and so on for every byte.
+     * Since the most significan bytes of the pixel values often have very
+     * similar values, grouping them together in this way often achieves better
+     * net compression of the array. This is usually especially effective when
+     * compressing floating-point arrays.
+     */
     public static final String ZCMPTYPE_GZIP_2 = "GZIP 2";
 
+    /**
+     * If ZCMPTYPE = ’RICE 1’ then the Rice algorithm is used to compress and
+     * uncompress the image pixels. The Rice algorithm (Rice, R. F., Yeh, P.-S.,
+     * and Miller, W. H. 1993, in Proc. of the 9th AIAA Computing in Aerospace
+     * Conf., AIAA-93-4541-CP, American Institute of Aeronautics and
+     * Astronautics) is simple and very fast, compressing or decompressing 10 7
+     * pixels/sec on modern workstations. It requires only enough memory to hold
+     * a single block of 16 or 32 pixels at a time. It codes the pixels in small
+     * blocks and so is able to adapt very quickly to changes in the input image
+     * statistics (e.g., Rice has no problem handling cosmic rays, bright stars,
+     * saturated pixels, etc.).
+     */
     public static final String ZCMPTYPE_RICE_1 = "RICE 1";
 
+    /**
+     * If ZCMPTYPE = ’PLIO 1’ then the IRAF PLIO (Pixel List) algorithm is used
+     * to compress and uncompress the image pixels. The PLIO algorithm was
+     * developed to store integer-valued image masks in a compressed form.
+     * Typical uses of image masks are to segment images into regions, or to
+     * mark bad pixels. Such masks often have large regions of constant value
+     * hence are highly compressible. The compression algorithm used is based on
+     * run-length encoding, with the ability to dynamically follow level changes
+     * in the image, allowing a 16-bit encoding to be used regardless of the
+     * image depth. The worst case performance occurs when successive pixels
+     * have different values. Even in this case the encoding will only require
+     * one word (16 bits) per mask pixel, provided either the delta intensity
+     * change between pixels is usually less than 12 bits, or the mask
+     * represents a zero floored step function of constant height. The worst
+     * case cannot exceed npix*2 words provided the mask depth is 24 bits or
+     * less.
+     */
     public static final String ZCMPTYPE_PLIO_1 = "PLIO 1";
 
+    /**
+     * Hcompress is an the image compression package written by Richard L. White
+     * for use at the Space Telescope Science Institute. Hcompress was used to
+     * compress the STScI Digitized Sky Survey and has also been used to
+     * compress the preview images in the Hubble Data Archive. Briefly, the
+     * method used is: <br>
+     * 1. a wavelet transform called the H-transform (a Haar transform
+     * generalized to two dimensions), followed by<br>
+     * 2. quantization that discards noise in the image while retaining the
+     * signal on all scales, followed by 10<br>
+     * 3. quadtree coding of the quantized coefficients.<br>
+     * The technique gives very good compression for astronomical images and is
+     * relatively fast. The calculations are carried out using integer
+     * arithmetic and a re entirely reversible. Consequently, the program can be
+     * used for either lossy or lossless compression , with no special approach
+     * needed for the lossless case (e.g. there is no need for a file of
+     * residuals .)
+     */
     public static final String ZCMPTYPE_HCOMPRESS_1 = "HCOMPRESS 1";
 
+    /**
+     * alternative name for 'RICE 1'
+     */
     public static final String ZCMPTYPE_RICE_ONE = "RICE ONE";
 
     /**
-     * name of the column containing the compressed data.
+     * Each row of this variable-length column contains the byte st ream that is
+     * generated as a result of compressing the corresponding image tile. The
+     * datatype o f the column (as given by the TFORMn keyword) will generally
+     * be either ’1PB’, ’1PI’ , or ’1PJ’ (or the equivalent ’1Q’ format),
+     * depending on whether the compression algorithm ge nerates an output
+     * stream of 8-bit bytes, 16-bit integers, or 32-bit integers, respectively.
      */
     public static final String COMPRESSED_DATA_COLUMN = "COMPRESSED_DATA";
+
+    /**
+     * When using the quantization method to compress floating-poi nt images
+     * that is described in Section 4, it sometimes may not be possible to
+     * quantize some o f the tiles (e.g., if the range of pixels values is too
+     * large or if most of the pixels have the sam e value and hence the
+     * calculated RMS noise level in the tile is close to zero). There also may
+     * be other rare cases where the nominal compression algorithm can not be
+     * applied to certain tiles. In these cases, one may use an alternate
+     * technique in which the raw pixel values are loss lessly compressed with
+     * the GZIP algorithm and the resulting byte stream is stored in the GZIP
+     * COMPRESSED DATA column (with a ’1PB’ or ’1QB’ variable-length array
+     * column format). The corresponding COMPRESSED DATA column for these tiles
+     * must contain a null pointer.
+     */
+    public static final String GZIP_COMPRESSED_DATA_COLUMN = "GZIP_COMPRESSED_DATA";
+
+    /**
+     * Use of this column is no longer recommended, but it may exist i n older
+     * compressed image files that were created before support for the GZIP
+     * COMPRESSED DATA column (describe above) was added to this convention in
+     * May 2011. This variable length co lumn contains the uncompressed pixels
+     * for any tiles that cannot be compressed with the norma l method.
+     */
+    public static final String UNCOMPRESSED_DATA_COLUMN = "UNCOMPRESSED_DATA";
 
     /**
      * name of the column containing the quant zero value.
@@ -256,6 +387,37 @@ public enum Compression implements IFitsHeader {
      * name of the column containing the quant scale value.
      */
     public static final String ZSCALE_COLUMN = "ZSCALE";
+
+    /**
+     * The number of 8-bit bytes in each original integer pixel value.
+     */
+    public static final String BYTEPIX = "BYTEPIX";
+
+    /**
+     * The blocksize parameter for the rise algorithm.
+     */
+    public static final String BLOCKSIZE = "BLOCKSIZE";
+
+    /**
+     * The integer scale parameter determines the amount of compression. Scale =
+     * 0 or 1 leads to lossless compression, i.e. the decompressed image has
+     * exactly the same pixel values as the original image. If the scale factor
+     * is greater than 1 then the compression is lossy: the decompressed image
+     * will not be exactly the same as the original.
+     */
+    public static final String SCALE = "SCALE";
+
+    /**
+     * At high compressions factors the decompressed image begins to appear
+     * blocky because of the way information is discarded. This blockiness ness
+     * is greatly reduced, producing more pleasing images, if the image is
+     * smoothed slightly during decompression. When done properly, the smoothing
+     * will not affect any quantitative photometric or astromet- ric
+     * measurements derived from the compressed image. Of course, the smoothing
+     * should never be applied when the image has been losslessly compressed
+     * with a scale factor (defined above) of 0 or 1.
+     */
+    public static final String SMOOTH = "SMOOTH";
 
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
