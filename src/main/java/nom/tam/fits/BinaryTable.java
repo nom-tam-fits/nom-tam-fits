@@ -69,7 +69,7 @@ public class BinaryTable extends AbstractTableData {
     private static final int MAX_EMPTY_BLOCK_SIZE = 4000000;
 
     /** Opaque state to pass to ColumnTable */
-    private static class SaveState {
+    protected static class SaveState {
 
         private final List<ColumnDesc> columns;
 

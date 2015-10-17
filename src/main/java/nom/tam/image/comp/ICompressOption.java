@@ -31,6 +31,14 @@ package nom.tam.image.comp;
  * #L%
  */
 
-public interface ICompressOption {
+public interface ICompressOption extends Cloneable {
+
+    ICompressOption setOption(String name, Object value);
+
+    ICompressOption setTileWidth(int value);
+
+    ICompressOption setTileHeigth(int value);
+
+    ICompressOption copy();
 
 }

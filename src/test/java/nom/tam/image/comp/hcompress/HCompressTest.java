@@ -67,7 +67,7 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
 
-            IntHCompress intHCompress = new IntHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(0));
+            IntHCompress intHCompress = new IntHCompress(new HCompressorOption().setTileWidth(100).setTileHeigth(100).setScale(0));
             intHCompress.compress(asIntBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -97,7 +97,7 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
 
-            IntHCompress intHCompress = new IntHCompress(new HCompressorOption().setNx(99).setNy(99).setScale(0));
+            IntHCompress intHCompress = new IntHCompress(new HCompressorOption().setTileWidth(99).setTileHeigth(99).setScale(0));
             intHCompress.compress(asIntBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -130,7 +130,7 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
 
-            new IntHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(0x231a)).compress(asIntBuffer, compressed);
+            new IntHCompress(new HCompressorOption().setTileWidth(100).setTileHeigth(100).setScale(0x231a)).compress(asIntBuffer, compressed);
 
             byte[] compressedArray = new byte[expectedBytes.length];
             compressed.position(0);
@@ -179,7 +179,7 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
 
-            ShortHCompress shortHCompress = new ShortHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(0));
+            ShortHCompress shortHCompress = new ShortHCompress(new HCompressorOption().setTileWidth(100).setTileHeigth(100).setScale(0));
             shortHCompress.compress(asShortBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -210,7 +210,7 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
 
-            ShortHCompress shortHCompress = new ShortHCompress(new HCompressorOption().setNx(99).setNy(99).setScale(0));
+            ShortHCompress shortHCompress = new ShortHCompress(new HCompressorOption().setTileWidth(99).setTileHeigth(99).setScale(0));
             shortHCompress.compress(asShortBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -241,7 +241,7 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
 
-            ShortHCompress shortHCompress = new ShortHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(1));
+            ShortHCompress shortHCompress = new ShortHCompress(new HCompressorOption().setTileWidth(100).setTileHeigth(100).setScale(1));
             shortHCompress.compress(asShortBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -272,7 +272,7 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[byteArray.length]);
 
-            ByteHCompress byteHCompress = new ByteHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(0));
+            ByteHCompress byteHCompress = new ByteHCompress(new HCompressorOption().setTileWidth(100).setTileHeigth(100).setScale(0));
             byteHCompress.compress(byteBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -303,7 +303,7 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[byteArray.length]);
 
-            ByteHCompress byteHCompress = new ByteHCompress(new HCompressorOption().setNx(99).setNy(99).setScale(0));
+            ByteHCompress byteHCompress = new ByteHCompress(new HCompressorOption().setTileWidth(99).setTileHeigth(99).setScale(0));
             byteHCompress.compress(asByteBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -334,7 +334,7 @@ public class HCompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[byteArray.length]);
 
-            ByteHCompress byteHCompress = new ByteHCompress(new HCompressorOption().setNx(100).setNy(100).setScale(1));
+            ByteHCompress byteHCompress = new ByteHCompress(new HCompressorOption().setTileWidth(100).setTileHeigth(100).setScale(1));
             byteHCompress.compress(asByteBuffer, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -361,8 +361,8 @@ public class HCompressTest {
                             .setTileHeigth(100)//
                             .setTileWidth(100), //
                     new HCompressorOption()//
-                            .setNx(100)//
-                            .setNy(100)//
+                            .setTileWidth(100)//
+                            .setTileHeigth(100)//
                             .setScale(0));
 
             byte[] bytes = new byte[(int) file.length()];
@@ -400,8 +400,8 @@ public class HCompressTest {
                             .setTileHeigth(100)//
                             .setTileWidth(100), //
                     new HCompressorOption()//
-                            .setNx(100)//
-                            .setNy(100)//
+                            .setTileWidth(100)//
+                            .setTileHeigth(100)//
                             .setScale(0));
 
             byte[] bytes = new byte[(int) file.length()];

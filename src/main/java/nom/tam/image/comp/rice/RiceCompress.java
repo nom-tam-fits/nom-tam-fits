@@ -1,4 +1,4 @@
-package nom.tam.image.comp.rise;
+package nom.tam.image.comp.rice;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -54,18 +54,18 @@ import nom.tam.image.comp.filter.QuantizeOption;
  * @author William Pence
  * @author Richard van Nieuwenhoven
  */
-public abstract class RiseCompress<T extends Buffer> implements ITileCompressor<T> {
+public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<T> {
 
     /**
      * logger to log to.
      */
-    private static final Logger LOG = Logger.getLogger(RiseCompress.class.getName());
+    private static final Logger LOG = Logger.getLogger(RiceCompress.class.getName());
 
-    public static class ByteRiseCompress extends RiseCompress<ByteBuffer> {
+    public static class ByteRiceCompress extends RiceCompress<ByteBuffer> {
 
         private ByteBuffer pixelBuffer;
 
-        public ByteRiseCompress(RiseCompressOption option) {
+        public ByteRiceCompress(RiceCompressOption option) {
             super(FS_BITS_FOR_BYTE, FS_MAX_FOR_BYTE, option, BITS_PER_BYTE);
         }
 
@@ -90,11 +90,11 @@ public abstract class RiseCompress<T extends Buffer> implements ITileCompressor<
         }
     }
 
-    public static class IntRiseCompress extends RiseCompress<IntBuffer> {
+    public static class IntRiceCompress extends RiceCompress<IntBuffer> {
 
         private IntBuffer pixelBuffer;
 
-        public IntRiseCompress(RiseCompressOption option) {
+        public IntRiceCompress(RiceCompressOption option) {
             super(FS_BITS_FOR_INT, FS_MAX_FOR_INT, option, BITS_PER_INT);
         }
 
@@ -119,11 +119,11 @@ public abstract class RiseCompress<T extends Buffer> implements ITileCompressor<
         }
     }
 
-    public static class ShortRiseCompress extends RiseCompress<ShortBuffer> {
+    public static class ShortRiceCompress extends RiceCompress<ShortBuffer> {
 
         private ShortBuffer pixelBuffer;
 
-        public ShortRiseCompress(RiseCompressOption option) {
+        public ShortRiceCompress(RiceCompressOption option) {
             super(FS_BITS_FOR_SHORT, FS_MAX_FOR_SHORT, option, BITS_PER_SHORT);
         }
 
@@ -148,17 +148,17 @@ public abstract class RiseCompress<T extends Buffer> implements ITileCompressor<
         }
     }
 
-    public static class FloatRiseCompress extends FloatQuantCompressor {
+    public static class FloatRiceCompress extends FloatQuantCompressor {
 
-        public FloatRiseCompress(QuantizeOption quantizeOption, RiseCompressOption options) {
-            super(quantizeOption, new IntRiseCompress(options));
+        public FloatRiceCompress(QuantizeOption quantizeOption, RiceCompressOption options) {
+            super(quantizeOption, new IntRiceCompress(options));
         }
     }
 
-    public static class DoubleRiseCompress extends DoubleQuantCompressor {
+    public static class DoubleRiceCompress extends DoubleQuantCompressor {
 
-        public DoubleRiseCompress(QuantizeOption quantizeOption, RiseCompressOption options) {
-            super(quantizeOption, new IntRiseCompress(options));
+        public DoubleRiceCompress(QuantizeOption quantizeOption, RiceCompressOption options) {
+            super(quantizeOption, new IntRiceCompress(options));
         }
     }
 
@@ -458,7 +458,7 @@ public abstract class RiseCompress<T extends Buffer> implements ITileCompressor<
 
     private final int fsMax;
 
-    private RiseCompress(int fsBits, int fsMax, RiseCompressOption option, int bitsPerPixel) {
+    private RiceCompress(int fsBits, int fsMax, RiceCompressOption option, int bitsPerPixel) {
         this.fsBits = fsBits;
         this.fsMax = fsMax;
         this.blockSize = option.getBlockSize();

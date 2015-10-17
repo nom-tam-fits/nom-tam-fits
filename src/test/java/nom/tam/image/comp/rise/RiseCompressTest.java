@@ -36,16 +36,17 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import nom.tam.image.comp.rise.RiseCompress.ByteRiseCompress;
-import nom.tam.image.comp.rise.RiseCompress.IntRiseCompress;
-import nom.tam.image.comp.rise.RiseCompress.ShortRiseCompress;
+import nom.tam.image.comp.rice.RiceCompressOption;
+import nom.tam.image.comp.rice.RiceCompress.ByteRiceCompress;
+import nom.tam.image.comp.rice.RiceCompress.IntRiceCompress;
+import nom.tam.image.comp.rice.RiceCompress.ShortRiceCompress;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 public class RiseCompressTest {
 
-    private static final RiseCompressOption option = new RiseCompressOption().setBlockSize(32);
+    private static final RiceCompressOption option = new RiceCompressOption().setBlockSize(32);
 
     @Test
     public void testRiseInt() throws Exception {
@@ -61,7 +62,7 @@ public class RiseCompressTest {
             int[] intArray = new int[bytes.length / 4];
             ByteBuffer.wrap(bytes).asIntBuffer().get(intArray);
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
-            IntRiseCompress compressor = new IntRiseCompress(option);
+            IntRiceCompress compressor = new IntRiceCompress(option);
             compressor.compress(IntBuffer.wrap(intArray), compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -90,7 +91,7 @@ public class RiseCompressTest {
             short[] shortArray = new short[bytes.length / 2];
             ByteBuffer.wrap(bytes).asShortBuffer().get(shortArray);
             ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
-            ShortRiseCompress compressor = new ShortRiseCompress(option);
+            ShortRiceCompress compressor = new ShortRiceCompress(option);
             compressor.compress(ShortBuffer.wrap(shortArray), compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -118,7 +119,7 @@ public class RiseCompressTest {
             expected.read(expectedBytes);
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
-            ByteRiseCompress compressor = new ByteRiseCompress(option);
+            ByteRiceCompress compressor = new ByteRiceCompress(option);
             compressor.compress(ByteBuffer.wrap(bytes), compressed);
 
             byte[] compressedArray = new byte[compressed.position()];

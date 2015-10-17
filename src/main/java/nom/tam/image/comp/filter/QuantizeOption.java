@@ -1,6 +1,8 @@
 package nom.tam.image.comp.filter;
 
+import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.hcompress.HCompressorOption;
 
 /*
  * #%L
@@ -218,5 +220,32 @@ public class QuantizeOption implements ICompressOption {
     public QuantizeOption setMaxValue(double value) {
         this.maxValue = value;
         return this;
+    }
+
+    @Override
+    public QuantizeOption setOption(String name, Object value) {
+        if (Compression.ZQUANTIZ.name().equals(name)) {
+            if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(value)) {
+                setDither(true);
+                setDither2(false);
+            } else if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(value)) {
+                setDither(true);
+                setDither2(true);
+            }
+        } else if (Compression.ZZERO_COLUMN.equals(name)) {
+            setBZero((Double) value);
+        } else if (Compression.ZSCALE_COLUMN.equals(name)) {
+            setBScale((Double) value);
+        }
+        return this;
+    }
+
+    @Override
+    public HCompressorOption copy() {
+        try {
+            return (HCompressorOption) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException("open could not be cloned", e);
+        }
     }
 }

@@ -1,5 +1,11 @@
 package nom.tam.fits;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import nom.tam.image.comp.CompressedImageData;
+import nom.tam.image.comp.CompressedImageHDU;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -69,6 +75,8 @@ public final class FitsFactory {
 
     private static final ThreadLocal<FitsSettings> LOCAL_SETTINGS = new ThreadLocal<>();
 
+    private static ExecutorService threadPool;
+
     private static FitsSettings current() {
         FitsSettings settings = LOCAL_SETTINGS.get();
         if (settings == null) {
@@ -101,6 +109,8 @@ public final class FitsFactory {
             return RandomGroupsHDU.manufactureData(hdr);
         } else if (current().useAsciiTables && AsciiTableHDU.isHeader(hdr)) {
             return AsciiTableHDU.manufactureData(hdr);
+        } else if (CompressedImageHDU.isHeader(hdr)) {
+            return CompressedImageHDU.manufactureData(hdr);
         } else if (BinaryTableHDU.isHeader(hdr)) {
             return BinaryTableHDU.manufactureData(hdr);
         } else if (UndefinedHDU.isHeader(hdr)) {
@@ -159,6 +169,8 @@ public final class FitsFactory {
             return (BasicHDU<DataClass>) new RandomGroupsHDU(hdr, (RandomGroupsData) d);
         } else if (current().useAsciiTables && d instanceof AsciiTable) {
             return (BasicHDU<DataClass>) new AsciiTableHDU(hdr, (AsciiTable) d);
+        } else if (d instanceof CompressedImageData) {
+            return (BasicHDU<DataClass>) new CompressedImageHDU(hdr, (CompressedImageData) d);
         } else if (d instanceof BinaryTable) {
             return (BasicHDU<DataClass>) new BinaryTableHDU(hdr, (BinaryTable) d);
         } else if (d instanceof UndefinedData) {
@@ -316,5 +328,16 @@ public final class FitsFactory {
         } else {
             LOCAL_SETTINGS.remove();
         }
+    }
+
+    public static ExecutorService threadPool() {
+        if (threadPool == null) {
+            synchronized (GLOBAL_SETTINGS) {
+                if (threadPool == null) {
+                    threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+                }
+            }
+        }
+        return threadPool;
     }
 }

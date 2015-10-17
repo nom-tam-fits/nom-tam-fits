@@ -237,9 +237,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *            the name of the column
      */
     public int findColumn(String colName) {
-
         for (int i = 0; i < getNCols(); i += 1) {
-
             String val = this.myHeader.getStringValue(TTYPEn.n(i + 1));
             if (val != null && val.trim().equals(colName)) {
                 return i;

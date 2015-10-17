@@ -275,7 +275,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * @return the associated Data object
      */
-    public final DataClass getData() {
+    public DataClass getData() {
         return this.myData;
     }
 

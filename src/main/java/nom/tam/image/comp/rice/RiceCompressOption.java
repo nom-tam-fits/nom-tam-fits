@@ -1,4 +1,4 @@
-package nom.tam.image.comp.hcompress;
+package nom.tam.image.comp.rice;
 
 /*
  * #%L
@@ -33,60 +33,38 @@ package nom.tam.image.comp.hcompress;
 
 import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.hcompress.HCompressorOption;
 
-public class HCompressorOption implements ICompressOption {
+public class RiceCompressOption implements ICompressOption {
 
-    private int tileHeigth;
+    public static final int DEFAULT_RISE_BLOCKSIZE = 32;
 
-    private int tileWidth;
+    private int blockSize = DEFAULT_RISE_BLOCKSIZE;
 
-    private boolean smooth;
-
-    private int scale;
-
-    public int getTileWidth() {
-        return this.tileWidth;
+    public int getBlockSize() {
+        return blockSize;
     }
 
-    public int getTileHeigth() {
-        return this.tileHeigth;
-    }
-
-    public int getScale() {
-        return this.scale;
-    }
-
-    public boolean isSmooth() {
-        return this.smooth;
-    }
-
-    public HCompressorOption setTileWidth(int value) {
-        this.tileWidth = value;
-        return this;
-    }
-
-    public HCompressorOption setTileHeigth(int value) {
-        this.tileHeigth = value;
-        return this;
-    }
-
-    public HCompressorOption setScale(int value) {
-        this.scale = value;
-        return this;
-    }
-
-    public HCompressorOption setSmooth(boolean value) {
-        this.smooth = value;
+    public RiceCompressOption setBlockSize(int value) {
+        this.blockSize = value;
         return this;
     }
 
     @Override
-    public HCompressorOption setOption(String name, Object value) {
-        if (Compression.SMOOTH.equals(name)) {
-            setSmooth((Boolean) value);
-        } else if (Compression.SCALE.equals(name)) {
-            setScale((Integer) value);
+    public RiceCompressOption setOption(String name, Object value) {
+        if (Compression.BLOCKSIZE.equals(name)) {
+            setBlockSize((Integer) value);
         }
+        return this;
+    }
+
+    @Override
+    public RiceCompressOption setTileWidth(int value) {
+        return this;
+    }
+
+    @Override
+    public RiceCompressOption setTileHeigth(int value) {
         return this;
     }
 

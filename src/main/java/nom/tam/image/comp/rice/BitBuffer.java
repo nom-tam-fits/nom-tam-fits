@@ -1,4 +1,4 @@
-package nom.tam.image.comp.rise;
+package nom.tam.image.comp.rice;
 
 /*
  * #%L

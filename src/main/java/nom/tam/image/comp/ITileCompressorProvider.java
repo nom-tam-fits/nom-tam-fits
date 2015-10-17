@@ -1,4 +1,4 @@
-package nom.tam.image.comp.rise;
+package nom.tam.image.comp;
 
 /*
  * #%L
@@ -31,20 +31,20 @@ package nom.tam.image.comp.rise;
  * #L%
  */
 
-import nom.tam.image.comp.ICompressOption;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 
-public class RiseCompressOption implements ICompressOption {
+public interface ITileCompressorProvider {
 
-    private static final int DEFAULT_RISE_BLOCKSIZE = 32;
+    interface ITileCompressorControl {
 
-    private int blockSize = DEFAULT_RISE_BLOCKSIZE;
+        ICompressOption[] options();
 
-    public int getBlockSize() {
-        return blockSize;
+        void compress(Buffer in, ByteBuffer out, ICompressOption... options);
+
+        void decompress(ByteBuffer in, Buffer out, ICompressOption... options);
     }
 
-    public RiseCompressOption setBlockSize(int value) {
-        this.blockSize = value;
-        return this;
-    }
+    ITileCompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType);
+
 }
