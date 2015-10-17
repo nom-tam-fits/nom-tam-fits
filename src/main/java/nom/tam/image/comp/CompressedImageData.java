@@ -51,6 +51,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -158,6 +159,18 @@ public class CompressedImageData extends BinaryTable {
             return null;
         }
 
+        private int getGZipBytePix() {
+            int oldPosition = this.compressedData.position();
+            this.compressedData.position(this.compressedData.limit() - FitsIO.BYTES_IN_INTEGER);
+            int tileSize = this.compressedData.slice().order(ByteOrder.LITTLE_ENDIAN).getInt();
+            this.compressedData.position(oldPosition);
+            int nrOfPixelsInTile = this.width * this.heigth;
+            if ((tileSize % nrOfPixelsInTile) == 0) {
+                return tileSize / nrOfPixelsInTile;
+            }
+            return -1;
+        }
+
         public Tile setZZero(double value) {
             this.zero = value;
             return this;
@@ -181,6 +194,11 @@ public class CompressedImageData extends BinaryTable {
         public Tile setDataOffset(int value) {
             this.dataOffset = value;
             return this;
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "(" + tileIndex + "," + action + "," + compressionType + ")";
         }
     }
 
@@ -298,6 +316,14 @@ public class CompressedImageData extends BinaryTable {
                     tileIndex++;
                 }
             }
+            // workaround bug
+            if (this.compressionAlgorithm.startsWith("GZIP")) {
+                Tile tile = tiles[0];
+                int gzipBytePix = tile.getGZipBytePix();
+                if (gzipBytePix > 0) {
+                    this.bytePix = gzipBytePix;
+                }
+            }
             return this;
         }
 
@@ -354,8 +380,8 @@ public class CompressedImageData extends BinaryTable {
             int pixels = axes[0] * axes[1];
             // if the compressed type size does not correspond to the bitpix
             // than we have to use a buffer.
-            Class<?> baseType = Object.class;
-            if (decompressed == null || Math.abs(bitPix) != Math.round(Math.pow(2.0, bytePix * FitsIO.BITS_OF_1_BYTE))) {
+            Class<?> baseType;
+            if (decompressed == null || Math.abs(bitPix) != (bytePix * FitsIO.BITS_OF_1_BYTE)) {
                 switch (bytePix) {
                     case BYTE_SIZE_OF_LONG_AND_DOUBLE:
                         if (bitPix < 0) {
@@ -390,6 +416,7 @@ public class CompressedImageData extends BinaryTable {
                 baseType = baseType();
             }
             for (Tile tile : tiles) {
+                tile.action = nom.tam.image.comp.CompressedImageData.Tile.Action.DECOMPRESS;
                 decompressedWholeErea.position(tile.dataOffset);
                 if (decompressedWholeErea instanceof ByteBuffer) {
                     tile.decompressedData = ((ByteBuffer) decompressedWholeErea).slice();
@@ -404,6 +431,7 @@ public class CompressedImageData extends BinaryTable {
                 } else if (decompressedWholeErea instanceof DoubleBuffer) {
                     tile.decompressedData = ((DoubleBuffer) decompressedWholeErea).slice();
                 }
+                tile.decompressedData.limit(tile.width * tile.heigth);
             }
 
             this.compressorControl = TileCompressorProvider.findCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);
@@ -419,8 +447,23 @@ public class CompressedImageData extends BinaryTable {
             } catch (InterruptedException e) {
                 return null;
             }
-
+            if (decompressedWholeErea != decompressed) {
+                copy(decompressedWholeErea, decompressed);
+            }
             return decompressed;
+        }
+
+        private void copy(Buffer src, Buffer target) {
+            if (src instanceof IntBuffer && target instanceof ShortBuffer) {
+                IntBuffer srcInt = (IntBuffer) src;
+                ShortBuffer targetShort = (ShortBuffer) target;
+                srcInt.position(0);
+                while (srcInt.hasRemaining()) {
+                    targetShort.put((short) srcInt.get());
+                }
+                return;
+            }
+            throw new UnsupportedOperationException("not yet supported conversion");
         }
 
         private Class<?> baseType() {

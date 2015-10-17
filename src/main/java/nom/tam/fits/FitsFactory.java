@@ -332,12 +332,16 @@ public final class FitsFactory {
 
     public static ExecutorService threadPool() {
         if (threadPool == null) {
-            synchronized (GLOBAL_SETTINGS) {
-                if (threadPool == null) {
-                    threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-                }
-            }
+            initializeThreadPool();
         }
         return threadPool;
+    }
+
+    private static void initializeThreadPool() {
+        synchronized (GLOBAL_SETTINGS) {
+            if (threadPool == null) {
+                threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+            }
+        }
     }
 }

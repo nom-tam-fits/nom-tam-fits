@@ -58,7 +58,6 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageHDU;
 import nom.tam.image.comp.filter.QuantizeOption;
-import nom.tam.image.comp.gzip.GZipCompress;
 import nom.tam.image.comp.hcompress.HCompressor.ShortHCompress;
 import nom.tam.image.comp.hcompress.HCompressorOption;
 import nom.tam.image.comp.plio.PLIOCompress;
@@ -79,6 +78,13 @@ public class ReadProvidedCompressedImageTest {
         protected double zero;
 
         protected void decompressRow(Header header, Object row) {
+        }
+
+        Object readAll(String fileName) throws Exception {
+            try (Fits f = new Fits(fileName)) {
+                CompressedImageHDU bhdu = (CompressedImageHDU) f.getHDU(1);
+                return bhdu.getUncompressedData();
+            }
         }
 
         void read(String fileName) throws Exception {
@@ -181,21 +187,10 @@ public class ReadProvidedCompressedImageTest {
 
     @Test
     public void readGzip() throws Exception {
-        final ShortBuffer decompressed = ShortBuffer.wrap(new short[300 * 300]);
-        new ImageReader() {
+        Object result = new ImageReader().readAll("src/test/resources/nom/tam/image/provided/m13_gzip.fits");
 
-            @Override
-            protected void decompressRow(Header hdr, Object row) {
-                IntBuffer wrapedint = IntBuffer.wrap(new int[300]);
-                new GZipCompress.IntGZipCompress().decompress(ByteBuffer.wrap((byte[]) row), wrapedint);
-                for (int index = 0; index < 300; index++) {
-                    decompressed.put((short) wrapedint.get(index));
-                }
-            }
-
-        }.read("src/test/resources/nom/tam/image/provided/m13_gzip.fits");
         short[][] data = new short[300][300];
-        ArrayFuncs.copyInto(decompressed.array(), data);
+        ArrayFuncs.copyInto(((ShortBuffer) result).array(), data);
         assertData(data);
         if (this.showImage) {
             dispayImage(data);
