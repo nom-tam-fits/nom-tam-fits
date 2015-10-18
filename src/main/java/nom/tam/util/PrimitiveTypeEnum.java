@@ -31,19 +31,123 @@ package nom.tam.util;
  * #L%
  */
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public enum PrimitiveTypeEnum {
-    BYTE(1, false, byte.class, Byte.class, 'B'),
-    SHORT(2, false, short.class, Short.class, 'S'),
-    CHAR(2, false, char.class, Character.class, 'C'),
-    INT(4, false, int.class, Integer.class, 'I'),
-    LONG(8, false, long.class, Long.class, 'J'),
-    FLOAT(4, false, float.class, Float.class, 'F'),
-    DOUBLE(8, false, double.class, Double.class, 'D'),
-    BOOLEAN(1, false, boolean.class, Boolean.class, 'Z'),
-    STRING(0, true, CharSequence.class, String.class, 'L') {
+    BYTE(1, false, byte.class, Byte.class, 'B', 8) {
+
+        @Override
+        public Object newArray(int length) {
+            return new byte[length];
+        }
+
+        @Override
+        public Buffer wrap(Object array) {
+            return ByteBuffer.wrap((byte[]) array);
+        }
+
+        @Override
+        public Buffer sliceBuffer(Buffer buffer) {
+            return ((ByteBuffer) buffer).slice();
+        }
+    },
+    SHORT(2, false, short.class, Short.class, 'S', 16) {
+
+        @Override
+        public Object newArray(int length) {
+            return new short[length];
+        }
+
+        @Override
+        public Buffer wrap(Object array) {
+            return ShortBuffer.wrap((short[]) array);
+        }
+
+        @Override
+        public Buffer sliceBuffer(Buffer buffer) {
+            return ((ShortBuffer) buffer).slice();
+        }
+    },
+    CHAR(2, false, char.class, Character.class, 'C', 0),
+    INT(4, false, int.class, Integer.class, 'I', 32) {
+
+        @Override
+        public Object newArray(int length) {
+            return new int[length];
+        }
+
+        @Override
+        public Buffer wrap(Object array) {
+            return IntBuffer.wrap((int[]) array);
+        }
+
+        @Override
+        public Buffer sliceBuffer(Buffer buffer) {
+            return ((IntBuffer) buffer).slice();
+        }
+    },
+    LONG(8, false, long.class, Long.class, 'J', 64) {
+
+        @Override
+        public Object newArray(int length) {
+            return new long[length];
+        }
+
+        @Override
+        public Buffer wrap(Object array) {
+            return LongBuffer.wrap((long[]) array);
+        }
+
+        @Override
+        public Buffer sliceBuffer(Buffer buffer) {
+            return ((LongBuffer) buffer).slice();
+        }
+    },
+    FLOAT(4, false, float.class, Float.class, 'F', -32) {
+
+        @Override
+        public Object newArray(int length) {
+            return new float[length];
+        }
+
+        @Override
+        public Buffer wrap(Object array) {
+            return FloatBuffer.wrap((float[]) array);
+        }
+
+        @Override
+        public Buffer sliceBuffer(Buffer buffer) {
+            return ((FloatBuffer) buffer).slice();
+        }
+    },
+    DOUBLE(8, false, double.class, Double.class, 'D', -64) {
+
+        @Override
+        public Object newArray(int length) {
+            return new double[length];
+        }
+
+        @Override
+        public Buffer wrap(Object array) {
+            return DoubleBuffer.wrap((double[]) array);
+        }
+
+        @Override
+        public Buffer sliceBuffer(Buffer buffer) {
+            return ((DoubleBuffer) buffer).slice();
+        }
+    },
+    BOOLEAN(1, false, boolean.class, Boolean.class, 'Z', 0),
+    STRING(0, true, CharSequence.class, String.class, 'L', 0) {
 
         @Override
         public int size(Object instance) {
@@ -53,7 +157,7 @@ public enum PrimitiveTypeEnum {
             return ((CharSequence) instance).length();
         }
     },
-    UNKNOWN(0, true, Object.class, Object.class, 'L') {
+    UNKNOWN(0, true, Object.class, Object.class, 'L', 0) {
 
         @Override
         public int size(Object instance) {
@@ -89,6 +193,23 @@ public enum PrimitiveTypeEnum {
         return primitiveTypeEnum;
     }
 
+    public static final Map<Integer, PrimitiveTypeEnum> BY_BITPIX;
+
+    public static final Map<Class<?>, PrimitiveTypeEnum> BY_CLASS;
+    static {
+        Map<Integer, PrimitiveTypeEnum> byBitpix = new HashMap<>();
+        Map<Class<?>, PrimitiveTypeEnum> byClass = new HashMap<>();
+        for (PrimitiveTypeEnum type : PrimitiveTypeEnum.values()) {
+            if (type.bitPix != 0) {
+                byBitpix.put(type.bitPix, type);
+            }
+            byClass.put(type.primitiveClass, type);
+            byClass.put(type.wrapperClass, type);
+        }
+        BY_BITPIX = Collections.unmodifiableMap(byBitpix);
+        BY_CLASS = Collections.unmodifiableMap(byClass);
+    }
+
     private final int size;
 
     private final boolean individualSize;
@@ -99,12 +220,15 @@ public enum PrimitiveTypeEnum {
 
     private final char type;
 
-    private PrimitiveTypeEnum(int size, boolean individualSize, Class<?> primitiveClass, Class<?> wrapperClass, char type) {
+    private final int bitPix;
+
+    private PrimitiveTypeEnum(int size, boolean individualSize, Class<?> primitiveClass, Class<?> wrapperClass, char type, int bitPix) {
         this.size = size;
         this.individualSize = individualSize;
         this.primitiveClass = primitiveClass;
         this.wrapperClass = wrapperClass;
         this.type = type;
+        this.bitPix = bitPix;
     }
 
     public boolean individualSize() {
@@ -131,5 +255,29 @@ public enum PrimitiveTypeEnum {
 
     public char type() {
         return this.type;
+    }
+
+    public Object newArray(int length) {
+        return null;
+    }
+
+    public final Buffer newBuffer(int length) {
+        return wrap(newArray(length));
+    }
+
+    public Buffer wrap(Object array) {
+        return null;
+    }
+
+    public Class<?> primitiveClass() {
+        return primitiveClass;
+    }
+
+    public Buffer sliceBuffer(Buffer decompressedWholeErea) {
+        return null;
+    }
+
+    public int bitPix() {
+        return bitPix;
     }
 }

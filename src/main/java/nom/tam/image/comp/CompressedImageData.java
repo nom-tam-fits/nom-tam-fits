@@ -45,6 +45,7 @@ import static nom.tam.fits.header.Compression.ZTILEn;
 import static nom.tam.fits.header.Compression.ZVALn;
 import static nom.tam.fits.header.Compression.ZZERO_COLUMN;
 import static nom.tam.fits.header.Standard.TTYPEn;
+import static nom.tam.util.PrimitiveTypeEnum.BY_BITPIX;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -52,15 +53,11 @@ import java.math.RoundingMode;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 
-import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
@@ -204,10 +201,6 @@ public class CompressedImageData extends BinaryTable {
 
     private class TileArray {
 
-        private static final int BYTE_SIZE_OF_LONG_AND_DOUBLE = 8;
-
-        private static final int BYTE_SIZE_OF_INT_AND_FLOAT = 4;
-
         private Tile[] tiles;
 
         private Buffer decompressedWholeErea;
@@ -328,22 +321,7 @@ public class CompressedImageData extends BinaryTable {
         }
 
         private int defaultBytePix(int bitPerPixel) {
-            switch (bitPerPixel) {
-                case BasicHDU.BITPIX_BYTE:
-                    return PrimitiveTypeEnum.BYTE.size();
-                case BasicHDU.BITPIX_SHORT:
-                    return PrimitiveTypeEnum.SHORT.size();
-                case BasicHDU.BITPIX_INT:
-                    return PrimitiveTypeEnum.INT.size();
-                case BasicHDU.BITPIX_LONG:
-                    return PrimitiveTypeEnum.LONG.size();
-                case BasicHDU.BITPIX_FLOAT:
-                    return PrimitiveTypeEnum.FLOAT.size();
-                case BasicHDU.BITPIX_DOUBLE:
-                    return PrimitiveTypeEnum.DOUBLE.size();
-                default:
-                    throw new IllegalStateException("invalid bit per pixel");
-            }
+            return BY_BITPIX.get(bitPerPixel).size();
         }
 
         private <T> T getNullableColumn(Header header, Class<T> class1, String columnName) throws FitsException {
@@ -376,65 +354,29 @@ public class CompressedImageData extends BinaryTable {
             }
         }
 
-        public Object decompress(Buffer decompressed, Header header) {
+        public Buffer decompress(Buffer decompressed, Header header) {
+            PrimitiveTypeEnum primitiveTypeEnum = BY_BITPIX.get(bitPix);
             int pixels = axes[0] * axes[1];
+            if (decompressed == null) {
+                decompressed = primitiveTypeEnum.newBuffer(pixels);
+            }
             // if the compressed type size does not correspond to the bitpix
             // than we have to use a buffer.
-            Class<?> baseType;
+            PrimitiveTypeEnum baseType = primitiveTypeEnum;
             if (decompressed == null || Math.abs(bitPix) != (bytePix * FitsIO.BITS_OF_1_BYTE)) {
-                switch (bytePix) {
-                    case BYTE_SIZE_OF_LONG_AND_DOUBLE:
-                        if (bitPix < 0) {
-                            decompressedWholeErea = DoubleBuffer.wrap(new double[pixels]);
-                            baseType = double.class;
-                        } else {
-                            decompressedWholeErea = LongBuffer.wrap(new long[pixels]);
-                            baseType = long.class;
-                        }
-                        break;
-                    case BYTE_SIZE_OF_INT_AND_FLOAT:
-                        if (bitPix < 0) {
-                            decompressedWholeErea = FloatBuffer.wrap(new float[pixels]);
-                            baseType = float.class;
-                        } else {
-                            decompressedWholeErea = IntBuffer.wrap(new int[pixels]);
-                            baseType = int.class;
-                        }
-                        break;
-                    case 2:
-                        decompressedWholeErea = ShortBuffer.wrap(new short[pixels]);
-                        baseType = short.class;
-                        break;
-                    case 1:
-                    default:
-                        decompressedWholeErea = ByteBuffer.wrap(new byte[pixels]);
-                        baseType = byte.class;
-                        break;
-                }
+                baseType = BY_BITPIX.get(bytePix * FitsIO.BITS_OF_1_BYTE * bitPix / Math.abs(bitPix));
+                decompressedWholeErea = baseType.newBuffer(pixels);
             } else {
                 decompressedWholeErea = decompressed;
-                baseType = baseType();
             }
             for (Tile tile : tiles) {
                 tile.action = nom.tam.image.comp.CompressedImageData.Tile.Action.DECOMPRESS;
                 decompressedWholeErea.position(tile.dataOffset);
-                if (decompressedWholeErea instanceof ByteBuffer) {
-                    tile.decompressedData = ((ByteBuffer) decompressedWholeErea).slice();
-                } else if (decompressedWholeErea instanceof ShortBuffer) {
-                    tile.decompressedData = ((ShortBuffer) decompressedWholeErea).slice();
-                } else if (decompressedWholeErea instanceof IntBuffer) {
-                    tile.decompressedData = ((IntBuffer) decompressedWholeErea).slice();
-                } else if (decompressedWholeErea instanceof LongBuffer) {
-                    tile.decompressedData = ((LongBuffer) decompressedWholeErea).slice();
-                } else if (decompressedWholeErea instanceof FloatBuffer) {
-                    tile.decompressedData = ((FloatBuffer) decompressedWholeErea).slice();
-                } else if (decompressedWholeErea instanceof DoubleBuffer) {
-                    tile.decompressedData = ((DoubleBuffer) decompressedWholeErea).slice();
-                }
+                tile.decompressedData = baseType.sliceBuffer(decompressedWholeErea);
                 tile.decompressedData.limit(tile.width * tile.heigth);
             }
 
-            this.compressorControl = TileCompressorProvider.findCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);
+            this.compressorControl = TileCompressorProvider.findCompressorControl(quantAlgorithm, compressionAlgorithm, baseType.primitiveClass());
             this.compressOptions = compressorControl.options();
             for (ICompressOption option : compressOptions) {
                 option.setOption(Compression.BLOCKSIZE, blocksize);
@@ -466,44 +408,6 @@ public class CompressedImageData extends BinaryTable {
             throw new UnsupportedOperationException("not yet supported conversion");
         }
 
-        private Class<?> baseType() {
-            switch (bitPix) {
-                case BasicHDU.BITPIX_DOUBLE:
-                    return double.class;
-                case BasicHDU.BITPIX_FLOAT:
-                    return float.class;
-                case BasicHDU.BITPIX_LONG:
-                    return long.class;
-                case BasicHDU.BITPIX_INT:
-                    return int.class;
-                case BasicHDU.BITPIX_SHORT:
-                    return short.class;
-                case BasicHDU.BITPIX_BYTE:
-                    return byte.class;
-                default:
-                    throw new IllegalStateException("invalid bit per pixel");
-            }
-        }
-
-        private Buffer createBuffer() {
-            int pixels = axes[0] * axes[1];
-            switch (bitPix) {
-                case BasicHDU.BITPIX_DOUBLE:
-                    return DoubleBuffer.wrap(new double[pixels]);
-                case BasicHDU.BITPIX_FLOAT:
-                    return FloatBuffer.wrap(new float[pixels]);
-                case BasicHDU.BITPIX_LONG:
-                    return LongBuffer.wrap(new long[pixels]);
-                case BasicHDU.BITPIX_INT:
-                    return IntBuffer.wrap(new int[pixels]);
-                case BasicHDU.BITPIX_SHORT:
-                    return ShortBuffer.wrap(new short[pixels]);
-                case BasicHDU.BITPIX_BYTE:
-                    return ByteBuffer.wrap(new byte[pixels]);
-                default:
-                    throw new IllegalStateException("invalid bit per pixel");
-            }
-        }
     }
 
     public CompressedImageData(Header hdr) throws FitsException {
@@ -512,6 +416,6 @@ public class CompressedImageData extends BinaryTable {
 
     public Object getUncompressedData(Header hdr) throws FitsException {
         TileArray tileArray = new TileArray().read(hdr);
-        return tileArray.decompress(tileArray.createBuffer(), hdr);
+        return tileArray.decompress(null, hdr);
     }
 }
