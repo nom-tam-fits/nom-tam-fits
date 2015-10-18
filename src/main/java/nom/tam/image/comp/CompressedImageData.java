@@ -122,11 +122,7 @@ public class CompressedImageData extends BinaryTable {
                 option.setTileHeigth(heigth);
             }
             if (this.width == array.axes[0]) {
-                try {
-                    array.compressorControl.decompress(compressedData, decompressedData, tileOptions);
-                } catch (Exception e) {
-                    "".toString();
-                }
+                array.compressorControl.decompress(compressedData, decompressedData, tileOptions);
             }
             return this;
         }
@@ -145,15 +141,7 @@ public class CompressedImageData extends BinaryTable {
         }
 
         private ByteBuffer convertToBuffer(Object data) {
-            if (data instanceof byte[]) {
-                return ByteBuffer.wrap((byte[]) data);
-            }
-            if (data instanceof short[]) {
-                ByteBuffer bytes = ByteBuffer.wrap(new byte[((short[]) data).length * 2]);
-                bytes.asShortBuffer().put((short[]) data);
-                return bytes;
-            }
-            return null;
+            return PrimitiveTypeEnum.valueOf(data.getClass().getComponentType()).convertToByteBuffer(data);
         }
 
         private int getGZipBytePix() {

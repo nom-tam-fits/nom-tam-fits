@@ -59,6 +59,11 @@ public class PrimitiveTypeTest {
         assertEquals(byte.class, ((byte[]) PrimitiveTypeEnum.BYTE.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveTypeEnum.BYTE.newBuffer(5) instanceof ByteBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.BYTE, 6, 3).capacity());
+
+        assertEquals((byte) 1, PrimitiveTypeEnum.BYTE.convertToByteBuffer(new byte[]{
+            1
+        }).get());
+
     }
 
     @Test
@@ -67,6 +72,10 @@ public class PrimitiveTypeTest {
         assertEquals(short.class, ((short[]) PrimitiveTypeEnum.SHORT.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveTypeEnum.SHORT.newBuffer(5) instanceof ShortBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.SHORT, 6, 3).capacity());
+
+        assertEquals((byte) 1, PrimitiveTypeEnum.SHORT.convertToByteBuffer(new short[]{
+            256
+        }).get());
     }
 
     @Test
@@ -75,6 +84,10 @@ public class PrimitiveTypeTest {
         assertEquals(int.class, ((int[]) PrimitiveTypeEnum.INT.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveTypeEnum.INT.newBuffer(5) instanceof IntBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.INT, 6, 3).capacity());
+
+        assertEquals((byte) 1, PrimitiveTypeEnum.INT.convertToByteBuffer(new int[]{
+            256 * 256 * 256
+        }).get());
     }
 
     @Test
@@ -83,6 +96,10 @@ public class PrimitiveTypeTest {
         assertEquals(long.class, ((long[]) PrimitiveTypeEnum.LONG.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveTypeEnum.LONG.newBuffer(5) instanceof LongBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.LONG, 6, 3).capacity());
+
+        assertEquals((byte) 1, PrimitiveTypeEnum.LONG.convertToByteBuffer(new long[]{
+            256L * 256L * 256L * 256L * 256L * 256L * 256L
+        }).get());
     }
 
     @Test
@@ -91,6 +108,13 @@ public class PrimitiveTypeTest {
         assertEquals(float.class, ((float[]) PrimitiveTypeEnum.FLOAT.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveTypeEnum.FLOAT.newBuffer(5) instanceof FloatBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.FLOAT, 6, 3).capacity());
+
+        float testValue = 567.7686876876f;
+        int value = Float.floatToIntBits(testValue) >> (3 * 8);
+
+        assertEquals((byte) value, PrimitiveTypeEnum.FLOAT.convertToByteBuffer(new float[]{
+            testValue
+        }).get());
     }
 
     @Test
@@ -99,6 +123,13 @@ public class PrimitiveTypeTest {
         assertEquals(double.class, ((double[]) PrimitiveTypeEnum.DOUBLE.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveTypeEnum.DOUBLE.newBuffer(5) instanceof DoubleBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.DOUBLE, 6, 3).capacity());
+
+        double testValue = 567.7686876876725638752364576543d;
+        long value = Double.doubleToLongBits(testValue) >> (7 * 8);
+
+        assertEquals((byte) value, PrimitiveTypeEnum.DOUBLE.convertToByteBuffer(new double[]{
+            testValue
+        }).get());
     }
 
     @Test
@@ -106,5 +137,23 @@ public class PrimitiveTypeTest {
         Assert.assertNull(PrimitiveTypeEnum.BY_BITPIX.get(PrimitiveTypeEnum.STRING.bitPix()));
         Assert.assertNull(PrimitiveTypeEnum.STRING.newArray(5));
         Assert.assertNull(PrimitiveTypeEnum.STRING.newBuffer(5));
+        Assert.assertNull(PrimitiveTypeEnum.STRING.sliceBuffer(null));
     }
+
+    @Test
+    public void testUnknown() throws Exception {
+        assertSame(PrimitiveTypeEnum.UNKNOWN, PrimitiveTypeEnum.valueOf(PrimitiveTypeTest.class));
+        assertSame(PrimitiveTypeEnum.UNKNOWN, PrimitiveTypeEnum.valueOf(PrimitiveTypeEnum.UNKNOWN.name()));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testUnknownAsTYpe() throws Exception {
+        PrimitiveTypeEnum.UNKNOWN.asTypedBuffer(null);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testUnknownPutArray() throws Exception {
+        PrimitiveTypeEnum.UNKNOWN.putArray(null, null);
+    }
+
 }

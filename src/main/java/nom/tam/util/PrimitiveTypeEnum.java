@@ -31,8 +31,10 @@ package nom.tam.util;
  * #L%
  */
 
+import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -43,7 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum PrimitiveTypeEnum {
-    BYTE(1, false, byte.class, Byte.class, 'B', 8) {
+    BYTE(1, false, byte.class, Byte.class, ByteBuffer.class, 'B', 8) {
 
         @Override
         public Object newArray(int length) {
@@ -59,8 +61,18 @@ public enum PrimitiveTypeEnum {
         public Buffer sliceBuffer(Buffer buffer) {
             return ((ByteBuffer) buffer).slice();
         }
+
+        @Override
+        public Buffer asTypedBuffer(ByteBuffer buffer) {
+            return buffer;
+        }
+
+        @Override
+        public void putArray(Buffer buffer, Object array) {
+            ((ByteBuffer) buffer).put((byte[]) array);
+        }
     },
-    SHORT(2, false, short.class, Short.class, 'S', 16) {
+    SHORT(2, false, short.class, Short.class, ShortBuffer.class, 'S', 16) {
 
         @Override
         public Object newArray(int length) {
@@ -76,9 +88,19 @@ public enum PrimitiveTypeEnum {
         public Buffer sliceBuffer(Buffer buffer) {
             return ((ShortBuffer) buffer).slice();
         }
+
+        @Override
+        public Buffer asTypedBuffer(ByteBuffer buffer) {
+            return buffer.asShortBuffer();
+        }
+
+        @Override
+        public void putArray(Buffer buffer, Object array) {
+            ((ShortBuffer) buffer).put((short[]) array);
+        }
     },
-    CHAR(2, false, char.class, Character.class, 'C', 0),
-    INT(4, false, int.class, Integer.class, 'I', 32) {
+    CHAR(2, false, char.class, Character.class, CharBuffer.class, 'C', 0),
+    INT(4, false, int.class, Integer.class, IntBuffer.class, 'I', 32) {
 
         @Override
         public Object newArray(int length) {
@@ -94,8 +116,18 @@ public enum PrimitiveTypeEnum {
         public Buffer sliceBuffer(Buffer buffer) {
             return ((IntBuffer) buffer).slice();
         }
+
+        @Override
+        public Buffer asTypedBuffer(ByteBuffer buffer) {
+            return buffer.asIntBuffer();
+        }
+
+        @Override
+        public void putArray(Buffer buffer, Object array) {
+            ((IntBuffer) buffer).put((int[]) array);
+        }
     },
-    LONG(8, false, long.class, Long.class, 'J', 64) {
+    LONG(8, false, long.class, Long.class, LongBuffer.class, 'J', 64) {
 
         @Override
         public Object newArray(int length) {
@@ -111,8 +143,18 @@ public enum PrimitiveTypeEnum {
         public Buffer sliceBuffer(Buffer buffer) {
             return ((LongBuffer) buffer).slice();
         }
+
+        @Override
+        public Buffer asTypedBuffer(ByteBuffer buffer) {
+            return buffer.asLongBuffer();
+        }
+
+        @Override
+        public void putArray(Buffer buffer, Object array) {
+            ((LongBuffer) buffer).put((long[]) array);
+        }
     },
-    FLOAT(4, false, float.class, Float.class, 'F', -32) {
+    FLOAT(4, false, float.class, Float.class, FloatBuffer.class, 'F', -32) {
 
         @Override
         public Object newArray(int length) {
@@ -128,8 +170,18 @@ public enum PrimitiveTypeEnum {
         public Buffer sliceBuffer(Buffer buffer) {
             return ((FloatBuffer) buffer).slice();
         }
+
+        @Override
+        public Buffer asTypedBuffer(ByteBuffer buffer) {
+            return buffer.asFloatBuffer();
+        }
+
+        @Override
+        public void putArray(Buffer buffer, Object array) {
+            ((FloatBuffer) buffer).put((float[]) array);
+        }
     },
-    DOUBLE(8, false, double.class, Double.class, 'D', -64) {
+    DOUBLE(8, false, double.class, Double.class, DoubleBuffer.class, 'D', -64) {
 
         @Override
         public Object newArray(int length) {
@@ -145,9 +197,19 @@ public enum PrimitiveTypeEnum {
         public Buffer sliceBuffer(Buffer buffer) {
             return ((DoubleBuffer) buffer).slice();
         }
+
+        @Override
+        public Buffer asTypedBuffer(ByteBuffer buffer) {
+            return buffer.asDoubleBuffer();
+        }
+
+        @Override
+        public void putArray(Buffer buffer, Object array) {
+            ((DoubleBuffer) buffer).put((double[]) array);
+        }
     },
-    BOOLEAN(1, false, boolean.class, Boolean.class, 'Z', 0),
-    STRING(0, true, CharSequence.class, String.class, 'L', 0) {
+    BOOLEAN(1, false, boolean.class, Boolean.class, null, 'Z', 0),
+    STRING(0, true, CharSequence.class, String.class, null, 'L', 0) {
 
         @Override
         public int size(Object instance) {
@@ -157,7 +219,7 @@ public enum PrimitiveTypeEnum {
             return ((CharSequence) instance).length();
         }
     },
-    UNKNOWN(0, true, Object.class, Object.class, 'L', 0) {
+    UNKNOWN(0, true, Object.class, Object.class, null, 'L', 0) {
 
         @Override
         public int size(Object instance) {
@@ -165,30 +227,16 @@ public enum PrimitiveTypeEnum {
         }
     };
 
-    private static Map<Class<?>, PrimitiveTypeEnum> lookup;
-
-    private static synchronized Map<Class<?>, PrimitiveTypeEnum> getLookup() {
-        if (PrimitiveTypeEnum.lookup == null) {
-            PrimitiveTypeEnum.lookup = new HashMap<Class<?>, PrimitiveTypeEnum>();
-            for (PrimitiveTypeEnum primitiveTypeEnum : values()) {
-                PrimitiveTypeEnum.lookup.put(primitiveTypeEnum.primitiveClass, primitiveTypeEnum);
-                PrimitiveTypeEnum.lookup.put(primitiveTypeEnum.wrapperClass, primitiveTypeEnum);
-            }
-        }
-        return PrimitiveTypeEnum.lookup;
-    }
-
     public static PrimitiveTypeEnum valueOf(Class<?> clazz) {
-        PrimitiveTypeEnum primitiveTypeEnum = getLookup().get(clazz);
+        PrimitiveTypeEnum primitiveTypeEnum = BY_CLASS.get(clazz);
         if (primitiveTypeEnum == null) {
             for (Class<?> interf : clazz.getInterfaces()) {
-                primitiveTypeEnum = getLookup().get(interf);
+                primitiveTypeEnum = BY_CLASS.get(interf);
                 if (primitiveTypeEnum != null) {
                     return primitiveTypeEnum;
                 }
             }
-
-            return UNKNOWN;
+            return valueOf(clazz.getSuperclass());
         }
         return primitiveTypeEnum;
     }
@@ -205,6 +253,9 @@ public enum PrimitiveTypeEnum {
             }
             byClass.put(type.primitiveClass, type);
             byClass.put(type.wrapperClass, type);
+            if (type.bufferClass != null) {
+                byClass.put(type.bufferClass, type);
+            }
         }
         BY_BITPIX = Collections.unmodifiableMap(byBitpix);
         BY_CLASS = Collections.unmodifiableMap(byClass);
@@ -218,15 +269,18 @@ public enum PrimitiveTypeEnum {
 
     private final Class<?> wrapperClass;
 
+    private final Class<?> bufferClass;
+
     private final char type;
 
     private final int bitPix;
 
-    private PrimitiveTypeEnum(int size, boolean individualSize, Class<?> primitiveClass, Class<?> wrapperClass, char type, int bitPix) {
+    private PrimitiveTypeEnum(int size, boolean individualSize, Class<?> primitiveClass, Class<?> wrapperClass, Class<?> bufferClass, char type, int bitPix) {
         this.size = size;
         this.individualSize = individualSize;
         this.primitiveClass = primitiveClass;
         this.wrapperClass = wrapperClass;
+        this.bufferClass = bufferClass;
         this.type = type;
         this.bitPix = bitPix;
     }
@@ -279,5 +333,20 @@ public enum PrimitiveTypeEnum {
 
     public int bitPix() {
         return bitPix;
+    }
+
+    public ByteBuffer convertToByteBuffer(Object array) {
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[Array.getLength(array) * size]);
+        putArray(asTypedBuffer(buffer), array);
+        buffer.rewind();
+        return buffer;
+    }
+
+    public void putArray(Buffer buffer, Object array) {
+        throw new UnsupportedOperationException("no primitiv type");
+    }
+
+    public Buffer asTypedBuffer(ByteBuffer buffer) {
+        throw new UnsupportedOperationException("no primitiv buffer available");
     }
 }
