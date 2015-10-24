@@ -2,7 +2,6 @@ package nom.tam.image.comp.filter;
 
 import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.image.comp.hcompress.HCompressorOption;
 
 /*
  * #%L
@@ -11,12 +10,12 @@ import nom.tam.image.comp.hcompress.HCompressorOption;
  * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -24,7 +23,7 @@ import nom.tam.image.comp.hcompress.HCompressorOption;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -69,6 +68,15 @@ public class QuantizeOption implements ICompressOption {
 
     private double maxValue;
 
+    @Override
+    public QuantizeOption copy() {
+        try {
+            return (QuantizeOption) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException("open could not be cloned", e);
+        }
+    }
+
     public double getBScale() {
         return this.bScale;
     }
@@ -85,8 +93,28 @@ public class QuantizeOption implements ICompressOption {
         return this.intMinValue;
     }
 
+    public double getMaxValue() {
+        return this.maxValue;
+    }
+
+    public double getMinValue() {
+        return this.minValue;
+    }
+
+    public double getNullValue() {
+        return this.nullValue;
+    }
+
+    public double getQlevel() {
+        return this.qlevel;
+    }
+
     public double getQLevel() {
         return this.qlevel;
+    }
+
+    public long getSeed() {
+        return this.seed;
     }
 
     public int getTileHeigth() {
@@ -95,6 +123,26 @@ public class QuantizeOption implements ICompressOption {
 
     public int getTileWidth() {
         return this.tileWidth;
+    }
+
+    public boolean isCenterOnZero() {
+        return this.centerOnZero;
+    }
+
+    public boolean isCheckNull() {
+        return this.checkNull;
+    }
+
+    public boolean isCheckZero() {
+        return this.checkZero;
+    }
+
+    public boolean isDither() {
+        return this.dither;
+    }
+
+    public boolean isDither2() {
+        return this.dither2;
     }
 
     public QuantizeOption setBScale(double value) {
@@ -107,93 +155,8 @@ public class QuantizeOption implements ICompressOption {
         return this;
     }
 
-    public QuantizeOption setIntMaxValue(int value) {
-        this.intMaxValue = value;
-        return this;
-    }
-
-    public QuantizeOption setIntMinValue(int value) {
-        this.intMinValue = value;
-        return this;
-    }
-
-    public QuantizeOption setQLevel(double value) {
-        this.qlevel = value;
-        return this;
-    }
-
-    public QuantizeOption setTileHeigth(int value) {
-        this.tileHeigth = value;
-        return this;
-    }
-
-    public QuantizeOption setTileWidth(int value) {
-        this.tileWidth = value;
-        return this;
-    }
-
-    public double getQlevel() {
-        return qlevel;
-    }
-
-    public boolean isDither2() {
-        return dither2;
-    }
-
-    public boolean isDither() {
-        return dither;
-    }
-
-    public boolean isCenterOnZero() {
-        return centerOnZero;
-    }
-
-    public long getSeed() {
-        return seed;
-    }
-
-    public boolean isCheckNull() {
-        return checkNull;
-    }
-
-    public boolean isCheckZero() {
-        return checkZero;
-    }
-
-    public double getNullValue() {
-        return nullValue;
-    }
-
-    public double getMinValue() {
-        return minValue;
-    }
-
-    public double getMaxValue() {
-        return maxValue;
-    }
-
-    public QuantizeOption setQlevel(double value) {
-        this.qlevel = value;
-        return this;
-    }
-
-    public QuantizeOption setDither(boolean value) {
-        this.dither = value;
-        return this;
-    }
-
-    public QuantizeOption setDither2(boolean value) {
-        this.dither2 = value;
-        return this;
-    }
-
     public QuantizeOption setCenterOnZero(boolean value) {
         this.centerOnZero = value;
-        return this;
-    }
-
-    public QuantizeOption setSeed(long value) {
-        this.seed = value;
         return this;
     }
 
@@ -207,8 +170,28 @@ public class QuantizeOption implements ICompressOption {
         return this;
     }
 
-    public QuantizeOption setNullValue(double value) {
-        this.nullValue = value;
+    public QuantizeOption setDither(boolean value) {
+        this.dither = value;
+        return this;
+    }
+
+    public QuantizeOption setDither2(boolean value) {
+        this.dither2 = value;
+        return this;
+    }
+
+    public QuantizeOption setIntMaxValue(int value) {
+        this.intMaxValue = value;
+        return this;
+    }
+
+    public QuantizeOption setIntMinValue(int value) {
+        this.intMinValue = value;
+        return this;
+    }
+
+    public QuantizeOption setMaxValue(double value) {
+        this.maxValue = value;
         return this;
     }
 
@@ -217,8 +200,8 @@ public class QuantizeOption implements ICompressOption {
         return this;
     }
 
-    public QuantizeOption setMaxValue(double value) {
-        this.maxValue = value;
+    public QuantizeOption setNullValue(double value) {
+        this.nullValue = value;
         return this;
     }
 
@@ -240,12 +223,30 @@ public class QuantizeOption implements ICompressOption {
         return this;
     }
 
+    public QuantizeOption setQlevel(double value) {
+        this.qlevel = value;
+        return this;
+    }
+
+    public QuantizeOption setQLevel(double value) {
+        this.qlevel = value;
+        return this;
+    }
+
+    public QuantizeOption setSeed(long value) {
+        this.seed = value;
+        return this;
+    }
+
     @Override
-    public HCompressorOption copy() {
-        try {
-            return (HCompressorOption) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("open could not be cloned", e);
-        }
+    public QuantizeOption setTileHeigth(int value) {
+        this.tileHeigth = value;
+        return this;
+    }
+
+    @Override
+    public QuantizeOption setTileWidth(int value) {
+        this.tileWidth = value;
+        return this;
     }
 }

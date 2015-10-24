@@ -31,37 +31,19 @@ package nom.tam.image.comp;
  * #L%
  */
 
-import static nom.tam.fits.header.Compression.COMPRESSED_DATA_COLUMN;
-import static nom.tam.fits.header.Compression.ZNAXIS;
-import static nom.tam.fits.header.Compression.ZNAXISn;
-import static nom.tam.fits.header.Compression.ZSCALE_COLUMN;
-import static nom.tam.fits.header.Compression.ZTILEn;
-import static nom.tam.fits.header.Compression.ZZERO_COLUMN;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
-import java.util.Arrays;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
-import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageHDU;
-import nom.tam.image.comp.filter.QuantizeOption;
-import nom.tam.image.comp.hcompress.HCompressor.ShortHCompress;
-import nom.tam.image.comp.hcompress.HCompressorOption;
-import nom.tam.image.comp.plio.PLIOCompress;
-import nom.tam.image.comp.rice.RiceCompress;
-import nom.tam.image.comp.rice.RiceCompressOption;
 import nom.tam.util.ArrayFuncs;
 
 import org.junit.Assert;
@@ -69,68 +51,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ReadProvidedCompressedImageTest {
-
-    class ImageReader {
-
-        protected double scale;
-
-        protected double zero;
-
-        protected void decompressRow(Header header, Object row) {
-        }
-
-        void read(String fileName) throws Exception {
-            try (Fits f = new Fits(fileName)) {
-                CompressedImageHDU bhdu = (CompressedImageHDU) f.getHDU(1);
-                bhdu.getUncompressedData();
-
-                Header hdr = bhdu.getHeader();
-                int naxis = hdr.getIntValue(ZNAXIS);
-                int[] axes = new int[naxis];
-                for (int i = 1; i <= naxis; i += 1) {
-                    axes[i - 1] = hdr.getIntValue(ZNAXISn.n(i), -1);
-                    if (axes[i - 1] == -1) {
-                        throw new FitsException("Required ZNAXISn not found");
-                    }
-                }
-                int[] tiles = new int[axes.length];
-                Arrays.fill(tiles, 1);
-                tiles[0] = axes[1];
-                for (int i = 1; i <= naxis; i += 1) {
-                    HeaderCard card = hdr.findCard(ZTILEn.n(i));
-                    if (card != null) {
-                        tiles[i - 1] = card.getValue(Integer.class, axes[i - 1]);
-                    }
-                }
-                Object[] rows = (Object[]) bhdu.getColumn(COMPRESSED_DATA_COLUMN);
-                double[] zzero = null;
-                double[] zscale = null;
-                try {
-                    zzero = (double[]) bhdu.getColumn(ZZERO_COLUMN);
-                    zscale = (double[]) bhdu.getColumn(ZSCALE_COLUMN);
-                } catch (Exception e) {
-                    // columns not available
-                }
-                for (int tileIndex = 0; tileIndex < rows.length; tileIndex++) {
-                    Object row = rows[tileIndex];
-                    if (zzero != null) {
-                        this.zero = zzero[tileIndex];
-                    }
-                    if (zscale != null) {
-                        this.scale = zscale[tileIndex];
-                    }
-                    decompressRow(hdr, row);
-                }
-            }
-        }
-
-        Object readAll(String fileName) throws Exception {
-            try (Fits f = new Fits(fileName)) {
-                CompressedImageHDU bhdu = (CompressedImageHDU) f.getHDU(1);
-                return bhdu.getUncompressedData();
-            }
-        }
-    }
 
     private final boolean showImage = false;
 
@@ -184,9 +104,16 @@ public class ReadProvidedCompressedImageTest {
         frame.setVisible(true);
     }
 
+    Object readAll(String fileName) throws Exception {
+        try (Fits f = new Fits(fileName)) {
+            CompressedImageHDU bhdu = (CompressedImageHDU) f.getHDU(1);
+            return bhdu.getUncompressedData();
+        }
+    }
+
     @Test
     public void readGzip() throws Exception {
-        Object result = new ImageReader().readAll("src/test/resources/nom/tam/image/provided/m13_gzip.fits");
+        Object result = readAll("src/test/resources/nom/tam/image/provided/m13_gzip.fits");
 
         short[][] data = new short[300][300];
         ArrayFuncs.copyInto(((ShortBuffer) result).array(), data);
@@ -198,24 +125,9 @@ public class ReadProvidedCompressedImageTest {
 
     @Test
     public void readHCompressed() throws Exception {
-        final ShortBuffer decompressed = ShortBuffer.wrap(new short[300 * 300]);
-        new ImageReader() {
-
-            @Override
-            protected void decompressRow(Header hdr, Object row) {
-                HCompressorOption options = new HCompressorOption()//
-                        .setScale(0)//
-                        .setSmooth(false)//
-                        .setTileWidth(hdr.getIntValue(ZTILEn.n(1)))//
-                        .setTileHeigth(hdr.getIntValue(ZTILEn.n(2)));
-                new ShortHCompress(options).decompress(ByteBuffer.wrap((byte[]) row), decompressed);
-            }
-
-        }.read("src/test/resources/nom/tam/image/provided/m13_hcomp.fits");
-
+        Object result = readAll("src/test/resources/nom/tam/image/provided/m13_hcomp.fits");
         short[][] data = new short[300][300];
-        ArrayFuncs.copyInto(decompressed.array(), data);
-
+        ArrayFuncs.copyInto(((ShortBuffer) result).array(), data);
         assertData(data);
         if (this.showImage) {
             dispayImage(data);
@@ -224,23 +136,9 @@ public class ReadProvidedCompressedImageTest {
 
     @Test
     public void readPLIO() throws Exception {
-        final ShortBuffer decompressed = ShortBuffer.wrap(new short[300 * 300]);
-        new ImageReader() {
-
-            @Override
-            protected void decompressRow(Header hdr, Object row) {
-                ShortBuffer slice = decompressed.slice();
-                slice.limit(300);
-                ByteBuffer bytes = ByteBuffer.wrap(new byte[((short[]) row).length * 2]);
-                bytes.asShortBuffer().put((short[]) row);
-                bytes.rewind();
-                new PLIOCompress.ShortPLIOCompress().decompress(bytes, slice);
-                decompressed.position(decompressed.position() + 300);
-            }
-
-        }.read("src/test/resources/nom/tam/image/provided/m13_plio.fits");
+        Object result = readAll("src/test/resources/nom/tam/image/provided/m13_plio.fits");
         short[][] data = new short[300][300];
-        ArrayFuncs.copyInto(decompressed.array(), data);
+        ArrayFuncs.copyInto(((ShortBuffer) result).array(), data);
         assertData(data);
         if (this.showImage) {
             dispayImage(data);
@@ -249,35 +147,16 @@ public class ReadProvidedCompressedImageTest {
 
     @Test
     public void readReal() throws Exception {
-        final FloatBuffer decompressed = FloatBuffer.wrap(new float[300 * 300]);
-        new ImageReader() {
-
-            @Override
-            protected void decompressRow(Header hdr, Object row) {
-
-                RiceCompressOption options = new RiceCompressOption()//
-                        .setBlockSize(32);
-                QuantizeOption quant = new QuantizeOption()//
-                        .setBScale(this.scale)//
-                        .setBZero(this.zero)//
-                        .setTileHeigth(1)//
-                        .setTileWidth(300);
-                FloatBuffer wrapedint = FloatBuffer.wrap(new float[300]);
-                new RiceCompress.FloatRiceCompress(quant, options).decompress(ByteBuffer.wrap((byte[]) row), wrapedint);
-                for (int index = 0; index < 300; index++) {
-                    decompressed.put(wrapedint.get(index));
-                }
-            }
-
-        }.read("src/test/resources/nom/tam/image/provided/m13real_rice.fits");
+        Object result = readAll("src/test/resources/nom/tam/image/provided/m13real_rice.fits");
         float[][] data = new float[300][300];
-        ArrayFuncs.copyInto(decompressed.array(), data);
+        ArrayFuncs.copyInto(((FloatBuffer) result).array(), data);
         assertData(data);
+
     }
 
     @Test
     public void readRice() throws Exception {
-        Object result = new ImageReader().readAll("src/test/resources/nom/tam/image/provided/m13_rice.fits");
+        Object result = readAll("src/test/resources/nom/tam/image/provided/m13_rice.fits");
 
         short[][] data = new short[300][300];
         ArrayFuncs.copyInto(((ShortBuffer) result).array(), data);
@@ -288,7 +167,7 @@ public class ReadProvidedCompressedImageTest {
     }
 
     @Before
-    public void setpup() throws Exception {
+    public void setup() throws Exception {
         try (Fits f = new Fits("src/test/resources/nom/tam/image/provided/m13.fits")) {
             this.m13 = (ImageHDU) f.getHDU(0);
             this.m13_data = (short[][]) this.m13.getData().getData();
@@ -298,4 +177,5 @@ public class ReadProvidedCompressedImageTest {
             this.m13_data_real = (float[][]) this.m13real.getData().getData();
         }
     }
+
 }
