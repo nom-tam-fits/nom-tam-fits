@@ -7,12 +7,12 @@ package nom.tam.util;
  * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -48,13 +48,18 @@ public enum PrimitiveTypeEnum {
     BYTE(1, false, byte.class, Byte.class, ByteBuffer.class, 'B', 8) {
 
         @Override
+        public Buffer asTypedBuffer(ByteBuffer buffer) {
+            return buffer;
+        }
+
+        @Override
         public Object newArray(int length) {
             return new byte[length];
         }
 
         @Override
-        public Buffer wrap(Object array) {
-            return ByteBuffer.wrap((byte[]) array);
+        public void putArray(Buffer buffer, Object array) {
+            ((ByteBuffer) buffer).put((byte[]) array);
         }
 
         @Override
@@ -63,16 +68,16 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public Buffer asTypedBuffer(ByteBuffer buffer) {
-            return buffer;
-        }
-
-        @Override
-        public void putArray(Buffer buffer, Object array) {
-            ((ByteBuffer) buffer).put((byte[]) array);
+        public Buffer wrap(Object array) {
+            return ByteBuffer.wrap((byte[]) array);
         }
     },
     SHORT(2, false, short.class, Short.class, ShortBuffer.class, 'S', 16) {
+
+        @Override
+        public Buffer asTypedBuffer(ByteBuffer buffer) {
+            return buffer.asShortBuffer();
+        }
 
         @Override
         public Object newArray(int length) {
@@ -80,8 +85,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public Buffer wrap(Object array) {
-            return ShortBuffer.wrap((short[]) array);
+        public void putArray(Buffer buffer, Object array) {
+            ((ShortBuffer) buffer).put((short[]) array);
         }
 
         @Override
@@ -90,17 +95,17 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public Buffer asTypedBuffer(ByteBuffer buffer) {
-            return buffer.asShortBuffer();
-        }
-
-        @Override
-        public void putArray(Buffer buffer, Object array) {
-            ((ShortBuffer) buffer).put((short[]) array);
+        public Buffer wrap(Object array) {
+            return ShortBuffer.wrap((short[]) array);
         }
     },
     CHAR(2, false, char.class, Character.class, CharBuffer.class, 'C', 0),
     INT(4, false, int.class, Integer.class, IntBuffer.class, 'I', 32) {
+
+        @Override
+        public Buffer asTypedBuffer(ByteBuffer buffer) {
+            return buffer.asIntBuffer();
+        }
 
         @Override
         public Object newArray(int length) {
@@ -108,8 +113,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public Buffer wrap(Object array) {
-            return IntBuffer.wrap((int[]) array);
+        public void putArray(Buffer buffer, Object array) {
+            ((IntBuffer) buffer).put((int[]) array);
         }
 
         @Override
@@ -118,16 +123,16 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public Buffer asTypedBuffer(ByteBuffer buffer) {
-            return buffer.asIntBuffer();
-        }
-
-        @Override
-        public void putArray(Buffer buffer, Object array) {
-            ((IntBuffer) buffer).put((int[]) array);
+        public Buffer wrap(Object array) {
+            return IntBuffer.wrap((int[]) array);
         }
     },
     LONG(8, false, long.class, Long.class, LongBuffer.class, 'J', 64) {
+
+        @Override
+        public Buffer asTypedBuffer(ByteBuffer buffer) {
+            return buffer.asLongBuffer();
+        }
 
         @Override
         public Object newArray(int length) {
@@ -135,8 +140,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public Buffer wrap(Object array) {
-            return LongBuffer.wrap((long[]) array);
+        public void putArray(Buffer buffer, Object array) {
+            ((LongBuffer) buffer).put((long[]) array);
         }
 
         @Override
@@ -145,16 +150,16 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public Buffer asTypedBuffer(ByteBuffer buffer) {
-            return buffer.asLongBuffer();
-        }
-
-        @Override
-        public void putArray(Buffer buffer, Object array) {
-            ((LongBuffer) buffer).put((long[]) array);
+        public Buffer wrap(Object array) {
+            return LongBuffer.wrap((long[]) array);
         }
     },
     FLOAT(4, false, float.class, Float.class, FloatBuffer.class, 'F', -32) {
+
+        @Override
+        public Buffer asTypedBuffer(ByteBuffer buffer) {
+            return buffer.asFloatBuffer();
+        }
 
         @Override
         public Object newArray(int length) {
@@ -162,8 +167,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public Buffer wrap(Object array) {
-            return FloatBuffer.wrap((float[]) array);
+        public void putArray(Buffer buffer, Object array) {
+            ((FloatBuffer) buffer).put((float[]) array);
         }
 
         @Override
@@ -172,16 +177,16 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public Buffer asTypedBuffer(ByteBuffer buffer) {
-            return buffer.asFloatBuffer();
-        }
-
-        @Override
-        public void putArray(Buffer buffer, Object array) {
-            ((FloatBuffer) buffer).put((float[]) array);
+        public Buffer wrap(Object array) {
+            return FloatBuffer.wrap((float[]) array);
         }
     },
     DOUBLE(8, false, double.class, Double.class, DoubleBuffer.class, 'D', -64) {
+
+        @Override
+        public Buffer asTypedBuffer(ByteBuffer buffer) {
+            return buffer.asDoubleBuffer();
+        }
 
         @Override
         public Object newArray(int length) {
@@ -189,8 +194,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public Buffer wrap(Object array) {
-            return DoubleBuffer.wrap((double[]) array);
+        public void putArray(Buffer buffer, Object array) {
+            ((DoubleBuffer) buffer).put((double[]) array);
         }
 
         @Override
@@ -199,13 +204,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public Buffer asTypedBuffer(ByteBuffer buffer) {
-            return buffer.asDoubleBuffer();
-        }
-
-        @Override
-        public void putArray(Buffer buffer, Object array) {
-            ((DoubleBuffer) buffer).put((double[]) array);
+        public Buffer wrap(Object array) {
+            return DoubleBuffer.wrap((double[]) array);
         }
     },
     BOOLEAN(1, false, boolean.class, Boolean.class, null, 'Z', 0),
@@ -227,6 +227,28 @@ public enum PrimitiveTypeEnum {
         }
     };
 
+    private static final int BIT_PIX_OFFSET = 64;
+
+    private static final PrimitiveTypeEnum[] BY_BITPIX;
+
+    private static final Map<Class<?>, PrimitiveTypeEnum> BY_CLASS;
+    static {
+        PrimitiveTypeEnum[] byBitpix = new PrimitiveTypeEnum[BIT_PIX_OFFSET * 2 + 1];
+        Map<Class<?>, PrimitiveTypeEnum> byClass = new HashMap<>();
+        for (PrimitiveTypeEnum type : PrimitiveTypeEnum.values()) {
+            if (type.bitPix != 0) {
+                byBitpix[type.bitPix + BIT_PIX_OFFSET] = type;
+            }
+            byClass.put(type.primitiveClass, type);
+            byClass.put(type.wrapperClass, type);
+            if (type.bufferClass != null) {
+                byClass.put(type.bufferClass, type);
+            }
+        }
+        BY_BITPIX = byBitpix;
+        BY_CLASS = Collections.unmodifiableMap(byClass);
+    }
+
     public static PrimitiveTypeEnum valueOf(Class<?> clazz) {
         PrimitiveTypeEnum primitiveTypeEnum = BY_CLASS.get(clazz);
         if (primitiveTypeEnum == null) {
@@ -241,24 +263,8 @@ public enum PrimitiveTypeEnum {
         return primitiveTypeEnum;
     }
 
-    public static final Map<Integer, PrimitiveTypeEnum> BY_BITPIX;
-
-    public static final Map<Class<?>, PrimitiveTypeEnum> BY_CLASS;
-    static {
-        Map<Integer, PrimitiveTypeEnum> byBitpix = new HashMap<>();
-        Map<Class<?>, PrimitiveTypeEnum> byClass = new HashMap<>();
-        for (PrimitiveTypeEnum type : PrimitiveTypeEnum.values()) {
-            if (type.bitPix != 0) {
-                byBitpix.put(type.bitPix, type);
-            }
-            byClass.put(type.primitiveClass, type);
-            byClass.put(type.wrapperClass, type);
-            if (type.bufferClass != null) {
-                byClass.put(type.bufferClass, type);
-            }
-        }
-        BY_BITPIX = Collections.unmodifiableMap(byBitpix);
-        BY_CLASS = Collections.unmodifiableMap(byClass);
+    public static PrimitiveTypeEnum valueOf(int bitPix) {
+        return BY_BITPIX[bitPix + BIT_PIX_OFFSET];
     }
 
     private final int size;
@@ -285,8 +291,39 @@ public enum PrimitiveTypeEnum {
         this.bitPix = bitPix;
     }
 
+    public Buffer asTypedBuffer(ByteBuffer buffer) {
+        throw new UnsupportedOperationException("no primitiv buffer available");
+    }
+
+    public int bitPix() {
+        return this.bitPix;
+    }
+
+    public ByteBuffer convertToByteBuffer(Object array) {
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[Array.getLength(array) * this.size]);
+        putArray(asTypedBuffer(buffer), array);
+        buffer.rewind();
+        return buffer;
+    }
+
     public boolean individualSize() {
         return this.individualSize;
+    }
+
+    public Object newArray(int length) {
+        return null;
+    }
+
+    public final Buffer newBuffer(int length) {
+        return wrap(newArray(length));
+    }
+
+    public Class<?> primitiveClass() {
+        return this.primitiveClass;
+    }
+
+    public void putArray(Buffer buffer, Object array) {
+        throw new UnsupportedOperationException("no primitiv type");
     }
 
     public int size() {
@@ -295,7 +332,7 @@ public enum PrimitiveTypeEnum {
 
     /**
      * currently the only individual size primitive so, keep it simple
-     * 
+     *
      * @param instance
      *            the object to calculate the size
      * @return the size in bytes of the object instance
@@ -307,46 +344,15 @@ public enum PrimitiveTypeEnum {
         return this.size;
     }
 
-    public char type() {
-        return this.type;
-    }
-
-    public Object newArray(int length) {
-        return null;
-    }
-
-    public final Buffer newBuffer(int length) {
-        return wrap(newArray(length));
-    }
-
-    public Buffer wrap(Object array) {
-        return null;
-    }
-
-    public Class<?> primitiveClass() {
-        return primitiveClass;
-    }
-
     public Buffer sliceBuffer(Buffer decompressedWholeErea) {
         return null;
     }
 
-    public int bitPix() {
-        return bitPix;
+    public char type() {
+        return this.type;
     }
 
-    public ByteBuffer convertToByteBuffer(Object array) {
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[Array.getLength(array) * size]);
-        putArray(asTypedBuffer(buffer), array);
-        buffer.rewind();
-        return buffer;
-    }
-
-    public void putArray(Buffer buffer, Object array) {
-        throw new UnsupportedOperationException("no primitiv type");
-    }
-
-    public Buffer asTypedBuffer(ByteBuffer buffer) {
-        throw new UnsupportedOperationException("no primitiv buffer available");
+    public Buffer wrap(Object array) {
+        return null;
     }
 }

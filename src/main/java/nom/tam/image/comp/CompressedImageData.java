@@ -45,7 +45,6 @@ import static nom.tam.fits.header.Compression.ZTILEn;
 import static nom.tam.fits.header.Compression.ZVALn;
 import static nom.tam.fits.header.Compression.ZZERO_COLUMN;
 import static nom.tam.fits.header.Standard.TTYPEn;
-import static nom.tam.util.PrimitiveTypeEnum.BY_BITPIX;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -210,7 +209,7 @@ public class CompressedImageData extends BinaryTable {
         /**
          * ZNAMEn = ’BYTEPIX’ value= 1, 2, 4, or 8
          */
-        private int bytePix = PrimitiveTypeEnum.INT.size();
+        private int bytePix;
 
         /**
          * ZNAMEn = ’BLOCKSIZE’ value= 16 or 32
@@ -240,11 +239,11 @@ public class CompressedImageData extends BinaryTable {
 
         protected TileArray read(Header header) throws FitsException {
             bitPix = header.getIntValue(ZBITPIX);
+            compressionAlgorithm = header.getStringValue(ZCMPTYPE);
+            naxis = header.getIntValue(ZNAXIS);
             bytePix = defaultBytePix(bitPix);
             readZVALs(header);
-            naxis = header.getIntValue(ZNAXIS);
             quantAlgorithm = header.getStringValue(ZQUANTIZ);
-            compressionAlgorithm = header.getStringValue(ZCMPTYPE);
             axes = new int[naxis];
             for (int i = 1; i <= naxis; i += 1) {
                 axes[i - 1] = header.getIntValue(ZNAXISn.n(i), -1);
@@ -309,7 +308,10 @@ public class CompressedImageData extends BinaryTable {
         }
 
         private int defaultBytePix(int bitPerPixel) {
-            return BY_BITPIX.get(bitPerPixel).size();
+            if (compressionAlgorithm.startsWith("RICE")) {
+                return PrimitiveTypeEnum.INT.size();
+            }
+            return PrimitiveTypeEnum.valueOf(bitPerPixel).size();
         }
 
         private <T> T getNullableColumn(Header header, Class<T> class1, String columnName) throws FitsException {
@@ -343,7 +345,7 @@ public class CompressedImageData extends BinaryTable {
         }
 
         public Buffer decompress(Buffer decompressed, Header header) {
-            PrimitiveTypeEnum primitiveTypeEnum = BY_BITPIX.get(bitPix);
+            PrimitiveTypeEnum primitiveTypeEnum = PrimitiveTypeEnum.valueOf(bitPix);
             int pixels = axes[0] * axes[1];
             if (decompressed == null) {
                 decompressed = primitiveTypeEnum.newBuffer(pixels);
@@ -352,7 +354,7 @@ public class CompressedImageData extends BinaryTable {
             // than we have to use a buffer.
             PrimitiveTypeEnum baseType = primitiveTypeEnum;
             if (decompressed == null || Math.abs(bitPix) != (bytePix * FitsIO.BITS_OF_1_BYTE)) {
-                baseType = BY_BITPIX.get(bytePix * FitsIO.BITS_OF_1_BYTE * bitPix / Math.abs(bitPix));
+                baseType = PrimitiveTypeEnum.valueOf(bytePix * FitsIO.BITS_OF_1_BYTE * bitPix / Math.abs(bitPix));
                 decompressedWholeErea = baseType.newBuffer(pixels);
             } else {
                 decompressedWholeErea = decompressed;

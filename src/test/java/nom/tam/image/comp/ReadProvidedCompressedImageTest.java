@@ -7,12 +7,12 @@ package nom.tam.image.comp;
  * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.comp;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -44,7 +44,6 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.Arrays;
 
@@ -78,13 +77,6 @@ public class ReadProvidedCompressedImageTest {
         protected double zero;
 
         protected void decompressRow(Header header, Object row) {
-        }
-
-        Object readAll(String fileName) throws Exception {
-            try (Fits f = new Fits(fileName)) {
-                CompressedImageHDU bhdu = (CompressedImageHDU) f.getHDU(1);
-                return bhdu.getUncompressedData();
-            }
         }
 
         void read(String fileName) throws Exception {
@@ -129,6 +121,13 @@ public class ReadProvidedCompressedImageTest {
                     }
                     decompressRow(hdr, row);
                 }
+            }
+        }
+
+        Object readAll(String fileName) throws Exception {
+            try (Fits f = new Fits(fileName)) {
+                CompressedImageHDU bhdu = (CompressedImageHDU) f.getHDU(1);
+                return bhdu.getUncompressedData();
             }
         }
     }
@@ -278,23 +277,10 @@ public class ReadProvidedCompressedImageTest {
 
     @Test
     public void readRice() throws Exception {
-        final ShortBuffer decompressed = ShortBuffer.wrap(new short[300 * 300]);
-        new ImageReader() {
+        Object result = new ImageReader().readAll("src/test/resources/nom/tam/image/provided/m13_rice.fits");
 
-            @Override
-            protected void decompressRow(Header hdr, Object row) {
-                RiceCompressOption options = new RiceCompressOption()//
-                        .setBlockSize(32);
-                IntBuffer wrapedint = IntBuffer.wrap(new int[300]);
-                new RiceCompress.IntRiceCompress(options).decompress(ByteBuffer.wrap((byte[]) row), wrapedint);
-                for (int index = 0; index < 300; index++) {
-                    decompressed.put((short) wrapedint.get(index));
-                }
-            }
-
-        }.read("src/test/resources/nom/tam/image/provided/m13_rice.fits");
         short[][] data = new short[300][300];
-        ArrayFuncs.copyInto(decompressed.array(), data);
+        ArrayFuncs.copyInto(((ShortBuffer) result).array(), data);
         assertData(data);
         if (this.showImage) {
             dispayImage(data);

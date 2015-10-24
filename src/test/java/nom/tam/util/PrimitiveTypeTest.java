@@ -7,12 +7,12 @@ package nom.tam.util;
  * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -55,7 +55,7 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testByte() throws Exception {
-        assertSame(PrimitiveTypeEnum.BYTE, PrimitiveTypeEnum.BY_BITPIX.get(8));
+        assertSame(PrimitiveTypeEnum.BYTE, PrimitiveTypeEnum.valueOf(8));
         assertEquals(byte.class, ((byte[]) PrimitiveTypeEnum.BYTE.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveTypeEnum.BYTE.newBuffer(5) instanceof ByteBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.BYTE, 6, 3).capacity());
@@ -67,20 +67,38 @@ public class PrimitiveTypeTest {
     }
 
     @Test
-    public void testShort() throws Exception {
-        assertSame(PrimitiveTypeEnum.SHORT, PrimitiveTypeEnum.BY_BITPIX.get(16));
-        assertEquals(short.class, ((short[]) PrimitiveTypeEnum.SHORT.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveTypeEnum.SHORT.newBuffer(5) instanceof ShortBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.SHORT, 6, 3).capacity());
+    public void testDouble() throws Exception {
+        assertSame(PrimitiveTypeEnum.DOUBLE, PrimitiveTypeEnum.valueOf(-64));
+        assertEquals(double.class, ((double[]) PrimitiveTypeEnum.DOUBLE.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveTypeEnum.DOUBLE.newBuffer(5) instanceof DoubleBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.DOUBLE, 6, 3).capacity());
 
-        assertEquals((byte) 1, PrimitiveTypeEnum.SHORT.convertToByteBuffer(new short[]{
-            256
+        double testValue = 567.7686876876725638752364576543d;
+        long value = Double.doubleToLongBits(testValue) >> 7 * 8;
+
+        assertEquals((byte) value, PrimitiveTypeEnum.DOUBLE.convertToByteBuffer(new double[]{
+            testValue
+        }).get());
+    }
+
+    @Test
+    public void testFloat() throws Exception {
+        assertSame(PrimitiveTypeEnum.FLOAT, PrimitiveTypeEnum.valueOf(-32));
+        assertEquals(float.class, ((float[]) PrimitiveTypeEnum.FLOAT.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveTypeEnum.FLOAT.newBuffer(5) instanceof FloatBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.FLOAT, 6, 3).capacity());
+
+        float testValue = 567.7686876876f;
+        int value = Float.floatToIntBits(testValue) >> 3 * 8;
+
+        assertEquals((byte) value, PrimitiveTypeEnum.FLOAT.convertToByteBuffer(new float[]{
+            testValue
         }).get());
     }
 
     @Test
     public void testInt() throws Exception {
-        assertSame(PrimitiveTypeEnum.INT, PrimitiveTypeEnum.BY_BITPIX.get(32));
+        assertSame(PrimitiveTypeEnum.INT, PrimitiveTypeEnum.valueOf(32));
         assertEquals(int.class, ((int[]) PrimitiveTypeEnum.INT.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveTypeEnum.INT.newBuffer(5) instanceof IntBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.INT, 6, 3).capacity());
@@ -92,7 +110,7 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testLong() throws Exception {
-        assertSame(PrimitiveTypeEnum.LONG, PrimitiveTypeEnum.BY_BITPIX.get(64));
+        assertSame(PrimitiveTypeEnum.LONG, PrimitiveTypeEnum.valueOf(64));
         assertEquals(long.class, ((long[]) PrimitiveTypeEnum.LONG.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveTypeEnum.LONG.newBuffer(5) instanceof LongBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.LONG, 6, 3).capacity());
@@ -103,41 +121,23 @@ public class PrimitiveTypeTest {
     }
 
     @Test
-    public void testFloat() throws Exception {
-        assertSame(PrimitiveTypeEnum.FLOAT, PrimitiveTypeEnum.BY_BITPIX.get(-32));
-        assertEquals(float.class, ((float[]) PrimitiveTypeEnum.FLOAT.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveTypeEnum.FLOAT.newBuffer(5) instanceof FloatBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.FLOAT, 6, 3).capacity());
-
-        float testValue = 567.7686876876f;
-        int value = Float.floatToIntBits(testValue) >> (3 * 8);
-
-        assertEquals((byte) value, PrimitiveTypeEnum.FLOAT.convertToByteBuffer(new float[]{
-            testValue
-        }).get());
-    }
-
-    @Test
-    public void testDouble() throws Exception {
-        assertSame(PrimitiveTypeEnum.DOUBLE, PrimitiveTypeEnum.BY_BITPIX.get(-64));
-        assertEquals(double.class, ((double[]) PrimitiveTypeEnum.DOUBLE.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveTypeEnum.DOUBLE.newBuffer(5) instanceof DoubleBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.DOUBLE, 6, 3).capacity());
-
-        double testValue = 567.7686876876725638752364576543d;
-        long value = Double.doubleToLongBits(testValue) >> (7 * 8);
-
-        assertEquals((byte) value, PrimitiveTypeEnum.DOUBLE.convertToByteBuffer(new double[]{
-            testValue
-        }).get());
-    }
-
-    @Test
     public void testOther() throws Exception {
-        Assert.assertNull(PrimitiveTypeEnum.BY_BITPIX.get(PrimitiveTypeEnum.STRING.bitPix()));
+        Assert.assertNull(PrimitiveTypeEnum.valueOf(PrimitiveTypeEnum.STRING.bitPix()));
         Assert.assertNull(PrimitiveTypeEnum.STRING.newArray(5));
         Assert.assertNull(PrimitiveTypeEnum.STRING.newBuffer(5));
         Assert.assertNull(PrimitiveTypeEnum.STRING.sliceBuffer(null));
+    }
+
+    @Test
+    public void testShort() throws Exception {
+        assertSame(PrimitiveTypeEnum.SHORT, PrimitiveTypeEnum.valueOf(16));
+        assertEquals(short.class, ((short[]) PrimitiveTypeEnum.SHORT.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveTypeEnum.SHORT.newBuffer(5) instanceof ShortBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.SHORT, 6, 3).capacity());
+
+        assertEquals((byte) 1, PrimitiveTypeEnum.SHORT.convertToByteBuffer(new short[]{
+            256
+        }).get());
     }
 
     @Test
