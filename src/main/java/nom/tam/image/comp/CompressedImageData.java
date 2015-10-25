@@ -372,6 +372,7 @@ public class CompressedImageData extends BinaryTable {
                 option.setOption(Compression.BLOCKSIZE, blocksize);
                 option.setOption(Compression.SCALE, scaleFactor);
                 option.setOption(Compression.SMOOTH, smooth);
+                option.setOption(Compression.BYTEPIX, bytePix);
             }
 
             try {

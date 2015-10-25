@@ -36,10 +36,11 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import nom.tam.image.comp.rice.RiceCompressOption;
 import nom.tam.image.comp.rice.RiceCompress.ByteRiceCompress;
 import nom.tam.image.comp.rice.RiceCompress.IntRiceCompress;
 import nom.tam.image.comp.rice.RiceCompress.ShortRiceCompress;
+import nom.tam.image.comp.rice.RiceCompressOption;
+import nom.tam.util.PrimitiveTypeEnum;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -62,7 +63,7 @@ public class RiseCompressTest {
             int[] intArray = new int[bytes.length / 4];
             ByteBuffer.wrap(bytes).asIntBuffer().get(intArray);
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
-            IntRiceCompress compressor = new IntRiceCompress(option);
+            IntRiceCompress compressor = new IntRiceCompress(option.setBytePix(PrimitiveTypeEnum.INT.size()));
             compressor.compress(IntBuffer.wrap(intArray), compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -91,7 +92,7 @@ public class RiseCompressTest {
             short[] shortArray = new short[bytes.length / 2];
             ByteBuffer.wrap(bytes).asShortBuffer().get(shortArray);
             ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
-            ShortRiceCompress compressor = new ShortRiceCompress(option);
+            ShortRiceCompress compressor = new ShortRiceCompress(option.setBytePix(PrimitiveTypeEnum.SHORT.size()));
             compressor.compress(ShortBuffer.wrap(shortArray), compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -119,7 +120,7 @@ public class RiseCompressTest {
             expected.read(expectedBytes);
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
-            ByteRiceCompress compressor = new ByteRiceCompress(option);
+            ByteRiceCompress compressor = new ByteRiceCompress(option.setBytePix(PrimitiveTypeEnum.BYTE.size()));
             compressor.compress(ByteBuffer.wrap(bytes), compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -133,17 +134,5 @@ public class RiseCompressTest {
             Assert.assertArrayEquals(bytes, decompressedArray);
         }
 
-    }
-
-    /**
-     * debug routine
-     * 
-     * @param value
-     * @return
-     */
-    private String binaryString(byte value) {
-        String binaryString = Integer.toBinaryString(value & 0xFF);
-        binaryString = "000000000000000000000000000000000000000000000000000000".subSequence(0, 8 - binaryString.length()) + binaryString;
-        return binaryString;
     }
 }

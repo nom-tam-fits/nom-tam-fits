@@ -66,7 +66,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         private ByteBuffer pixelBuffer;
 
         public ByteRiceCompress(RiceCompressOption option) {
-            super(FS_BITS_FOR_BYTE, FS_MAX_FOR_BYTE, option, BITS_PER_BYTE);
+            super(FS_BITS_FOR_BYTE, FS_MAX_FOR_BYTE, option);
         }
 
         @Override
@@ -95,7 +95,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         private IntBuffer pixelBuffer;
 
         public IntRiceCompress(RiceCompressOption option) {
-            super(FS_BITS_FOR_INT, FS_MAX_FOR_INT, option, BITS_PER_INT);
+            super(FS_BITS_FOR_INT, FS_MAX_FOR_INT, option);
         }
 
         @Override
@@ -124,7 +124,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         private ShortBuffer pixelBuffer;
 
         public ShortRiceCompress(RiceCompressOption option) {
-            super(FS_BITS_FOR_SHORT, FS_MAX_FOR_SHORT, option, BITS_PER_SHORT);
+            super(FS_BITS_FOR_SHORT, FS_MAX_FOR_SHORT, option);
         }
 
         @Override
@@ -166,10 +166,6 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
 
     private static final int BITS_PER_BYTE = 8;
 
-    private static final int BITS_PER_INT = 32;
-
-    private static final int BITS_PER_SHORT = 16;
-
     private static final int BYTE_MASK = 0xff;
 
     private static final int FS_BITS_FOR_BYTE = 3;
@@ -187,7 +183,8 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
     /*
      * nonzero_count is lookup table giving number of bits in 8-bit values not
      * including leading zeros used in fits_rdecomp, fits_rdecomp_short and
-     * fits_rdecomp_byte
+     * fits_rdecomp_byte.
+     * @formatter:off
      */
     private static final int[] NONZERO_COUNT = {
         0,
@@ -448,6 +445,8 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         8
     };
 
+    // @formatter:on
+
     private final int bBits;
 
     private final int bitsPerPixel;
@@ -458,11 +457,11 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
 
     private final int fsMax;
 
-    private RiceCompress(int fsBits, int fsMax, RiceCompressOption option, int bitsPerPixel) {
+    private RiceCompress(int fsBits, int fsMax, RiceCompressOption option) {
         this.fsBits = fsBits;
         this.fsMax = fsMax;
         this.blockSize = option.getBlockSize();
-        this.bitsPerPixel = bitsPerPixel;
+        this.bitsPerPixel = option.getBytePix() * BITS_OF_1_BYTE;
         /*
          * From bsize derive: FSBITS = # bits required to store FS FSMAX =
          * maximum value for FS BBITS = bits/pixel for direct coding
