@@ -63,6 +63,11 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
+        public void getArray(Buffer buffer, Object array) {
+            ((ByteBuffer) buffer).get((byte[]) array);
+        }
+
+        @Override
         public Buffer sliceBuffer(Buffer buffer) {
             return ((ByteBuffer) buffer).slice();
         }
@@ -87,6 +92,11 @@ public enum PrimitiveTypeEnum {
         @Override
         public void putArray(Buffer buffer, Object array) {
             ((ShortBuffer) buffer).put((short[]) array);
+        }
+
+        @Override
+        public void getArray(Buffer buffer, Object array) {
+            ((ShortBuffer) buffer).get((short[]) array);
         }
 
         @Override
@@ -118,6 +128,11 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
+        public void getArray(Buffer buffer, Object array) {
+            ((IntBuffer) buffer).get((int[]) array);
+        }
+
+        @Override
         public Buffer sliceBuffer(Buffer buffer) {
             return ((IntBuffer) buffer).slice();
         }
@@ -142,6 +157,11 @@ public enum PrimitiveTypeEnum {
         @Override
         public void putArray(Buffer buffer, Object array) {
             ((LongBuffer) buffer).put((long[]) array);
+        }
+
+        @Override
+        public void getArray(Buffer buffer, Object array) {
+            ((LongBuffer) buffer).get((long[]) array);
         }
 
         @Override
@@ -172,6 +192,11 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
+        public void getArray(Buffer buffer, Object array) {
+            ((FloatBuffer) buffer).get((float[]) array);
+        }
+
+        @Override
         public Buffer sliceBuffer(Buffer buffer) {
             return ((FloatBuffer) buffer).slice();
         }
@@ -196,6 +221,11 @@ public enum PrimitiveTypeEnum {
         @Override
         public void putArray(Buffer buffer, Object array) {
             ((DoubleBuffer) buffer).put((double[]) array);
+        }
+
+        @Override
+        public void getArray(Buffer buffer, Object array) {
+            ((DoubleBuffer) buffer).get((double[]) array);
         }
 
         @Override
@@ -354,5 +384,9 @@ public enum PrimitiveTypeEnum {
 
     public Buffer wrap(Object array) {
         return null;
+    }
+
+    public void getArray(Buffer buffer, Object array) {
+        throw new UnsupportedOperationException("no primitiv type");
     }
 }
