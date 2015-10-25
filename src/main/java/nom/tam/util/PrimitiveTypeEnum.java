@@ -7,12 +7,12 @@ package nom.tam.util;
  * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -53,6 +53,11 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
+        public void getArray(Buffer buffer, Object array) {
+            ((ByteBuffer) buffer).get((byte[]) array);
+        }
+
+        @Override
         public Object newArray(int length) {
             return new byte[length];
         }
@@ -60,11 +65,6 @@ public enum PrimitiveTypeEnum {
         @Override
         public void putArray(Buffer buffer, Object array) {
             ((ByteBuffer) buffer).put((byte[]) array);
-        }
-
-        @Override
-        public void getArray(Buffer buffer, Object array) {
-            ((ByteBuffer) buffer).get((byte[]) array);
         }
 
         @Override
@@ -85,6 +85,11 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
+        public void getArray(Buffer buffer, Object array) {
+            ((ShortBuffer) buffer).get((short[]) array);
+        }
+
+        @Override
         public Object newArray(int length) {
             return new short[length];
         }
@@ -92,11 +97,6 @@ public enum PrimitiveTypeEnum {
         @Override
         public void putArray(Buffer buffer, Object array) {
             ((ShortBuffer) buffer).put((short[]) array);
-        }
-
-        @Override
-        public void getArray(Buffer buffer, Object array) {
-            ((ShortBuffer) buffer).get((short[]) array);
         }
 
         @Override
@@ -118,6 +118,11 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
+        public void getArray(Buffer buffer, Object array) {
+            ((IntBuffer) buffer).get((int[]) array);
+        }
+
+        @Override
         public Object newArray(int length) {
             return new int[length];
         }
@@ -125,11 +130,6 @@ public enum PrimitiveTypeEnum {
         @Override
         public void putArray(Buffer buffer, Object array) {
             ((IntBuffer) buffer).put((int[]) array);
-        }
-
-        @Override
-        public void getArray(Buffer buffer, Object array) {
-            ((IntBuffer) buffer).get((int[]) array);
         }
 
         @Override
@@ -150,6 +150,11 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
+        public void getArray(Buffer buffer, Object array) {
+            ((LongBuffer) buffer).get((long[]) array);
+        }
+
+        @Override
         public Object newArray(int length) {
             return new long[length];
         }
@@ -157,11 +162,6 @@ public enum PrimitiveTypeEnum {
         @Override
         public void putArray(Buffer buffer, Object array) {
             ((LongBuffer) buffer).put((long[]) array);
-        }
-
-        @Override
-        public void getArray(Buffer buffer, Object array) {
-            ((LongBuffer) buffer).get((long[]) array);
         }
 
         @Override
@@ -182,6 +182,11 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
+        public void getArray(Buffer buffer, Object array) {
+            ((FloatBuffer) buffer).get((float[]) array);
+        }
+
+        @Override
         public Object newArray(int length) {
             return new float[length];
         }
@@ -189,11 +194,6 @@ public enum PrimitiveTypeEnum {
         @Override
         public void putArray(Buffer buffer, Object array) {
             ((FloatBuffer) buffer).put((float[]) array);
-        }
-
-        @Override
-        public void getArray(Buffer buffer, Object array) {
-            ((FloatBuffer) buffer).get((float[]) array);
         }
 
         @Override
@@ -214,6 +214,11 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
+        public void getArray(Buffer buffer, Object array) {
+            ((DoubleBuffer) buffer).get((double[]) array);
+        }
+
+        @Override
         public Object newArray(int length) {
             return new double[length];
         }
@@ -221,11 +226,6 @@ public enum PrimitiveTypeEnum {
         @Override
         public void putArray(Buffer buffer, Object array) {
             ((DoubleBuffer) buffer).put((double[]) array);
-        }
-
-        @Override
-        public void getArray(Buffer buffer, Object array) {
-            ((DoubleBuffer) buffer).get((double[]) array);
         }
 
         @Override
@@ -336,6 +336,10 @@ public enum PrimitiveTypeEnum {
         return buffer;
     }
 
+    public void getArray(Buffer buffer, Object array) {
+        throw new UnsupportedOperationException("no primitiv type");
+    }
+
     public boolean individualSize() {
         return this.individualSize;
     }
@@ -362,7 +366,7 @@ public enum PrimitiveTypeEnum {
 
     /**
      * currently the only individual size primitive so, keep it simple
-     * 
+     *
      * @param instance
      *            the object to calculate the size
      * @return the size in bytes of the object instance
@@ -384,9 +388,5 @@ public enum PrimitiveTypeEnum {
 
     public Buffer wrap(Object array) {
         return null;
-    }
-
-    public void getArray(Buffer buffer, Object array) {
-        throw new UnsupportedOperationException("no primitiv type");
     }
 }

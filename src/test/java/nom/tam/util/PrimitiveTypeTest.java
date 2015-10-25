@@ -34,6 +34,7 @@ package nom.tam.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
+import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
@@ -64,6 +65,18 @@ public class PrimitiveTypeTest {
             1
         }).get());
 
+        testGetPutArray(PrimitiveTypeEnum.BYTE, Byte.valueOf((byte) 1), Byte.valueOf((byte) 2));
+    }
+
+    private void testGetPutArray(PrimitiveTypeEnum type, Object value, Object other) {
+        Object array = type.newArray(1);
+        Array.set(array, 0, value);
+        Buffer buffer = type.newBuffer(1);
+        type.putArray(buffer, array);
+        Array.set(array, 0, other);
+        buffer.rewind();
+        type.getArray(buffer, array);
+        Assert.assertEquals(value, Array.get(array, 0));
     }
 
     @Test
@@ -79,6 +92,8 @@ public class PrimitiveTypeTest {
         assertEquals((byte) value, PrimitiveTypeEnum.DOUBLE.convertToByteBuffer(new double[]{
             testValue
         }).get());
+
+        testGetPutArray(PrimitiveTypeEnum.DOUBLE, Double.valueOf(1), Double.valueOf(2));
     }
 
     @Test
@@ -94,6 +109,7 @@ public class PrimitiveTypeTest {
         assertEquals((byte) value, PrimitiveTypeEnum.FLOAT.convertToByteBuffer(new float[]{
             testValue
         }).get());
+        testGetPutArray(PrimitiveTypeEnum.FLOAT, Float.valueOf(1), Float.valueOf(2));
     }
 
     @Test
@@ -106,6 +122,7 @@ public class PrimitiveTypeTest {
         assertEquals((byte) 1, PrimitiveTypeEnum.INT.convertToByteBuffer(new int[]{
             256 * 256 * 256
         }).get());
+        testGetPutArray(PrimitiveTypeEnum.INT, Integer.valueOf(1), Integer.valueOf(2));
     }
 
     @Test
@@ -118,6 +135,7 @@ public class PrimitiveTypeTest {
         assertEquals((byte) 1, PrimitiveTypeEnum.LONG.convertToByteBuffer(new long[]{
             256L * 256L * 256L * 256L * 256L * 256L * 256L
         }).get());
+        testGetPutArray(PrimitiveTypeEnum.LONG, Long.valueOf(1), Long.valueOf(2));
     }
 
     @Test
@@ -138,6 +156,7 @@ public class PrimitiveTypeTest {
         assertEquals((byte) 1, PrimitiveTypeEnum.SHORT.convertToByteBuffer(new short[]{
             256
         }).get());
+        testGetPutArray(PrimitiveTypeEnum.SHORT, Short.valueOf((short) 1), Short.valueOf((short) 2));
     }
 
     @Test
@@ -154,6 +173,11 @@ public class PrimitiveTypeTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testUnknownPutArray() throws Exception {
         PrimitiveTypeEnum.UNKNOWN.putArray(null, null);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testUnknownGetArray() throws Exception {
+        PrimitiveTypeEnum.UNKNOWN.getArray(null, null);
     }
 
 }
