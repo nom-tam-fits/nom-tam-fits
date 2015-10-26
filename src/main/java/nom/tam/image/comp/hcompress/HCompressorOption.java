@@ -44,29 +44,50 @@ public class HCompressorOption implements ICompressOption {
 
     private int scale;
 
-    public int getTileWidth() {
-        return this.tileWidth;
-    }
-
-    public int getTileHeigth() {
-        return this.tileHeigth;
+    @Override
+    public HCompressorOption copy() {
+        try {
+            return (HCompressorOption) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException("open could not be cloned", e);
+        }
     }
 
     public int getScale() {
         return this.scale;
     }
 
+    public int getTileHeigth() {
+        return this.tileHeigth;
+    }
+
+    public int getTileWidth() {
+        return this.tileWidth;
+    }
+
     public boolean isSmooth() {
         return this.smooth;
     }
 
-    public HCompressorOption setTileWidth(int value) {
-        this.tileWidth = value;
+    @Override
+    public ICompressOption setBScale(double value) {
         return this;
     }
 
-    public HCompressorOption setTileHeigth(int value) {
-        this.tileHeigth = value;
+    @Override
+    public ICompressOption setBZero(double value) {
+        return this;
+    }
+
+    @Override
+    public ICompressOption setOptions(Parameter[] parameters) {
+        for (Parameter parameter : parameters) {
+            if (Compression.SMOOTH.equals(parameter.getName())) {
+                setSmooth(parameter.getValue(Boolean.class));
+            } else if (Compression.SCALE.equals(parameter.getName())) {
+                setScale(parameter.getValue(Integer.class));
+            }
+        }
         return this;
     }
 
@@ -81,21 +102,14 @@ public class HCompressorOption implements ICompressOption {
     }
 
     @Override
-    public HCompressorOption setOption(String name, Object value) {
-        if (Compression.SMOOTH.equals(name)) {
-            setSmooth((Boolean) value);
-        } else if (Compression.SCALE.equals(name)) {
-            setScale((Integer) value);
-        }
+    public HCompressorOption setTileHeigth(int value) {
+        this.tileHeigth = value;
         return this;
     }
 
     @Override
-    public HCompressorOption copy() {
-        try {
-            return (HCompressorOption) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("open could not be cloned", e);
-        }
+    public HCompressorOption setTileWidth(int value) {
+        this.tileWidth = value;
+        return this;
     }
 }

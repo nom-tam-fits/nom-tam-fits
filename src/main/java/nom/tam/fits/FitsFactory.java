@@ -2,6 +2,7 @@ package nom.tam.fits;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import nom.tam.image.comp.CompressedImageData;
 import nom.tam.image.comp.CompressedImageHDU;
@@ -61,11 +62,11 @@ public final class FitsFactory {
 
         private FitsSettings copy() {
             FitsSettings settings = new FitsSettings();
-            settings.useAsciiTables = useAsciiTables;
-            settings.useHierarch = useHierarch;
-            settings.checkAsciiStrings = checkAsciiStrings;
-            settings.allowTerminalJunk = allowTerminalJunk;
-            settings.longStringsEnabled = longStringsEnabled;
+            settings.useAsciiTables = this.useAsciiTables;
+            settings.useHierarch = this.useHierarch;
+            settings.checkAsciiStrings = this.checkAsciiStrings;
+            settings.allowTerminalJunk = this.allowTerminalJunk;
+            settings.longStringsEnabled = this.longStringsEnabled;
             return settings;
         }
 
@@ -77,6 +78,8 @@ public final class FitsFactory {
 
     private static ExecutorService threadPool;
 
+    public static final int FITS_BLOCK_SIZE = 2880;
+
     private static FitsSettings current() {
         FitsSettings settings = LOCAL_SETTINGS.get();
         if (settings == null) {
@@ -84,11 +87,6 @@ public final class FitsFactory {
         } else {
             return settings;
         }
-    }
-
-    public static final int FITS_BLOCK_SIZE = 2880;
-
-    private FitsFactory() {
     }
 
     /**
@@ -179,43 +177,6 @@ public final class FitsFactory {
         return null;
     }
 
-    // CHECKSTYLE:OFF
-    /**
-     * @return Given Header and data objects return the appropriate type of HDU.
-     * @param hdr
-     *            the header of the date
-     * @param d
-     *            the data
-     * @param <DataClass>
-     *            the class of the data
-     * @throws FitsException
-     *             if the operation failed
-     * @deprecated use {@link #hduFactory(Header, Data)} instead
-     */
-    @Deprecated
-    public static <DataClass extends Data> BasicHDU<DataClass> HDUFactory(Header hdr, DataClass d) throws FitsException {
-        return hduFactory(hdr, d);
-    }
-
-    // CHECKSTYLE:ON
-
-    // CHECKSTYLE:OFF
-    /**
-     * @return Given an object, create the appropriate FITS header to describe
-     *         it.
-     * @param o
-     *            The object to be described.
-     * @throws FitsException
-     *             if the parameter could not be converted to a hdu.
-     * @deprecated use {@link #hduFactory(Object)} instead
-     */
-    @Deprecated
-    public static BasicHDU<?> HDUFactory(Object o) throws FitsException {
-        return hduFactory(o);
-    }
-
-    // CHECKSTYLE:ON
-
     /**
      * @return Given an object, create the appropriate FITS header to describe
      *         it.
@@ -254,6 +215,61 @@ public final class FitsFactory {
         return hduFactory(h, d);
     }
 
+    // CHECKSTYLE:OFF
+    /**
+     * @return Given Header and data objects return the appropriate type of HDU.
+     * @param hdr
+     *            the header of the date
+     * @param d
+     *            the data
+     * @param <DataClass>
+     *            the class of the data
+     * @throws FitsException
+     *             if the operation failed
+     * @deprecated use {@link #hduFactory(Header, Data)} instead
+     */
+    @Deprecated
+    public static <DataClass extends Data> BasicHDU<DataClass> HDUFactory(Header hdr, DataClass d) throws FitsException {
+        return hduFactory(hdr, d);
+    }
+
+    // CHECKSTYLE:ON
+
+    // CHECKSTYLE:OFF
+    /**
+     * @return Given an object, create the appropriate FITS header to describe
+     *         it.
+     * @param o
+     *            The object to be described.
+     * @throws FitsException
+     *             if the parameter could not be converted to a hdu.
+     * @deprecated use {@link #hduFactory(Object)} instead
+     */
+    @Deprecated
+    public static BasicHDU<?> HDUFactory(Object o) throws FitsException {
+        return hduFactory(o);
+    }
+
+    // CHECKSTYLE:ON
+
+    private static void initializeThreadPool() {
+        synchronized (GLOBAL_SETTINGS) {
+            if (threadPool == null) {
+                // 1.5 thread per core
+                threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), //
+                        new ThreadFactory() {
+
+                            private int counter = 1;
+
+                            @Override
+                            public Thread newThread(Runnable r) {
+                                return new Thread(r, "nom-tam-fits worker " + this.counter++);
+                            }
+                        });
+            }
+        }
+    }
+
     /**
      * @return <code>true</code> If long string support is enabled.
      */
@@ -263,7 +279,7 @@ public final class FitsFactory {
 
     /**
      * Do we allow junk after a valid FITS file?
-     * 
+     *
      * @param allowTerminalJunk
      *            value to set
      */
@@ -276,7 +292,7 @@ public final class FitsFactory {
      * they are within the range specified by the FITS standard. The standard
      * only allows the values 0x20 - 0x7E with null bytes allowed in one limited
      * context. Disabled by default.
-     * 
+     *
      * @param checkAsciiStrings
      *            value to set
      */
@@ -286,7 +302,7 @@ public final class FitsFactory {
 
     /**
      * Enable/Disable longstring support.
-     * 
+     *
      * @param longStringsEnabled
      *            value to set
      */
@@ -296,7 +312,7 @@ public final class FitsFactory {
 
     /**
      * Indicate whether ASCII tables should be used where feasible.
-     * 
+     *
      * @param useAsciiTables
      *            value to set
      */
@@ -306,7 +322,7 @@ public final class FitsFactory {
 
     /**
      * Enable/Disable hierarchical keyword processing.
-     * 
+     *
      * @param useHierarch
      *            value to set
      */
@@ -314,11 +330,18 @@ public final class FitsFactory {
         current().useHierarch = useHierarch;
     }
 
+    public static ExecutorService threadPool() {
+        if (threadPool == null) {
+            initializeThreadPool();
+        }
+        return threadPool;
+    }
+
     /**
      * Use thread local settings for the curretn thread instead of the lobal
      * ones if the parameter is set to true, else use the shared global
      * settings.
-     * 
+     *
      * @param useThreadSettings
      *            true if the thread should not share the global settings.
      */
@@ -330,18 +353,6 @@ public final class FitsFactory {
         }
     }
 
-    public static ExecutorService threadPool() {
-        if (threadPool == null) {
-            initializeThreadPool();
-        }
-        return threadPool;
-    }
-
-    private static void initializeThreadPool() {
-        synchronized (GLOBAL_SETTINGS) {
-            if (threadPool == null) {
-                threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-            }
-        }
+    private FitsFactory() {
     }
 }

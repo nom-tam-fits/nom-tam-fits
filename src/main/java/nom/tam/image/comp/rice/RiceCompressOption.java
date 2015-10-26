@@ -58,13 +58,18 @@ public class RiceCompressOption implements ICompressOption {
         return this.blockSize;
     }
 
+    public int getBytePix() {
+        return this.bytePix;
+    }
+
     public RiceCompressOption setBlockSize(int value) {
         this.blockSize = value;
         return this;
     }
 
-    public int getBytePix() {
-        return this.bytePix;
+    @Override
+    public ICompressOption setBScale(double scale) {
+        return this;
     }
 
     public RiceCompressOption setBytePix(int value) {
@@ -73,11 +78,18 @@ public class RiceCompressOption implements ICompressOption {
     }
 
     @Override
-    public RiceCompressOption setOption(String name, Object value) {
-        if (Compression.BLOCKSIZE.equals(name)) {
-            setBlockSize((Integer) value);
-        } else if (Compression.BYTEPIX.equals(name)) {
-            setBytePix((Integer) value);
+    public ICompressOption setBZero(double zero) {
+        return this;
+    }
+
+    @Override
+    public ICompressOption setOptions(Parameter[] parameters) {
+        for (Parameter parameter : parameters) {
+            if (Compression.BLOCKSIZE.equals(parameter.getName())) {
+                setBlockSize(parameter.getValue(Integer.class));
+            } else if (Compression.BYTEPIX.equals(parameter.getName())) {
+                setBytePix(parameter.getValue(Integer.class));
+            }
         }
         return this;
     }

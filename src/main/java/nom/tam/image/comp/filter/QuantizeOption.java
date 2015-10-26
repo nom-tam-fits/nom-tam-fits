@@ -145,11 +145,13 @@ public class QuantizeOption implements ICompressOption {
         return this.dither2;
     }
 
+    @Override
     public QuantizeOption setBScale(double value) {
         this.bScale = value;
         return this;
     }
 
+    @Override
     public QuantizeOption setBZero(double value) {
         this.bZero = value;
         return this;
@@ -206,19 +208,17 @@ public class QuantizeOption implements ICompressOption {
     }
 
     @Override
-    public QuantizeOption setOption(String name, Object value) {
-        if (Compression.ZQUANTIZ.name().equals(name)) {
-            if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(value)) {
-                setDither(true);
-                setDither2(false);
-            } else if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(value)) {
-                setDither(true);
-                setDither2(true);
+    public ICompressOption setOptions(Parameter[] parameters) {
+        for (Parameter parameter : parameters) {
+            if (Compression.ZQUANTIZ.name().equals(parameter.getName())) {
+                if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(parameter.getValue())) {
+                    setDither(true);
+                    setDither2(false);
+                } else if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(parameter.getValue())) {
+                    setDither(true);
+                    setDither2(true);
+                }
             }
-        } else if (Compression.ZZERO_COLUMN.equals(name)) {
-            setBZero((Double) value);
-        } else if (Compression.ZSCALE_COLUMN.equals(name)) {
-            setBScale((Double) value);
         }
         return this;
     }

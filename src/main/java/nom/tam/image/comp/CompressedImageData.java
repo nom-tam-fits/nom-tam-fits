@@ -7,12 +7,12 @@ package nom.tam.image.comp;
  * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.comp;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -52,21 +52,20 @@ import java.math.RoundingMode;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
-import nom.tam.image.comp.rice.RiceCompressOption;
 import nom.tam.util.PrimitiveTypeEnum;
 
 public class CompressedImageData extends BinaryTable {
 
-    private static class Tile implements Callable<Tile> {
+    private static class Tile implements Runnable {
 
         enum Action {
             COMPRESS,
@@ -101,29 +100,33 @@ public class CompressedImageData extends BinaryTable {
 
         private Action action;
 
+        private Future<?> future;
+
         public Tile(TileArray array) {
             this.array = array;
         }
 
+        private ByteBuffer convertToBuffer(Object data) {
+            return PrimitiveTypeEnum.valueOf(data.getClass().getComponentType()).convertToByteBuffer(data);
+        }
+
+        public void execute(ExecutorService threadPool) {
+            this.future = threadPool.submit(this);
+        }
+
         @Override
-        public Tile call() throws Exception {
+        public void run() {
             ICompressOption[] tileOptions = this.array.compressOptions.clone();
             for (int index = 0; index < tileOptions.length; index++) {
-                ICompressOption option = tileOptions[index].copy();
-                tileOptions[index] = option;
-                option.setOption(Compression.ZZERO_COLUMN, this.zero);
-                option.setOption(Compression.ZSCALE_COLUMN, this.scale);
-                option.setTileWidth(this.width);
-                option.setTileHeigth(this.heigth);
+                tileOptions[index] = tileOptions[index].copy() //
+                        .setBZero(this.zero) //
+                        .setBScale(this.scale) //
+                        .setTileWidth(this.width) //
+                        .setTileHeigth(this.heigth);
             }
             if (this.width == this.array.axes[0]) {
                 this.array.compressorControl.decompress(this.compressedData, this.decompressedData, tileOptions);
             }
-            return this;
-        }
-
-        private ByteBuffer convertToBuffer(Object data) {
-            return PrimitiveTypeEnum.valueOf(data.getClass().getComponentType()).convertToByteBuffer(data);
         }
 
         public Tile setCompressed(Object data, TileCompressionType type) {
@@ -168,6 +171,16 @@ public class CompressedImageData extends BinaryTable {
         public String toString() {
             return getClass().getSimpleName() + "(" + this.tileIndex + "," + this.action + "," + this.compressionType + ")";
         }
+
+        public void waitForResult() {
+            if (!this.future.isDone()) {
+                try {
+                    this.future.get();
+                } catch (Exception e) {
+                    throw new IllegalStateException("could not (de)compress tile", e);
+                }
+            }
+        }
     }
 
     private class TileArray {
@@ -191,27 +204,6 @@ public class CompressedImageData extends BinaryTable {
         private String compressionAlgorithm;
 
         /**
-         * ZNAMEn = ’BYTEPIX’ value= 1, 2, 4, or 8
-         */
-        private int bytePix;
-
-        /**
-         * ZNAMEn = ’BLOCKSIZE’ value= 16 or 32
-         */
-        private int blocksize = RiceCompressOption.DEFAULT_RISE_BLOCKSIZE;
-
-        /**
-         * ZNAMEn = ’SCALE’
-         */
-        private int scaleFactor = 0;
-
-        /**
-         * ZNAMEn = ’SMOOTH’ A value of 0 means no smoothing, and any other
-         * value means smoothing is recommended.
-         */
-        private boolean smooth = false;
-
-        /**
          * an integer that gives the value of the BITPIX keyword in the
          * uncompressed FITS image
          */
@@ -220,6 +212,8 @@ public class CompressedImageData extends BinaryTable {
         private ICompressOption[] compressOptions;
 
         private ITileCompressorControl compressorControl;
+
+        private ICompressOption.Parameter[] compressionParameter;
 
         public Buffer decompress(Buffer decompressed, Header header) {
             PrimitiveTypeEnum primitiveTypeEnum = PrimitiveTypeEnum.valueOf(this.bitPix);
@@ -242,25 +236,16 @@ public class CompressedImageData extends BinaryTable {
             this.compressorControl = TileCompressorProvider.findCompressorControl(this.quantAlgorithm, this.compressionAlgorithm, baseType.primitiveClass());
             this.compressOptions = this.compressorControl.options();
             for (ICompressOption option : this.compressOptions) {
-                option.setOption(Compression.BLOCKSIZE, this.blocksize);
-                option.setOption(Compression.SCALE, this.scaleFactor);
-                option.setOption(Compression.SMOOTH, this.smooth);
-                option.setOption(Compression.BYTEPIX, this.bytePix);
+                option.setOptions(this.compressionParameter);
             }
-
-            try {
-                FitsFactory.threadPool().invokeAll(Arrays.asList(this.tiles));
-            } catch (InterruptedException e) {
-                return null;
+            ExecutorService threadPool = FitsFactory.threadPool();
+            for (Tile tile : this.tiles) {
+                tile.execute(threadPool);
             }
-            return  this.decompressedWholeErea;
-        }
-
-        private int defaultBytePix(int bitPerPixel) {
-            if (this.compressionAlgorithm.startsWith("RICE")) {
-                return PrimitiveTypeEnum.INT.size();
+            for (Tile tile : this.tiles) {
+                tile.waitForResult();
             }
-            return PrimitiveTypeEnum.valueOf(bitPerPixel).size();
+            return this.decompressedWholeErea;
         }
 
         private <T> T getNullableColumn(Header header, Class<T> class1, String columnName) throws FitsException {
@@ -277,7 +262,6 @@ public class CompressedImageData extends BinaryTable {
             this.bitPix = header.getIntValue(ZBITPIX);
             this.compressionAlgorithm = header.getStringValue(ZCMPTYPE);
             this.naxis = header.getIntValue(ZNAXIS);
-            this.bytePix = defaultBytePix(this.bitPix);
             readZVALs(header);
             this.quantAlgorithm = header.getStringValue(ZQUANTIZ);
             this.axes = new int[this.naxis];
@@ -338,20 +322,16 @@ public class CompressedImageData extends BinaryTable {
         private void readZVALs(Header header) {
             int nval = 1;
             HeaderCard card = header.findCard(ZNAMEn.n(nval));
+            HeaderCard value;
             while (card != null) {
-                HeaderCard valueCard = header.findCard(ZVALn.n(nval));
-                if (valueCard != null) {
-                    if (card.getValue().trim().equals(Compression.BYTEPIX)) {
-                        this.bytePix = valueCard.getValue(Integer.class, PrimitiveTypeEnum.INT.size());
-                    } else if (card.getValue().trim().equals(Compression.BLOCKSIZE)) {
-                        this.blocksize = valueCard.getValue(Integer.class, RiceCompressOption.DEFAULT_RISE_BLOCKSIZE);
-                    } else if (card.getValue().trim().equals(Compression.SCALE)) {
-                        this.scaleFactor = valueCard.getValue(Integer.class, 0);
-                    } else if (card.getValue().trim().equals(Compression.SMOOTH)) {
-                        this.smooth = valueCard.getValue(Integer.class, 0) != 0;
-                    }
-                }
                 card = header.findCard(ZNAMEn.n(++nval));
+            }
+            this.compressionParameter = new ICompressOption.Parameter[--nval];
+            while (nval > 0) {
+                card = header.findCard(ZNAMEn.n(nval));
+                value = header.findCard(ZVALn.n(nval));
+                ICompressOption.Parameter parameter = new ICompressOption.Parameter(card.getKey(), value.getValue(value.valueType(), null));
+                this.compressionParameter[--nval] = parameter;
             }
         }
 
