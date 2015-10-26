@@ -51,8 +51,6 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 
@@ -64,7 +62,6 @@ import nom.tam.fits.HeaderCard;
 import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
 import nom.tam.image.comp.rice.RiceCompressOption;
-import nom.tam.util.FitsIO;
 import nom.tam.util.PrimitiveTypeEnum;
 
 public class CompressedImageData extends BinaryTable {
@@ -224,34 +221,17 @@ public class CompressedImageData extends BinaryTable {
 
         private ITileCompressorControl compressorControl;
 
-        private void copy(Buffer src, Buffer target) {
-            if (src instanceof IntBuffer && target instanceof ShortBuffer) {
-                IntBuffer srcInt = (IntBuffer) src;
-                ShortBuffer targetShort = (ShortBuffer) target;
-                srcInt.position(0);
-                while (srcInt.hasRemaining()) {
-                    targetShort.put((short) srcInt.get());
-                }
-                return;
-            }
-            throw new UnsupportedOperationException("not yet supported conversion");
-        }
-
         public Buffer decompress(Buffer decompressed, Header header) {
             PrimitiveTypeEnum primitiveTypeEnum = PrimitiveTypeEnum.valueOf(this.bitPix);
             int pixels = this.axes[0] * this.axes[1];
-            if (decompressed == null) {
-                decompressed = primitiveTypeEnum.newBuffer(pixels);
+            this.decompressedWholeErea = decompressed;
+            if (this.decompressedWholeErea == null) {
+                this.decompressedWholeErea = primitiveTypeEnum.newBuffer(pixels);
             }
             // if the compressed type size does not correspond to the bitpix
             // than we have to use a buffer.
             PrimitiveTypeEnum baseType = primitiveTypeEnum;
-            if (decompressed == null || Math.abs(this.bitPix) != this.bytePix * FitsIO.BITS_OF_1_BYTE) {
-                baseType = PrimitiveTypeEnum.valueOf(this.bytePix * FitsIO.BITS_OF_1_BYTE * this.bitPix / Math.abs(this.bitPix));
-                this.decompressedWholeErea = baseType.newBuffer(pixels);
-            } else {
-                this.decompressedWholeErea = decompressed;
-            }
+
             for (Tile tile : this.tiles) {
                 tile.action = nom.tam.image.comp.CompressedImageData.Tile.Action.DECOMPRESS;
                 this.decompressedWholeErea.position(tile.dataOffset);
@@ -273,10 +253,7 @@ public class CompressedImageData extends BinaryTable {
             } catch (InterruptedException e) {
                 return null;
             }
-            if (this.decompressedWholeErea != decompressed) {
-                copy(this.decompressedWholeErea, decompressed);
-            }
-            return decompressed;
+            return  this.decompressedWholeErea;
         }
 
         private int defaultBytePix(int bitPerPixel) {

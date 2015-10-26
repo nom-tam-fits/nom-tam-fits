@@ -10,6 +10,8 @@ import nom.tam.image.comp.ITileCompressor;
 import nom.tam.image.comp.filter.QuantProcessor.DoubleQuantCompressor;
 import nom.tam.image.comp.filter.QuantProcessor.FloatQuantCompressor;
 import nom.tam.image.comp.filter.QuantizeOption;
+import nom.tam.util.FitsIO;
+import nom.tam.util.PrimitiveTypeEnum;
 
 /*
  * #%L
@@ -66,7 +68,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         private ByteBuffer pixelBuffer;
 
         public ByteRiceCompress(RiceCompressOption option) {
-            super(FS_BITS_FOR_BYTE, FS_MAX_FOR_BYTE, option);
+            super(option);
         }
 
         @Override
@@ -86,7 +88,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
 
         public void decompress(ByteBuffer readBuffer, ByteBuffer buffer) {
             this.pixelBuffer = buffer;
-            super.decompressBuffer(readBuffer, readBuffer.get(), buffer.limit());
+            super.decompressBuffer(readBuffer, buffer.limit());
         }
     }
 
@@ -95,7 +97,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         private IntBuffer pixelBuffer;
 
         public IntRiceCompress(RiceCompressOption option) {
-            super(FS_BITS_FOR_INT, FS_MAX_FOR_INT, option);
+            super(option);
         }
 
         @Override
@@ -115,7 +117,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
 
         public void decompress(ByteBuffer readBuffer, IntBuffer buffer) {
             this.pixelBuffer = buffer;
-            super.decompressBuffer(readBuffer, readBuffer.getInt(), buffer.limit());
+            super.decompressBuffer(readBuffer, buffer.limit());
         }
     }
 
@@ -124,7 +126,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         private ShortBuffer pixelBuffer;
 
         public ShortRiceCompress(RiceCompressOption option) {
-            super(FS_BITS_FOR_SHORT, FS_MAX_FOR_SHORT, option);
+            super(option);
         }
 
         @Override
@@ -144,7 +146,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
 
         public void decompress(ByteBuffer readBuffer, ShortBuffer buffer) {
             this.pixelBuffer = buffer;
-            super.decompressBuffer(readBuffer, readBuffer.getShort(), buffer.limit());
+            super.decompressBuffer(readBuffer, buffer.limit());
         }
     }
 
@@ -187,264 +189,23 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
      * @formatter:off
      */
     private static final int[] NONZERO_COUNT = {
-        0,
-        1,
-        2,
-        2,
-        3,
-        3,
-        3,
-        3,
-        4,
-        4,
-        4,
-        4,
-        4,
-        4,
-        4,
-        4,
-        5,
-        5,
-        5,
-        5,
-        5,
-        5,
-        5,
-        5,
-        5,
-        5,
-        5,
-        5,
-        5,
-        5,
-        5,
-        5,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        6,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        7,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8,
-        8
+        0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8
     };
-
     // @formatter:on
 
     private final int bBits;
@@ -457,11 +218,23 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
 
     private final int fsMax;
 
-    private RiceCompress(int fsBits, int fsMax, RiceCompressOption option) {
-        this.fsBits = fsBits;
-        this.fsMax = fsMax;
+    private RiceCompress(RiceCompressOption option) {
         this.blockSize = option.getBlockSize();
-        this.bitsPerPixel = option.getBytePix() * BITS_OF_1_BYTE;
+        if (option.getBytePix() == PrimitiveTypeEnum.BYTE.size()) {
+            this.fsBits = FS_BITS_FOR_BYTE;
+            this.fsMax = FS_MAX_FOR_BYTE;
+            this.bitsPerPixel = FitsIO.BITS_OF_1_BYTE;
+        } else if (option.getBytePix() == PrimitiveTypeEnum.SHORT.size()) {
+            this.fsBits = FS_BITS_FOR_SHORT;
+            this.fsMax = FS_MAX_FOR_SHORT;
+            this.bitsPerPixel = FitsIO.BITS_OF_2_BYTES;
+        } else if (option.getBytePix() == PrimitiveTypeEnum.INT.size()) {
+            this.fsBits = FS_BITS_FOR_INT;
+            this.fsMax = FS_MAX_FOR_INT;
+            this.bitsPerPixel = FitsIO.BITS_OF_4_BYTES;
+        } else {
+            throw new UnsupportedOperationException("Rice only supports 1/2/4 type per pixel");
+        }
         /*
          * From bsize derive: FSBITS = # bits required to store FS FSMAX =
          * maximum value for FS BBITS = bits/pixel for direct coding
@@ -600,15 +373,20 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
      * 
      * @param readBuffer
      *            input buffer
-     * @param firstPixel
-     *            the value of the first pixel
      * @param nx
      *            the number of pixel to uncompress
      */
-    protected void decompressBuffer(ByteBuffer readBuffer, int firstPixel, int nx) {
+    protected void decompressBuffer(final ByteBuffer readBuffer, final int nx) {
         /* first x bytes of input buffer contain the value of the first */
         /* x byte integer value, without any encoding */
-        int lastpix = firstPixel;
+        int lastpix = 0;
+        if (bitsPerPixel == PrimitiveTypeEnum.BYTE.bitPix()) {
+            lastpix = readBuffer.get();
+        } else if (bitsPerPixel == PrimitiveTypeEnum.SHORT.bitPix()) {
+            lastpix = readBuffer.getShort();
+        } else if (bitsPerPixel == PrimitiveTypeEnum.INT.bitPix()) {
+            lastpix = readBuffer.getInt();
+        }
         int b = readBuffer.get(); /* bit buffer */
         int nbits = BITS_PER_BYTE; /* number of bits remaining in b */
         for (int i = 0; i < nx;) {
