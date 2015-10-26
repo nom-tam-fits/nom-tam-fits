@@ -71,7 +71,7 @@ public class QuantizeOption implements ICompressOption {
     @Override
     public QuantizeOption copy() {
         try {
-            return (QuantizeOption) super.clone();
+            return (QuantizeOption) clone();
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException("open could not be cloned", e);
         }
@@ -103,10 +103,6 @@ public class QuantizeOption implements ICompressOption {
 
     public double getNullValue() {
         return this.nullValue;
-    }
-
-    public double getQlevel() {
-        return this.qlevel;
     }
 
     public double getQLevel() {
@@ -208,7 +204,7 @@ public class QuantizeOption implements ICompressOption {
     }
 
     @Override
-    public ICompressOption setOptions(Parameter[] parameters) {
+    public ICompressOption setCompressionParameter(Parameter[] parameters) {
         for (Parameter parameter : parameters) {
             if (Compression.ZQUANTIZ.name().equals(parameter.getName())) {
                 if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(parameter.getValue())) {
@@ -224,11 +220,6 @@ public class QuantizeOption implements ICompressOption {
     }
 
     public QuantizeOption setQlevel(double value) {
-        this.qlevel = value;
-        return this;
-    }
-
-    public QuantizeOption setQLevel(double value) {
         this.qlevel = value;
         return this;
     }

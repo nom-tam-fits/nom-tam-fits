@@ -38,6 +38,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
+import nom.tam.fits.header.Compression;
+import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.filter.QuantizeOption;
 import nom.tam.image.comp.hcompress.HCompressor.ByteHCompress;
 import nom.tam.image.comp.hcompress.HCompressor.DoubleHCompress;
@@ -422,5 +424,31 @@ public class HCompressTest {
             doubleHCompress.decompress(ByteBuffer.wrap(compressedArray), DoubleBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(doubleArray, decompressedArray, quant.getBScale() * 1.5);
         }
+    }
+
+    @Test
+    public void testOption() {
+        HCompressorOption option = new HCompressorOption() {
+
+            @Override
+            protected Object clone() throws CloneNotSupportedException {
+                throw new CloneNotSupportedException("this can not be cloned");
+            }
+        };
+        IllegalStateException expected = null;
+        try {
+            option.copy();
+        } catch (IllegalStateException e) {
+            expected = e;
+        }
+        Assert.assertNotNull(expected);
+        option.setCompressionParameter(new ICompressOption.Parameter[]{
+            new ICompressOption.Parameter(Compression.BLOCKSIZE, 32),
+            new ICompressOption.Parameter(Compression.BYTEPIX, 32),
+            new ICompressOption.Parameter(Compression.SCALE, 1),
+            new ICompressOption.Parameter(Compression.SMOOTH, true),
+        });
+        Assert.assertTrue(option.isSmooth());
+        Assert.assertEquals(1, option.getScale());
     }
 }

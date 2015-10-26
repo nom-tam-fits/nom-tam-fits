@@ -47,7 +47,7 @@ public class HCompressorOption implements ICompressOption {
     @Override
     public HCompressorOption copy() {
         try {
-            return (HCompressorOption) super.clone();
+            return (HCompressorOption) clone();
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException("open could not be cloned", e);
         }
@@ -80,7 +80,7 @@ public class HCompressorOption implements ICompressOption {
     }
 
     @Override
-    public ICompressOption setOptions(Parameter[] parameters) {
+    public ICompressOption setCompressionParameter(Parameter[] parameters) {
         for (Parameter parameter : parameters) {
             if (Compression.SMOOTH.equals(parameter.getName())) {
                 setSmooth(parameter.getValue(Boolean.class));

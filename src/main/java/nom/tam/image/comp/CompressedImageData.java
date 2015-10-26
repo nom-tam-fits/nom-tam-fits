@@ -7,12 +7,12 @@ package nom.tam.image.comp;
  * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- *
+ * 
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * 
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.comp;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -54,16 +54,23 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
 import nom.tam.util.PrimitiveTypeEnum;
 
 public class CompressedImageData extends BinaryTable {
+
+    /**
+     * logger to log to.
+     */
+    private static final Logger LOG = Logger.getLogger(CompressedImageData.class.getName());
 
     private static class Tile implements Runnable {
 
@@ -116,16 +123,25 @@ public class CompressedImageData extends BinaryTable {
 
         @Override
         public void run() {
-            ICompressOption[] tileOptions = this.array.compressOptions.clone();
-            for (int index = 0; index < tileOptions.length; index++) {
-                tileOptions[index] = tileOptions[index].copy() //
-                        .setBZero(this.zero) //
-                        .setBScale(this.scale) //
-                        .setTileWidth(this.width) //
-                        .setTileHeigth(this.heigth);
-            }
-            if (this.width == this.array.axes[0]) {
-                this.array.compressorControl.decompress(this.compressedData, this.decompressedData, tileOptions);
+            if (action == Action.DECOMPRESS) {
+                if (compressionType == TileCompressionType.COMPRESSED) {
+                    decompressedData.limit(width * heigth);
+                    ICompressOption[] tileOptions = this.array.compressOptions.clone();
+                    for (int index = 0; index < tileOptions.length; index++) {
+                        tileOptions[index] = tileOptions[index].copy() //
+                                .setBZero(this.zero) //
+                                .setBScale(this.scale) //
+                                .setTileWidth(this.width) //
+                                .setTileHeigth(this.heigth);
+                    }
+                    this.array.compressorControl.decompress(this.compressedData, this.decompressedData, tileOptions);
+                } else if (compressionType == TileCompressionType.GZIP_COMPRESSED) {
+                    this.array.gzipCompressorControl.decompress(this.compressedData, this.decompressedData);
+                } else {
+                    // TODO some nice code to just copy the compressed to the
+                    // uncompressed buffer (the source was uncompressed)
+                    LOG.severe("TILES WITH UNCOMPRESSED DATA NOT JET SUPPORTED");
+                }
             }
         }
 
@@ -215,28 +231,25 @@ public class CompressedImageData extends BinaryTable {
 
         private ICompressOption.Parameter[] compressionParameter;
 
+        private ITileCompressorControl gzipCompressorControl;
+
         public Buffer decompress(Buffer decompressed, Header header) {
-            PrimitiveTypeEnum primitiveTypeEnum = PrimitiveTypeEnum.valueOf(this.bitPix);
+            PrimitiveTypeEnum baseType = PrimitiveTypeEnum.valueOf(this.bitPix);
             int pixels = this.axes[0] * this.axes[1];
             this.decompressedWholeErea = decompressed;
             if (this.decompressedWholeErea == null) {
-                this.decompressedWholeErea = primitiveTypeEnum.newBuffer(pixels);
+                this.decompressedWholeErea = baseType.newBuffer(pixels);
             }
-            // if the compressed type size does not correspond to the bitpix
-            // than we have to use a buffer.
-            PrimitiveTypeEnum baseType = primitiveTypeEnum;
-
             for (Tile tile : this.tiles) {
                 tile.action = nom.tam.image.comp.CompressedImageData.Tile.Action.DECOMPRESS;
                 this.decompressedWholeErea.position(tile.dataOffset);
                 tile.decompressedData = baseType.sliceBuffer(this.decompressedWholeErea);
-                tile.decompressedData.limit(tile.width * tile.heigth);
             }
-
             this.compressorControl = TileCompressorProvider.findCompressorControl(this.quantAlgorithm, this.compressionAlgorithm, baseType.primitiveClass());
+            this.gzipCompressorControl = TileCompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_GZIP_1, baseType.primitiveClass());
             this.compressOptions = this.compressorControl.options();
             for (ICompressOption option : this.compressOptions) {
-                option.setOptions(this.compressionParameter);
+                option.setCompressionParameter(this.compressionParameter);
             }
             ExecutorService threadPool = FitsFactory.threadPool();
             for (Tile tile : this.tiles) {
@@ -262,8 +275,8 @@ public class CompressedImageData extends BinaryTable {
             this.bitPix = header.getIntValue(ZBITPIX);
             this.compressionAlgorithm = header.getStringValue(ZCMPTYPE);
             this.naxis = header.getIntValue(ZNAXIS);
-            readZVALs(header);
             this.quantAlgorithm = header.getStringValue(ZQUANTIZ);
+            readZVALs(header);
             this.axes = new int[this.naxis];
             for (int i = 1; i <= this.naxis; i += 1) {
                 this.axes[i - 1] = header.getIntValue(ZNAXISn.n(i), -1);
@@ -326,15 +339,15 @@ public class CompressedImageData extends BinaryTable {
             while (card != null) {
                 card = header.findCard(ZNAMEn.n(++nval));
             }
-            this.compressionParameter = new ICompressOption.Parameter[--nval];
+            this.compressionParameter = new ICompressOption.Parameter[nval--];
             while (nval > 0) {
                 card = header.findCard(ZNAMEn.n(nval));
                 value = header.findCard(ZVALn.n(nval));
                 ICompressOption.Parameter parameter = new ICompressOption.Parameter(card.getKey(), value.getValue(value.valueType(), null));
                 this.compressionParameter[--nval] = parameter;
             }
+            this.compressionParameter[this.compressionParameter.length - 1] = new ICompressOption.Parameter(Compression.ZQUANTIZ.name(), this.quantAlgorithm);
         }
-
     }
 
     public CompressedImageData(Header hdr) throws FitsException {

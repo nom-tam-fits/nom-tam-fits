@@ -48,7 +48,7 @@ public class RiceCompressOption implements ICompressOption {
     @Override
     public RiceCompressOption copy() {
         try {
-            return (RiceCompressOption) super.clone();
+            return (RiceCompressOption) clone();
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException("open could not be cloned", e);
         }
@@ -83,7 +83,7 @@ public class RiceCompressOption implements ICompressOption {
     }
 
     @Override
-    public ICompressOption setOptions(Parameter[] parameters) {
+    public ICompressOption setCompressionParameter(Parameter[] parameters) {
         for (Parameter parameter : parameters) {
             if (Compression.BLOCKSIZE.equals(parameter.getName())) {
                 setBlockSize(parameter.getValue(Integer.class));
