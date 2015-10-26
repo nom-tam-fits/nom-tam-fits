@@ -203,6 +203,28 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         return getTrimmedString(AUTHOR);
     }
 
+    /**
+     * In FITS files the index represented by NAXIS1 is the index that changes
+     * most rapidly. This reflects the behavior of Fortran where there are true
+     * multidimensional arrays. In Java in a multidimensional array is an array
+     * of arrays and the first index is the index that changes slowest. So at
+     * some point a client of the library is going to have to invert the order.
+     * E.g., if I have a FITS file will
+     * 
+     * <pre>
+     * BITPIX=16
+     * NAXIS1=10
+     * NAXIS2=20
+     * NAXIS3=30
+     * </pre>
+     * 
+     * this will be read into a Java array short[30][20][10] so it makes sense
+     * to me at least that the returned dimensions are 30,20,10
+     * 
+     * @return the dimensions of the axis.
+     * @throws FitsException
+     *             if the axis are configured wrong.
+     */
     public int[] getAxes() throws FitsException {
         int nAxis = this.myHeader.getIntValue(NAXIS, 0);
         if (nAxis < 0) {
