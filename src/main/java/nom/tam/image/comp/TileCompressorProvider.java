@@ -45,13 +45,13 @@ public class TileCompressorProvider implements ITileCompressorProvider {
      * private implementation of the tile compression provider, all is based on
      * the option based constructor of the compressors.
      */
-    private static class TileCompressorControl implements ITileCompressorControl {
+    protected static class TileCompressorControl implements ITileCompressorControl {
 
         private final Class<? extends ICompressOption>[] optionClasses;
 
         private final Constructor<ITileCompressor<Buffer>> constructor;
 
-        public TileCompressorControl(Class<?> compressorClass) {
+        protected TileCompressorControl(Class<?> compressorClass) {
             constructor = (Constructor<ITileCompressor<Buffer>>) compressorClass.getConstructors()[0];
             optionClasses = (Class<? extends ICompressOption>[]) constructor.getParameterTypes();
         }
@@ -90,16 +90,16 @@ public class TileCompressorProvider implements ITileCompressorProvider {
     }
 
     private static final Class<?>[] AVAILABLE_COMPRESSORS = {
-        nom.tam.image.comp.rice.RiceCompress.ByteRiceCompress.class,
         nom.tam.image.comp.rice.RiceCompress.DoubleRiceCompress.class,
         nom.tam.image.comp.rice.RiceCompress.FloatRiceCompress.class,
+        nom.tam.image.comp.hcompress.HCompressor.DoubleHCompress.class,
+        nom.tam.image.comp.hcompress.HCompressor.FloatHCompress.class,
+        nom.tam.image.comp.rice.RiceCompress.ByteRiceCompress.class,
         nom.tam.image.comp.rice.RiceCompress.IntRiceCompress.class,
         nom.tam.image.comp.rice.RiceCompress.ShortRiceCompress.class,
         nom.tam.image.comp.plio.PLIOCompress.BytePLIOCompress.class,
         nom.tam.image.comp.plio.PLIOCompress.ShortPLIOCompress.class,
         nom.tam.image.comp.hcompress.HCompressor.ByteHCompress.class,
-        nom.tam.image.comp.hcompress.HCompressor.DoubleHCompress.class,
-        nom.tam.image.comp.hcompress.HCompressor.FloatHCompress.class,
         nom.tam.image.comp.hcompress.HCompressor.IntHCompress.class,
         nom.tam.image.comp.hcompress.HCompressor.ShortHCompress.class,
         nom.tam.image.comp.gzip2.GZip2Compress.ByteGZip2Compress.class,
@@ -130,7 +130,7 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         if (classsName.indexOf(Float.class.getSimpleName()) == 0 || classsName.indexOf(Double.class.getSimpleName()) == 0) {
             quantAlgorithm = null; // default so not in the className
         }
-        classsName.append(standardizeQuantAlgorithm(quantAlgorithm));
+        classsName.append(standardizeQuantAlgorithm(quantAlgorithm, baseType));
         classsName.append(standardizeCompressionAlgorithm(compressionAlgorithm));
         classsName.append("Compress");
         return classsName.toString();
@@ -153,7 +153,7 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         return "Unknown";
     }
 
-    private Object standardizeQuantAlgorithm(String quantAlgorithm) {
+    private Object standardizeQuantAlgorithm(String quantAlgorithm, Class<?> baseType) {
         if (quantAlgorithm != null) {
             if (Compression.ZQUANTIZ_NO_DITHER.equalsIgnoreCase(quantAlgorithm) || //
                     Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equalsIgnoreCase(quantAlgorithm) || //

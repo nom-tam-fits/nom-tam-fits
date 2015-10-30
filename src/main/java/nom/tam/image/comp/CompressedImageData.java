@@ -72,14 +72,14 @@ public class CompressedImageData extends BinaryTable {
      */
     private static final Logger LOG = Logger.getLogger(CompressedImageData.class.getName());
 
-    private static class Tile implements Runnable {
+    protected static class Tile implements Runnable {
 
-        enum Action {
+        protected enum Action {
             COMPRESS,
             DECOMPRESS
         }
 
-        enum TileCompressionType {
+        protected enum TileCompressionType {
             UNCOMPRESSED,
             COMPRESSED,
             GZIP_COMPRESSED
@@ -137,10 +137,13 @@ public class CompressedImageData extends BinaryTable {
                     this.array.compressorControl.decompress(this.compressedData, this.decompressedData, tileOptions);
                 } else if (compressionType == TileCompressionType.GZIP_COMPRESSED) {
                     this.array.gzipCompressorControl.decompress(this.compressedData, this.decompressedData);
-                } else {
+                } else if (compressionType == TileCompressionType.UNCOMPRESSED) {
                     // TODO some nice code to just copy the compressed to the
                     // uncompressed buffer (the source was uncompressed)
-                    LOG.severe("TILES WITH UNCOMPRESSED DATA NOT JET SUPPORTED");
+                    LOG.severe("TILES WITH UNCOMPRESSED DATA NOT YET SUPPORTED");
+                } else {
+                    LOG.severe("Unknown compression column");
+                    throw new IllegalStateException("Unknown compression column");
                 }
             }
         }
@@ -189,17 +192,15 @@ public class CompressedImageData extends BinaryTable {
         }
 
         public void waitForResult() {
-            if (!this.future.isDone()) {
-                try {
-                    this.future.get();
-                } catch (Exception e) {
-                    throw new IllegalStateException("could not (de)compress tile", e);
-                }
+            try {
+                this.future.get();
+            } catch (Exception e) {
+                throw new IllegalStateException("could not (de)compress tile", e);
             }
         }
     }
 
-    private class TileArray {
+    protected class TileArray {
 
         private Tile[] tiles;
 
