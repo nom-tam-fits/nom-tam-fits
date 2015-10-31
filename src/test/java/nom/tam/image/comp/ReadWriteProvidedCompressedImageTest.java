@@ -35,6 +35,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.FileOutputStream;
+import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
@@ -42,15 +44,22 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsFactory;
+import nom.tam.fits.Header;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.header.Compression;
+import nom.tam.image.comp.rice.RiceCompressOption;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.PrimitiveTypeEnum;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ReadProvidedCompressedImageTest {
+public class ReadWriteProvidedCompressedImageTest {
 
     private final boolean showImage = false;
 
@@ -163,6 +172,27 @@ public class ReadProvidedCompressedImageTest {
         assertData(data);
         if (this.showImage) {
             dispayImage(data);
+        }
+    }
+
+    @Test
+    public void writeRice() throws Exception {
+        try (Fits f = new Fits()) {
+            CompressedImageData data = new CompressedImageData();
+            BasicHDU<CompressedImageData> compressedHdu = FitsFactory.hduFactory(new Header(), data);
+            data.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
+                    .setQuantAlgorithm((String) null)//
+                    .setBitPix(PrimitiveTypeEnum.SHORT.bitPix())//
+                    .setImageSize(300, 300)//
+                    .setTileSize(300, 15)//
+                    .getCompressOption(RiceCompressOption.class)//
+                    /**/.setBlockSize(32);
+            data.setUncompressedData((Buffer) null, compressedHdu.getHeader());
+
+            f.addHDU(compressedHdu);
+            try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_rice.fits"))) {
+                // f.write(bdos);
+            }
         }
     }
 

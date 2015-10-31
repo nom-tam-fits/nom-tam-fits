@@ -163,6 +163,8 @@ public final class FitsFactory {
     public static <DataClass extends Data> BasicHDU<DataClass> hduFactory(Header hdr, DataClass d) throws FitsException {
         if (d instanceof ImageData) {
             return (BasicHDU<DataClass>) new ImageHDU(hdr, (ImageData) d);
+        } else if (d instanceof CompressedImageData) {
+            return (BasicHDU<DataClass>) new CompressedImageHDU(hdr, (CompressedImageData) d);
         } else if (d instanceof RandomGroupsData) {
             return (BasicHDU<DataClass>) new RandomGroupsHDU(hdr, (RandomGroupsData) d);
         } else if (current().useAsciiTables && d instanceof AsciiTable) {
@@ -192,7 +194,6 @@ public final class FitsFactory {
         if (o instanceof Header) {
             h = (Header) o;
             d = dataFactory(h);
-
         } else if (ImageHDU.isData(o)) {
             d = ImageHDU.encapsulate(o);
             h = ImageHDU.manufactureHeader(d);
