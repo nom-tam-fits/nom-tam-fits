@@ -182,7 +182,7 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
     }
 
     @Override
-    public void compress(T pixelData, ByteBuffer compressed) {
+    public boolean compress(T pixelData, ByteBuffer compressed) {
         this.nioBuffer.rewind();
         int pixelDataLimit = pixelData.limit();
         try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {
@@ -198,6 +198,7 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
             throw new IllegalStateException("could not gzip data", e);
         }
         compressed.limit(compressed.position());
+        return true;
     }
 
     protected GZIPInputStream createGZipInputStream(ByteBuffer compressed) throws IOException {

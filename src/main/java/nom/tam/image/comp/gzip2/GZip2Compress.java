@@ -106,7 +106,7 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
     }
 
     @Override
-    public void compress(T pixelData, ByteBuffer compressed) {
+    public boolean compress(T pixelData, ByteBuffer compressed) {
         int pixelDataLimit = pixelData.limit();
         byte[] pixelBytes = new byte[pixelDataLimit * primitivSize];
         getPixel(pixelData, pixelBytes);
@@ -116,6 +116,7 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
         } catch (IOException e) {
             throw new IllegalStateException("could not gzip data", e);
         }
+        return true;
     }
 
     @Override

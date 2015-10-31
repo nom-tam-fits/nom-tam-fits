@@ -107,10 +107,11 @@ public class TileCompressorProviderTest {
         }
 
         @Override
-        public void compress(ByteBuffer buffer, ByteBuffer compressed) {
+        public boolean compress(ByteBuffer buffer, ByteBuffer compressed) {
             if (exceptionInMethod) {
                 throw new RuntimeException("could not compress");
             }
+            return true;
         }
 
         @Override

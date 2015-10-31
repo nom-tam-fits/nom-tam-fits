@@ -81,9 +81,10 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
             pixelBuffer.put((byte) pixel);
         }
 
-        public void compress(ByteBuffer buffer, ByteBuffer writeBuffer) {
+        public boolean compress(ByteBuffer buffer, ByteBuffer writeBuffer) {
             this.pixelBuffer = buffer;
             super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()), new BitBuffer(writeBuffer));
+            return true;
         }
 
         public void decompress(ByteBuffer readBuffer, ByteBuffer buffer) {
@@ -110,9 +111,10 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
             pixelBuffer.put(pixel);
         }
 
-        public void compress(IntBuffer buffer, ByteBuffer writeBuffer) {
+        public boolean compress(IntBuffer buffer, ByteBuffer writeBuffer) {
             this.pixelBuffer = buffer;
             super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()), new BitBuffer(writeBuffer));
+            return true;
         }
 
         public void decompress(ByteBuffer readBuffer, IntBuffer buffer) {
@@ -139,9 +141,10 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
             pixelBuffer.put((short) pixel);
         }
 
-        public void compress(ShortBuffer buffer, ByteBuffer writeBuffer) {
+        public boolean compress(ShortBuffer buffer, ByteBuffer writeBuffer) {
             this.pixelBuffer = buffer;
             super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()), new BitBuffer(writeBuffer));
+            return true;
         }
 
         public void decompress(ByteBuffer readBuffer, ShortBuffer buffer) {

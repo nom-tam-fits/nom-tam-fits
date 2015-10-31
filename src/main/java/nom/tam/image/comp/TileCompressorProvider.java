@@ -52,38 +52,39 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         private final Constructor<ITileCompressor<Buffer>> constructor;
 
         protected TileCompressorControl(Class<?> compressorClass) {
-            constructor = (Constructor<ITileCompressor<Buffer>>) compressorClass.getConstructors()[0];
-            optionClasses = (Class<? extends ICompressOption>[]) constructor.getParameterTypes();
+            this.constructor = (Constructor<ITileCompressor<Buffer>>) compressorClass.getConstructors()[0];
+            this.optionClasses = (Class<? extends ICompressOption>[]) this.constructor.getParameterTypes();
         }
 
         @Override
-        public ICompressOption[] options() {
+        public boolean compress(Buffer in, ByteBuffer out, ICompressOption... options) {
             try {
-                ICompressOption[] result = new ICompressOption[optionClasses.length];
-                for (int index = 0; index < result.length; index++) {
-                    result[index] = optionClasses[index].newInstance();
-                }
-                return result;
+                this.constructor.newInstance((Object[]) options).compress(in, out);
             } catch (Exception e) {
-                throw new IllegalStateException("could not instanciate option classes for " + constructor, e);
+                throw new IllegalStateException("could not decompress " + this.constructor, e);
             }
-        }
-
-        @Override
-        public void compress(Buffer in, ByteBuffer out, ICompressOption... options) {
-            try {
-                constructor.newInstance((Object[]) options).compress(in, out);
-            } catch (Exception e) {
-                throw new IllegalStateException("could not decompress " + constructor, e);
-            }
+            return true;
         }
 
         @Override
         public void decompress(ByteBuffer in, Buffer out, ICompressOption... options) {
             try {
-                constructor.newInstance((Object[]) options).decompress(in, out);
+                this.constructor.newInstance((Object[]) options).decompress(in, out);
             } catch (Exception e) {
-                throw new IllegalStateException("could not decompress " + constructor, e);
+                throw new IllegalStateException("could not decompress " + this.constructor, e);
+            }
+        }
+
+        @Override
+        public ICompressOption[] options() {
+            try {
+                ICompressOption[] result = new ICompressOption[this.optionClasses.length];
+                for (int index = 0; index < result.length; index++) {
+                    result[index] = this.optionClasses[index].newInstance();
+                }
+                return result;
+            } catch (Exception e) {
+                throw new IllegalStateException("could not instanciate option classes for " + this.constructor, e);
             }
         }
 
@@ -112,16 +113,21 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         nom.tam.image.comp.gzip.GZipCompress.ShortGZipCompress.class
     };
 
-    @Override
-    public ITileCompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
-
-        String classsName = classNameForCompresseion(quantAlgorithm, compressionAlgorithm, baseType);
-        for (Class<?> clazz : AVAILABLE_COMPRESSORS) {
-            if (clazz.getSimpleName().equals(classsName)) {
-                return new TileCompressorControl(clazz);
+    public static ITileCompressorControl findCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
+        Iterator<ITileCompressorProvider> providers = ServiceLoader.load(ITileCompressorProvider.class, Thread.currentThread().getContextClassLoader()).iterator();
+        ITileCompressorProvider defaultProvider = null;
+        while (providers.hasNext()) {
+            ITileCompressorProvider iTileCompressorProvider = providers.next();
+            if (iTileCompressorProvider instanceof TileCompressorProvider) {
+                defaultProvider = iTileCompressorProvider;
+            } else {
+                ITileCompressorControl result = iTileCompressorProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);
+                if (result != null) {
+                    return result;
+                }
             }
         }
-        return null;
+        return defaultProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);
     }
 
     private String classNameForCompresseion(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
@@ -134,6 +140,22 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         classsName.append(standardizeCompressionAlgorithm(compressionAlgorithm));
         classsName.append("Compress");
         return classsName.toString();
+    }
+
+    @Override
+    public ITileCompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
+
+        String classsName = classNameForCompresseion(quantAlgorithm, compressionAlgorithm, baseType);
+        for (Class<?> clazz : AVAILABLE_COMPRESSORS) {
+            if (clazz.getSimpleName().equals(classsName)) {
+                return new TileCompressorControl(clazz);
+            }
+        }
+        return null;
+    }
+
+    private Object standardizeBaseType(String simpleName) {
+        return Character.toUpperCase(simpleName.charAt(0)) + simpleName.substring(1).toLowerCase();
     }
 
     private Object standardizeCompressionAlgorithm(String compressionAlgorithm) {
@@ -164,26 +186,5 @@ public class TileCompressorProvider implements ITileCompressorProvider {
             }
         }
         return "";
-    }
-
-    private Object standardizeBaseType(String simpleName) {
-        return Character.toUpperCase(simpleName.charAt(0)) + simpleName.substring(1).toLowerCase();
-    }
-
-    public static ITileCompressorControl findCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
-        Iterator<ITileCompressorProvider> providers = ServiceLoader.load(ITileCompressorProvider.class, Thread.currentThread().getContextClassLoader()).iterator();
-        ITileCompressorProvider defaultProvider = null;
-        while (providers.hasNext()) {
-            ITileCompressorProvider iTileCompressorProvider = (ITileCompressorProvider) providers.next();
-            if (iTileCompressorProvider instanceof TileCompressorProvider) {
-                defaultProvider = iTileCompressorProvider;
-            } else {
-                ITileCompressorControl result = iTileCompressorProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);
-                if (result != null) {
-                    return result;
-                }
-            }
-        }
-        return defaultProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);
     }
 }

@@ -50,8 +50,9 @@ public class TileCompressorAlternativProvider implements ITileCompressorProvider
                 }
 
                 @Override
-                public void compress(Buffer in, ByteBuffer out, ICompressOption... options) {
+                public boolean compress(Buffer in, ByteBuffer out, ICompressOption... options) {
                     new LongGZip2Compress().compress((LongBuffer) in, out);
+                    return true;
                 }
 
                 @Override

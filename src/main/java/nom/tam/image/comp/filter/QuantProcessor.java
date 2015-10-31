@@ -50,13 +50,16 @@ public class QuantProcessor {
         }
 
         @Override
-        public void compress(DoubleBuffer buffer, ByteBuffer compressed) {
+        public boolean compress(DoubleBuffer buffer, ByteBuffer compressed) {
             IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()]);
             double[] doubles = new double[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()];
             buffer.get(doubles);
-            this.quantize(doubles, intData);
+            if (!this.quantize(doubles, intData)) {
+                return false;
+            }
             intData.rewind();
             this.postCompressor.compress(intData, compressed);
+            return true;
         }
 
         @Override
@@ -81,7 +84,7 @@ public class QuantProcessor {
         }
 
         @Override
-        public void compress(FloatBuffer buffer, ByteBuffer compressed) {
+        public boolean compress(FloatBuffer buffer, ByteBuffer compressed) {
             float[] floats = new float[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()];
             double[] doubles = new double[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()];
             buffer.get(floats);
@@ -89,9 +92,12 @@ public class QuantProcessor {
                 doubles[index] = floats[index];
             }
             IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()]);
-            this.quantize(doubles, intData);
+            if (!this.quantize(doubles, intData)) {
+                return false;
+            }
             intData.rewind();
             this.postCompressor.compress(intData, compressed);
+            return true;
         }
 
         @Override

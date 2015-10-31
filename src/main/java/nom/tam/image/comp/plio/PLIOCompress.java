@@ -55,9 +55,10 @@ public abstract class PLIOCompress {
         private ByteBuffer pixelData;
 
         @Override
-        public void compress(ByteBuffer buffer, ByteBuffer compressed) {
+        public boolean compress(ByteBuffer buffer, ByteBuffer compressed) {
             this.pixelData = buffer;
             compress(compressed.asShortBuffer(), this.pixelData.limit());
+            return true;
         }
 
         @Override
@@ -84,9 +85,10 @@ public abstract class PLIOCompress {
         private ShortBuffer pixelData;
 
         @Override
-        public void compress(ShortBuffer buffer, ByteBuffer compressed) {
+        public boolean compress(ShortBuffer buffer, ByteBuffer compressed) {
             this.pixelData = buffer;
             super.compress(compressed.asShortBuffer(), this.pixelData.limit());
+            return true;
         }
 
         @Override

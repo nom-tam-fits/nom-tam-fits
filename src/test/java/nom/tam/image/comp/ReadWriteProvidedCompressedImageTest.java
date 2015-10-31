@@ -187,8 +187,9 @@ public class ReadWriteProvidedCompressedImageTest {
                     .setTileSize(300, 15)//
                     .getCompressOption(RiceCompressOption.class)//
                     /**/.setBlockSize(32);
-            data.setUncompressedData((Buffer) null, compressedHdu.getHeader());
-
+            ShortBuffer source = ShortBuffer.wrap(new short[300*300]);
+            ArrayFuncs.copyInto(m13_data,source.array());
+            data.setUncompressedData(source, compressedHdu.getHeader());
             f.addHDU(compressedHdu);
             try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_rice.fits"))) {
                 // f.write(bdos);

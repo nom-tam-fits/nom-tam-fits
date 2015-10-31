@@ -36,7 +36,7 @@ import java.nio.ByteBuffer;
 
 public interface ITileCompressor<T extends Buffer> {
 
-    void compress(T buffer, ByteBuffer compressed);
+    boolean compress(T buffer, ByteBuffer compressed);
 
     void decompress(ByteBuffer compressed, T buffer);
 }

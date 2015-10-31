@@ -53,7 +53,7 @@ public abstract class HCompressor<T extends Buffer> implements ITileCompressor<T
         }
 
         @Override
-        public void compress(ByteBuffer buffer, ByteBuffer compressed) {
+        public boolean compress(ByteBuffer buffer, ByteBuffer compressed) {
             byte[] byteArray = new byte[buffer.limit()];
             buffer.get(byteArray);
             long[] longArray = new long[byteArray.length];
@@ -61,6 +61,7 @@ public abstract class HCompressor<T extends Buffer> implements ITileCompressor<T
                 longArray[index] = byteArray[index] & BYTE_MASK_FOR_LONG;
             }
             compress(longArray, compressed);
+            return true;
         }
 
         @Override
@@ -81,12 +82,13 @@ public abstract class HCompressor<T extends Buffer> implements ITileCompressor<T
         }
 
         @Override
-        public void compress(IntBuffer buffer, ByteBuffer compressed) {
+        public boolean compress(IntBuffer buffer, ByteBuffer compressed) {
             int[] intArray = new int[buffer.limit()];
             buffer.get(intArray);
             long[] longArray = new long[intArray.length];
             ArrayFuncs.copyInto(intArray, longArray);
             compress(longArray, compressed);
+            return true;
         }
 
         @Override
@@ -107,12 +109,13 @@ public abstract class HCompressor<T extends Buffer> implements ITileCompressor<T
         }
 
         @Override
-        public void compress(ShortBuffer buffer, ByteBuffer compressed) {
+        public boolean compress(ShortBuffer buffer, ByteBuffer compressed) {
             short[] shortArray = new short[buffer.limit()];
             buffer.get(shortArray);
             long[] longArray = new long[shortArray.length];
             ArrayFuncs.copyInto(shortArray, longArray);
             compress(longArray, compressed);
+            return true;
         }
 
         @Override
