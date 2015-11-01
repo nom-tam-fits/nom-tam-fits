@@ -112,4 +112,14 @@ public class HCompressorOption implements ICompressOption {
         this.tileWidth = value;
         return this;
     }
+
+    @Override
+    public double getBZero() {
+        return Double.NaN;
+    }
+
+    @Override
+    public double getBScale() {
+        return Double.NaN;
+    }
 }

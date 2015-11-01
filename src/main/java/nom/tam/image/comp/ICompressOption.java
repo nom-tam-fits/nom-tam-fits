@@ -71,4 +71,8 @@ public interface ICompressOption extends Cloneable {
 
     ICompressOption setTileWidth(int value);
 
+    double getBZero();
+
+    double getBScale();
+
 }

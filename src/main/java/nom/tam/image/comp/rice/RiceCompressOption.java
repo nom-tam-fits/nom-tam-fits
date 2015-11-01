@@ -103,4 +103,14 @@ public class RiceCompressOption implements ICompressOption {
     public RiceCompressOption setTileWidth(int value) {
         return this;
     }
+
+    @Override
+    public double getBZero() {
+        return Double.NaN;
+    }
+
+    @Override
+    public double getBScale() {
+        return Double.NaN;
+    }
 }

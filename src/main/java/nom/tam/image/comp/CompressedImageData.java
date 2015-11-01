@@ -62,6 +62,7 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.CompressedImageData.Tile.Action;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
@@ -142,7 +143,12 @@ public class CompressedImageData extends BinaryTable {
             this.compressionType = TileCompressionType.COMPRESSED;
             boolean compressSuccess;
             compressSuccess = this.array.compressorControl.compress(this.decompressedData, this.compressedData, tileOptions);
-            if (!compressSuccess) {
+            if (compressSuccess) {
+                for (int index = 0; index < tileOptions.length; index++) {
+                    this.zero = Double.isNaN(this.zero) ? tileOptions[index].getBZero() : this.zero;
+                    this.scale = Double.isNaN(this.scale) ? tileOptions[index].getBScale() : this.scale;
+                }
+            } else {
                 this.compressionType = TileCompressionType.GZIP_COMPRESSED;
                 this.compressedData.rewind();
                 this.decompressedData.rewind();
@@ -154,6 +160,7 @@ public class CompressedImageData extends BinaryTable {
                 this.decompressedData.rewind();
                 array.baseType.appendToByteBuffer(this.compressedData, this.decompressedData);
             }
+
             compactCompressedData();
         }
 
@@ -304,7 +311,21 @@ public class CompressedImageData extends BinaryTable {
                 }
             });
             executeAllTiles();
+            writeHeader(header);
             LOG.severe("Not yet implemented ");
+        }
+
+        private void writeHeader(Header header) {
+            try {
+                header.card(ZBITPIX).value(this.baseType.bitPix());
+                header.card(ZCMPTYPE).value(this.compressAlgorithm);
+                header.card(ZNAXIS).value(axes.length);
+                if (this.quantAlgorithm != null) {
+                    header.card(ZQUANTIZ).value(this.quantAlgorithm);
+                }
+            } catch (HeaderCardException e) {
+                throw new IllegalStateException("internal construction of fits header failed!", e);
+            }
         }
 
         private ICompressOption[] compressOptions() {
