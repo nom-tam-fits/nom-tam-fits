@@ -253,7 +253,6 @@ public class ReadWriteProvidedCompressedImageTest {
     }
 
     @Test
-    @Ignore
     public void blackboxTest2() throws Exception {
         Object result = readAll("https://raw.githubusercontent.com/nom-tam-fits/nom-tam-fits/blackbox-images/unpack_vlos_mag.fits.fz");
         System.out.println(result);

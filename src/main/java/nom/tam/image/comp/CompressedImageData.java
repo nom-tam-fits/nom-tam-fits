@@ -156,6 +156,7 @@ public class CompressedImageData extends BinaryTable {
                 this.compressionType = TileCompressionType.GZIP_COMPRESSED;
                 this.compressedData.rewind();
                 this.decompressedData.rewind();
+
                 compressSuccess = this.array.gzipCompressorControl.compress(this.decompressedData, this.compressedData);
             }
             if (!compressSuccess) {
@@ -329,8 +330,8 @@ public class CompressedImageData extends BinaryTable {
         }
 
         private void createTiles(ITileInit init) {
-            int nrOfTilesOnXAxis = BigDecimal.valueOf(this.axes[0]).divide(BigDecimal.valueOf(this.tileAxes[0])).round(new MathContext(1, RoundingMode.CEILING)).intValue();
-            int nrOfTilesOnYAxis = BigDecimal.valueOf(this.axes[1]).divide(BigDecimal.valueOf(this.tileAxes[1])).round(new MathContext(1, RoundingMode.CEILING)).intValue();
+            int nrOfTilesOnXAxis = BigDecimal.valueOf(this.axes[0]).divide(BigDecimal.valueOf(this.tileAxes[0])).round(ROUNDIG_CONTEXT).intValue();
+            int nrOfTilesOnYAxis = BigDecimal.valueOf(this.axes[1]).divide(BigDecimal.valueOf(this.tileAxes[1])).round(ROUNDIG_CONTEXT).intValue();
             int lastTileWidth = nrOfTilesOnXAxis * this.tileAxes[0] - this.axes[0];
             if (lastTileWidth == 0) {
                 lastTileWidth = this.tileAxes[0];
@@ -471,6 +472,8 @@ public class CompressedImageData extends BinaryTable {
      * logger to log to.
      */
     private static final Logger LOG = Logger.getLogger(CompressedImageData.class.getName());
+
+    private static final MathContext ROUNDIG_CONTEXT = new MathContext(9, RoundingMode.CEILING);
 
     /**
      * tile information, only available during compressing or decompressing.
