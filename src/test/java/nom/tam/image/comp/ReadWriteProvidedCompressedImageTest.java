@@ -36,7 +36,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
-import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
@@ -57,6 +56,7 @@ import nom.tam.util.PrimitiveTypeEnum;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ReadWriteProvidedCompressedImageTest {
@@ -243,6 +243,20 @@ public class ReadWriteProvidedCompressedImageTest {
                 // f.write(bdos);
             }
         }
+    }
+
+    @Test
+    @Ignore
+    public void blackboxTest1() throws Exception {
+        Object result = readAll("https://raw.githubusercontent.com/nom-tam-fits/nom-tam-fits/blackbox-images/DECam_00149774_40_DESX0332-2742.fits.fz");
+        System.out.println(result);
+    }
+
+    @Test
+    @Ignore
+    public void blackboxTest2() throws Exception {
+        Object result = readAll("https://raw.githubusercontent.com/nom-tam-fits/nom-tam-fits/blackbox-images/unpack_vlos_mag.fits.fz");
+        System.out.println(result);
     }
 
     @Before

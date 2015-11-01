@@ -2,6 +2,10 @@ language: java
 jdk:
 - oraclejdk7
 
+branches:
+  except:
+    - blackbox-images
+
 install:
   - mvn install -DskipTests=true
 
