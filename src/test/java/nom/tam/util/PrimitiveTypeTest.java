@@ -61,11 +61,15 @@ public class PrimitiveTypeTest {
         Assert.assertTrue(PrimitiveTypeEnum.BYTE.newBuffer(5) instanceof ByteBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.BYTE, 6, 3).capacity());
 
-        assertEquals((byte) 1, PrimitiveTypeEnum.BYTE.convertToByteBuffer(new byte[]{
+        byte expectedValue = 1;
+        ByteBuffer buffer = PrimitiveTypeEnum.BYTE.convertToByteBuffer(new byte[]{
             1
-        }).get());
+        });
+        assertEquals(expectedValue, buffer.get());
 
         testGetPutArray(PrimitiveTypeEnum.BYTE, Byte.valueOf((byte) 1), Byte.valueOf((byte) 2));
+
+        testAppedBuffer(PrimitiveTypeEnum.BYTE, expectedValue);
     }
 
     private void testGetPutArray(PrimitiveTypeEnum type, Object value, Object other) {
@@ -89,11 +93,14 @@ public class PrimitiveTypeTest {
         double testValue = 567.7686876876725638752364576543d;
         long value = Double.doubleToLongBits(testValue) >> 7 * 8;
 
-        assertEquals((byte) value, PrimitiveTypeEnum.DOUBLE.convertToByteBuffer(new double[]{
+        ByteBuffer buffer = PrimitiveTypeEnum.DOUBLE.convertToByteBuffer(new double[]{
             testValue
-        }).get());
+        });
+        assertEquals((byte) value, buffer.get());
 
         testGetPutArray(PrimitiveTypeEnum.DOUBLE, Double.valueOf(1), Double.valueOf(2));
+
+        testAppedBuffer(PrimitiveTypeEnum.DOUBLE, testValue);
     }
 
     @Test
@@ -106,10 +113,13 @@ public class PrimitiveTypeTest {
         float testValue = 567.7686876876f;
         int value = Float.floatToIntBits(testValue) >> 3 * 8;
 
-        assertEquals((byte) value, PrimitiveTypeEnum.FLOAT.convertToByteBuffer(new float[]{
+        ByteBuffer buffer = PrimitiveTypeEnum.FLOAT.convertToByteBuffer(new float[]{
             testValue
-        }).get());
+        });
+        assertEquals((byte) value, buffer.get());
         testGetPutArray(PrimitiveTypeEnum.FLOAT, Float.valueOf(1), Float.valueOf(2));
+
+        testAppedBuffer(PrimitiveTypeEnum.FLOAT, testValue);
     }
 
     @Test
@@ -119,10 +129,14 @@ public class PrimitiveTypeTest {
         Assert.assertTrue(PrimitiveTypeEnum.INT.newBuffer(5) instanceof IntBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.INT, 6, 3).capacity());
 
-        assertEquals((byte) 1, PrimitiveTypeEnum.INT.convertToByteBuffer(new int[]{
-            256 * 256 * 256
-        }).get());
+        int expectedValue = 256 * 256 * 256;
+        ByteBuffer buffer = PrimitiveTypeEnum.INT.convertToByteBuffer(new int[]{
+            expectedValue
+        });
+        assertEquals((byte) 1, buffer.get());
         testGetPutArray(PrimitiveTypeEnum.INT, Integer.valueOf(1), Integer.valueOf(2));
+
+        testAppedBuffer(PrimitiveTypeEnum.INT, expectedValue);
     }
 
     @Test
@@ -132,8 +146,9 @@ public class PrimitiveTypeTest {
         Assert.assertTrue(PrimitiveTypeEnum.LONG.newBuffer(5) instanceof LongBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.LONG, 6, 3).capacity());
 
+        long expectedValue = 256L * 256L * 256L * 256L * 256L * 256L * 256L;
         assertEquals((byte) 1, PrimitiveTypeEnum.LONG.convertToByteBuffer(new long[]{
-            256L * 256L * 256L * 256L * 256L * 256L * 256L
+            expectedValue
         }).get());
         testGetPutArray(PrimitiveTypeEnum.LONG, Long.valueOf(1), Long.valueOf(2));
     }
@@ -153,10 +168,32 @@ public class PrimitiveTypeTest {
         Assert.assertTrue(PrimitiveTypeEnum.SHORT.newBuffer(5) instanceof ShortBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.SHORT, 6, 3).capacity());
 
-        assertEquals((byte) 1, PrimitiveTypeEnum.SHORT.convertToByteBuffer(new short[]{
-            256
-        }).get());
+        short expectedValue = 256;
+        ByteBuffer buffer = PrimitiveTypeEnum.SHORT.convertToByteBuffer(new short[]{
+            expectedValue
+        });
+        assertEquals((byte) 1, buffer.get());
         testGetPutArray(PrimitiveTypeEnum.SHORT, Short.valueOf((short) 1), Short.valueOf((short) 2));
+
+        testAppedBuffer(PrimitiveTypeEnum.SHORT, expectedValue);
+    }
+
+    private void testAppedBuffer(PrimitiveTypeEnum type, Object expectedValue) {
+        Object oneArray = type.newArray(1);
+        Array.set(oneArray, 0, expectedValue);
+        Buffer buffer = type.wrap(oneArray);
+        buffer.rewind();
+        Buffer longerBuffer = type.newBuffer(buffer.remaining() * 10);
+        for (int index = 0; index < 5; index++) {
+            type.appendBuffer(longerBuffer, buffer);
+            buffer.rewind();
+        }
+        longerBuffer.rewind();
+        Object testArray = type.newArray(5);
+        type.getArray(longerBuffer, testArray);
+        for (int index = 0; index < 5; index++) {
+            Assert.assertEquals(expectedValue, Array.get(testArray, index));
+        }
     }
 
     @Test
@@ -178,6 +215,11 @@ public class PrimitiveTypeTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testUnknownGetArray() throws Exception {
         PrimitiveTypeEnum.UNKNOWN.getArray(null, null);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testUnknownAppendBuffer() throws Exception {
+        PrimitiveTypeEnum.UNKNOWN.appendBuffer(null, null);
     }
 
 }

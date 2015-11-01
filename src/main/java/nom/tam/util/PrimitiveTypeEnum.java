@@ -53,8 +53,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public void getArray(Buffer buffer, Object array) {
-            ((ByteBuffer) buffer).get((byte[]) array);
+        public void getArray(Buffer buffer, Object array, int length) {
+            ((ByteBuffer) buffer).get((byte[]) array, 0, length);
         }
 
         @Override
@@ -63,8 +63,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public void putArray(Buffer buffer, Object array) {
-            ((ByteBuffer) buffer).put((byte[]) array);
+        public void putArray(Buffer buffer, Object array, int length) {
+            ((ByteBuffer) buffer).put((byte[]) array, 0, length);
         }
 
         @Override
@@ -76,6 +76,16 @@ public enum PrimitiveTypeEnum {
         public Buffer wrap(Object array) {
             return ByteBuffer.wrap((byte[]) array);
         }
+
+        @Override
+        public void appendBuffer(Buffer buffer, Buffer dataToAppend) {
+            byte[] temp = new byte[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
+            while (dataToAppend.hasRemaining()) {
+                int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
+                ((ByteBuffer) dataToAppend).get(temp, 0, nrObBytes);
+                ((ByteBuffer) buffer).put(temp, 0, nrObBytes);
+            }
+        }
     },
     SHORT(2, false, short.class, Short.class, ShortBuffer.class, 'S', 16) {
 
@@ -85,8 +95,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public void getArray(Buffer buffer, Object array) {
-            ((ShortBuffer) buffer).get((short[]) array);
+        public void getArray(Buffer buffer, Object array, int length) {
+            ((ShortBuffer) buffer).get((short[]) array, 0, length);
         }
 
         @Override
@@ -95,8 +105,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public void putArray(Buffer buffer, Object array) {
-            ((ShortBuffer) buffer).put((short[]) array);
+        public void putArray(Buffer buffer, Object array, int length) {
+            ((ShortBuffer) buffer).put((short[]) array, 0, length);
         }
 
         @Override
@@ -108,6 +118,16 @@ public enum PrimitiveTypeEnum {
         public Buffer wrap(Object array) {
             return ShortBuffer.wrap((short[]) array);
         }
+
+        @Override
+        public void appendBuffer(Buffer buffer, Buffer dataToAppend) {
+            short[] temp = new short[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
+            while (dataToAppend.hasRemaining()) {
+                int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
+                ((ShortBuffer) dataToAppend).get(temp, 0, nrObBytes);
+                ((ShortBuffer) buffer).put(temp, 0, nrObBytes);
+            }
+        }
     },
     CHAR(2, false, char.class, Character.class, CharBuffer.class, 'C', 0),
     INT(4, false, int.class, Integer.class, IntBuffer.class, 'I', 32) {
@@ -118,8 +138,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public void getArray(Buffer buffer, Object array) {
-            ((IntBuffer) buffer).get((int[]) array);
+        public void getArray(Buffer buffer, Object array, int length) {
+            ((IntBuffer) buffer).get((int[]) array, 0, length);
         }
 
         @Override
@@ -128,8 +148,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public void putArray(Buffer buffer, Object array) {
-            ((IntBuffer) buffer).put((int[]) array);
+        public void putArray(Buffer buffer, Object array, int length) {
+            ((IntBuffer) buffer).put((int[]) array, 0, length);
         }
 
         @Override
@@ -141,6 +161,16 @@ public enum PrimitiveTypeEnum {
         public Buffer wrap(Object array) {
             return IntBuffer.wrap((int[]) array);
         }
+
+        @Override
+        public void appendBuffer(Buffer buffer, Buffer dataToAppend) {
+            int[] temp = new int[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
+            while (dataToAppend.hasRemaining()) {
+                int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
+                ((IntBuffer) dataToAppend).get(temp, 0, nrObBytes);
+                ((IntBuffer) buffer).put(temp, 0, nrObBytes);
+            }
+        }
     },
     LONG(8, false, long.class, Long.class, LongBuffer.class, 'J', 64) {
 
@@ -150,8 +180,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public void getArray(Buffer buffer, Object array) {
-            ((LongBuffer) buffer).get((long[]) array);
+        public void getArray(Buffer buffer, Object array, int length) {
+            ((LongBuffer) buffer).get((long[]) array, 0, length);
         }
 
         @Override
@@ -160,8 +190,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public void putArray(Buffer buffer, Object array) {
-            ((LongBuffer) buffer).put((long[]) array);
+        public void putArray(Buffer buffer, Object array, int length) {
+            ((LongBuffer) buffer).put((long[]) array, 0, length);
         }
 
         @Override
@@ -173,6 +203,16 @@ public enum PrimitiveTypeEnum {
         public Buffer wrap(Object array) {
             return LongBuffer.wrap((long[]) array);
         }
+
+        @Override
+        public void appendBuffer(Buffer buffer, Buffer dataToAppend) {
+            long[] temp = new long[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
+            while (dataToAppend.hasRemaining()) {
+                int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
+                ((LongBuffer) dataToAppend).get(temp, 0, nrObBytes);
+                ((LongBuffer) buffer).put(temp, 0, nrObBytes);
+            }
+        }
     },
     FLOAT(4, false, float.class, Float.class, FloatBuffer.class, 'F', -32) {
 
@@ -182,8 +222,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public void getArray(Buffer buffer, Object array) {
-            ((FloatBuffer) buffer).get((float[]) array);
+        public void getArray(Buffer buffer, Object array, int length) {
+            ((FloatBuffer) buffer).get((float[]) array, 0, length);
         }
 
         @Override
@@ -192,8 +232,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public void putArray(Buffer buffer, Object array) {
-            ((FloatBuffer) buffer).put((float[]) array);
+        public void putArray(Buffer buffer, Object array, int length) {
+            ((FloatBuffer) buffer).put((float[]) array, 0, length);
         }
 
         @Override
@@ -205,6 +245,16 @@ public enum PrimitiveTypeEnum {
         public Buffer wrap(Object array) {
             return FloatBuffer.wrap((float[]) array);
         }
+
+        @Override
+        public void appendBuffer(Buffer buffer, Buffer dataToAppend) {
+            float[] temp = new float[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
+            while (dataToAppend.hasRemaining()) {
+                int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
+                ((FloatBuffer) dataToAppend).get(temp, 0, nrObBytes);
+                ((FloatBuffer) buffer).put(temp, 0, nrObBytes);
+            }
+        }
     },
     DOUBLE(8, false, double.class, Double.class, DoubleBuffer.class, 'D', -64) {
 
@@ -214,8 +264,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public void getArray(Buffer buffer, Object array) {
-            ((DoubleBuffer) buffer).get((double[]) array);
+        public void getArray(Buffer buffer, Object array, int length) {
+            ((DoubleBuffer) buffer).get((double[]) array, 0, length);
         }
 
         @Override
@@ -224,8 +274,8 @@ public enum PrimitiveTypeEnum {
         }
 
         @Override
-        public void putArray(Buffer buffer, Object array) {
-            ((DoubleBuffer) buffer).put((double[]) array);
+        public void putArray(Buffer buffer, Object array, int length) {
+            ((DoubleBuffer) buffer).put((double[]) array, 0, length);
         }
 
         @Override
@@ -236,6 +286,16 @@ public enum PrimitiveTypeEnum {
         @Override
         public Buffer wrap(Object array) {
             return DoubleBuffer.wrap((double[]) array);
+        }
+
+        @Override
+        public void appendBuffer(Buffer buffer, Buffer dataToAppend) {
+            double[] temp = new double[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
+            while (dataToAppend.hasRemaining()) {
+                int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
+                ((DoubleBuffer) dataToAppend).get(temp, 0, nrObBytes);
+                ((DoubleBuffer) buffer).put(temp, 0, nrObBytes);
+            }
         }
     },
     BOOLEAN(1, false, boolean.class, Boolean.class, null, 'Z', 0),
@@ -256,6 +316,8 @@ public enum PrimitiveTypeEnum {
             return 0;
         }
     };
+
+    private static final int COPY_BLOCK_SIZE = 1024;
 
     private static final int BIT_PIX_OFFSET = 64;
 
@@ -336,7 +398,11 @@ public enum PrimitiveTypeEnum {
         return buffer;
     }
 
-    public void getArray(Buffer buffer, Object array) {
+    public final void getArray(Buffer buffer, Object array) {
+        getArray(buffer, array, Array.getLength(array));
+    }
+
+    public void getArray(Buffer buffer, Object array, int length) {
         throw new UnsupportedOperationException("no primitiv type");
     }
 
@@ -356,7 +422,11 @@ public enum PrimitiveTypeEnum {
         return this.primitiveClass;
     }
 
-    public void putArray(Buffer buffer, Object array) {
+    public final void putArray(Buffer buffer, Object array) {
+        putArray(buffer, array, Array.getLength(array));
+    }
+
+    public void putArray(Buffer buffer, Object array, int length) {
         throw new UnsupportedOperationException("no primitiv type");
     }
 
@@ -388,5 +458,21 @@ public enum PrimitiveTypeEnum {
 
     public Buffer wrap(Object array) {
         return null;
+    }
+
+    public void appendBuffer(Buffer buffer, Buffer dataToAppend) {
+        throw new UnsupportedOperationException("no primitiv type");
+    }
+
+    public void appendToByteBuffer(ByteBuffer byteBuffer, Buffer dataToAppend) {
+        byte[] temp = new byte[Math.min(COPY_BLOCK_SIZE * this.size, dataToAppend.remaining() * this.size)];
+        Buffer typedBuffer = asTypedBuffer(ByteBuffer.wrap(temp));
+        Object array = newArray(Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining()));
+        while (dataToAppend.hasRemaining()) {
+            int part = Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining());
+            getArray(dataToAppend, array, part);
+            putArray(typedBuffer, array, part);
+            byteBuffer.put(temp, 0, part * this.size);
+        }
     }
 }

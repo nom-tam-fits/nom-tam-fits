@@ -257,7 +257,7 @@ public final class FitsFactory {
         synchronized (GLOBAL_SETTINGS) {
             if (threadPool == null) {
                 // 1.5 thread per core
-                threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), //
+                threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, //
                         new ThreadFactory() {
 
                             private int counter = 1;

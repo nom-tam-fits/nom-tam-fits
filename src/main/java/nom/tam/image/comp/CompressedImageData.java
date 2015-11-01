@@ -54,6 +54,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.BinaryTable;
@@ -108,7 +109,7 @@ public class CompressedImageData extends BinaryTable {
 
         private Action action;
 
-        private int compressedSize;
+        private int compressedOffset;
 
         private Future<?> future;
 
@@ -126,36 +127,87 @@ public class CompressedImageData extends BinaryTable {
 
         @Override
         public void run() {
+            // for now only tiles consisting of rows supported
             this.decompressedData.limit(this.width * this.heigth);
             if (this.action == Action.DECOMPRESS) {
-                if (this.compressionType == TileCompressionType.COMPRESSED) {
-                    ICompressOption[] tileOptions = this.array.compressOptions.clone();
-                    for (int index = 0; index < tileOptions.length; index++) {
-                        tileOptions[index] = tileOptions[index].copy() //
-                                .setBZero(this.zero) //
-                                .setBScale(this.scale) //
-                                .setTileWidth(this.width) //
-                                .setTileHeigth(this.heigth);
-                    }
-                    this.array.compressorControl.decompress(this.compressedData, this.decompressedData, tileOptions);
-                } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
-                    this.array.gzipCompressorControl.decompress(this.compressedData, this.decompressedData);
-                } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {
-                    // TODO some nice code to just copy the compressed to the
-                    // uncompressed buffer (the source was uncompressed)
-                    LOG.severe("TILES WITH UNCOMPRESSED DATA NOT YET SUPPORTED");
-                } else {
-                    LOG.severe("Unknown compression column");
-                    throw new IllegalStateException("Unknown compression column");
-                }
+                decompress();
             } else if (this.action == Action.COMPRESS) {
-                ICompressOption[] tileOptions = this.array.compressOptions.clone();
-                this.compressionType = TileCompressionType.COMPRESSED;
-                if (!this.array.compressorControl.compress(this.decompressedData, this.compressedData, tileOptions)) {
-                    this.compressionType = TileCompressionType.GZIP_COMPRESSED;
-                    this.array.gzipCompressorControl.compress(this.decompressedData, this.compressedData);
+                compress();
+            }
+        }
+
+        private void compress() {
+            this.compressedData.limit(this.width * this.heigth * array.baseType.size());
+            ICompressOption[] tileOptions = this.array.compressOptions.clone();
+            this.compressionType = TileCompressionType.COMPRESSED;
+            boolean compressSuccess;
+            try {
+                compressSuccess = this.array.compressorControl.compress(this.decompressedData, this.compressedData, tileOptions);
+            } catch (Exception e) {
+                LOG.log(Level.FINER, "compressend of tile failed, probably because the compressed size was bigger as uncompressed, using gzip", e);
+                compressSuccess = false;
+            }
+            if (!compressSuccess) {
+                this.compressionType = TileCompressionType.GZIP_COMPRESSED;
+                try {
+                    this.compressedData.rewind();
+                    this.decompressedData.rewind();
+                    compressSuccess = this.array.gzipCompressorControl.compress(this.decompressedData, this.compressedData);
+                } catch (Exception e) {
+                    LOG.log(Level.FINER, "fallback gzip compression of tile failed, probably because the gipped size was bigger as uncompressed, using uncompressed", e);
+                    compressSuccess = false;
                 }
-                this.compressedSize = this.compressedData.position();
+            }
+            if (!compressSuccess) {
+                this.compressedData.rewind();
+                this.decompressedData.rewind();
+                array.baseType.appendToByteBuffer(this.compressedData, this.decompressedData);
+            }
+            compactCompressedData();
+        }
+
+        private void decompress() {
+            if (this.compressionType == TileCompressionType.COMPRESSED) {
+                ICompressOption[] tileOptions = this.array.compressOptions.clone();
+                for (int index = 0; index < tileOptions.length; index++) {
+                    tileOptions[index] = tileOptions[index].copy() //
+                            .setBZero(this.zero) //
+                            .setBScale(this.scale) //
+                            .setTileWidth(this.width) //
+                            .setTileHeigth(this.heigth);
+                }
+                this.array.compressorControl.decompress(this.compressedData, this.decompressedData, tileOptions);
+            } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
+                this.array.gzipCompressorControl.decompress(this.compressedData, this.decompressedData);
+            } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {
+                Buffer typedBuffer = array.baseType.asTypedBuffer(compressedData);
+                array.baseType.appendBuffer(this.decompressedData, typedBuffer);
+            } else {
+                LOG.severe("Unknown compression column");
+                throw new IllegalStateException("Unknown compression column");
+            }
+        }
+
+        /**
+         * lets close the gaps in the data as soon as the previous tiles are
+         * also compressed. the compressed data of the first tile is used to
+         * append the complete block.
+         */
+        private void compactCompressedData() {
+            if (tileIndex > 0) {
+                try {
+                    // wait for the previous tile to finish.
+                    array.tiles[tileIndex - 1].future.get();
+                    compressedData.limit(compressedData.position());
+                    compressedData.rewind();
+                    this.compressedOffset = array.tiles[0].compressedData.position();
+                    PrimitiveTypeEnum.BYTE.appendBuffer(array.tiles[0].compressedData, compressedData);
+                } catch (Exception e) {
+                    // already logged so just return.
+                    return;
+                }
+            } else {
+                this.compressedOffset = 0;
             }
         }
 
@@ -199,7 +251,7 @@ public class CompressedImageData extends BinaryTable {
 
         @Override
         public String toString() {
-            return getClass().getSimpleName() + "(" + this.tileIndex + "," + this.action + "," + this.compressionType + ")";
+            return getClass().getSimpleName() + "(" + this.tileIndex + "," + this.action + "," + this.compressionType + "," + this.compressedOffset + ")";
         }
 
         public void waitForResult() {
@@ -234,10 +286,10 @@ public class CompressedImageData extends BinaryTable {
         private String compressAlgorithm;
 
         /**
-         * an integer that gives the value of the BITPIX keyword in the
+         * an enum that interprets the value of the BITPIX keyword in the
          * uncompressed FITS image
          */
-        private int bitPix;
+        private PrimitiveTypeEnum baseType;
 
         private ICompressOption[] compressOptions;
 
@@ -248,7 +300,6 @@ public class CompressedImageData extends BinaryTable {
         private ITileCompressorControl gzipCompressorControl;
 
         public void compress(final Buffer buffer, Header header) {
-            final PrimitiveTypeEnum baseType = PrimitiveTypeEnum.valueOf(this.bitPix);
             final ByteBuffer compressed = ByteBuffer.wrap(new byte[baseType.size() * this.axes[0] * this.axes[1]]);
             createTiles(new ITileInit() {
 
@@ -262,15 +313,10 @@ public class CompressedImageData extends BinaryTable {
                 }
             });
             executeAllTiles();
-            int size = 0;
-            for (Tile tile : tiles) {
-                size += tile.compressedSize;
-            }
-            LOG.severe("Not yet implemented " + size);
+            LOG.severe("Not yet implemented ");
         }
 
         private ICompressOption[] compressOptions() {
-            PrimitiveTypeEnum baseType = PrimitiveTypeEnum.valueOf(this.bitPix);
             if (this.compressorControl == null) {
                 this.compressorControl = TileCompressorProvider.findCompressorControl(this.quantAlgorithm, this.compressAlgorithm, baseType.primitiveClass());
             }
@@ -312,7 +358,6 @@ public class CompressedImageData extends BinaryTable {
         }
 
         public Buffer decompress(Buffer decompressed, Header header) {
-            PrimitiveTypeEnum baseType = PrimitiveTypeEnum.valueOf(this.bitPix);
             int pixels = this.axes[0] * this.axes[1];
             this.decompressedWholeErea = decompressed;
             if (this.decompressedWholeErea == null) {
@@ -351,7 +396,7 @@ public class CompressedImageData extends BinaryTable {
         }
 
         protected TileArray read(Header header) throws FitsException {
-            this.bitPix = header.getIntValue(ZBITPIX);
+            this.baseType = PrimitiveTypeEnum.valueOf(header.getIntValue(ZBITPIX));
             this.compressAlgorithm = header.getStringValue(ZCMPTYPE);
             this.naxis = header.getIntValue(ZNAXIS);
             this.quantAlgorithm = header.getStringValue(ZQUANTIZ);
@@ -447,7 +492,7 @@ public class CompressedImageData extends BinaryTable {
     }
 
     public CompressedImageData setBitPix(int bitPix) {
-        tileArray().bitPix = bitPix;
+        tileArray().baseType = PrimitiveTypeEnum.valueOf(bitPix);
         return this;
     }
 

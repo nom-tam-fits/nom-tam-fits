@@ -187,8 +187,56 @@ public class ReadWriteProvidedCompressedImageTest {
                     .setTileSize(300, 15)//
                     .getCompressOption(RiceCompressOption.class)//
                     /**/.setBlockSize(32);
-            ShortBuffer source = ShortBuffer.wrap(new short[300*300]);
-            ArrayFuncs.copyInto(m13_data,source.array());
+            ShortBuffer source = ShortBuffer.wrap(new short[300 * 300]);
+            ArrayFuncs.copyInto(m13_data, source.array());
+            data.setUncompressedData(source, compressedHdu.getHeader());
+            f.addHDU(compressedHdu);
+            try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_rice.fits"))) {
+                // f.write(bdos);
+            }
+        }
+    }
+
+    @Test
+    public void testGzipFallbackCompressed() throws Exception {
+        try (Fits f = new Fits()) {
+            CompressedImageData data = new CompressedImageData();
+            BasicHDU<CompressedImageData> compressedHdu = FitsFactory.hduFactory(new Header(), data);
+            data.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
+                    .setQuantAlgorithm((String) null)//
+                    .setBitPix(PrimitiveTypeEnum.SHORT.bitPix())//
+                    .setImageSize(5, 5)//
+                    .setTileSize(5, 1)//
+                    .getCompressOption(RiceCompressOption.class)//
+                    /**/.setBlockSize(32);
+            short[] array = new short[]{
+                1000,
+                -2000,
+                3000,
+                -3000,
+                4000,
+                1000,
+                -2000,
+                3000,
+                -3000,
+                4000,
+                1000,
+                -2000,
+                3000,
+                -3000,
+                4000,
+                1000,
+                -2000,
+                3000,
+                -3000,
+                4000,
+                1000,
+                -2000,
+                3000,
+                -3000,
+                4000
+            };
+            ShortBuffer source = ShortBuffer.wrap(array);
             data.setUncompressedData(source, compressedHdu.getHeader());
             f.addHDU(compressedHdu);
             try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_rice.fits"))) {
