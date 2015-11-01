@@ -209,12 +209,12 @@ public class PrimitiveTypeTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void testUnknownPutArray() throws Exception {
-        PrimitiveTypeEnum.UNKNOWN.putArray(null, null);
+        PrimitiveTypeEnum.UNKNOWN.putArray(null, null, 0);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testUnknownGetArray() throws Exception {
-        PrimitiveTypeEnum.UNKNOWN.getArray(null, null);
+        PrimitiveTypeEnum.UNKNOWN.getArray(null, null, 0);
     }
 
     @Test(expected = UnsupportedOperationException.class)

@@ -174,18 +174,18 @@ public class TileCompressorProviderTest {
         provider.decompress(null, null, options);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testBadProviderCasesBadCompressMethod() {
         ITileCompressorControl provider = new BrokenClass(null).getProvider();
         ICompressOption[] options = provider.options();
         exceptionInMethod = true;
-        provider.compress(null, null, options);
+        Assert.assertFalse(provider.compress(null, null, options));
     }
 
     @Test
     public void testTileToString() throws Exception {
         String toString = new Access2().getTile().toString();
-        Assert.assertEquals("Tile(0,null,null)", toString);
+        Assert.assertEquals("Tile(0,null,null,0)", toString);
     }
 
     @Test(expected = IllegalStateException.class)

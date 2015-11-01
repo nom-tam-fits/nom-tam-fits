@@ -36,10 +36,17 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.ServiceLoader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.fits.header.Compression;
 
 public class TileCompressorProvider implements ITileCompressorProvider {
+
+    /**
+     * logger to log to.
+     */
+    private static final Logger LOG = Logger.getLogger(TileCompressorProvider.class.getName());
 
     /**
      * private implementation of the tile compression provider, all is based on
@@ -61,7 +68,8 @@ public class TileCompressorProvider implements ITileCompressorProvider {
             try {
                 this.constructor.newInstance((Object[]) options).compress(in, out);
             } catch (Exception e) {
-                throw new IllegalStateException("could not decompress " + this.constructor, e);
+                LOG.log(Level.FINE, "could not compress using " + this.constructor + " must fallback to other compression method", e);
+                return false;
             }
             return true;
         }

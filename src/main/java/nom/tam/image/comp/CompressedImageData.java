@@ -141,24 +141,15 @@ public class CompressedImageData extends BinaryTable {
             ICompressOption[] tileOptions = this.array.compressOptions.clone();
             this.compressionType = TileCompressionType.COMPRESSED;
             boolean compressSuccess;
-            try {
-                compressSuccess = this.array.compressorControl.compress(this.decompressedData, this.compressedData, tileOptions);
-            } catch (Exception e) {
-                LOG.log(Level.FINER, "compressend of tile failed, probably because the compressed size was bigger as uncompressed, using gzip", e);
-                compressSuccess = false;
-            }
+            compressSuccess = this.array.compressorControl.compress(this.decompressedData, this.compressedData, tileOptions);
             if (!compressSuccess) {
                 this.compressionType = TileCompressionType.GZIP_COMPRESSED;
-                try {
-                    this.compressedData.rewind();
-                    this.decompressedData.rewind();
-                    compressSuccess = this.array.gzipCompressorControl.compress(this.decompressedData, this.compressedData);
-                } catch (Exception e) {
-                    LOG.log(Level.FINER, "fallback gzip compression of tile failed, probably because the gipped size was bigger as uncompressed, using uncompressed", e);
-                    compressSuccess = false;
-                }
+                this.compressedData.rewind();
+                this.decompressedData.rewind();
+                compressSuccess = this.array.gzipCompressorControl.compress(this.decompressedData, this.compressedData);
             }
             if (!compressSuccess) {
+                this.compressionType = TileCompressionType.UNCOMPRESSED;
                 this.compressedData.rewind();
                 this.decompressedData.rewind();
                 array.baseType.appendToByteBuffer(this.compressedData, this.decompressedData);
@@ -203,7 +194,7 @@ public class CompressedImageData extends BinaryTable {
                     this.compressedOffset = array.tiles[0].compressedData.position();
                     PrimitiveTypeEnum.BYTE.appendBuffer(array.tiles[0].compressedData, compressedData);
                 } catch (Exception e) {
-                    // already logged so just return.
+                    LOG.log(Level.FINEST, "ignoring exception because it is logged at another place", e);
                     return;
                 }
             } else {
