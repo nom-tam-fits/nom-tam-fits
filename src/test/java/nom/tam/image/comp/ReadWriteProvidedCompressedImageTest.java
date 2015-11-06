@@ -245,8 +245,33 @@ public class ReadWriteProvidedCompressedImageTest {
         }
     }
 
-    @Test
-    @Ignore
+    /**
+     * <pre>
+     * 1989
+     * 1990
+     * 1991
+     * 1992
+     * 1993
+     * 1994
+     * 1996
+     * 1997
+     * 1998
+     * 5
+     * 6
+     * 7
+     * 8
+     * 9
+     * 10
+     * 11
+     * 12
+     * 13
+     * 
+     * 14 wrong size
+     * </pre>
+     * 
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
     public void blackboxTest1() throws Exception {
         Object result = readAll("https://raw.githubusercontent.com/nom-tam-fits/nom-tam-fits/blackbox-images/DECam_00149774_40_DESX0332-2742.fits.fz");
         System.out.println(result);
