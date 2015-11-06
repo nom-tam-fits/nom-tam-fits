@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
@@ -128,6 +130,46 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
 
         @Override
         protected void setPixel(ShortBuffer pixelData, byte[] pixelBytes) {
+            pixelData.put(this.nioBuffer);
+        }
+    }
+
+    public static class FloatGZipCompress extends GZipCompress<FloatBuffer> {
+
+        protected static final int BYTE_SIZE_OF_FLOAT = 4;
+
+        public FloatGZipCompress() {
+            super(BYTE_SIZE_OF_FLOAT);
+            this.nioBuffer = ByteBuffer.wrap(this.buffer).asFloatBuffer();
+        }
+
+        @Override
+        protected void getPixel(FloatBuffer pixelData, byte[] pixelBytes) {
+            this.nioBuffer.put(pixelData);
+        }
+
+        @Override
+        protected void setPixel(FloatBuffer pixelData, byte[] pixelBytes) {
+            pixelData.put(this.nioBuffer);
+        }
+    }
+
+    public static class DoubleGZipCompress extends GZipCompress<DoubleBuffer> {
+
+        protected static final int BYTE_SIZE_OF_DOUBLE = 8;
+
+        public DoubleGZipCompress() {
+            super(BYTE_SIZE_OF_DOUBLE);
+            this.nioBuffer = ByteBuffer.wrap(this.buffer).asDoubleBuffer();
+        }
+
+        @Override
+        protected void getPixel(DoubleBuffer pixelData, byte[] pixelBytes) {
+            this.nioBuffer.put(pixelData);
+        }
+
+        @Override
+        protected void setPixel(DoubleBuffer pixelData, byte[] pixelBytes) {
             pixelData.put(this.nioBuffer);
         }
     }

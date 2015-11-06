@@ -46,6 +46,7 @@ import static nom.tam.fits.header.Compression.ZVALn;
 import static nom.tam.fits.header.Compression.ZZERO_COLUMN;
 import static nom.tam.fits.header.Standard.TTYPEn;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -211,7 +212,7 @@ public class CompressedImageData extends BinaryTable {
         }
 
         public Tile setCompressed(Object data, TileCompressionType type) {
-            if (data != null) {
+            if (data != null && Array.getLength(data) > 0) {
                 this.compressionType = type;
                 this.compressedData = convertToBuffer(data);
             }
@@ -313,7 +314,7 @@ public class CompressedImageData extends BinaryTable {
             });
             executeAllTiles();
             writeHeader(header);
-            LOG.severe("Not yet implemented ");
+            LOG.severe("Not yet completely implemented ");
         }
 
         private ICompressOption[] compressOptions() {
@@ -341,6 +342,7 @@ public class CompressedImageData extends BinaryTable {
                 lastTileHeigth = this.tileAxes[1];
             }
             int tileIndex = 0;
+            int dataOffset = 0;
             this.tiles = new Tile[nrOfTilesOnXAxis * nrOfTilesOnYAxis];
             for (int y = 0; y < this.axes[1]; y += this.tileAxes[1]) {
                 boolean lastY = y + this.tileAxes[1] >= this.axes[1];
@@ -348,10 +350,11 @@ public class CompressedImageData extends BinaryTable {
                     boolean lastX = x + this.tileAxes[0] >= this.axes[0];
                     this.tiles[tileIndex] = new Tile(this)//
                             .setIndex(tileIndex)//
-                            .setDataOffset(y * this.axes[1] + x)//
+                            .setDataOffset(dataOffset)//
                             .setWidth(lastX ? lastTileWidth : this.tileAxes[0])//
                             .setHeigth(lastY ? lastTileHeigth : this.tileAxes[1]);
                     init.init(this.tiles[tileIndex]);
+                    dataOffset += this.tiles[tileIndex].width * this.tiles[tileIndex].heigth;
                     tileIndex++;
                 }
             }
@@ -448,7 +451,7 @@ public class CompressedImageData extends BinaryTable {
             while (nval > 0) {
                 card = header.findCard(ZNAMEn.n(nval));
                 value = header.findCard(ZVALn.n(nval));
-                ICompressOption.Parameter parameter = new ICompressOption.Parameter(card.getKey(), value.getValue(value.valueType(), null));
+                ICompressOption.Parameter parameter = new ICompressOption.Parameter(card.getValue(), value.getValue(value.valueType(), null));
                 this.compressionParameter[--nval] = parameter;
             }
             this.compressionParameter[this.compressionParameter.length - 1] = new ICompressOption.Parameter(Compression.ZQUANTIZ.name(), this.quantAlgorithm);

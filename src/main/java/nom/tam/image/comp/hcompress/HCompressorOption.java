@@ -83,7 +83,7 @@ public class HCompressorOption implements ICompressOption {
     public ICompressOption setCompressionParameter(Parameter[] parameters) {
         for (Parameter parameter : parameters) {
             if (Compression.SMOOTH.equals(parameter.getName())) {
-                setSmooth(parameter.getValue(Boolean.class));
+                setSmooth(parameter.getValue(Integer.class).intValue() != 0);
             } else if (Compression.SCALE.equals(parameter.getName())) {
                 setScale(parameter.getValue(Integer.class));
             }

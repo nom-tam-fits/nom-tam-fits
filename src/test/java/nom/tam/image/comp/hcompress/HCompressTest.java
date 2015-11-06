@@ -446,7 +446,7 @@ public class HCompressTest {
             new ICompressOption.Parameter(Compression.BLOCKSIZE, 32),
             new ICompressOption.Parameter(Compression.BYTEPIX, 32),
             new ICompressOption.Parameter(Compression.SCALE, 1),
-            new ICompressOption.Parameter(Compression.SMOOTH, true),
+            new ICompressOption.Parameter(Compression.SMOOTH, 1),
         });
         Assert.assertTrue(option.isSmooth());
         Assert.assertEquals(1, option.getScale());

@@ -118,7 +118,9 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         nom.tam.image.comp.gzip.GZipCompress.ByteGZipCompress.class,
         nom.tam.image.comp.gzip.GZipCompress.IntGZipCompress.class,
         nom.tam.image.comp.gzip.GZipCompress.LongGZipCompress.class,
-        nom.tam.image.comp.gzip.GZipCompress.ShortGZipCompress.class
+        nom.tam.image.comp.gzip.GZipCompress.ShortGZipCompress.class,
+        nom.tam.image.comp.gzip.GZipCompress.FloatGZipCompress.class,
+        nom.tam.image.comp.gzip.GZipCompress.DoubleGZipCompress.class
     };
 
     public static ITileCompressorControl findCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {

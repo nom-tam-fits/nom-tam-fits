@@ -54,7 +54,7 @@ public class QuantizeOption implements ICompressOption {
 
     private boolean dither2;
 
-    private long seed;
+    private long seed = 1L;
 
     private boolean checkNull;
 
