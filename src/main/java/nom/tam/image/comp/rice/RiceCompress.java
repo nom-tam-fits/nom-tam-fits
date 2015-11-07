@@ -390,7 +390,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         } else if (bitsPerPixel == PrimitiveTypeEnum.INT.bitPix()) {
             lastpix = readBuffer.getInt();
         }
-        int b = readBuffer.get(); /* bit buffer */
+        int b = readBuffer.get() & BYTE_MASK; /* bit buffer */
         int nbits = BITS_PER_BYTE; /* number of bits remaining in b */
         for (int i = 0; i < nx;) {
             /* get the FS value from first fsbits */

@@ -56,7 +56,6 @@ import nom.tam.util.PrimitiveTypeEnum;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ReadWriteProvidedCompressedImageTest {
@@ -245,33 +244,7 @@ public class ReadWriteProvidedCompressedImageTest {
         }
     }
 
-    /**
-     * <pre>
-     * 1989
-     * 1990
-     * 1991
-     * 1992
-     * 1993
-     * 1994
-     * 1996
-     * 1997
-     * 1998
-     * 5
-     * 6
-     * 7
-     * 8
-     * 9
-     * 10
-     * 11
-     * 12
-     * 13
-     * 
-     * 14 wrong size
-     * </pre>
-     * 
-     * @throws Exception
-     */
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void blackboxTest1() throws Exception {
         Object result = readAll("https://raw.githubusercontent.com/nom-tam-fits/nom-tam-fits/blackbox-images/DECam_00149774_40_DESX0332-2742.fits.fz");
         System.out.println(result);
