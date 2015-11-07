@@ -35,6 +35,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
@@ -114,9 +115,22 @@ public class ReadWriteProvidedCompressedImageTest {
 
     Object readAll(String fileName) throws Exception {
         try (Fits f = new Fits(fileName)) {
-            CompressedImageHDU bhdu = (CompressedImageHDU) f.getHDU(1);
-            return bhdu.getUncompressedData();
+            BasicHDU<?> hdu = f.getHDU(1);
+            if (hdu instanceof CompressedImageHDU) {
+                CompressedImageHDU bhdu = (CompressedImageHDU) hdu;
+                return bhdu.getUncompressedData();
+            }
+            if (hdu instanceof ImageHDU) {
+                ImageHDU bhdu = (ImageHDU) hdu;
+                return bhdu.getData().getData();
+            }
+            hdu = f.getHDU(0);
+            if (hdu instanceof ImageHDU) {
+                ImageHDU bhdu = (ImageHDU) hdu;
+                return bhdu.getData().getData();
+            }
         }
+        return null;
     }
 
     @Test
@@ -246,14 +260,39 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void blackboxTest1() throws Exception {
-        Object result = readAll("https://raw.githubusercontent.com/nom-tam-fits/nom-tam-fits/blackbox-images/DECam_00149774_40_DESX0332-2742.fits.fz");
+        Object result = readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits.fz"));
+        // Object expected =
+        // readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits"));
+
         System.out.println(result);
+    }
+
+    private String resolveLocalOrRemoteFileName(String fileName) {
+        if (new File("../blackbox-images/" + fileName).exists()) {
+            fileName = "../blackbox-images/" + fileName;
+        } else {
+            fileName = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName;
+        }
+        return fileName;
     }
 
     @Test
     public void blackboxTest2() throws Exception {
-        Object result = readAll("https://raw.githubusercontent.com/nom-tam-fits/nom-tam-fits/blackbox-images/unpack_vlos_mag.fits.fz");
-        System.out.println(result);
+        FloatBuffer result = (FloatBuffer) readAll(resolveLocalOrRemoteFileName("unpack_vlos_mag.fits.fz"));
+        float[][] expected = (float[][]) readAll(resolveLocalOrRemoteFileName("unpack_vlos_mag.fits"));
+        result.rewind();
+        float[] real = new float[expected[0].length];
+        for (int index = 0; index < expected.length; index++) {
+            float[] expectedPart = expected[index];
+            result.get(real);
+
+            try {
+                Assert.assertArrayEquals(expectedPart, real, 0.001f);
+                System.out.println("row ok " + index);
+            } catch (Throwable e) {
+                System.out.println("todo row  " + index + " differs");
+            }
+        }
     }
 
     @Before
