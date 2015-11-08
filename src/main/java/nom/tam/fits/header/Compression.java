@@ -123,7 +123,7 @@ public enum Compression implements IFitsHeader {
     ZMASKCMP(HDU.ANY, VALUE.STRING, ""),
 
     /**
-     * 
+     *
      The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
@@ -135,7 +135,7 @@ public enum Compression implements IFitsHeader {
     ZSIMPLE(HDU.PRIMARY, VALUE.LOGICAL, ""),
 
     /**
-     * 
+     *
      The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
@@ -147,7 +147,7 @@ public enum Compression implements IFitsHeader {
     ZTENSION(HDU.ANY, VALUE.STRING, ""),
 
     /**
-     * 
+     *
      The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
@@ -159,7 +159,7 @@ public enum Compression implements IFitsHeader {
     ZEXTEND(HDU.PRIMARY, VALUE.LOGICAL, ""),
 
     /**
-     * 
+     *
      The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
@@ -172,7 +172,7 @@ public enum Compression implements IFitsHeader {
     ZBLOCKED(HDU.PRIMARY, VALUE.LOGICAL, ""),
 
     /**
-     * 
+     *
      The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
@@ -183,7 +183,7 @@ public enum Compression implements IFitsHeader {
     ZPCOUNT(HDU.EXTENSION, VALUE.INTEGER, ""),
 
     /**
-     * 
+     *
      The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
@@ -194,7 +194,7 @@ public enum Compression implements IFitsHeader {
     ZGCOUNT(HDU.EXTENSION, VALUE.INTEGER, ""),
 
     /**
-     * 
+     *
      The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
@@ -204,7 +204,7 @@ public enum Compression implements IFitsHeader {
     ZHECKSUM(HDU.ANY, VALUE.STRING, ""),
 
     /**
-     * 
+     *
      The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
@@ -228,7 +228,17 @@ public enum Compression implements IFitsHeader {
      * range from 1 to 100 00, inclusive. See section 4 for further discussion
      * of this keyword.
      */
-    ZDITHER0(HDU.ANY, VALUE.INTEGER, "");
+    ZDITHER0(HDU.ANY, VALUE.INTEGER, ""),
+
+    /**
+     * When using the quantization method to compress floating-point images,
+     * this header is used to store the integer value that represents undefined
+     * pixels (if any) in the scaled integer pixel values. These pixels have an
+     * IEEE NaN value (Not a Number) in the uncompressed floating-point image.
+     * The recommended value for ZBLANK is -2147483648 (the largest negative
+     * 32-bit integer).
+     */
+    ZBLANK(HDU.ANY, VALUE.INTEGER, "");
 
     /**
      * This is the simplest option in which no dithering is performed. The
@@ -377,6 +387,16 @@ public enum Compression implements IFitsHeader {
      * for any tiles that cannot be compressed with the norma l method.
      */
     public static final String UNCOMPRESSED_DATA_COLUMN = "UNCOMPRESSED_DATA";
+
+    /**
+     * When using the quantization method to compress floating-point images that
+     * is described in Section 4, this column is used to store the integer value
+     * that represents undefined pixels (if any) in the scaled integer pixel
+     * values. These pixels have an IEEE NaN value (Not a Number) in the
+     * uncompressed floating-point image. The recommended value for ZBLANK is
+     * -2147483648 (the largest negative 32-bit integer).
+     */
+    public static final String ZBLANK_COLUMN = "ZBLANK";
 
     /**
      * name of the column containing the quant zero value.

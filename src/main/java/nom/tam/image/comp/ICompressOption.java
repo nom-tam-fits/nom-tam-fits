@@ -61,6 +61,12 @@ public interface ICompressOption extends Cloneable {
 
     ICompressOption copy();
 
+    double getBScale();
+
+    double getBZero();
+
+    ICompressOption setBNull(Integer blank);
+
     ICompressOption setBScale(double scale);
 
     ICompressOption setBZero(double zero);
@@ -70,9 +76,5 @@ public interface ICompressOption extends Cloneable {
     ICompressOption setTileHeigth(int value);
 
     ICompressOption setTileWidth(int value);
-
-    double getBZero();
-
-    double getBScale();
 
 }

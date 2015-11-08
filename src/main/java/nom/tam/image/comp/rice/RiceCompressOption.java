@@ -58,12 +58,27 @@ public class RiceCompressOption implements ICompressOption {
         return this.blockSize;
     }
 
+    @Override
+    public double getBScale() {
+        return Double.NaN;
+    }
+
     public int getBytePix() {
         return this.bytePix;
     }
 
+    @Override
+    public double getBZero() {
+        return Double.NaN;
+    }
+
     public RiceCompressOption setBlockSize(int value) {
         this.blockSize = value;
+        return this;
+    }
+
+    @Override
+    public ICompressOption setBNull(Integer blank) {
         return this;
     }
 
@@ -102,15 +117,5 @@ public class RiceCompressOption implements ICompressOption {
     @Override
     public RiceCompressOption setTileWidth(int value) {
         return this;
-    }
-
-    @Override
-    public double getBZero() {
-        return Double.NaN;
-    }
-
-    @Override
-    public double getBScale() {
-        return Double.NaN;
     }
 }

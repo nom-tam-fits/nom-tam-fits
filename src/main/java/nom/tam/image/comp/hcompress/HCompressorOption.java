@@ -53,6 +53,16 @@ public class HCompressorOption implements ICompressOption {
         }
     }
 
+    @Override
+    public double getBScale() {
+        return Double.NaN;
+    }
+
+    @Override
+    public double getBZero() {
+        return Double.NaN;
+    }
+
     public int getScale() {
         return this.scale;
     }
@@ -67,6 +77,11 @@ public class HCompressorOption implements ICompressOption {
 
     public boolean isSmooth() {
         return this.smooth;
+    }
+
+    @Override
+    public ICompressOption setBNull(Integer blank) {
+        return this;
     }
 
     @Override
@@ -111,15 +126,5 @@ public class HCompressorOption implements ICompressOption {
     public HCompressorOption setTileWidth(int value) {
         this.tileWidth = value;
         return this;
-    }
-
-    @Override
-    public double getBZero() {
-        return Double.NaN;
-    }
-
-    @Override
-    public double getBScale() {
-        return Double.NaN;
     }
 }

@@ -35,6 +35,8 @@ import static nom.tam.fits.header.Compression.COMPRESSED_DATA_COLUMN;
 import static nom.tam.fits.header.Compression.GZIP_COMPRESSED_DATA_COLUMN;
 import static nom.tam.fits.header.Compression.UNCOMPRESSED_DATA_COLUMN;
 import static nom.tam.fits.header.Compression.ZBITPIX;
+import static nom.tam.fits.header.Compression.ZBLANK;
+import static nom.tam.fits.header.Compression.ZBLANK_COLUMN;
 import static nom.tam.fits.header.Compression.ZCMPTYPE;
 import static nom.tam.fits.header.Compression.ZNAMEn;
 import static nom.tam.fits.header.Compression.ZNAXIS;
@@ -102,6 +104,8 @@ public class CompressedImageData extends BinaryTable {
         private double zero = Double.NaN;
 
         private double scale = Double.NaN;
+
+        private Integer blank = null;
 
         private int width;
 
@@ -181,6 +185,7 @@ public class CompressedImageData extends BinaryTable {
                     tileOptions[index] = tileOptions[index].copy() //
                             .setBZero(this.zero) //
                             .setBScale(this.scale) //
+                            .setBNull(this.blank)//
                             .setTileWidth(this.width) //
                             .setTileHeigth(this.heigth);
                 }
@@ -236,6 +241,11 @@ public class CompressedImageData extends BinaryTable {
 
         public Tile setWidth(int value) {
             this.width = value;
+            return this;
+        }
+
+        public Tile setZBlank(Integer value) {
+            this.blank = value;
             return this;
         }
 
@@ -298,6 +308,8 @@ public class CompressedImageData extends BinaryTable {
         private ICompressOption.Parameter[] compressionParameter;
 
         private ITileCompressorControl gzipCompressorControl;
+
+        private Integer zblank;
 
         public void compress(final Buffer buffer, Header header) {
             final ByteBuffer compressed = ByteBuffer.wrap(new byte[this.baseType.size() * this.axes[0] * this.axes[1]]);
@@ -398,10 +410,19 @@ public class CompressedImageData extends BinaryTable {
             return null;
         }
 
+        private <T> T getNullableValue(Header header, Class<T> clazz) {
+            HeaderCard card = header.findCard(ZBLANK);
+            if (card != null) {
+                return card.getValue(clazz, null);
+            }
+            return null;
+        }
+
         protected TileArray read(Header header) throws FitsException {
             this.baseType = PrimitiveTypeEnum.valueOf(header.getIntValue(ZBITPIX));
             this.compressAlgorithm = header.getStringValue(ZCMPTYPE);
             this.naxis = header.getIntValue(ZNAXIS);
+            this.zblank = getNullableValue(header, Integer.class);
             this.quantAlgorithm = header.getStringValue(ZQUANTIZ);
             readZVALs(header);
             this.axes = new int[this.naxis];
@@ -425,6 +446,8 @@ public class CompressedImageData extends BinaryTable {
             final Object[] gzipCompressed = getNullableColumn(header, Object[].class, GZIP_COMPRESSED_DATA_COLUMN);
             final double[] zzero = getNullableColumn(header, double[].class, ZZERO_COLUMN);
             final double[] zscale = getNullableColumn(header, double[].class, ZSCALE_COLUMN);
+            final int[] zblankColumn = getNullableColumn(header, int[].class, ZBLANK_COLUMN);
+
             createTiles(new ITileInit() {
 
                 @Override
@@ -432,6 +455,7 @@ public class CompressedImageData extends BinaryTable {
                     tile.setCompressed(compressed[tile.tileIndex], Tile.TileCompressionType.COMPRESSED)//
                             .setCompressed(uncompressed != null ? uncompressed[tile.tileIndex] : null, Tile.TileCompressionType.UNCOMPRESSED)//
                             .setCompressed(gzipCompressed != null ? gzipCompressed[tile.tileIndex] : null, Tile.TileCompressionType.GZIP_COMPRESSED)//
+                            .setZBlank(TileArray.this.zblank != null ? TileArray.this.zblank : zblankColumn == null ? null : zblankColumn[tile.tileIndex])//
                             .setZZero(zzero == null ? Double.NaN : zzero[tile.tileIndex])//
                             .setZScale(zscale == null ? Double.NaN : zscale[tile.tileIndex]);
                 }

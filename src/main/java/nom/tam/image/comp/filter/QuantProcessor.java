@@ -40,80 +40,6 @@ import nom.tam.image.comp.ITileCompressor;
 
 public class QuantProcessor {
 
-    public static class DoubleQuantCompressor extends QuantProcessor implements ITileCompressor<DoubleBuffer> {
-
-        private final ITileCompressor<IntBuffer> postCompressor;
-
-        public DoubleQuantCompressor(QuantizeOption quantizeOption, ITileCompressor<IntBuffer> postCompressor) {
-            super(quantizeOption);
-            this.postCompressor = postCompressor;
-        }
-
-        @Override
-        public boolean compress(DoubleBuffer buffer, ByteBuffer compressed) {
-            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()]);
-            double[] doubles = new double[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()];
-            buffer.get(doubles);
-            if (!this.quantize(doubles, intData)) {
-                return false;
-            }
-            intData.rewind();
-            this.postCompressor.compress(intData, compressed);
-            return true;
-        }
-
-        @Override
-        public void decompress(ByteBuffer compressed, DoubleBuffer buffer) {
-            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()]);
-            this.postCompressor.decompress(compressed, intData);
-            intData.rewind();
-            this.unquantize(intData, buffer);
-        }
-    }
-
-    /**
-     * TODO this is done very inefficient and should be refactored!
-     */
-    public static class FloatQuantCompressor extends QuantProcessor implements ITileCompressor<FloatBuffer> {
-
-        private final ITileCompressor<IntBuffer> postCompressor;
-
-        public FloatQuantCompressor(QuantizeOption quantizeOption, ITileCompressor<IntBuffer> postCompressor) {
-            super(quantizeOption);
-            this.postCompressor = postCompressor;
-        }
-
-        @Override
-        public boolean compress(FloatBuffer buffer, ByteBuffer compressed) {
-            float[] floats = new float[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()];
-            double[] doubles = new double[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()];
-            buffer.get(floats);
-            for (int index = 0; index < doubles.length; index++) {
-                doubles[index] = floats[index];
-            }
-            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()]);
-            if (!this.quantize(doubles, intData)) {
-                return false;
-            }
-            intData.rewind();
-            this.postCompressor.compress(intData, compressed);
-            return true;
-        }
-
-        @Override
-        public void decompress(ByteBuffer compressed, FloatBuffer buffer) {
-            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()]);
-            this.postCompressor.decompress(compressed, intData);
-            intData.rewind();
-            double[] doubles = new double[quantizeOption.getTileHeigth() * quantizeOption.getTileWidth()];
-            DoubleBuffer doubleBuffer = DoubleBuffer.wrap(doubles);
-            this.unquantize(intData, doubleBuffer);
-            for (int index = 0; index < doubles.length; index++) {
-                buffer.put((float) doubles[index]);
-            }
-        }
-    }
-
     private class BaseFilter extends PixelFilter {
 
         public BaseFilter() {
@@ -235,18 +161,99 @@ public class QuantProcessor {
         }
     }
 
+    public static class DoubleQuantCompressor extends QuantProcessor implements ITileCompressor<DoubleBuffer> {
+
+        private final ITileCompressor<IntBuffer> postCompressor;
+
+        public DoubleQuantCompressor(QuantizeOption quantizeOption, ITileCompressor<IntBuffer> postCompressor) {
+            super(quantizeOption);
+            this.postCompressor = postCompressor;
+        }
+
+        @Override
+        public boolean compress(DoubleBuffer buffer, ByteBuffer compressed) {
+            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()]);
+            double[] doubles = new double[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()];
+            buffer.get(doubles);
+            if (!this.quantize(doubles, intData)) {
+                return false;
+            }
+            intData.rewind();
+            this.postCompressor.compress(intData, compressed);
+            return true;
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, DoubleBuffer buffer) {
+            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()]);
+            this.postCompressor.decompress(compressed, intData);
+            intData.rewind();
+            unquantize(intData, buffer);
+        }
+    }
+
+    /**
+     * TODO this is done very inefficient and should be refactored!
+     */
+    public static class FloatQuantCompressor extends QuantProcessor implements ITileCompressor<FloatBuffer> {
+
+        private final ITileCompressor<IntBuffer> postCompressor;
+
+        public FloatQuantCompressor(QuantizeOption quantizeOption, ITileCompressor<IntBuffer> postCompressor) {
+            super(quantizeOption);
+            this.postCompressor = postCompressor;
+        }
+
+        @Override
+        public boolean compress(FloatBuffer buffer, ByteBuffer compressed) {
+            float[] floats = new float[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()];
+            double[] doubles = new double[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()];
+            buffer.get(floats);
+            for (int index = 0; index < doubles.length; index++) {
+                doubles[index] = floats[index];
+            }
+            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()]);
+            if (!this.quantize(doubles, intData)) {
+                return false;
+            }
+            intData.rewind();
+            this.postCompressor.compress(intData, compressed);
+            return true;
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, FloatBuffer buffer) {
+            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()]);
+            this.postCompressor.decompress(compressed, intData);
+            intData.rewind();
+            double[] doubles = new double[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()];
+            DoubleBuffer doubleBuffer = DoubleBuffer.wrap(doubles);
+            unquantize(intData, doubleBuffer);
+            for (double d : doubles) {
+                buffer.put((float) d);
+            }
+        }
+    }
+
     private class NullFilter extends PixelFilter {
 
         private final double nullValue;
 
-        public NullFilter(double nullValue, PixelFilter next) {
+        private final int nullValueIndicator;
+
+        public NullFilter(double nullValue, Integer nullValueIndicator, PixelFilter next) {
             super(next);
             this.nullValue = nullValue;
+            this.nullValueIndicator = nullValueIndicator == null ? NULL_VALUE : nullValueIndicator;
+        }
+
+        public final boolean isNull(double pixel) {
+            return this.nullValue == pixel;
         }
 
         @Override
         protected double toDouble(int pixel) {
-            if (pixel == NULL_VALUE) {
+            if (pixel == this.nullValueIndicator) {
                 return this.nullValue;
             }
             return super.toDouble(pixel);
@@ -255,13 +262,9 @@ public class QuantProcessor {
         @Override
         protected int toInt(double pixel) {
             if (isNull(pixel)) {
-                return NULL_VALUE;
+                return this.nullValueIndicator;
             }
             return super.toInt(pixel);
-        }
-
-        public final boolean isNull(double pixel) {
-            return this.nullValue == pixel;
         }
     }
 
@@ -364,10 +367,11 @@ public class QuantProcessor {
             filter = new ZeroFilter(filter);
         }
         if (quantizeOption.isCheckNull()) {
-            final NullFilter nullFilter = new NullFilter(quantizeOption.getNullValue(), filter);
+            final NullFilter nullFilter = new NullFilter(quantizeOption.getNullValue(), quantizeOption.getNullValueIndicator(), filter);
             filter = nullFilter;
-            quantize = new Quantize(quantizeOption) {
+            this.quantize = new Quantize(quantizeOption) {
 
+                @Override
                 protected int findNextValidPixelWithNullCheck(int nx, DoubleArrayPointer rowpix, int ii) {
                     while (ii < nx && nullFilter.isNull(rowpix.get(ii))) {
                         ii++;
@@ -381,26 +385,39 @@ public class QuantProcessor {
                 }
             };
         } else {
-            quantize = new Quantize(quantizeOption);
+            this.quantize = new Quantize(quantizeOption);
         }
         this.pixelFilter = filter;
         this.centerOnZero = localCenterOnZero;
     }
 
     private void calculateBZeroAndBscale() {
-        this.bScale = quantizeOption.getBScale();
-        if (Double.isNaN(quantizeOption.getBZero())) {
-            this.bZero = zeroCenter(quantizeOption.isCheckNull(), quantizeOption.getMinValue(), quantizeOption.getMaxValue());
-            quantizeOption.setIntMinValue(nint((quantizeOption.getMinValue() - this.bZero) / bScale));
-            quantizeOption.setIntMaxValue(nint((quantizeOption.getMaxValue() - this.bZero) / bScale));
-            quantizeOption.setBZero(this.bZero);
+        this.bScale = this.quantizeOption.getBScale();
+        if (Double.isNaN(this.quantizeOption.getBZero())) {
+            this.bZero = zeroCenter(this.quantizeOption.isCheckNull(), this.quantizeOption.getMinValue(), this.quantizeOption.getMaxValue());
+            this.quantizeOption.setIntMinValue(nint((this.quantizeOption.getMinValue() - this.bZero) / this.bScale));
+            this.quantizeOption.setIntMaxValue(nint((this.quantizeOption.getMaxValue() - this.bZero) / this.bScale));
+            this.quantizeOption.setBZero(this.bZero);
         } else {
-            this.bZero = quantizeOption.getBZero();
+            this.bZero = this.quantizeOption.getBZero();
         }
+    }
+
+    public Quantize getQuantize() {
+        return this.quantize;
     }
 
     private int nint(double x) {
         return x >= 0. ? (int) (x + ROUNDING_HALF) : (int) (x - ROUNDING_HALF);
+    }
+
+    public boolean quantize(double[] doubles, IntBuffer quants) {
+        boolean success = this.quantize.quantize(doubles, this.quantizeOption.getTileWidth(), this.quantizeOption.getTileHeigth());
+        if (success) {
+            calculateBZeroAndBscale();
+            quantize(DoubleBuffer.wrap(doubles, 0, this.quantizeOption.getTileWidth() * this.quantizeOption.getTileHeigth()), quants);
+        }
+        return success;
     }
 
     public void quantize(final DoubleBuffer fdata, final IntBuffer intData) {
@@ -442,18 +459,5 @@ public class QuantProcessor {
             evaluatedBZero = minValue - this.bScale * (NULL_VALUE + N_RESERVED_VALUES);
         }
         return evaluatedBZero;
-    }
-
-    public boolean quantize(double[] doubles, IntBuffer quants) {
-        boolean success = quantize.quantize(doubles, this.quantizeOption.getTileWidth(), this.quantizeOption.getTileHeigth());
-        if (success) {
-            calculateBZeroAndBscale();
-            quantize(DoubleBuffer.wrap(doubles, 0, this.quantizeOption.getTileWidth() * this.quantizeOption.getTileHeigth()), quants);
-        }
-        return success;
-    }
-
-    public Quantize getQuantize() {
-        return quantize;
     }
 }

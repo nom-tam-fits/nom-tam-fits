@@ -62,7 +62,9 @@ public class QuantizeOption implements ICompressOption {
 
     private boolean centerOnZero;
 
-    private double nullValue;
+    private double nullValue = Double.NaN;
+
+    private Integer nullValueIndicator;
 
     private double minValue;
 
@@ -77,10 +79,12 @@ public class QuantizeOption implements ICompressOption {
         }
     }
 
+    @Override
     public double getBScale() {
         return this.bScale;
     }
 
+    @Override
     public double getBZero() {
         return this.bZero;
     }
@@ -103,6 +107,10 @@ public class QuantizeOption implements ICompressOption {
 
     public double getNullValue() {
         return this.nullValue;
+    }
+
+    public Integer getNullValueIndicator() {
+        return this.nullValueIndicator;
     }
 
     public double getQLevel() {
@@ -142,6 +150,15 @@ public class QuantizeOption implements ICompressOption {
     }
 
     @Override
+    public ICompressOption setBNull(Integer blank) {
+        if (blank != null) {
+            this.checkNull = true;
+            this.nullValueIndicator = blank;
+        }
+        return this;
+    }
+
+    @Override
     public QuantizeOption setBScale(double value) {
         this.bScale = value;
         return this;
@@ -165,6 +182,22 @@ public class QuantizeOption implements ICompressOption {
 
     public QuantizeOption setCheckZero(boolean value) {
         this.checkZero = value;
+        return this;
+    }
+
+    @Override
+    public ICompressOption setCompressionParameter(Parameter[] parameters) {
+        for (Parameter parameter : parameters) {
+            if (Compression.ZQUANTIZ.name().equals(parameter.getName())) {
+                if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(parameter.getValue())) {
+                    setDither(true);
+                    setDither2(false);
+                } else if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(parameter.getValue())) {
+                    setDither(true);
+                    setDither2(true);
+                }
+            }
+        }
         return this;
     }
 
@@ -200,22 +233,6 @@ public class QuantizeOption implements ICompressOption {
 
     public QuantizeOption setNullValue(double value) {
         this.nullValue = value;
-        return this;
-    }
-
-    @Override
-    public ICompressOption setCompressionParameter(Parameter[] parameters) {
-        for (Parameter parameter : parameters) {
-            if (Compression.ZQUANTIZ.name().equals(parameter.getName())) {
-                if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(parameter.getValue())) {
-                    setDither(true);
-                    setDither2(false);
-                } else if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(parameter.getValue())) {
-                    setDither(true);
-                    setDither2(true);
-                }
-            }
-        }
         return this;
     }
 

@@ -285,12 +285,18 @@ public class ReadWriteProvidedCompressedImageTest {
         for (int index = 0; index < expected.length; index++) {
             float[] expectedPart = expected[index];
             result.get(real);
-
-            try {
-                Assert.assertArrayEquals(expectedPart, real, 0.001f);
-                System.out.println("row ok " + index);
-            } catch (Throwable e) {
-                System.out.println("todo row  " + index + " differs");
+            Assert.assertEquals(expectedPart.length, real.length);
+            for (int subindex = 0; subindex < expectedPart.length; subindex++) {
+                float expectedFloat = expectedPart[subindex];
+                float realFloat = real[subindex];
+                if (!Float.isNaN(expectedFloat) && !Float.isNaN(realFloat)) {
+                    try {
+                        Assert.assertEquals(expectedFloat, realFloat, 1f);
+                    } catch (Throwable e) {
+                        System.out.println("todo row  " + index + " from column " + subindex + " differs");
+                        break;
+                    }
+                }
             }
         }
     }
