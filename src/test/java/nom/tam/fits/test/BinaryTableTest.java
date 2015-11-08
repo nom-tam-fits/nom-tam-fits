@@ -59,10 +59,12 @@ import nom.tam.fits.FitsHeap;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.PaddingException;
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.ColumnTable;
 import nom.tam.util.TableException;
 import nom.tam.util.TestArrayFuncs;
 
@@ -221,43 +223,46 @@ public class BinaryTableTest {
         tab.fillHeader(hdr);
         BasicHDU<?> hdu = FitsFactory.hduFactory(hdr, tab);
         try (Fits f = new Fits(); BufferedFile bf = new BufferedFile("target/bt12.fits", "rw")) {
-	        f.addHDU(hdu);
-	        f.write(bf);
+            f.addHDU(hdu);
+            f.write(bf);
         }
         System.out.println("Wrote file bt12.fits");
 
         try (Fits f = new Fits("target/bt12.fits")) {
-	        BinaryTableHDU btu = (BinaryTableHDU) f.getHDU(1);
-	        // In the first column the first string is the longest so all strings
-	        // should fit.
-	        String[] res = (String[]) btu.getColumn(0);
-	
-	        for (int i = 0; i < 50; i += 1) {
-	            System.out.println(i + "  " + res[i] + " :: " + strings[i] + " " + strings[i].equals(res[i]));
-	        }
-	        assertEquals("bfe0", true, TestArrayFuncs.arrayEquals(btu.getColumn(0), strings));
-	        assertEquals("bfe1", true, TestArrayFuncs.arrayEquals(btu.getColumn(1), shorts));
-	        assertEquals("bfe2", true, TestArrayFuncs.arrayEquals(btu.getColumn(2), floats));
-	        assertEquals("bfe3", true, TestArrayFuncs.arrayEquals(btu.getColumn(3), doubles));
-	        // The strings will be truncated to the length of the longest string in
-	        // the first row.
-	        String[][] results = (String[][]) btu.getColumn(4);
-	        assertEquals("bfe4", false, TestArrayFuncs.arrayEquals(results, multiString));
-	        int max = 0;
-	        for (int i = 0; i < 3; i += 1) {
-	            if (multiString[0][i].length() > max)
-	                max = multiString[0][i].length();
-	        }
-	        // Now check that within the truncation limit the strings are identical.
-	        for (int i = 0; i < 50; i += 1) {
-	            for (int j = 0; j < 3; j += 1) {
-	                String test = multiString[i][j];
-	                if (test.length() > max) {
-	                    test = test.substring(0, max);
-	                }
-	                assertEquals("cmp" + i + "," + j, test.trim(), results[i][j].trim());
-	            }
-	        }
+            BinaryTableHDU btu = (BinaryTableHDU) f.getHDU(1);
+            // In the first column the first string is the longest so all
+            // strings
+            // should fit.
+            String[] res = (String[]) btu.getColumn(0);
+
+            for (int i = 0; i < 50; i += 1) {
+                System.out.println(i + "  " + res[i] + " :: " + strings[i] + " " + strings[i].equals(res[i]));
+            }
+            assertEquals("bfe0", true, TestArrayFuncs.arrayEquals(btu.getColumn(0), strings));
+            assertEquals("bfe1", true, TestArrayFuncs.arrayEquals(btu.getColumn(1), shorts));
+            assertEquals("bfe2", true, TestArrayFuncs.arrayEquals(btu.getColumn(2), floats));
+            assertEquals("bfe3", true, TestArrayFuncs.arrayEquals(btu.getColumn(3), doubles));
+            // The strings will be truncated to the length of the longest string
+            // in
+            // the first row.
+            String[][] results = (String[][]) btu.getColumn(4);
+            assertEquals("bfe4", false, TestArrayFuncs.arrayEquals(results, multiString));
+            int max = 0;
+            for (int i = 0; i < 3; i += 1) {
+                if (multiString[0][i].length() > max)
+                    max = multiString[0][i].length();
+            }
+            // Now check that within the truncation limit the strings are
+            // identical.
+            for (int i = 0; i < 50; i += 1) {
+                for (int j = 0; j < 3; j += 1) {
+                    String test = multiString[i][j];
+                    if (test.length() > max) {
+                        test = test.substring(0, max);
+                    }
+                    assertEquals("cmp" + i + "," + j, test.trim(), results[i][j].trim());
+                }
+            }
         }
         // Cleanup...
         strings[0] = oldString;
@@ -1486,5 +1491,254 @@ public class BinaryTableTest {
         assertEquals(FitsException.class, actual.getClass());
         assertEquals("all went wrong ;-)", actual.getCause().getMessage());
 
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testColumnCloneFailure() throws Exception {
+        BinaryTable btab = new BinaryTable() {
+
+            class ColumnExtra extends ColumnDesc {
+
+                @Override
+                public int[] getDimens() {
+                    throwException(new CloneNotSupportedException());
+                    return null;
+                }
+            }
+
+            @Override
+            public String toString() {
+                new ColumnExtra().clone();
+                return super.toString();
+            }
+        };
+        btab.toString();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testBinaryTableFailure() throws Exception {
+        new BinaryTable() {
+
+            @Override
+            protected ColumnTable<SaveState> createColumnTable(Object[] arrCol, int[] sizes) throws TableException {
+                throw new TableException("failure");
+            }
+        };
+    }
+
+    static class AccessBinaryTable extends BinaryTable {
+
+        private static Object newState() {
+            return new SaveState(new ArrayList<ColumnDesc>(), null);
+        }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testBinaryTableFailure2() throws Exception {
+        new BinaryTable(new ColumnTable<Object>(new Object[0], new int[0]) {
+
+            @Override
+            public ColumnTable<Object> copy() throws TableException {
+                throw new TableException("failure");
+            }
+
+            @Override
+            public Object getExtraState() {
+                return AccessBinaryTable.newState();
+            }
+
+        });
+    }
+
+    @Test(expected = FitsException.class)
+    public void testBinaryTableMemoryFalure() throws Exception {
+        Header fitsHeader = new Header();
+        fitsHeader//
+                .card(Standard.PCOUNT).value(Integer.MAX_VALUE)//
+                .card(Standard.THEAP).value(-10);
+        new BinaryTable(fitsHeader);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddWrongFlattendColumn() throws Exception {
+        BinaryTable table = createTestTable();
+        int columnSize = table.addFlattenedColumn(longs, new int[]{
+            2
+        });
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddFlattendColumnWrongType() throws Exception {
+        BinaryTable table = createTestTable();
+        long[] flat = new long[longs.length * 2];
+        System.arraycopy(longs, 0, flat, 0, longs.length);
+        System.arraycopy(longs, 0, flat, longs.length, longs.length);
+
+        int columnSize = table.addFlattenedColumn(flat, new int[]{
+            2
+        });
+        table.setFlattenedColumn(columnSize - 1, new float[flat.length]);
+
+    }
+
+    @Test
+    public void testAddFlattendColumn() throws Exception {
+        BinaryTable table = createTestTable();
+        long[] flat = new long[longs.length * 2];
+        System.arraycopy(longs, 0, flat, 0, longs.length);
+        System.arraycopy(longs, 0, flat, longs.length, longs.length);
+
+        int columnSize = table.addFlattenedColumn(flat, new int[]{
+            2
+        });
+        table.getDimens();
+        long[] value = (long[]) table.getElement(0, columnSize - 1);
+        Assert.assertArrayEquals(new long[]{
+            longs[0],
+            longs[1]
+        }, value);
+        value = (long[]) table.getElement(1, columnSize - 1);
+        Assert.assertArrayEquals(new long[]{
+            longs[2],
+            longs[3]
+        }, value);
+        Assert.assertArrayEquals(new Class<?>[]{
+            float.class,
+            int.class,
+            byte.class,
+            int.class,
+            int.class,
+            int.class,
+            float.class,
+            byte.class,
+            long.class
+        }, table.getBases());
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddIllegalRow() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.addRow(new Object[2]);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testIllegalElement() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.getElement(1, 2);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testIllegalFlattenedColumn() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.getFlattenedColumn(1);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testIllegalRow() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.getRow(1);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testIllegalSetRow() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.setRow(1, new Object[1]);
+    }
+
+    @Test
+    public void testAddColumn() throws Exception {
+        BinaryTable btab = new BinaryTable();
+
+        Header header = new Header();
+        btab.fillHeader(header);
+
+        BinaryTableHDU binaryTableHDU = new BinaryTableHDU(header, btab);
+        binaryTableHDU.addColumn(this.floats);
+        binaryTableHDU.addColumn(this.floats);
+
+        float[][] value = (float[][]) btab.getElement(0, 0);
+        assertArrayEquals(floats[0], value);
+        value = (float[][]) btab.getElement(0, 1);
+        assertArrayEquals(floats[0], value);
+
+    }
+
+    @Test
+    public void testAddComplexColumn() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.addColumn(new float[][]{
+            {
+                1f,
+                1f
+            },
+            {
+                2f,
+                2f
+            },
+            {
+                3f,
+                3f
+            }
+        });
+        btab.addColumn(new float[][]{
+            {
+                1f
+            },
+            {
+                2f
+            },
+            {
+                3f
+            }
+        });
+
+        Header header = new Header();
+        btab.fillHeader(header);
+        Assert.assertTrue(new BinaryTableHDU(header, btab).setComplexColumn(0));
+        Assert.assertFalse(new BinaryTableHDU(header, btab).setComplexColumn(1));
+
+        btab.setElement(0, 1, new float[]{
+            2f
+        });
+        btab.setElement(2, 1, new float[]{
+            2f
+        });
+        Assert.assertArrayEquals(new float[][]{
+            {
+                2f
+            },
+            {
+                2f
+            },
+            {
+                2f
+            }
+        }, (float[][]) btab.getColumn(1));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Throwable> void throwException(Throwable exception, Object dummy) throws T {
+        throw (T) exception;
+    }
+
+    public static void throwException(Throwable exception) {
+        BinaryTableTest.<RuntimeException> throwException(exception, null);
+    }
+
+    private BinaryTable createTestTable() throws FitsException {
+        BinaryTable btab = new BinaryTable();
+
+        btab.addColumn(this.floats);
+        btab.addColumn(this.vf);
+        btab.addColumn(this.strings);
+        btab.addColumn(this.vbool);
+        btab.addColumn(this.ints);
+        btab.addColumn(this.vc);
+        btab.addColumn(this.complex);
+        btab.addColumn(this.multiString);
+
+        Fits f = new Fits();
+        f.addHDU(Fits.makeHDU(btab));
+        return btab;
     }
 }

@@ -153,8 +153,8 @@ public class BinaryTable extends AbstractTableData {
         public Object clone() {
             try {
                 ColumnDesc copy = (ColumnDesc) super.clone();
-                if (this.dimens != null) {
-                    this.dimens = this.dimens.clone();
+                if (getDimens() != null) {
+                    this.dimens = getDimens().clone();
                 }
                 // Model should not be changed...
                 return copy;
@@ -300,7 +300,7 @@ public class BinaryTable extends AbstractTableData {
      */
     public BinaryTable() {
         try {
-            this.table = new ColumnTable<SaveState>(new Object[0], new int[0]);
+            this.table = createColumnTable(new Object[0], new int[0]);
         } catch (TableException e) {
             throw new IllegalStateException("Impossible exception in BinaryTable() constructor", e);
         }
@@ -330,7 +330,7 @@ public class BinaryTable extends AbstractTableData {
         try {
             this.table = tab.copy();
         } catch (Exception e) {
-            throw new Error("Unexpected Exception", e);
+            throw new IllegalStateException("Unexpected Exception", e);
         }
         this.heap = extra.heap.copy();
         this.nRow = tab.getNRows();
@@ -500,13 +500,26 @@ public class BinaryTable extends AbstractTableData {
         return addFlattenedColumn(o, dims, false);
     }
 
-    // This function is needed since we had made addFlattenedColumn public
-    // so in principle a user might have called it directly.
+    /**
+     * This function is needed since we had made addFlattenedColumn public so in
+     * principle a user might have called it directly.
+     *
+     * @param o
+     *            The new column data. This should be a one-dimensional
+     *            primitive array.
+     * @param dims
+     *            The dimensions of one row of the column.
+     * @param allocated
+     *            is it already in the columnList?
+     * @return the new column size
+     * @throws FitsException
+     */
     int addFlattenedColumn(Object o, int[] dims, boolean allocated) throws FitsException {
 
         ColumnDesc added;
         if (!allocated) {
             added = new ColumnDesc();
+            added.dimens = dims;
         } else {
             added = this.columnList.get(this.columnList.size() - 1);
         }
@@ -560,7 +573,9 @@ public class BinaryTable extends AbstractTableData {
         } catch (TableException e) {
             throw new FitsException("Error in ColumnTable:" + e);
         }
-
+        if (!this.columnList.contains(added)) {
+            this.columnList.add(added);
+        }
         return this.columnList.size();
     }
 
@@ -892,12 +907,16 @@ public class BinaryTable extends AbstractTableData {
             }
         }
         try {
-            this.table = new ColumnTable<SaveState>(arrCol, sizes);
+            this.table = createColumnTable(arrCol, sizes);
         } catch (TableException e) {
             throw new FitsException("Unable to create table:" + e);
         }
         saveExtraState();
         return this.table;
+    }
+
+    protected ColumnTable<SaveState> createColumnTable(Object[] arrCol, int[] sizes) throws TableException {
+        return new ColumnTable<SaveState>(arrCol, sizes);
     }
 
     /**
@@ -1079,8 +1098,6 @@ public class BinaryTable extends AbstractTableData {
                 }
                 fillForColumn(h, i, iter);
             }
-        } catch (HeaderCardException e) {
-            System.err.println("Error updating BinaryTableHeader:" + e);
         } finally {
             Standard.context(null);
         }
@@ -1462,7 +1479,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Updata the header to reflect information about a given column. This
+     * Update the header to reflect information about a given column. This
      * routine tries to ensure that the Header is organized by column. * @throws
      * FitsException if the operation failed
      */
