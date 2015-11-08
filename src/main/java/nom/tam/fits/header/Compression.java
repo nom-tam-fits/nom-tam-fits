@@ -224,7 +224,7 @@ public enum Compression implements IFitsHeader {
     /**
      * (optional keyword) The value field of this keyword shall contain an
      * integer that gives the seed value for the random dithering pattern that
-     * wa s used when quantizing the floating-point pixel values. The value may
+     * was used when quantizing the floating-point pixel values. The value may
      * range from 1 to 100 00, inclusive. See section 4 for further discussion
      * of this keyword.
      */

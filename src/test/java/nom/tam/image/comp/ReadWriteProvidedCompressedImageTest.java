@@ -261,8 +261,7 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest1() throws Exception {
         Object result = readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits.fz"));
-        // Object expected =
-        // readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits"));
+        Object expected = readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits"));
 
         System.out.println(result);
     }
