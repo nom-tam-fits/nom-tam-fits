@@ -290,12 +290,7 @@ public class ReadWriteProvidedCompressedImageTest {
                 float expectedFloat = expectedPart[subindex];
                 float realFloat = real[subindex];
                 if (!Float.isNaN(expectedFloat) && !Float.isNaN(realFloat)) {
-                    try {
-                        Assert.assertEquals(expectedFloat, realFloat, 1f);
-                    } catch (Throwable e) {
-                        System.out.println("todo row  " + index + " from column " + subindex + " differs");
-                        break;
-                    }
+                    Assert.assertEquals(expectedFloat, realFloat, 6500f);
                 }
             }
         }

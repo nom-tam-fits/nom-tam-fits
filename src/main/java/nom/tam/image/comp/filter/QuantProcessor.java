@@ -281,7 +281,7 @@ public class QuantProcessor {
         }
 
         protected double toDouble(int pixel) {
-            return this.next.toInt(pixel);
+            return this.next.toDouble(pixel);
         }
 
         protected int toInt(double pixel) {
