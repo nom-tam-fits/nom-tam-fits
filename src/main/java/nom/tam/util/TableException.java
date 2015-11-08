@@ -1,5 +1,7 @@
 package nom.tam.util;
 
+import nom.tam.fits.FitsException;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -31,7 +33,7 @@ package nom.tam.util;
  * #L%
  */
 
-public class TableException extends Exception {
+public class TableException extends FitsException {
 
     /**
      * serial version id.

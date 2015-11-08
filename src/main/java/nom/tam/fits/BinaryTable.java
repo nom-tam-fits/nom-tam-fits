@@ -565,13 +565,8 @@ public class BinaryTable extends AbstractTableData {
         // we only create the column table after we have all the columns
         // ready.
         added.column = o;
-
-        try {
-            if (this.table != null) {
-                this.table.addColumn(o, added.size);
-            }
-        } catch (TableException e) {
-            throw new FitsException("Error in ColumnTable:" + e);
+        if (this.table != null) {
+            this.table.addColumn(o, added.size);
         }
         if (!this.columnList.contains(added)) {
             this.columnList.add(added);
@@ -612,19 +607,13 @@ public class BinaryTable extends AbstractTableData {
             createTable();
 
         } else {
-
             Object[] flatRow = new Object[getNCols()];
             for (int i = 0; i < getNCols(); i++) {
                 Object x = ArrayFuncs.flatten(o[i]);
                 ColumnDesc colDesc = this.columnList.get(i);
                 flatRow[i] = arrayToColumn(colDesc, x);
             }
-            try {
-                this.table.addRow(flatRow);
-            } catch (TableException e) {
-                throw new FitsException("Error add row to table");
-            }
-
+            this.table.addRow(flatRow);
             this.nRow++;
         }
 
@@ -906,11 +895,7 @@ public class BinaryTable extends AbstractTableData {
                 arrCol[i] = ArrayFuncs.newInstance(ArrayFuncs.getBaseClass(desc.model), desc.size * this.nRow);
             }
         }
-        try {
-            this.table = createColumnTable(arrCol, sizes);
-        } catch (TableException e) {
-            throw new FitsException("Unable to create table:" + e);
-        }
+        this.table = createColumnTable(arrCol, sizes);
         saveExtraState();
         return this.table;
     }
@@ -951,13 +936,9 @@ public class BinaryTable extends AbstractTableData {
      */
     @Override
     public void deleteRows(int row, int len) throws FitsException {
-        try {
-            ensureData();
-            this.table.deleteRows(row, len);
-            this.nRow -= len;
-        } catch (TableException e) {
-            throw new FitsException("Error deleting row block " + row + " to " + (row + len - 1) + " from table");
-        }
+        ensureData();
+        this.table.deleteRows(row, len);
+        this.nRow -= len;
     }
 
     private Object encurl(Object res, int col, int rows) {
@@ -1808,31 +1789,27 @@ public class BinaryTable extends AbstractTableData {
     public void setElement(int i, int j, Object o) throws FitsException {
         ensureData();
         ColumnDesc colDesc = this.columnList.get(j);
-        try {
-            if (colDesc.isVarying) {
+        if (colDesc.isVarying) {
 
-                int size = Array.getLength(o);
-                // The offset for the row is the offset to the heap plus the
-                // offset within the heap.
-                int offset = (int) this.heap.getSize();
-                this.heap.putData(o);
-                if (colDesc.isLongVary) {
-                    this.table.setElement(i, j, new long[]{
-                        size,
-                        offset
-                    });
-                } else {
-                    this.table.setElement(i, j, new int[]{
-                        size,
-                        offset
-                    });
-                }
-
+            int size = Array.getLength(o);
+            // The offset for the row is the offset to the heap plus the
+            // offset within the heap.
+            int offset = (int) this.heap.getSize();
+            this.heap.putData(o);
+            if (colDesc.isLongVary) {
+                this.table.setElement(i, j, new long[]{
+                    size,
+                    offset
+                });
             } else {
-                this.table.setElement(i, j, ArrayFuncs.flatten(o));
+                this.table.setElement(i, j, new int[]{
+                    size,
+                    offset
+                });
             }
-        } catch (TableException e) {
-            throw new FitsException("Error modifying table:" + e);
+
+        } else {
+            this.table.setElement(i, j, ArrayFuncs.flatten(o));
         }
     }
 
@@ -1854,11 +1831,7 @@ public class BinaryTable extends AbstractTableData {
         if (data.getClass() != oldCol.getClass() || Array.getLength(data) != Array.getLength(oldCol)) {
             throw new FitsException("Replacement column mismatch at column:" + col);
         }
-        try {
-            this.table.setColumn(col, data);
-        } catch (TableException e) {
-            throw new FitsException("Unable to set column:" + col + " error:" + e);
-        }
+        this.table.setColumn(col, data);
     }
 
     /**
@@ -1885,12 +1858,7 @@ public class BinaryTable extends AbstractTableData {
             ColumnDesc colDesc = this.columnList.get(col);
             ydata[col] = arrayToColumn(colDesc, o);
         }
-
-        try {
-            this.table.setRow(row, ydata);
-        } catch (TableException e) {
-            throw new FitsException("Error modifying table: " + e);
-        }
+        this.table.setRow(row, ydata);
     }
 
     /**
