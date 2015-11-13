@@ -848,14 +848,14 @@ public class Fits implements Closeable {
                 obs.flush();
                 obs.close();
             } catch (IOException e) {
-                LOG.log(Level.WARNING, "Warning: error flushing/closing FITS output stream", e);
+                throw new FitsException("Error flushing/closing the FITS output stream: " + e, e);
             }
         }
         if (obs instanceof BufferedFile) {
             try {
                 ((BufferedFile) obs).setLength(((BufferedFile) obs).getFilePointer());
             } catch (IOException e) {
-                LOG.log(Level.SEVERE, "Warning: error changing fits file size", e);
+                throw new FitsException("Error resizing the FITS output stream: " + e, e);
             }
         }
     }
