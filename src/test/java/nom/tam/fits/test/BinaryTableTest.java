@@ -1716,6 +1716,196 @@ public class BinaryTableTest {
         }, (float[][]) btab.getColumn(1));
     }
 
+    @Test
+    public void testColumnAddRow() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.getData().addRow(new Object[]{
+            new float[]{
+                1f
+            },
+            new int[]{
+                2,
+                2
+            },
+            new double[]{
+                3d,
+                3d,
+                3d
+            }
+        });
+        assertArrayEquals(new int[]{
+            1,
+            2,
+            3
+        }, btab.getData().getSizes());
+        assertEquals(3, btab.getData().getNCols());
+    }
+
+    @Test(expected = TableException.class)
+    public void testColumnAddWrongRowSize() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.getData().addRow(new Object[]{
+            new float[]{
+                1f
+            }
+        });
+        btab.getData().addRow(new Object[]{
+            new float[]{
+                1f
+            },
+            new int[]{
+                2,
+                2
+            }
+        });
+    }
+
+    @Test(expected = TableException.class)
+    public void testColumnAddWrongRow() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.getData().addRow(new Object[]{
+            new float[]{
+                1f
+            }
+        });
+        btab.getData().addRow(new Object[]{
+            new float[]{
+                1f,
+                2f
+            }
+        });
+    }
+
+    @Test
+    public void testColumnDeleteRow() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.getData().addRow(new Object[]{
+            new float[]{
+                1f
+            },
+            new int[]{
+                2,
+                2
+            },
+            new double[]{
+                3d,
+                3d,
+                3d
+            }
+        });
+        Assert.assertEquals(1, btab.getData().getNRows());
+        btab.getData().deleteRow(0);
+        Assert.assertEquals(0, btab.getData().getNRows());
+    }
+
+    @Test(expected = TableException.class)
+    public void testColumnDeleteWrongRow() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.getData().addRow(new Object[]{
+            new float[]{
+                1f
+            },
+            new int[]{
+                2,
+                2
+            },
+            new double[]{
+                3d,
+                3d,
+                3d
+            }
+        });
+        Assert.assertEquals(1, btab.getData().getNRows());
+        btab.getData().deleteRow(1);// out of bound
+    }
+
+    @Test
+    public void testColumnDeleteWrongRows() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.getData().addRow(new Object[]{
+            new float[]{
+                1f
+            },
+            new int[]{
+                2,
+                2
+            },
+            new double[]{
+                3d,
+                3d,
+                3d
+            }
+        });
+        Assert.assertEquals(1, btab.getData().getNRows());
+        btab.getData().deleteRows(0, 0); // zero rows
+        Assert.assertEquals(1, btab.getData().getNRows());
+    }
+
+    @Test(expected = TableException.class)
+    public void testColumnSetWrongType() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.getData().addRow(new Object[]{
+            new float[]{
+                1f
+            },
+            new int[]{
+                2,
+                2
+            },
+            new double[]{
+                3d,
+                3d,
+                3d
+            }
+        });
+        btab.getData().setElement(0, 0, new int[]{
+            3
+        });
+    }
+
+
+    @Test(expected = TableException.class)
+    public void testColumnSetRowWrongType() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.getData().addRow(new Object[]{
+            new float[]{
+                1f
+            },
+            new int[]{
+                2,
+                2
+            },
+            new double[]{
+                3d,
+                3d,
+                3d
+            }
+        });
+        btab.getData().setRow(0, 3);
+    }
+    @Test(expected = TableException.class)
+    public void testColumnSetWrongSize() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.getData().addRow(new Object[]{
+            new float[]{
+                1f
+            },
+            new int[]{
+                2,
+                2
+            },
+            new double[]{
+                3d,
+                3d,
+                3d
+            }
+        });
+        btab.getData().setElement(0, 0, new float[]{
+            3f,
+            3f
+        });
+    }
+
     @SuppressWarnings("unchecked")
     private static <T extends Throwable> void throwException(Throwable exception, Object dummy) throws T {
         throw (T) exception;
