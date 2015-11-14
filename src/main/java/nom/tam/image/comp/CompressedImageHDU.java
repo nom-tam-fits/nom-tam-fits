@@ -36,6 +36,8 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Data;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
+import nom.tam.fits.ImageData;
+import nom.tam.fits.ImageHDU;
 
 public class CompressedImageHDU extends BinaryTableHDU {
 
@@ -97,5 +99,11 @@ public class CompressedImageHDU extends BinaryTableHDU {
 
     public Object getUncompressedData() throws FitsException {
         return getData().getUncompressedData(getHeader());
+    }
+
+    public ImageHDU asImageHDU() throws FitsException {
+        ImageData data = ImageHDU.encapsulate(getUncompressedData());
+        ImageHDU imageHDU = new ImageHDU(ImageHDU.manufactureHeader(data), data);
+        return imageHDU;
     }
 }
