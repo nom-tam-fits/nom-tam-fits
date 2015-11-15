@@ -60,21 +60,21 @@ public enum Compression implements IFitsHeader {
      * integer that gives the value of the BITPIX keyword in the uncompressed
      * FITS image. 1
      */
-    ZBITPIX(HDU.ANY, VALUE.INTEGER, ""),
+    ZBITPIX(HDU.ANY, VALUE.INTEGER, "", Standard.BITPIX),
 
     /**
      * (required keyword) The value field of this keyword shall contain an
      * integer that gives the value of the NAXIS keyword in the uncompressed
      * FITS image.
      */
-    ZNAXIS(HDU.ANY, VALUE.INTEGER, ""),
+    ZNAXIS(HDU.ANY, VALUE.INTEGER, "", Standard.NAXIS),
 
     /**
      * (required keywords) The value field of these keywords shall contain a
      * positive integer that gives the value of the NAXISn keywords in the
      * uncompressed FITS image.
      */
-    ZNAXISn(HDU.ANY, VALUE.INTEGER, ""),
+    ZNAXISn(HDU.ANY, VALUE.INTEGER, "", Standard.NAXISn),
     /**
      * (optional keywords) The value of these indexed keywords (where n ranges
      * from 1 to ZNAXIS ) shall contain a positive integer representing the
@@ -132,7 +132,7 @@ public enum Compression implements IFitsHeader {
      * the original uncompressed image was contained in the primary array of the
      * FITS file.
      */
-    ZSIMPLE(HDU.PRIMARY, VALUE.LOGICAL, ""),
+    ZSIMPLE(HDU.PRIMARY, VALUE.LOGICAL, "", Standard.SIMPLE),
 
     /**
      *
@@ -144,7 +144,7 @@ public enum Compression implements IFitsHeader {
      * the original uncompressed image was contained in in IMAGE extension.
      */
 
-    ZTENSION(HDU.ANY, VALUE.STRING, ""),
+    ZTENSION(HDU.ANY, VALUE.STRING, "", Standard.XTENSION),
 
     /**
      *
@@ -156,7 +156,7 @@ public enum Compression implements IFitsHeader {
      * the original uncompressed image was contained in the primary array of the
      * FITS file.
      */
-    ZEXTEND(HDU.PRIMARY, VALUE.LOGICAL, ""),
+    ZEXTEND(HDU.PRIMARY, VALUE.LOGICAL, "", Standard.EXTEND),
 
     /**
      *
@@ -169,7 +169,7 @@ public enum Compression implements IFitsHeader {
      * FITS file,
      */
     @Deprecated
-    ZBLOCKED(HDU.PRIMARY, VALUE.LOGICAL, ""),
+    ZBLOCKED(HDU.PRIMARY, VALUE.LOGICAL, "", Standard.BLOCKED),
 
     /**
      *
@@ -180,7 +180,7 @@ public enum Compression implements IFitsHeader {
      * uncompressed.preserves the original PCOUNT keyword.may only be used if
      * the original uncompressed image was contained in in IMAGE extension.
      */
-    ZPCOUNT(HDU.EXTENSION, VALUE.INTEGER, ""),
+    ZPCOUNT(HDU.EXTENSION, VALUE.INTEGER, "", Standard.PCOUNT),
 
     /**
      *
@@ -191,7 +191,7 @@ public enum Compression implements IFitsHeader {
      * uncompressed.preserves the original GCOUNT keyword.may only be used if
      * the original uncompressed image was contained in in IMAGE extension.
      */
-    ZGCOUNT(HDU.EXTENSION, VALUE.INTEGER, ""),
+    ZGCOUNT(HDU.EXTENSION, VALUE.INTEGER, "", Standard.GCOUNT),
 
     /**
      *
@@ -201,7 +201,7 @@ public enum Compression implements IFitsHeader {
      * identical copy o f the original FITS file when the image is
      * uncompressed.preserves the original CHECKSUM keyword.
      */
-    ZHECKSUM(HDU.ANY, VALUE.STRING, ""),
+    ZHECKSUM(HDU.ANY, VALUE.STRING, "", Checksum.CHECKSUM),
 
     /**
      *
@@ -211,13 +211,12 @@ public enum Compression implements IFitsHeader {
      * identical copy o f the original FITS file when the image is
      * uncompressed.preserves the original DATASUM
      */
-    ZDATASUM(HDU.ANY, VALUE.STRING, ""),
+    ZDATASUM(HDU.ANY, VALUE.STRING, "", Checksum.DATASUM),
 
     /**
      * (optional keyword) This keyword records the name of the algorithm that
      * was used to quantize floating-point image pixels into integer values
-     * which are then passed to the compression algorithm, as discussed further
-     * in section 4 of this document.
+     * which are then passed to the compression algorithm.
      */
     ZQUANTIZ(HDU.ANY, VALUE.STRING, ""),
 
@@ -225,8 +224,7 @@ public enum Compression implements IFitsHeader {
      * (optional keyword) The value field of this keyword shall contain an
      * integer that gives the seed value for the random dithering pattern that
      * was used when quantizing the floating-point pixel values. The value may
-     * range from 1 to 100 00, inclusive. See section 4 for further discussion
-     * of this keyword.
+     * range from 1 to 100.00, inclusive.
      */
     ZDITHER0(HDU.ANY, VALUE.INTEGER, ""),
 
@@ -429,26 +427,37 @@ public enum Compression implements IFitsHeader {
 
     /**
      * At high compressions factors the decompressed image begins to appear
-     * blocky because of the way information is discarded. This blockiness ness
-     * is greatly reduced, producing more pleasing images, if the image is
-     * smoothed slightly during decompression. When done properly, the smoothing
-     * will not affect any quantitative photometric or astromet- ric
-     * measurements derived from the compressed image. Of course, the smoothing
-     * should never be applied when the image has been losslessly compressed
-     * with a scale factor (defined above) of 0 or 1.
+     * blocky because of the way information is discarded. This blockiness is
+     * greatly reduced, producing more pleasing images, if the image is smoothed
+     * slightly during decompression. When done properly, the smoothing will not
+     * affect any quantitative photometric or astrometric measurements derived
+     * from the compressed image. Of course, the smoothing should never be
+     * applied when the image has been losslessly compressed with a scale factor
+     * (defined above) of 0 or 1.
      */
     public static final String SMOOTH = "SMOOTH";
 
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
+    private final IFitsHeader uncompressedKey;
+
     private Compression(HDU hdu, VALUE valueType, String comment) {
+        this(hdu, valueType, comment, null);
+    }
+
+    private Compression(HDU hdu, VALUE valueType, String comment, IFitsHeader uncompressedKey) {
         this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.HEASARC, hdu, valueType, comment);
+        this.uncompressedKey = uncompressedKey;
     }
 
     @Override
     public String comment() {
         return this.key.comment();
+    }
+
+    public IFitsHeader getUncompressedKey() {
+        return this.uncompressedKey;
     }
 
     @Override
@@ -476,4 +485,5 @@ public enum Compression implements IFitsHeader {
     public VALUE valueType() {
         return this.key.valueType();
     }
+
 }

@@ -86,38 +86,38 @@ public class CompressedImageData extends BinaryTable {
         }
 
         protected enum TileCompressionType {
-            UNCOMPRESSED,
             COMPRESSED,
-            GZIP_COMPRESSED
+            GZIP_COMPRESSED,
+            UNCOMPRESSED
         }
-
-        private final TileArray array;
-
-        private int tileIndex;
-
-        private TileCompressionType compressionType;
-
-        private ByteBuffer compressedData;
-
-        private Buffer decompressedData;
-
-        private double zero = Double.NaN;
-
-        private double scale = Double.NaN;
-
-        private Integer blank = null;
-
-        private int width;
-
-        private int heigth;
-
-        private int dataOffset;
 
         private Action action;
 
+        private final TileArray array;
+
+        private Integer blank = null;
+
+        private ByteBuffer compressedData;
+
         private int compressedOffset;
 
+        private TileCompressionType compressionType;
+
+        private int dataOffset;
+
+        private Buffer decompressedData;
+
         private Future<?> future;
+
+        private int heigth;
+
+        private double scale = Double.NaN;
+
+        private int tileIndex;
+
+        private int width;
+
+        private double zero = Double.NaN;
 
         public Tile(TileArray array) {
             this.array = array;
@@ -275,13 +275,28 @@ public class CompressedImageData extends BinaryTable {
 
     protected class TileArray {
 
-        private Tile[] tiles;
+        private int[] axes;
+
+        /**
+         * an enum that interprets the value of the BITPIX keyword in the
+         * uncompressed FITS image
+         */
+        private PrimitiveTypeEnum baseType;
+
+        /**
+         * ZCMPTYPE name of the algorithm that was used to compress
+         */
+        private String compressAlgorithm;
+
+        private ICompressOption.Parameter[] compressionParameter;
+
+        private ICompressOption[] compressOptions;
+
+        private ITileCompressorControl compressorControl;
 
         private Buffer decompressedWholeErea;
 
-        private int[] axes;
-
-        private int[] tileAxes;
+        private ITileCompressorControl gzipCompressorControl;
 
         private int naxis;
 
@@ -290,24 +305,9 @@ public class CompressedImageData extends BinaryTable {
          */
         private String quantAlgorithm;
 
-        /**
-         * ZCMPTYPE name of the algorithm that was used to compress
-         */
-        private String compressAlgorithm;
+        private int[] tileAxes;
 
-        /**
-         * an enum that interprets the value of the BITPIX keyword in the
-         * uncompressed FITS image
-         */
-        private PrimitiveTypeEnum baseType;
-
-        private ICompressOption[] compressOptions;
-
-        private ITileCompressorControl compressorControl;
-
-        private ICompressOption.Parameter[] compressionParameter;
-
-        private ITileCompressorControl gzipCompressorControl;
+        private Tile[] tiles;
 
         private Integer zblank;
 
@@ -387,6 +387,7 @@ public class CompressedImageData extends BinaryTable {
                 option.setCompressionParameter(this.compressionParameter);
             }
             executeAllTiles();
+            this.decompressedWholeErea.rewind();
             return this.decompressedWholeErea;
         }
 
@@ -524,7 +525,7 @@ public class CompressedImageData extends BinaryTable {
         return null;
     }
 
-    public Object getUncompressedData(Header hdr) throws FitsException {
+    public Buffer getUncompressedData(Header hdr) throws FitsException {
         try {
             this.tileArray = new TileArray().read(hdr);
             return this.tileArray.decompress(null, hdr);

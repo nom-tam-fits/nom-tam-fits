@@ -203,4 +203,11 @@ public class EnumHeaderTest {
         assertSame(Standard.SIMPLE, result[1]);
         assertTrue(result[2] instanceof FitsHeaderImpl);
     }
+
+    @Test
+    public void testLookup() {
+        assertSame(Standard.BITPIX, GenericKey.lookup(Standard.BITPIX.key()));
+        assertSame(Standard.NAXISn, GenericKey.lookup(Standard.NAXISn.n(99).key()));
+
+    }
 }

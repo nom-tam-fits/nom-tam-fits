@@ -40,14 +40,16 @@ import static nom.tam.fits.header.Standard.PCOUNT;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.nio.Buffer;
 
 import nom.tam.fits.header.Standard;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.FitsIO;
+import nom.tam.util.PrimitiveTypeEnum;
 import nom.tam.util.RandomAccess;
+import nom.tam.util.array.MultyArrayIterator;
 
 /**
  * This class instantiates FITS primary HDU and IMAGE extension data.
@@ -68,9 +70,9 @@ public class ImageData extends Data {
      */
     protected static class ArrayDesc {
 
-        private int[] dims;
+        private final int[] dims;
 
-        private Class<?> type;
+        private final Class<?> type;
 
         ArrayDesc(int[] dims, Class<?> type) {
             this.dims = dims;
@@ -123,7 +125,7 @@ public class ImageData extends Data {
      * Create an array from a header description. This is typically how data
      * will be created when reading FITS data from a file where the header is
      * read first. This creates an empty array.
-     * 
+     *
      * @param h
      *            header to be used as a template.
      * @throws FitsException
@@ -137,7 +139,7 @@ public class ImageData extends Data {
     /**
      * Create an ImageData object using the specified object to initialize the
      * data array.
-     * 
+     *
      * @param x
      *            The initial data array. This should be a primitive array but
      *            this is not checked currently.
@@ -149,7 +151,7 @@ public class ImageData extends Data {
 
     /**
      * Fill header with keywords that describe image data.
-     * 
+     *
      * @param head
      *            The FITS header
      * @throws FitsException
@@ -248,48 +250,22 @@ public class ImageData extends Data {
     }
 
     protected ArrayDesc parseHeader(Header h) throws FitsException {
-
-        int bitpix;
-        int ndim;
-        int[] dims;
-
-        int i;
-
-        Class<?> baseClass;
-
         int gCount = h.getIntValue(GCOUNT, 1);
         int pCount = h.getIntValue(PCOUNT, 0);
         if (gCount > 1 || pCount != 0) {
             throw new FitsException("Group data treated as images");
         }
-
-        bitpix = h.getIntValue(BITPIX, 0);
-
-        if (bitpix == BasicHDU.BITPIX_BYTE) {
-            baseClass = Byte.TYPE;
-        } else if (bitpix == BasicHDU.BITPIX_SHORT) {
-            baseClass = Short.TYPE;
-        } else if (bitpix == BasicHDU.BITPIX_INT) {
-            baseClass = Integer.TYPE;
-        } else if (bitpix == BasicHDU.BITPIX_LONG) {
-            baseClass = Long.TYPE;
-        } else if (bitpix == BasicHDU.BITPIX_FLOAT) {
-            baseClass = Float.TYPE;
-        } else if (bitpix == BasicHDU.BITPIX_DOUBLE) {
-            baseClass = Double.TYPE;
-        } else {
-            throw new FitsException("Invalid BITPIX:" + bitpix);
-        }
-
-        ndim = h.getIntValue(NAXIS, 0);
-        dims = new int[ndim];
-
+        int bitPix = h.getIntValue(BITPIX, 0);
+        PrimitiveTypeEnum primitivType = PrimitiveTypeEnum.valueOf(bitPix);
+        Class<?> baseClass = primitivType.primitiveClass();
+        int ndim = h.getIntValue(NAXIS, 0);
+        int[] dims = new int[ndim];
         // Note that we have to invert the order of the axes
         // for the FITS file to get the order in the array we
         // are generating.
 
         this.byteSize = 1;
-        for (i = 0; i < ndim; i += 1) {
+        for (int i = 0; i < ndim; i += 1) {
             int cdim = h.getIntValue(NAXISn.n(i + 1), 0);
             if (cdim < 0) {
                 throw new FitsException("Invalid array dimension:" + cdim);
@@ -297,7 +273,7 @@ public class ImageData extends Data {
             this.byteSize *= cdim;
             dims[ndim - i - 1] = cdim;
         }
-        this.byteSize *= Math.abs(bitpix) / FitsIO.BITS_OF_1_BYTE;
+        this.byteSize *= primitivType.size();
         if (ndim == 0) {
             this.byteSize = 0;
         }
@@ -340,6 +316,17 @@ public class ImageData extends Data {
             throw new PaddingException("Error skipping padding after image", this);
         } catch (IOException e) {
             throw new FitsException("Error skipping padding after image");
+        }
+    }
+
+    public void setBuffer(Buffer data) {
+        PrimitiveTypeEnum primType = PrimitiveTypeEnum.valueOf(this.dataDescription.type);
+        this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
+        MultyArrayIterator iterator = new MultyArrayIterator(this.dataArray);
+        Object array = iterator.next();
+        while (array != null) {
+            primType.getArray(data, array);
+            array = iterator.next();
         }
     }
 

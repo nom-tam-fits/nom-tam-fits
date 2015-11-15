@@ -31,19 +31,174 @@ package nom.tam.image.comp;
  * #L%
  */
 
+import static nom.tam.fits.header.Checksum.CHECKSUM;
+import static nom.tam.fits.header.Checksum.DATASUM;
+import static nom.tam.fits.header.Compression.ZBITPIX;
+import static nom.tam.fits.header.Compression.ZBLANK;
+import static nom.tam.fits.header.Compression.ZBLOCKED;
+import static nom.tam.fits.header.Compression.ZCMPTYPE;
+import static nom.tam.fits.header.Compression.ZDATASUM;
+import static nom.tam.fits.header.Compression.ZDITHER0;
+import static nom.tam.fits.header.Compression.ZEXTEND;
+import static nom.tam.fits.header.Compression.ZGCOUNT;
+import static nom.tam.fits.header.Compression.ZHECKSUM;
 import static nom.tam.fits.header.Compression.ZIMAGE;
+import static nom.tam.fits.header.Compression.ZNAMEn;
+import static nom.tam.fits.header.Compression.ZNAXIS;
+import static nom.tam.fits.header.Compression.ZNAXISn;
+import static nom.tam.fits.header.Compression.ZPCOUNT;
+import static nom.tam.fits.header.Compression.ZQUANTIZ;
+import static nom.tam.fits.header.Compression.ZSIMPLE;
+import static nom.tam.fits.header.Compression.ZTENSION;
+import static nom.tam.fits.header.Compression.ZTILEn;
+import static nom.tam.fits.header.Compression.ZVALn;
+import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.EXTNAME;
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.PCOUNT;
+import static nom.tam.fits.header.Standard.TFIELDS;
+import static nom.tam.fits.header.Standard.TFORMn;
+import static nom.tam.fits.header.Standard.TTYPEn;
+import static nom.tam.fits.header.Standard.XTENSION;
+
+import java.nio.Buffer;
+import java.util.HashMap;
+import java.util.Map;
+
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Data;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.header.Compression;
+import nom.tam.fits.header.GenericKey;
+import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.IFitsHeader.VALUE;
+import nom.tam.util.Cursor;
 
 public class CompressedImageHDU extends BinaryTableHDU {
 
+    private enum UncompressHeaderCardMapping {
+        MAP_ANY(null) {
+
+            @Override
+            protected void specializedCopy(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+                // unhandled card so just copy it to the uncompressed header
+                headerIterator.add(card.copy());
+            }
+        },
+        MAP_BITPIX(BITPIX),
+        MAP_CHECKSUM(CHECKSUM),
+        MAP_DATASUM(DATASUM),
+        MAP_EXTNAME(EXTNAME) {
+
+            @Override
+            protected void specializedCopy(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+                if (!card.getValue().equals("COMPRESSED_IMAGE")) {
+                    super.specializedCopy(card, headerIterator);
+                }
+            }
+        },
+        MAP_GCOUNT(GCOUNT),
+        MAP_NAXIS(NAXIS),
+        MAP_NAXISn(NAXISn),
+        MAP_PCOUNT(PCOUNT),
+        MAP_TFIELDS(TFIELDS),
+        MAP_TFORMn(TFORMn),
+        MAP_TTYPEn(TTYPEn),
+        MAP_XTENSION(XTENSION),
+        MAP_ZBITPIX(ZBITPIX),
+        MAP_ZBLANK(ZBLANK),
+        MAP_ZBLOCKED(ZBLOCKED),
+        MAP_ZCMPTYPE(ZCMPTYPE),
+        MAP_ZDATASUM(ZDATASUM),
+        MAP_ZDITHER0(ZDITHER0),
+        MAP_ZEXTEND(ZEXTEND),
+        MAP_ZGCOUNT(ZGCOUNT),
+        MAP_ZHECKSUM(ZHECKSUM),
+        MAP_ZIMAGE(ZIMAGE),
+        MAP_ZNAMEn(ZNAMEn),
+        MAP_ZNAXIS(ZNAXIS),
+        MAP_ZNAXISn(ZNAXISn) {
+
+            @Override
+            protected void specializedCopy(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+                String newKey = this.uncompressedHeader.n(GenericKey.getN(card.getKey())).key();
+                headerIterator.add(new HeaderCard(newKey, card.getValue(Integer.class, 0), card.getComment()));
+            }
+        },
+        MAP_ZPCOUNT(ZPCOUNT),
+        MAP_ZQUANTIZ(ZQUANTIZ),
+        MAP_ZSIMPLE(ZSIMPLE),
+        MAP_ZTENSION(ZTENSION),
+        MAP_ZTILEn(ZTILEn),
+        MAP_ZVALn(ZVALn);
+
+        private static void copy(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+            UncompressHeaderCardMapping mapping = selectMapping(card);
+            mapping.specializedCopy(card, headerIterator);
+        }
+
+        protected static UncompressHeaderCardMapping selectMapping(HeaderCard card) {
+            IFitsHeader key = GenericKey.lookup(card.getKey());
+            if (key != null) {
+                UncompressHeaderCardMapping mapping = UNCOMPRESSED_HEADER_MAPPING.get(key);
+                if (mapping != null) {
+                    return mapping;
+                }
+            }
+            return MAP_ANY;
+        }
+
+        private final IFitsHeader compressedHeader;
+
+        protected final IFitsHeader uncompressedHeader;
+
+        private UncompressHeaderCardMapping(IFitsHeader header) {
+            this.compressedHeader = header;
+            if (header instanceof Compression) {
+                this.uncompressedHeader = ((Compression) this.compressedHeader).getUncompressedKey();
+            } else {
+                this.uncompressedHeader = null;
+            }
+            UNCOMPRESSED_HEADER_MAPPING.put(header, this);
+        }
+
+        /**
+         * default behaviour is to ignore the card and by that to eclude it from
+         * the uncompressed header if it does not have a uncompressed
+         * equivalent..
+         *
+         * @param card
+         *            the card from the compressed header
+         * @param headerIterator
+         *            the iterator for the uncumpressed header.
+         * @throws HeaderCardException
+         *             if the card could not be copied
+         */
+        protected void specializedCopy(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+            if (this.uncompressedHeader != null) {
+                if (this.uncompressedHeader.valueType() == VALUE.INTEGER) {
+                    headerIterator.add(new HeaderCard(this.uncompressedHeader.key(), card.getValue(Integer.class, 0), card.getComment()));
+                } else if (this.uncompressedHeader.valueType() == VALUE.STRING) {
+                    headerIterator.add(new HeaderCard(this.uncompressedHeader.key(), card.getValue(), card.getComment()));
+                } else if (this.uncompressedHeader.valueType() == VALUE.LOGICAL) {
+                    headerIterator.add(new HeaderCard(this.uncompressedHeader.key(), card.getValue(Boolean.class, false), card.getComment()));
+                }
+            }
+        }
+    }
+
+    private static final Map<IFitsHeader, UncompressHeaderCardMapping> UNCOMPRESSED_HEADER_MAPPING = new HashMap<>();;
+
     /**
      * Check that this HDU has a valid header for this type.
-     * 
+     *
      * @param hdr
      *            header to check
      * @return <CODE>true</CODE> if this HDU has a valid header.
@@ -82,14 +237,18 @@ public class CompressedImageHDU extends BinaryTableHDU {
         super(hdr, datum);
     }
 
-    /**
-     * Check that this HDU has a valid header.
-     * 
-     * @return <CODE>true</CODE> if this HDU has a valid header.
-     */
-    @Override
-    public boolean isHeader() {
-        return isHeader(this.myHeader);
+    public ImageHDU asImageHDU() throws FitsException {
+        Header header = new Header();
+        Cursor<String, HeaderCard> imageIterator = header.iterator();
+        Cursor<String, HeaderCard> iterator = getHeader().iterator();
+        while (iterator.hasNext()) {
+            HeaderCard card = iterator.next();
+            UncompressHeaderCardMapping.copy(card, imageIterator);
+        }
+        ImageData data = (ImageData) ImageHDU.manufactureData(header);
+        ImageHDU imageHDU = new ImageHDU(header, data);
+        data.setBuffer(getUncompressedData());
+        return imageHDU;
     }
 
     @Override
@@ -97,13 +256,17 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return (CompressedImageData) super.getData();
     }
 
-    public Object getUncompressedData() throws FitsException {
+    public Buffer getUncompressedData() throws FitsException {
         return getData().getUncompressedData(getHeader());
     }
 
-    public ImageHDU asImageHDU() throws FitsException {
-        ImageData data = ImageHDU.encapsulate(getUncompressedData());
-        ImageHDU imageHDU = new ImageHDU(ImageHDU.manufactureHeader(data), data);
-        return imageHDU;
+    /**
+     * Check that this HDU has a valid header.
+     *
+     * @return <CODE>true</CODE> if this HDU has a valid header.
+     */
+    @Override
+    public boolean isHeader() {
+        return isHeader(this.myHeader);
     }
 }

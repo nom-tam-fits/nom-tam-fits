@@ -41,10 +41,12 @@ import nom.tam.fits.header.IFitsHeader.VALUE;
 
 /**
  * generic key interface, create an IFitsHeader from a key.
- * 
+ *
  * @author ritchie
  */
 public final class GenericKey {
+
+    private static final int NUMBER_BASE = 10;
 
     /**
      * cache of all standard keys, for reusing the standards.
@@ -57,6 +59,9 @@ public final class GenericKey {
             headers.put(key.key(), key);
         }
         for (IFitsHeader key : Checksum.values()) {
+            headers.put(key.key(), key);
+        }
+        for (IFitsHeader key : Compression.values()) {
             headers.put(key.key(), key);
         }
         for (IFitsHeader key : DataDescription.values()) {
@@ -75,14 +80,8 @@ public final class GenericKey {
     }
 
     /**
-     * utility class do not instanciate it.
-     */
-    private GenericKey() {
-    }
-
-    /**
      * create a fits header key from a free string
-     * 
+     *
      * @param key
      *            the string to create the key for
      * @return the IFitsHeader implementation for the key.
@@ -97,7 +96,7 @@ public final class GenericKey {
 
     /**
      * create a array of generic fits header keys from a array of string keys.
-     * 
+     *
      * @param keys
      *            the array of string keys
      * @return the array of IFitsHeaderKeys.
@@ -108,5 +107,46 @@ public final class GenericKey {
             result[index] = create(keys[index]);
         }
         return result;
+    }
+
+    public static int getN(String card) {
+        int index = card.length() - 1;
+        int n = 0;
+        while (index >= 0 && Character.isDigit(card.charAt(index))) {
+            n = n * NUMBER_BASE + card.charAt(index) - '0';
+            index--;
+        }
+        return n;
+    }
+
+    /**
+     * lookup a string key in the standard key sets.
+     *
+     * @param key
+     *            the fits key to search.
+     * @return the found fits key or null
+     */
+    public static IFitsHeader lookup(String key) {
+        if (Character.isDigit(key.charAt(key.length() - 1))) {
+            StringBuilder builder = new StringBuilder();
+            for (int index = 0; index < key.length(); index++) {
+                char character = key.charAt(index);
+                if (Character.isDigit(character)) {
+                    if (builder.charAt(builder.length() - 1) != 'n') {
+                        builder.append('n');
+                    }
+                } else {
+                    builder.append(character);
+                }
+            }
+            return STANDARD_KEYS.get(builder.toString());
+        }
+        return STANDARD_KEYS.get(key);
+    }
+
+    /**
+     * utility class do not instanciate it.
+     */
+    private GenericKey() {
     }
 }

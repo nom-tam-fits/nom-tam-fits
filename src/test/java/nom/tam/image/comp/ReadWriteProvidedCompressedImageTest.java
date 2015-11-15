@@ -174,7 +174,7 @@ public class ReadWriteProvidedCompressedImageTest {
         frame.setVisible(true);
     }
 
-    Object readAll(String fileName, int index) throws Exception {
+    private Object readAll(String fileName, int index) throws Exception {
         try (Fits f = new Fits(fileName)) {
             BasicHDU<?> hdu = f.getHDU(index);
             if (hdu instanceof CompressedImageHDU) {
@@ -184,6 +184,17 @@ public class ReadWriteProvidedCompressedImageTest {
             if (hdu instanceof ImageHDU) {
                 ImageHDU bhdu = (ImageHDU) hdu;
                 return bhdu.getData().getData();
+            }
+        }
+        return null;
+    }
+
+    private ImageHDU readCompressedHdu(String fileName, int index) throws Exception {
+        try (Fits f = new Fits(fileName)) {
+            BasicHDU<?> hdu = f.getHDU(index);
+            if (hdu instanceof CompressedImageHDU) {
+                CompressedImageHDU bhdu = (CompressedImageHDU) hdu;
+                return bhdu.asImageHDU();
             }
         }
         return null;
@@ -242,6 +253,17 @@ public class ReadWriteProvidedCompressedImageTest {
         if (this.showImage) {
             dispayImage(data);
         }
+    }
+
+    @Test
+    public void readRiceAsImageHDU() throws Exception {
+        ImageHDU image = readCompressedHdu("src/test/resources/nom/tam/image/provided/m13_rice.fits", 1);
+
+        short[][] data = (short[][]) image.getData().getData();
+        if (this.showImage) {
+            dispayImage(data);
+        }
+        "".toCharArray();
     }
 
     private String resolveLocalOrRemoteFileName(String fileName) {

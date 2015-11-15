@@ -60,60 +60,50 @@ public class HeaderCard implements CursorValue<String> {
 
     private static final String CONTINUE_CARD_PREFIX = CONTINUE.key() + "  '";
 
-    private static final int STRING_SPLIT_POSITION_FOR_EXTRA_COMMENT_SPACE = 35;
+    public static final int FITS_HEADER_CARD_SIZE = 80;
 
     private static final int HIERARCH_ALIGN_POSITION = 39;
 
-    private static final int NORMAL_ALIGN_POSITION = 30;
-
-    private static final int MAX_DOUBLE_STRING_LENGTH = 20;
-
     private static final int HIERARCH_SMALL_STRING_ALIGN_POSITION = 29;
-
-    private static final int NORMAL_SMALL_STRING_ALIGN_POSITION = 19;
-
-    private static final String HIERARCH_WITH_DOT = "HIERARCH.";
 
     private static final String HIERARCH_WITH_BLANK = "HIERARCH ";
 
-    private static final int HIERARCH_LENGTH_PLUS_1 = HIERARCH_WITH_BLANK.length();
+    private static final int HIERARCH_WITH_BLANK_LENGTH = HIERARCH_WITH_BLANK.length();
 
-    public static final int FITS_HEADER_CARD_SIZE = 80;
-
-    private static final BigDecimal LONG_MAX_VALUE_AS_BIG_DECIMAL = BigDecimal.valueOf(Long.MAX_VALUE);
+    private static final String HIERARCH_WITH_DOT = "HIERARCH.";
 
     /**
      * regexp for IEEE floats
      */
     private static final Pattern IEEE_REGEX = Pattern.compile("[+-]?(?=\\d*[.eE])(?=\\.?\\d)\\d*\\.?\\d*(?:[eE][+-]?\\d+)?");
 
+    private static final BigDecimal LONG_MAX_VALUE_AS_BIG_DECIMAL = BigDecimal.valueOf(Long.MAX_VALUE);
+
     /**
      * regexp for numbers.
      */
     private static final Pattern LONG_REGEX = Pattern.compile("[+-]?[0-9][0-9]*");
+
+    private static final int MAX_DOUBLE_STRING_LENGTH = 20;
 
     /**
      * max number of characters an integer can have.
      */
     private static final int MAX_INTEGER_STRING_SIZE = Integer.toString(Integer.MAX_VALUE).length() - 1;
 
-    /**
-     * max number of characters a long can have.
-     */
-    private static final int MAX_LONG_STRING_SIZE = Long.toString(Long.MAX_VALUE).length() - 1;
-
     /** Maximum length of a FITS keyword field */
     public static final int MAX_KEYWORD_LENGTH = 8;
 
     /**
-     * Maximum length of a FITS value field.
+     * the start and end quotes of the string and the ampasant to continue the
+     * string.
      */
-    public static final int MAX_VALUE_LENGTH = 70;
+    public static final int MAX_LONG_STRING_CONTINUE_OVERHEAD = 3;
 
     /**
-     * Maximum length of a FITS string value field.
+     * max number of characters a long can have.
      */
-    public static final int MAX_STRING_VALUE_LENGTH = HeaderCard.MAX_VALUE_LENGTH - 2;
+    private static final int MAX_LONG_STRING_SIZE = Long.toString(Long.MAX_VALUE).length() - 1;
 
     /**
      * Maximum length of a FITS long string value field. the &amp; for the
@@ -128,10 +118,20 @@ public class HeaderCard implements CursorValue<String> {
     public static final int MAX_LONG_STRING_VALUE_WITH_COMMENT_LENGTH = HeaderCard.MAX_LONG_STRING_VALUE_LENGTH - 2;
 
     /**
-     * the start and end quotes of the string and the ampasant to continue the
-     * string.
+     * Maximum length of a FITS string value field.
      */
-    public static final int MAX_LONG_STRING_CONTINUE_OVERHEAD = 3;
+    public static final int MAX_STRING_VALUE_LENGTH = HeaderCard.MAX_VALUE_LENGTH - 2;
+
+    /**
+     * Maximum length of a FITS value field.
+     */
+    public static final int MAX_VALUE_LENGTH = 70;
+
+    private static final int NORMAL_ALIGN_POSITION = 30;
+
+    private static final int NORMAL_SMALL_STRING_ALIGN_POSITION = 19;
+
+    private static final int STRING_SPLIT_POSITION_FOR_EXTRA_COMMENT_SPACE = 35;
 
     /**
      * @return a created HeaderCard from a FITS card string.
@@ -186,19 +186,19 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * The keyword part of the card (set to null if there's no keyword)
-     */
-    private String key;
-
-    /**
-     * The value part of the card (set to null if there's no value)
-     */
-    private String value;
-
-    /**
      * The comment part of the card (set to null if there's no comment)
      */
     private String comment;
+
+    /**
+     * A flag indicating whether or not this is a string value
+     */
+    private boolean isString;
+
+    /**
+     * The keyword part of the card (set to null if there's no keyword)
+     */
+    private String key;
 
     /**
      * Does this card represent a nullable field. ?
@@ -206,9 +206,9 @@ public class HeaderCard implements CursorValue<String> {
     private boolean nullable;
 
     /**
-     * A flag indicating whether or not this is a string value
+     * The value part of the card (set to null if there's no value)
      */
-    private boolean isString;
+    private String value;
 
     public HeaderCard(ArrayDataInput dis) throws TruncatedFileException, IOException {
         this(new HeaderCardCountingArrayDataInput(dis));
@@ -222,7 +222,7 @@ public class HeaderCard implements CursorValue<String> {
 
         String card = readOneHeaderLine(dis);
 
-        if (FitsFactory.getUseHierarch() && card.length() > HIERARCH_LENGTH_PLUS_1 && card.substring(0, HIERARCH_LENGTH_PLUS_1).equals(HIERARCH_WITH_BLANK)) {
+        if (FitsFactory.getUseHierarch() && card.length() > HIERARCH_WITH_BLANK_LENGTH && card.substring(0, HIERARCH_WITH_BLANK_LENGTH).equals(HIERARCH_WITH_BLANK)) {
             hierarchCard(card, dis);
             return;
         }
@@ -232,7 +232,7 @@ public class HeaderCard implements CursorValue<String> {
         // a / terminates the string (except inside quotes)
 
         // treat short lines as special keywords
-        if (card.length() < HIERARCH_LENGTH_PLUS_1) {
+        if (card.length() < HIERARCH_WITH_BLANK_LENGTH) {
             this.key = card;
             return;
         }
@@ -257,7 +257,7 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * Create a HeaderCard from its component parts
-     * 
+     *
      * @param key
      *            keyword (null for a comment)
      * @param value
@@ -273,7 +273,7 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * Create a HeaderCard from its component parts
-     * 
+     *
      * @param key
      *            keyword (null for a comment)
      * @param value
@@ -289,7 +289,7 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * Create a HeaderCard from its component parts
-     * 
+     *
      * @param key
      *            keyword (null for a comment)
      * @param value
@@ -305,7 +305,7 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * Create a HeaderCard from its component parts
-     * 
+     *
      * @param key
      *            keyword (null for a comment)
      * @param value
@@ -321,7 +321,7 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * Create a HeaderCard from its component parts
-     * 
+     *
      * @param key
      *            keyword (null for a comment)
      * @param value
@@ -337,7 +337,7 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * Create a HeaderCard from its component parts
-     * 
+     *
      * @param key
      *            keyword (null for a comment)
      * @param value
@@ -353,7 +353,7 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * Create a HeaderCard from its component parts
-     * 
+     *
      * @param key
      *            keyword (null for a comment)
      * @param value
@@ -372,7 +372,7 @@ public class HeaderCard implements CursorValue<String> {
      * value. This may be either a comment style card in which case the nullable
      * field should be false, or a value field which has a null value, in which
      * case the nullable field should be true.
-     * 
+     *
      * @param key
      *            The key for the comment or nullable field.
      * @param comment
@@ -388,7 +388,7 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * Create a HeaderCard from its component parts
-     * 
+     *
      * @param key
      *            keyword (null for a comment)
      * @param value
@@ -404,7 +404,7 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * Create a HeaderCard from its component parts
-     * 
+     *
      * @param key
      *            Keyword (null for a COMMENT)
      * @param value
@@ -422,7 +422,7 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * Create a HeaderCard from its component parts
-     * 
+     *
      * @param key
      *            Keyword (null for a COMMENT)
      * @param value
@@ -439,7 +439,7 @@ public class HeaderCard implements CursorValue<String> {
         if (key == null && value != null) {
             throw new HeaderCardException("Null keyword with non-null value");
         } else if (key != null && key.length() > HeaderCard.MAX_KEYWORD_LENGTH && //
-                (!FitsFactory.getUseHierarch() || !key.substring(0, HIERARCH_LENGTH_PLUS_1).equals(HIERARCH_WITH_DOT))) {
+                (!FitsFactory.getUseHierarch() || !key.substring(0, HIERARCH_WITH_BLANK_LENGTH).equals(HIERARCH_WITH_DOT))) {
             throw new HeaderCardException("Keyword too long");
         }
         if (value != null) {
@@ -481,6 +481,12 @@ public class HeaderCard implements CursorValue<String> {
         return 1;
     }
 
+    public HeaderCard copy() throws HeaderCardException {
+        HeaderCard copy = new HeaderCard(this.key, null, this.comment, this.nullable, this.isString);
+        copy.value = this.value;
+        return copy;
+    }
+
     private void extractValueCommentFromString(HeaderCardCountingArrayDataInput dis, String card) throws IOException, TruncatedFileException {
         // extract the value/comment part of the string
         ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
@@ -507,6 +513,7 @@ public class HeaderCard implements CursorValue<String> {
     /**
      * @return the keyword from this card
      */
+    @Override
     public String getKey() {
         return this.key;
     }
@@ -567,7 +574,7 @@ public class HeaderCard implements CursorValue<String> {
      * Process HIERARCH style cards... HIERARCH LEV1 LEV2 ... = value / comment
      * The keyword for the card will be "HIERARCH.LEV1.LEV2..." A '/' is assumed
      * to start a comment.
-     * 
+     *
      * @param dis
      */
     private void hierarchCard(String card, HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
@@ -627,6 +634,14 @@ public class HeaderCard implements CursorValue<String> {
         this.isString = true;
     }
 
+    private int maxStringValueLength() {
+        int maxStringValueLength = HeaderCard.MAX_STRING_VALUE_LENGTH;
+        if (FitsFactory.getUseHierarch() && getKey().length() > MAX_KEYWORD_LENGTH) {
+            maxStringValueLength -= getKey().length() - MAX_KEYWORD_LENGTH;
+        }
+        return maxStringValueLength;
+    }
+
     private String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
         byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
         int len;
@@ -650,6 +665,16 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
+     * set the comment of a card.
+     *
+     * @param comment
+     *            the comment to set.
+     */
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    /**
      * Set the key.
      */
     void setKey(String newKey) {
@@ -658,17 +683,7 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * Set the value for this card.
-     * 
-     * @param update
-     *            the new value to set
-     */
-    public void setValue(String update) {
-        this.value = update;
-    }
-
-    /**
-     * Set the value for this card.
-     * 
+     *
      * @param update
      *            the new value to set
      */
@@ -678,27 +693,17 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * Set the value for this card.
-     * 
+     *
      * @param update
      *            the new value to set
      */
-    public void setValue(int update) {
-        this.value = String.valueOf(update);
+    public void setValue(double update) {
+        this.value = dblString(update);
     }
 
     /**
      * Set the value for this card.
-     * 
-     * @param update
-     *            the new value to set
-     */
-    public void setValue(long update) {
-        this.value = String.valueOf(update);
-    }
-
-    /**
-     * Set the value for this card.
-     * 
+     *
      * @param update
      *            the new value to set
      */
@@ -708,22 +713,32 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * Set the value for this card.
-     * 
+     *
      * @param update
      *            the new value to set
      */
-    public void setValue(double update) {
-        this.value = dblString(update);
+    public void setValue(int update) {
+        this.value = String.valueOf(update);
     }
 
     /**
-     * set the comment of a card.
-     * 
-     * @param comment
-     *            the comment to set.
+     * Set the value for this card.
+     *
+     * @param update
+     *            the new value to set
      */
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setValue(long update) {
+        this.value = String.valueOf(update);
+    }
+
+    /**
+     * Set the value for this card.
+     *
+     * @param update
+     *            the new value to set
+     */
+    public void setValue(String update) {
+        this.value = update;
     }
 
     /**
@@ -739,7 +754,7 @@ public class HeaderCard implements CursorValue<String> {
         FitsLineAppender buf = new FitsLineAppender();
         // start with the keyword, if there is one
         if (this.key != null) {
-            if (this.key.length() > HIERARCH_LENGTH_PLUS_1 && this.key.substring(0, HIERARCH_LENGTH_PLUS_1).equals(HIERARCH_WITH_DOT)) {
+            if (this.key.length() > HIERARCH_WITH_BLANK_LENGTH && this.key.substring(0, HIERARCH_WITH_BLANK_LENGTH).equals(HIERARCH_WITH_DOT)) {
                 buf.appendRepacing(this.key, '.', ' ');
                 alignSmallString = HIERARCH_SMALL_STRING_ALIGN_POSITION;
                 alignPosition = HIERARCH_ALIGN_POSITION;
@@ -804,14 +819,6 @@ public class HeaderCard implements CursorValue<String> {
         }
         buf.completeLine();
         return buf.toString();
-    }
-
-    private int maxStringValueLength() {
-        int maxStringValueLength = HeaderCard.MAX_STRING_VALUE_LENGTH;
-        if (FitsFactory.getUseHierarch() && getKey().length() > MAX_KEYWORD_LENGTH) {
-            maxStringValueLength -= getKey().length() - MAX_KEYWORD_LENGTH;
-        }
-        return maxStringValueLength;
     }
 
     /**
