@@ -356,4 +356,16 @@ public class ReadWriteProvidedCompressedImageTest {
             }
         }
     }
+
+    @Test
+    public void writeRice2() throws Exception {
+        CompressedImageHDU compressed = null;
+        try (Fits f = new Fits("src/test/resources/nom/tam/image/provided/m13.fits")) {
+            BasicHDU<?> hdu = f.getHDU(0);
+            if (hdu instanceof ImageHDU) {
+                compressed = CompressedImageHDU.fromImageHDU((ImageHDU) hdu);
+            }
+        }
+        compressed.toString();
+    }
 }

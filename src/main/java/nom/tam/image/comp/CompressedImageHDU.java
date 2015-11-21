@@ -87,7 +87,13 @@ public class CompressedImageHDU extends BinaryTableHDU {
         MAP_ANY(null) {
 
             @Override
-            protected void specializedCopy(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+            protected void copyCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+                // unhandled card so just copy it to the uncompressed header
+                headerIterator.add(card.copy());
+            }
+
+            @Override
+            protected void copyCardBack(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
                 // unhandled card so just copy it to the uncompressed header
                 headerIterator.add(card.copy());
             }
@@ -98,9 +104,9 @@ public class CompressedImageHDU extends BinaryTableHDU {
         MAP_EXTNAME(EXTNAME) {
 
             @Override
-            protected void specializedCopy(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+            protected void copyCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
                 if (!card.getValue().equals("COMPRESSED_IMAGE")) {
-                    super.specializedCopy(card, headerIterator);
+                    super.copyCard(card, headerIterator);
                 }
             }
         },
@@ -127,8 +133,14 @@ public class CompressedImageHDU extends BinaryTableHDU {
         MAP_ZNAXISn(ZNAXISn) {
 
             @Override
-            protected void specializedCopy(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-                String newKey = this.uncompressedHeader.n(GenericKey.getN(card.getKey())).key();
+            protected void copyCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+                String newKey = this.uncompressedHeaderKey.n(GenericKey.getN(card.getKey())).key();
+                headerIterator.add(new HeaderCard(newKey, card.getValue(Integer.class, 0), card.getComment()));
+            }
+
+            @Override
+            protected void copyCardBack(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+                String newKey = this.compressedHeaderKey.n(GenericKey.getN(card.getKey())).key();
                 headerIterator.add(new HeaderCard(newKey, card.getValue(Integer.class, 0), card.getComment()));
             }
         },
@@ -140,14 +152,19 @@ public class CompressedImageHDU extends BinaryTableHDU {
         MAP_ZVALn(ZVALn);
 
         private static void copy(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-            UncompressHeaderCardMapping mapping = selectMapping(card);
-            mapping.specializedCopy(card, headerIterator);
+            UncompressHeaderCardMapping mapping = selectMapping(UNCOMPRESSED_HEADER_MAPPING, card);
+            mapping.copyCard(card, headerIterator);
         }
 
-        protected static UncompressHeaderCardMapping selectMapping(HeaderCard card) {
+        private static void copyBack(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+            UncompressHeaderCardMapping mapping = selectMapping(COMPRESSED_HEADER_MAPPING, card);
+            mapping.copyCardBack(card, headerIterator);
+        }
+
+        protected static UncompressHeaderCardMapping selectMapping(Map<IFitsHeader, UncompressHeaderCardMapping> mappings, HeaderCard card) {
             IFitsHeader key = GenericKey.lookup(card.getKey());
             if (key != null) {
-                UncompressHeaderCardMapping mapping = UNCOMPRESSED_HEADER_MAPPING.get(key);
+                UncompressHeaderCardMapping mapping = mappings.get(key);
                 if (mapping != null) {
                     return mapping;
                 }
@@ -155,18 +172,22 @@ public class CompressedImageHDU extends BinaryTableHDU {
             return MAP_ANY;
         }
 
-        private final IFitsHeader compressedHeader;
+        protected final IFitsHeader compressedHeaderKey;
 
-        protected final IFitsHeader uncompressedHeader;
+        protected final IFitsHeader uncompressedHeaderKey;
 
         private UncompressHeaderCardMapping(IFitsHeader header) {
-            this.compressedHeader = header;
+            this.compressedHeaderKey = header;
             if (header instanceof Compression) {
-                this.uncompressedHeader = ((Compression) this.compressedHeader).getUncompressedKey();
+                this.uncompressedHeaderKey = ((Compression) this.compressedHeaderKey).getUncompressedKey();
+
             } else {
-                this.uncompressedHeader = null;
+                this.uncompressedHeaderKey = null;
             }
             UNCOMPRESSED_HEADER_MAPPING.put(header, this);
+            if (this.uncompressedHeaderKey != null) {
+                COMPRESSED_HEADER_MAPPING.put(this.uncompressedHeaderKey, this);
+            }
         }
 
         /**
@@ -181,20 +202,45 @@ public class CompressedImageHDU extends BinaryTableHDU {
          * @throws HeaderCardException
          *             if the card could not be copied
          */
-        protected void specializedCopy(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-            if (this.uncompressedHeader != null) {
-                if (this.uncompressedHeader.valueType() == VALUE.INTEGER) {
-                    headerIterator.add(new HeaderCard(this.uncompressedHeader.key(), card.getValue(Integer.class, 0), card.getComment()));
-                } else if (this.uncompressedHeader.valueType() == VALUE.STRING) {
-                    headerIterator.add(new HeaderCard(this.uncompressedHeader.key(), card.getValue(), card.getComment()));
-                } else if (this.uncompressedHeader.valueType() == VALUE.LOGICAL) {
-                    headerIterator.add(new HeaderCard(this.uncompressedHeader.key(), card.getValue(Boolean.class, false), card.getComment()));
+        protected void copyCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+            IFitsHeader uncompressedKey = this.uncompressedHeaderKey;
+            copyCard(card, headerIterator, uncompressedKey);
+        }
+
+        protected void copyCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator, IFitsHeader targetKey) throws HeaderCardException {
+            if (targetKey != null) {
+                if (targetKey.valueType() == VALUE.INTEGER) {
+                    headerIterator.add(new HeaderCard(targetKey.key(), card.getValue(Integer.class, 0), card.getComment()));
+                } else if (targetKey.valueType() == VALUE.STRING) {
+                    headerIterator.add(new HeaderCard(targetKey.key(), card.getValue(), card.getComment()));
+                } else if (targetKey.valueType() == VALUE.LOGICAL) {
+                    headerIterator.add(new HeaderCard(targetKey.key(), card.getValue(Boolean.class, false), card.getComment()));
                 }
             }
         }
+
+        protected void copyCardBack(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+            copyCard(card, headerIterator, this.compressedHeaderKey);
+        }
     }
 
-    private static final Map<IFitsHeader, UncompressHeaderCardMapping> UNCOMPRESSED_HEADER_MAPPING = new HashMap<>();;
+    private static final Map<IFitsHeader, UncompressHeaderCardMapping> COMPRESSED_HEADER_MAPPING = new HashMap<>();
+
+    private static final Map<IFitsHeader, UncompressHeaderCardMapping> UNCOMPRESSED_HEADER_MAPPING = new HashMap<>();
+
+    public static CompressedImageHDU fromImageHDU(ImageHDU imageHDU) throws FitsException {
+        CompressedImageData compressedData = new CompressedImageData();
+        Header header = new Header();
+        Cursor<String, HeaderCard> iterator = header.iterator();
+        Cursor<String, HeaderCard> imageIterator = imageHDU.getHeader().iterator();
+        while (imageIterator.hasNext()) {
+            HeaderCard card = imageIterator.next();
+            UncompressHeaderCardMapping.copyBack(card, iterator);
+        }
+        CompressedImageHDU compressedImageHDU = new CompressedImageHDU(header, compressedData);
+        compressedData.prepareUncompressedData(imageHDU.getData().getData(), header);
+        return compressedImageHDU;
+    }
 
     /**
      * Check that this HDU has a valid header for this type.

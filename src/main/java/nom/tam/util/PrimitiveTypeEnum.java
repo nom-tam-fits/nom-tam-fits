@@ -418,6 +418,11 @@ public enum PrimitiveTypeEnum {
         return wrap(newArray(length));
     }
 
+    public final Buffer newBuffer(long length) {
+        // TODO handle big arrays differently by using memory mapped files.
+        return wrap(newArray((int) length));
+    }
+
     public Class<?> primitiveClass() {
         return this.primitiveClass;
     }
