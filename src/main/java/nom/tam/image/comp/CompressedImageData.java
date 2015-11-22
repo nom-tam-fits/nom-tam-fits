@@ -65,10 +65,9 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardBuilder;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.CompressedImageData.Tile.Action;
-import nom.tam.image.comp.CompressedImageData.Tile.TileCompressionType;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.PrimitiveTypeEnum;
@@ -117,8 +116,6 @@ public class CompressedImageData extends BinaryTable {
 
         private int tileIndex;
 
-        private ICompressOption[] tileOptions;
-
         private int width;
 
         private double zero = Double.NaN;
@@ -152,12 +149,12 @@ public class CompressedImageData extends BinaryTable {
 
         private void compress() {
             this.compressedData.limit(this.width * this.heigth * this.array.baseType.size());
-            this.tileOptions = this.array.compressOptions.clone();
+            ICompressOption[] tileOptions = this.array.compressOptions.clone();
             this.compressionType = TileCompressionType.COMPRESSED;
             boolean compressSuccess;
-            compressSuccess = this.array.compressorControl.compress(this.decompressedData, this.compressedData, this.tileOptions);
+            compressSuccess = this.array.compressorControl.compress(this.decompressedData, this.compressedData, tileOptions);
             if (compressSuccess) {
-                for (ICompressOption tileOption : this.tileOptions) {
+                for (ICompressOption tileOption : tileOptions) {
                     this.zero = Double.isNaN(this.zero) ? tileOption.getBZero() : this.zero;
                     this.scale = Double.isNaN(this.scale) ? tileOption.getBScale() : this.scale;
                 }
@@ -184,16 +181,16 @@ public class CompressedImageData extends BinaryTable {
 
         private void decompress() {
             if (this.compressionType == TileCompressionType.COMPRESSED) {
-                this.tileOptions = this.array.compressOptions.clone();
-                for (int index = 0; index < this.tileOptions.length; index++) {
-                    this.tileOptions[index] = this.tileOptions[index].copy() //
+                ICompressOption[] tileOptions = this.array.compressOptions.clone();
+                for (int index = 0; index < tileOptions.length; index++) {
+                    tileOptions[index] = tileOptions[index].copy() //
                             .setBZero(this.zero) //
                             .setBScale(this.scale) //
                             .setBNull(this.blank)//
                             .setTileWidth(this.width) //
                             .setTileHeigth(this.heigth);
                 }
-                this.array.compressorControl.decompress(this.compressedData, this.decompressedData, this.tileOptions);
+                this.array.compressorControl.decompress(this.compressedData, this.decompressedData, tileOptions);
             } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
                 this.array.gzipCompressorControl.decompress(this.compressedData, this.decompressedData);
             } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {
@@ -317,9 +314,10 @@ public class CompressedImageData extends BinaryTable {
 
         private Integer zblank;
 
-        public void compress(Header header) throws FitsException {
+        public void compress(Header header) {
             executeAllTiles();
             writeHeader(header);
+            LOG.severe("Not yet completely implemented ");
         }
 
         private ICompressOption[] compressOptions() {
@@ -498,29 +496,16 @@ public class CompressedImageData extends BinaryTable {
             this.compressionParameter[this.compressionParameter.length - 1] = new ICompressOption.Parameter(Compression.ZQUANTIZ.name(), this.quantAlgorithm);
         }
 
-        private void writeHeader(Header header) throws FitsException {
-            HeaderCardBuilder cardBilder = header.card(ZBITPIX);
-            cardBilder.value(this.baseType.bitPix())//
-                    .card(ZCMPTYPE).value(this.compressAlgorithm);
-            if (this.zblank != null) {
-                cardBilder.card(ZBLANK).value(this.zblank);
-            }
-            if (this.quantAlgorithm != null) {
-                cardBilder.card(ZQUANTIZ).value(this.quantAlgorithm);
-            }
-            boolean compressedColumn = false;
-            boolean gzipColumn = false;
-            boolean uncompressedColumn = false;
-            boolean zeroColumn = false;
-            boolean scaleColumn = false;
-            boolean blankColumn = false;
-            for (Tile tile : tileArray().tiles) {
-                compressedColumn = compressedColumn || tile.compressionType == TileCompressionType.COMPRESSED;
-                gzipColumn = gzipColumn || tile.compressionType == TileCompressionType.GZIP_COMPRESSED;
-                uncompressedColumn = uncompressedColumn || tile.compressionType == TileCompressionType.UNCOMPRESSED;
-                blankColumn = blankColumn || tile.blank != null;
-                zeroColumn = zeroColumn || !Double.isNaN(tile.zero);
-                scaleColumn = scaleColumn || Double.isNaN(tile.scale);
+        private void writeHeader(Header header) {
+            try {
+                header.card(ZBITPIX).value(this.baseType.bitPix());
+                header.card(ZCMPTYPE).value(this.compressAlgorithm);
+                header.card(ZNAXIS).value(this.axes.length);
+                if (this.quantAlgorithm != null) {
+                    header.card(ZQUANTIZ).value(this.quantAlgorithm);
+                }
+            } catch (HeaderCardException e) {
+                throw new IllegalStateException("internal construction of fits header failed!", e);
             }
         }
     }
@@ -543,10 +528,6 @@ public class CompressedImageData extends BinaryTable {
 
     public CompressedImageData(Header hdr) throws FitsException {
         super(hdr);
-    }
-
-    public void compress(Header header) throws FitsException {
-        tileArray().compress(header);
     }
 
     public <T extends ICompressOption> T getCompressOption(Class<T> clazz) {
@@ -599,7 +580,7 @@ public class CompressedImageData extends BinaryTable {
         return this;
     }
 
-    public CompressedImageData setUncompressedData(Buffer buffer, Header header) throws FitsException {
+    public CompressedImageData setUncompressedData(Buffer buffer, Header header) {
         try {
             tileArray()//
                     .prepareUncompressedData(buffer)//
