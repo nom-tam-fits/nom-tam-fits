@@ -297,6 +297,11 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return imageHDU;
     }
 
+    public void compress() throws FitsException {
+        getData().compress(getHeader());
+
+    }
+
     @Override
     public CompressedImageData getData() {
         return (CompressedImageData) super.getData();
