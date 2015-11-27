@@ -368,7 +368,7 @@ public class ReadWriteProvidedCompressedImageTest {
                         .setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
                         .setTileSize(300, 3)//
                         .getCompressOption(RiceCompressOption.class)//
-                        .setBytePix(32);
+                      /**/  .setBytePix(32);
                 compressed.compress();
             }
         }
