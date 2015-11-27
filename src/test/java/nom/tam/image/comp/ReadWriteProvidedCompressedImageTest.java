@@ -35,7 +35,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -51,6 +50,7 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Compression;
+import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.image.comp.rice.RiceCompressOption;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
@@ -263,16 +263,11 @@ public class ReadWriteProvidedCompressedImageTest {
         if (this.showImage) {
             dispayImage(data);
         }
-        "".toCharArray();
+        "to set a breakpoint ;-)".toString();
     }
 
     private String resolveLocalOrRemoteFileName(String fileName) {
-        if (new File("../blackbox-images/" + fileName).exists()) {
-            fileName = "../blackbox-images/" + fileName;
-        } else {
-            fileName = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName;
-        }
-        return fileName;
+        return BlackBoxImages.getBlackBoxImage(fileName);
     }
 
     @Before
@@ -368,7 +363,7 @@ public class ReadWriteProvidedCompressedImageTest {
                         .setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
                         .setTileSize(300, 3)//
                         .getCompressOption(RiceCompressOption.class)//
-                      /**/  .setBytePix(32);
+                        /**/.setBytePix(32);
                 compressed.compress();
             }
         }
