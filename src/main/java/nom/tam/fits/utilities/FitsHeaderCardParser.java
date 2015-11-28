@@ -35,6 +35,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import nom.tam.util.AsciiFuncs;
+
 /**
  * A helper utility class to parse header cards for there value (especially
  * strings) and comments.
@@ -51,17 +53,27 @@ public final class FitsHeaderCardParser {
         /**
          * the comment specified with the value.
          */
-        private String comment = null;
+        private String comment;
 
         /**
          * was the value quoted?
          */
-        private boolean isString = false;
+        private final boolean isString;
 
         /**
          * the value of the card. (trimmed)
          */
         private String value = null;
+
+        public ParsedValue() {
+            isString = false;
+        }
+
+        public ParsedValue(String value, String comment) {
+            isString = true;
+            this.value = value;
+            this.comment = comment;
+        }
 
         /**
          * @return the comment of the card.
@@ -113,18 +125,20 @@ public final class FitsHeaderCardParser {
      */
     private static String deleteQuotes(String quotedString) {
         Matcher doubleQuoteMatcher = FitsHeaderCardParser.DOUBLE_QUOTE_PATTERN.matcher(quotedString);
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer(quotedString.length());
         if (doubleQuoteMatcher.find(1)) {
+            sb = new StringBuffer(quotedString.length());
             do {
                 doubleQuoteMatcher.appendReplacement(sb, "'");
             } while (doubleQuoteMatcher.find());
         }
         doubleQuoteMatcher.appendTail(sb);
         sb.deleteCharAt(0);
-        sb.setLength(sb.length() - 1);
-        while (sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
-            sb.setLength(sb.length() - 1);
+        int newLength = sb.length() - 1;
+        while (newLength > 0 && AsciiFuncs.isWhitespace(sb.charAt(newLength - 1))) {
+            newLength--;
         }
+        sb.setLength(newLength);
         return sb.toString();
     }
 
@@ -207,7 +221,6 @@ public final class FitsHeaderCardParser {
      *         string was found.
      */
     private static ParsedValue parseStringValue(String card) {
-        ParsedValue stringValue = null;
         int indexOfQuote = card.indexOf('\'');
         if (indexOfQuote >= 0) {
             Matcher matcher = FitsHeaderCardParser.STRING_PATTERN.matcher(card);
@@ -217,13 +230,11 @@ public final class FitsHeaderCardParser {
                     // ok the string was commented, forget the string.
                     return null;
                 }
-                stringValue = new ParsedValue();
-                stringValue.isString = true;
-                stringValue.value = deleteQuotes(matcher.group(0));
-                stringValue.comment = extractComment(card, matcher.end());
+                return new ParsedValue(deleteQuotes(matcher.group(0)), extractComment(card, matcher.end()));
             }
         }
-        return stringValue;
+        return null;
+
     }
 
     /**

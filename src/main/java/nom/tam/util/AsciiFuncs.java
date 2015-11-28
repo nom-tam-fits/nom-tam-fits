@@ -84,4 +84,12 @@ public final class AsciiFuncs {
     public static byte[] getBytes(String in) {
         return in.getBytes(StandardCharsets.US_ASCII);
     }
+
+    /**
+     * @param character
+     * @return true is the character is a whitespace.
+     */
+    public static boolean isWhitespace(char character) {
+        return character == ' ' || character == '\t' || character == '\n' || character == '\r';
+    }
 }

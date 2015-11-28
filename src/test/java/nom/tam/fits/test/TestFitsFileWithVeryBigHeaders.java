@@ -43,9 +43,17 @@ import org.junit.Test;
 
 public class TestFitsFileWithVeryBigHeaders {
 
+    private BasicHDU<?> hdu;
+
     @Test
     @Ignore
     public void testFileWithVeryBigHeadersAndGC() throws Exception {
+        oneTest(0);
+        hdu = null;
+        for (int i = 0; i < 20; i++)
+            System.gc();
+        long baseUsedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        System.out.println("base memory:" + baseUsedMemory);
 
         for (int i = 0; i < 100; i++) {
             long time = System.currentTimeMillis();
@@ -56,7 +64,7 @@ public class TestFitsFileWithVeryBigHeaders {
             System.gc();
             System.gc();
             System.gc();
-            System.out.println("memory:" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+            System.out.println("memory:" + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) - baseUsedMemory));
         }
     }
 
@@ -71,7 +79,7 @@ public class TestFitsFileWithVeryBigHeaders {
 
     protected long oneTest(long count) throws FitsException, IOException {
         try (Fits f = new Fits(BlackBoxImages.getBlackBoxImage("OEP.fits"))) {
-            BasicHDU<?> hdu;
+
             while ((hdu = f.readHDU()) != null) {
                 count = count + hdu.getHeader().getSize();
             }
