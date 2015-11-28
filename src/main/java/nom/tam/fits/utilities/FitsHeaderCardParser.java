@@ -225,16 +225,12 @@ public final class FitsHeaderCardParser {
         if (indexOfQuote >= 0) {
             Matcher matcher = FitsHeaderCardParser.STRING_PATTERN.matcher(card);
             if (matcher.find(indexOfQuote)) {
-                int indexOfComment = card.lastIndexOf('/', matcher.start());
-                if (indexOfComment >= 0 && indexOfComment < matcher.start()) {
-                    // ok the string was commented, forget the string.
-                    return null;
+                if (card.lastIndexOf('/', matcher.start()) < 0) {
+                    return new ParsedValue(deleteQuotes(matcher.group(0)), extractComment(card, matcher.end()));
                 }
-                return new ParsedValue(deleteQuotes(matcher.group(0)), extractComment(card, matcher.end()));
             }
         }
         return null;
-
     }
 
     /**
