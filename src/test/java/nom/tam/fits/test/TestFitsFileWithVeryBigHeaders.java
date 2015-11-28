@@ -31,23 +31,51 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import java.io.IOException;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.util.BlackBoxImages;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestFitsFileWithVeryBigHeaders {
 
     @Test
+    @Ignore
+    public void testFileWithVeryBigHeadersAndGC() throws Exception {
+
+        for (int i = 0; i < 100; i++) {
+            long time = System.currentTimeMillis();
+            long count = 0;
+            count = oneTest(count);
+            System.out.println("time to read:" + (System.currentTimeMillis() - time));
+            System.out.println("headers in file:" + count);
+            System.gc();
+            System.gc();
+            System.gc();
+            System.out.println("memory:" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+        }
+    }
+
+    @Test
+    @Ignore
     public void testFileWithVeryBigHeaders() throws Exception {
-        long count = 0;
+
+        for (int i = 0; i < 100; i++) {
+            oneTest(0);
+        }
+    }
+
+    protected long oneTest(long count) throws FitsException, IOException {
         try (Fits f = new Fits(BlackBoxImages.getBlackBoxImage("OEP.fits"))) {
             BasicHDU<?> hdu;
             while ((hdu = f.readHDU()) != null) {
                 count = count + hdu.getHeader().getSize();
             }
         }
-        System.out.println("headers in file:" + count);
+        return count;
     }
 }

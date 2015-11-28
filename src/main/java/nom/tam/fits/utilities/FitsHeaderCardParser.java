@@ -208,17 +208,20 @@ public final class FitsHeaderCardParser {
      */
     private static ParsedValue parseStringValue(String card) {
         ParsedValue stringValue = null;
-        Matcher matcher = FitsHeaderCardParser.STRING_PATTERN.matcher(card);
-        if (matcher.find()) {
-            int indexOfComment = card.indexOf('/');
-            if (indexOfComment >= 0 && indexOfComment < matcher.start()) {
-                // ok the string was commented, forget the string.
-                return null;
+        int indexOfQuote = card.indexOf('\'');
+        if (indexOfQuote >= 0) {
+            Matcher matcher = FitsHeaderCardParser.STRING_PATTERN.matcher(card);
+            if (matcher.find(indexOfQuote)) {
+                int indexOfComment = card.lastIndexOf('/', matcher.start());
+                if (indexOfComment >= 0 && indexOfComment < matcher.start()) {
+                    // ok the string was commented, forget the string.
+                    return null;
+                }
+                stringValue = new ParsedValue();
+                stringValue.isString = true;
+                stringValue.value = deleteQuotes(matcher.group(0));
+                stringValue.comment = extractComment(card, matcher.end());
             }
-            stringValue = new ParsedValue();
-            stringValue.isString = true;
-            stringValue.value = deleteQuotes(matcher.group(0));
-            stringValue.comment = extractComment(card, matcher.end());
         }
         return stringValue;
     }

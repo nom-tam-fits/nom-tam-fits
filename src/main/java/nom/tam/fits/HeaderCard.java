@@ -222,7 +222,7 @@ public class HeaderCard implements CursorValue<String> {
 
         String card = readOneHeaderLine(dis);
 
-        if (FitsFactory.getUseHierarch() && card.length() > HIERARCH_WITH_BLANK_LENGTH && card.substring(0, HIERARCH_WITH_BLANK_LENGTH).equals(HIERARCH_WITH_BLANK)) {
+        if (FitsFactory.getUseHierarch() && card.length() > HIERARCH_WITH_BLANK_LENGTH && card.regionMatches(0, HIERARCH_WITH_BLANK, 0, HIERARCH_WITH_BLANK_LENGTH)) {
             hierarchCard(card, dis);
             return;
         }
@@ -248,7 +248,7 @@ public class HeaderCard implements CursorValue<String> {
         }
 
         // Non-key/value pair lines are treated as keyed comments
-        if (this.key.equals(COMMENT.key()) || this.key.equals(HISTORY.key()) || !card.substring(MAX_KEYWORD_LENGTH, MAX_KEYWORD_LENGTH + 2).equals("= ")) {
+        if (this.key.equals(COMMENT.key()) || this.key.equals(HISTORY.key()) || !card.regionMatches(MAX_KEYWORD_LENGTH, "= ", 0, 2)) {
             this.comment = card.substring(MAX_KEYWORD_LENGTH).trim();
             return;
         }
