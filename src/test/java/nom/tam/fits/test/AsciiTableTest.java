@@ -33,6 +33,8 @@ package nom.tam.fits.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -78,7 +80,17 @@ public class AsciiTableTest {
         // Read back the data from the file.
         f = new Fits("target/at1.fits");
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+        checkByColumn(hdu);
 
+        try (Fits f2 = new Fits(new FileInputStream(new File("target/at1.fits")))) {
+            // lets trigger the read over a stream and test again
+            hdu = (AsciiTableHDU) f2.getHDU(1);
+            checkByColumn(hdu);
+        }
+
+    }
+
+    protected void checkByColumn(AsciiTableHDU hdu) {
         Object[] inputs = getSampleCols();
         Object[] outputs = (Object[]) hdu.getKernel();
 
@@ -89,7 +101,6 @@ public class AsciiTableTest {
         for (int j = 0; j < 5; j += 1) {
             assertEquals("ByCol:" + j, true, TestArrayFuncs.arrayEquals(inputs[j], outputs[j], 1.e-6, 1.e-14));
         }
-
     }
 
     public void createByRow() throws Exception {
@@ -112,6 +123,15 @@ public class AsciiTableTest {
         // Read it back.
         f = new Fits("target/at2.fits");
 
+        checkByRow(f);
+
+        try (Fits f2 = new Fits(new FileInputStream(new File("target/at2.fits")))) {
+            // lets trigger the read over a stream and test again
+            checkByRow(f2);
+        }
+    }
+
+    protected void checkByRow(Fits f) throws FitsException, IOException {
         Object[] output = (Object[]) f.getHDU(1).getKernel();
         Object[] input = getRowBlock(50);
 
@@ -370,15 +390,15 @@ public class AsciiTableTest {
         };
 
         BasicHDU<?> ahdu = FitsFactory.hduFactory(o);
-        try(Fits f = new Fits()) {
-	        f.addHDU(ahdu);
-	        f.write(bf);
+        try (Fits f = new Fits()) {
+            f.addHDU(ahdu);
+            f.write(bf);
         }
         bf.close();
 
         BasicHDU<?> bhdu;
-        try(Fits f = new Fits("target/at3.fits")) {
-        	bhdu = f.getHDU(1);
+        try (Fits f = new Fits("target/at3.fits")) {
+            bhdu = f.getHDU(1);
         }
         Header hdr = bhdu.getHeader();
         assertEquals(hdr.getStringValue("TFORM1"), "A1");
@@ -390,23 +410,23 @@ public class AsciiTableTest {
 
     public void readByColumn() throws Exception {
         try (Fits f = new Fits("target/at1.fits")) {
-        	AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
-	        AsciiTable data = hdu.getData();
-	        Object[] cols = getSampleCols();
-	
-	        assertEquals("Number of rows", data.getNRows(), 50);
-	        assertEquals("Number of columns", data.getNCols(), 5);
-	
-	        for (int j = 0; j < data.getNCols(); j += 1) {
-	            Object col = data.getColumn(j);
-	            if (j == 4) {
-	                String[] st = (String[]) col;
-	                for (int i = 0; i < st.length; i += 1) {
-	                    st[i] = st[i].trim();
-	                }
-	            }
-	            assertEquals("Ascii Columns:" + j, true, TestArrayFuncs.arrayEquals(cols[j], col, 1.e-6, 1.e-14));
-	        }
+            AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+            AsciiTable data = hdu.getData();
+            Object[] cols = getSampleCols();
+
+            assertEquals("Number of rows", data.getNRows(), 50);
+            assertEquals("Number of columns", data.getNCols(), 5);
+
+            for (int j = 0; j < data.getNCols(); j += 1) {
+                Object col = data.getColumn(j);
+                if (j == 4) {
+                    String[] st = (String[]) col;
+                    for (int i = 0; i < st.length; i += 1) {
+                        st[i] = st[i].trim();
+                    }
+                }
+                assertEquals("Ascii Columns:" + j, true, TestArrayFuncs.arrayEquals(cols[j], col, 1.e-6, 1.e-14));
+            }
         }
     }
 

@@ -67,6 +67,7 @@ import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.utilities.FitsHeaderCardParser;
+import nom.tam.fits.utilities.FitsHeaderCardParser.ParsedValue;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
@@ -776,5 +777,16 @@ public class HeaderTest {
             FitsFactory.setUseHierarch(useHierarch);
             FitsFactory.setLongStringsEnabled(longStringsEnabled);
         }
+    }
+
+    @Test
+    public void testTrimBlanksAfterQuotedString() throws Exception {
+        String card = "TESTTEST= 'TESTVALUE ''QUOTED'' TRIMMSTUFF     '  / comment";
+
+        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
+        assertEquals("comment", parsedValue.getComment());
+        // lets see if the blanks after the value are removed.
+        assertEquals("TESTVALUE 'QUOTED' TRIMMSTUFF", parsedValue.getValue());
+
     }
 }
