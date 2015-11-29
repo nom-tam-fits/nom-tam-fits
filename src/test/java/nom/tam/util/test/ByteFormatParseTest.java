@@ -543,21 +543,4 @@ public class ByteFormatParseTest {
 
     }
 
-    @Test
-    @Ignore
-    public void randomTestManyValues() {
-        for (int y = 1; y < 40; y++) {
-            byte[] array = new byte[y];
-            Random random = new Random(System.currentTimeMillis());
-            for (int i = 0; i < 1000000; i++) {
-                long longValue = ((long) random.nextInt()) << 32 | ((long) random.nextInt());
-                bf.format(longValue, array);
-                double value = Double.longBitsToDouble(longValue);
-                bf.format(value, array);
-                float value2 = Float.intBitsToFloat(random.nextInt());
-                bf.format(value2, array);
-            }
-        }
-
-    }
 }

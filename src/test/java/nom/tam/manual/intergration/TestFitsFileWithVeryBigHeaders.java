@@ -1,4 +1,4 @@
-package nom.tam.fits.test;
+package nom.tam.manual.intergration;
 
 /*
  * #%L
@@ -45,13 +45,33 @@ public class TestFitsFileWithVeryBigHeaders {
 
     private BasicHDU<?> hdu;
 
+    protected long oneTest(long count) throws FitsException, IOException {
+        try (Fits f = new Fits(BlackBoxImages.getBlackBoxImage("OEP.fits"))) {
+
+            while ((this.hdu = f.readHDU()) != null) {
+                count = count + this.hdu.getHeader().getSize();
+            }
+        }
+        return count;
+    }
+
+    @Test
+    @Ignore
+    public void testFileWithVeryBigHeaders() throws Exception {
+
+        for (int i = 0; i < 100; i++) {
+            oneTest(0);
+        }
+    }
+
     @Test
     @Ignore
     public void testFileWithVeryBigHeadersAndGC() throws Exception {
         oneTest(0);
-        hdu = null;
-        for (int i = 0; i < 20; i++)
+        this.hdu = null;
+        for (int i = 0; i < 20; i++) {
             System.gc();
+        }
         long baseUsedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         System.out.println("base memory:" + baseUsedMemory);
 
@@ -65,26 +85,7 @@ public class TestFitsFileWithVeryBigHeaders {
             System.gc();
             System.gc();
             Thread.sleep(2000L);
-            System.out.println("memory:" + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) - baseUsedMemory));
+            System.out.println("memory:" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - baseUsedMemory));
         }
-    }
-
-    @Test
-    @Ignore
-    public void testFileWithVeryBigHeaders() throws Exception {
-
-        for (int i = 0; i < 100; i++) {
-            oneTest(0);
-        }
-    }
-
-    protected long oneTest(long count) throws FitsException, IOException {
-        try (Fits f = new Fits(BlackBoxImages.getBlackBoxImage("OEP.fits"))) {
-
-            while ((hdu = f.readHDU()) != null) {
-                count = count + hdu.getHeader().getSize();
-            }
-        }
-        return count;
     }
 }

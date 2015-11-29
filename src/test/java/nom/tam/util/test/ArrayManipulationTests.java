@@ -137,45 +137,4 @@ public class ArrayManipulationTests {
         Assert.assertEquals("[9, 10, 11, 12, 13, 14, 15, 16]", Arrays.toString(testTargetArray[1]));
     }
 
-    @Test
-    @Ignore
-    public void testEqualArrayCopyPerf() {
-
-        int[][] testArray = new int[2000][2000];
-        for (int index = 0; index < testArray.length; index++) {
-            for (int index2 = 0; index2 < testArray[index].length; index2++) {
-                testArray[index][index2] = index + index2;
-            }
-        }
-        long[][] testArrayCopy = new long[2000][2000];
-        // let them both initialize a little
-        MultyArrayCopier.copyInto(testArray, testArrayCopy);
-        ArrayFuncs.copyInto(testArray, testArrayCopy);
-        long timeCopy = 0;
-        long timeIter = 0;
-        long start;
-        for (int loop = 0; loop < 50; loop++) {
-
-            start = System.currentTimeMillis();
-            for (int index = 0; index < 100; index++) {
-                MultyArrayCopier.copyInto(testArray, testArrayCopy);
-            }
-            timeIter += System.currentTimeMillis() - start;
-
-            start = System.currentTimeMillis();
-            for (int index = 0; index < 100; index++) {
-                ArrayFuncs.copyInto(testArray, testArrayCopy);
-            }
-            timeCopy += System.currentTimeMillis() - start;
-        }
-        System.out.println("timeCopy:" + timeCopy);
-        System.out.println("timeIter:" + timeIter);
-        for (int index = 0; index < testArrayCopy.length; index++) {
-            for (int index2 = 0; index2 < testArrayCopy[index].length; index2++) {
-                Assert.assertEquals(index + index2, testArrayCopy[index][index2]);
-            }
-        }
-
-    }
-
 }

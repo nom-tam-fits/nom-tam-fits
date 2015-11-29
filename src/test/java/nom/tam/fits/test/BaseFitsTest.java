@@ -541,22 +541,4 @@ public class BaseFitsTest {
 
     }
 
-    /**
-     * this test is only for manual usage with enough memory allocated.
-     * 
-     * @throws Exception
-     */
-    @Test
-    @Ignore
-    public void testVeryBigDataFiles() throws Exception {
-        Fits f = new Fits();
-        ImageData data = new ImageData(new float[50000][50000]);
-        Header manufactureHeader = ImageHDU.manufactureHeader(data);
-        f.addHDU(FitsFactory.hduFactory(manufactureHeader, data));
-        BufferedFile bf = new BufferedFile("target/big.fits", "rw");
-        f.write(bf);
-        System.out.println(Arrays.toString(ArrayFuncs.getDimensions(f.getHDU(0).getData().getData())));
-        f = new Fits("target/big.fits");
-        System.out.println(Arrays.toString(ArrayFuncs.getDimensions(f.getHDU(0).getData().getData())));
-    }
 }
