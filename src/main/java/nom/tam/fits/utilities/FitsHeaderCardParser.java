@@ -99,20 +99,16 @@ public final class FitsHeaderCardParser {
     }
 
     /**
-     * pattern to replace the double quotes from string values to single quotes.
-     */
-    private static final Pattern DOUBLE_QUOTE_PATTERN = Pattern.compile("''");
-
-    /**
      * pattern to match FITS keywords, specially to parse hirarchical keywords.
      */
     private static final Pattern KEYWORD_PATTERN = Pattern.compile("([A-Z|a-z|0-9|_|-]+)([ |\\.]*=?)");
 
     /**
      * pattern to match a quoted string where 2 quotes are used to escape a
-     * single quote inside the string.
+     * single quote inside the string. Attention this patern ist optimized as
+     * specified in http://www.perlmonks.org/?node_id=607740
      */
-    private static final Pattern STRING_PATTERN = Pattern.compile("'(?:[^']|'{2})*'");
+    private static final Pattern STRING_PATTERN = Pattern.compile("'((?:[^']+(?=')|'')*)'(?!')");
 
     /**
      * delete the start and trailing quote from the sting and replace all
@@ -124,22 +120,29 @@ public final class FitsHeaderCardParser {
      * @return the unquoted string
      */
     private static String deleteQuotes(String quotedString) {
-        Matcher doubleQuoteMatcher = FitsHeaderCardParser.DOUBLE_QUOTE_PATTERN.matcher(quotedString);
-        StringBuffer sb = new StringBuffer(quotedString.length());
-        if (doubleQuoteMatcher.find(1)) {
-            sb = new StringBuffer(quotedString.length());
-            do {
-                doubleQuoteMatcher.appendReplacement(sb, "'");
-            } while (doubleQuoteMatcher.find());
+        int indexOfQuote = quotedString.indexOf('\'');
+        if (indexOfQuote < 0) {
+            int newLength = quotedString.length();
+            while (newLength > 0 && AsciiFuncs.isWhitespace(quotedString.charAt(newLength - 1))) {
+                newLength--;
+            }
+            return quotedString.substring(0, newLength);
+        } else {
+            int lastIndexOfQuote = 0;
+            StringBuffer sb = new StringBuffer(quotedString.length());
+            while (indexOfQuote >= 0) {
+                sb.append(quotedString, lastIndexOfQuote, indexOfQuote);
+                lastIndexOfQuote = indexOfQuote + 1;
+                indexOfQuote = quotedString.indexOf('\'', lastIndexOfQuote + 1);
+            }
+            sb.append(quotedString, lastIndexOfQuote, quotedString.length());
+            int newLength = sb.length();
+            while (newLength > 0 && AsciiFuncs.isWhitespace(sb.charAt(newLength - 1))) {
+                newLength--;
+            }
+            sb.setLength(newLength);
+            return sb.toString();
         }
-        doubleQuoteMatcher.appendTail(sb);
-        sb.deleteCharAt(0);
-        int newLength = sb.length() - 1;
-        while (newLength > 0 && AsciiFuncs.isWhitespace(sb.charAt(newLength - 1))) {
-            newLength--;
-        }
-        sb.setLength(newLength);
-        return sb.toString();
     }
 
     /**
@@ -224,9 +227,9 @@ public final class FitsHeaderCardParser {
         int indexOfQuote = card.indexOf('\'');
         if (indexOfQuote >= 0) {
             Matcher matcher = FitsHeaderCardParser.STRING_PATTERN.matcher(card);
-            if (matcher.find(indexOfQuote)) {
+            if (matcher.find(0)) {
                 if (card.lastIndexOf('/', matcher.start()) < 0) {
-                    return new ParsedValue(deleteQuotes(matcher.group(0)), extractComment(card, matcher.end()));
+                    return new ParsedValue(deleteQuotes(matcher.group(1)), extractComment(card, matcher.end()));
                 }
             }
         }
