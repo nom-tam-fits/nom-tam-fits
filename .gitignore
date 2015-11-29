@@ -13,3 +13,5 @@ release.properties
 /target/
 /.metadata/
 /RemoteSystemsTempFiles/
+/.apt_generated/
+/.factorypath

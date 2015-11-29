@@ -227,7 +227,7 @@ public final class FitsHeaderCardParser {
         int indexOfQuote = card.indexOf('\'');
         if (indexOfQuote >= 0) {
             Matcher matcher = FitsHeaderCardParser.STRING_PATTERN.matcher(card);
-            if (matcher.find(0)) {
+            if (matcher.find(indexOfQuote)) {
                 if (card.lastIndexOf('/', matcher.start()) < 0) {
                     return new ParsedValue(deleteQuotes(matcher.group(1)), extractComment(card, matcher.end()));
                 }
