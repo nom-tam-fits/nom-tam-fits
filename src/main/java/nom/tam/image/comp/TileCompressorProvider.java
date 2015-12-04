@@ -44,19 +44,14 @@ import nom.tam.fits.header.Compression;
 public class TileCompressorProvider implements ITileCompressorProvider {
 
     /**
-     * logger to log to.
-     */
-    private static final Logger LOG = Logger.getLogger(TileCompressorProvider.class.getName());
-
-    /**
      * private implementation of the tile compression provider, all is based on
      * the option based constructor of the compressors.
      */
     protected static class TileCompressorControl implements ITileCompressorControl {
 
-        private final Class<? extends ICompressOption>[] optionClasses;
-
         private final Constructor<ITileCompressor<Buffer>> constructor;
+
+        private final Class<? extends ICompressOption>[] optionClasses;
 
         protected TileCompressorControl(Class<?> compressorClass) {
             this.constructor = (Constructor<ITileCompressor<Buffer>>) compressorClass.getConstructors()[0];
@@ -122,6 +117,11 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         nom.tam.image.comp.gzip.GZipCompress.FloatGZipCompress.class,
         nom.tam.image.comp.gzip.GZipCompress.DoubleGZipCompress.class
     };
+
+    /**
+     * logger to log to.
+     */
+    private static final Logger LOG = Logger.getLogger(TileCompressorProvider.class.getName());
 
     public static ITileCompressorControl findCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
         Iterator<ITileCompressorProvider> providers = ServiceLoader.load(ITileCompressorProvider.class, Thread.currentThread().getContextClassLoader()).iterator();

@@ -40,7 +40,6 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.Standard;
-import nom.tam.image.comp.CompressedImageData.Tile;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
 import nom.tam.image.comp.rice.RiceCompressOption;
 
@@ -71,11 +70,11 @@ public class TileCompressorProviderTest {
         }
 
         TileArray getTileArray() {
-            return new TileArray();
+            return new TileArray(this);
         }
 
         Tile getTile() {
-            return new Tile(getTileArray());
+            return new DecompressingTile(getTileArray(), 0);
         }
     }
 
@@ -185,15 +184,12 @@ public class TileCompressorProviderTest {
     @Test
     public void testTileToString() throws Exception {
         String toString = new Access2().getTile().toString();
-        Assert.assertEquals("Tile(0,null,null,0)", toString);
+        Assert.assertEquals("DecompressingTile(0,null,0)", toString);
     }
 
     @Test(expected = IllegalStateException.class)
     public void testTileCompressionError() throws Exception {
         Tile tile = new Access2().getTile();
-        Field declaredField = Tile.class.getDeclaredField("action");
-        declaredField.setAccessible(true);
-        declaredField.set(tile, Tile.Action.DECOMPRESS);
         tile.execute(FitsFactory.threadPool());
         Thread.sleep(20);
         tile.waitForResult();

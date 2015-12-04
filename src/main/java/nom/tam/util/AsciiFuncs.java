@@ -87,6 +87,7 @@ public final class AsciiFuncs {
 
     /**
      * @param character
+     *            the charater to check
      * @return true is the character is a whitespace.
      */
     public static boolean isWhitespace(char character) {
