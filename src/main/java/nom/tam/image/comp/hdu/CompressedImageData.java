@@ -31,6 +31,8 @@ package nom.tam.image.comp.hdu;
  * #L%
  */
 
+import static nom.tam.fits.header.Compression.ZIMAGE;
+
 import java.nio.Buffer;
 
 import nom.tam.fits.BinaryTable;
@@ -57,6 +59,12 @@ public class CompressedImageData extends BinaryTable {
 
     public void compress(Header header) throws FitsException {
         tileArray().compress(header);
+    }
+
+    @Override
+    public void fillHeader(Header h) throws FitsException {
+        super.fillHeader(h);
+        h.addValue(ZIMAGE, true);
     }
 
     public <T extends ICompressOption> T getCompressOption(Class<T> clazz) {

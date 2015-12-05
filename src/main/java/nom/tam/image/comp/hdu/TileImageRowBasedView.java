@@ -39,16 +39,16 @@ import java.nio.Buffer;
  */
 class TileImageRowBasedView {
 
+    private Buffer buffer;
+
+    private final int heigth;
+
+    private final int offset;
+
     /**
      * the tile this view is connected to
      */
     private final Tile tile;
-
-    private final int offset;
-
-    private Buffer buffer;
-
-    private final int heigth;
 
     private final int width;
 

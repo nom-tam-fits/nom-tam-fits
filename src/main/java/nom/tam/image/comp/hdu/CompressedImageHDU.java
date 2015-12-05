@@ -68,7 +68,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.Data;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
@@ -229,8 +228,9 @@ public class CompressedImageHDU extends BinaryTableHDU {
     private static final Map<IFitsHeader, UncompressHeaderCardMapping> UNCOMPRESSED_HEADER_MAPPING = new HashMap<>();
 
     public static CompressedImageHDU fromImageHDU(ImageHDU imageHDU) throws FitsException {
-        CompressedImageData compressedData = new CompressedImageData();
         Header header = new Header();
+        CompressedImageData compressedData = new CompressedImageData();
+        compressedData.fillHeader(header);
         Cursor<String, HeaderCard> iterator = header.iterator();
         Cursor<String, HeaderCard> imageIterator = imageHDU.getHeader().iterator();
         while (imageIterator.hasNext()) {
@@ -255,28 +255,6 @@ public class CompressedImageHDU extends BinaryTableHDU {
 
     public static CompressedImageData manufactureData(Header hdr) throws FitsException {
         return new CompressedImageData(hdr);
-    }
-
-    /**
-     * @return Create a header that describes the given image data.
-     * @param d
-     *            The image to be described.
-     * @throws FitsException
-     *             if the object does not contain valid image data.
-     */
-    public static Header manufactureHeader(Data d) throws FitsException {
-
-        if (d == null) {
-            return null;
-        }
-        if (!(d instanceof CompressedImageData)) {
-            throw new FitsException("cant' create a compressed image header from non compressed image data");
-        }
-
-        Header h = new Header();
-        ((CompressedImageData) d).fillHeader(h);
-
-        return h;
     }
 
     public CompressedImageHDU(Header hdr, CompressedImageData datum) {
@@ -318,6 +296,6 @@ public class CompressedImageHDU extends BinaryTableHDU {
      */
     @Override
     public boolean isHeader() {
-        return isHeader(this.myHeader);
+        return super.isHeader() && isHeader(this.myHeader);
     }
 }

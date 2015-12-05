@@ -323,8 +323,8 @@ public class ReadWriteProvidedCompressedImageTest {
                 -3000,
                 4000
             };
-            ShortBuffer source = ShortBuffer.wrap(array);
-            data.prepareUncompressedData(source, compressedHdu.getHeader());
+            data.prepareUncompressedData(array, compressedHdu.getHeader());
+            data.compress(compressedHdu.getHeader());
             f.addHDU(compressedHdu);
             try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_rice.fits"))) {
                 // f.write(bdos);
@@ -347,6 +347,7 @@ public class ReadWriteProvidedCompressedImageTest {
             ShortBuffer source = ShortBuffer.wrap(new short[300 * 300]);
             ArrayFuncs.copyInto(this.m13_data, source.array());
             data.prepareUncompressedData(source, compressedHdu.getHeader());
+            data.compress(compressedHdu.getHeader());
             f.addHDU(compressedHdu);
             try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_rice.fits"))) {
                 // f.write(bdos);
@@ -367,8 +368,10 @@ public class ReadWriteProvidedCompressedImageTest {
                         .getCompressOption(RiceCompressOption.class)//
                         /**/.setBytePix(4);
                 compressed.compress();
+                Assert.assertTrue(compressed.isHeader());
             }
         }
         compressed.toString();
     }
+
 }

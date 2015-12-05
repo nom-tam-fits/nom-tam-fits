@@ -169,8 +169,6 @@ public final class FitsFactory {
             return (BasicHDU<DataClass>) new RandomGroupsHDU(hdr, (RandomGroupsData) d);
         } else if (current().useAsciiTables && d instanceof AsciiTable) {
             return (BasicHDU<DataClass>) new AsciiTableHDU(hdr, (AsciiTable) d);
-        } else if (d instanceof CompressedImageData) {
-            return (BasicHDU<DataClass>) new CompressedImageHDU(hdr, (CompressedImageData) d);
         } else if (d instanceof BinaryTable) {
             return (BasicHDU<DataClass>) new BinaryTableHDU(hdr, (BinaryTable) d);
         } else if (d instanceof UndefinedData) {
