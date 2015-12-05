@@ -58,24 +58,6 @@ public class PaddingException extends FitsException {
      */
     private BasicHDU<?> truncatedHDU;
 
-    /**
-     * When the error is thrown, the data object being read must be supplied. We
-     * initially create a dummy header for this. If someone is reading the
-     * entire HDU, then they can trap the exception and set the header to the
-     * appropriate value.
-     * 
-     * @param data
-     *            the data that was not padded.
-     * @throws FitsException
-     *             if the data could not be used to create a hdu.
-     */
-    public PaddingException(Data data) throws FitsException {
-        super("data not padded");
-        this.truncatedHDU = FitsFactory.hduFactory(data.getKernel());
-        // We want to use the original Data object... so
-        this.truncatedHDU = FitsFactory.hduFactory(this.truncatedHDU.getHeader(), data);
-    }
-
     public PaddingException(String msg, Data data) throws FitsException {
         super(msg);
         this.truncatedHDU = FitsFactory.hduFactory(data.getKernel());
