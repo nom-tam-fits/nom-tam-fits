@@ -1,4 +1,4 @@
-package nom.tam.image.comp;
+package nom.tam.image.comp.hdu;
 
 /*
  * #%L
@@ -31,8 +31,61 @@ package nom.tam.image.comp;
  * #L%
  */
 
-enum TileCompressionType {
-    COMPRESSED,
-    GZIP_COMPRESSED,
-    UNCOMPRESSED
+import java.nio.Buffer;
+
+/**
+ * This view on the image data represents a tile that is row based, so a tile
+ * that fills the whole width of the image.
+ */
+class TileImageRowBasedView {
+
+    /**
+     * the tile this view is connected to
+     */
+    private final Tile tile;
+
+    private final int offset;
+
+    private Buffer buffer;
+
+    private final int heigth;
+
+    private final int width;
+
+    public TileImageRowBasedView(Tile tile, int dataOffset, int width, int heigth) {
+        this.tile = tile;
+        this.offset = dataOffset;
+        this.width = width;
+        this.heigth = heigth;
+    }
+
+    public Buffer getBuffer() {
+        return this.buffer;
+    }
+
+    public int getDataOffset() {
+        return this.offset;
+    }
+
+    public int getHeigth() {
+        return this.heigth;
+    }
+
+    /**
+     * @return the number of pixels in the tile this view represents.
+     */
+    public int getPixelSize() {
+        return this.width * this.heigth;
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public TileImageRowBasedView setDecompressedData(Buffer value) {
+        value.position(this.offset);
+        this.buffer = this.tile.array.getBaseType().sliceBuffer(value);
+        this.buffer.limit(getPixelSize());
+        return this;
+    }
 }

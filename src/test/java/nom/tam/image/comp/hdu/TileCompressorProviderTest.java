@@ -1,4 +1,4 @@
-package nom.tam.image.comp;
+package nom.tam.image.comp.hdu;
 
 /*
  * #%L
@@ -31,7 +31,6 @@ package nom.tam.image.comp;
  * #L%
  */
 
-import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 
 import nom.tam.fits.FitsException;
@@ -40,7 +39,11 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.Standard;
+import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.ITileCompressor;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
+import nom.tam.image.comp.TileCompressorAlternativProvider;
+import nom.tam.image.comp.TileCompressorProvider;
 import nom.tam.image.comp.rice.RiceCompressOption;
 
 import org.junit.Assert;
@@ -49,15 +52,7 @@ import org.junit.Test;
 
 public class TileCompressorProviderTest {
 
-    private static boolean exceptionInConstructor;
-
-    private static boolean exceptionInMethod;
-
     static class Access2 extends CompressedImageData {
-
-        public Access2() throws FitsException {
-            super(enptyHeader());
-        }
 
         private static Header enptyHeader() {
             Header header = new Header();
@@ -69,40 +64,25 @@ public class TileCompressorProviderTest {
             return header;
         }
 
-        TileArray getTileArray() {
-            return new TileArray(this);
+        public Access2() throws FitsException {
+            super(enptyHeader());
         }
 
         Tile getTile() {
             return new DecompressingTile(getTileArray(), 0);
         }
-    }
 
-    @Before
-    public void setup() {
-        exceptionInConstructor = false;
-        exceptionInMethod = false;
-    }
-
-    static class BrokenOption extends RiceCompressOption {
-
-        public BrokenOption() {
-            if (exceptionInConstructor) {
-                throw new RuntimeException("could not instanciate");
-            }
+        TileArray getTileArray() {
+            return new TileArray(this);
         }
     }
 
-    static class BrokenClass extends TileCompressorProvider implements ITileCompressor<ByteBuffer> {
+    public static class BrokenClass extends TileCompressorProvider implements ITileCompressor<ByteBuffer> {
 
         public BrokenClass(BrokenOption option) {
             if (exceptionInConstructor) {
                 throw new RuntimeException("could not instanciate");
             }
-        }
-
-        private ITileCompressorControl getProvider() {
-            return new TileCompressorControl(BrokenClass.class);
         }
 
         @Override
@@ -119,6 +99,29 @@ public class TileCompressorProviderTest {
                 throw new RuntimeException("could not decompress");
             }
         }
+
+        private ITileCompressorControl getProvider() {
+            return TileCompressorAlternativProvider.createControl(BrokenClass.class);
+        }
+    }
+
+    public static class BrokenOption extends RiceCompressOption {
+
+        public BrokenOption() {
+            if (exceptionInConstructor) {
+                throw new RuntimeException("could not instanciate");
+            }
+        }
+    }
+
+    private static boolean exceptionInConstructor;
+
+    private static boolean exceptionInMethod;
+
+    @Before
+    public void setup() {
+        exceptionInConstructor = false;
+        exceptionInMethod = false;
     }
 
     @Test
@@ -136,6 +139,30 @@ public class TileCompressorProviderTest {
     }
 
     @Test(expected = IllegalStateException.class)
+    public void testBadProviderCasesBadCompressConstruct() {
+        ITileCompressorControl provider = new BrokenClass(null).getProvider();
+        ICompressOption[] options = provider.options();
+        exceptionInConstructor = true;
+        provider.decompress(null, null, options);
+    }
+
+    @Test
+    public void testBadProviderCasesBadCompressMethod() {
+        ITileCompressorControl provider = new BrokenClass(null).getProvider();
+        ICompressOption[] options = provider.options();
+        exceptionInMethod = true;
+        Assert.assertFalse(provider.compress(null, null, options));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testBadProviderCasesBadDeCompressMethod() {
+        ITileCompressorControl provider = new BrokenClass(null).getProvider();
+        ICompressOption[] options = provider.options();
+        exceptionInMethod = true;
+        provider.decompress(null, null, options);
+    }
+
+    @Test(expected = IllegalStateException.class)
     public void testBadProviderCasesBadOption() {
         ITileCompressorControl provider = new BrokenClass(null).getProvider();
         exceptionInConstructor = true;
@@ -149,14 +176,6 @@ public class TileCompressorProviderTest {
         provider.decompress(null, null, options);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void testBadProviderCasesBadCompressConstruct() {
-        ITileCompressorControl provider = new BrokenClass(null).getProvider();
-        ICompressOption[] options = provider.options();
-        exceptionInConstructor = true;
-        provider.decompress(null, null, options);
-    }
-
     @Test
     public void testBadProviderCasesSuccessCompressMethod() {
         ITileCompressorControl provider = new BrokenClass(null).getProvider();
@@ -166,32 +185,16 @@ public class TileCompressorProviderTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testBadProviderCasesBadDeCompressMethod() {
-        ITileCompressorControl provider = new BrokenClass(null).getProvider();
-        ICompressOption[] options = provider.options();
-        exceptionInMethod = true;
-        provider.decompress(null, null, options);
-    }
-
-    @Test
-    public void testBadProviderCasesBadCompressMethod() {
-        ITileCompressorControl provider = new BrokenClass(null).getProvider();
-        ICompressOption[] options = provider.options();
-        exceptionInMethod = true;
-        Assert.assertFalse(provider.compress(null, null, options));
+    public void testTileCompressionError() throws Exception {
+        Tile tile = new Access2().getTile();
+        tile.execute(FitsFactory.threadPool());
+        Thread.sleep(20);
+        tile.waitForResult();
     }
 
     @Test
     public void testTileToString() throws Exception {
         String toString = new Access2().getTile().toString();
         Assert.assertEquals("DecompressingTile(0,null,0)", toString);
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void testTileCompressionError() throws Exception {
-        Tile tile = new Access2().getTile();
-        tile.execute(FitsFactory.threadPool());
-        Thread.sleep(20);
-        tile.waitForResult();
     }
 }

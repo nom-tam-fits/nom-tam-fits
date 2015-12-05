@@ -4,8 +4,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import nom.tam.image.comp.CompressedImageData;
-import nom.tam.image.comp.CompressedImageHDU;
+import nom.tam.image.comp.hdu.CompressedImageData;
+import nom.tam.image.comp.hdu.CompressedImageHDU;
 
 /*
  * #%L

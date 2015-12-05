@@ -51,6 +51,8 @@ import nom.tam.fits.Header;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.util.BlackBoxImages;
+import nom.tam.image.comp.hdu.CompressedImageData;
+import nom.tam.image.comp.hdu.CompressedImageHDU;
 import nom.tam.image.comp.rice.RiceCompressOption;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
@@ -322,7 +324,7 @@ public class ReadWriteProvidedCompressedImageTest {
                 4000
             };
             ShortBuffer source = ShortBuffer.wrap(array);
-            data.setUncompressedData(source, compressedHdu.getHeader());
+            data.prepareUncompressedData(source, compressedHdu.getHeader());
             f.addHDU(compressedHdu);
             try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_rice.fits"))) {
                 // f.write(bdos);
@@ -344,7 +346,7 @@ public class ReadWriteProvidedCompressedImageTest {
                     /**/.setBlockSize(32);
             ShortBuffer source = ShortBuffer.wrap(new short[300 * 300]);
             ArrayFuncs.copyInto(this.m13_data, source.array());
-            data.setUncompressedData(source, compressedHdu.getHeader());
+            data.prepareUncompressedData(source, compressedHdu.getHeader());
             f.addHDU(compressedHdu);
             try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_rice.fits"))) {
                 // f.write(bdos);
@@ -363,7 +365,7 @@ public class ReadWriteProvidedCompressedImageTest {
                         .setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
                         .setTileSize(300, 3)//
                         .getCompressOption(RiceCompressOption.class)//
-                        /**/.setBytePix(32);
+                        /**/.setBytePix(4);
                 compressed.compress();
             }
         }

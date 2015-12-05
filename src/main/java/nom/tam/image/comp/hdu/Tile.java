@@ -1,4 +1,4 @@
-package nom.tam.image.comp;
+package nom.tam.image.comp.hdu;
 
 /*
  * #%L
@@ -37,6 +37,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import nom.tam.image.comp.ICompressOption;
 import nom.tam.util.PrimitiveTypeEnum;
 
 /**
@@ -56,21 +57,15 @@ abstract class Tile implements Runnable {
 
     protected TileCompressionType compressionType;
 
-    private int dataOffset;
-
-    protected Buffer decompressedData;
-
     protected Future<?> future;
 
-    protected int heigth;
+    protected TileImageRowBasedView imageDataView;
 
     protected double scale = Double.NaN;
 
     protected final int tileIndex;
 
     protected ICompressOption[] tileOptions;
-
-    protected int width;
 
     protected double zero = Double.NaN;
 
@@ -95,16 +90,11 @@ abstract class Tile implements Runnable {
         return this.compressionType;
     }
 
-    public int getDataOffset() {
-        return this.dataOffset;
-    }
-
-    public Buffer getDecompressedData() {
-        return this.decompressedData;
-    }
-
-    public int getHeigth() {
-        return this.heigth;
+    /**
+     * @return the number of pixels in this tile.
+     */
+    public int getPixelSize() {
+        return this.imageDataView.getPixelSize();
     }
 
     public double getScale() {
@@ -115,16 +105,8 @@ abstract class Tile implements Runnable {
         return this.tileIndex;
     }
 
-    public int getWidth() {
-        return this.width;
-    }
-
     public double getZero() {
         return this.zero;
-    }
-
-    protected void limitBuffer() {
-        this.decompressedData.limit(this.width * this.heigth);
     }
 
     public Tile setBlank(Integer value) {
@@ -140,28 +122,8 @@ abstract class Tile implements Runnable {
         return this;
     }
 
-    public Tile setCompressedData(ByteBuffer value) {
-        this.compressedData = value;
-        return this;
-    }
-
-    public Tile setCompressionType(TileCompressionType value) {
-        this.compressionType = value;
-        return this;
-    }
-
-    public Tile setDataOffset(int value) {
-        this.dataOffset = value;
-        return this;
-    }
-
-    public Tile setDecompressedData(Buffer value) {
-        this.decompressedData = value;
-        return this;
-    }
-
-    public Tile setHeigth(int value) {
-        this.heigth = value;
+    public Tile setDimentions(int dataOffset, int width, int heigth) {
+        this.imageDataView = new TileImageRowBasedView(this, dataOffset, width, heigth);
         return this;
     }
 
@@ -170,9 +132,35 @@ abstract class Tile implements Runnable {
         return this;
     }
 
-    public Tile setWidth(int value) {
-        this.width = value;
-        return this;
+    /**
+     * set the buffer that describes the whole image and let the tile create a
+     * slice of it from the position where the tile starts in the whole image.
+     * Attention this method is not multy thread able because it changes the
+     * position of the buffer parameter.
+     *
+     * @param buffer
+     *            the buffer that describes the whole image.
+     */
+    public void setWholeImageBuffer(Buffer buffer) {
+        this.imageDataView.setDecompressedData(buffer);
+    }
+
+    /**
+     * set the buffer that describes the whole compressed image and let the tile
+     * create a slice of it from the position where the tile starts in the whole
+     * image. Attention this method is not multy thread able because it changes
+     * the position of the buffer parameter. This buffer is just as big as the
+     * image buffer but will be reduced to the needed size as a last step of the
+     * Compression.
+     *
+     * @param compressed
+     *            the buffer that describes the whole image.
+     */
+    public void setWholeImageCompressedBuffer(ByteBuffer compressed) {
+        compressed.position(this.imageDataView.getDataOffset() * this.array.getBaseType().size());
+        this.compressedData = compressed.slice();
+        // we do not limit this buffer but is expected not to write more than
+        // the uncompressed size.
     }
 
     public Tile setZero(double value) {

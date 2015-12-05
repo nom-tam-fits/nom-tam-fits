@@ -1,4 +1,4 @@
-package nom.tam.image.comp;
+package nom.tam.image.comp.hdu;
 
 /*
  * #%L
@@ -31,9 +31,8 @@ package nom.tam.image.comp;
  * #L%
  */
 
-interface ITileInitialisation {
-
-    Tile createTile(int tileIndex);
-
-    void init(Tile tile);
+enum TileCompressionType {
+    COMPRESSED,
+    GZIP_COMPRESSED,
+    UNCOMPRESSED
 }

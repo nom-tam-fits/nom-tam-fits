@@ -39,15 +39,14 @@ import nom.tam.image.comp.gzip2.GZip2Compress.LongGZip2Compress;
 
 public class TileCompressorAlternativProvider implements ITileCompressorProvider {
 
+    public static ITileCompressorControl createControl(Class<?> clazz) {
+        return new TileCompressorProvider.TileCompressorControl(clazz);
+    }
+
     @Override
     public ITileCompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
         if ("X".equalsIgnoreCase(compressionAlgorithm) && quantAlgorithm == null && baseType.equals(long.class)) {
             return new ITileCompressorControl() {
-
-                @Override
-                public ICompressOption[] options() {
-                    return new ICompressOption[0];
-                }
 
                 @Override
                 public boolean compress(Buffer in, ByteBuffer out, ICompressOption... options) {
@@ -58,6 +57,11 @@ public class TileCompressorAlternativProvider implements ITileCompressorProvider
                 @Override
                 public void decompress(ByteBuffer in, Buffer out, ICompressOption... options) {
                     new LongGZip2Compress().decompress(in, (LongBuffer) out);
+                }
+
+                @Override
+                public ICompressOption[] options() {
+                    return new ICompressOption[0];
                 }
 
             };

@@ -1,4 +1,4 @@
-package nom.tam.image.comp;
+package nom.tam.image.comp.hdu;
 
 /*
  * #%L
@@ -53,15 +53,15 @@ public class DecompressingTile extends Tile {
                         .setBZero(this.zero) //
                         .setBScale(this.scale) //
                         .setBNull(this.blank)//
-                        .setTileWidth(this.width) //
-                        .setTileHeigth(this.heigth);
+                        .setTileWidth(this.imageDataView.getWidth()) //
+                        .setTileHeigth(this.imageDataView.getHeigth());
             }
-            this.array.getCompressorControl().decompress(this.compressedData, this.decompressedData, this.tileOptions);
+            this.array.getCompressorControl().decompress(this.compressedData, this.imageDataView.getBuffer(), this.tileOptions);
         } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
-            this.array.getGzipCompressorControl().decompress(this.compressedData, this.decompressedData);
+            this.array.getGzipCompressorControl().decompress(this.compressedData, this.imageDataView.getBuffer());
         } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {
             Buffer typedBuffer = this.array.getBaseType().asTypedBuffer(this.compressedData);
-            this.array.getBaseType().appendBuffer(this.decompressedData, typedBuffer);
+            this.array.getBaseType().appendBuffer(this.imageDataView.getBuffer(), typedBuffer);
         } else {
             LOG.severe("Unknown compression column");
             throw new IllegalStateException("Unknown compression column");
@@ -70,7 +70,6 @@ public class DecompressingTile extends Tile {
 
     @Override
     public void run() {
-        limitBuffer();
         decompress();
     }
 }

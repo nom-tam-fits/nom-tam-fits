@@ -1,4 +1,4 @@
-package nom.tam.image.comp;
+package nom.tam.image.comp.hdu;
 
 /*
  * #%L
@@ -62,13 +62,15 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardBuilder;
 import nom.tam.fits.header.Compression;
+import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
+import nom.tam.image.comp.TileCompressorProvider;
 import nom.tam.util.PrimitiveTypeEnum;
 
 /**
  * This class represents a complete array of tiles describing an image ordered
  * from left to right and top down. the tiles all have the same geometry only
- * the tiles at the right side and the bottom side can have differnt sizes.
+ * the tiles at the right side and the bottom side can have different sizes.
  */
 class TileArray {
 
@@ -81,8 +83,6 @@ class TileArray {
      * uncompressed FITS image
      */
     private PrimitiveTypeEnum baseType;
-
-    private int bufferSize;
 
     /**
      * ZCMPTYPE name of the algorithm that was used to compress
@@ -161,11 +161,9 @@ class TileArray {
             for (int x = 0; x < this.axes[0]; x += this.tileAxes[0]) {
                 boolean lastX = x + this.tileAxes[0] >= this.axes[0];
                 this.tiles[tileIndex] = init.createTile(tileIndex)//
-                        .setDataOffset(dataOffset)//
-                        .setWidth(lastX ? lastTileWidth : this.tileAxes[0])//
-                        .setHeigth(lastY ? lastTileHeigth : this.tileAxes[1]);
+                        .setDimentions(dataOffset, lastX ? lastTileWidth : this.tileAxes[0], lastY ? lastTileHeigth : this.tileAxes[1]);
                 init.init(this.tiles[tileIndex]);
-                dataOffset += this.tiles[tileIndex].getWidth() * this.tiles[tileIndex].getHeigth();
+                dataOffset += this.tiles[tileIndex].getPixelSize();
                 tileIndex++;
             }
         }
@@ -178,8 +176,7 @@ class TileArray {
             this.decompressedWholeErea = this.baseType.newBuffer(pixels);
         }
         for (Tile tile : this.tiles) {
-            this.decompressedWholeErea.position(tile.getDataOffset());
-            tile.setDecompressedData(this.baseType.sliceBuffer(this.decompressedWholeErea));
+            tile.setWholeImageBuffer(this.decompressedWholeErea);
         }
         for (ICompressOption option : compressOptions()) {
             option.setCompressionParameter(this.compressionParameter);
@@ -204,7 +201,11 @@ class TileArray {
     }
 
     public int getBufferSize() {
-        return this.bufferSize;
+        int bufferSize = 1;
+        for (int axisValue : this.axes) {
+            bufferSize *= axisValue;
+        }
+        return bufferSize;
     }
 
     public ICompressOption[] getCompressOptions() {
@@ -252,17 +253,16 @@ class TileArray {
 
             @Override
             public void init(Tile tile) {
-                buffer.position(tile.getDataOffset());
-                tile.setDecompressedData(TileArray.this.baseType.sliceBuffer(buffer));
-                compressed.position(tile.getDataOffset() * TileArray.this.baseType.size());
-                tile.setCompressedData(compressed.slice());
+                tile.setWholeImageBuffer(buffer);
+                tile.setWholeImageCompressedBuffer(compressed);
+
             }
         });
         return this;
     }
 
     protected TileArray read(Header header) throws FitsException {
-        readStructureInfo(header);
+        readHeader(header);
         this.compressAlgorithm = header.getStringValue(ZCMPTYPE);
         this.zblank = getNullableValue(header, Integer.class);
         this.quantAlgorithm = header.getStringValue(ZQUANTIZ);
@@ -295,26 +295,42 @@ class TileArray {
         return this;
     }
 
-    protected void readStructureInfo(Header header) throws FitsException {
-        this.baseType = PrimitiveTypeEnum.valueOf(header.getIntValue(ZBITPIX));
-        this.naxis = header.getIntValue(ZNAXIS);
-        this.axes = new int[this.naxis];
-        this.bufferSize = 1;
-        for (int i = 1; i <= this.naxis; i += 1) {
-            int axisValue = header.getIntValue(ZNAXISn.n(i), -1);
-            this.axes[i - 1] = axisValue;
-            if (this.axes[i - 1] == -1) {
-                throw new FitsException("Required ZNAXISn not found");
+    private void readAxis(Header header) throws FitsException {
+        if (this.axes == null || this.axes.length == 0) {
+            this.naxis = header.getIntValue(ZNAXIS);
+            this.axes = new int[this.naxis];
+            for (int i = 1; i <= this.naxis; i += 1) {
+                int axisValue = header.getIntValue(ZNAXISn.n(i), -1);
+                this.axes[i - 1] = axisValue;
+                if (this.axes[i - 1] == -1) {
+                    throw new FitsException("Required ZNAXISn not found");
+                }
             }
-            this.bufferSize *= axisValue;
         }
-        this.tileAxes = new int[this.axes.length];
-        Arrays.fill(this.tileAxes, 1);
-        this.tileAxes[0] = this.axes[0];
-        for (int i = 1; i <= this.naxis; i += 1) {
-            HeaderCard card = header.findCard(ZTILEn.n(i));
-            if (card != null) {
-                this.tileAxes[i - 1] = card.getValue(Integer.class, this.axes[i - 1]);
+    }
+
+    private void readBaseType(Header header) {
+        if (this.baseType == null) {
+            this.baseType = PrimitiveTypeEnum.valueOf(header.getIntValue(ZBITPIX));
+        }
+    }
+
+    protected void readHeader(Header header) throws FitsException {
+        readBaseType(header);
+        readAxis(header);
+        readTileAxis(header);
+    }
+
+    private void readTileAxis(Header header) {
+        if (this.tileAxes == null || this.tileAxes.length == 0) {
+            this.tileAxes = new int[this.axes.length];
+            Arrays.fill(this.tileAxes, 1);
+            this.tileAxes[0] = this.axes[0];
+            for (int i = 1; i <= this.naxis; i += 1) {
+                HeaderCard card = header.findCard(ZTILEn.n(i));
+                if (card != null) {
+                    this.tileAxes[i - 1] = card.getValue(Integer.class, this.axes[i - 1]);
+                }
             }
         }
     }
@@ -343,11 +359,6 @@ class TileArray {
 
     public TileArray setBaseType(PrimitiveTypeEnum value) {
         this.baseType = value;
-        return this;
-    }
-
-    public TileArray setBufferSize(int value) {
-        this.bufferSize = value;
         return this;
     }
 

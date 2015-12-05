@@ -56,33 +56,25 @@ public class CreateTstImages {
 
     private static final String FUNPACK = "/home/nir/ws/cfitsio/funpack";
 
-    public static void main(String[] args) throws Exception {
-        new File("target/compress").mkdirs();
-        testDataDouble(100, 0d);
-        testDataFloat(100, 0f);
-        testDataLong(100, 0L);
-        testDataInt(100, 0);
-        testDataShort(100, (short) 0);
-        testDatabyte(100);
-        testDataDouble(99, -1000d);
-        testDataFloat(99, -100f);
-        testDataLong(99, -100L);
-        testDataInt(99, -100);
-        testDataShort(99, (short) -10);
-        testDatabyte(99);
-        extractCompressedData(100, "32");
-        extractCompressedData(100, "16");
-        extractCompressedData(100, "8");
-        extractCompressedData(100, "-64");
-        extractCompressedData(100, "-32");
-        extractCompressedData(100, "64");
+    private static void createCompressedData(int edge, String nr, List<String> types, File fitsFile, File compressedFile, String[] options, String type) throws Exception,
+            IOException {
+        compressedFile.delete();
+        String[] cmdarray = new String[options.length + 3];
+        cmdarray[0] = FPACK;
+        cmdarray[1] = "-w";
+        cmdarray[cmdarray.length - 1] = fitsFile.getAbsolutePath();
 
-        extractCompressedData(99, "32");
-        extractCompressedData(99, "16");
-        extractCompressedData(99, "8");
-        extractCompressedData(99, "-64");
-        extractCompressedData(99, "-32");
-        extractCompressedData(99, "64");
+        System.arraycopy(options, 0, cmdarray, 2, options.length);
+        wait(Runtime.getRuntime().exec(cmdarray));
+        File gzip2File = new File("target/compress/test" + edge + "Data" + type + nr + ".fits.fz");
+        gzip2File.delete();
+        compressedFile.renameTo(gzip2File);
+        wait(Runtime.getRuntime().exec(new String[]{
+            FUNPACK,
+            gzip2File.getAbsolutePath()
+        }));
+        new File("target/compress/test" + edge + "Data" + type + nr + ".fits").renameTo(new File("target/compress/test" + edge + "Data" + type + nr + ".fits.uncompressed"));
+        types.add(type);
     }
 
     private static void extractCompressedData(int edge, String nr) throws Exception {
@@ -173,90 +165,86 @@ public class CreateTstImages {
         }
     }
 
-    private static void writeBinData(int edge, String nr, ByteBuffer dataBuffer) throws FileNotFoundException, IOException {
-        File binFileName = new File("target/compress/test" + edge + "Data" + nr + ".bin");
-        if (!binFileName.exists()) {
-            if (nr.equals("-64")) {
-                "".toString();
-            }
-            RandomAccessFile binfile = new RandomAccessFile(binFileName, "rw");
-            binfile.write(dataBuffer.array(), 0, dataBuffer.position());
-            binfile.close();
-        }
-    }
-
     private static ByteBuffer getByteData(Object dataOrg) {
         ByteBuffer dataBuffer = ByteBuffer.wrap(new byte[1024 * 1024]);
         if (dataOrg instanceof int[][]) {
             int[][] intArray = (int[][]) dataOrg;
-            for (int x = 0; x < intArray.length; x++) {
+            for (int[] element : intArray) {
                 for (int y = 0; y < intArray[0].length; y++) {
-                    dataBuffer.putInt(intArray[x][y]);
+                    dataBuffer.putInt(element[y]);
                 }
             }
         }
         if (dataOrg instanceof short[][]) {
             short[][] intArray = (short[][]) dataOrg;
-            for (int x = 0; x < intArray.length; x++) {
+            for (short[] element : intArray) {
                 for (int y = 0; y < intArray[0].length; y++) {
-                    dataBuffer.putShort(intArray[x][y]);
+                    dataBuffer.putShort(element[y]);
                 }
             }
         }
         if (dataOrg instanceof byte[][]) {
             byte[][] intArray = (byte[][]) dataOrg;
-            for (int x = 0; x < intArray.length; x++) {
+            for (byte[] element : intArray) {
                 for (int y = 0; y < intArray[0].length; y++) {
-                    dataBuffer.put(intArray[x][y]);
+                    dataBuffer.put(element[y]);
                 }
             }
         }
         if (dataOrg instanceof long[][]) {
             long[][] intArray = (long[][]) dataOrg;
-            for (int x = 0; x < intArray.length; x++) {
+            for (long[] element : intArray) {
                 for (int y = 0; y < intArray[0].length; y++) {
-                    dataBuffer.putLong(intArray[x][y]);
+                    dataBuffer.putLong(element[y]);
                 }
             }
         }
         if (dataOrg instanceof float[][]) {
             float[][] intArray = (float[][]) dataOrg;
-            for (int x = 0; x < intArray.length; x++) {
+            for (float[] element : intArray) {
                 for (int y = 0; y < intArray[0].length; y++) {
-                    dataBuffer.putFloat(intArray[x][y]);
+                    dataBuffer.putFloat(element[y]);
                 }
             }
         }
         if (dataOrg instanceof double[][]) {
             double[][] intArray = (double[][]) dataOrg;
-            for (int x = 0; x < intArray.length; x++) {
+            for (double[] element : intArray) {
                 for (int y = 0; y < intArray[0].length; y++) {
-                    dataBuffer.putDouble(intArray[x][y]);
+                    dataBuffer.putDouble(element[y]);
                 }
             }
         }
         return dataBuffer;
     }
 
-    private static void createCompressedData(int edge, String nr, List<String> types, File fitsFile, File compressedFile, String[] options, String type) throws Exception,
-            IOException {
-        compressedFile.delete();
-        String[] cmdarray = new String[options.length + 3];
-        cmdarray[0] = FPACK;
-        cmdarray[1] = "-w";
-        cmdarray[cmdarray.length - 1] = fitsFile.getAbsolutePath();
+    public static void main(String[] args) throws Exception {
+        new File("target/compress").mkdirs();
+        testDataDouble(100, 0d);
+        testDataFloat(100, 0f);
+        testDataLong(100, 0L);
+        testDataInt(100, 0);
+        testDataShort(100, (short) 0);
+        testDatabyte(100);
+        testDataDouble(99, -1000d);
+        testDataFloat(99, -100f);
+        testDataLong(99, -100L);
+        testDataInt(99, -100);
+        testDataShort(99, (short) -10);
+        testDatabyte(99);
+        extractCompressedData(100, "32");
+        extractCompressedData(100, "16");
+        extractCompressedData(100, "8");
+        extractCompressedData(100, "-64");
+        extractCompressedData(100, "-32");
+        extractCompressedData(100, "64");
 
-        System.arraycopy(options, 0, cmdarray, 2, options.length);
-        wait(Runtime.getRuntime().exec(cmdarray));
-        File gzip2File = new File("target/compress/test" + edge + "Data" + type + nr + ".fits.fz");
-        gzip2File.delete();
-        compressedFile.renameTo(gzip2File);
-        wait(Runtime.getRuntime().exec(new String[]{
-            FUNPACK,
-            gzip2File.getAbsolutePath()
-        }));
-        new File("target/compress/test" + edge + "Data" + type + nr + ".fits").renameTo(new File("target/compress/test" + edge + "Data" + type + nr + ".fits.uncompressed"));
-        types.add(type);
+        extractCompressedData(99, "32");
+        extractCompressedData(99, "16");
+        extractCompressedData(99, "8");
+        extractCompressedData(99, "-64");
+        extractCompressedData(99, "-32");
+        extractCompressedData(99, "64");
     }
 
     private static boolean notEqual(byte[] data, byte[] data2) {
@@ -271,19 +259,24 @@ public class CreateTstImages {
         return false;
     }
 
-    private static void wait(Process exec) throws Exception {
-        InputStream in = exec.getErrorStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            System.out.println("ERR:" + line);
+    private static void testDatabyte(int edge) throws FitsException, IOException {
+        int maxValue = Byte.MAX_VALUE / 2;
+        byte[][] image = new byte[edge][edge];
+        for (int x = 0; x < edge; x++) {
+            for (int y = 0; y < edge; y++) {
+                double distX = (x - edge / 2d) / 50d;
+                double distY = (y - edge / 2d) / 50d;
+                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)), 0.999999999999999999999999999999999999);
+                image[y][x] = (byte) (maxValue - dist * maxValue);
+            }
         }
-        in = exec.getInputStream();
-        reader = new BufferedReader(new InputStreamReader(in));
-        while ((line = reader.readLine()) != null) {
-            System.out.println("OUT:" + line);
-        }
-        exec.waitFor();
+        BasicHDU<?> hdu = FitsFactory.hduFactory(image);
+        Fits fits = new Fits();
+        fits.addHDU(hdu);
+        BufferedFile bf = new BufferedFile("target/compress/test" + edge + "Data8.fits", "rw");
+        fits.write(bf);
+        bf.flush();
+        bf.close();
     }
 
     private static void testDataDouble(int edge, double offset) throws FitsException, IOException {
@@ -294,7 +287,7 @@ public class CreateTstImages {
                 double distX = (x - edge / 2d) / 50d;
                 double distY = (y - edge / 2d) / 50d;
                 double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)), 0.999999999999999999999999999999999999);
-                image[y][x] = (maxValue - dist * maxValue) + offset;
+                image[y][x] = maxValue - dist * maxValue + offset;
             }
         }
         BasicHDU<?> hdu = FitsFactory.hduFactory(image);
@@ -326,26 +319,6 @@ public class CreateTstImages {
         bf.close();
     }
 
-    private static void testDataLong(int edge, long offset) throws FitsException, IOException {
-        long maxValue = Long.MAX_VALUE / 2;
-        long[][] image = new long[edge][edge];
-        for (int x = 0; x < edge; x++) {
-            for (int y = 0; y < edge; y++) {
-                double distX = (x - edge / 2d) / 50d;
-                double distY = (y - edge / 2d) / 50d;
-                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)), 0.999999999999999999999999999999999999);
-                image[y][x] = (long) (maxValue - dist * maxValue) + offset;
-            }
-        }
-        BasicHDU<?> hdu = FitsFactory.hduFactory(image);
-        Fits fits = new Fits();
-        fits.addHDU(hdu);
-        BufferedFile bf = new BufferedFile("target/compress/test" + edge + "Data64.fits", "rw");
-        fits.write(bf);
-        bf.flush();
-        bf.close();
-    }
-
     private static void testDataInt(int edge, int offset) throws FitsException, IOException {
         int maxValue = Integer.MAX_VALUE / 2;
         int[][] image = new int[edge][edge];
@@ -361,6 +334,26 @@ public class CreateTstImages {
         Fits fits = new Fits();
         fits.addHDU(hdu);
         BufferedFile bf = new BufferedFile("target/compress/test" + edge + "Data32.fits", "rw");
+        fits.write(bf);
+        bf.flush();
+        bf.close();
+    }
+
+    private static void testDataLong(int edge, long offset) throws FitsException, IOException {
+        long maxValue = Long.MAX_VALUE / 2;
+        long[][] image = new long[edge][edge];
+        for (int x = 0; x < edge; x++) {
+            for (int y = 0; y < edge; y++) {
+                double distX = (x - edge / 2d) / 50d;
+                double distY = (y - edge / 2d) / 50d;
+                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)), 0.999999999999999999999999999999999999);
+                image[y][x] = (long) (maxValue - dist * maxValue) + offset;
+            }
+        }
+        BasicHDU<?> hdu = FitsFactory.hduFactory(image);
+        Fits fits = new Fits();
+        fits.addHDU(hdu);
+        BufferedFile bf = new BufferedFile("target/compress/test" + edge + "Data64.fits", "rw");
         fits.write(bf);
         bf.flush();
         bf.close();
@@ -386,23 +379,30 @@ public class CreateTstImages {
         bf.close();
     }
 
-    private static void testDatabyte(int edge) throws FitsException, IOException {
-        int maxValue = Byte.MAX_VALUE / 2;
-        byte[][] image = new byte[edge][edge];
-        for (int x = 0; x < edge; x++) {
-            for (int y = 0; y < edge; y++) {
-                double distX = (x - edge / 2d) / 50d;
-                double distY = (y - edge / 2d) / 50d;
-                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)), 0.999999999999999999999999999999999999);
-                image[y][x] = (byte) (maxValue - dist * maxValue);
-            }
+    private static void wait(Process exec) throws Exception {
+        InputStream in = exec.getErrorStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            System.out.println("ERR:" + line);
         }
-        BasicHDU<?> hdu = FitsFactory.hduFactory(image);
-        Fits fits = new Fits();
-        fits.addHDU(hdu);
-        BufferedFile bf = new BufferedFile("target/compress/test" + edge + "Data8.fits", "rw");
-        fits.write(bf);
-        bf.flush();
-        bf.close();
+        in = exec.getInputStream();
+        reader = new BufferedReader(new InputStreamReader(in));
+        while ((line = reader.readLine()) != null) {
+            System.out.println("OUT:" + line);
+        }
+        exec.waitFor();
+    }
+
+    private static void writeBinData(int edge, String nr, ByteBuffer dataBuffer) throws FileNotFoundException, IOException {
+        File binFileName = new File("target/compress/test" + edge + "Data" + nr + ".bin");
+        if (!binFileName.exists()) {
+            if (nr.equals("-64")) {
+                "".toString();
+            }
+            RandomAccessFile binfile = new RandomAccessFile(binFileName, "rw");
+            binfile.write(dataBuffer.array(), 0, dataBuffer.position());
+            binfile.close();
+        }
     }
 }

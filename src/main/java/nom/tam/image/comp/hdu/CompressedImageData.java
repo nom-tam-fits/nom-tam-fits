@@ -1,4 +1,4 @@
-package nom.tam.image.comp;
+package nom.tam.image.comp.hdu;
 
 /*
  * #%L
@@ -36,6 +36,7 @@ import java.nio.Buffer;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
+import nom.tam.image.comp.ICompressOption;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.PrimitiveTypeEnum;
 
@@ -77,10 +78,14 @@ public class CompressedImageData extends BinaryTable {
     }
 
     public void prepareUncompressedData(Object data, Header header) throws FitsException {
-        tileArray().readStructureInfo(header);
-        Buffer source = tileArray().getBaseType().newBuffer(tileArray().getBufferSize());
-        ArrayFuncs.copyInto(data, source.array());
-        tileArray().prepareUncompressedData(source);
+        tileArray().readHeader(header);
+        if (data instanceof Buffer) {
+            tileArray().prepareUncompressedData((Buffer) data);
+        } else {
+            Buffer source = tileArray().getBaseType().newBuffer(this.tileArray.getBufferSize());
+            ArrayFuncs.copyInto(data, source.array());
+            tileArray().prepareUncompressedData(source);
+        }
     }
 
     public CompressedImageData setBitPix(int bitPix) {
@@ -105,17 +110,6 @@ public class CompressedImageData extends BinaryTable {
 
     public CompressedImageData setTileSize(int... axes) {
         tileArray().setTileAxes(axes);
-        return this;
-    }
-
-    public CompressedImageData setUncompressedData(Buffer buffer, Header header) throws FitsException {
-        try {
-            tileArray()//
-                    .prepareUncompressedData(buffer)//
-                    .compress(header);
-        } finally {
-            this.tileArray = null;
-        }
         return this;
     }
 
