@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import nom.tam.fits.utilities.FitsHeaderCardParser;
@@ -57,6 +59,8 @@ import nom.tam.util.CursorValue;
  * for a FITS Header.
  */
 public class HeaderCard implements CursorValue<String> {
+
+    private static final Logger LOG = Logger.getLogger(HeaderCard.class.getName());
 
     private static final String CONTINUE_CARD_PREFIX = CONTINUE.key() + "  '";
 
@@ -918,6 +922,36 @@ public class HeaderCard implements CursorValue<String> {
                 buf.completeLine();
                 stringValue.rest();
             }
+        }
+    }
+
+    /**
+     * This method is only used internally when it is sure that the creation of
+     * the card is granted not to throw an exception
+     * 
+     * @param key
+     *            the key for the card
+     * @param value
+     *            the value of the card
+     * @param comment
+     *            the comment for the card
+     * @return the new HeaderCard
+     */
+    protected static HeaderCard saveNewHeaderCard(String key, Object value, String comment) {
+        try {
+            if (value instanceof String) {
+                return new HeaderCard(key, (String) value, comment);
+            } else if (value instanceof Boolean) {
+                return new HeaderCard(key, ((Boolean) value).booleanValue(), comment);
+            } else if (value instanceof Integer) {
+                return new HeaderCard(key, ((Integer) value).intValue(), comment);
+            } else if (value == null) {
+                return new HeaderCard(key, (String) null, comment);
+            }
+            throw new IllegalStateException("not supported save value");
+        } catch (HeaderCardException e) {
+            LOG.log(Level.SEVERE, "Impossible Exception for internal card creation:" + key + ":" + value, e);
+            throw new IllegalStateException(e);
         }
     }
 }

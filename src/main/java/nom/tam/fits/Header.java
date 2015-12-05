@@ -511,12 +511,8 @@ public class Header implements FitsElement {
                 this.iter.remove();
             }
         }
-        try {
-            // End cannot have a comment
-            this.iter.add(new HeaderCard(END.key(), (String) null, null));
-        } catch (HeaderCardException e) {
-            LOG.severe("can not happen");
-        }
+        // End cannot have a comment
+        this.iter.add(HeaderCard.saveNewHeaderCard(END.key(), (String) null, null));
     }
 
     /**
@@ -1136,14 +1132,7 @@ public class Header implements FitsElement {
      *            A string to follow the header.
      */
     public void insertCommentStyle(String header, String value) {
-        // Should just truncate strings, so we should never get
-        // an exception...
-
-        try {
-            this.iter.add(new HeaderCard(header, (String) null, value));
-        } catch (HeaderCardException e) {
-            System.err.println("Impossible Exception for comment style:" + header + ":" + value);
-        }
+        this.iter.add(HeaderCard.saveNewHeaderCard(header, (String) null, value));
     }
 
     /**
@@ -1479,11 +1468,7 @@ public class Header implements FitsElement {
     public void setBitpix(int val) {
         this.iter = iterator();
         this.iter.next();
-        try {
-            this.iter.add(new HeaderCard(BITPIX.key(), val, BITPIX.comment()));
-        } catch (HeaderCardException e) {
-            System.err.println("Impossible exception at setBitpix " + e);
-        }
+        this.iter.add(HeaderCard.saveNewHeaderCard(BITPIX.key(), val, BITPIX.comment()));
     }
 
     /**
@@ -1497,12 +1482,7 @@ public class Header implements FitsElement {
         if (this.iter.hasNext()) {
             this.iter.next();
         }
-
-        try {
-            this.iter.add(new HeaderCard(NAXIS.key(), val, NAXIS.comment()));
-        } catch (HeaderCardException e) {
-            System.err.println("Impossible exception at setNaxes " + e);
-        }
+        this.iter.add(HeaderCard.saveNewHeaderCard(NAXIS.key(), val, NAXIS.comment()));
     }
 
     /**
@@ -1527,12 +1507,8 @@ public class Header implements FitsElement {
         if (this.iter.hasNext()) {
             this.iter.next();
         }
-        try {
-            IFitsHeader naxisKey = NAXISn.n(axis);
-            this.iter.add(new HeaderCard(naxisKey.key(), dim, naxisKey.comment()));
-        } catch (HeaderCardException e) {
-            LOG.log(Level.SEVERE, "Impossible exception at setNaxis", e);
-        }
+        IFitsHeader naxisKey = NAXISn.n(axis);
+        this.iter.add(HeaderCard.saveNewHeaderCard(naxisKey.key(), dim, naxisKey.comment()));
     }
 
     /**
@@ -1565,11 +1541,7 @@ public class Header implements FitsElement {
             }
         }
         this.iter = iterator();
-        try {
-            this.iter.add(new HeaderCard(SIMPLE.key(), val, SIMPLE.comment()));
-        } catch (HeaderCardException e) {
-            LOG.log(Level.FINE, "Impossible exception at setSimple ", e);
-        }
+        this.iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), val, SIMPLE.comment()));
     }
 
     /**
@@ -1584,11 +1556,7 @@ public class Header implements FitsElement {
         deleteKey(XTENSION);
         deleteKey(EXTEND);
         this.iter = iterator();
-        try {
-            this.iter.add(new HeaderCard(XTENSION.key(), val, XTENSION.comment()));
-        } catch (HeaderCardException e) {
-            System.err.println("Impossible exception at setXtension " + e);
-        }
+        this.iter.add(HeaderCard.saveNewHeaderCard(XTENSION.key(), val, XTENSION.comment()));
     }
 
     /**
