@@ -32,6 +32,7 @@ package nom.tam.fits.test;
  */
 
 import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.END;
 import static nom.tam.fits.header.Standard.EXTEND;
 import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.NAXISn;
@@ -52,6 +53,7 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -68,6 +70,7 @@ import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.utilities.FitsHeaderCardParser;
 import nom.tam.fits.utilities.FitsHeaderCardParser.ParsedValue;
+import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
@@ -364,6 +367,7 @@ public class HeaderTest {
         assertEquals("NAXIS2", 300, hdr.getIntValue(NAXISn.n(2)));
         assertEquals("NAXIS2a", 300, hdr.getIntValue(NAXISn.n(2), -1));
         assertEquals("NAXIS3", -1, hdr.getIntValue(NAXISn.n(3), -1));
+        assertEquals("NAXIS3", -1, hdr.getIntValue(NAXISn.n(3).key(), -1));
 
         assertEquals("BITPIX", BigInteger.valueOf(-32), hdr.getBigIntegerValue(BITPIX.name()));
 
@@ -788,5 +792,27 @@ public class HeaderTest {
         // lets see if the blanks after the value are removed.
         assertEquals("TESTVALUE 'QUOTED' TRIMMSTUFF", parsedValue.getValue());
 
+    }
+
+    @Test(expected = FitsException.class)
+    public void writeEmptyHeader() throws Exception {
+        ArrayDataOutput dos = new BufferedDataOutputStream(new ByteArrayOutputStream() {
+
+            @Override
+            public synchronized void write(byte[] b, int off, int len) {
+                HeaderTest.<RuntimeException> throwAny(new IOException("all goes wrong!"));
+            }
+        }, 80);
+        Header header = new Header();
+        header.addValue(SIMPLE, true);
+        header.addValue(BITPIX, 1);
+        header.addValue(NAXIS, 0);
+        header.addValue(END, true);
+
+        header.write(dos);
+    }
+
+    private static <E extends Throwable> void throwAny(Throwable e) throws E {
+        throw (E) e;
     }
 }

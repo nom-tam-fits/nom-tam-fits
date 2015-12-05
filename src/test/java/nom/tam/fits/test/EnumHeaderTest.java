@@ -120,6 +120,13 @@ public class EnumHeaderTest {
         // by String
         Assert.assertEquals(10, hdr.getIntValue("NAXIS1"));
         Assert.assertEquals(20, hdr.getIntValue("NAXIS2"));
+
+        hdr.addValue(NAXISn.n(1), 10L);
+        hdr.addValue(NAXISn.n(2), 20L);
+
+        Assert.assertEquals(10, hdr.getIntValue("NAXIS1"));
+        Assert.assertEquals(20, hdr.getIntValue("NAXIS2"));
+
     }
 
     @Test

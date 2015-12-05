@@ -512,7 +512,7 @@ public class Header implements FitsElement {
             }
         }
         // End cannot have a comment
-        this.iter.add(HeaderCard.saveNewHeaderCard(END.key(), (String) null, null));
+        this.iter.add(HeaderCard.saveNewHeaderCard(END.key(), null, false));
     }
 
     /**
@@ -1132,7 +1132,7 @@ public class Header implements FitsElement {
      *            A string to follow the header.
      */
     public void insertCommentStyle(String header, String value) {
-        this.iter.add(HeaderCard.saveNewHeaderCard(header, (String) null, value));
+        this.iter.add(HeaderCard.saveNewHeaderCard(header, value, false));
     }
 
     /**
@@ -1468,7 +1468,7 @@ public class Header implements FitsElement {
     public void setBitpix(int val) {
         this.iter = iterator();
         this.iter.next();
-        this.iter.add(HeaderCard.saveNewHeaderCard(BITPIX.key(), val, BITPIX.comment()));
+        this.iter.add(HeaderCard.saveNewHeaderCard(BITPIX.key(), BITPIX.comment(), false).setValue(val));
     }
 
     /**
@@ -1482,7 +1482,7 @@ public class Header implements FitsElement {
         if (this.iter.hasNext()) {
             this.iter.next();
         }
-        this.iter.add(HeaderCard.saveNewHeaderCard(NAXIS.key(), val, NAXIS.comment()));
+        this.iter.add(HeaderCard.saveNewHeaderCard(NAXIS.key(), NAXIS.comment(), false).setValue(val));
     }
 
     /**
@@ -1508,7 +1508,7 @@ public class Header implements FitsElement {
             this.iter.next();
         }
         IFitsHeader naxisKey = NAXISn.n(axis);
-        this.iter.add(HeaderCard.saveNewHeaderCard(naxisKey.key(), dim, naxisKey.comment()));
+        this.iter.add(HeaderCard.saveNewHeaderCard(naxisKey.key(), naxisKey.comment(), false).setValue(dim));
     }
 
     /**
@@ -1541,7 +1541,7 @@ public class Header implements FitsElement {
             }
         }
         this.iter = iterator();
-        this.iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), val, SIMPLE.comment()));
+        this.iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), SIMPLE.comment(), false).setValue(val));
     }
 
     /**
@@ -1556,7 +1556,7 @@ public class Header implements FitsElement {
         deleteKey(XTENSION);
         deleteKey(EXTEND);
         this.iter = iterator();
-        this.iter.add(HeaderCard.saveNewHeaderCard(XTENSION.key(), val, XTENSION.comment()));
+        this.iter.add(HeaderCard.saveNewHeaderCard(XTENSION.key(), XTENSION.comment(), true).setValue(val));
     }
 
     /**
@@ -1695,9 +1695,6 @@ public class Header implements FitsElement {
         this.cards.sort(new HeaderOrder());
         checkBeginning();
         checkEnd();
-        if (this.cards.size() <= 0) {
-            return;
-        }
         Cursor<String, HeaderCard> writeIterator = this.cards.iterator(0);
         try {
             while (writeIterator.hasNext()) {

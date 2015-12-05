@@ -690,9 +690,11 @@ public class HeaderCard implements CursorValue<String> {
      *
      * @param update
      *            the new value to set
+     * @return the headercard itself
      */
-    public void setValue(boolean update) {
+    public HeaderCard setValue(boolean update) {
         this.value = update ? "T" : "F";
+        return this;
     }
 
     /**
@@ -700,9 +702,11 @@ public class HeaderCard implements CursorValue<String> {
      *
      * @param update
      *            the new value to set
+     * @return the headercard itself
      */
-    public void setValue(double update) {
+    public HeaderCard setValue(double update) {
         this.value = dblString(update);
+        return this;
     }
 
     /**
@@ -710,9 +714,11 @@ public class HeaderCard implements CursorValue<String> {
      *
      * @param update
      *            the new value to set
+     * @return the headercard itself
      */
-    public void setValue(float update) {
+    public HeaderCard setValue(float update) {
         this.value = dblString(update);
+        return this;
     }
 
     /**
@@ -720,9 +726,11 @@ public class HeaderCard implements CursorValue<String> {
      *
      * @param update
      *            the new value to set
+     * @return the headercard itself
      */
-    public void setValue(int update) {
+    public HeaderCard setValue(int update) {
         this.value = String.valueOf(update);
+        return this;
     }
 
     /**
@@ -730,9 +738,11 @@ public class HeaderCard implements CursorValue<String> {
      *
      * @param update
      *            the new value to set
+     * @return the headercard itself
      */
-    public void setValue(long update) {
+    public HeaderCard setValue(long update) {
         this.value = String.valueOf(update);
+        return this;
     }
 
     /**
@@ -740,9 +750,11 @@ public class HeaderCard implements CursorValue<String> {
      *
      * @param update
      *            the new value to set
+     * @return the headercard itself
      */
-    public void setValue(String update) {
+    public HeaderCard setValue(String update) {
         this.value = update;
+        return this;
     }
 
     /**
@@ -931,26 +943,17 @@ public class HeaderCard implements CursorValue<String> {
      * 
      * @param key
      *            the key for the card
-     * @param value
-     *            the value of the card
      * @param comment
      *            the comment for the card
+     * @param isString
+     *            is this a string value card?
      * @return the new HeaderCard
      */
-    protected static HeaderCard saveNewHeaderCard(String key, Object value, String comment) {
+    protected static HeaderCard saveNewHeaderCard(String key, String comment, boolean isString) {
         try {
-            if (value instanceof String) {
-                return new HeaderCard(key, (String) value, comment);
-            } else if (value instanceof Boolean) {
-                return new HeaderCard(key, ((Boolean) value).booleanValue(), comment);
-            } else if (value instanceof Integer) {
-                return new HeaderCard(key, ((Integer) value).intValue(), comment);
-            } else if (value == null) {
-                return new HeaderCard(key, (String) null, comment);
-            }
-            throw new IllegalStateException("not supported save value");
+            return new HeaderCard(key, null, comment, false, isString);
         } catch (HeaderCardException e) {
-            LOG.log(Level.SEVERE, "Impossible Exception for internal card creation:" + key + ":" + value, e);
+            LOG.log(Level.SEVERE, "Impossible Exception for internal card creation:" + key, e);
             throw new IllegalStateException(e);
         }
     }

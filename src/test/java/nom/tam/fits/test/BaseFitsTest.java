@@ -66,7 +66,6 @@ import nom.tam.util.Cursor;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class BaseFitsTest {
@@ -88,9 +87,12 @@ public class BaseFitsTest {
         Fits fits1 = makeAsciiTable();
 
         BasicHDU<?> image = fits1.readHDU();
+        Assert.assertEquals(0L, image.getHeader().getFileOffset());
+
         AsciiTableHDU hdu2 = (AsciiTableHDU) fits1.readHDU();
         fits1.skipHDU(2);
         AsciiTableHDU hdu3 = (AsciiTableHDU) fits1.readHDU();
+        Assert.assertEquals(28800L, hdu3.getHeader().getFileOffset());
 
         hdu2.info(System.out);
         hdu3.info(System.out);
