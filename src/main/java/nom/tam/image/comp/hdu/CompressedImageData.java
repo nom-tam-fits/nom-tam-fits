@@ -57,8 +57,8 @@ public class CompressedImageData extends BinaryTable {
         super(hdr);
     }
 
-    public void compress(Header header) throws FitsException {
-        tileArray().compress(header);
+    public void compress(CompressedImageHDU hdu) throws FitsException {
+        tileArray().compress(hdu);
     }
 
     @Override
@@ -96,6 +96,14 @@ public class CompressedImageData extends BinaryTable {
         }
     }
 
+    /**
+     * It is possible to use another bitPix in the compressed image as in the
+     * real image, this is not recommended to do.
+     *
+     * @param bitPix
+     *            the bitpix for the compressed image.
+     * @return myself
+     */
     public CompressedImageData setBitPix(int bitPix) {
         tileArray().setBaseType(PrimitiveTypeEnum.valueOf(bitPix));
         return this;
@@ -116,7 +124,7 @@ public class CompressedImageData extends BinaryTable {
         return this;
     }
 
-    public CompressedImageData setTileSize(int... axes) {
+    protected CompressedImageData setTileSize(int... axes) {
         tileArray().setTileAxes(axes);
         return this;
     }

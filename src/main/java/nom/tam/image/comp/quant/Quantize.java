@@ -1,4 +1,4 @@
-package nom.tam.image.comp.filter;
+package nom.tam.image.comp.quant;
 
 /*
  * #%L

@@ -86,6 +86,13 @@ abstract class Tile implements Runnable {
         return this.blank;
     }
 
+    public byte[] getCompressedData() {
+        byte[] data = new byte[this.compressedData.limit()];
+        this.compressedData.rewind();
+        PrimitiveTypeEnum.BYTE.getArray(this.compressedData, data);
+        return data;
+    }
+
     public TileCompressionType getCompressionType() {
         return this.compressionType;
     }
@@ -180,4 +187,5 @@ abstract class Tile implements Runnable {
             throw new IllegalStateException("could not (de)compress tile", e);
         }
     }
+
 }

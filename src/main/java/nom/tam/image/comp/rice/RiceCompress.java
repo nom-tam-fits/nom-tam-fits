@@ -7,9 +7,9 @@ import java.nio.ShortBuffer;
 import java.util.logging.Logger;
 
 import nom.tam.image.comp.ITileCompressor;
-import nom.tam.image.comp.filter.QuantProcessor.DoubleQuantCompressor;
-import nom.tam.image.comp.filter.QuantProcessor.FloatQuantCompressor;
-import nom.tam.image.comp.filter.QuantizeOption;
+import nom.tam.image.comp.quant.QuantProcessor.DoubleQuantCompressor;
+import nom.tam.image.comp.quant.QuantProcessor.FloatQuantCompressor;
+import nom.tam.image.comp.quant.QuantizeOption;
 import nom.tam.util.FitsIO;
 import nom.tam.util.PrimitiveTypeEnum;
 

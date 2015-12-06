@@ -80,6 +80,13 @@ import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.util.Cursor;
 
+/**
+ * A compressed image is a normal binary table with a defined structure. The
+ * image is splitted in tiles and each tile is compressed on it's own. the
+ * compressed data is then stored in the 3 data columns of this binary table
+ * (compressed, gzip and uncompressed) depending on the compression type used in
+ * the tile.
+ */
 public class CompressedImageHDU extends BinaryTableHDU {
 
     private enum UncompressHeaderCardMapping {
@@ -227,9 +234,12 @@ public class CompressedImageHDU extends BinaryTableHDU {
 
     private static final Map<IFitsHeader, UncompressHeaderCardMapping> UNCOMPRESSED_HEADER_MAPPING = new HashMap<>();
 
-    public static CompressedImageHDU fromImageHDU(ImageHDU imageHDU) throws FitsException {
+    public static CompressedImageHDU fromImageHDU(ImageHDU imageHDU, int... tileAxis) throws FitsException {
         Header header = new Header();
         CompressedImageData compressedData = new CompressedImageData();
+        if (tileAxis.length > 0) {
+            compressedData.setTileSize(tileAxis);
+        }
         compressedData.fillHeader(header);
         Cursor<String, HeaderCard> iterator = header.iterator();
         Cursor<String, HeaderCard> imageIterator = imageHDU.getHeader().iterator();
@@ -276,8 +286,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
     }
 
     public void compress() throws FitsException {
-        getData().compress(getHeader());
-
+        getData().compress(this);
     }
 
     @Override

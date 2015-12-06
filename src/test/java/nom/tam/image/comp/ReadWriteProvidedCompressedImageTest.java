@@ -46,17 +46,13 @@ import javax.swing.JLabel;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsFactory;
-import nom.tam.fits.Header;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.util.BlackBoxImages;
-import nom.tam.image.comp.hdu.CompressedImageData;
 import nom.tam.image.comp.hdu.CompressedImageHDU;
 import nom.tam.image.comp.rice.RiceCompressOption;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
-import nom.tam.util.PrimitiveTypeEnum;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -286,92 +282,93 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void testGzipFallbackCompressed() throws Exception {
-        try (Fits f = new Fits()) {
-            CompressedImageData data = new CompressedImageData();
-            BasicHDU<CompressedImageData> compressedHdu = FitsFactory.hduFactory(new Header(), data);
-            data.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
-                    .setQuantAlgorithm((String) null)//
-                    .setBitPix(PrimitiveTypeEnum.SHORT.bitPix())//
-                    .setImageSize(5, 5)//
-                    .setTileSize(5, 1)//
-                    .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32);
-            short[] array = new short[]{
-                1000,
-                -2000,
-                3000,
-                -3000,
-                4000,
-                1000,
-                -2000,
-                3000,
-                -3000,
-                4000,
-                1000,
-                -2000,
-                3000,
-                -3000,
-                4000,
-                1000,
-                -2000,
-                3000,
-                -3000,
-                4000,
+        short[][] array = new short[][]{
+            {
                 1000,
                 -2000,
                 3000,
                 -3000,
                 4000
-            };
-            data.prepareUncompressedData(array, compressedHdu.getHeader());
-            data.compress(compressedHdu.getHeader());
-            f.addHDU(compressedHdu);
-            try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_rice.fits"))) {
-                // f.write(bdos);
+            },
+            {
+                1000,
+                -2000,
+                3000,
+                -3000,
+                4000
+            },
+            {
+                1000,
+                -2000,
+                3000,
+                -3000,
+                4000
+            },
+            {
+                1000,
+                -2000,
+                3000,
+                -3000,
+                4000
+            },
+            {
+                1000,
+                -2000,
+                3000,
+                -3000,
+                4000
             }
+        };
+        try (Fits f = new Fits()) {
+            ImageHDU image = (ImageHDU) Fits.makeHDU(array);
+            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(image, 5, 1);
+            compressedHdu.getData().setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
+                    .getCompressOption(RiceCompressOption.class)//
+                    /**/.setBlockSize(32);
+            compressedHdu.compress();
+            f.addHDU(compressedHdu);
+            try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_fallback.fits.fz"))) {
+                f.write(bdos);
+            }
+        }
+        try (Fits f = new Fits("target/write_fallback.fits.fz")) {
+            f.readHDU(); // the primary
+            CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
+            short[][] actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
+            Assert.assertArrayEquals(array, actualShortArray);
         }
     }
 
     @Test
     public void writeRice() throws Exception {
         try (Fits f = new Fits()) {
-            CompressedImageData data = new CompressedImageData();
-            BasicHDU<CompressedImageData> compressedHdu = FitsFactory.hduFactory(new Header(), data);
-            data.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
+            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(m13, 300, 15);
+            compressedHdu.getData().setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
                     .setQuantAlgorithm((String) null)//
-                    .setBitPix(PrimitiveTypeEnum.SHORT.bitPix())//
-                    .setImageSize(300, 300)//
-                    .setTileSize(300, 15)//
                     .getCompressOption(RiceCompressOption.class)//
                     /**/.setBlockSize(32);
-            ShortBuffer source = ShortBuffer.wrap(new short[300 * 300]);
-            ArrayFuncs.copyInto(this.m13_data, source.array());
-            data.prepareUncompressedData(source, compressedHdu.getHeader());
-            data.compress(compressedHdu.getHeader());
+            compressedHdu.compress();
             f.addHDU(compressedHdu);
-            try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_rice.fits"))) {
-                // f.write(bdos);
+            compressedHdu = CompressedImageHDU.fromImageHDU(m13, 300, 1);
+            compressedHdu.getData().setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
+                    .setQuantAlgorithm((String) null)//
+                    .getCompressOption(RiceCompressOption.class)//
+                    /**/.setBlockSize(32);
+            compressedHdu.compress();
+            f.addHDU(compressedHdu);
+            try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_own.fits.fz"))) {
+                f.write(bdos);
             }
         }
-    }
-
-    @Test
-    public void writeRice2() throws Exception {
-        CompressedImageHDU compressed = null;
-        try (Fits f = new Fits("src/test/resources/nom/tam/image/provided/m13.fits")) {
-            BasicHDU<?> hdu = f.getHDU(0);
-            if (hdu instanceof ImageHDU) {
-                compressed = CompressedImageHDU.fromImageHDU((ImageHDU) hdu);
-                compressed.getData()//
-                        .setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
-                        .setTileSize(300, 3)//
-                        .getCompressOption(RiceCompressOption.class)//
-                        /**/.setBytePix(4);
-                compressed.compress();
-                Assert.assertTrue(compressed.isHeader());
-            }
+        try (Fits f = new Fits("target/write_m13_own.fits.fz")) {
+            f.readHDU();// the primary
+            CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
+            short[][] actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
+            Assert.assertArrayEquals(m13_data, actualShortArray);
+            hdu = (CompressedImageHDU) f.readHDU();
+            actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
+            Assert.assertArrayEquals(m13_data, actualShortArray);
         }
-        compressed.toString();
     }
 
 }

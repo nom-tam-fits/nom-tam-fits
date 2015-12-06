@@ -40,12 +40,12 @@ import java.nio.ShortBuffer;
 
 import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.image.comp.filter.QuantizeOption;
 import nom.tam.image.comp.hcompress.HCompressor.ByteHCompress;
 import nom.tam.image.comp.hcompress.HCompressor.DoubleHCompress;
 import nom.tam.image.comp.hcompress.HCompressor.FloatHCompress;
 import nom.tam.image.comp.hcompress.HCompressor.IntHCompress;
 import nom.tam.image.comp.hcompress.HCompressor.ShortHCompress;
+import nom.tam.image.comp.quant.QuantizeOption;
 import nom.tam.util.ArrayFuncs;
 
 import org.junit.Assert;

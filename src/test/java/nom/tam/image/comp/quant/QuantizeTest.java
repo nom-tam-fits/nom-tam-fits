@@ -1,4 +1,4 @@
-package nom.tam.image.comp.filter;
+package nom.tam.image.comp.quant;
 
 /*
  * #%L
@@ -39,6 +39,8 @@ import java.util.Arrays;
 
 import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.quant.QuantProcessor;
+import nom.tam.image.comp.quant.QuantizeOption;
 import nom.tam.util.ArrayFuncs;
 
 import org.junit.Assert;

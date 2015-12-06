@@ -1,4 +1,4 @@
-package nom.tam.image.comp.filter;
+package nom.tam.image.comp.quant;
 
 import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ICompressOption;

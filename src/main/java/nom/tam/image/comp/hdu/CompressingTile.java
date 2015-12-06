@@ -31,46 +31,12 @@ package nom.tam.image.comp.hdu;
  * #L%
  */
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.util.PrimitiveTypeEnum;
 
 public class CompressingTile extends Tile {
 
-    /**
-     * logger to log to.
-     */
-    private static final Logger LOG = Logger.getLogger(CompressingTile.class.getName());
-
     public CompressingTile(TileArray array, int tileIndex) {
         super(array, tileIndex);
-    }
-
-    /**
-     * lets close the gaps in the data as soon as the previous tiles are also
-     * compressed. the compressed data of the first tile is used to append the
-     * complete block.
-     */
-    private void compactCompressedData() {
-        if (this.tileIndex > 0) {
-            try {
-                // wait for the previous tile to finish.
-                this.array.getTile(this.tileIndex - 1).future.get();
-                this.compressedData.limit(this.compressedData.position());
-                this.compressedData.rewind();
-                Tile firstTile = this.array.getTile(0);
-                this.compressedOffset = firstTile.compressedData.position();
-                firstTile.compressedData.limit(firstTile.compressedData.limit() + this.compressedData.limit());
-                PrimitiveTypeEnum.BYTE.appendBuffer(firstTile.compressedData, this.compressedData);
-            } catch (Exception e) {
-                LOG.log(Level.FINEST, "ignoring exception because it is logged at another place", e);
-                return;
-            }
-        } else {
-            this.compressedOffset = 0;
-        }
     }
 
     private void compress() {
@@ -97,8 +63,6 @@ public class CompressingTile extends Tile {
             this.imageDataView.getBuffer().rewind();
             this.array.getBaseType().appendToByteBuffer(this.compressedData, this.imageDataView.getBuffer());
         }
-
-        compactCompressedData();
     }
 
     @Override
