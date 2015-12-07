@@ -31,12 +31,47 @@ package nom.tam.image.comp.hdu;
  * #L%
  */
 
+import java.nio.ByteBuffer;
+
 import nom.tam.image.comp.ICompressOption;
+import nom.tam.util.PrimitiveTypeEnum;
 
 public class CompressingTile extends Tile {
 
     public CompressingTile(TileArray array, int tileIndex) {
         super(array, tileIndex);
+    }
+
+    /**
+     * lets close the gaps in the data as soon as the previous tiles are also
+     * compressed. the compressed data of the first tile is used to append the
+     * complete block.
+     */
+    private void compactCompressedData() {
+        if (this.tileIndex > 0) {
+            try {
+                // wait for the previous tile to finish.
+                this.array.getTile(this.tileIndex - 1).future.get();
+                ByteBuffer compressedWholeErea = this.array.getCompressedWholeErea();
+                this.compressedOffset = compressedWholeErea.position();
+                PrimitiveTypeEnum.BYTE.appendBuffer(compressedWholeErea, this.compressedData);
+                replaceCompressedBufferWithTargetArea(compressedWholeErea);
+            } catch (Exception e) {
+                throw new IllegalStateException("could not compact compressed data", e);
+            }
+        } else {
+            this.compressedOffset = 0;
+            this.array.getCompressedWholeErea().position(this.compressedData.limit());
+        }
+    }
+
+    private void replaceCompressedBufferWithTargetArea(ByteBuffer compressedWholeErea) {
+        int compressedSize = this.compressedData.limit();
+        int latest = compressedWholeErea.position();
+        compressedWholeErea.position(this.compressedOffset);
+        this.compressedData = compressedWholeErea.slice();
+        this.compressedData.limit(compressedSize);
+        compressedWholeErea.position(latest);
     }
 
     private void compress() {
@@ -63,6 +98,9 @@ public class CompressingTile extends Tile {
             this.imageDataView.getBuffer().rewind();
             this.array.getBaseType().appendToByteBuffer(this.compressedData, this.imageDataView.getBuffer());
         }
+        this.compressedData.limit(this.compressedData.position());
+        this.compressedData.rewind();
+        compactCompressedData();
     }
 
     @Override
