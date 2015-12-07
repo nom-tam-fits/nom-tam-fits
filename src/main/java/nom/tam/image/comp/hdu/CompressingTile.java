@@ -65,15 +65,6 @@ public class CompressingTile extends Tile {
         }
     }
 
-    private void replaceCompressedBufferWithTargetArea(ByteBuffer compressedWholeErea) {
-        int compressedSize = this.compressedData.limit();
-        int latest = compressedWholeErea.position();
-        compressedWholeErea.position(this.compressedOffset);
-        this.compressedData = compressedWholeErea.slice();
-        this.compressedData.limit(compressedSize);
-        compressedWholeErea.position(latest);
-    }
-
     private void compress() {
         this.compressedData.limit(this.imageDataView.getPixelSize() * this.array.getBaseType().size());
         this.tileOptions = this.array.getCompressOptions().clone();
@@ -101,6 +92,15 @@ public class CompressingTile extends Tile {
         this.compressedData.limit(this.compressedData.position());
         this.compressedData.rewind();
         compactCompressedData();
+    }
+
+    private void replaceCompressedBufferWithTargetArea(ByteBuffer compressedWholeErea) {
+        int compressedSize = this.compressedData.limit();
+        int latest = compressedWholeErea.position();
+        compressedWholeErea.position(this.compressedOffset);
+        this.compressedData = compressedWholeErea.slice();
+        this.compressedData.limit(compressedSize);
+        compressedWholeErea.position(latest);
     }
 
     @Override
