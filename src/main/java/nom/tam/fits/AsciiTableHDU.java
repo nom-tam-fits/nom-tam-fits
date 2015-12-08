@@ -115,7 +115,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     /**
      * Check that this is a valid ascii table header.
-     * 
+     *
      * @param header
      *            to validate.
      * @return <CODE>true</CODE> if this is an ascii table header.
@@ -126,7 +126,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     /**
      * Create a Data object to correspond to the header description.
-     * 
+     *
      * @param hdr
      *            the header to create the data for
      * @return An unfilled Data object which can be used to read in the data for
@@ -155,7 +155,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     /**
      * Create an ASCII table header/data unit.
-     * 
+     *
      * @param h
      *            the template specifying the ASCII table.
      * @param d
@@ -178,12 +178,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         int oldRowlen = this.myHeader.getIntValue(NAXIS1);
         this.myHeader.setNaxis(1, rowlen + oldRowlen);
 
-        int oldTfields = this.myHeader.getIntValue(TFIELDS);
-        try {
-            this.myHeader.addValue(TFIELDS, oldTfields + 1);
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Impossible exception at addColumn", e);
-        }
+        super.addColumn(newCol);
         Standard.context(null);
         return getNCols();
     }
@@ -220,7 +215,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     /**
      * Mark an entry as null.
-     * 
+     *
      * @param row
      *            row index of the element
      * @param col
@@ -241,7 +236,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     /**
      * Set the null string for a column.
-     * 
+     *
      * @param col
      *            the column index
      * @param newNull

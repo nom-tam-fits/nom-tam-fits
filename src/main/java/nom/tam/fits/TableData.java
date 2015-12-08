@@ -38,8 +38,42 @@ package nom.tam.fits;
 
 public interface TableData {
 
+    /**
+     * Add a column to the table without any associated header information.
+     * Users should be cautious of calling this routine directly rather than the
+     * corresponding routine in AsciiTableHDU since this routine knows nothing
+     * of the FITS header modifications required.
+     * 
+     * @param newCol
+     *            the new column information. the newCol should be an Object[]
+     *            where type of all of the constituents is identical. The length
+     *            of data should match the other columns. <b> Note:</b> It is
+     *            valid for data to be a 2 or higher dimensionality primitive
+     *            array. In this case the column index is the first (in Java
+     *            speak) index of the array. E.g., if called with
+     *            int[30][20][10], the number of rows in the table should be 30
+     *            and this column will have elements which are 2-d integer
+     *            arrays with TDIM = (10,20).
+     * @return the number of columns in the adapted table
+     * @throws FitsException
+     *             if the operation failed
+     */
     int addColumn(Object newCol) throws FitsException;
 
+    /**
+     * Add a row at the end of the table. Given the way the table is structured
+     * this will normally not be very efficient.Users should be cautious of
+     * calling this routine directly rather than the corresponding routine in
+     * AsciiTableHDU since this routine knows nothing of the FITS header
+     * modifications required.
+     * 
+     * @param newRow
+     *            An array of elements to be added. Each element of o should be
+     *            an array of primitives or a String.
+     * @throws FitsException
+     *             if the operation failed
+     * @return the number of rows in the adapted table
+     */
     int addRow(Object[] newRow) throws FitsException;
 
     void deleteColumns(int row, int len) throws FitsException;

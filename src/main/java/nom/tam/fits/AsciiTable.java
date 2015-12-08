@@ -131,7 +131,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Create an ASCII table given a header
-     * 
+     *
      * @param hdr
      *            The header describing the table
      * @throws FitsException
@@ -212,20 +212,6 @@ public class AsciiTable extends AbstractTableData {
         return this.lengths[col];
     }
 
-    /**
-     * Add a column to the table. Users should be cautious of calling this
-     * routine directly rather than the corresponding routine in AsciiTableHDU
-     * since this routine knows nothing of the FITS header modifications
-     * required.
-     * 
-     * @param newCol
-     *            the new column information. This is typically a primitive[n]
-     *            or String[n] array.
-     * @return the number of fields in the table
-     * @throws FitsException
-     *             if the operation failed
-     */
-
     @Override
     public int addColumn(Object newCol) throws FitsException {
         int maxLen = 1;
@@ -259,7 +245,7 @@ public class AsciiTable extends AbstractTableData {
     /**
      * This version of addColumn allows the user to override the default length
      * associated with each column type.
-     * 
+     *
      * @param newCol
      *            The new column data
      * @param length
@@ -324,16 +310,6 @@ public class AsciiTable extends AbstractTableData {
         return this.nFields;
     }
 
-    /**
-     * Add a row to the FITS table.
-     * 
-     * @param newRow
-     *            The new row data.
-     * @return The number of rows after this is added.
-     * @throws FitsException
-     *             if the operation failed
-     */
-
     @Override
     public int addRow(Object[] newRow) throws FitsException {
         try {
@@ -365,7 +341,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Delete columns from the table.
-     * 
+     *
      * @param start
      *            The first, 0-indexed, column to be deleted.
      * @param len
@@ -439,7 +415,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Delete rows from a FITS table
-     * 
+     *
      * @param start
      *            The first (0-indexed) row to be deleted.
      * @param len
@@ -473,8 +449,19 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
+     * be sure that the data is filled. because the getData already tests null
+     * the getData is called without check.
+     *
+     * @throws FitsException
+     *             if the operation failed
+     */
+    private void ensureData() throws FitsException {
+        getData();
+    }
+
+    /**
      * Move an element from the buffer into a data array.
-     * 
+     *
      * @param offset
      *            The offset within buffer at which the element starts.
      * @param length
@@ -523,7 +510,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Fill in a header with information that points to this data.
-     * 
+     *
      * @param hdr
      *            The header to be updated with information appropriate to the
      *            current table data.
@@ -574,7 +561,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Get a column of data
-     * 
+     *
      * @param col
      *            The 0-indexed column to be returned.
      * @return The column object -- typically as a 1-d array.
@@ -589,20 +576,9 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * be sure that the data is filled. because the getData already tests null
-     * the getData is called without check.
-     * 
-     * @throws FitsException
-     *             if the operation failed
-     */
-    private void ensureData() throws FitsException {
-        getData();
-    }
-
-    /**
      * Get the ASCII table information. This will actually do the read if it had
      * previously been deferred
-     * 
+     *
      * @return The table data as an Object[] array.
      * @throws FitsException
      *             if the operation failed
@@ -652,7 +628,7 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Get a single element as a one-d array. We return String's as arrays for
      * consistency though they could be returned as a scalar.
-     * 
+     *
      * @param row
      *            The 0-based row
      * @param col
@@ -673,7 +649,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Get the number of columns in the table
-     * 
+     *
      * @return The number of columns
      */
 
@@ -684,7 +660,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Get the number of rows in the table
-     * 
+     *
      * @return The number of rows.
      */
 
@@ -695,7 +671,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Get a row. If the data has not yet been read just read this row.
-     * 
+     *
      * @param row
      *            The 0-indexed row to be returned.
      * @return A row of data.
@@ -715,7 +691,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Get the number of bytes in a row
-     * 
+     *
      * @return The number of bytes for a single row in the table.
      */
     public int getRowLen() {
@@ -724,7 +700,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Return the size of the data section
-     * 
+     *
      * @return The size in bytes of the data section, not includeing the
      *         padding.
      */
@@ -736,7 +712,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * See if an element is null.
-     * 
+     *
      * @param row
      *            The 0-based row
      * @param col
@@ -754,7 +730,7 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Read a single element from the table. This returns an array of dimension
      * 1.
-     * 
+     *
      * @throws FitsException
      *             if the operation failed
      */
@@ -762,7 +738,7 @@ public class AsciiTable extends AbstractTableData {
 
         Object[] res = new Object[1];
         try {
-            getBuffer(this.lengths[col], this.fileOffset + (long) row * (long) this.rowLen + (long) this.offsets[col]);
+            getBuffer(this.lengths[col], this.fileOffset + (long) row * (long) this.rowLen + this.offsets[col]);
         } catch (IOException e) {
             this.buffer = null;
             throw new FitsException("Unable to read element");
@@ -783,7 +759,7 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Read a single row from the table. This returns a set of arrays of
      * dimension 1.
-     * 
+     *
      * @throws FitsException
      *             if the operation failed
      */
@@ -812,7 +788,7 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Read in an ASCII table. Reading is deferred if we are reading from a
      * random access device
-     * 
+     *
      * @param str
      *            the stream to read from
      * @throws FitsException
@@ -842,7 +818,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Replace a column with new data.
-     * 
+     *
      * @param col
      *            The 0-based index to the column
      * @param newData
@@ -866,7 +842,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Modify an element in the table
-     * 
+     *
      * @param row
      *            the 0-based row
      * @param col
@@ -897,7 +873,7 @@ public class AsciiTable extends AbstractTableData {
      * latter written out, a TNULL keyword needs to be defined in the
      * corresponding header. This routine does not add an element for String
      * columns.
-     * 
+     *
      * @param row
      *            The 0-based row.
      * @param col
@@ -932,7 +908,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Modify a row in the table
-     * 
+     *
      * @param row
      *            The 0-based index of the row
      * @param newData
@@ -994,7 +970,7 @@ public class AsciiTable extends AbstractTableData {
     /**
      * This is called after we delete columns. The HDU doesn't know how to
      * update the TBCOL entries.
-     * 
+     *
      * @param oldNCol
      *            The number of columns we had before deletion.
      * @param hdr
@@ -1020,7 +996,7 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Write the data to an output stream.
-     * 
+     *
      * @param str
      *            The output stream to be written to
      * @throws FitsException

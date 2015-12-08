@@ -99,7 +99,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     /**
      * Check that this is a valid binary table header.
-     * 
+     *
      * @param header
      *            to validate.
      * @return <CODE>true</CODE> if this is a binary table header.
@@ -142,28 +142,11 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         super(hdr, datum);
     }
 
-    /**
-     * Add a column without any associated header information.
-     * 
-     * @param data
-     *            The column data to be added. Data should be an Object[] where
-     *            type of all of the constituents is identical. The length of
-     *            data should match the other columns. <b> Note:</b> It is valid
-     *            for data to be a 2 or higher dimensionality primitive array.
-     *            In this case the column index is the first (in Java speak)
-     *            index of the array. E.g., if called with int[30][20][10], the
-     *            number of rows in the table should be 30 and this column will
-     *            have elements which are 2-d integer arrays with TDIM =
-     *            (10,20).
-     * @throws FitsException
-     *             the column could not be added.
-     */
     @Override
     public int addColumn(Object data) throws FitsException {
-
-        int col = this.myData.addColumn(data);
+        this.myData.addColumn(data);
         this.myData.pointToColumn(getNCols() - 1, this.myHeader);
-        return col;
+        return super.addColumn(data);
     }
 
     /**
@@ -222,7 +205,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     /**
      * Check that this HDU has a valid header.
-     * 
+     *
      * @return <CODE>true</CODE> if this HDU has a valid header.
      */
     public boolean isHeader() {
@@ -240,7 +223,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      * Convert a column in the table to complex. Only tables with appropriate
      * types and dimensionalities can be converted. It is legal to call this on
      * a column that is already complex.
-     * 
+     *
      * @param index
      *            The 0-based index of the column to be converted.
      * @return Whether the column can be converted

@@ -64,23 +64,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class BinaryTable extends AbstractTableData {
 
-    private static final long MAX_INTEGER_VALUE = (long) Integer.MAX_VALUE;
-
-    private static final int MAX_EMPTY_BLOCK_SIZE = 4000000;
-
-    /** Opaque state to pass to ColumnTable */
-    protected static class SaveState {
-
-        private final List<ColumnDesc> columns;
-
-        private final FitsHeap heap;
-
-        public SaveState(List<ColumnDesc> columns, FitsHeap heap) {
-            this.columns = columns;
-            this.heap = heap;
-        }
-    }
-
     /**
      * Collect all of the information we are using to describe a column into a
      * single object.
@@ -134,21 +117,6 @@ public class BinaryTable extends AbstractTableData {
          */
         private Object column;
 
-        /**
-         * @returnIs this a variable length column ?
-         */
-        boolean isVarying() {
-            return isVarying;
-        }
-
-        /**
-         * @return Is this a variable length column using longs? [Must have
-         *         isVarying true too]
-         */
-        boolean isLongVary() {
-            return isLongVary;
-        }
-
         @Override
         public Object clone() {
             try {
@@ -163,15 +131,47 @@ public class BinaryTable extends AbstractTableData {
             }
         }
 
-        @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
-        public int[] getDimens() {
-            return dimens;
+        public Class<?> getBase() {
+            return this.base;
         }
 
-        public Class<?> getBase() {
-            return base;
+        @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
+        public int[] getDimens() {
+            return this.dimens;
+        }
+
+        /**
+         * @return Is this a variable length column using longs? [Must have
+         *         isVarying true too]
+         */
+        boolean isLongVary() {
+            return this.isLongVary;
+        }
+
+        /**
+         * @returnIs this a variable length column ?
+         */
+        boolean isVarying() {
+            return this.isVarying;
         }
     }
+
+    /** Opaque state to pass to ColumnTable */
+    protected static class SaveState {
+
+        private final List<ColumnDesc> columns;
+
+        private final FitsHeap heap;
+
+        public SaveState(List<ColumnDesc> columns, FitsHeap heap) {
+            this.columns = columns;
+            this.heap = heap;
+        }
+    }
+
+    private static final long MAX_INTEGER_VALUE = Integer.MAX_VALUE;
+
+    private static final int MAX_EMPTY_BLOCK_SIZE = 4000000;
 
     private static final Logger LOG = Logger.getLogger(BinaryTable.class.getName());
 
@@ -252,7 +252,7 @@ public class BinaryTable extends AbstractTableData {
     /**
      * This is the area in which variable length column data lives.
      */
-    private FitsHeap heap;
+    private final FitsHeap heap;
 
     /**
      * The number of bytes between the end of the data and the heap
@@ -312,7 +312,7 @@ public class BinaryTable extends AbstractTableData {
 
     /**
      * Create a binary table from an existing ColumnTable
-     * 
+     *
      * @param tabIn
      *            the column table to create the binary table from
      */
@@ -354,7 +354,7 @@ public class BinaryTable extends AbstractTableData {
         if (heapSizeL > MAX_INTEGER_VALUE) {
             throw new FitsException("Heap size > 2 GB");
         }
-        if ((heapSizeL - heapOffsetL) > MAX_INTEGER_VALUE) {
+        if (heapSizeL - heapOffsetL > MAX_INTEGER_VALUE) {
             throw new FitsException("Unable to allocate heap > 2GB");
         }
         this.heapOffset = (int) heapOffsetL;
@@ -386,7 +386,7 @@ public class BinaryTable extends AbstractTableData {
 
     /**
      * Create a binary table from existing data in column order.
-     * 
+     *
      * @param o
      *            array of columns
      * @throws FitsException
@@ -414,18 +414,8 @@ public class BinaryTable extends AbstractTableData {
         this(convertToColumns(data));
     }
 
-    /**
-     * Add a column to the end of a table.
-     *
-     * @param o
-     *            An array of identically structured objects with the same
-     *            number of elements as other columns in the table.
-     * @throws FitsException
-     *             if the operation failed
-     */
     @Override
     public int addColumn(Object o) throws FitsException {
-
         int primeDim = Array.getLength(o);
         ColumnDesc added = new ColumnDesc();
         this.columnList.add(added);
@@ -574,26 +564,6 @@ public class BinaryTable extends AbstractTableData {
         return this.columnList.size();
     }
 
-    private Object encapsulate(Object o) {
-        if (o.getClass().isArray() && ArrayFuncs.getDimensions(o).length == 1 && ArrayFuncs.getDimensions(o)[0] == 1) {
-            return o;
-        }
-
-        Object[] array = (Object[]) Array.newInstance(o.getClass(), 1);
-        array[0] = o;
-        return array;
-    }
-
-    /**
-     * Add a row at the end of the table. Given the way the table is structured
-     * this will normally not be very efficient.
-     *
-     * @param o
-     *            An array of elements to be added. Each element of o should be
-     *            an array of primitives or a String.
-     * @throws FitsException
-     *             if the operation failed
-     */
     @Override
     public int addRow(Object[] o) throws FitsException {
         ensureData();
@@ -624,7 +594,7 @@ public class BinaryTable extends AbstractTableData {
      * Convert the external representation to the BinaryTable representation.
      * Transformation include boolean -> T/F, Strings -> byte arrays, variable
      * length arrays -> pointers (after writing data to heap).
-     * 
+     *
      * @throws FitsException
      *             if the operation failed
      */
@@ -875,6 +845,10 @@ public class BinaryTable extends AbstractTableData {
         return o;
     }
 
+    protected ColumnTable<SaveState> createColumnTable(Object[] arrCol, int[] sizes) throws TableException {
+        return new ColumnTable<SaveState>(arrCol, sizes);
+    }
+
     /**
      * Create a column table given the number of rows and a model row. This is
      * used when we defer instantiation of the ColumnTable until the user
@@ -898,10 +872,6 @@ public class BinaryTable extends AbstractTableData {
         this.table = createColumnTable(arrCol, sizes);
         saveExtraState();
         return this.table;
-    }
-
-    protected ColumnTable<SaveState> createColumnTable(Object[] arrCol, int[] sizes) throws TableException {
-        return new ColumnTable<SaveState>(arrCol, sizes);
     }
 
     /**
@@ -939,6 +909,16 @@ public class BinaryTable extends AbstractTableData {
         ensureData();
         this.table.deleteRows(row, len);
         this.nRow -= len;
+    }
+
+    private Object encapsulate(Object o) {
+        if (o.getClass().isArray() && ArrayFuncs.getDimensions(o).length == 1 && ArrayFuncs.getDimensions(o)[0] == 1) {
+            return o;
+        }
+
+        Object[] array = (Object[]) Array.newInstance(o.getClass(), 1);
+        array[0] = o;
+        return array;
     }
 
     private Object encurl(Object res, int col, int rows) {
@@ -1652,7 +1632,7 @@ public class BinaryTable extends AbstractTableData {
      * Kovacs (4/1/08) Separated heap reading, s.t. the heap can be properly
      * initialized even if in deferred read mode. columnToArray() checks and
      * initializes the heap as necessary.
-     * 
+     *
      * @param input
      *            stream to read from.
      * @throws FitsException
@@ -1666,7 +1646,7 @@ public class BinaryTable extends AbstractTableData {
 
     /**
      * Read table, heap and padding
-     * 
+     *
      * @param i
      *            the sreatm to read the data from.
      * @throws FitsException

@@ -4,6 +4,10 @@ import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.TTYPEn;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
 
@@ -44,10 +48,12 @@ import nom.tam.fits.header.IFitsHeader;
  */
 public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> {
 
+    private static final Logger LOG = Logger.getLogger(TableHDU.class.getName());
+
     /**
      * Create the TableHDU. Note that this will normally only be invoked by
      * subclasses in the FITS package.
-     * 
+     *
      * @param hdr
      *            the header
      * @param td
@@ -58,21 +64,37 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Add a column to the table.
-     * 
-     * @return the index of the new row
-     * @param data
-     *            column to add to the table
+     * Add a column to the table without any associated header information.
+     *
+     * @param newCol
+     *            the new column information. the newCol should be an Object[]
+     *            where type of all of the constituents is identical. The length
+     *            of data should match the other columns. <b> Note:</b> It is
+     *            valid for data to be a 2 or higher dimensionality primitive
+     *            array. In this case the column index is the first (in Java
+     *            speak) index of the array. E.g., if called with
+     *            int[30][20][10], the number of rows in the table should be 30
+     *            and this column will have elements which are 2-d integer
+     *            arrays with TDIM = (10,20).
+     * @return the number of columns in the adapted table
      * @throws FitsException
      *             if the operation failed
      */
-    public abstract int addColumn(Object data) throws FitsException;
+    public int addColumn(Object newCol) throws FitsException {
+        int nCols = getNCols();
+        try {
+            this.myHeader.addValue(TFIELDS, nCols);
+        } catch (HeaderCardException e) {
+            LOG.log(Level.SEVERE, "Impossible exception at addColumn", e);
+        }
+        return nCols;
+    }
 
     /**
      * Add a row to the end of the table. If this is the first row, then this
      * will add appropriate columns for each of the entries.
-     * 
-     * @return the index of the new row
+     *
+     * @return the number of rows in the adapted table
      * @param newRow
      *            row to add to the table
      * @throws FitsException
@@ -80,7 +102,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public int addRow(Object[] newRow) throws FitsException {
         int row = this.myData.addRow(newRow);
-        this.myHeader.addValue(NAXISn.n(2), row);
+        this.myHeader.addValue(NAXISn.n(2), getNRows());
         return row;
     }
 
@@ -93,7 +115,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Delete a set of columns from a table.
-     * 
+     *
      * @param column
      *            The one-indexed start column.
      * @param len
@@ -107,7 +129,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Delete a set of columns from a table.
-     * 
+     *
      * @param column
      *            The one-indexed start column.
      * @param len
@@ -123,7 +145,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Delete a set of columns from a table.
-     * 
+     *
      * @param column
      *            The one-indexed start column.
      * @param len
@@ -137,7 +159,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Delete a set of columns from a table.
-     * 
+     *
      * @param column
      *            The zero-indexed start column.
      * @param len
@@ -189,7 +211,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * table. Inspired by a routine by R. Mathar but re-implemented using the
      * DataTable and changes to AsciiTable so that it can be done easily for
      * both Binary and ASCII tables.
-     * 
+     *
      * @param row
      *            the (0-based) index of the first row to be deleted.
      * @throws FitsException
@@ -204,7 +226,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * inspired by code by R.Mathar but re-implemented using changes in the
      * ColumnTable class abd AsciiTable so that we can do it for all FITS
      * tables.
-     * 
+     *
      * @param firstRow
      *            the (0-based) index of the first row to be deleted. This is
      *            zero-based indexing: 0&lt;=firstrow&lt; number of rows.
@@ -231,7 +253,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Find the 0-based column index corresponding to a particular column name.
-     * 
+     *
      * @return index of the column
      * @param colName
      *            the name of the column
@@ -271,7 +293,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Get the FITS type of a column in the table.
-     * 
+     *
      * @param index
      *            The 0-based index of the column.
      * @return The FITS type.
@@ -291,7 +313,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * Convenience method for getting column data. Note that this works only for
      * metadata that returns a string value. This is equivalent to
      * getStringValue(type+index);
-     * 
+     *
      * @return meta data string value
      * @param index
      *            index of the colum
@@ -304,7 +326,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Get the name of a column in the table.
-     * 
+     *
      * @param index
      *            The 0-based column index.
      * @return The column name.
@@ -346,7 +368,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Get the number of columns for this table
-     * 
+     *
      * @return The number of columns in the table.
      */
     public int getNCols() {
@@ -355,7 +377,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Get the number of rows for this table
-     * 
+     *
      * @return The number of rows in the table.
      */
     public int getNRows() {
@@ -376,7 +398,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Update a column within a table. The new column should have the same
      * format ast the column being replaced.
-     * 
+     *
      * @param col
      *            index of the column to replace
      * @param newCol
@@ -391,7 +413,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Update a column within a table. The new column should have the same
      * format as the column being replaced.
-     * 
+     *
      * @param colName
      *            name of the column to replace
      * @param newCol
@@ -401,6 +423,30 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public void setColumn(String colName, Object newCol) throws FitsException {
         setColumn(findColumn(colName), newCol);
+    }
+
+    /**
+     * Specify column metadata for a given column in a way that allows all of
+     * the column metadata for a given column to be organized together.
+     *
+     * @param index
+     *            The 0-based index of the column
+     * @param key
+     *            The column key. I.e., the keyword will be key+(index+1)
+     * @param value
+     *            The value to be placed in the header.
+     * @param comment
+     *            The comment for the header
+     * @param after
+     *            Should the header card be after the current column metadata
+     *            block (true), or immediately before the TFORM card (false). @throws
+     *            FitsException if the operation failed
+     * @throws FitsException
+     *             if the header could not be updated
+     */
+    public void setColumnMeta(int index, IFitsHeader key, String value, String comment, boolean after) throws FitsException {
+        setCurrentColumn(index, after);
+        this.myHeader.addValue(key.n(index + 1).key(), value, comment);
     }
 
     public void setColumnMeta(int index, String key, boolean value, String comment, boolean after) throws FitsException {
@@ -425,31 +471,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Specify column metadata for a given column in a way that allows all of
      * the column metadata for a given column to be organized together.
-     * 
-     * @param index
-     *            The 0-based index of the column
-     * @param key
-     *            The column key. I.e., the keyword will be key+(index+1)
-     * @param value
-     *            The value to be placed in the header.
-     * @param comment
-     *            The comment for the header
-     * @param after
-     *            Should the header card be after the current column metadata
-     *            block (true), or immediately before the TFORM card (false). @throws
-     *            FitsException if the operation failed
-     * @throws FitsException
-     *             if the header could not be updated
-     */
-    public void setColumnMeta(int index, IFitsHeader key, String value, String comment, boolean after) throws FitsException {
-        setCurrentColumn(index, after);
-        this.myHeader.addValue(key.n(index + 1).key(), value, comment);
-    }
-
-    /**
-     * Specify column metadata for a given column in a way that allows all of
-     * the column metadata for a given column to be organized together.
-     * 
+     *
      * @param index
      *            The 0-based index of the column
      * @param key
@@ -480,7 +502,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Set the cursor in the header to point after the metadata for the
      * specified column
-     * 
+     *
      * @param col
      *            The 0-based index of the column
      */
@@ -491,7 +513,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Set the cursor in the header to point either before the TFORM value or
      * after the column metadat
-     * 
+     *
      * @param col
      *            The 0-based index of the column
      * @param after
@@ -510,7 +532,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Update a single element within the table.
-     * 
+     *
      * @param row
      *            the row index
      * @param col
@@ -526,7 +548,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Update a row within a table.
-     * 
+     *
      * @param row
      *            row index
      * @param newRow
