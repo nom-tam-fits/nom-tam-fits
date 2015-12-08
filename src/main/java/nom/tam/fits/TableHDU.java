@@ -5,7 +5,6 @@ import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.TTYPEn;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.header.GenericKey;
@@ -82,11 +81,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public int addColumn(Object newCol) throws FitsException {
         int nCols = getNCols();
-        try {
-            this.myHeader.addValue(TFIELDS, nCols);
-        } catch (HeaderCardException e) {
-            LOG.log(Level.SEVERE, "Impossible exception at addColumn", e);
-        }
+        this.myHeader.addValue(TFIELDS, nCols);
         return nCols;
     }
 
