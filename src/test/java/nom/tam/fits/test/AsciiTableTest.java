@@ -160,6 +160,8 @@ public class AsciiTableTest {
         assertEquals("delrBef", 50, th.getNRows());
         th.deleteRows(2, 2);
         assertEquals("delrAft", 48, th.getNRows());
+        th.deleteRows(50);
+        assertEquals("delrAft", 48, th.getNRows());
         BufferedFile bf = new BufferedFile("target/at1y.fits", "rw");
         f.write(bf);
         bf.close();
@@ -648,5 +650,29 @@ public class AsciiTableTest {
         assertEquals("NULL", hdu.getHeader().getStringValue("TNULL2"));
         Assert.assertTrue(hdu.isNull(1, 1));
 
+    }
+
+    @Test
+    public void testDelete() throws Exception {
+        AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
+        assertEquals(5, hdu.getNCols());
+        assertEquals(18, hdu.getHeader().size());
+        hdu.deleteColumnsIndexOne(1, 1, new String[]{});
+        assertEquals(4, hdu.getNCols());
+        assertEquals(17, hdu.getHeader().size());
+    }
+
+    @Test(expected = FitsException.class)
+    public void testDeleteNegative() throws Exception {
+        AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
+        hdu.deleteColumnsIndexOne(0, 1, new String[]{});
+    }
+
+    @Test
+    public void testDeleteEmpty() throws Exception {
+        AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
+        hdu.deleteColumnsIndexOne(1, 0, new String[]{});
+        assertEquals(5, hdu.getNCols());
+        assertEquals(18, hdu.getHeader().size());
     }
 }

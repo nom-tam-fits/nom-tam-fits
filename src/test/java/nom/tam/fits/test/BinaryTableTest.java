@@ -190,10 +190,12 @@ public class BinaryTableTest {
         btab = bhdu.getData();
 
         assertEquals("col1", true, TestArrayFuncs.arrayEquals(this.floats, bhdu.getColumn(0)));
+        assertEquals("col1", true, TestArrayFuncs.arrayEquals(this.floats, bhdu.getColumns()[0]));
         assertEquals("col2", true, TestArrayFuncs.arrayEquals(this.vf, bhdu.getColumn(1)));
         assertEquals("col6", true, TestArrayFuncs.arrayEquals(this.vc, bhdu.getColumn(5)));
         assertEquals("col7", true, TestArrayFuncs.arrayEquals(this.complex, bhdu.getColumn(6)));
         assertEquals("col8", true, TestArrayFuncs.arrayEquals(this.multiString, bhdu.getColumn(7)));
+        assertEquals("col8", true, TestArrayFuncs.arrayEquals(this.multiString, bhdu.getColumns()[7]));
 
         String[] col = (String[]) bhdu.getColumn(2);
         for (int i = 0; i < col.length; i += 1) {
@@ -463,6 +465,8 @@ public class BinaryTableTest {
             bhdu.setColumnMeta(i, "TX", i + 1, null, true);
             bhdu.setColumnMeta(i, "TY", 2. * (i + 1), null, true);
         }
+        bhdu.setCurrentColumn(1);
+        Assert.assertEquals(-1, bhdu.findColumn("XXX"));
 
         BufferedFile ff = new BufferedFile("target/bt10.fits", "rw");
         f.write(ff);
@@ -1813,13 +1817,13 @@ public class BinaryTableTest {
         });
     }
 
-
     @Test(expected = TableException.class)
     public void testColumnSetRowWrongType() throws Exception {
         BinaryTable btab = new BinaryTable();
         btab.getData().addRow(TEST_ROW);
         btab.getData().setRow(0, 3);
     }
+
     @Test(expected = TableException.class)
     public void testColumnSetWrongSize() throws Exception {
         BinaryTable btab = new BinaryTable();
