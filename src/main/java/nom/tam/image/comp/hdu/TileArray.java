@@ -48,6 +48,7 @@ import static nom.tam.fits.header.Compression.ZVALn;
 import static nom.tam.fits.header.Compression.ZZERO_COLUMN;
 import static nom.tam.fits.header.Standard.TTYPEn;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -386,67 +387,43 @@ class TileArray {
     }
 
     private void writeColumns(CompressedImageHDU hdu) throws FitsException {
-        byte[][] compressed = null;
-        byte[][] uncompressed = null;
-        byte[][] gzipCompressed = null;
-        double[] zzero = null;
-        double[] zscale = null;
-        int[] zblankColumn = null;
+        Object compressedColumn = null;
+        Object uncompressedColumn = null;
+        Object gzipColumn = null;
+        Object zzeroColumn = null;
+        Object zscaleColumn = null;
+        Object zblankColumn = null;
         for (Tile tile : this.tiles) {
-            if (tile.getCompressionType() == TileCompressionType.COMPRESSED) {
-                if (compressed == null) {
-                    compressed = new byte[this.tiles.length][];
-                }
-                compressed[tile.getTileIndex()] = tile.getCompressedData();
-            } else if (tile.getCompressionType() == TileCompressionType.GZIP_COMPRESSED) {
-                if (gzipCompressed == null) {
-                    gzipCompressed = new byte[this.tiles.length][];
-                }
-                gzipCompressed[tile.getTileIndex()] = tile.getCompressedData();
-            } else if (tile.getCompressionType() == TileCompressionType.UNCOMPRESSED) {
-                if (uncompressed == null) {
-                    uncompressed = new byte[this.tiles.length][];
-                }
-                uncompressed[tile.getTileIndex()] = tile.getCompressedData();
-            }
-            if (tile.getBlank() != null) {
-                if (zblankColumn == null) {
-                    zblankColumn = new int[this.tiles.length];
-                }
-                zblankColumn[tile.getTileIndex()] = tile.getBlank();
-            }
-            if (!Double.isNaN(tile.getZero())) {
-                if (zzero == null) {
-                    zzero = new double[this.tiles.length];
-                }
-                zzero[tile.getTileIndex()] = tile.getZero();
-            }
-            if (!Double.isNaN(tile.getScale())) {
-                if (zscale == null) {
-                    zscale = new double[this.tiles.length];
-                }
-                zscale[tile.getTileIndex()] = tile.getScale();
-            }
+            compressedColumn = setInColumn(compressedColumn, tile.getCompressionType() == TileCompressionType.COMPRESSED, tile, byte[].class, tile.getCompressedData());
+            gzipColumn = setInColumn(gzipColumn, tile.getCompressionType() == TileCompressionType.GZIP_COMPRESSED, tile, byte[].class, tile.getCompressedData());
+            uncompressedColumn = setInColumn(uncompressedColumn, tile.getCompressionType() == TileCompressionType.UNCOMPRESSED, tile, byte[].class, tile.getCompressedData());
+            zblankColumn = setInColumn(zblankColumn, tile.getBlank() != null, tile, int.class, tile.getBlank());
+            zzeroColumn = setInColumn(zzeroColumn, !Double.isNaN(tile.getZero()), tile, double.class, tile.getZero());
+            zscaleColumn = setInColumn(zscaleColumn, !Double.isNaN(tile.getScale()), tile, double.class, tile.getScale());
         }
-        if (compressed != null) {
-            hdu.setColumnName(hdu.addColumn(compressed) - 1, COMPRESSED_DATA_COLUMN, null);
-        }
-        if (gzipCompressed != null) {
-            hdu.setColumnName(hdu.addColumn(gzipCompressed) - 1, GZIP_COMPRESSED_DATA_COLUMN, null);
-        }
-        if (uncompressed != null) {
-            hdu.setColumnName(hdu.addColumn(uncompressed) - 1, UNCOMPRESSED_DATA_COLUMN, null);
-        }
-        if (zblankColumn != null) {
-            hdu.setColumnName(hdu.addColumn(zblankColumn) - 1, ZBLANK_COLUMN, null);
-        }
-        if (zzero != null) {
-            hdu.setColumnName(hdu.addColumn(zzero) - 1, ZZERO_COLUMN, null);
-        }
-        if (zscale != null) {
-            hdu.setColumnName(hdu.addColumn(zscale) - 1, ZSCALE_COLUMN, null);
-        }
+        addColumnToTable(hdu, compressedColumn, COMPRESSED_DATA_COLUMN);
+        addColumnToTable(hdu, gzipColumn, GZIP_COMPRESSED_DATA_COLUMN);
+        addColumnToTable(hdu, uncompressedColumn, UNCOMPRESSED_DATA_COLUMN);
+        addColumnToTable(hdu, zblankColumn, ZBLANK_COLUMN);
+        addColumnToTable(hdu, zzeroColumn, ZZERO_COLUMN);
+        addColumnToTable(hdu, zscaleColumn, ZSCALE_COLUMN);
         hdu.getData().fillHeader(hdu.getHeader());
+    }
+
+    private <T> Object setInColumn(Object column, boolean predicate, Tile tile, Class<T> clazz, T value) {
+        if (predicate) {
+            if (column == null) {
+                column = Array.newInstance(clazz, this.tiles.length);
+            }
+            Array.set(column, tile.getTileIndex(), value);
+        }
+        return column;
+    }
+
+    private void addColumnToTable(CompressedImageHDU hdu, Object column, String columnName) throws FitsException {
+        if (column != null) {
+            hdu.setColumnName(hdu.addColumn(column) - 1, columnName, null);
+        }
     }
 
     private void writeHeader(Header header) throws FitsException {
