@@ -346,21 +346,24 @@ public class ReadWriteProvidedCompressedImageTest {
             compressedHdu.getData().setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
                     .setQuantAlgorithm((String) null)//
                     .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32);
+                    /**/.setBlockSize(32)//
+                    /**/.setBytePix(2);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             compressedHdu = CompressedImageHDU.fromImageHDU(m13, 300, 1);
             compressedHdu.getData().setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
                     .setQuantAlgorithm((String) null)//
                     .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32);
+                    /**/.setBlockSize(32)//
+                    /**/.setBytePix(2);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
-            compressedHdu = CompressedImageHDU.fromImageHDU(m13, 100, 100);
+            compressedHdu = CompressedImageHDU.fromImageHDU(m13, 100, 300);
             compressedHdu.getData().setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
                     .setQuantAlgorithm((String) null)//
                     .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32);
+                    /**/.setBlockSize(32)//
+                    /**/.setBytePix(2);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_own.fits.fz"))) {
@@ -375,9 +378,9 @@ public class ReadWriteProvidedCompressedImageTest {
             hdu = (CompressedImageHDU) f.readHDU();
             actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
             Assert.assertArrayEquals(m13_data, actualShortArray);
-//            hdu = (CompressedImageHDU) f.readHDU();
-//            actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
-//            Assert.assertArrayEquals(m13_data, actualShortArray);
+            hdu = (CompressedImageHDU) f.readHDU();
+   //         actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
+   //         Assert.assertArrayEquals(m13_data, actualShortArray);
         }
     }
 

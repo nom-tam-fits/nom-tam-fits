@@ -36,39 +36,39 @@ import nom.tam.image.comp.ICompressOption;
 
 public class QuantizeOption implements ICompressOption {
 
-    private double qlevel = Double.NaN;
-
     private double bScale = Double.NaN;
 
     private double bZero = Double.NaN;
 
-    private int intMaxValue;
-
-    private int intMinValue;
-
-    private int tileWidth;
-
-    private int tileHeigth;
-
-    private boolean dither;
-
-    private boolean dither2;
-
-    private long seed = 1L;
+    private boolean centerOnZero;
 
     private boolean checkNull;
 
     private boolean checkZero;
 
-    private boolean centerOnZero;
+    private boolean dither;
+
+    private boolean dither2;
+
+    private int intMaxValue;
+
+    private int intMinValue;
+
+    private double maxValue;
+
+    private double minValue;
 
     private double nullValue = Double.NaN;
 
     private Integer nullValueIndicator;
 
-    private double minValue;
+    private double qlevel = Double.NaN;
 
-    private double maxValue;
+    private long seed = 1L;
+
+    private int tileHeigth;
+
+    private int tileWidth;
 
     @Override
     public QuantizeOption copy() {
@@ -87,6 +87,12 @@ public class QuantizeOption implements ICompressOption {
     @Override
     public double getBZero() {
         return this.bZero;
+    }
+
+    @Override
+    public Parameter[] getCompressionParameters() {
+        // TODO
+        return new Parameter[0];
     }
 
     public int getIntMaxValue() {

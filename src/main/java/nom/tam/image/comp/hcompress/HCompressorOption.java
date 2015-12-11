@@ -36,13 +36,13 @@ import nom.tam.image.comp.ICompressOption;
 
 public class HCompressorOption implements ICompressOption {
 
-    private int tileHeigth;
-
-    private int tileWidth;
+    private int scale;
 
     private boolean smooth;
 
-    private int scale;
+    private int tileHeigth;
+
+    private int tileWidth;
 
     @Override
     public HCompressorOption copy() {
@@ -61,6 +61,14 @@ public class HCompressorOption implements ICompressOption {
     @Override
     public double getBZero() {
         return Double.NaN;
+    }
+
+    @Override
+    public Parameter[] getCompressionParameters() {
+        return new Parameter[]{
+            new Parameter(Compression.SMOOTH, this.smooth ? 1 : 0),
+            new Parameter(Compression.SCALE, this.scale),
+        };
     }
 
     public int getScale() {

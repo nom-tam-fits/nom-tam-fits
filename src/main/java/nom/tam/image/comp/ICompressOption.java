@@ -1,5 +1,6 @@
 package nom.tam.image.comp;
 
+
 /*
  * #%L
  * nom.tam FITS library
@@ -64,6 +65,8 @@ public interface ICompressOption extends Cloneable {
     double getBScale();
 
     double getBZero();
+
+    Parameter[] getCompressionParameters();
 
     ICompressOption setBNull(Integer blank);
 

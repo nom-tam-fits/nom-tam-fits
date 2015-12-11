@@ -64,6 +64,7 @@ import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardBuilder;
 import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.ICompressOption.Parameter;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
 import nom.tam.image.comp.TileCompressorProvider;
 import nom.tam.util.PrimitiveTypeEnum;
@@ -92,6 +93,8 @@ class TileArray {
 
     private final CompressedImageData compressedImageData;
 
+    private ByteBuffer compressedWholeErea;
+
     private ICompressOption.Parameter[] compressionParameter;
 
     private ICompressOption[] compressOptions;
@@ -99,8 +102,6 @@ class TileArray {
     private ITileCompressorControl compressorControl;
 
     private Buffer decompressedWholeErea;
-
-    private ByteBuffer compressedWholeErea;
 
     private ITileCompressorControl gzipCompressorControl;
 
@@ -127,8 +128,23 @@ class TileArray {
         this.compressedImageData = compressedImageData;
     }
 
+    private void addColumnToTable(CompressedImageHDU hdu, Object column, String columnName) throws FitsException {
+        if (column != null) {
+            hdu.setColumnName(hdu.addColumn(column) - 1, columnName, null);
+        }
+    }
+
     public void compress(CompressedImageHDU hdu) throws FitsException {
         executeAllTiles();
+        for (ICompressOption option : compressOptions()) {
+            ICompressOption.Parameter[] parameter = option.getCompressionParameters();
+            if (this.compressionParameter == null) {
+                this.compressionParameter = parameter;
+            } else {
+                this.compressionParameter = Arrays.copyOf(this.compressionParameter, this.compressionParameter.length + parameter.length);
+                System.arraycopy(parameter, 0, this.compressionParameter, this.compressionParameter.length - parameter.length, parameter.length);
+            }
+        }
         writeColumns(hdu);
         writeHeader(hdu.getHeader());
     }
@@ -383,6 +399,16 @@ class TileArray {
         return this;
     }
 
+    private <T> Object setInColumn(Object column, boolean predicate, Tile tile, Class<T> clazz, T value) {
+        if (predicate) {
+            if (column == null) {
+                column = Array.newInstance(clazz, this.tiles.length);
+            }
+            Array.set(column, tile.getTileIndex(), value);
+        }
+        return column;
+    }
+
     public TileArray setQuantAlgorithm(String value) {
         this.quantAlgorithm = value;
         return this;
@@ -417,22 +443,6 @@ class TileArray {
         hdu.getData().fillHeader(hdu.getHeader());
     }
 
-    private <T> Object setInColumn(Object column, boolean predicate, Tile tile, Class<T> clazz, T value) {
-        if (predicate) {
-            if (column == null) {
-                column = Array.newInstance(clazz, this.tiles.length);
-            }
-            Array.set(column, tile.getTileIndex(), value);
-        }
-        return column;
-    }
-
-    private void addColumnToTable(CompressedImageHDU hdu, Object column, String columnName) throws FitsException {
-        if (column != null) {
-            hdu.setColumnName(hdu.addColumn(column) - 1, columnName, null);
-        }
-    }
-
     private void writeHeader(Header header) throws FitsException {
         HeaderCardBuilder cardBilder = header.card(ZBITPIX);
         cardBilder.value(this.baseType.bitPix())//
@@ -446,6 +456,18 @@ class TileArray {
         for (int i = 1; i <= this.tileAxes.length; i += 1) {
             cardBilder.card(ZTILEn.n(i)).value(this.tileAxes[i - 1]);
         }
-
+        int nval = 1;
+        for (Parameter parameter : this.compressionParameter) {
+            header.card(ZNAMEn.n(nval)).value(parameter.getName());
+            Object value = parameter.getValue();
+            if (value instanceof String) {
+                header.card(ZVALn.n(nval)).value((String) value);
+            } else if (value instanceof Integer) {
+                header.card(ZVALn.n(nval)).value((Integer) value);
+            } else if (value instanceof Boolean) {
+                header.card(ZVALn.n(nval)).value((Boolean) value);
+            }
+            nval++;
+        }
     }
 }

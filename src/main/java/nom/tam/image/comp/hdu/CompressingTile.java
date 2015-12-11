@@ -69,8 +69,7 @@ public class CompressingTile extends Tile {
         this.compressedData.limit(this.imageDataView.getPixelSize() * this.array.getBaseType().size());
         this.tileOptions = this.array.getCompressOptions().clone();
         this.compressionType = TileCompressionType.COMPRESSED;
-        boolean compressSuccess;
-        compressSuccess = this.array.getCompressorControl().compress(this.imageDataView.getBuffer(), this.compressedData, this.tileOptions);
+        boolean compressSuccess = this.array.getCompressorControl().compress(this.imageDataView.getBuffer(), this.compressedData, this.tileOptions);
         if (compressSuccess) {
             for (ICompressOption tileOption : this.tileOptions) {
                 this.zero = Double.isNaN(this.zero) ? tileOption.getBZero() : this.zero;
@@ -106,6 +105,5 @@ public class CompressingTile extends Tile {
     @Override
     public void run() {
         compress();
-        this.imageDataView.finish();
     }
 }

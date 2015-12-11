@@ -72,6 +72,14 @@ public class RiceCompressOption implements ICompressOption {
         return Double.NaN;
     }
 
+    @Override
+    public Parameter[] getCompressionParameters() {
+        return new Parameter[]{
+            new Parameter(Compression.BLOCKSIZE, this.blockSize),
+            new Parameter(Compression.BYTEPIX, this.bytePix),
+        };
+    }
+
     public RiceCompressOption setBlockSize(int value) {
         this.blockSize = value;
         return this;
