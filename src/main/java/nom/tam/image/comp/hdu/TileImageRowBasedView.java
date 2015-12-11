@@ -88,4 +88,11 @@ class TileImageRowBasedView {
         this.buffer.limit(getPixelSize());
         return this;
     }
+
+    /**
+     * nothing to do in the normal case, overwrite this method if post
+     * processing is necessary.
+     */
+    public void finish() {
+    }
 }

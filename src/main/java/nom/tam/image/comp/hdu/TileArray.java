@@ -147,27 +147,30 @@ class TileArray {
     }
 
     private void createTiles(ITileInitialisation init) {
-        int nrOfTilesOnXAxis = BigDecimal.valueOf(this.axes[0]).divide(BigDecimal.valueOf(this.tileAxes[0])).round(ROUNDIG_CONTEXT).intValue();
-        int nrOfTilesOnYAxis = BigDecimal.valueOf(this.axes[1]).divide(BigDecimal.valueOf(this.tileAxes[1])).round(ROUNDIG_CONTEXT).intValue();
-        int lastTileWidth = nrOfTilesOnXAxis * this.tileAxes[0] - this.axes[0];
+        final int imageWidth = this.axes[0];
+        final int imageHeigth = this.axes[1];
+        final int tileWidth = this.tileAxes[0];
+        final int tileHeigth = this.tileAxes[1];
+        final int nrOfTilesOnXAxis = BigDecimal.valueOf(imageWidth).divide(BigDecimal.valueOf(tileWidth)).round(ROUNDIG_CONTEXT).intValue();
+        final int nrOfTilesOnYAxis = BigDecimal.valueOf(imageHeigth).divide(BigDecimal.valueOf(tileHeigth)).round(ROUNDIG_CONTEXT).intValue();
+        int lastTileWidth = nrOfTilesOnXAxis * tileWidth - imageWidth;
         if (lastTileWidth == 0) {
-            lastTileWidth = this.tileAxes[0];
+            lastTileWidth = tileWidth;
         }
-        int lastTileHeigth = nrOfTilesOnYAxis * this.tileAxes[1] - this.axes[1];
+        int lastTileHeigth = nrOfTilesOnYAxis * tileHeigth - imageHeigth;
         if (lastTileHeigth == 0) {
-            lastTileHeigth = this.tileAxes[1];
+            lastTileHeigth = tileHeigth;
         }
         int tileIndex = 0;
-        int dataOffset = 0;
         this.tiles = new Tile[nrOfTilesOnXAxis * nrOfTilesOnYAxis];
-        for (int y = 0; y < this.axes[1]; y += this.tileAxes[1]) {
-            boolean lastY = y + this.tileAxes[1] >= this.axes[1];
-            for (int x = 0; x < this.axes[0]; x += this.tileAxes[0]) {
-                boolean lastX = x + this.tileAxes[0] >= this.axes[0];
+        for (int y = 0; y < imageHeigth; y += tileHeigth) {
+            boolean lastY = y + tileHeigth >= imageHeigth;
+            for (int x = 0; x < imageWidth; x += tileWidth) {
+                boolean lastX = x + tileWidth >= imageWidth;
+                int dataOffset = y * imageWidth + x;
                 this.tiles[tileIndex] = init.createTile(tileIndex)//
-                        .setDimentions(dataOffset, lastX ? lastTileWidth : this.tileAxes[0], lastY ? lastTileHeigth : this.tileAxes[1]);
+                        .setDimentions(dataOffset, lastX ? lastTileWidth : tileWidth, lastY ? lastTileHeigth : tileHeigth);
                 init.init(this.tiles[tileIndex]);
-                dataOffset += this.tiles[tileIndex].getPixelSize();
                 tileIndex++;
             }
         }
@@ -226,6 +229,10 @@ class TileArray {
 
     public ITileCompressorControl getGzipCompressorControl() {
         return this.gzipCompressorControl;
+    }
+
+    public int getImageWidth() {
+        return this.axes[0];
     }
 
     private <T> T getNullableColumn(Header header, Class<T> class1, String columnName) throws FitsException {

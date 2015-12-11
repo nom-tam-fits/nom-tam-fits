@@ -106,5 +106,6 @@ public class CompressingTile extends Tile {
     @Override
     public void run() {
         compress();
+        this.imageDataView.finish();
     }
 }

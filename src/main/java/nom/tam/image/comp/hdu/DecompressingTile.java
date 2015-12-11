@@ -71,5 +71,6 @@ public class DecompressingTile extends Tile {
     @Override
     public void run() {
         decompress();
+        this.imageDataView.finish();
     }
 }
