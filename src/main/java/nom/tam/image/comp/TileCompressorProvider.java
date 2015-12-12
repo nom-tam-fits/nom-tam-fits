@@ -169,7 +169,6 @@ public class TileCompressorProvider implements ITileCompressorProvider {
     }
 
     private Object standardizeCompressionAlgorithm(String compressionAlgorithm) {
-        compressionAlgorithm = compressionAlgorithm.replace('_', ' ');
         if (Compression.ZCMPTYPE_RICE_1.equalsIgnoreCase(compressionAlgorithm) || //
                 Compression.ZCMPTYPE_RICE_ONE.equalsIgnoreCase(compressionAlgorithm)) {
             return "Rice";

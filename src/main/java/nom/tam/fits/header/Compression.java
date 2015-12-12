@@ -278,7 +278,7 @@ public enum Compression implements IFitsHeader {
      * Internet. The gzip alg orithm has no associated parameters that need to
      * be specified with the ZNAMEn and ZVALn keywords.
      */
-    public static final String ZCMPTYPE_GZIP_1 = "GZIP 1";
+    public static final String ZCMPTYPE_GZIP_1 = "GZIP_1";
 
     /**
      * If ZCMPTYPE = ’GZIP 2’ then the bytes in the array of image pixel values
@@ -291,7 +291,7 @@ public enum Compression implements IFitsHeader {
      * net compression of the array. This is usually especially effective when
      * compressing floating-point arrays.
      */
-    public static final String ZCMPTYPE_GZIP_2 = "GZIP 2";
+    public static final String ZCMPTYPE_GZIP_2 = "GZIP_2";
 
     /**
      * If ZCMPTYPE = ’RICE 1’ then the Rice algorithm is used to compress and
@@ -305,7 +305,7 @@ public enum Compression implements IFitsHeader {
      * statistics (e.g., Rice has no problem handling cosmic rays, bright stars,
      * saturated pixels, etc.).
      */
-    public static final String ZCMPTYPE_RICE_1 = "RICE 1";
+    public static final String ZCMPTYPE_RICE_1 = "RICE_1";
 
     /**
      * If ZCMPTYPE = ’PLIO 1’ then the IRAF PLIO (Pixel List) algorithm is used
@@ -324,7 +324,7 @@ public enum Compression implements IFitsHeader {
      * case cannot exceed npix*2 words provided the mask depth is 24 bits or
      * less.
      */
-    public static final String ZCMPTYPE_PLIO_1 = "PLIO 1";
+    public static final String ZCMPTYPE_PLIO_1 = "PLIO_1";
 
     /**
      * Hcompress is an the image compression package written by Richard L. White
@@ -344,12 +344,12 @@ public enum Compression implements IFitsHeader {
      * needed for the lossless case (e.g. there is no need for a file of
      * residuals .)
      */
-    public static final String ZCMPTYPE_HCOMPRESS_1 = "HCOMPRESS 1";
+    public static final String ZCMPTYPE_HCOMPRESS_1 = "HCOMPRESS_1";
 
     /**
      * alternative name for 'RICE 1'
      */
-    public static final String ZCMPTYPE_RICE_ONE = "RICE ONE";
+    public static final String ZCMPTYPE_RICE_ONE = "RICE_ONE";
 
     /**
      * Each row of this variable-length column contains the byte st ream that is
