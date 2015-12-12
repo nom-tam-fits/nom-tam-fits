@@ -44,12 +44,6 @@ import nom.tam.util.PrimitiveTypeEnum;
 class TileImageColumnBasedView extends TileImageRowBasedView {
 
     /**
-     * the width of the image in pixels, that differs from the width of the
-     * tile.
-     */
-    private final int imageWidth;
-
-    /**
      * the buffer representing the tile data gap less. this will exist only
      * between the first getBuffer() and the finish(). This way the memory used
      * for the data copy is allocates as early as needed and freed as soon as
@@ -57,37 +51,73 @@ class TileImageColumnBasedView extends TileImageRowBasedView {
      */
     private Buffer gapLessBuffer;
 
+    /**
+     * the width of the image in pixels, that differs from the width of the
+     * tile.
+     */
+    private final int imageWidth;
+
     public TileImageColumnBasedView(Tile tile, int dataOffset, int imageWidth, int width, int heigth) {
         super(tile, dataOffset, width, heigth);
         this.imageWidth = imageWidth;
-    }
-
-    @Override
-    public Buffer getBuffer() {
-        if (gapLessBuffer == null) {
-            createGapLessBuffer();
-        }
-        return gapLessBuffer;
     }
 
     /**
      * create the temporary buffer that contains no data gaps.
      */
     private void createGapLessBuffer() {
-        final int gap = imageWidth - getWidth();
+        final int gap = this.imageWidth - getWidth();
         final int pixelSizeInData = getPixelSizeInData();
         Buffer imagebuffer = getImageBuffer();
         imagebuffer.position(0);
         imagebuffer.limit(0);
         PrimitiveTypeEnum type = primitivType();
-        gapLessBuffer = type.newBuffer(getPixelSize());
+        this.gapLessBuffer = type.newBuffer(getPixelSize());
         while (imagebuffer.limit() < pixelSizeInData) {
             imagebuffer.limit(imagebuffer.position() + getWidth());
-            type.appendBuffer(gapLessBuffer, imagebuffer);
+            type.appendBuffer(this.gapLessBuffer, imagebuffer);
             imagebuffer.limit(Math.min(pixelSizeInData, imagebuffer.position() + gap));
             imagebuffer.position(imagebuffer.limit());
         }
-        gapLessBuffer.rewind();
+        this.gapLessBuffer.rewind();
+    }
+
+    /**
+     * resolve the temporary buffer that contains no data gaps, and put the data
+     * back into the image buffer.
+     */
+    private void desolveGapLessBuffer() {
+        final int gap = this.imageWidth - getWidth();
+        final int pixelSize = getPixelSize();
+        Buffer imagebuffer = getImageBuffer();
+        imagebuffer.limit(getPixelSizeInData());
+        imagebuffer.rewind();
+        this.gapLessBuffer.rewind();
+        this.gapLessBuffer.limit(0);
+        PrimitiveTypeEnum type = primitivType();
+        while (this.gapLessBuffer.limit() < pixelSize) {
+            this.gapLessBuffer.limit(this.gapLessBuffer.position() + getWidth());
+            type.appendBuffer(imagebuffer, this.gapLessBuffer);
+            imagebuffer.position(Math.min(imagebuffer.position() + gap, imagebuffer.limit()));
+        }
+        this.gapLessBuffer = null;
+    }
+
+    @Override
+    public void finish() {
+        desolveGapLessBuffer();
+    }
+
+    @Override
+    public Buffer getBuffer() {
+        if (this.gapLessBuffer == null) {
+            createGapLessBuffer();
+        }
+        return this.gapLessBuffer;
+    }
+
+    private Buffer getImageBuffer() {
+        return super.getBuffer();
     }
 
     /**
@@ -96,38 +126,10 @@ class TileImageColumnBasedView extends TileImageRowBasedView {
      *         would go over the image data limit.
      */
     private int getPixelSizeInData() {
-        return (getHeigth() - 1) * imageWidth + getWidth();
-    }
-
-    /**
-     * resolve the temporary buffer that contains no data gaps, and put the data
-     * back into the image buffer.
-     */
-    private void desolveGapLessBuffer() {
-        final int pixelSize = getPixelSize();
-        Buffer imagebuffer = getImageBuffer();
-        imagebuffer.limit(getPixelSizeInData());
-        imagebuffer.rewind();
-        gapLessBuffer.rewind();
-        PrimitiveTypeEnum type = primitivType();
-        while (gapLessBuffer.limit() < pixelSize) {
-            gapLessBuffer.limit(gapLessBuffer.position() + getWidth());
-            type.appendBuffer(imagebuffer, gapLessBuffer);
-            imagebuffer.position(imagebuffer.position() + imageWidth);
-        }
-        gapLessBuffer = null;
+        return (getHeigth() - 1) * this.imageWidth + getWidth();
     }
 
     private PrimitiveTypeEnum primitivType() {
         return PrimitiveTypeEnum.valueOf(getImageBuffer().getClass());
-    }
-
-    private Buffer getImageBuffer() {
-        return super.getBuffer();
-    }
-
-    @Override
-    public void finish() {
-        desolveGapLessBuffer();
     }
 }

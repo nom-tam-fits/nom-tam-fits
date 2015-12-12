@@ -130,8 +130,8 @@ abstract class Tile implements Runnable {
     }
 
     public Tile setDimentions(int dataOffset, int width, int heigth) {
-        if (array.getImageWidth() > width) {
-            this.imageDataView = new TileImageColumnBasedView(this, dataOffset, array.getImageWidth(), width, heigth);
+        if (this.array.getImageWidth() > width) {
+            this.imageDataView = new TileImageColumnBasedView(this, dataOffset, this.array.getImageWidth(), width, heigth);
         } else {
             this.imageDataView = new TileImageRowBasedView(this, dataOffset, width, heigth);
         }
@@ -168,7 +168,7 @@ abstract class Tile implements Runnable {
      *            the buffer that describes the whole image.
      */
     public void setWholeImageCompressedBuffer(ByteBuffer compressed) {
-        compressed.position(this.imageDataView.getDataOffset() * this.array.getBaseType().size());
+        compressed.position(getPixelSize() * this.tileIndex * this.array.getBaseType().size());
         this.compressedData = compressed.slice();
         // we do not limit this buffer but is expected not to write more than
         // the uncompressed size.

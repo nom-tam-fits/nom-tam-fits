@@ -91,8 +91,7 @@ public class QuantizeOption implements ICompressOption {
 
     @Override
     public Parameter[] getCompressionParameters() {
-        // TODO
-        return new Parameter[0];
+        return null;
     }
 
     public int getIntMaxValue() {

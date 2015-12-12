@@ -140,7 +140,7 @@ class TileArray {
             ICompressOption.Parameter[] parameter = option.getCompressionParameters();
             if (this.compressionParameter == null) {
                 this.compressionParameter = parameter;
-            } else {
+            } else if (parameter != null) {
                 this.compressionParameter = Arrays.copyOf(this.compressionParameter, this.compressionParameter.length + parameter.length);
                 System.arraycopy(parameter, 0, this.compressionParameter, this.compressionParameter.length - parameter.length, parameter.length);
             }

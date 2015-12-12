@@ -379,8 +379,8 @@ public class ReadWriteProvidedCompressedImageTest {
             actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
             Assert.assertArrayEquals(m13_data, actualShortArray);
             hdu = (CompressedImageHDU) f.readHDU();
-   //         actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
-   //         Assert.assertArrayEquals(m13_data, actualShortArray);
+            actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
+            Assert.assertArrayEquals(m13_data, actualShortArray);
         }
     }
 
