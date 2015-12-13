@@ -7,12 +7,12 @@ package nom.tam.image.comp.quant;
  * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- *
+ * 
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * 
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.comp.quant;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -132,7 +132,7 @@ public class Quantize {
      * noise = 1.482602 / sqrt(6) * median (abs(2*flux(i) - flux(i-2) -
      * flux(i+2))) The returned estimates are the median of the values that are
      * computed for each row of the image.
-     *
+     * 
      * @param arrayIn
      *            2 dimensional array of image pixels
      * @param nx
@@ -368,7 +368,7 @@ public class Quantize {
      * to convert back to nearly the original floating point values: fdata ~=
      * idata * bscale + bzero. If the function value is zero, the data were not
      * copied to idata.
-     *
+     * 
      * @param fdata
      *            the data to quantinize
      * @param nxpix
