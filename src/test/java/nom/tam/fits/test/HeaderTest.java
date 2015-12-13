@@ -37,6 +37,7 @@ import static nom.tam.fits.header.Standard.EXTEND;
 import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.SIMPLE;
+import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.extra.NOAOExt.CRPIX1;
 import static nom.tam.fits.header.extra.NOAOExt.CRPIX2;
 import static nom.tam.fits.header.extra.NOAOExt.CRVAL1;
@@ -810,6 +811,33 @@ public class HeaderTest {
         header.addValue(END, true);
 
         header.write(dos);
+    }
+
+    /**
+     * test if the header order is corrected during the write, the THEAP keyword
+     * must be the last before the end.
+     */
+    @Test
+    public void headerOrder() throws Exception {
+        ArrayDataOutput dos = new BufferedDataOutputStream(new ByteArrayOutputStream(), 80);
+        Header header = new Header();
+        header.addValue(SIMPLE, true);
+        header.addValue(THEAP, 1);
+        header.addValue(BITPIX, 1);
+        header.addValue(NAXIS, 0);
+        header.addValue(END, true);
+        Assert.assertEquals(NAXIS.key(), header.iterator(3).next().getKey());
+        header.write(dos);
+        Assert.assertEquals(THEAP.key(), header.iterator(3).next().getKey());
+        header = new Header();
+        header.addValue(SIMPLE, true);
+        header.addValue(BITPIX, 1);
+        header.addValue(NAXIS, 0);
+        header.addValue(END, true);
+        header.addValue(THEAP, 1);
+        Assert.assertEquals(END.key(), header.iterator(3).next().getKey());
+        header.write(dos);
+        Assert.assertEquals(THEAP.key(), header.iterator(3).next().getKey());
     }
 
     private static <E extends Throwable> void throwAny(Throwable e) throws E {
