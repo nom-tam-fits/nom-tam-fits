@@ -384,11 +384,6 @@ class TileArray {
         this.compressionParameter[this.compressionParameter.length - 1] = new ICompressOption.Parameter(Compression.ZQUANTIZ.name(), this.quantAlgorithm);
     }
 
-    public TileArray setBaseType(PrimitiveTypeEnum value) {
-        this.baseType = value;
-        return this;
-    }
-
     public TileArray setCompressAlgorithm(String value) {
         this.compressAlgorithm = value;
         return this;

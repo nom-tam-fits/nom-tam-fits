@@ -40,7 +40,6 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.PrimitiveTypeEnum;
 
 public class CompressedImageData extends BinaryTable {
 
@@ -94,19 +93,6 @@ public class CompressedImageData extends BinaryTable {
             ArrayFuncs.copyInto(data, source.array());
             tileArray().prepareUncompressedData(source);
         }
-    }
-
-    /**
-     * It is possible to use another bitPix in the compressed image as in the
-     * real image, this is not recommended to do.
-     *
-     * @param bitPix
-     *            the bitpix for the compressed image.
-     * @return myself
-     */
-    public CompressedImageData setBitPix(int bitPix) {
-        tileArray().setBaseType(PrimitiveTypeEnum.valueOf(bitPix));
-        return this;
     }
 
     public CompressedImageData setCompressAlgorithm(String compressAlgorithm) {
