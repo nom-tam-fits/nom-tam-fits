@@ -68,7 +68,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         private ByteBuffer pixelBuffer;
 
         public ByteRiceCompress(RiceCompressOption option) {
-            super(option);
+            super(option.setDefaultBytePix(PrimitiveTypeEnum.BYTE.size()));
         }
 
         @Override
@@ -98,7 +98,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         private IntBuffer pixelBuffer;
 
         public IntRiceCompress(RiceCompressOption option) {
-            super(option);
+            super(option.setDefaultBytePix(PrimitiveTypeEnum.INT.size()));
         }
 
         @Override
@@ -128,7 +128,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         private ShortBuffer pixelBuffer;
 
         public ShortRiceCompress(RiceCompressOption option) {
-            super(option);
+            super(option.setDefaultBytePix(PrimitiveTypeEnum.SHORT.size()));
         }
 
         @Override

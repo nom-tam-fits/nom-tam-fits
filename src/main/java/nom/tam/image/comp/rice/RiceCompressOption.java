@@ -43,12 +43,16 @@ public class RiceCompressOption implements ICompressOption {
 
     private int blockSize = DEFAULT_RISE_BLOCKSIZE;
 
-    private Integer bytePix = DEFAULT_RISE_BYTEPIX;
+    private Integer bytePix = null;
+
+    private RiceCompressOption original;
 
     @Override
     public RiceCompressOption copy() {
         try {
-            return (RiceCompressOption) clone();
+            RiceCompressOption clone = (RiceCompressOption) clone();
+            clone.original = this;
+            return clone;
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException("open could not be cloned", e);
         }
@@ -113,6 +117,16 @@ public class RiceCompressOption implements ICompressOption {
             } else if (Compression.BYTEPIX.equals(parameter.getName())) {
                 setBytePix(parameter.getValue(Integer.class));
             }
+        }
+        return setDefaultBytePix(DEFAULT_RISE_BYTEPIX);
+    }
+
+    protected RiceCompressOption setDefaultBytePix(int defaultBytePix) {
+        if (this.original != null) {
+            this.original.setDefaultBytePix(defaultBytePix);
+            this.bytePix = this.original.getBytePix();
+        } else if (this.bytePix == null) {
+            this.bytePix = defaultBytePix;
         }
         return this;
     }

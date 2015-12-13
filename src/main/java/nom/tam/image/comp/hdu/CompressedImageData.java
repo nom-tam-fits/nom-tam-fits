@@ -114,11 +114,6 @@ public class CompressedImageData extends BinaryTable {
         return this;
     }
 
-    public CompressedImageData setImageSize(int... axes) {
-        tileArray().setAxes(axes);
-        return this;
-    }
-
     public CompressedImageData setQuantAlgorithm(String quantAlgorithm) {
         tileArray().setQuantAlgorithm(quantAlgorithm);
         return this;

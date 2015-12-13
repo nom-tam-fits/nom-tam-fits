@@ -46,6 +46,8 @@ import javax.swing.JLabel;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.util.BlackBoxImages;
@@ -354,16 +356,14 @@ public class ReadWriteProvidedCompressedImageTest {
             compressedHdu.getData().setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
                     .setQuantAlgorithm((String) null)//
                     .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32)//
-                    /**/.setBytePix(2);
+                    /**/.setBlockSize(32);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             compressedHdu = CompressedImageHDU.fromImageHDU(m13, 100, 300);
             compressedHdu.getData().setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
                     .setQuantAlgorithm((String) null)//
                     .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32)//
-                    /**/.setBytePix(2);
+                    /**/.setBlockSize(32);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_own.fits.fz"))) {
@@ -373,15 +373,32 @@ public class ReadWriteProvidedCompressedImageTest {
         try (Fits f = new Fits("target/write_m13_own.fits.fz")) {
             f.readHDU();// the primary
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
+            Assert.assertEquals("2", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
             short[][] actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
             Assert.assertArrayEquals(m13_data, actualShortArray);
             hdu = (CompressedImageHDU) f.readHDU();
+            Assert.assertEquals("2", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
             actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
             Assert.assertArrayEquals(m13_data, actualShortArray);
             hdu = (CompressedImageHDU) f.readHDU();
+            Assert.assertEquals("2", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
             actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
             Assert.assertArrayEquals(m13_data, actualShortArray);
         }
     }
 
+    private HeaderCard findCompressOption(Header header, String key) {
+        try {
+            int index = 1;
+            while (true) {
+                HeaderCard card = header.findCard(Compression.ZNAMEn.n(index));
+                if (card.getValue().equals(key)) {
+                    return header.findCard(Compression.ZVALn.n(index));
+                }
+                index++;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
