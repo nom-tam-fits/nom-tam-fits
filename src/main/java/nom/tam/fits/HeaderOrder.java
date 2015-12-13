@@ -9,6 +9,7 @@ import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.TFIELDS;
+import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.Standard.XTENSION;
 
 import java.io.Serializable;
@@ -61,14 +62,13 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
      * Which order should the cards indexed by these keys be written out? This
      * method assumes that the arguments are either the FITS Header keywords as
      * strings, and some other type (or null) for comment style keywords.
-     * 
+     *
      * @return -1 if the first argument should be written first <br>
      *         1 if the second argument should be written first <br>
      *         0 if either is legal.
      */
     @Override
     public int compare(String c1, String c2) {
-
         // Note that we look at each of the ordered FITS keywords in the
         // required
         // order.
@@ -80,43 +80,34 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
 
         // Now search in the order in which cards must appear
         // in the header.
-
         if (c1.equals(SIMPLE.key()) || c1.equals(XTENSION.key())) {
             return -1;
-        }
-        if (c2.equals(SIMPLE.key()) || c2.equals(XTENSION.key())) {
+        } else if (c2.equals(SIMPLE.key()) || c2.equals(XTENSION.key())) {
             return 1;
-        }
-
-        if (c1.equals(BITPIX.key())) {
+        } else if (c1.equals(BITPIX.key())) {
             return -1;
-        }
-        if (c2.equals(BITPIX.key())) {
+        } else if (c2.equals(BITPIX.key())) {
             return 1;
-        }
-
-        if (c1.equals(NAXIS.key())) {
+        } else if (c1.equals(NAXIS.key())) {
             return -1;
-        }
-        if (c2.equals(NAXIS.key())) {
+        } else if (c2.equals(NAXIS.key())) {
             return 1;
         }
 
         // Check the NAXISn cards. These must
         // be in axis order.
-
-        if (naxisN(c1) > 0) {
-            if (naxisN(c2) > 0) {
-                if (naxisN(c1) < naxisN(c2)) {
+        final int naxisNc1 = naxisN(c1);
+        final int naxisNc2 = naxisN(c2);
+        if (naxisNc1 > 0) {
+            if (naxisNc2 > 0) {
+                if (naxisNc1 < naxisNc2) {
                     return -1;
                 } else {
                     return 1;
                 }
             }
             return -1;
-        }
-
-        if (naxisN(c2) > 0) {
+        } else if (naxisNc2 > 0) {
             return 1;
         }
 
@@ -125,29 +116,19 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
         // be here if present in the primary data array.
         if (c1.equals(EXTEND.key())) {
             return -1;
-        }
-        if (c2.equals(EXTEND.key())) {
+        } else if (c2.equals(EXTEND.key())) {
             return 1;
-        }
-
-        if (c1.equals(PCOUNT.key())) {
+        } else if (c1.equals(PCOUNT.key())) {
             return -1;
-        }
-        if (c2.equals(PCOUNT.key())) {
+        } else if (c2.equals(PCOUNT.key())) {
             return 1;
-        }
-
-        if (c1.equals(GCOUNT.key())) {
+        } else if (c1.equals(GCOUNT.key())) {
             return -1;
-        }
-        if (c2.equals(GCOUNT.key())) {
+        } else if (c2.equals(GCOUNT.key())) {
             return 1;
-        }
-
-        if (c1.equals(TFIELDS.key())) {
+        } else if (c1.equals(TFIELDS.key())) {
             return -1;
-        }
-        if (c2.equals(TFIELDS.key())) {
+        } else if (c2.equals(TFIELDS.key())) {
             return 1;
         }
 
@@ -156,17 +137,21 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
         // deprecated currently.
         if (c1.equals(BLOCKED.key())) {
             return -1;
-        }
-        if (c2.equals(BLOCKED.key())) {
+        } else if (c2.equals(BLOCKED.key())) {
             return 1;
         }
 
         // Note that this must be at the end, so the
-        // values returned are inverted.
-        if (c1.equals(END.key())) {
+        // values returned are inverted. THEAP is put to the end of the file
+        // because os a bug in cfitsio that causes confusion when the header
+        // appears befor any compression headers.
+        if (c1.equals(THEAP.key())) {
             return 1;
-        }
-        if (c2.equals(END.key())) {
+        } else if (c2.equals(THEAP.key())) {
+            return -1;
+        } else if (c1.equals(END.key())) {
+            return 1;
+        } else if (c2.equals(END.key())) {
             return -1;
         }
 
@@ -188,9 +173,8 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
     /** Find the index for NAXISn keywords */
     private int naxisN(String key) {
         int startOfNumber = Standard.NAXIS.key().length();
-        if (key.length() > startOfNumber && key.substring(0, startOfNumber).equals(Standard.NAXIS.key())) {
+        if (key.length() > startOfNumber && key.regionMatches(false, 0, Standard.NAXIS.key(), 0, startOfNumber)) {
             for (int i = startOfNumber; i < key.length(); i += 1) {
-
                 boolean number = true;
                 char c = key.charAt(i);
                 if ('0' > c || c > '9') {
