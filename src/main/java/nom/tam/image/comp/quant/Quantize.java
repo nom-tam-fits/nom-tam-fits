@@ -7,12 +7,12 @@ package nom.tam.image.comp.quant;
  * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.comp.quant;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -32,8 +32,6 @@ package nom.tam.image.comp.quant;
  */
 
 import java.util.Arrays;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class Quantize {
 
@@ -82,8 +80,6 @@ public class Quantize {
     private static final double NOISE_5_MULTIPLICATOR = 0.1772048;
 
     private final QuantizeOption parameter;
-
-    private int[] intData;
 
     /**
      * maximum non-null value
@@ -136,7 +132,7 @@ public class Quantize {
      * noise = 1.482602 / sqrt(6) * median (abs(2*flux(i) - flux(i-2) -
      * flux(i+2))) The returned estimates are the median of the values that are
      * computed for each row of the image.
-     * 
+     *
      * @param arrayIn
      *            2 dimensional array of image pixels
      * @param nx
@@ -318,17 +314,8 @@ public class Quantize {
         return false;
     }
 
-    protected boolean isNull(double d) {
-        return false;
-    }
-
     protected int findNextValidPixelWithNullCheck(int nx, DoubleArrayPointer rowpix, int ii) {
         return ii;
-    }
-
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
-    public int[] getIntData() {
-        return this.intData;
     }
 
     private double getNextPixelAndCheckMinMax(DoubleArrayPointer rowpix, int ii) {
@@ -362,6 +349,10 @@ public class Quantize {
         this.xmaxval = Double.MIN_VALUE;
     }
 
+    protected boolean isNull(double d) {
+        return false;
+    }
+
     /**
      * arguments: long row i: tile number = row number in the binary table
      * double fdata[] i: array of image pixels to be compressed long nxpix i:
@@ -377,7 +368,7 @@ public class Quantize {
      * to convert back to nearly the original floating point values: fdata ~=
      * idata * bscale + bzero. If the function value is zero, the data were not
      * copied to idata.
-     * 
+     *
      * @param fdata
      *            the data to quantinize
      * @param nxpix
@@ -392,7 +383,6 @@ public class Quantize {
         double bScale; /* bscale, 1 in intdata = delta in fdata */
 
         long nx = (long) nxpix * (long) nypix;
-        this.intData = new int[(int) nx];
         if (nx <= 1L) {
             this.parameter.setBScale(1.);
             this.parameter.setBZero(0.);
@@ -438,9 +428,9 @@ public class Quantize {
         }
 
         this.parameter.setBScale(bScale);
-        this.parameter.setMinValue(minValue);
-        this.parameter.setMaxValue(maxValue);
-        parameter.setCheckNull(parameter.isCheckNull() && ngood != nx);
+        this.parameter.setMinValue(this.minValue);
+        this.parameter.setMaxValue(this.maxValue);
+        this.parameter.setCheckNull(this.parameter.isCheckNull() && this.ngood != nx);
         return true; /* yes, data have been quantized */
     }
 

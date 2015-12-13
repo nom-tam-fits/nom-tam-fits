@@ -91,10 +91,6 @@ public enum CXCStclSharedExt implements IFitsHeader {
         this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
     }
 
-    private CXCStclSharedExt(String key, String comment) {
-        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
-    }
-
     @Override
     public String comment() {
         return this.key.comment();
