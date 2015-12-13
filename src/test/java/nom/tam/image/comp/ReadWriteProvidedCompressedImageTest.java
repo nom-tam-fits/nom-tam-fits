@@ -419,23 +419,20 @@ public class ReadWriteProvidedCompressedImageTest {
                 f.write(bdos);
             }
         }
-        if (1 == 1) {
-            return;
-        }
-        try (Fits f = new Fits("target/write_m13_own.fits.fz")) {
+        try (Fits f = new Fits("target/write_m13real_own.fits.fz")) {
             f.readHDU();// the primary
             // @Tom this goes wron even if in the stored table the columns seem
             // correct the header after this read says a different dimentions of
             // the binary table.
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             float[][] actualShortArray = (float[][]) hdu.asImageHDU().getData().getData();
-            assertArrayEquals(m13_data_real, actualShortArray, 0.1f);
+            assertArrayEquals(m13_data_real, actualShortArray, 9f);
             hdu = (CompressedImageHDU) f.readHDU();
             actualShortArray = (float[][]) hdu.asImageHDU().getData().getData();
-            assertArrayEquals(m13_data_real, actualShortArray, 0.1f);
+            assertArrayEquals(m13_data_real, actualShortArray, 15f);
             hdu = (CompressedImageHDU) f.readHDU();
             actualShortArray = (float[][]) hdu.asImageHDU().getData().getData();
-            assertArrayEquals(m13_data_real, actualShortArray, 0.1f);
+            assertArrayEquals(m13_data_real, actualShortArray, 6f);
         }
     }
 
