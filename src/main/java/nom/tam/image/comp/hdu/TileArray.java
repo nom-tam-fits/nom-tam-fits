@@ -450,12 +450,10 @@ class TileArray {
         for (Parameter parameter : this.compressionParameter) {
             header.card(ZNAMEn.n(nval)).value(parameter.getName());
             Object value = parameter.getValue();
-            if (value instanceof String) {
-                header.card(ZVALn.n(nval)).value((String) value);
-            } else if (value instanceof Integer) {
+            if (value instanceof Integer) {
                 header.card(ZVALn.n(nval)).value((Integer) value);
-            } else if (value instanceof Boolean) {
-                header.card(ZVALn.n(nval)).value((Boolean) value);
+            } else {
+                throw new FitsException("Unsupported compression parameter type");
             }
             nval++;
         }

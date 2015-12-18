@@ -458,6 +458,7 @@ public class ReadWriteProvidedCompressedImageTest {
             compressedHdu.getData().setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
                     .setQuantAlgorithm((String) null)//
                     .getCompressOption(HCompressorOption.class)//
+                    /**/.setSmooth(true)//
                     /**/.setScale(1);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
@@ -502,6 +503,7 @@ public class ReadWriteProvidedCompressedImageTest {
             compressedHdu.getData().setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
                     .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
                     .getCompressOption(HCompressorOption.class)//
+                    /**/.setSmooth(true)//
                     /**/.setScale(1);
             compressedHdu.getData().getCompressOption(QuantizeOption.class).setQlevel(1.0);
             compressedHdu.compress();
