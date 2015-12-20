@@ -57,7 +57,6 @@ public interface ICompressOption extends Cloneable {
         public <T> T getValue(Class<T> clazz) {
             return clazz.cast(value);
         }
-
     }
 
     ICompressOption copy();

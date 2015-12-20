@@ -37,11 +37,11 @@ import nom.tam.util.PrimitiveTypeEnum;
 
 public class RiceCompressOption implements ICompressOption {
 
-    public static final int DEFAULT_RISE_BLOCKSIZE = 32;
+    public static final int DEFAULT_RICE_BLOCKSIZE = 32;
 
-    public static final int DEFAULT_RISE_BYTEPIX = PrimitiveTypeEnum.INT.size();
+    public static final int DEFAULT_RICE_BYTEPIX = PrimitiveTypeEnum.INT.size();
 
-    private int blockSize = DEFAULT_RISE_BLOCKSIZE;
+    private int blockSize = DEFAULT_RICE_BLOCKSIZE;
 
     private Integer bytePix = null;
 
@@ -54,7 +54,7 @@ public class RiceCompressOption implements ICompressOption {
             clone.original = this;
             return clone;
         } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("open could not be cloned", e);
+            throw new IllegalStateException("option could not be cloned", e);
         }
     }
 
@@ -118,7 +118,7 @@ public class RiceCompressOption implements ICompressOption {
                 setBytePix(parameter.getValue(Integer.class));
             }
         }
-        return setDefaultBytePix(DEFAULT_RISE_BYTEPIX);
+        return setDefaultBytePix(DEFAULT_RICE_BYTEPIX);
     }
 
     protected RiceCompressOption setDefaultBytePix(int defaultBytePix) {

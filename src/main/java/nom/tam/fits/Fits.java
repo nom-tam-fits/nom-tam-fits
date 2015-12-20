@@ -181,6 +181,7 @@ public class Fits implements Closeable {
             props.load(versionProperties);
             return props.getProperty("version");
         } catch (IOException e) {
+            LOG.log(Level.INFO, "reading version failed, ignoring", e);
             return "unknown";
         } finally {
             saveClose(versionProperties);
@@ -378,7 +379,7 @@ public class Fits implements Closeable {
         try {
             streamInit(FitsUtil.getURLStream(myURL, 0));
         } catch (IOException e) {
-            throw new FitsException("Unable to open input from URL:" + myURL);
+            throw new FitsException("Unable to open input from URL:" + myURL, e);
         }
     }
 

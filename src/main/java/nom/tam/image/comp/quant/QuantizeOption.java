@@ -85,7 +85,7 @@ public class QuantizeOption implements ICompressOption {
         try {
             return (QuantizeOption) clone();
         } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("open could not be cloned", e);
+            throw new IllegalStateException("option could not be cloned", e);
         }
     }
 

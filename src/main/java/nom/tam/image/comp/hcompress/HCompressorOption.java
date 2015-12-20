@@ -49,7 +49,7 @@ public class HCompressorOption implements ICompressOption {
         try {
             return (HCompressorOption) clone();
         } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("open could not be cloned", e);
+            throw new IllegalStateException("option could not be cloned", e);
         }
     }
 
