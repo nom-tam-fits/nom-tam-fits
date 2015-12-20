@@ -79,6 +79,7 @@ public class CompressingTile extends Tile {
             for (ICompressOption tileOption : this.tileOptions) {
                 this.zero = Double.isNaN(this.zero) ? tileOption.getBZero() : this.zero;
                 this.scale = Double.isNaN(this.scale) ? tileOption.getBScale() : this.scale;
+                this.blank = this.blank == null ? tileOption.getBNull() : this.blank;
             }
         } else {
             this.compressionType = TileCompressionType.GZIP_COMPRESSED;

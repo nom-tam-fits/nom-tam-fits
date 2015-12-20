@@ -90,6 +90,11 @@ public class QuantizeOption implements ICompressOption {
     }
 
     @Override
+    public Integer getBNull() {
+        return this.nullValueIndicator;
+    }
+
+    @Override
     public double getBScale() {
         return this.bScale;
     }

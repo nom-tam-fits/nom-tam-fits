@@ -133,6 +133,8 @@ class TileArray {
 
     public void compress(CompressedImageHDU hdu) throws FitsException {
         executeAllTiles();
+        // take the first blank as default value (if there is one)
+        this.zblank = this.tiles[0].getBlank();
         for (ICompressOption option : compressOptions()) {
             ICompressOption.Parameter[] parameter = option.getCompressionParameters();
             if (this.compressionParameter == null) {
@@ -417,7 +419,7 @@ class TileArray {
             compressedColumn = setInColumn(compressedColumn, tile.getCompressionType() == TileCompressionType.COMPRESSED, tile, byte[].class, tile.getCompressedData());
             gzipColumn = setInColumn(gzipColumn, tile.getCompressionType() == TileCompressionType.GZIP_COMPRESSED, tile, byte[].class, tile.getCompressedData());
             uncompressedColumn = setInColumn(uncompressedColumn, tile.getCompressionType() == TileCompressionType.UNCOMPRESSED, tile, byte[].class, tile.getCompressedData());
-            zblankColumn = setInColumn(zblankColumn, tile.getBlank() != null, tile, int.class, tile.getBlank());
+            zblankColumn = setInColumn(zblankColumn, tile.getBlank() != null && !tile.getBlank().equals(this.zblank), tile, int.class, tile.getBlank());
             zzeroColumn = setInColumn(zzeroColumn, !Double.isNaN(tile.getZero()), tile, double.class, tile.getZero());
             zscaleColumn = setInColumn(zscaleColumn, !Double.isNaN(tile.getScale()), tile, double.class, tile.getScale());
         }
