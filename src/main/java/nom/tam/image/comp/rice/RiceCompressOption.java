@@ -132,7 +132,7 @@ public class RiceCompressOption implements ICompressOption {
     }
 
     @Override
-    public RiceCompressOption setTileHeigth(int value) {
+    public RiceCompressOption setTileHeight(int value) {
         return this;
     }
 

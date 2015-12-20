@@ -57,8 +57,8 @@ class TileImageColumnBasedView extends TileImageRowBasedView {
      */
     private final int imageWidth;
 
-    public TileImageColumnBasedView(Tile tile, int dataOffset, int imageWidth, int width, int heigth) {
-        super(tile, dataOffset, width, heigth);
+    public TileImageColumnBasedView(Tile tile, int dataOffset, int imageWidth, int width, int height) {
+        super(tile, dataOffset, width, height);
         this.imageWidth = imageWidth;
     }
 
@@ -126,7 +126,7 @@ class TileImageColumnBasedView extends TileImageRowBasedView {
      *         would go over the image data limit.
      */
     private int getPixelSizeInData() {
-        return (getHeigth() - 1) * this.imageWidth + getWidth();
+        return (getHeight() - 1) * this.imageWidth + getWidth();
     }
 
     private PrimitiveTypeEnum primitivType() {

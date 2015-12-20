@@ -129,11 +129,11 @@ abstract class Tile implements Runnable {
         return this;
     }
 
-    public Tile setDimentions(int dataOffset, int width, int heigth) {
+    public Tile setDimensions(int dataOffset, int width, int height) {
         if (this.array.getImageWidth() > width) {
-            this.imageDataView = new TileImageColumnBasedView(this, dataOffset, this.array.getImageWidth(), width, heigth);
+            this.imageDataView = new TileImageColumnBasedView(this, dataOffset, this.array.getImageWidth(), width, height);
         } else {
-            this.imageDataView = new TileImageRowBasedView(this, dataOffset, width, heigth);
+            this.imageDataView = new TileImageRowBasedView(this, dataOffset, width, height);
         }
         return this;
     }

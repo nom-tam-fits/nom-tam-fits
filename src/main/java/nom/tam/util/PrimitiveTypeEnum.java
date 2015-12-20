@@ -453,7 +453,7 @@ public enum PrimitiveTypeEnum {
         return this.size;
     }
 
-    public Buffer sliceBuffer(Buffer decompressedWholeErea) {
+    public Buffer sliceBuffer(Buffer decompressedWholeArea) {
         return null;
     }
 

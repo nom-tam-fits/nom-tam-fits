@@ -40,7 +40,7 @@ public class HCompressorOption implements ICompressOption {
 
     private boolean smooth;
 
-    private int tileHeigth;
+    private int tileHeight;
 
     private int tileWidth;
 
@@ -75,8 +75,8 @@ public class HCompressorOption implements ICompressOption {
         return this.scale;
     }
 
-    public int getTileHeigth() {
-        return this.tileHeigth;
+    public int getTileHeight() {
+        return this.tileHeight;
     }
 
     public int getTileWidth() {
@@ -125,8 +125,8 @@ public class HCompressorOption implements ICompressOption {
     }
 
     @Override
-    public HCompressorOption setTileHeigth(int value) {
-        this.tileHeigth = value;
+    public HCompressorOption setTileHeight(int value) {
+        this.tileHeight = value;
         return this;
     }
 
