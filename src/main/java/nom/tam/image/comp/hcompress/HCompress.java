@@ -225,9 +225,9 @@ public class HCompress {
      * @param pixels
      *            pixels to compress
      * @param nx
-     *            image width dimention
+     *            image width dimension
      * @param ny
-     *            image heigth dimention
+     *            image height dimension
      * @param nbitplanes
      *            Number of bit planes in quadrants
      */

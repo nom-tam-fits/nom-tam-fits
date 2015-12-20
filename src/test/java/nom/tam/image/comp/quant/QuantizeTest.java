@@ -65,7 +65,7 @@ public class QuantizeTest {
                     .setSeed(8864L)//
                     .setQlevel(4)//
                     .setCheckNull(false)//
-                    .setTileHeigth(100)//
+                    .setTileHeight(100)//
                     .setTileWidth(100));
             IntBuffer quants = IntBuffer.wrap(new int[doubles.length]);
             quantProcessor.quantize(doubles, quants);
@@ -86,7 +86,7 @@ public class QuantizeTest {
     }
 
     private void checkRequantedValues(QuantProcessor quantize, IntBuffer buffer, double[] doubles, QuantizeOption option, boolean check) {
-        double[] output = new double[option.getTileWidth() * option.getTileHeigth()];
+        double[] output = new double[option.getTileWidth() * option.getTileHeight()];
         quantize.unquantize(buffer, DoubleBuffer.wrap(output));
         if (check) {
             double[] expected = new double[output.length];
@@ -112,7 +112,7 @@ public class QuantizeTest {
                     .setSeed(3942L)//
                     .setQlevel(4)//
                     .setCheckNull(false)//
-                    .setTileHeigth(100)//
+                    .setTileHeight(100)//
                     .setTileWidth(100));
             IntBuffer quants = IntBuffer.wrap(new int[doubles.length]);
             quantProcessor.quantize(doubles, quants);
@@ -150,7 +150,7 @@ public class QuantizeTest {
                 .setCenterOnZero(true)//
                 .setCheckZero(true)//
                 .setTileWidth(xsize - 3)//
-                .setTileHeigth(ysize));
+                .setTileHeight(ysize));
         IntBuffer quants = IntBuffer.wrap(new int[matrix.length]);
         quantProcessor.quantize(matrix, quants);
         quants.rewind();
@@ -180,7 +180,7 @@ public class QuantizeTest {
                 .setCenterOnZero(false)//
                 .setCheckZero(false)//
                 .setTileWidth(xsize)//
-                .setTileHeigth(ysize));
+                .setTileHeight(ysize));
         IntBuffer quants = IntBuffer.wrap(new int[xsize * ysize]);
         quantProcessor.quantize(matrix, quants);
         quants.rewind();
@@ -211,7 +211,7 @@ public class QuantizeTest {
                 .setCenterOnZero(false)//
                 .setCheckZero(false)//
                 .setTileWidth(xsize)//
-                .setTileHeigth(ysize));
+                .setTileHeight(ysize));
         IntBuffer quants = IntBuffer.wrap(new int[xsize * ysize]);
         quantProcessor.quantize(matrix, quants);
         quants.rewind();
@@ -240,7 +240,7 @@ public class QuantizeTest {
                 .setCenterOnZero(false)//
                 .setCheckZero(false)//
                 .setTileWidth(xsize)//
-                .setTileHeigth(ysize));
+                .setTileHeight(ysize));
         IntBuffer quants = IntBuffer.wrap(new int[xsize * ysize]);
         quantProcessor.quantize(matrix, quants);
         quants.rewind();
@@ -308,7 +308,7 @@ public class QuantizeTest {
                 .setCheckNull(true)//
                 .setNullValue(NULL_VALUE)//
                 .setTileWidth(xsize)//
-                .setTileHeigth(ysize));
+                .setTileHeight(ysize));
         IntBuffer quants = IntBuffer.wrap(new int[xsize * ysize]);
         quantProcessor.quantize(matrix, quants);
         quants.rewind();
@@ -359,7 +359,7 @@ public class QuantizeTest {
                 .setCheckNull(false)//
                 .setNullValue(NULL_VALUE)//
                 .setTileWidth(3)//
-                .setTileHeigth(2));
+                .setTileHeight(2));
         Assert.assertFalse(quantProcessor.quantize(matrix, null));
 
         // test very small image
@@ -371,7 +371,7 @@ public class QuantizeTest {
                 .setCheckNull(true)//
                 .setNullValue(NULL_VALUE)//
                 .setTileWidth(1)//
-                .setTileHeigth(1));
+                .setTileHeight(1));
         Assert.assertFalse(quantProcessor.quantize(matrix, null));
     }
 
@@ -387,7 +387,7 @@ public class QuantizeTest {
                 .setCheckNull(true)//
                 .setNullValue(NULL_VALUE)//
                 .setTileWidth(3)//
-                .setTileHeigth(2));
+                .setTileHeight(2));
         Assert.assertFalse(quantProcessor.quantize(matrix, null));
     }
 
@@ -625,7 +625,7 @@ public class QuantizeTest {
                     .setCheckNull(true)//
                     .setNullValue(NULL_VALUE)//
                     .setTileWidth(xsize)//
-                    .setTileHeigth(ysize));
+                    .setTileHeight(ysize));
             IntBuffer quants = IntBuffer.wrap(new int[xsize * ysize]);
             quantProcessor.quantize(matrix, quants);
             quants.rewind();

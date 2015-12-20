@@ -161,7 +161,7 @@ public abstract class HCompressor<T extends Buffer> implements ITileCompressor<T
     }
 
     protected void compress(long[] longArray, ByteBuffer compressed) {
-        compress().compress(longArray, this.options.getTileHeigth(), this.options.getTileWidth(), this.options.getScale(), compressed);
+        compress().compress(longArray, this.options.getTileHeight(), this.options.getTileWidth(), this.options.getScale(), compressed);
     }
 
     private HDecompress decompress() {

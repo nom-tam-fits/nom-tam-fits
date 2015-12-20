@@ -93,7 +93,7 @@ class TileArray {
 
     private final CompressedImageData compressedImageData;
 
-    private ByteBuffer compressedWholeErea;
+    private ByteBuffer compressedWholeArea;
 
     private ICompressOption.Parameter[] compressionParameter;
 
@@ -101,7 +101,7 @@ class TileArray {
 
     private ITileCompressorControl compressorControl;
 
-    private Buffer decompressedWholeErea;
+    private Buffer decompressedWholeArea;
 
     private ITileCompressorControl gzipCompressorControl;
 
@@ -164,28 +164,28 @@ class TileArray {
 
     private void createTiles(ITileInitialisation init) {
         final int imageWidth = this.axes[0];
-        final int imageHeigth = this.axes[1];
+        final int imageHeight = this.axes[1];
         final int tileWidth = this.tileAxes[0];
-        final int tileHeigth = this.tileAxes[1];
+        final int tileHeight = this.tileAxes[1];
         final int nrOfTilesOnXAxis = BigDecimal.valueOf(imageWidth).divide(BigDecimal.valueOf(tileWidth)).round(ROUNDIG_CONTEXT).intValue();
-        final int nrOfTilesOnYAxis = BigDecimal.valueOf(imageHeigth).divide(BigDecimal.valueOf(tileHeigth)).round(ROUNDIG_CONTEXT).intValue();
+        final int nrOfTilesOnYAxis = BigDecimal.valueOf(imageHeight).divide(BigDecimal.valueOf(tileHeight)).round(ROUNDIG_CONTEXT).intValue();
         int lastTileWidth = nrOfTilesOnXAxis * tileWidth - imageWidth;
         if (lastTileWidth == 0) {
             lastTileWidth = tileWidth;
         }
-        int lastTileHeigth = nrOfTilesOnYAxis * tileHeigth - imageHeigth;
-        if (lastTileHeigth == 0) {
-            lastTileHeigth = tileHeigth;
+        int lastTileHeight = nrOfTilesOnYAxis * tileHeight - imageHeight;
+        if (lastTileHeight == 0) {
+            lastTileHeight = tileHeight;
         }
         int tileIndex = 0;
         this.tiles = new Tile[nrOfTilesOnXAxis * nrOfTilesOnYAxis];
-        for (int y = 0; y < imageHeigth; y += tileHeigth) {
-            boolean lastY = y + tileHeigth >= imageHeigth;
+        for (int y = 0; y < imageHeight; y += tileHeight) {
+            boolean lastY = y + tileHeight >= imageHeight;
             for (int x = 0; x < imageWidth; x += tileWidth) {
                 boolean lastX = x + tileWidth >= imageWidth;
                 int dataOffset = y * imageWidth + x;
                 this.tiles[tileIndex] = init.createTile(tileIndex)//
-                        .setDimentions(dataOffset, lastX ? lastTileWidth : tileWidth, lastY ? lastTileHeigth : tileHeigth);
+                        .setDimensions(dataOffset, lastX ? lastTileWidth : tileWidth, lastY ? lastTileHeight : tileHeight);
                 init.init(this.tiles[tileIndex]);
                 tileIndex++;
             }
@@ -194,19 +194,19 @@ class TileArray {
 
     public Buffer decompress(Buffer decompressed, Header header) {
         int pixels = this.axes[0] * this.axes[1];
-        this.decompressedWholeErea = decompressed;
-        if (this.decompressedWholeErea == null) {
-            this.decompressedWholeErea = this.baseType.newBuffer(pixels);
+        this.decompressedWholeArea = decompressed;
+        if (this.decompressedWholeArea == null) {
+            this.decompressedWholeArea = this.baseType.newBuffer(pixels);
         }
         for (Tile tile : this.tiles) {
-            tile.setWholeImageBuffer(this.decompressedWholeErea);
+            tile.setWholeImageBuffer(this.decompressedWholeArea);
         }
         for (ICompressOption option : compressOptions()) {
             option.setCompressionParameter(this.compressionParameter);
         }
         executeAllTiles();
-        this.decompressedWholeErea.rewind();
-        return this.decompressedWholeErea;
+        this.decompressedWholeArea.rewind();
+        return this.decompressedWholeArea;
     }
 
     private void executeAllTiles() {
@@ -231,8 +231,8 @@ class TileArray {
         return bufferSize;
     }
 
-    public ByteBuffer getCompressedWholeErea() {
-        return this.compressedWholeErea;
+    public ByteBuffer getCompressedWholeArea() {
+        return this.compressedWholeArea;
     }
 
     public ICompressOption[] getCompressOptions() {
@@ -274,7 +274,7 @@ class TileArray {
     }
 
     protected TileArray prepareUncompressedData(final Buffer buffer) {
-        this.compressedWholeErea = ByteBuffer.wrap(new byte[this.baseType.size() * this.axes[0] * this.axes[1]]);
+        this.compressedWholeArea = ByteBuffer.wrap(new byte[this.baseType.size() * this.axes[0] * this.axes[1]]);
         createTiles(new ITileInitialisation() {
 
             @Override
@@ -285,11 +285,11 @@ class TileArray {
             @Override
             public void init(Tile tile) {
                 tile.setWholeImageBuffer(buffer);
-                tile.setWholeImageCompressedBuffer(TileArray.this.compressedWholeErea);
+                tile.setWholeImageCompressedBuffer(TileArray.this.compressedWholeArea);
 
             }
         });
-        this.compressedWholeErea.rewind();
+        this.compressedWholeArea.rewind();
         return this;
     }
 
@@ -434,17 +434,17 @@ class TileArray {
     }
 
     private void writeHeader(Header header) throws FitsException {
-        HeaderCardBuilder cardBilder = header.card(ZBITPIX);
-        cardBilder.value(this.baseType.bitPix())//
+        HeaderCardBuilder cardBuilder = header.card(ZBITPIX);
+        cardBuilder.value(this.baseType.bitPix())//
                 .card(ZCMPTYPE).value(this.compressAlgorithm);
         if (this.zblank != null) {
-            cardBilder.card(ZBLANK).value(this.zblank);
+            cardBuilder.card(ZBLANK).value(this.zblank);
         }
         if (this.quantAlgorithm != null) {
-            cardBilder.card(ZQUANTIZ).value(this.quantAlgorithm);
+            cardBuilder.card(ZQUANTIZ).value(this.quantAlgorithm);
         }
         for (int i = 1; i <= this.tileAxes.length; i += 1) {
-            cardBilder.card(ZTILEn.n(i)).value(this.tileAxes[i - 1]);
+            cardBuilder.card(ZTILEn.n(i)).value(this.tileAxes[i - 1]);
         }
         int nval = 1;
         for (Parameter parameter : this.compressionParameter) {

@@ -66,7 +66,7 @@ public class QuantizeOption implements ICompressOption {
 
     private long seed = 1L;
 
-    private int tileHeigth;
+    private int tileHeight;
 
     private int tileWidth;
 
@@ -126,8 +126,8 @@ public class QuantizeOption implements ICompressOption {
         return this.seed;
     }
 
-    public int getTileHeigth() {
-        return this.tileHeigth;
+    public int getTileHeight() {
+        return this.tileHeight;
     }
 
     public int getTileWidth() {
@@ -252,8 +252,8 @@ public class QuantizeOption implements ICompressOption {
     }
 
     @Override
-    public QuantizeOption setTileHeigth(int value) {
-        this.tileHeigth = value;
+    public QuantizeOption setTileHeight(int value) {
+        this.tileHeight = value;
         return this;
     }
 

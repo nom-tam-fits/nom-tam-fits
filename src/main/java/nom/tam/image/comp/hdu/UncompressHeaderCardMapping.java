@@ -181,13 +181,13 @@ enum UncompressHeaderCardMapping {
     }
 
     /**
-     * default behaviour is to ignore the card and by that to eclude it from the
+     * default behaviour is to ignore the card and by that to exclude it from the
      * uncompressed header if it does not have a uncompressed equivalent..
      *
      * @param card
      *            the card from the compressed header
      * @param headerIterator
-     *            the iterator for the uncumpressed header.
+     *            the iterator for the uncompressed header.
      * @throws HeaderCardException
      *             if the card could not be copied
      */

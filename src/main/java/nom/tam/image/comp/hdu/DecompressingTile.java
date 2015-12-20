@@ -54,7 +54,7 @@ public class DecompressingTile extends Tile {
                         .setBScale(this.scale) //
                         .setBNull(this.blank)//
                         .setTileWidth(this.imageDataView.getWidth()) //
-                        .setTileHeigth(this.imageDataView.getHeigth());
+                        .setTileHeight(this.imageDataView.getHeight());
             }
             this.array.getCompressorControl().decompress(this.compressedData, this.imageDataView.getBuffer(), this.tileOptions);
         } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {

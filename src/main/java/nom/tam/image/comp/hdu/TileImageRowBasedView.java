@@ -41,7 +41,7 @@ class TileImageRowBasedView {
 
     private Buffer buffer;
 
-    private final int heigth;
+    private final int height;
 
     private final int offset;
 
@@ -52,11 +52,11 @@ class TileImageRowBasedView {
 
     private final int width;
 
-    public TileImageRowBasedView(Tile tile, int dataOffset, int width, int heigth) {
+    public TileImageRowBasedView(Tile tile, int dataOffset, int width, int height) {
         this.tile = tile;
         this.offset = dataOffset;
         this.width = width;
-        this.heigth = heigth;
+        this.height = height;
     }
 
     public Buffer getBuffer() {
@@ -67,15 +67,15 @@ class TileImageRowBasedView {
         return this.offset;
     }
 
-    public int getHeigth() {
-        return this.heigth;
+    public int getHeight() {
+        return this.height;
     }
 
     /**
      * @return the number of pixels in the tile this view represents.
      */
     public int getPixelSize() {
-        return this.width * this.heigth;
+        return this.width * this.height;
     }
 
     public int getWidth() {

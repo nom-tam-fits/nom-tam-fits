@@ -423,7 +423,7 @@ public class ReadWriteProvidedCompressedImageTest {
         try (Fits f = new Fits("target/write_m13real_own.fits.fz")) {
             f.readHDU();// the primary
             // @Tom this goes wron even if in the stored table the columns seem
-            // correct the header after this read says a different dimentions of
+            // correct the header after this read says a different dimensions of
             // the binary table.
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             float[][] actualShortArray = (float[][]) hdu.asImageHDU().getData().getData();
@@ -514,8 +514,8 @@ public class ReadWriteProvidedCompressedImageTest {
         }
         try (Fits f = new Fits("target/write_m13real_own_h.fits.fz")) {
             f.readHDU();// the primary
-            // @Tom this goes wron even if in the stored table the columns seem
-            // correct the header after this read says a different dimentions of
+            // @Tom this goes wrong even if in the stored table the columns seem
+            // correct the header after this read says a different dimensions of
             // the binary table.
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             float[][] actualShortArray = (float[][]) hdu.asImageHDU().getData().getData();

@@ -52,16 +52,16 @@ public class CompressingTile extends Tile {
             try {
                 // wait for the previous tile to finish.
                 this.array.getTile(this.tileIndex - 1).future.get();
-                ByteBuffer compressedWholeErea = this.array.getCompressedWholeErea();
-                this.compressedOffset = compressedWholeErea.position();
-                PrimitiveTypeEnum.BYTE.appendBuffer(compressedWholeErea, this.compressedData);
-                replaceCompressedBufferWithTargetArea(compressedWholeErea);
+                ByteBuffer compressedWholeArea = this.array.getCompressedWholeArea();
+                this.compressedOffset = compressedWholeArea.position();
+                PrimitiveTypeEnum.BYTE.appendBuffer(compressedWholeArea, this.compressedData);
+                replaceCompressedBufferWithTargetArea(compressedWholeArea);
             } catch (Exception e) {
                 throw new IllegalStateException("could not compact compressed data", e);
             }
         } else {
             this.compressedOffset = 0;
-            this.array.getCompressedWholeErea().position(this.compressedData.limit());
+            this.array.getCompressedWholeArea().position(this.compressedData.limit());
         }
     }
 
@@ -71,7 +71,7 @@ public class CompressingTile extends Tile {
         for (int index = 0; index < this.tileOptions.length; index++) {
             this.tileOptions[index] = this.tileOptions[index].copy() //
                     .setTileWidth(this.imageDataView.getWidth()) //
-                    .setTileHeigth(this.imageDataView.getHeigth());
+                    .setTileHeight(this.imageDataView.getHeight());
         }
         this.compressionType = TileCompressionType.COMPRESSED;
         boolean compressSuccess = this.array.getCompressorControl().compress(this.imageDataView.getBuffer(), this.compressedData, this.tileOptions);
@@ -98,13 +98,13 @@ public class CompressingTile extends Tile {
         compactCompressedData();
     }
 
-    private void replaceCompressedBufferWithTargetArea(ByteBuffer compressedWholeErea) {
+    private void replaceCompressedBufferWithTargetArea(ByteBuffer compressedWholeArea) {
         int compressedSize = this.compressedData.limit();
-        int latest = compressedWholeErea.position();
-        compressedWholeErea.position(this.compressedOffset);
-        this.compressedData = compressedWholeErea.slice();
+        int latest = compressedWholeArea.position();
+        compressedWholeArea.position(this.compressedOffset);
+        this.compressedData = compressedWholeArea.slice();
         this.compressedData.limit(compressedSize);
-        compressedWholeErea.position(latest);
+        compressedWholeArea.position(latest);
     }
 
     @Override

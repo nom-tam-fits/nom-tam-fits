@@ -76,7 +76,7 @@ public interface ICompressOption extends Cloneable {
 
     ICompressOption setCompressionParameter(Parameter[] parameters);
 
-    ICompressOption setTileHeigth(int value);
+    ICompressOption setTileHeight(int value);
 
     ICompressOption setTileWidth(int value);
 

@@ -172,8 +172,8 @@ public class QuantProcessor {
 
         @Override
         public boolean compress(DoubleBuffer buffer, ByteBuffer compressed) {
-            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()]);
-            double[] doubles = new double[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()];
+            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
+            double[] doubles = new double[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()];
             buffer.get(doubles);
             if (!this.quantize(doubles, intData)) {
                 return false;
@@ -185,7 +185,7 @@ public class QuantProcessor {
 
         @Override
         public void decompress(ByteBuffer compressed, DoubleBuffer buffer) {
-            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()]);
+            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
             this.postCompressor.decompress(compressed, intData);
             intData.rewind();
             unquantize(intData, buffer);
@@ -206,13 +206,13 @@ public class QuantProcessor {
 
         @Override
         public boolean compress(FloatBuffer buffer, ByteBuffer compressed) {
-            float[] floats = new float[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()];
-            double[] doubles = new double[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()];
+            float[] floats = new float[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()];
+            double[] doubles = new double[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()];
             buffer.get(floats);
             for (int index = 0; index < doubles.length; index++) {
                 doubles[index] = floats[index];
             }
-            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()]);
+            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
             if (!this.quantize(doubles, intData)) {
                 return false;
             }
@@ -223,10 +223,10 @@ public class QuantProcessor {
 
         @Override
         public void decompress(ByteBuffer compressed, FloatBuffer buffer) {
-            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()]);
+            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
             this.postCompressor.decompress(compressed, intData);
             intData.rewind();
-            double[] doubles = new double[this.quantizeOption.getTileHeigth() * this.quantizeOption.getTileWidth()];
+            double[] doubles = new double[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()];
             DoubleBuffer doubleBuffer = DoubleBuffer.wrap(doubles);
             unquantize(intData, doubleBuffer);
             for (double d : doubles) {
@@ -412,10 +412,10 @@ public class QuantProcessor {
     }
 
     public boolean quantize(double[] doubles, IntBuffer quants) {
-        boolean success = this.quantize.quantize(doubles, this.quantizeOption.getTileWidth(), this.quantizeOption.getTileHeigth());
+        boolean success = this.quantize.quantize(doubles, this.quantizeOption.getTileWidth(), this.quantizeOption.getTileHeight());
         if (success) {
             calculateBZeroAndBscale();
-            quantize(DoubleBuffer.wrap(doubles, 0, this.quantizeOption.getTileWidth() * this.quantizeOption.getTileHeigth()), quants);
+            quantize(DoubleBuffer.wrap(doubles, 0, this.quantizeOption.getTileWidth() * this.quantizeOption.getTileHeight()), quants);
         }
         return success;
     }
