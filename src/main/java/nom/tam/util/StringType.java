@@ -1,10 +1,10 @@
-package nom.tam.fits.compress;
+package nom.tam.util;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,31 +31,18 @@ package nom.tam.fits.compress;
  * #L%
  */
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.nio.Buffer;
 
-public class BZip2CompressionProvider implements ICompressProvider {
-
-    private static final int PRIORITY = 5;
+public class StringType extends PrimitiveTypeBase<Buffer> {
+    public StringType() {
+        super(0, true, CharSequence.class, String.class, null, 'L', 0);
+    }
 
     @Override
-    public InputStream decompress(InputStream in) throws IOException {
-        try {
-            return CompressionLibLoaderProtection.createBZip2Stream(in);
-        } catch (IOException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IOException(e);
+    public int size(Object instance) {
+        if (instance == null) {
+            return 0;
         }
-    }
-
-    @Override
-    public int priority() {
-        return PRIORITY;
-    }
-
-    @Override
-    public boolean provides(int mag1, int mag2) {
-        return mag1 == 'B' && mag2 == 'Z';
+        return ((CharSequence) instance).length();
     }
 }
