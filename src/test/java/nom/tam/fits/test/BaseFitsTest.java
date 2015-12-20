@@ -71,6 +71,7 @@ import org.junit.Test;
 public class BaseFitsTest {
 
     private static final String TARGET_BASIC_FITS_TEST_FITS = "target/basicFitsTest.fits";
+    public static final String FILE = "file:" + File.separator + File.separator + File.separator;
 
     @Before
     public void setup() {
@@ -413,19 +414,19 @@ public class BaseFitsTest {
             Assert.assertNotNull(fits.readHDU());
             Assert.assertEquals(1, fits.currentSize());
         }
-        try (Fits fits = new Fits("file://" + new File("src/test/resources/nom/tam/fits/test/test.fits").getAbsolutePath(), false)) {
+        try (Fits fits = new Fits(FILE + new File("src/test/resources/nom/tam/fits/test/test.fits").getAbsolutePath(), false)) {
             Assert.assertNotNull(fits.readHDU());
         }
         actual = null;
         try {
-            new Fits("file://" + new File("src/test/resources/nom/tam/fits/test/test.fitsX").getAbsolutePath(), false);
+            new Fits(FILE + new File("src/test/resources/nom/tam/fits/test/test.fitsX").getAbsolutePath(), false);
         } catch (FitsException ex) {
             actual = ex;
         }
         Assert.assertNotNull(actual);
         actual = null;
         try {
-            new Fits(new URL("file://" + new File("src/test/resources/nom/tam/fits/test/test.fitsX").getAbsolutePath()), false);
+            new Fits(new URL(FILE + new File("src/test/resources/nom/tam/fits/test/test.fitsX").getAbsolutePath()), false);
         } catch (FitsException ex) {
             actual = ex;
         }

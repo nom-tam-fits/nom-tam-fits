@@ -54,6 +54,8 @@ import org.junit.Test;
 
 public class TestMain {
 
+    public final static String LS = System.lineSeparator();
+
     @Test
     public void testNothing() throws Exception {
         PrintStream out = System.out;
@@ -93,27 +95,27 @@ public class TestMain {
             Assert.assertEquals("\n" + //
                     "\n" + //
                     "Primary header:\n" + //
-                    "\n" + //
-                    "  Image\n" + //
-                    "      Header Information:\n" + //
-                    "         BITPIX=16\n" + //
-                    "         NAXIS=2\n" + //
-                    "         NAXIS1=5\n" + //
-                    "         NAXIS2=5\n" + //
-                    "      Data information:\n" + //
-                    "         short[5, 5]\n" + //
+                    LS + //
+                    "  Image" + LS + //
+                    "      Header Information:" + LS + //
+                    "         BITPIX=16" + LS + //
+                    "         NAXIS=2" + LS + //
+                    "         NAXIS1=5" + LS + //
+                    "         NAXIS2=5" + LS + //
+                    "      Data information:" + LS + //
+                    "         short[5, 5]" + LS + //
                     "\n" + //
                     "\n" + //
                     "Extension 1:\n" + //
-                    "\n" + //
-                    "  Image\n" + //
-                    "      Header Information:\n" + //
-                    "         BITPIX=16\n" + //
-                    "         NAXIS=2\n" + //
-                    "         NAXIS1=5\n" + //
-                    "         NAXIS2=5\n" + //
-                    "      Data information:\n" + //
-                    "         short[5, 5]\n", new String(sysout.toByteArray()));
+                    LS + //
+                    "  Image" + LS + //
+                    "      Header Information:" + LS + //
+                    "         BITPIX=16" + LS + //
+                    "         NAXIS=2" + LS + //
+                    "         NAXIS1=5" + LS + //
+                    "         NAXIS2=5" + LS + //
+                    "      Data information:" + LS + //
+                    "         short[5, 5]" + LS, new String(sysout.toByteArray()));
         } finally {
             System.setOut(out);
         }
@@ -146,27 +148,27 @@ public class TestMain {
             Assert.assertEquals("\n" + //
                     "\n" + //
                     "Primary header:\n" + //
-                    "\n" + //
-                    "  Image\n" + //
-                    "      Header Information:\n" + //
-                    "         BITPIX=16\n" + //
-                    "         NAXIS=2\n" + //
-                    "         NAXIS1=5\n" + //
-                    "         NAXIS2=5\n" + //
-                    "      Data information:\n" + //
-                    "         short[5, 5]\n" + //
+                    LS + //
+                    "  Image" + LS + //
+                    "      Header Information:" + LS + //
+                    "         BITPIX=16" + LS + //
+                    "         NAXIS=2" + LS + //
+                    "         NAXIS1=5" + LS + //
+                    "         NAXIS2=5" + LS + //
+                    "      Data information:" + LS + //
+                    "         short[5, 5]" + LS + //
                     "\n" + //
                     "\n" + //
                     "Extension 1:\n" + //
-                    "\n" + //
-                    "  Image\n" + //
-                    "      Header Information:\n" + //
-                    "         BITPIX=16\n" + //
-                    "         NAXIS=2\n" + //
-                    "         NAXIS1=5\n" + //
-                    "         NAXIS2=5\n" + //
-                    "      Data information:\n" + //
-                    "         short[5, 5]\n", new String(sysout.toByteArray()));
+                    LS + //
+                    "  Image" + LS + //
+                    "      Header Information:" + LS + //
+                    "         BITPIX=16" + LS + //
+                    "         NAXIS=2" + LS + //
+                    "         NAXIS1=5" + LS + //
+                    "         NAXIS2=5" + LS + //
+                    "      Data information:" + LS + //
+                    "         short[5, 5]" + LS, new String(sysout.toByteArray()));
             Assert.assertEquals(new File("target/testMainRead.fits").length(),//
                     new File("target/test-copy.fits").length());
         } finally {
