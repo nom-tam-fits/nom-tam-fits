@@ -269,7 +269,7 @@ public class CompressTest {
         File fil = new File(is);
 
         String path = fil.getCanonicalPath();
-        URL u = new URL("file://" + path);
+        URL u = new URL(BaseFitsTest.FILE + path);
 
         Fits f;
         if (useComp) {
