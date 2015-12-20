@@ -48,6 +48,7 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.util.BlackBoxImages;
@@ -421,10 +422,7 @@ public class ReadWriteProvidedCompressedImageTest {
             }
         }
         try (Fits f = new Fits("target/write_m13real_own.fits.fz")) {
-            f.readHDU();// the primary
-            // @Tom this goes wron even if in the stored table the columns seem
-            // correct the header after this read says a different dimentions of
-            // the binary table.
+            f.readHDU();
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             float[][] actualShortArray = (float[][]) hdu.asImageHDU().getData().getData();
             assertArrayEquals(m13_data_real, actualShortArray, 9f);
@@ -513,10 +511,7 @@ public class ReadWriteProvidedCompressedImageTest {
             }
         }
         try (Fits f = new Fits("target/write_m13real_own_h.fits.fz")) {
-            f.readHDU();// the primary
-            // @Tom this goes wron even if in the stored table the columns seem
-            // correct the header after this read says a different dimentions of
-            // the binary table.
+            f.readHDU();
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             float[][] actualShortArray = (float[][]) hdu.asImageHDU().getData().getData();
             assertArrayEquals(m13_data_real, actualShortArray, 9f);
@@ -526,6 +521,56 @@ public class ReadWriteProvidedCompressedImageTest {
             hdu = (CompressedImageHDU) f.readHDU();
             actualShortArray = (float[][]) hdu.asImageHDU().getData().getData();
             assertArrayEquals(m13_data_real, actualShortArray, 6f);
+        }
+    }
+
+    @Test
+    public void testBlanksInCompressedFloatImage() throws Exception {
+        double[][] data = new double[100][100];
+        double value = -1000.0d;
+        int blanks = 0;
+        for (int index1 = 0; index1 < 100; index1++) {
+            for (int index2 = 0; index2 < 100; index2++) {
+                data[index1][index2] = value;
+                if (blanks++ % 20 == 0) {
+                    value = Double.NaN;
+                } else {
+                    value += 0.12345d;
+                }
+            }
+        }
+        try (Fits f = new Fits(); BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/testBlanksInCompressedFloatImage.fits"))) {
+            ImageData imageData = new ImageData(data);
+            ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
+            f.addHDU(hdu);
+            f.write(bdos);
+        }
+        try (Fits f = new Fits(); BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/testBlanksInCompressedFloatImage.fits.fz"))) {
+            ImageData imageData = new ImageData(data);
+            ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
+            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);
+            compressedHdu.getData().setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
+                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+                    .getCompressOption(HCompressorOption.class)//
+                    /**/.setScale(4);
+            compressedHdu.getData()//
+                    .getCompressOption(QuantizeOption.class)//
+                    /**/.setQlevel(1.0)
+                    /**/.setCheckNull(true);
+            compressedHdu.compress();
+            f.addHDU(compressedHdu);
+            f.write(bdos);
+        }
+        if (1 == 1) {
+            return;
+        }
+        try (Fits f = new Fits("target/testBlanksInCompressedFloatImage.fits.fz")) {
+            f.readHDU();
+            CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
+            double[][] actual = (double[][]) hdu.asImageHDU().getData().getData();
+            for (int index = 0; index < actual.length; index++) {
+                Assert.assertArrayEquals(data[index], actual[index], 0f);
+            }
         }
     }
 

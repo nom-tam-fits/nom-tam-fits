@@ -50,7 +50,6 @@ import static nom.tam.fits.header.Standard.TTYPEn;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -75,8 +74,6 @@ import nom.tam.util.PrimitiveTypeEnum;
  * the tiles at the right side and the bottom side can have different sizes.
  */
 class TileArray {
-
-    private static final MathContext ROUNDIG_CONTEXT = new MathContext(9, RoundingMode.CEILING);
 
     private int[] axes;
 
@@ -167,8 +164,8 @@ class TileArray {
         final int imageHeigth = this.axes[1];
         final int tileWidth = this.tileAxes[0];
         final int tileHeigth = this.tileAxes[1];
-        final int nrOfTilesOnXAxis = BigDecimal.valueOf(imageWidth).divide(BigDecimal.valueOf(tileWidth)).round(ROUNDIG_CONTEXT).intValue();
-        final int nrOfTilesOnYAxis = BigDecimal.valueOf(imageHeigth).divide(BigDecimal.valueOf(tileHeigth)).round(ROUNDIG_CONTEXT).intValue();
+        final int nrOfTilesOnXAxis = new BigDecimal((double) imageWidth / (double) tileWidth).setScale(0, RoundingMode.CEILING).intValue();
+        final int nrOfTilesOnYAxis = new BigDecimal((double) imageHeigth / (double) tileHeigth).setScale(0, RoundingMode.CEILING).intValue();
         int lastTileWidth = nrOfTilesOnXAxis * tileWidth - imageWidth;
         if (lastTileWidth == 0) {
             lastTileWidth = tileWidth;

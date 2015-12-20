@@ -272,7 +272,7 @@
 				<configuration>
 					<verbose>false</verbose>
 					<licenseName>publicdomain</licenseName>
-					<licenseResolver>file://${project.basedir}/src/license</licenseResolver>
+					<licenseResolver>https://raw.githubusercontent.com/nom-tam-fits/nom-tam-fits/master/src/license</licenseResolver>
 				</configuration>
 				<executions>
 					<execution>

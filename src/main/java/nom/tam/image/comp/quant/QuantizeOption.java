@@ -36,6 +36,16 @@ import nom.tam.image.comp.ICompressOption;
 
 public class QuantizeOption implements ICompressOption {
 
+    /**
+     * and including NULL_VALUE. These values may not be used to represent the
+     * quantized and scaled floating point pixel values If lossy Hcompression is
+     * used, and the array contains null values, then it is also possible for
+     * the compressed values to slightly exceed the range of the actual
+     * (lossless) values so we must reserve a little more space value used to
+     * represent undefined pixels
+     */
+    private static final int NULL_VALUE = Integer.MIN_VALUE + 1;
+
     private double bScale = Double.NaN;
 
     private double bZero = Double.NaN;
@@ -182,6 +192,9 @@ public class QuantizeOption implements ICompressOption {
 
     public QuantizeOption setCheckNull(boolean value) {
         this.checkNull = value;
+        if (this.nullValueIndicator == null) {
+            this.nullValueIndicator = NULL_VALUE;
+        }
         return this;
     }
 
