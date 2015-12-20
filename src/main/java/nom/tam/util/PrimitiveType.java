@@ -1,10 +1,10 @@
-package nom.tam.fits.compress;
+package nom.tam.util;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,31 +31,50 @@ package nom.tam.fits.compress;
  * #L%
  */
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 
-public class BZip2CompressionProvider implements ICompressProvider {
+public interface PrimitiveType<B extends Buffer> {
 
-    private static final int PRIORITY = 5;
+    void appendBuffer(B buffer, B dataToAppend);
 
-    @Override
-    public InputStream decompress(InputStream in) throws IOException {
-        try {
-            return CompressionLibLoaderProtection.createBZip2Stream(in);
-        } catch (IOException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
-    }
+    void appendToByteBuffer(ByteBuffer byteBuffer, B dataToAppend);
 
-    @Override
-    public int priority() {
-        return PRIORITY;
-    }
+    B asTypedBuffer(ByteBuffer buffer);
 
-    @Override
-    public boolean provides(int mag1, int mag2) {
-        return mag1 == 'B' && mag2 == 'Z';
-    }
+    int bitPix();
+
+    ByteBuffer convertToByteBuffer(Object array);
+
+    void getArray(B buffer, Object array);
+
+    void getArray(B buffer, Object array, int length);
+
+    boolean individualSize();
+
+    Object newArray(int length);
+
+    B newBuffer(int length);
+
+    B newBuffer(long length);
+
+    Class<?> primitiveClass();
+
+    void putArray(B buffer, Object array);
+
+    void putArray(B buffer, Object array, int length);
+
+    int size();
+
+    int size(Object instance);
+
+    B sliceBuffer(B buffer);
+
+    char type();
+
+    B wrap(Object array);
+
+    Class<?> wrapperClass();
+
+    Class<? extends B> bufferClass();
 }

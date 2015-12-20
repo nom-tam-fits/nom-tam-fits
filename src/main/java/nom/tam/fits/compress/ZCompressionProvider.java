@@ -48,7 +48,7 @@ public class ZCompressionProvider implements ICompressProvider {
             return CompressionLibLoaderProtection.createZStream(in);
         } catch (IOException e) {
             throw e;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }
@@ -62,5 +62,4 @@ public class ZCompressionProvider implements ICompressProvider {
     public boolean provides(int mag1, int mag2) {
         return mag1 == Z_COMPRESS_MAGIC_BYTE1 && mag2 == Z_COMPRESS_MAGIC_BYTE2;
     }
-
 }
