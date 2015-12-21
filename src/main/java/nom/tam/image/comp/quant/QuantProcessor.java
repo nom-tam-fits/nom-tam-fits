@@ -339,7 +339,7 @@ public class QuantProcessor {
 
     private Quantize quantize;
 
-    protected QuantizeOption quantizeOption;
+    protected final QuantizeOption quantizeOption;
 
     public QuantProcessor(QuantizeOption quantizeOption) {
         this.quantizeOption = quantizeOption;

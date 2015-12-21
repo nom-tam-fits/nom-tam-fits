@@ -382,7 +382,6 @@ public class HCompress {
         if (nsign > 0) {
             compressedBytes.put(signbits, 0, nsign);
         }
-
         return (int) noutchar;
 
     }
