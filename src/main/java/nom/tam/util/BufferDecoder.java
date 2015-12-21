@@ -35,6 +35,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.lang.reflect.Array;
 
+import nom.tam.util.type.PrimitiveTypeEnum;
+
 public abstract class BufferDecoder {
 
     private class PrimitiveArrayRecurse {

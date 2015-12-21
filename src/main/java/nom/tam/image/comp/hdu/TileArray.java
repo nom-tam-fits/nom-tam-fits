@@ -66,7 +66,7 @@ import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ICompressOption.Parameter;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
 import nom.tam.image.comp.TileCompressorProvider;
-import nom.tam.util.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveTypeEnum;
 
 /**
  * This class represents a complete array of tiles describing an image ordered

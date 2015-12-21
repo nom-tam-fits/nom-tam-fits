@@ -1,4 +1,4 @@
-package nom.tam.util;
+package nom.tam.util.type;
 
 /*
  * #%L
@@ -32,53 +32,55 @@ package nom.tam.util;
  */
 
 import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
+import java.nio.LongBuffer;
 
-public class ShortType extends PrimitiveTypeBase<ShortBuffer> {
+public class LongType extends PrimitiveTypeBase<LongBuffer> {
 
-    private static final int BIT_PIX = 16;
+    private static final int BIT_PIX = 64;
 
-    public ShortType() {
-        super(2, false, short.class, Short.class, ShortBuffer.class, 'S', BIT_PIX);
+    private static final int SIZE = 8;
+
+    public LongType() {
+        super(SIZE, false, long.class, Long.class, LongBuffer.class, 'J', BIT_PIX);
     }
 
     @Override
-    public ShortBuffer asTypedBuffer(ByteBuffer buffer) {
-        return buffer.asShortBuffer();
-    }
-
-    @Override
-    public void getArray(ShortBuffer buffer, Object array, int length) {
-        buffer.get((short[]) array, 0, length);
-    }
-
-    @Override
-    public Object newArray(int length) {
-        return new short[length];
-    }
-
-    @Override
-    public void putArray(ShortBuffer buffer, Object array, int length) {
-        buffer.put((short[]) array, 0, length);
-    }
-
-    @Override
-    public ShortBuffer sliceBuffer(ShortBuffer buffer) {
-        return buffer.slice();
-    }
-
-    @Override
-    public ShortBuffer wrap(Object array) {
-        return ShortBuffer.wrap((short[]) array);
-    }
-
-    @Override
-    public void appendBuffer(ShortBuffer buffer, ShortBuffer dataToAppend) {
-        short[] temp = new short[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
+    public void appendBuffer(LongBuffer buffer, LongBuffer dataToAppend) {
+        long[] temp = new long[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
         while (dataToAppend.hasRemaining()) {
             int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
             dataToAppend.get(temp, 0, nrObBytes);
             buffer.put(temp, 0, nrObBytes);
         }
+    }
+
+    @Override
+    public LongBuffer asTypedBuffer(ByteBuffer buffer) {
+        return buffer.asLongBuffer();
+    }
+
+    @Override
+    public void getArray(LongBuffer buffer, Object array, int length) {
+        buffer.get((long[]) array, 0, length);
+    }
+
+    @Override
+    public Object newArray(int length) {
+        return new long[length];
+    }
+
+    @Override
+    public void putArray(LongBuffer buffer, Object array, int length) {
+        buffer.put((long[]) array, 0, length);
+    }
+
+    @Override
+    public LongBuffer sliceBuffer(LongBuffer buffer) {
+        return buffer.slice();
+    }
+
+    @Override
+    public LongBuffer wrap(Object array) {
+        return LongBuffer.wrap((long[]) array);
     }
 }

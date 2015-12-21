@@ -1,4 +1,4 @@
-package nom.tam.util;
+package nom.tam.util.type;
 
 /*
  * #%L
@@ -32,52 +32,53 @@ package nom.tam.util;
  */
 
 import java.nio.ByteBuffer;
+import java.nio.ShortBuffer;
 
-public class ByteType extends PrimitiveTypeBase<ByteBuffer> {
+public class ShortType extends PrimitiveTypeBase<ShortBuffer> {
 
-    private static final int BIT_PIX = 8;
+    private static final int BIT_PIX = 16;
 
-    public ByteType() {
-        super(1, false, byte.class, Byte.class, ByteBuffer.class, 'B', BIT_PIX);
+    public ShortType() {
+        super(2, false, short.class, Short.class, ShortBuffer.class, 'S', BIT_PIX);
     }
 
     @Override
-    public ByteBuffer asTypedBuffer(ByteBuffer buffer) {
-        return buffer;
-    }
-
-    @Override
-    public void getArray(ByteBuffer buffer, Object array, int length) {
-        buffer.get((byte[]) array, 0, length);
-    }
-
-    @Override
-    public Object newArray(int length) {
-        return new byte[length];
-    }
-
-    @Override
-    public void putArray(ByteBuffer buffer, Object array, int length) {
-        buffer.put((byte[]) array, 0, length);
-    }
-
-    @Override
-    public ByteBuffer sliceBuffer(ByteBuffer buffer) {
-        return buffer.slice();
-    }
-
-    @Override
-    public ByteBuffer wrap(Object array) {
-        return ByteBuffer.wrap((byte[]) array);
-    }
-
-    @Override
-    public void appendBuffer(ByteBuffer buffer, ByteBuffer dataToAppend) {
-        byte[] temp = new byte[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
+    public void appendBuffer(ShortBuffer buffer, ShortBuffer dataToAppend) {
+        short[] temp = new short[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
         while (dataToAppend.hasRemaining()) {
             int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
             dataToAppend.get(temp, 0, nrObBytes);
             buffer.put(temp, 0, nrObBytes);
         }
+    }
+
+    @Override
+    public ShortBuffer asTypedBuffer(ByteBuffer buffer) {
+        return buffer.asShortBuffer();
+    }
+
+    @Override
+    public void getArray(ShortBuffer buffer, Object array, int length) {
+        buffer.get((short[]) array, 0, length);
+    }
+
+    @Override
+    public Object newArray(int length) {
+        return new short[length];
+    }
+
+    @Override
+    public void putArray(ShortBuffer buffer, Object array, int length) {
+        buffer.put((short[]) array, 0, length);
+    }
+
+    @Override
+    public ShortBuffer sliceBuffer(ShortBuffer buffer) {
+        return buffer.slice();
+    }
+
+    @Override
+    public ShortBuffer wrap(Object array) {
+        return ShortBuffer.wrap((short[]) array);
     }
 }

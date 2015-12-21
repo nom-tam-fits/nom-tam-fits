@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import nom.tam.util.type.PrimitiveTypeEnum;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**

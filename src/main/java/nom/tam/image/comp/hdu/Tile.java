@@ -38,7 +38,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.util.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveTypeEnum;
 
 /**
  * abstract information holder about the a tile that represents a rectangular

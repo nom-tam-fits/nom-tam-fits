@@ -33,7 +33,7 @@ package nom.tam.image.comp.rice;
 
 import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.util.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveTypeEnum;
 
 public class RiceCompressOption implements ICompressOption {
 

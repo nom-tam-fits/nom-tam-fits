@@ -1,4 +1,4 @@
-package nom.tam.util;
+package nom.tam.util.type;
 
 /*
  * #%L
@@ -31,11 +31,16 @@ package nom.tam.util;
  * #L%
  */
 
-import java.nio.CharBuffer;
+import java.nio.Buffer;
 
-public class CharType extends PrimitiveTypeBase<CharBuffer> {
+public class UnknownType extends PrimitiveTypeBase<Buffer> {
 
-    public CharType() {
-        super(2, false, char.class, Character.class, CharBuffer.class, 'C', 0);
+    public UnknownType() {
+        super(0, true, Object.class, Object.class, null, 'L', 0);
+    }
+
+    @Override
+    public int size(Object instance) {
+        return 0;
     }
 }

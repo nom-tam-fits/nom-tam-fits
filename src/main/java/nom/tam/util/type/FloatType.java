@@ -1,4 +1,4 @@
-package nom.tam.util;
+package nom.tam.util.type;
 
 /*
  * #%L
@@ -45,6 +45,16 @@ public class FloatType extends PrimitiveTypeBase<FloatBuffer> {
     }
 
     @Override
+    public void appendBuffer(FloatBuffer buffer, FloatBuffer dataToAppend) {
+        float[] temp = new float[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
+        while (dataToAppend.hasRemaining()) {
+            int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
+            dataToAppend.get(temp, 0, nrObBytes);
+            buffer.put(temp, 0, nrObBytes);
+        }
+    }
+
+    @Override
     public FloatBuffer asTypedBuffer(ByteBuffer buffer) {
         return buffer.asFloatBuffer();
     }
@@ -72,15 +82,5 @@ public class FloatType extends PrimitiveTypeBase<FloatBuffer> {
     @Override
     public FloatBuffer wrap(Object array) {
         return FloatBuffer.wrap((float[]) array);
-    }
-
-    @Override
-    public void appendBuffer(FloatBuffer buffer, FloatBuffer dataToAppend) {
-        float[] temp = new float[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
-        while (dataToAppend.hasRemaining()) {
-            int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
-            dataToAppend.get(temp, 0, nrObBytes);
-            buffer.put(temp, 0, nrObBytes);
-        }
     }
 }

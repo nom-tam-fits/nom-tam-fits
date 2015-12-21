@@ -47,9 +47,9 @@ import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.PrimitiveTypeEnum;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.array.MultyArrayIterator;
+import nom.tam.util.type.PrimitiveTypeEnum;
 
 /**
  * This class instantiates FITS primary HDU and IMAGE extension data.

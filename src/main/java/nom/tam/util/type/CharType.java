@@ -1,4 +1,4 @@
-package nom.tam.util;
+package nom.tam.util.type;
 
 /*
  * #%L
@@ -31,50 +31,11 @@ package nom.tam.util;
  * #L%
  */
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 
-public interface PrimitiveType<B extends Buffer> {
+public class CharType extends PrimitiveTypeBase<CharBuffer> {
 
-    void appendBuffer(B buffer, B dataToAppend);
-
-    void appendToByteBuffer(ByteBuffer byteBuffer, B dataToAppend);
-
-    B asTypedBuffer(ByteBuffer buffer);
-
-    int bitPix();
-
-    ByteBuffer convertToByteBuffer(Object array);
-
-    void getArray(B buffer, Object array);
-
-    void getArray(B buffer, Object array, int length);
-
-    boolean individualSize();
-
-    Object newArray(int length);
-
-    B newBuffer(int length);
-
-    B newBuffer(long length);
-
-    Class<?> primitiveClass();
-
-    void putArray(B buffer, Object array);
-
-    void putArray(B buffer, Object array, int length);
-
-    int size();
-
-    int size(Object instance);
-
-    B sliceBuffer(B buffer);
-
-    char type();
-
-    B wrap(Object array);
-
-    Class<?> wrapperClass();
-
-    Class<? extends B> bufferClass();
+    public CharType() {
+        super(2, false, char.class, Character.class, CharBuffer.class, 'C', 0);
+    }
 }

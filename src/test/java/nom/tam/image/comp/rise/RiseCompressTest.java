@@ -42,7 +42,7 @@ import nom.tam.image.comp.rice.RiceCompress.ByteRiceCompress;
 import nom.tam.image.comp.rice.RiceCompress.IntRiceCompress;
 import nom.tam.image.comp.rice.RiceCompress.ShortRiceCompress;
 import nom.tam.image.comp.rice.RiceCompressOption;
-import nom.tam.util.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveTypeEnum;
 
 import org.junit.Assert;
 import org.junit.Test;

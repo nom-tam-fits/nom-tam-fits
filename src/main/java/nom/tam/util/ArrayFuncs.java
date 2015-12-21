@@ -38,6 +38,7 @@ import java.util.logging.Logger;
 
 import nom.tam.util.array.MultyArrayCopier;
 import nom.tam.util.array.MultyArrayIterator;
+import nom.tam.util.type.PrimitiveTypeEnum;
 
 /**
  * This is a package of static functions which perform computations on arrays.

@@ -35,7 +35,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.util.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveTypeEnum;
 
 public class CompressingTile extends Tile {
 

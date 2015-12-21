@@ -1,4 +1,4 @@
-package nom.tam.util;
+package nom.tam.util.type;
 
 /*
  * #%L
@@ -33,13 +33,17 @@ package nom.tam.util;
 
 import java.nio.Buffer;
 
-public class UnknownType extends PrimitiveTypeBase<Buffer> {
-    public UnknownType() {
-        super(0, true, Object.class, Object.class, null, 'L', 0);
+public class StringType extends PrimitiveTypeBase<Buffer> {
+
+    public StringType() {
+        super(0, true, CharSequence.class, String.class, null, 'L', 0);
     }
 
     @Override
     public int size(Object instance) {
-        return 0;
+        if (instance == null) {
+            return 0;
+        }
+        return ((CharSequence) instance).length();
     }
 }

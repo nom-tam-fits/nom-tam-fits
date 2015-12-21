@@ -1,4 +1,4 @@
-package nom.tam.util;
+package nom.tam.util.type;
 
 /*
  * #%L
@@ -39,19 +39,19 @@ public abstract class PrimitiveTypeBase<B extends Buffer> implements PrimitiveTy
 
     public static final int COPY_BLOCK_SIZE = 1024;
 
-    private final int size;
+    private final int bitPix;
+
+    private final Class<B> bufferClass;
 
     private final boolean individualSize;
 
     private final Class<?> primitiveClass;
 
-    private final Class<?> wrapperClass;
-
-    private final Class<B> bufferClass;
+    private final int size;
 
     private final char type;
 
-    private final int bitPix;
+    private final Class<?> wrapperClass;
 
     protected PrimitiveTypeBase(int size, boolean individualSize, Class<?> primitiveClass, Class<?> wrapperClass, Class<B> bufferClass, char type, int bitPix) {
         this.size = size;
@@ -64,6 +64,24 @@ public abstract class PrimitiveTypeBase<B extends Buffer> implements PrimitiveTy
     }
 
     @Override
+    public void appendBuffer(B buffer, B dataToAppend) {
+        throw new UnsupportedOperationException("no primitive type");
+    }
+
+    @Override
+    public void appendToByteBuffer(ByteBuffer byteBuffer, B dataToAppend) {
+        byte[] temp = new byte[Math.min(COPY_BLOCK_SIZE * this.size, dataToAppend.remaining() * this.size)];
+        B typedBuffer = asTypedBuffer(ByteBuffer.wrap(temp));
+        Object array = newArray(Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining()));
+        while (dataToAppend.hasRemaining()) {
+            int part = Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining());
+            getArray(dataToAppend, array, part);
+            putArray(typedBuffer, array, part);
+            byteBuffer.put(temp, 0, part * this.size);
+        }
+    }
+
+    @Override
     public B asTypedBuffer(ByteBuffer buffer) {
         throw new UnsupportedOperationException("no primitive buffer available");
     }
@@ -71,6 +89,11 @@ public abstract class PrimitiveTypeBase<B extends Buffer> implements PrimitiveTy
     @Override
     public int bitPix() {
         return this.bitPix;
+    }
+
+    @Override
+    public Class<B> bufferClass() {
+        return this.bufferClass;
     }
 
     @Override
@@ -135,7 +158,8 @@ public abstract class PrimitiveTypeBase<B extends Buffer> implements PrimitiveTy
     /**
      * currently the only individual size primitive so, keep it simple
      *
-     * @param instance the object to calculate the size
+     * @param instance
+     *            the object to calculate the size
      * @return the size in bytes of the object instance
      */
     @Override
@@ -162,30 +186,7 @@ public abstract class PrimitiveTypeBase<B extends Buffer> implements PrimitiveTy
     }
 
     @Override
-    public void appendBuffer(B buffer, B dataToAppend) {
-        throw new UnsupportedOperationException("no primitive type");
-    }
-
-    @Override
-    public void appendToByteBuffer(ByteBuffer byteBuffer, B dataToAppend) {
-        byte[] temp = new byte[Math.min(COPY_BLOCK_SIZE * this.size, dataToAppend.remaining() * this.size)];
-        B typedBuffer = asTypedBuffer(ByteBuffer.wrap(temp));
-        Object array = newArray(Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining()));
-        while (dataToAppend.hasRemaining()) {
-            int part = Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining());
-            getArray(dataToAppend, array, part);
-            putArray(typedBuffer, array, part);
-            byteBuffer.put(temp, 0, part * this.size);
-        }
-    }
-
-    @Override
     public Class<?> wrapperClass() {
-        return wrapperClass;
-    }
-
-    @Override
-    public Class<B> bufferClass() {
-        return bufferClass;
+        return this.wrapperClass;
     }
 }

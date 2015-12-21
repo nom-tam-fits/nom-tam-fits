@@ -1,4 +1,4 @@
-package nom.tam.util;
+package nom.tam.util.type;
 
 /*
  * #%L
@@ -45,6 +45,16 @@ public class IntType extends PrimitiveTypeBase<IntBuffer> {
     }
 
     @Override
+    public void appendBuffer(IntBuffer buffer, IntBuffer dataToAppend) {
+        int[] temp = new int[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
+        while (dataToAppend.hasRemaining()) {
+            int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
+            dataToAppend.get(temp, 0, nrObBytes);
+            buffer.put(temp, 0, nrObBytes);
+        }
+    }
+
+    @Override
     public IntBuffer asTypedBuffer(ByteBuffer buffer) {
         return buffer.asIntBuffer();
     }
@@ -72,15 +82,5 @@ public class IntType extends PrimitiveTypeBase<IntBuffer> {
     @Override
     public IntBuffer wrap(Object array) {
         return IntBuffer.wrap((int[]) array);
-    }
-
-    @Override
-    public void appendBuffer(IntBuffer buffer, IntBuffer dataToAppend) {
-        int[] temp = new int[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
-        while (dataToAppend.hasRemaining()) {
-            int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
-            dataToAppend.get(temp, 0, nrObBytes);
-            buffer.put(temp, 0, nrObBytes);
-        }
     }
 }

@@ -1,4 +1,4 @@
-package nom.tam.util;
+package nom.tam.util.type;
 
 /*
  * #%L
@@ -38,14 +38,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum PrimitiveTypeEnum implements PrimitiveType<Buffer> {
+    BOOLEAN(new BooleanType()),
     BYTE(new ByteType()),
-    SHORT(new ShortType()),
     CHAR(new CharType()),
+    DOUBLE(new DoubleType()),
+    FLOAT(new FloatType()),
     INT(new IntType()),
     LONG(new LongType()),
-    FLOAT(new FloatType()),
-    DOUBLE(new DoubleType()),
-    BOOLEAN(new BooleanType()),
+    SHORT(new ShortType()),
     STRING(new StringType()),
     UNKNOWN(new UnknownType());
 
@@ -71,8 +71,6 @@ public enum PrimitiveTypeEnum implements PrimitiveType<Buffer> {
         BY_CLASS = Collections.unmodifiableMap(byClass);
     }
 
-    private final PrimitiveTypeBase<Buffer> primitiveType;
-
     public static PrimitiveTypeEnum valueOf(Class<?> clazz) {
         PrimitiveTypeEnum primitiveTypeEnum = BY_CLASS.get(clazz);
         if (primitiveTypeEnum == null) {
@@ -91,113 +89,115 @@ public enum PrimitiveTypeEnum implements PrimitiveType<Buffer> {
         return BY_BITPIX[bitPix + BIT_PIX_OFFSET];
     }
 
+    private final PrimitiveTypeBase<Buffer> primitiveType;
+
     @SuppressWarnings("unchecked")
     <T extends Buffer> PrimitiveTypeEnum(PrimitiveTypeBase<T> primitiveType) {
         this.primitiveType = (PrimitiveTypeBase<Buffer>) primitiveType;
     }
 
     @Override
-    public Buffer asTypedBuffer(ByteBuffer buffer) {
-        return primitiveType.asTypedBuffer(buffer);
-    }
-
-    @Override
-    public int bitPix() {
-        return primitiveType.bitPix();
-    }
-
-    @Override
-    public ByteBuffer convertToByteBuffer(Object array) {
-        return primitiveType.convertToByteBuffer(array);
-    }
-
-    @Override
-    public void getArray(Buffer buffer, Object array, int length) {
-        primitiveType.getArray(buffer, array, length);
-    }
-
-    @Override
-    public boolean individualSize() {
-        return primitiveType.individualSize();
-    }
-
-    @Override
-    public Object newArray(int length) {
-        return primitiveType.newArray(length);
-    }
-
-    @Override
-    public Class<?> primitiveClass() {
-        return primitiveType.primitiveClass();
-    }
-
-    @Override
-    public void putArray(Buffer buffer, Object array, int length) {
-        primitiveType.putArray(buffer, array, length);
-    }
-
-    @Override
-    public int size() {
-        return primitiveType.size();
-    }
-
-    @Override
-    public int size(Object instance) {
-        return primitiveType.size(instance);
-    }
-
-    @Override
-    public Buffer sliceBuffer(Buffer buffer) {
-        return primitiveType.sliceBuffer(buffer);
-    }
-
-    @Override
-    public char type() {
-        return primitiveType.type();
-    }
-
-    @Override
-    public Buffer wrap(Object array) {
-        return primitiveType.wrap(array);
-    }
-
-    @Override
     public void appendBuffer(Buffer buffer, Buffer dataToAppend) {
-        primitiveType.appendBuffer(buffer, dataToAppend);
+        this.primitiveType.appendBuffer(buffer, dataToAppend);
     }
 
     @Override
     public void appendToByteBuffer(ByteBuffer byteBuffer, Buffer dataToAppend) {
-        primitiveType.appendToByteBuffer(byteBuffer, dataToAppend);
+        this.primitiveType.appendToByteBuffer(byteBuffer, dataToAppend);
     }
 
     @Override
-    public void getArray(Buffer buffer, Object array) {
-        primitiveType.getArray(buffer, array);
+    public Buffer asTypedBuffer(ByteBuffer buffer) {
+        return this.primitiveType.asTypedBuffer(buffer);
     }
 
     @Override
-    public Buffer newBuffer(int length) {
-        return primitiveType.newBuffer(length);
-    }
-
-    @Override
-    public Buffer newBuffer(long length) {
-        return primitiveType.newBuffer(length);
-    }
-
-    @Override
-    public void putArray(Buffer buffer, Object array) {
-        primitiveType.putArray(buffer, array);
-    }
-
-    @Override
-    public Class<?> wrapperClass() {
-        return primitiveType.wrapperClass();
+    public int bitPix() {
+        return this.primitiveType.bitPix();
     }
 
     @Override
     public Class<? extends Buffer> bufferClass() {
-        return primitiveType.bufferClass();
+        return this.primitiveType.bufferClass();
+    }
+
+    @Override
+    public ByteBuffer convertToByteBuffer(Object array) {
+        return this.primitiveType.convertToByteBuffer(array);
+    }
+
+    @Override
+    public void getArray(Buffer buffer, Object array) {
+        this.primitiveType.getArray(buffer, array);
+    }
+
+    @Override
+    public void getArray(Buffer buffer, Object array, int length) {
+        this.primitiveType.getArray(buffer, array, length);
+    }
+
+    @Override
+    public boolean individualSize() {
+        return this.primitiveType.individualSize();
+    }
+
+    @Override
+    public Object newArray(int length) {
+        return this.primitiveType.newArray(length);
+    }
+
+    @Override
+    public Buffer newBuffer(int length) {
+        return this.primitiveType.newBuffer(length);
+    }
+
+    @Override
+    public Buffer newBuffer(long length) {
+        return this.primitiveType.newBuffer(length);
+    }
+
+    @Override
+    public Class<?> primitiveClass() {
+        return this.primitiveType.primitiveClass();
+    }
+
+    @Override
+    public void putArray(Buffer buffer, Object array) {
+        this.primitiveType.putArray(buffer, array);
+    }
+
+    @Override
+    public void putArray(Buffer buffer, Object array, int length) {
+        this.primitiveType.putArray(buffer, array, length);
+    }
+
+    @Override
+    public int size() {
+        return this.primitiveType.size();
+    }
+
+    @Override
+    public int size(Object instance) {
+        return this.primitiveType.size(instance);
+    }
+
+    @Override
+    public Buffer sliceBuffer(Buffer buffer) {
+        return this.primitiveType.sliceBuffer(buffer);
+    }
+
+    @Override
+    public char type() {
+        return this.primitiveType.type();
+    }
+
+    @Override
+    public Buffer wrap(Object array) {
+        return this.primitiveType.wrap(array);
+    }
+
+    @Override
+    public Class<?> wrapperClass() {
+        return this.primitiveType.wrapperClass();
     }
 }

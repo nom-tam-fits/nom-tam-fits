@@ -1,4 +1,4 @@
-package nom.tam.util;
+package nom.tam.util.type;
 
 /*
  * #%L
@@ -31,18 +31,53 @@ package nom.tam.util;
  * #L%
  */
 
-import java.nio.Buffer;
+import java.nio.ByteBuffer;
 
-public class StringType extends PrimitiveTypeBase<Buffer> {
-    public StringType() {
-        super(0, true, CharSequence.class, String.class, null, 'L', 0);
+public class ByteType extends PrimitiveTypeBase<ByteBuffer> {
+
+    private static final int BIT_PIX = 8;
+
+    public ByteType() {
+        super(1, false, byte.class, Byte.class, ByteBuffer.class, 'B', BIT_PIX);
     }
 
     @Override
-    public int size(Object instance) {
-        if (instance == null) {
-            return 0;
+    public void appendBuffer(ByteBuffer buffer, ByteBuffer dataToAppend) {
+        byte[] temp = new byte[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
+        while (dataToAppend.hasRemaining()) {
+            int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
+            dataToAppend.get(temp, 0, nrObBytes);
+            buffer.put(temp, 0, nrObBytes);
         }
-        return ((CharSequence) instance).length();
+    }
+
+    @Override
+    public ByteBuffer asTypedBuffer(ByteBuffer buffer) {
+        return buffer;
+    }
+
+    @Override
+    public void getArray(ByteBuffer buffer, Object array, int length) {
+        buffer.get((byte[]) array, 0, length);
+    }
+
+    @Override
+    public Object newArray(int length) {
+        return new byte[length];
+    }
+
+    @Override
+    public void putArray(ByteBuffer buffer, Object array, int length) {
+        buffer.put((byte[]) array, 0, length);
+    }
+
+    @Override
+    public ByteBuffer sliceBuffer(ByteBuffer buffer) {
+        return buffer.slice();
+    }
+
+    @Override
+    public ByteBuffer wrap(Object array) {
+        return ByteBuffer.wrap((byte[]) array);
     }
 }

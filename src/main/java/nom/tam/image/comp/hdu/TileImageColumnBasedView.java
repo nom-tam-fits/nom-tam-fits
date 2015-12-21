@@ -33,7 +33,7 @@ package nom.tam.image.comp.hdu;
 
 import java.nio.Buffer;
 
-import nom.tam.util.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveTypeEnum;
 
 /**
  * This subclass of the row based view, will abstract the problems that occur

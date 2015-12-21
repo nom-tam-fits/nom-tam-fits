@@ -43,6 +43,8 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
+import nom.tam.util.type.PrimitiveTypeEnum;
+
 import org.junit.Assert;
 import org.junit.Test;
 

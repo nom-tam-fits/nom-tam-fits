@@ -1,4 +1,4 @@
-package nom.tam.util;
+package nom.tam.util.type;
 
 /*
  * #%L
@@ -45,6 +45,16 @@ public class DoubleType extends PrimitiveTypeBase<DoubleBuffer> {
     }
 
     @Override
+    public void appendBuffer(DoubleBuffer buffer, DoubleBuffer dataToAppend) {
+        double[] temp = new double[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
+        while (dataToAppend.hasRemaining()) {
+            int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
+            dataToAppend.get(temp, 0, nrObBytes);
+            buffer.put(temp, 0, nrObBytes);
+        }
+    }
+
+    @Override
     public DoubleBuffer asTypedBuffer(ByteBuffer buffer) {
         return buffer.asDoubleBuffer();
     }
@@ -72,15 +82,5 @@ public class DoubleType extends PrimitiveTypeBase<DoubleBuffer> {
     @Override
     public DoubleBuffer wrap(Object array) {
         return DoubleBuffer.wrap((double[]) array);
-    }
-
-    @Override
-    public void appendBuffer(DoubleBuffer buffer, DoubleBuffer dataToAppend) {
-        double[] temp = new double[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
-        while (dataToAppend.hasRemaining()) {
-            int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
-            dataToAppend.get(temp, 0, nrObBytes);
-            buffer.put(temp, 0, nrObBytes);
-        }
     }
 }
