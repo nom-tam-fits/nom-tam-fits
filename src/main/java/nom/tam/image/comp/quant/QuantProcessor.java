@@ -239,16 +239,19 @@ public class QuantProcessor {
 
         private final double nullValue;
 
+        private final boolean isNaN;
+
         private final int nullValueIndicator;
 
-        public NullFilter(double nullValue, Integer nullValueIndicator, PixelFilter next) {
+        public NullFilter(double nullValue, int nullValueIndicator, PixelFilter next) {
             super(next);
             this.nullValue = nullValue;
-            this.nullValueIndicator = nullValueIndicator == null ? NULL_VALUE : nullValueIndicator;
+            this.isNaN = Double.isNaN(this.nullValue);
+            this.nullValueIndicator = nullValueIndicator;
         }
 
         public final boolean isNull(double pixel) {
-            return this.nullValue == pixel;
+            return this.isNaN ? Double.isNaN(pixel) : this.nullValue == pixel;
         }
 
         @Override
@@ -319,16 +322,6 @@ public class QuantProcessor {
      */
     private static final long N_RESERVED_VALUES = 10;
 
-    /**
-     * and including NULL_VALUE. These values may not be used to represent the
-     * quantized and scaled floating point pixel values If lossy Hcompression is
-     * used, and the array contains null values, then it is also possible for
-     * the compressed values to slightly exceed the range of the actual
-     * (lossless) values so we must reserve a little more space value used to
-     * represent undefined pixels
-     */
-    private static final int NULL_VALUE = Integer.MIN_VALUE + 1;
-
     private static final double ROUNDING_HALF = 0.5;
 
     /**
@@ -346,7 +339,7 @@ public class QuantProcessor {
 
     private Quantize quantize;
 
-    protected QuantizeOption quantizeOption;
+    protected final QuantizeOption quantizeOption;
 
     public QuantProcessor(QuantizeOption quantizeOption) {
         this.quantizeOption = quantizeOption;
@@ -394,7 +387,7 @@ public class QuantProcessor {
     private void calculateBZeroAndBscale() {
         this.bScale = this.quantizeOption.getBScale();
         if (Double.isNaN(this.quantizeOption.getBZero())) {
-            this.bZero = zeroCenter(this.quantizeOption.isCheckNull(), this.quantizeOption.getMinValue(), this.quantizeOption.getMaxValue());
+            this.bZero = zeroCenter();
             this.quantizeOption.setIntMinValue(nint((this.quantizeOption.getMinValue() - this.bZero) / this.bScale));
             this.quantizeOption.setIntMaxValue(nint((this.quantizeOption.getMaxValue() - this.bZero) / this.bScale));
             this.quantizeOption.setBZero(this.bZero);
@@ -434,9 +427,11 @@ public class QuantProcessor {
         }
     }
 
-    private double zeroCenter(boolean checknull, final double minValue, final double maxValue) {
+    private double zeroCenter() {
+        final double minValue = this.quantizeOption.getMinValue();
+        final double maxValue = this.quantizeOption.getMaxValue();
         double evaluatedBZero;
-        if (!checknull && !this.centerOnZero) {
+        if (!this.quantizeOption.isCheckNull() && !this.centerOnZero) {
             // don't have to check for nulls
             // return all positive values, if possible since some compression
             // algorithms either only work for positive integers, or are more
@@ -456,7 +451,7 @@ public class QuantProcessor {
             // data contains null values or has be forced to center on zero
             // shift the range to be close to the value used to represent null
             // values
-            evaluatedBZero = minValue - this.bScale * (NULL_VALUE + N_RESERVED_VALUES);
+            evaluatedBZero = minValue - this.bScale * (Integer.MIN_VALUE + N_RESERVED_VALUES + 1);
         }
         return evaluatedBZero;
     }

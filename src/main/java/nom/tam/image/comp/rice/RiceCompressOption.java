@@ -63,6 +63,11 @@ public class RiceCompressOption implements ICompressOption {
     }
 
     @Override
+    public Integer getBNull() {
+        return null;
+    }
+
+    @Override
     public double getBScale() {
         return Double.NaN;
     }

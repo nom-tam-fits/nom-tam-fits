@@ -32,6 +32,7 @@ package nom.tam.image.comp.hdu;
  */
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.util.PrimitiveTypeEnum;
@@ -67,7 +68,7 @@ public class CompressingTile extends Tile {
 
     private void compress() {
         this.compressedData.limit(this.imageDataView.getPixelSize() * this.array.getBaseType().size());
-        this.tileOptions = this.array.getCompressOptions().clone();
+        this.tileOptions = Arrays.copyOf(this.array.getCompressOptions(), this.array.getCompressOptions().length);
         for (int index = 0; index < this.tileOptions.length; index++) {
             this.tileOptions[index] = this.tileOptions[index].copy() //
                     .setTileWidth(this.imageDataView.getWidth()) //
@@ -79,6 +80,7 @@ public class CompressingTile extends Tile {
             for (ICompressOption tileOption : this.tileOptions) {
                 this.zero = Double.isNaN(this.zero) ? tileOption.getBZero() : this.zero;
                 this.scale = Double.isNaN(this.scale) ? tileOption.getBScale() : this.scale;
+                this.blank = this.blank == null ? tileOption.getBNull() : this.blank;
             }
         } else {
             this.compressionType = TileCompressionType.GZIP_COMPRESSED;
@@ -95,6 +97,7 @@ public class CompressingTile extends Tile {
         }
         this.compressedData.limit(this.compressedData.position());
         this.compressedData.rewind();
+
         compactCompressedData();
     }
 

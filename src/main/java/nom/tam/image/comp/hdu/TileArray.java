@@ -50,7 +50,6 @@ import static nom.tam.fits.header.Standard.TTYPEn;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -75,8 +74,6 @@ import nom.tam.util.PrimitiveTypeEnum;
  * the tiles at the right side and the bottom side can have different sizes.
  */
 class TileArray {
-
-    private static final MathContext ROUNDIG_CONTEXT = new MathContext(9, RoundingMode.CEILING);
 
     private int[] axes;
 
@@ -136,6 +133,8 @@ class TileArray {
 
     public void compress(CompressedImageHDU hdu) throws FitsException {
         executeAllTiles();
+        // take the first blank as default value (if there is one)
+        this.zblank = this.tiles[0].getBlank();
         for (ICompressOption option : compressOptions()) {
             ICompressOption.Parameter[] parameter = option.getCompressionParameters();
             if (this.compressionParameter == null) {
@@ -167,8 +166,8 @@ class TileArray {
         final int imageHeight = this.axes[1];
         final int tileWidth = this.tileAxes[0];
         final int tileHeight = this.tileAxes[1];
-        final int nrOfTilesOnXAxis = BigDecimal.valueOf(imageWidth).divide(BigDecimal.valueOf(tileWidth)).round(ROUNDIG_CONTEXT).intValue();
-        final int nrOfTilesOnYAxis = BigDecimal.valueOf(imageHeight).divide(BigDecimal.valueOf(tileHeight)).round(ROUNDIG_CONTEXT).intValue();
+        final int nrOfTilesOnXAxis = new BigDecimal((double) imageWidth / (double) tileWidth).setScale(0, RoundingMode.CEILING).intValue();
+        final int nrOfTilesOnYAxis = new BigDecimal((double) imageHeight / (double) tileHeight).setScale(0, RoundingMode.CEILING).intValue();
         int lastTileWidth = nrOfTilesOnXAxis * tileWidth - imageWidth;
         if (lastTileWidth == 0) {
             lastTileWidth = tileWidth;
@@ -420,7 +419,7 @@ class TileArray {
             compressedColumn = setInColumn(compressedColumn, tile.getCompressionType() == TileCompressionType.COMPRESSED, tile, byte[].class, tile.getCompressedData());
             gzipColumn = setInColumn(gzipColumn, tile.getCompressionType() == TileCompressionType.GZIP_COMPRESSED, tile, byte[].class, tile.getCompressedData());
             uncompressedColumn = setInColumn(uncompressedColumn, tile.getCompressionType() == TileCompressionType.UNCOMPRESSED, tile, byte[].class, tile.getCompressedData());
-            zblankColumn = setInColumn(zblankColumn, tile.getBlank() != null, tile, int.class, tile.getBlank());
+            zblankColumn = setInColumn(zblankColumn, tile.getBlank() != null && !tile.getBlank().equals(this.zblank), tile, int.class, tile.getBlank());
             zzeroColumn = setInColumn(zzeroColumn, !Double.isNaN(tile.getZero()), tile, double.class, tile.getZero());
             zscaleColumn = setInColumn(zscaleColumn, !Double.isNaN(tile.getScale()), tile, double.class, tile.getScale());
         }
