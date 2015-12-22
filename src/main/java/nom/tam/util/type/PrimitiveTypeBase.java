@@ -35,7 +35,7 @@ import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
-public abstract class PrimitiveTypeBase<B extends Buffer> implements PrimitiveType<B> {
+abstract class PrimitiveTypeBase<B extends Buffer> implements PrimitiveType<B> {
 
     public static final int COPY_BLOCK_SIZE = 1024;
 
