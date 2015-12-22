@@ -33,7 +33,7 @@ package nom.tam.image.comp.hdu;
 
 import java.nio.Buffer;
 
-import nom.tam.util.type.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveType;
 
 /**
  * This subclass of the row based view, will abstract the problems that occur
@@ -71,7 +71,7 @@ class TileImageColumnBasedView extends TileImageRowBasedView {
         Buffer imagebuffer = getImageBuffer();
         imagebuffer.position(0);
         imagebuffer.limit(0);
-        PrimitiveTypeEnum type = primitivType();
+        PrimitiveType type = primitivType();
         this.gapLessBuffer = type.newBuffer(getPixelSize());
         while (imagebuffer.limit() < pixelSizeInData) {
             imagebuffer.limit(imagebuffer.position() + getWidth());
@@ -94,7 +94,7 @@ class TileImageColumnBasedView extends TileImageRowBasedView {
         imagebuffer.rewind();
         this.gapLessBuffer.rewind();
         this.gapLessBuffer.limit(0);
-        PrimitiveTypeEnum type = primitivType();
+        PrimitiveType type = primitivType();
         while (this.gapLessBuffer.limit() < pixelSize) {
             this.gapLessBuffer.limit(this.gapLessBuffer.position() + getWidth());
             type.appendBuffer(imagebuffer, this.gapLessBuffer);
@@ -129,7 +129,7 @@ class TileImageColumnBasedView extends TileImageRowBasedView {
         return (getHeight() - 1) * this.imageWidth + getWidth();
     }
 
-    private PrimitiveTypeEnum primitivType() {
-        return PrimitiveTypeEnum.valueOf(getImageBuffer().getClass());
+    private PrimitiveType primitivType() {
+        return PrimitiveType.UNKNOWN.valueOf(getImageBuffer().getClass());
     }
 }

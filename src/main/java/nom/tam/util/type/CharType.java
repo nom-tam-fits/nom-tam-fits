@@ -33,9 +33,9 @@ package nom.tam.util.type;
 
 import java.nio.CharBuffer;
 
-public class CharType extends PrimitiveTypeBase<CharBuffer> {
+class CharType extends PrimitiveTypeBase<CharBuffer> {
 
-    public CharType() {
+    protected CharType() {
         super(2, false, char.class, Character.class, CharBuffer.class, 'C', 0);
     }
 }

@@ -33,9 +33,9 @@ package nom.tam.util.type;
 
 import java.nio.Buffer;
 
-public class StringType extends PrimitiveTypeBase<Buffer> {
+class StringType extends PrimitiveTypeBase<Buffer> {
 
-    public StringType() {
+    protected StringType() {
         super(0, true, CharSequence.class, String.class, null, 'L', 0);
     }
 

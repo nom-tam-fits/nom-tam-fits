@@ -17,7 +17,7 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ByteBufferInputStream;
 import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.FitsIO;
-import nom.tam.util.type.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveType;
 
 /*
  * #%L
@@ -176,9 +176,9 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
 
     private final class TypeConversion {
 
-        private final PrimitiveTypeEnum from;
+        private final PrimitiveType from;
 
-        private final PrimitiveTypeEnum to;
+        private final PrimitiveType to;
 
         private final Buffer fromBuffer;
 
@@ -188,9 +188,9 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
 
         private final Object toArray;
 
-        private TypeConversion(PrimitiveTypeEnum from) {
+        private TypeConversion(PrimitiveType from) {
             this.from = from;
-            this.to = PrimitiveTypeEnum.valueOf(GZipCompress.this.primitivSize * FitsIO.BITS_OF_1_BYTE);
+            this.to = PrimitiveType.UNKNOWN.valueOf(GZipCompress.this.primitivSize * FitsIO.BITS_OF_1_BYTE);
             this.toBuffer = GZipCompress.this.nioBuffer;
             this.fromBuffer = from.asTypedBuffer(ByteBuffer.wrap(GZipCompress.this.buffer));
             this.fromArray = from.newArray(DEFAULT_GZIP_BUFFER_SIZE / from.size());
@@ -215,7 +215,7 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
 
     protected T nioBuffer;
 
-    private final byte[] sizeArray = new byte[PrimitiveTypeEnum.INT.size()];
+    private final byte[] sizeArray = new byte[PrimitiveType.INT.size()];
 
     private final IntBuffer sizeBuffer = ByteBuffer.wrap(this.sizeArray).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 
@@ -283,7 +283,7 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
                     if (uncompressedSize % nrOfPixelsInTile == 0) {
                         int compressedPrimitivSize = uncompressedSize / nrOfPixelsInTile;
                         if (compressedPrimitivSize != this.primitivSize) {
-                            return new TypeConversion(PrimitiveTypeEnum.valueOf(compressedPrimitivSize * FitsIO.BITS_OF_1_BYTE));
+                            return new TypeConversion(PrimitiveType.UNKNOWN.valueOf(compressedPrimitivSize * FitsIO.BITS_OF_1_BYTE));
                         }
                     }
                 }

@@ -35,7 +35,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.util.type.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveType;
 
 public class CompressingTile extends Tile {
 
@@ -55,7 +55,7 @@ public class CompressingTile extends Tile {
                 this.array.getTile(this.tileIndex - 1).future.get();
                 ByteBuffer compressedWholeArea = this.array.getCompressedWholeArea();
                 this.compressedOffset = compressedWholeArea.position();
-                PrimitiveTypeEnum.BYTE.appendBuffer(compressedWholeArea, this.compressedData);
+                PrimitiveType.BYTE.appendBuffer(compressedWholeArea, this.compressedData);
                 replaceCompressedBufferWithTargetArea(compressedWholeArea);
             } catch (Exception e) {
                 throw new IllegalStateException("could not compact compressed data", e);

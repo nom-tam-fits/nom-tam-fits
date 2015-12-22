@@ -11,7 +11,7 @@ import nom.tam.image.comp.quant.QuantProcessor.DoubleQuantCompressor;
 import nom.tam.image.comp.quant.QuantProcessor.FloatQuantCompressor;
 import nom.tam.image.comp.quant.QuantizeOption;
 import nom.tam.util.FitsIO;
-import nom.tam.util.type.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveType;
 
 /*
  * #%L
@@ -68,7 +68,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         private ByteBuffer pixelBuffer;
 
         public ByteRiceCompress(RiceCompressOption option) {
-            super(option.setDefaultBytePix(PrimitiveTypeEnum.BYTE.size()));
+            super(option.setDefaultBytePix(PrimitiveType.BYTE.size()));
         }
 
         @Override
@@ -98,7 +98,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         private IntBuffer pixelBuffer;
 
         public IntRiceCompress(RiceCompressOption option) {
-            super(option.setDefaultBytePix(PrimitiveTypeEnum.INT.size()));
+            super(option.setDefaultBytePix(PrimitiveType.INT.size()));
         }
 
         @Override
@@ -128,7 +128,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         private ShortBuffer pixelBuffer;
 
         public ShortRiceCompress(RiceCompressOption option) {
-            super(option.setDefaultBytePix(PrimitiveTypeEnum.SHORT.size()));
+            super(option.setDefaultBytePix(PrimitiveType.SHORT.size()));
         }
 
         @Override
@@ -223,15 +223,15 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
 
     private RiceCompress(RiceCompressOption option) {
         this.blockSize = option.getBlockSize();
-        if (option.getBytePix() == PrimitiveTypeEnum.BYTE.size()) {
+        if (option.getBytePix() == PrimitiveType.BYTE.size()) {
             this.fsBits = FS_BITS_FOR_BYTE;
             this.fsMax = FS_MAX_FOR_BYTE;
             this.bitsPerPixel = FitsIO.BITS_OF_1_BYTE;
-        } else if (option.getBytePix() == PrimitiveTypeEnum.SHORT.size()) {
+        } else if (option.getBytePix() == PrimitiveType.SHORT.size()) {
             this.fsBits = FS_BITS_FOR_SHORT;
             this.fsMax = FS_MAX_FOR_SHORT;
             this.bitsPerPixel = FitsIO.BITS_OF_2_BYTES;
-        } else if (option.getBytePix() == PrimitiveTypeEnum.INT.size()) {
+        } else if (option.getBytePix() == PrimitiveType.INT.size()) {
             this.fsBits = FS_BITS_FOR_INT;
             this.fsMax = FS_MAX_FOR_INT;
             this.bitsPerPixel = FitsIO.BITS_OF_4_BYTES;
@@ -383,11 +383,11 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         /* first x bytes of input buffer contain the value of the first */
         /* x byte integer value, without any encoding */
         int lastpix = 0;
-        if (bitsPerPixel == PrimitiveTypeEnum.BYTE.bitPix()) {
+        if (bitsPerPixel == PrimitiveType.BYTE.bitPix()) {
             lastpix = readBuffer.get();
-        } else if (bitsPerPixel == PrimitiveTypeEnum.SHORT.bitPix()) {
+        } else if (bitsPerPixel == PrimitiveType.SHORT.bitPix()) {
             lastpix = readBuffer.getShort();
-        } else if (bitsPerPixel == PrimitiveTypeEnum.INT.bitPix()) {
+        } else if (bitsPerPixel == PrimitiveType.INT.bitPix()) {
             lastpix = readBuffer.getInt();
         }
         int b = readBuffer.get() & BYTE_MASK; /* bit buffer */

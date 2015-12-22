@@ -32,15 +32,77 @@ package nom.tam.util.type;
  */
 
 import java.nio.Buffer;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UnknownType extends PrimitiveTypeBase<Buffer> {
 
-    public UnknownType() {
+    private static final int BIT_PIX_OFFSET = 64;
+
+    private PrimitiveType<?>[] byBitPix;
+
+    private Map<Class<?>, PrimitiveType<?>> byClass;
+
+    protected UnknownType() {
         super(0, true, Object.class, Object.class, null, 'L', 0);
+    }
+
+    private void initialize() {
+        if (this.byBitPix == null) {
+            this.byBitPix = new PrimitiveType[BIT_PIX_OFFSET * 2 + 1];
+            Map<Class<?>, PrimitiveType<?>> initialByClass = new HashMap<>();
+            for (PrimitiveType<?> type : values()) {
+                if (type.bitPix() != 0) {
+                    this.byBitPix[type.bitPix() + BIT_PIX_OFFSET] = type;
+                }
+                initialByClass.put(type.primitiveClass(), type);
+                initialByClass.put(type.wrapperClass(), type);
+                if (type.bufferClass() != null) {
+                    initialByClass.put(type.bufferClass(), type);
+                }
+            }
+            this.byClass = Collections.unmodifiableMap(initialByClass);
+        }
     }
 
     @Override
     public int size(Object instance) {
         return 0;
+    }
+
+    public <T extends PrimitiveType> T valueOf(Class<?> clazz) {
+        initialize();
+        PrimitiveType<?> primitiveType = this.byClass.get(clazz);
+        if (primitiveType == null) {
+            for (Class<?> interf : clazz.getInterfaces()) {
+                primitiveType = this.byClass.get(interf);
+                if (primitiveType != null) {
+                    return (T) primitiveType;
+                }
+            }
+            return (T) valueOf(clazz.getSuperclass());
+        }
+        return (T) primitiveType;
+    }
+
+    public PrimitiveType<?> valueOf(int bitPix) {
+        initialize();
+        return this.byBitPix[bitPix + BIT_PIX_OFFSET];
+    }
+
+    private PrimitiveType<?>[] values() {
+        return new PrimitiveType[]{
+            BOOLEAN,
+            BYTE,
+            CHAR,
+            DOUBLE,
+            FLOAT,
+            INT,
+            LONG,
+            SHORT,
+            STRING,
+            UNKNOWN
+        };
     }
 }

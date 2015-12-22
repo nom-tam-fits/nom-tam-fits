@@ -35,7 +35,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.lang.reflect.Array;
 
-import nom.tam.util.type.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveType;
 
 public abstract class BufferDecoder {
 
@@ -62,44 +62,31 @@ public abstract class BufferDecoder {
             } else {
                 // This is a one-d array. Process it using our special
                 // functions.
-                switch (PrimitiveTypeEnum.valueOf(o.getClass().getComponentType())) {
-                    case BOOLEAN:
-                        this.primitiveArrayCount += read((boolean[]) o, 0, length);
-                        break;
-                    case BYTE:
-                        int len = read((byte[]) o, 0, length);
-                        this.primitiveArrayCount += len;
-
-                        if (len < length) {
-                            throw new EOFException();
-                        }
-                        break;
-                    case CHAR:
-                        this.primitiveArrayCount += read((char[]) o, 0, length);
-                        break;
-                    case SHORT:
-                        this.primitiveArrayCount += read((short[]) o, 0, length);
-                        break;
-                    case INT:
-                        this.primitiveArrayCount += read((int[]) o, 0, length);
-                        break;
-                    case LONG:
-                        this.primitiveArrayCount += read((long[]) o, 0, length);
-                        break;
-                    case FLOAT:
-                        this.primitiveArrayCount += read((float[]) o, 0, length);
-                        break;
-                    case DOUBLE:
-                        this.primitiveArrayCount += read((double[]) o, 0, length);
-                        break;
-                    case STRING:
-                    case UNKNOWN:
-                        for (int i = 0; i < length; i++) {
-                            primitiveArrayRecurse(Array.get(o, i));
-                        }
-                        break;
-                    default:
-                        throw new IOException("Invalid object passed to BufferedDataInputStream.readArray: " + o.getClass().getName());
+                PrimitiveType type = PrimitiveType.UNKNOWN.valueOf(o.getClass().getComponentType());
+                if (type == PrimitiveType.BOOLEAN) {
+                    this.primitiveArrayCount += read((boolean[]) o, 0, length);
+                } else if (type == PrimitiveType.BYTE) {
+                    int len = read((byte[]) o, 0, length);
+                    this.primitiveArrayCount += len;
+                    if (len < length) {
+                        throw new EOFException();
+                    }
+                } else if (type == PrimitiveType.CHAR) {
+                    this.primitiveArrayCount += read((char[]) o, 0, length);
+                } else if (type == PrimitiveType.SHORT) {
+                    this.primitiveArrayCount += read((short[]) o, 0, length);
+                } else if (type == PrimitiveType.INT) {
+                    this.primitiveArrayCount += read((int[]) o, 0, length);
+                } else if (type == PrimitiveType.LONG) {
+                    this.primitiveArrayCount += read((long[]) o, 0, length);
+                } else if (type == PrimitiveType.FLOAT) {
+                    this.primitiveArrayCount += read((float[]) o, 0, length);
+                } else if (type == PrimitiveType.DOUBLE) {
+                    this.primitiveArrayCount += read((double[]) o, 0, length);
+                } else if (type == PrimitiveType.STRING || type == PrimitiveType.UNKNOWN) {
+                    for (int i = 0; i < length; i++) {
+                        primitiveArrayRecurse(Array.get(o, i));
+                    }
                 }
             }
             return this.primitiveArrayCount;

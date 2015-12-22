@@ -34,13 +34,13 @@ package nom.tam.util.type;
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 
-public class LongType extends PrimitiveTypeBase<LongBuffer> {
+class LongType extends PrimitiveTypeBase<LongBuffer> {
 
     private static final int BIT_PIX = 64;
 
     private static final int SIZE = 8;
 
-    public LongType() {
+    protected LongType() {
         super(SIZE, false, long.class, Long.class, LongBuffer.class, 'J', BIT_PIX);
     }
 

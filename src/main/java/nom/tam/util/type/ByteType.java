@@ -33,11 +33,11 @@ package nom.tam.util.type;
 
 import java.nio.ByteBuffer;
 
-public class ByteType extends PrimitiveTypeBase<ByteBuffer> {
+class ByteType extends PrimitiveTypeBase<ByteBuffer> {
 
     private static final int BIT_PIX = 8;
 
-    public ByteType() {
+    protected ByteType() {
         super(1, false, byte.class, Byte.class, ByteBuffer.class, 'B', BIT_PIX);
     }
 

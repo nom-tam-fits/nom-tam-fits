@@ -42,7 +42,7 @@ import java.io.PrintStream;
 
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.type.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveType;
 
 /**
  * FITS image header/data unit
@@ -67,10 +67,10 @@ public class ImageHDU extends BasicHDU<ImageData> {
      */
     public static boolean isData(Object o) {
         if (o.getClass().isArray()) {
-            PrimitiveTypeEnum type = PrimitiveTypeEnum.valueOf(ArrayFuncs.getBaseClass(o));
-            return type != PrimitiveTypeEnum.BOOLEAN && //
-                    type != PrimitiveTypeEnum.STRING && //
-                    type != PrimitiveTypeEnum.UNKNOWN;
+            PrimitiveType<?> type = PrimitiveType.UNKNOWN.valueOf(ArrayFuncs.getBaseClass(o));
+            return type != PrimitiveType.BOOLEAN && //
+                    type != PrimitiveType.STRING && //
+                    type != PrimitiveType.UNKNOWN;
 
         }
         return false;

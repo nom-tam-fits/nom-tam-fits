@@ -38,7 +38,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.util.type.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveType;
 
 /**
  * abstract information holder about the a tile that represents a rectangular
@@ -75,7 +75,7 @@ abstract class Tile implements Runnable {
     }
 
     private ByteBuffer convertToBuffer(Object data) {
-        return PrimitiveTypeEnum.valueOf(data.getClass().getComponentType()).convertToByteBuffer(data);
+        return PrimitiveType.UNKNOWN.valueOf(data.getClass().getComponentType()).convertToByteBuffer(data);
     }
 
     public void execute(ExecutorService threadPool) {
@@ -89,7 +89,7 @@ abstract class Tile implements Runnable {
     public byte[] getCompressedData() {
         byte[] data = new byte[this.compressedData.limit()];
         this.compressedData.rewind();
-        PrimitiveTypeEnum.BYTE.getArray(this.compressedData, data);
+        PrimitiveType.BYTE.getArray(this.compressedData, data);
         return data;
     }
 

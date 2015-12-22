@@ -33,13 +33,13 @@ package nom.tam.image.comp.rice;
 
 import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.util.type.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveType;
 
 public class RiceCompressOption implements ICompressOption {
 
     public static final int DEFAULT_RICE_BLOCKSIZE = 32;
 
-    public static final int DEFAULT_RICE_BYTEPIX = PrimitiveTypeEnum.INT.size();
+    public static final int DEFAULT_RICE_BYTEPIX = PrimitiveType.INT.size();
 
     private int blockSize = DEFAULT_RICE_BLOCKSIZE;
 

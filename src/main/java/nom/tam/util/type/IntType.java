@@ -34,13 +34,13 @@ package nom.tam.util.type;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-public class IntType extends PrimitiveTypeBase<IntBuffer> {
+class IntType extends PrimitiveTypeBase<IntBuffer> {
 
     private static final int BIT_PIX = 32;
 
     private static final int SIZE = 4;
 
-    public IntType() {
+    protected IntType() {
         super(SIZE, false, int.class, Integer.class, IntBuffer.class, 'I', BIT_PIX);
     }
 

@@ -34,13 +34,13 @@ package nom.tam.util.type;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
-public class FloatType extends PrimitiveTypeBase<FloatBuffer> {
+class FloatType extends PrimitiveTypeBase<FloatBuffer> {
 
     private static final int BIT_PIX = -32;
 
     private static final int SIZE = 4;
 
-    public FloatType() {
+    protected FloatType() {
         super(SIZE, false, float.class, Float.class, FloatBuffer.class, 'F', BIT_PIX);
     }
 

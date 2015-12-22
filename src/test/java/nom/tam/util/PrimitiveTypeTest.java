@@ -43,14 +43,14 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
-import nom.tam.util.type.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveType;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 public class PrimitiveTypeTest {
 
-    private Buffer bufferAtPosition(PrimitiveTypeEnum type, int length, int position) {
+    private Buffer bufferAtPosition(PrimitiveType type, int length, int position) {
         Buffer result = type.newBuffer(length);
         result.position(position);
         return type.sliceBuffer(result);
@@ -58,23 +58,23 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testByte() throws Exception {
-        assertSame(PrimitiveTypeEnum.BYTE, PrimitiveTypeEnum.valueOf(8));
-        assertEquals(byte.class, ((byte[]) PrimitiveTypeEnum.BYTE.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveTypeEnum.BYTE.newBuffer(5) instanceof ByteBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.BYTE, 6, 3).capacity());
+        assertSame(PrimitiveType.BYTE, PrimitiveType.UNKNOWN.valueOf(8));
+        assertEquals(byte.class, ((byte[]) PrimitiveType.BYTE.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveType.BYTE.newBuffer(5) instanceof ByteBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveType.BYTE, 6, 3).capacity());
 
         byte expectedValue = 1;
-        ByteBuffer buffer = PrimitiveTypeEnum.BYTE.convertToByteBuffer(new byte[]{
+        ByteBuffer buffer = PrimitiveType.BYTE.convertToByteBuffer(new byte[]{
             1
         });
         assertEquals(expectedValue, buffer.get());
 
-        testGetPutArray(PrimitiveTypeEnum.BYTE, Byte.valueOf((byte) 1), Byte.valueOf((byte) 2));
+        testGetPutArray(PrimitiveType.BYTE, Byte.valueOf((byte) 1), Byte.valueOf((byte) 2));
 
-        testAppedBuffer(PrimitiveTypeEnum.BYTE, expectedValue);
+        testAppedBuffer(PrimitiveType.BYTE, expectedValue);
     }
 
-    private void testGetPutArray(PrimitiveTypeEnum type, Object value, Object other) {
+    private void testGetPutArray(PrimitiveType type, Object value, Object other) {
         Object array = type.newArray(1);
         Array.set(array, 0, value);
         Buffer buffer = type.newBuffer(1);
@@ -87,100 +87,100 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testDouble() throws Exception {
-        assertSame(PrimitiveTypeEnum.DOUBLE, PrimitiveTypeEnum.valueOf(-64));
-        assertEquals(double.class, ((double[]) PrimitiveTypeEnum.DOUBLE.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveTypeEnum.DOUBLE.newBuffer(5) instanceof DoubleBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.DOUBLE, 6, 3).capacity());
+        assertSame(PrimitiveType.DOUBLE, PrimitiveType.UNKNOWN.valueOf(-64));
+        assertEquals(double.class, ((double[]) PrimitiveType.DOUBLE.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveType.DOUBLE.newBuffer(5) instanceof DoubleBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveType.DOUBLE, 6, 3).capacity());
 
         double testValue = 567.7686876876725638752364576543d;
         long value = Double.doubleToLongBits(testValue) >> 7 * 8;
 
-        ByteBuffer buffer = PrimitiveTypeEnum.DOUBLE.convertToByteBuffer(new double[]{
+        ByteBuffer buffer = PrimitiveType.DOUBLE.convertToByteBuffer(new double[]{
             testValue
         });
         assertEquals((byte) value, buffer.get());
 
-        testGetPutArray(PrimitiveTypeEnum.DOUBLE, Double.valueOf(1), Double.valueOf(2));
+        testGetPutArray(PrimitiveType.DOUBLE, Double.valueOf(1), Double.valueOf(2));
 
-        testAppedBuffer(PrimitiveTypeEnum.DOUBLE, testValue);
+        testAppedBuffer(PrimitiveType.DOUBLE, testValue);
     }
 
     @Test
     public void testFloat() throws Exception {
-        assertSame(PrimitiveTypeEnum.FLOAT, PrimitiveTypeEnum.valueOf(-32));
-        assertEquals(float.class, ((float[]) PrimitiveTypeEnum.FLOAT.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveTypeEnum.FLOAT.newBuffer(5) instanceof FloatBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.FLOAT, 6, 3).capacity());
+        assertSame(PrimitiveType.FLOAT, PrimitiveType.UNKNOWN.valueOf(-32));
+        assertEquals(float.class, ((float[]) PrimitiveType.FLOAT.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveType.FLOAT.newBuffer(5) instanceof FloatBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveType.FLOAT, 6, 3).capacity());
 
         float testValue = 567.7686876876f;
         int value = Float.floatToIntBits(testValue) >> 3 * 8;
 
-        ByteBuffer buffer = PrimitiveTypeEnum.FLOAT.convertToByteBuffer(new float[]{
+        ByteBuffer buffer = PrimitiveType.FLOAT.convertToByteBuffer(new float[]{
             testValue
         });
         assertEquals((byte) value, buffer.get());
-        testGetPutArray(PrimitiveTypeEnum.FLOAT, Float.valueOf(1), Float.valueOf(2));
+        testGetPutArray(PrimitiveType.FLOAT, Float.valueOf(1), Float.valueOf(2));
 
-        testAppedBuffer(PrimitiveTypeEnum.FLOAT, testValue);
+        testAppedBuffer(PrimitiveType.FLOAT, testValue);
     }
 
     @Test
     public void testInt() throws Exception {
-        assertSame(PrimitiveTypeEnum.INT, PrimitiveTypeEnum.valueOf(32));
-        assertEquals(int.class, ((int[]) PrimitiveTypeEnum.INT.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveTypeEnum.INT.newBuffer(5) instanceof IntBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.INT, 6, 3).capacity());
+        assertSame(PrimitiveType.INT, PrimitiveType.UNKNOWN.valueOf(32));
+        assertEquals(int.class, ((int[]) PrimitiveType.INT.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveType.INT.newBuffer(5) instanceof IntBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveType.INT, 6, 3).capacity());
 
         int expectedValue = 256 * 256 * 256;
-        ByteBuffer buffer = PrimitiveTypeEnum.INT.convertToByteBuffer(new int[]{
+        ByteBuffer buffer = PrimitiveType.INT.convertToByteBuffer(new int[]{
             expectedValue
         });
         assertEquals((byte) 1, buffer.get());
-        testGetPutArray(PrimitiveTypeEnum.INT, Integer.valueOf(1), Integer.valueOf(2));
+        testGetPutArray(PrimitiveType.INT, Integer.valueOf(1), Integer.valueOf(2));
 
-        testAppedBuffer(PrimitiveTypeEnum.INT, expectedValue);
+        testAppedBuffer(PrimitiveType.INT, expectedValue);
     }
 
     @Test
     public void testLong() throws Exception {
-        assertSame(PrimitiveTypeEnum.LONG, PrimitiveTypeEnum.valueOf(64));
-        assertEquals(long.class, ((long[]) PrimitiveTypeEnum.LONG.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveTypeEnum.LONG.newBuffer(5) instanceof LongBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.LONG, 6, 3).capacity());
+        assertSame(PrimitiveType.LONG, PrimitiveType.UNKNOWN.valueOf(64));
+        assertEquals(long.class, ((long[]) PrimitiveType.LONG.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveType.LONG.newBuffer(5) instanceof LongBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveType.LONG, 6, 3).capacity());
 
         long expectedValue = 256L * 256L * 256L * 256L * 256L * 256L * 256L;
-        assertEquals((byte) 1, PrimitiveTypeEnum.LONG.convertToByteBuffer(new long[]{
+        assertEquals((byte) 1, PrimitiveType.LONG.convertToByteBuffer(new long[]{
             expectedValue
         }).get());
-        testGetPutArray(PrimitiveTypeEnum.LONG, Long.valueOf(1), Long.valueOf(2));
+        testGetPutArray(PrimitiveType.LONG, Long.valueOf(1), Long.valueOf(2));
     }
 
     @Test
     public void testOther() throws Exception {
-        Assert.assertNull(PrimitiveTypeEnum.valueOf(PrimitiveTypeEnum.STRING.bitPix()));
-        Assert.assertNull(PrimitiveTypeEnum.STRING.newArray(5));
-        Assert.assertNull(PrimitiveTypeEnum.STRING.newBuffer(5));
-        Assert.assertNull(PrimitiveTypeEnum.STRING.sliceBuffer(null));
+        Assert.assertNull(PrimitiveType.UNKNOWN.valueOf(PrimitiveType.STRING.bitPix()));
+        Assert.assertNull(PrimitiveType.STRING.newArray(5));
+        Assert.assertNull(PrimitiveType.STRING.newBuffer(5));
+        Assert.assertNull(PrimitiveType.STRING.sliceBuffer(null));
     }
 
     @Test
     public void testShort() throws Exception {
-        assertSame(PrimitiveTypeEnum.SHORT, PrimitiveTypeEnum.valueOf(16));
-        assertEquals(short.class, ((short[]) PrimitiveTypeEnum.SHORT.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveTypeEnum.SHORT.newBuffer(5) instanceof ShortBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveTypeEnum.SHORT, 6, 3).capacity());
+        assertSame(PrimitiveType.SHORT, PrimitiveType.UNKNOWN.valueOf(16));
+        assertEquals(short.class, ((short[]) PrimitiveType.SHORT.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveType.SHORT.newBuffer(5) instanceof ShortBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveType.SHORT, 6, 3).capacity());
 
         short expectedValue = 256;
-        ByteBuffer buffer = PrimitiveTypeEnum.SHORT.convertToByteBuffer(new short[]{
+        ByteBuffer buffer = PrimitiveType.SHORT.convertToByteBuffer(new short[]{
             expectedValue
         });
         assertEquals((byte) 1, buffer.get());
-        testGetPutArray(PrimitiveTypeEnum.SHORT, Short.valueOf((short) 1), Short.valueOf((short) 2));
+        testGetPutArray(PrimitiveType.SHORT, Short.valueOf((short) 1), Short.valueOf((short) 2));
 
-        testAppedBuffer(PrimitiveTypeEnum.SHORT, expectedValue);
+        testAppedBuffer(PrimitiveType.SHORT, expectedValue);
     }
 
-    private void testAppedBuffer(PrimitiveTypeEnum type, Object expectedValue) {
+    private void testAppedBuffer(PrimitiveType type, Object expectedValue) {
         Object oneArray = type.newArray(1);
         Array.set(oneArray, 0, expectedValue);
         Buffer buffer = type.wrap(oneArray);
@@ -200,28 +200,27 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testUnknown() throws Exception {
-        assertSame(PrimitiveTypeEnum.UNKNOWN, PrimitiveTypeEnum.valueOf(PrimitiveTypeTest.class));
-        assertSame(PrimitiveTypeEnum.UNKNOWN, PrimitiveTypeEnum.valueOf(PrimitiveTypeEnum.UNKNOWN.name()));
+        assertSame(PrimitiveType.UNKNOWN, PrimitiveType.UNKNOWN.valueOf(PrimitiveTypeTest.class));
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testUnknownAsTYpe() throws Exception {
-        PrimitiveTypeEnum.UNKNOWN.asTypedBuffer(null);
+        PrimitiveType.UNKNOWN.asTypedBuffer(null);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testUnknownPutArray() throws Exception {
-        PrimitiveTypeEnum.UNKNOWN.putArray(null, null, 0);
+        PrimitiveType.UNKNOWN.putArray(null, null, 0);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testUnknownGetArray() throws Exception {
-        PrimitiveTypeEnum.UNKNOWN.getArray(null, null, 0);
+        PrimitiveType.UNKNOWN.getArray(null, null, 0);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testUnknownAppendBuffer() throws Exception {
-        PrimitiveTypeEnum.UNKNOWN.appendBuffer(null, null);
+        PrimitiveType.UNKNOWN.appendBuffer(null, null);
     }
 
 }

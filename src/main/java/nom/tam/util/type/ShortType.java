@@ -34,11 +34,11 @@ package nom.tam.util.type;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
-public class ShortType extends PrimitiveTypeBase<ShortBuffer> {
+class ShortType extends PrimitiveTypeBase<ShortBuffer> {
 
     private static final int BIT_PIX = 16;
 
-    public ShortType() {
+    protected ShortType() {
         super(2, false, short.class, Short.class, ShortBuffer.class, 'S', BIT_PIX);
     }
 

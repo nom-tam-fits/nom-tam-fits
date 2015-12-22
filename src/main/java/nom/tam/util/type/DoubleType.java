@@ -34,13 +34,13 @@ package nom.tam.util.type;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 
-public class DoubleType extends PrimitiveTypeBase<DoubleBuffer> {
+class DoubleType extends PrimitiveTypeBase<DoubleBuffer> {
 
     private static final int BIT_PIX = -64;
 
     private static final int SIZE = 8;
 
-    public DoubleType() {
+    protected DoubleType() {
         super(SIZE, false, double.class, Double.class, DoubleBuffer.class, 'D', BIT_PIX);
     }
 

@@ -38,7 +38,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import nom.tam.util.type.PrimitiveTypeEnum;
+import nom.tam.util.type.PrimitiveType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -75,11 +75,11 @@ public class ColumnTable<T> implements DataTable {
 
     }
 
-    private static final Map<PrimitiveTypeEnum, PointerAccess<?>> POINTER_ACCESSORS;
+    private static final Map<PrimitiveType, PointerAccess<?>> POINTER_ACCESSORS;
 
     private static final PointerAccess<?>[] POINTER_ACCESSORS_BY_TYPE = new PointerAccess<?>[MAX_TYPE_VALUE];
     static {
-        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.BYTE.type()] = new PointerAccess<byte[][]>() {
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.BYTE.type()] = new PointerAccess<byte[][]>() {
 
             @Override
             public byte[][] get(ColumnTable<?> table) {
@@ -102,7 +102,7 @@ public class ColumnTable<T> implements DataTable {
                 is.read(table.bytePointers[index], arrOffset, size);
             }
         };
-        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.BOOLEAN.type()] = new PointerAccess<boolean[][]>() {
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.BOOLEAN.type()] = new PointerAccess<boolean[][]>() {
 
             @Override
             public boolean[][] get(ColumnTable<?> table) {
@@ -124,7 +124,7 @@ public class ColumnTable<T> implements DataTable {
                 is.read(table.booleanPointers[index], arrOffset, size);
             }
         };
-        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.SHORT.type()] = new PointerAccess<short[][]>() {
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.SHORT.type()] = new PointerAccess<short[][]>() {
 
             @Override
             public short[][] get(ColumnTable<?> table) {
@@ -146,7 +146,7 @@ public class ColumnTable<T> implements DataTable {
                 is.read(table.shortPointers[index], arrOffset, size);
             }
         };
-        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.CHAR.type()] = new PointerAccess<char[][]>() {
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.CHAR.type()] = new PointerAccess<char[][]>() {
 
             @Override
             public char[][] get(ColumnTable<?> table) {
@@ -169,7 +169,7 @@ public class ColumnTable<T> implements DataTable {
                 is.read(table.charPointers[index], arrOffset, size);
             }
         };
-        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.INT.type()] = new PointerAccess<int[][]>() {
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.INT.type()] = new PointerAccess<int[][]>() {
 
             @Override
             public int[][] get(ColumnTable<?> table) {
@@ -191,7 +191,7 @@ public class ColumnTable<T> implements DataTable {
                 is.read(table.intPointers[index], arrOffset, size);
             }
         };
-        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.LONG.type()] = new PointerAccess<long[][]>() {
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.LONG.type()] = new PointerAccess<long[][]>() {
 
             @Override
             public long[][] get(ColumnTable<?> table) {
@@ -213,7 +213,7 @@ public class ColumnTable<T> implements DataTable {
                 is.read(table.longPointers[index], arrOffset, size);
             }
         };
-        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.FLOAT.type()] = new PointerAccess<float[][]>() {
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.FLOAT.type()] = new PointerAccess<float[][]>() {
 
             @Override
             public float[][] get(ColumnTable<?> table) {
@@ -235,7 +235,7 @@ public class ColumnTable<T> implements DataTable {
                 is.read(table.floatPointers[index], arrOffset, size);
             }
         };
-        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.DOUBLE.type()] = new PointerAccess<double[][]>() {
+        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.DOUBLE.type()] = new PointerAccess<double[][]>() {
 
             @Override
             public double[][] get(ColumnTable<?> table) {
@@ -257,15 +257,15 @@ public class ColumnTable<T> implements DataTable {
                 is.read(table.doublePointers[index], arrOffset, size);
             }
         };
-        Map<PrimitiveTypeEnum, PointerAccess<?>> pointerAccess = new HashMap<>();
-        pointerAccess.put(PrimitiveTypeEnum.BYTE, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.BYTE.type()]);
-        pointerAccess.put(PrimitiveTypeEnum.BOOLEAN, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.BOOLEAN.type()]);
-        pointerAccess.put(PrimitiveTypeEnum.CHAR, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.CHAR.type()]);
-        pointerAccess.put(PrimitiveTypeEnum.SHORT, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.SHORT.type()]);
-        pointerAccess.put(PrimitiveTypeEnum.INT, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.INT.type()]);
-        pointerAccess.put(PrimitiveTypeEnum.LONG, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.LONG.type()]);
-        pointerAccess.put(PrimitiveTypeEnum.FLOAT, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.FLOAT.type()]);
-        pointerAccess.put(PrimitiveTypeEnum.DOUBLE, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.DOUBLE.type()]);
+        Map<PrimitiveType, PointerAccess<?>> pointerAccess = new HashMap<>();
+        pointerAccess.put(PrimitiveType.BYTE, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.BYTE.type()]);
+        pointerAccess.put(PrimitiveType.BOOLEAN, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.BOOLEAN.type()]);
+        pointerAccess.put(PrimitiveType.CHAR, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.CHAR.type()]);
+        pointerAccess.put(PrimitiveType.SHORT, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.SHORT.type()]);
+        pointerAccess.put(PrimitiveType.INT, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.INT.type()]);
+        pointerAccess.put(PrimitiveType.LONG, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.LONG.type()]);
+        pointerAccess.put(PrimitiveType.FLOAT, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.FLOAT.type()]);
+        pointerAccess.put(PrimitiveType.DOUBLE, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.DOUBLE.type()]);
         POINTER_ACCESSORS = Collections.unmodifiableMap(pointerAccess);
     }
 
@@ -390,7 +390,7 @@ public class ColumnTable<T> implements DataTable {
 
     @SuppressWarnings("unchecked")
     private PointerAccess<Object> selectPointerAccessor(Object data) {
-        return (PointerAccess<Object>) POINTER_ACCESSORS.get(PrimitiveTypeEnum.valueOf(data.getClass().getComponentType()));
+        return (PointerAccess<Object>) POINTER_ACCESSORS.get(PrimitiveType.UNKNOWN.valueOf(data.getClass().getComponentType()));
     }
 
     @SuppressWarnings("unchecked")
@@ -741,14 +741,14 @@ public class ColumnTable<T> implements DataTable {
         }
         // Allocate the pointer arrays. Note that many will be
         // zero-length.
-        this.bytePointers = new byte[columnIndex[PrimitiveTypeEnum.BYTE.type()]][];
-        this.shortPointers = new short[columnIndex[PrimitiveTypeEnum.SHORT.type()]][];
-        this.intPointers = new int[columnIndex[PrimitiveTypeEnum.INT.type()]][];
-        this.longPointers = new long[columnIndex[PrimitiveTypeEnum.LONG.type()]][];
-        this.floatPointers = new float[columnIndex[PrimitiveTypeEnum.FLOAT.type()]][];
-        this.doublePointers = new double[columnIndex[PrimitiveTypeEnum.DOUBLE.type()]][];
-        this.charPointers = new char[columnIndex[PrimitiveTypeEnum.CHAR.type()]][];
-        this.booleanPointers = new boolean[columnIndex[PrimitiveTypeEnum.BOOLEAN.type()]][];
+        this.bytePointers = new byte[columnIndex[PrimitiveType.BYTE.type()]][];
+        this.shortPointers = new short[columnIndex[PrimitiveType.SHORT.type()]][];
+        this.intPointers = new int[columnIndex[PrimitiveType.INT.type()]][];
+        this.longPointers = new long[columnIndex[PrimitiveType.LONG.type()]][];
+        this.floatPointers = new float[columnIndex[PrimitiveType.FLOAT.type()]][];
+        this.doublePointers = new double[columnIndex[PrimitiveType.DOUBLE.type()]][];
+        this.charPointers = new char[columnIndex[PrimitiveType.CHAR.type()]][];
+        this.booleanPointers = new boolean[columnIndex[PrimitiveType.BOOLEAN.type()]][];
         // Now set the pointers.
         Arrays.fill(columnIndex, 0);
         for (int col = 0; col < this.arrays.length; col += 1) {
