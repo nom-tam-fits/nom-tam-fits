@@ -50,6 +50,7 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.array.MultyArrayIterator;
 import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypeHandler;
 
 /**
  * This class instantiates FITS primary HDU and IMAGE extension data.
@@ -256,7 +257,7 @@ public class ImageData extends Data {
             throw new FitsException("Group data treated as images");
         }
         int bitPix = h.getIntValue(BITPIX, 0);
-        PrimitiveType<?> primitivType = PrimitiveType.UNKNOWN.valueOf(bitPix);
+        PrimitiveType<Buffer> primitivType = PrimitiveTypeHandler.valueOf(bitPix);
         Class<?> baseClass = primitivType.primitiveClass();
         int ndim = h.getIntValue(NAXIS, 0);
         int[] dims = new int[ndim];
@@ -320,7 +321,7 @@ public class ImageData extends Data {
     }
 
     public void setBuffer(Buffer data) {
-        PrimitiveType<Buffer> primType = PrimitiveType.UNKNOWN.valueOf(this.dataDescription.type);
+        PrimitiveType<Buffer> primType = PrimitiveTypeHandler.valueOf(this.dataDescription.type);
         this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
         MultyArrayIterator iterator = new MultyArrayIterator(this.dataArray);
         Object array = iterator.next();

@@ -39,6 +39,7 @@ import java.util.concurrent.Future;
 
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypeHandler;
 
 /**
  * abstract information holder about the a tile that represents a rectangular
@@ -75,7 +76,7 @@ abstract class Tile implements Runnable {
     }
 
     private ByteBuffer convertToBuffer(Object data) {
-        return PrimitiveType.UNKNOWN.valueOf(data.getClass().getComponentType()).convertToByteBuffer(data);
+        return PrimitiveTypeHandler.valueOf(data.getClass().getComponentType()).convertToByteBuffer(data);
     }
 
     public void execute(ExecutorService threadPool) {

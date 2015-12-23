@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 
 import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypeHandler;
 
 public abstract class BufferDecoder {
 
@@ -62,7 +63,7 @@ public abstract class BufferDecoder {
             } else {
                 // This is a one-d array. Process it using our special
                 // functions.
-                PrimitiveType type = PrimitiveType.UNKNOWN.valueOf(o.getClass().getComponentType());
+                PrimitiveType<?> type = PrimitiveTypeHandler.valueOf(o.getClass().getComponentType());
                 if (type == PrimitiveType.BOOLEAN) {
                     this.primitiveArrayCount += read((boolean[]) o, 0, length);
                 } else if (type == PrimitiveType.BYTE) {
@@ -91,7 +92,6 @@ public abstract class BufferDecoder {
             }
             return this.primitiveArrayCount;
         }
-
     }
 
     private final BufferPointer sharedBuffer;

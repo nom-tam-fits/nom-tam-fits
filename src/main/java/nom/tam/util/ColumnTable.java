@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypeHandler;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -75,7 +76,7 @@ public class ColumnTable<T> implements DataTable {
 
     }
 
-    private static final Map<PrimitiveType, PointerAccess<?>> POINTER_ACCESSORS;
+    private static final Map<PrimitiveType<?>, PointerAccess<?>> POINTER_ACCESSORS;
 
     private static final PointerAccess<?>[] POINTER_ACCESSORS_BY_TYPE = new PointerAccess<?>[MAX_TYPE_VALUE];
     static {
@@ -257,7 +258,7 @@ public class ColumnTable<T> implements DataTable {
                 is.read(table.doublePointers[index], arrOffset, size);
             }
         };
-        Map<PrimitiveType, PointerAccess<?>> pointerAccess = new HashMap<>();
+        Map<PrimitiveType<?>, PointerAccess<?>> pointerAccess = new HashMap<>();
         pointerAccess.put(PrimitiveType.BYTE, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.BYTE.type()]);
         pointerAccess.put(PrimitiveType.BOOLEAN, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.BOOLEAN.type()]);
         pointerAccess.put(PrimitiveType.CHAR, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.CHAR.type()]);
@@ -390,7 +391,7 @@ public class ColumnTable<T> implements DataTable {
 
     @SuppressWarnings("unchecked")
     private PointerAccess<Object> selectPointerAccessor(Object data) {
-        return (PointerAccess<Object>) POINTER_ACCESSORS.get(PrimitiveType.UNKNOWN.valueOf(data.getClass().getComponentType()));
+        return (PointerAccess<Object>) POINTER_ACCESSORS.get(PrimitiveTypeHandler.valueOf(data.getClass().getComponentType()));
     }
 
     @SuppressWarnings("unchecked")

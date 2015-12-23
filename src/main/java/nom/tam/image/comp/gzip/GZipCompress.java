@@ -18,6 +18,7 @@ import nom.tam.util.ByteBufferInputStream;
 import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.FitsIO;
 import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypeHandler;
 
 /*
  * #%L
@@ -174,23 +175,23 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
         }
     }
 
-    private final class TypeConversion {
+    private final class TypeConversion<B extends Buffer> {
 
-        private final PrimitiveType from;
+        private final PrimitiveType<B> from;
 
-        private final PrimitiveType to;
+        private final PrimitiveType<T> to;
 
-        private final Buffer fromBuffer;
+        private final B fromBuffer;
 
-        private final Buffer toBuffer;
+        private final T toBuffer;
 
         private final Object fromArray;
 
         private final Object toArray;
 
-        private TypeConversion(PrimitiveType from) {
+        private TypeConversion(PrimitiveType<B> from) {
             this.from = from;
-            this.to = PrimitiveType.UNKNOWN.valueOf(GZipCompress.this.primitivSize * FitsIO.BITS_OF_1_BYTE);
+            this.to = getPrimitiveType(GZipCompress.this.primitivSize);
             this.toBuffer = GZipCompress.this.nioBuffer;
             this.fromBuffer = from.asTypedBuffer(ByteBuffer.wrap(GZipCompress.this.buffer));
             this.fromArray = from.newArray(DEFAULT_GZIP_BUFFER_SIZE / from.size());
@@ -205,6 +206,11 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
             this.to.putArray(this.toBuffer, this.toArray);
             return byteCount * this.to.size() / this.from.size();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <B extends Buffer> PrimitiveType<B> getPrimitiveType(int size) {
+        return (PrimitiveType<B>) PrimitiveTypeHandler.valueOf(size * FitsIO.BITS_OF_1_BYTE);
     }
 
     private static final int DEFAULT_GZIP_BUFFER_SIZE = 65536;
@@ -254,7 +260,7 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
     @Override
     public void decompress(ByteBuffer compressed, T pixelData) {
         this.nioBuffer.rewind();
-        TypeConversion calcPrimitivSize = getGZipBytePix(compressed, pixelData.limit());
+        TypeConversion<Buffer> calcPrimitivSize = getGZipBytePix(compressed, pixelData.limit());
         try (GZIPInputStream zip = createGZipInputStream(compressed)) {
             int count;
             while ((count = zip.read(this.buffer)) >= 0) {
@@ -266,11 +272,11 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
                 setPixel(pixelData, null);
             }
         } catch (IOException e) {
-            throw new IllegalStateException("could not un-gzip data", e);
+            throw new IllegalStateException("could not gunzip data", e);
         }
     }
 
-    private TypeConversion getGZipBytePix(ByteBuffer compressed, int nrOfPrimitivElements) {
+    private TypeConversion<Buffer> getGZipBytePix(ByteBuffer compressed, int nrOfPrimitivElements) {
         if (compressed.limit() > FitsIO.BYTES_IN_INTEGER) {
             int oldPosition = compressed.position();
             try {
@@ -283,7 +289,7 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
                     if (uncompressedSize % nrOfPixelsInTile == 0) {
                         int compressedPrimitivSize = uncompressedSize / nrOfPixelsInTile;
                         if (compressedPrimitivSize != this.primitivSize) {
-                            return new TypeConversion(PrimitiveType.UNKNOWN.valueOf(compressedPrimitivSize * FitsIO.BITS_OF_1_BYTE));
+                            return new TypeConversion<Buffer>(getPrimitiveType(compressedPrimitivSize));
                         }
                     }
                 }

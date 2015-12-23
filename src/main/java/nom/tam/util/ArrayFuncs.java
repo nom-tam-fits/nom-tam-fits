@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import nom.tam.util.array.MultyArrayCopier;
 import nom.tam.util.array.MultyArrayIterator;
 import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypeHandler;
 
 /**
  * This is a package of static functions which perform computations on arrays.
@@ -79,7 +80,7 @@ public final class ArrayFuncs {
                 long length = Array.getLength(array);
                 if (length > 0) {
                     Class<?> componentType = array.getClass().getComponentType();
-                    PrimitiveType<?> primType = PrimitiveType.UNKNOWN.valueOf(componentType);
+                    PrimitiveType<?> primType = PrimitiveTypeHandler.valueOf(componentType);
                     if (componentType.isPrimitive()) {
                         size += length * primType.size();
                     } else {
@@ -91,7 +92,7 @@ public final class ArrayFuncs {
             }
             return size;
         } else {
-            PrimitiveType<?> primType = PrimitiveType.UNKNOWN.valueOf(o.getClass());
+            PrimitiveType<?> primType = PrimitiveTypeHandler.valueOf(o.getClass());
             if (primType.individualSize()) {
                 return primType.size(o);
             } else {
@@ -362,7 +363,7 @@ public final class ArrayFuncs {
         if (o == null) {
             return 0;
         }
-        PrimitiveType type = PrimitiveType.UNKNOWN.valueOf(getBaseClass(o));
+        PrimitiveType<?> type = PrimitiveTypeHandler.valueOf(getBaseClass(o));
         if (type != null && type.size() != 0) {
             return type.size();
         }

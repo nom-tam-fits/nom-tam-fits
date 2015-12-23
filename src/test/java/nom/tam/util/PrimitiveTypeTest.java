@@ -44,21 +44,22 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
 import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypeHandler;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 public class PrimitiveTypeTest {
 
-    private Buffer bufferAtPosition(PrimitiveType type, int length, int position) {
-        Buffer result = type.newBuffer(length);
+    private <T extends Buffer> Buffer bufferAtPosition(PrimitiveType<T> type, int length, int position) {
+        T result = type.newBuffer(length);
         result.position(position);
         return type.sliceBuffer(result);
     }
 
     @Test
     public void testByte() throws Exception {
-        assertSame(PrimitiveType.BYTE, PrimitiveType.UNKNOWN.valueOf(8));
+        assertSame(PrimitiveType.BYTE, PrimitiveTypeHandler.valueOf(8));
         assertEquals(byte.class, ((byte[]) PrimitiveType.BYTE.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveType.BYTE.newBuffer(5) instanceof ByteBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveType.BYTE, 6, 3).capacity());
@@ -74,10 +75,10 @@ public class PrimitiveTypeTest {
         testAppedBuffer(PrimitiveType.BYTE, expectedValue);
     }
 
-    private void testGetPutArray(PrimitiveType type, Object value, Object other) {
+    private <T extends Buffer> void testGetPutArray(PrimitiveType<T> type, Object value, Object other) {
         Object array = type.newArray(1);
         Array.set(array, 0, value);
-        Buffer buffer = type.newBuffer(1);
+        T buffer = type.newBuffer(1);
         type.putArray(buffer, array);
         Array.set(array, 0, other);
         buffer.rewind();
@@ -87,7 +88,7 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testDouble() throws Exception {
-        assertSame(PrimitiveType.DOUBLE, PrimitiveType.UNKNOWN.valueOf(-64));
+        assertSame(PrimitiveType.DOUBLE, PrimitiveTypeHandler.valueOf(-64));
         assertEquals(double.class, ((double[]) PrimitiveType.DOUBLE.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveType.DOUBLE.newBuffer(5) instanceof DoubleBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveType.DOUBLE, 6, 3).capacity());
@@ -107,7 +108,7 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testFloat() throws Exception {
-        assertSame(PrimitiveType.FLOAT, PrimitiveType.UNKNOWN.valueOf(-32));
+        assertSame(PrimitiveType.FLOAT, PrimitiveTypeHandler.valueOf(-32));
         assertEquals(float.class, ((float[]) PrimitiveType.FLOAT.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveType.FLOAT.newBuffer(5) instanceof FloatBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveType.FLOAT, 6, 3).capacity());
@@ -126,7 +127,7 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testInt() throws Exception {
-        assertSame(PrimitiveType.INT, PrimitiveType.UNKNOWN.valueOf(32));
+        assertSame(PrimitiveType.INT, PrimitiveTypeHandler.valueOf(32));
         assertEquals(int.class, ((int[]) PrimitiveType.INT.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveType.INT.newBuffer(5) instanceof IntBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveType.INT, 6, 3).capacity());
@@ -143,7 +144,7 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testLong() throws Exception {
-        assertSame(PrimitiveType.LONG, PrimitiveType.UNKNOWN.valueOf(64));
+        assertSame(PrimitiveType.LONG, PrimitiveTypeHandler.valueOf(64));
         assertEquals(long.class, ((long[]) PrimitiveType.LONG.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveType.LONG.newBuffer(5) instanceof LongBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveType.LONG, 6, 3).capacity());
@@ -157,7 +158,7 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testOther() throws Exception {
-        Assert.assertNull(PrimitiveType.UNKNOWN.valueOf(PrimitiveType.STRING.bitPix()));
+        Assert.assertNull(PrimitiveTypeHandler.valueOf(PrimitiveType.STRING.bitPix()));
         Assert.assertNull(PrimitiveType.STRING.newArray(5));
         Assert.assertNull(PrimitiveType.STRING.newBuffer(5));
         Assert.assertNull(PrimitiveType.STRING.sliceBuffer(null));
@@ -165,7 +166,7 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testShort() throws Exception {
-        assertSame(PrimitiveType.SHORT, PrimitiveType.UNKNOWN.valueOf(16));
+        assertSame(PrimitiveType.SHORT, PrimitiveTypeHandler.valueOf(16));
         assertEquals(short.class, ((short[]) PrimitiveType.SHORT.newArray(5)).getClass().getComponentType());
         Assert.assertTrue(PrimitiveType.SHORT.newBuffer(5) instanceof ShortBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveType.SHORT, 6, 3).capacity());
@@ -180,12 +181,12 @@ public class PrimitiveTypeTest {
         testAppedBuffer(PrimitiveType.SHORT, expectedValue);
     }
 
-    private void testAppedBuffer(PrimitiveType type, Object expectedValue) {
+    private <T extends Buffer> void testAppedBuffer(PrimitiveType<T> type, Object expectedValue) {
         Object oneArray = type.newArray(1);
         Array.set(oneArray, 0, expectedValue);
-        Buffer buffer = type.wrap(oneArray);
+        T buffer = type.wrap(oneArray);
         buffer.rewind();
-        Buffer longerBuffer = type.newBuffer(buffer.remaining() * 10);
+        T longerBuffer = type.newBuffer(buffer.remaining() * 10);
         for (int index = 0; index < 5; index++) {
             type.appendBuffer(longerBuffer, buffer);
             buffer.rewind();
@@ -200,7 +201,7 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testUnknown() throws Exception {
-        assertSame(PrimitiveType.UNKNOWN, PrimitiveType.UNKNOWN.valueOf(PrimitiveTypeTest.class));
+        assertSame(PrimitiveType.UNKNOWN, PrimitiveTypeHandler.valueOf(PrimitiveTypeTest.class));
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -222,5 +223,4 @@ public class PrimitiveTypeTest {
     public void testUnknownAppendBuffer() throws Exception {
         PrimitiveType.UNKNOWN.appendBuffer(null, null);
     }
-
 }

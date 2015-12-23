@@ -67,6 +67,7 @@ import nom.tam.image.comp.ICompressOption.Parameter;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
 import nom.tam.image.comp.TileCompressorProvider;
 import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypeHandler;
 
 /**
  * This class represents a complete array of tiles describing an image ordered
@@ -78,10 +79,10 @@ class TileArray {
     private int[] axes;
 
     /**
-     * an enum that interprets the value of the BITPIX keyword in the
+     * Interprets the value of the BITPIX keyword in the
      * uncompressed FITS image
      */
-    private PrimitiveType baseType;
+    private PrimitiveType<Buffer> baseType;
 
     /**
      * ZCMPTYPE name of the algorithm that was used to compress
@@ -218,7 +219,7 @@ class TileArray {
         }
     }
 
-    public PrimitiveType getBaseType() {
+    public PrimitiveType<Buffer> getBaseType() {
         return this.baseType;
     }
 
@@ -342,7 +343,7 @@ class TileArray {
 
     private void readBaseType(Header header) {
         if (this.baseType == null) {
-            this.baseType = PrimitiveType.UNKNOWN.valueOf(header.getIntValue(ZBITPIX));
+            this.baseType = (PrimitiveType<Buffer>) PrimitiveTypeHandler.valueOf(header.getIntValue(ZBITPIX));
         }
     }
 

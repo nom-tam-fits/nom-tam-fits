@@ -34,6 +34,7 @@ package nom.tam.image.comp.hdu;
 import java.nio.Buffer;
 
 import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypeHandler;
 
 /**
  * This subclass of the row based view, will abstract the problems that occur
@@ -129,7 +130,7 @@ class TileImageColumnBasedView extends TileImageRowBasedView {
         return (getHeight() - 1) * this.imageWidth + getWidth();
     }
 
-    private PrimitiveType primitivType() {
-        return PrimitiveType.UNKNOWN.valueOf(getImageBuffer().getClass());
+    private PrimitiveType<?> primitivType() {
+        return PrimitiveTypeHandler.valueOf(getImageBuffer().getClass());
     }
 }
