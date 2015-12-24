@@ -36,8 +36,8 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import nom.tam.util.array.MultyArrayCopier;
-import nom.tam.util.array.MultyArrayIterator;
+import nom.tam.util.array.MultiArrayCopier;
+import nom.tam.util.array.MultiArrayIterator;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 
@@ -74,7 +74,7 @@ public final class ArrayFuncs {
         }
         if (o.getClass().isArray()) {
             long size = 0;
-            MultyArrayIterator iter = new MultyArrayIterator(o);
+            MultiArrayIterator iter = new MultiArrayIterator(o);
             Object array;
             while ((array = iter.next()) != null) {
                 long length = Array.getLength(array);
@@ -193,7 +193,7 @@ public final class ArrayFuncs {
      *            The array mimicking the original.
      */
     public static void copyInto(Object array, Object mimic) {
-        MultyArrayCopier.copyInto(array, mimic);
+        MultiArrayCopier.copyInto(array, mimic);
     }
 
     /**
@@ -221,7 +221,7 @@ public final class ArrayFuncs {
             throw new RuntimeException("Curled array does not fit desired dimensions");
         }
         Object newArray = ArrayFuncs.newInstance(getBaseClass(input), dimens);
-        MultyArrayCopier.copyInto(input, newArray);
+        MultiArrayCopier.copyInto(input, newArray);
         return newArray;
 
     }
@@ -280,7 +280,7 @@ public final class ArrayFuncs {
             size *= dimen;
         }
         Object flat = ArrayFuncs.newInstance(getBaseClass(input), size);
-        MultyArrayCopier.copyInto(input, flat);
+        MultiArrayCopier.copyInto(input, flat);
         return flat;
     }
 

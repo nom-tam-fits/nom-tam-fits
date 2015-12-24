@@ -35,7 +35,7 @@ import java.util.Random;
 
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ByteFormatter;
-import nom.tam.util.array.MultyArrayCopier;
+import nom.tam.util.array.MultiArrayCopier;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -74,7 +74,7 @@ public class UtilTest {
         }
         long[][] testArrayCopy = new long[2000][2000];
         // let them both initialize a little
-        MultyArrayCopier.copyInto(testArray, testArrayCopy);
+        MultiArrayCopier.copyInto(testArray, testArrayCopy);
         ArrayFuncs.copyInto(testArray, testArrayCopy);
         long timeCopy = 0;
         long timeIter = 0;
@@ -83,7 +83,7 @@ public class UtilTest {
 
             start = System.currentTimeMillis();
             for (int index = 0; index < 100; index++) {
-                MultyArrayCopier.copyInto(testArray, testArrayCopy);
+                MultiArrayCopier.copyInto(testArray, testArrayCopy);
             }
             timeIter += System.currentTimeMillis() - start;
 

@@ -40,6 +40,28 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.header.Compression;
+import nom.tam.image.comp.gzip.GZipCompress.ByteGZipCompress;
+import nom.tam.image.comp.gzip.GZipCompress.DoubleGZipCompress;
+import nom.tam.image.comp.gzip.GZipCompress.FloatGZipCompress;
+import nom.tam.image.comp.gzip.GZipCompress.IntGZipCompress;
+import nom.tam.image.comp.gzip.GZipCompress.LongGZipCompress;
+import nom.tam.image.comp.gzip.GZipCompress.ShortGZipCompress;
+import nom.tam.image.comp.gzip2.GZip2Compress.ByteGZip2Compress;
+import nom.tam.image.comp.gzip2.GZip2Compress.IntGZip2Compress;
+import nom.tam.image.comp.gzip2.GZip2Compress.LongGZip2Compress;
+import nom.tam.image.comp.gzip2.GZip2Compress.ShortGZip2Compress;
+import nom.tam.image.comp.hcompress.HCompressor.ByteHCompress;
+import nom.tam.image.comp.hcompress.HCompressor.DoubleHCompress;
+import nom.tam.image.comp.hcompress.HCompressor.FloatHCompress;
+import nom.tam.image.comp.hcompress.HCompressor.IntHCompress;
+import nom.tam.image.comp.hcompress.HCompressor.ShortHCompress;
+import nom.tam.image.comp.plio.PLIOCompress.BytePLIOCompress;
+import nom.tam.image.comp.plio.PLIOCompress.ShortPLIOCompress;
+import nom.tam.image.comp.rice.RiceCompress.ByteRiceCompress;
+import nom.tam.image.comp.rice.RiceCompress.DoubleRiceCompress;
+import nom.tam.image.comp.rice.RiceCompress.FloatRiceCompress;
+import nom.tam.image.comp.rice.RiceCompress.IntRiceCompress;
+import nom.tam.image.comp.rice.RiceCompress.ShortRiceCompress;
 
 public class TileCompressorProvider implements ITileCompressorProvider {
 
@@ -53,6 +75,7 @@ public class TileCompressorProvider implements ITileCompressorProvider {
 
         private final Class<? extends ICompressOption>[] optionClasses;
 
+        @SuppressWarnings("unchecked")
         protected TileCompressorControl(Class<?> compressorClass) {
             this.constructor = (Constructor<ITileCompressor<Buffer>>) compressorClass.getConstructors()[0];
             this.optionClasses = (Class<? extends ICompressOption>[]) this.constructor.getParameterTypes();
@@ -90,32 +113,35 @@ public class TileCompressorProvider implements ITileCompressorProvider {
                 throw new IllegalStateException("could not instanciate option classes for " + this.constructor, e);
             }
         }
-
     }
 
     private static final Class<?>[] AVAILABLE_COMPRESSORS = {
-        nom.tam.image.comp.rice.RiceCompress.DoubleRiceCompress.class,
-        nom.tam.image.comp.rice.RiceCompress.FloatRiceCompress.class,
-        nom.tam.image.comp.hcompress.HCompressor.DoubleHCompress.class,
-        nom.tam.image.comp.hcompress.HCompressor.FloatHCompress.class,
-        nom.tam.image.comp.rice.RiceCompress.ByteRiceCompress.class,
-        nom.tam.image.comp.rice.RiceCompress.IntRiceCompress.class,
-        nom.tam.image.comp.rice.RiceCompress.ShortRiceCompress.class,
-        nom.tam.image.comp.plio.PLIOCompress.BytePLIOCompress.class,
-        nom.tam.image.comp.plio.PLIOCompress.ShortPLIOCompress.class,
-        nom.tam.image.comp.hcompress.HCompressor.ByteHCompress.class,
-        nom.tam.image.comp.hcompress.HCompressor.IntHCompress.class,
-        nom.tam.image.comp.hcompress.HCompressor.ShortHCompress.class,
-        nom.tam.image.comp.gzip2.GZip2Compress.ByteGZip2Compress.class,
-        nom.tam.image.comp.gzip2.GZip2Compress.IntGZip2Compress.class,
-        nom.tam.image.comp.gzip2.GZip2Compress.LongGZip2Compress.class,
-        nom.tam.image.comp.gzip2.GZip2Compress.ShortGZip2Compress.class,
-        nom.tam.image.comp.gzip.GZipCompress.ByteGZipCompress.class,
-        nom.tam.image.comp.gzip.GZipCompress.IntGZipCompress.class,
-        nom.tam.image.comp.gzip.GZipCompress.LongGZipCompress.class,
-        nom.tam.image.comp.gzip.GZipCompress.ShortGZipCompress.class,
-        nom.tam.image.comp.gzip.GZipCompress.FloatGZipCompress.class,
-        nom.tam.image.comp.gzip.GZipCompress.DoubleGZipCompress.class
+        ByteRiceCompress.class,
+        ShortRiceCompress.class,
+        IntRiceCompress.class,
+        FloatRiceCompress.class,
+        DoubleRiceCompress.class,
+        
+        BytePLIOCompress.class,
+        ShortPLIOCompress.class,
+
+        ByteHCompress.class,
+        ShortHCompress.class,
+        IntHCompress.class,
+        FloatHCompress.class,
+        DoubleHCompress.class,
+
+        ByteGZip2Compress.class,
+        ShortGZip2Compress.class,
+        IntGZip2Compress.class,
+        LongGZip2Compress.class,
+
+        ByteGZipCompress.class,
+        ShortGZipCompress.class,
+        IntGZipCompress.class,
+        LongGZipCompress.class,
+        FloatGZipCompress.class,
+        DoubleGZipCompress.class
     };
 
     /**

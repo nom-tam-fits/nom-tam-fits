@@ -72,7 +72,7 @@ class TileImageColumnBasedView extends TileImageRowBasedView {
         Buffer imagebuffer = getImageBuffer();
         imagebuffer.position(0);
         imagebuffer.limit(0);
-        PrimitiveType type = primitivType();
+        PrimitiveType<Buffer> type = primitiveType();
         this.gapLessBuffer = type.newBuffer(getPixelSize());
         while (imagebuffer.limit() < pixelSizeInData) {
             imagebuffer.limit(imagebuffer.position() + getWidth());
@@ -95,7 +95,7 @@ class TileImageColumnBasedView extends TileImageRowBasedView {
         imagebuffer.rewind();
         this.gapLessBuffer.rewind();
         this.gapLessBuffer.limit(0);
-        PrimitiveType type = primitivType();
+        PrimitiveType<Buffer> type = primitiveType();
         while (this.gapLessBuffer.limit() < pixelSize) {
             this.gapLessBuffer.limit(this.gapLessBuffer.position() + getWidth());
             type.appendBuffer(imagebuffer, this.gapLessBuffer);
@@ -130,7 +130,7 @@ class TileImageColumnBasedView extends TileImageRowBasedView {
         return (getHeight() - 1) * this.imageWidth + getWidth();
     }
 
-    private PrimitiveType<?> primitivType() {
+    private PrimitiveType<Buffer> primitiveType() {
         return PrimitiveTypeHandler.valueOf(getImageBuffer().getClass());
     }
 }

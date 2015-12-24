@@ -36,7 +36,7 @@ import java.io.IOException;
 
 /**
  * super closable interface for all fits reader/writers. It defines the
- * nessesary constands common for all reader and writers.
+ * necessary constants common for all reader and writers.
  * 
  * @author ritchie
  */

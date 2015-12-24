@@ -34,8 +34,8 @@ package nom.tam.util.test;
 import java.util.Arrays;
 
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.array.MultyArrayCopier;
-import nom.tam.util.array.MultyArrayIterator;
+import nom.tam.util.array.MultiArrayCopier;
+import nom.tam.util.array.MultiArrayIterator;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -80,7 +80,7 @@ public class ArrayManipulationTests {
 
     @Test
     public void testArrayIterator() {
-        MultyArrayIterator primitiveArrayIterator = new MultyArrayIterator(testArray);
+        MultiArrayIterator primitiveArrayIterator = new MultiArrayIterator(testArray);
 
         Assert.assertEquals("[1.0, 2.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
         Assert.assertEquals("[3.0, 4.0, 5.0]", Arrays.toString(((double[]) primitiveArrayIterator.next())));
@@ -98,16 +98,16 @@ public class ArrayManipulationTests {
 
     @Test
     public void testSize() {
-        Assert.assertEquals(16, new MultyArrayIterator(testArray).size());
+        Assert.assertEquals(16, new MultiArrayIterator(testArray).size());
         double[][] testTargetArray = new double[2][8];
-        MultyArrayCopier.copyInto(testArray, testTargetArray);
-        Assert.assertEquals(16, new MultyArrayIterator(testTargetArray).size());
+        MultiArrayCopier.copyInto(testArray, testTargetArray);
+        Assert.assertEquals(16, new MultiArrayIterator(testTargetArray).size());
     }
 
     @Test
     public void testArrayCopy() {
         double[][] testTargetArray = new double[2][8];
-        MultyArrayCopier.copyInto(testArray, testTargetArray);
+        MultiArrayCopier.copyInto(testArray, testTargetArray);
         Assert.assertEquals("[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]", Arrays.toString(testTargetArray[0]));
         Assert.assertEquals("[9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]", Arrays.toString(testTargetArray[1]));
     }
@@ -121,7 +121,7 @@ public class ArrayManipulationTests {
             }
         }
         int[][] testArrayCopy = new int[8][8];
-        MultyArrayCopier.copyInto(testArray, testArrayCopy);
+        MultiArrayCopier.copyInto(testArray, testArrayCopy);
         for (int index = 0; index < testArrayCopy.length; index++) {
             for (int index2 = 0; index2 < testArrayCopy[index].length; index2++) {
                 Assert.assertEquals(index + index2, testArrayCopy[index][index2]);
@@ -132,7 +132,7 @@ public class ArrayManipulationTests {
     @Test
     public void testArrayCopyConvert() {
         int[][] testTargetArray = new int[2][8];
-        MultyArrayCopier.copyInto(testArray, testTargetArray);
+        MultiArrayCopier.copyInto(testArray, testTargetArray);
         Assert.assertEquals("[1, 2, 3, 4, 5, 6, 7, 8]", Arrays.toString(testTargetArray[0]));
         Assert.assertEquals("[9, 10, 11, 12, 13, 14, 15, 16]", Arrays.toString(testTargetArray[1]));
     }

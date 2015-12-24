@@ -60,7 +60,7 @@ public interface PrimitiveType<B extends Buffer> {
 
     PrimitiveType<Buffer> STRING = new StringType();
 
-    UnknownType UNKNOWN = new UnknownType();
+    PrimitiveType<Buffer> UNKNOWN = new UnknownType();
 
     void appendBuffer(B buffer, B dataToAppend);
 

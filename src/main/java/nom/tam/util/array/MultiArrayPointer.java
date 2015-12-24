@@ -33,7 +33,7 @@ package nom.tam.util.array;
 
 import java.lang.reflect.Array;
 
-public class MultyArrayPointer {
+public class MultiArrayPointer {
 
     public static final Object END = new Object();
 
@@ -60,20 +60,20 @@ public class MultyArrayPointer {
 
     private int length;
 
-    private MultyArrayPointer sub;
+    private MultiArrayPointer sub;
 
-    private MultyArrayPointer backup;
+    private MultiArrayPointer backup;
 
-    public MultyArrayPointer() {
+    public MultiArrayPointer() {
     }
 
-    public MultyArrayPointer(Object baseArray) {
+    public MultiArrayPointer(Object baseArray) {
         set(baseArray);
     }
 
     private void activateSub(Object element) {
         if (this.backup == null) {
-            this.backup = new MultyArrayPointer();
+            this.backup = new MultiArrayPointer();
         }
         this.sub = this.backup;
         this.sub.set(element);
@@ -87,13 +87,13 @@ public class MultyArrayPointer {
         while (true) {
             if (this.sub != null) {
                 Object subNext = this.sub.next();
-                if (subNext != MultyArrayPointer.END) {
+                if (subNext != MultiArrayPointer.END) {
                     return subNext;
                 }
                 deactivateSub();
             }
             if (this.index >= this.length) {
-                return MultyArrayPointer.END;
+                return MultiArrayPointer.END;
             }
             Object element = Array.get(this.array, this.index++);
             if (element != null && isSubArray(element)) {

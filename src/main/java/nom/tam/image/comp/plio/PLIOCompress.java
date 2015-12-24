@@ -39,9 +39,9 @@ import nom.tam.image.comp.ITileCompressor;
 /**
  * The original decompression code was written by Doug Tody, NRAO and included
  * (ported to c and adapted) in cfitsio by William Pence, NASA/GSFC. That code
- * was then ported to java by R. van Nieuwenhoven. Later it was massively
- * refactored to harmonizered the different compression algorithms and reduce
- * the duplicate code peaces without obscuring the algorithm itself as good as
+ * was then ported to Java by R. van Nieuwenhoven. Later it was massively
+ * refactored to harmonize the different compression algorithms and reduce
+ * the duplicate code pieces without obscuring the algorithm itself as good as
  * possible.
  * 
  * @author Doug Tody
@@ -75,9 +75,7 @@ public abstract class PLIOCompress {
         @Override
         protected void put(int index, int pixel) {
             this.pixelData.put(index, (byte) pixel);
-
         }
-
     }
 
     public static class ShortPLIOCompress extends PLIOCompress implements ITileCompressor<ShortBuffer> {

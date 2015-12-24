@@ -191,7 +191,7 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
 
         private TypeConversion(PrimitiveType<B> from) {
             this.from = from;
-            this.to = getPrimitiveType(GZipCompress.this.primitivSize);
+            this.to = getPrimitiveType(GZipCompress.this.primitiveSize);
             this.toBuffer = GZipCompress.this.nioBuffer;
             this.fromBuffer = from.asTypedBuffer(ByteBuffer.wrap(GZipCompress.this.buffer));
             this.fromArray = from.newArray(DEFAULT_GZIP_BUFFER_SIZE / from.size());
@@ -215,7 +215,7 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
 
     private static final int DEFAULT_GZIP_BUFFER_SIZE = 65536;
 
-    protected final int primitivSize;
+    protected final int primitiveSize;
 
     protected byte[] buffer = new byte[DEFAULT_GZIP_BUFFER_SIZE];
 
@@ -225,8 +225,8 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
 
     private final IntBuffer sizeBuffer = ByteBuffer.wrap(this.sizeArray).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 
-    public GZipCompress(int primitivSize) {
-        this.primitivSize = primitivSize;
+    public GZipCompress(int primitiveSize) {
+        this.primitiveSize = primitiveSize;
     }
 
     @Override
@@ -238,7 +238,7 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
                 int count = Math.min(pixelData.remaining(), this.nioBuffer.capacity());
                 pixelData.limit(pixelData.position() + count);
                 getPixel(pixelData, null);
-                zip.write(this.buffer, 0, this.nioBuffer.position() * this.primitivSize);
+                zip.write(this.buffer, 0, this.nioBuffer.position() * this.primitiveSize);
                 this.nioBuffer.rewind();
                 pixelData.limit(pixelDataLimit);
             }
@@ -260,15 +260,15 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
     @Override
     public void decompress(ByteBuffer compressed, T pixelData) {
         this.nioBuffer.rewind();
-        TypeConversion<Buffer> calcPrimitivSize = getGZipBytePix(compressed, pixelData.limit());
+        TypeConversion<Buffer> typeConverter = getTypeConverter(compressed, pixelData.limit());
         try (GZIPInputStream zip = createGZipInputStream(compressed)) {
             int count;
             while ((count = zip.read(this.buffer)) >= 0) {
-                if (calcPrimitivSize != null) {
-                    count = calcPrimitivSize.copy(count);
+                if (typeConverter != null) {
+                    count = typeConverter.copy(count);
                 }
                 this.nioBuffer.position(0);
-                this.nioBuffer.limit(count / this.primitivSize);
+                this.nioBuffer.limit(count / this.primitiveSize);
                 setPixel(pixelData, null);
             }
         } catch (IOException e) {
@@ -276,7 +276,7 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
         }
     }
 
-    private TypeConversion<Buffer> getGZipBytePix(ByteBuffer compressed, int nrOfPrimitivElements) {
+    private TypeConversion<Buffer> getTypeConverter(ByteBuffer compressed, int nrOfPrimitiveElements) {
         if (compressed.limit() > FitsIO.BYTES_IN_INTEGER) {
             int oldPosition = compressed.position();
             try {
@@ -285,11 +285,11 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
                 int uncompressedSize = this.sizeBuffer.get(0);
                 if (uncompressedSize > 0) {
                     compressed.position(oldPosition);
-                    int nrOfPixelsInTile = nrOfPrimitivElements;
+                    int nrOfPixelsInTile = nrOfPrimitiveElements;
                     if (uncompressedSize % nrOfPixelsInTile == 0) {
-                        int compressedPrimitivSize = uncompressedSize / nrOfPixelsInTile;
-                        if (compressedPrimitivSize != this.primitivSize) {
-                            return new TypeConversion<Buffer>(getPrimitiveType(compressedPrimitivSize));
+                        int compressedPrimitiveSize = uncompressedSize / nrOfPixelsInTile;
+                        if (compressedPrimitiveSize != this.primitiveSize) {
+                            return new TypeConversion<Buffer>(getPrimitiveType(compressedPrimitiveSize));
                         }
                     }
                 }

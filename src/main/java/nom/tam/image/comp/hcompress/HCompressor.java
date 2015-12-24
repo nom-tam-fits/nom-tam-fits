@@ -126,7 +126,6 @@ public abstract class HCompressor<T extends Buffer> implements ITileCompressor<T
                 buffer.put((short) element);
             }
         }
-
     }
 
     public static class FloatHCompress extends FloatQuantCompressor {

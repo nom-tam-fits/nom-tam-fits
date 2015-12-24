@@ -33,7 +33,7 @@ package nom.tam.util.array;
 
 import java.lang.reflect.Array;
 
-public class MultyArrayIterator {
+public class MultiArrayIterator {
 
     private final Object baseArray;
 
@@ -41,12 +41,12 @@ public class MultyArrayIterator {
 
     private boolean baseNextCalled = false;
 
-    private final MultyArrayPointer pointer;
+    private final MultiArrayPointer pointer;
 
-    public MultyArrayIterator(Object baseArray) {
+    public MultiArrayIterator(Object baseArray) {
         this.baseArray = baseArray;
-        this.baseIsNoSubArray = !MultyArrayPointer.isSubArray(this.baseArray);
-        this.pointer = new MultyArrayPointer(this.baseArray);
+        this.baseIsNoSubArray = !MultiArrayPointer.isSubArray(this.baseArray);
+        this.pointer = new MultiArrayPointer(this.baseArray);
     }
 
     public Class<?> deepComponentType() {
@@ -69,7 +69,7 @@ public class MultyArrayIterator {
             Object result = null;
             while (result == null || Array.getLength(result) == 0) {
                 result = this.pointer.next();
-                if (result == MultyArrayPointer.END) {
+                if (result == MultiArrayPointer.END) {
                     return null;
                 }
             }

@@ -147,7 +147,7 @@ abstract class Tile implements Runnable {
     /**
      * set the buffer that describes the whole image and let the tile create a
      * slice of it from the position where the tile starts in the whole image.
-     * Attention this method is not multy thread able because it changes the
+     * Attention this method is not mult-thread able because it changes the
      * position of the buffer parameter.
      *
      * @param buffer
@@ -160,7 +160,7 @@ abstract class Tile implements Runnable {
     /**
      * set the buffer that describes the whole compressed image and let the tile
      * create a slice of it from the position where the tile starts in the whole
-     * image. Attention this method is not multy thread able because it changes
+     * image. Attention this method is not multi-thread able because it changes
      * the position of the buffer parameter. This buffer is just as big as the
      * image buffer but will be reduced to the needed size as a last step of the
      * Compression.

@@ -33,16 +33,15 @@ package nom.tam.util.array;
 
 import java.lang.reflect.Array;
 
-public final class MultyArrayCopier {
+public final class MultiArrayCopier {
 
     public static void copyInto(Object fromArray, Object toArray) {
-        new MultyArrayCopier(fromArray, toArray).copyInto();
-
+        new MultiArrayCopier(fromArray, toArray).copyInto();
     }
 
-    private final MultyArrayIterator from;
+    private final MultiArrayIterator from;
 
-    private final MultyArrayIterator to;
+    private final MultiArrayIterator to;
 
     private Object currentToArray;
 
@@ -50,12 +49,12 @@ public final class MultyArrayCopier {
 
     private int currentToArrayLength;
 
-    private final MultyArrayCopyFactory copyFacrory;
+    private final MultiArrayCopyFactory copyFactory;
 
-    private MultyArrayCopier(Object fromArray, Object toArray) {
-        this.from = new MultyArrayIterator(fromArray);
-        this.to = new MultyArrayIterator(toArray);
-        this.copyFacrory = MultyArrayCopyFactory.select(this.from.deepComponentType(), this.to.deepComponentType());
+    private MultiArrayCopier(Object fromArray, Object toArray) {
+        this.from = new MultiArrayIterator(fromArray);
+        this.to = new MultiArrayIterator(toArray);
+        this.copyFactory = MultiArrayCopyFactory.select(this.from.deepComponentType(), this.to.deepComponentType());
     }
 
     private void copyInto() {
@@ -76,11 +75,10 @@ public final class MultyArrayCopier {
                 this.currentToArrayLength = Array.getLength(this.currentToArray);
             }
             int length = Math.min(this.currentToArrayLength - this.currentToArrayOffset, currentFromArrayLength - currentFromArrayOffset);
-            this.copyFacrory.arraycopy(currentFromArray, currentFromArrayOffset, this.currentToArray, this.currentToArrayOffset, length);
+            this.copyFactory.arraycopy(currentFromArray, currentFromArrayOffset, this.currentToArray, this.currentToArrayOffset, length);
             currentFromArrayOffset += length;
             this.currentToArrayOffset += length;
         }
-
     }
 
 }

@@ -48,7 +48,7 @@ import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.RandomAccess;
-import nom.tam.util.array.MultyArrayIterator;
+import nom.tam.util.array.MultiArrayIterator;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 
@@ -323,7 +323,7 @@ public class ImageData extends Data {
     public void setBuffer(Buffer data) {
         PrimitiveType<Buffer> primType = PrimitiveTypeHandler.valueOf(this.dataDescription.type);
         this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
-        MultyArrayIterator iterator = new MultyArrayIterator(this.dataArray);
+        MultiArrayIterator iterator = new MultiArrayIterator(this.dataArray);
         Object array = iterator.next();
         while (array != null) {
             primType.getArray(data, array);
