@@ -79,8 +79,7 @@ class TileArray {
     private int[] axes;
 
     /**
-     * Interprets the value of the BITPIX keyword in the
-     * uncompressed FITS image
+     * Interprets the value of the BITPIX keyword in the uncompressed FITS image
      */
     private PrimitiveType<Buffer> baseType;
 
@@ -343,7 +342,7 @@ class TileArray {
 
     private void readBaseType(Header header) {
         if (this.baseType == null) {
-            this.baseType = (PrimitiveType<Buffer>) PrimitiveTypeHandler.valueOf(header.getIntValue(ZBITPIX));
+            this.baseType = PrimitiveTypeHandler.valueOf(header.getIntValue(ZBITPIX));
         }
     }
 

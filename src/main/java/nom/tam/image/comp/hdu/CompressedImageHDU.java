@@ -55,9 +55,9 @@ import nom.tam.util.Cursor;
  */
 public class CompressedImageHDU extends BinaryTableHDU {
 
-    static final Map<IFitsHeader, UncompressHeaderCardMapping> COMPRESSED_HEADER_MAPPING = new HashMap<>();
+    static final Map<IFitsHeader, BackupResoreUnCompressedHeaderCard> COMPRESSED_HEADER_MAPPING = new HashMap<>();
 
-    static final Map<IFitsHeader, UncompressHeaderCardMapping> UNCOMPRESSED_HEADER_MAPPING = new HashMap<>();
+    static final Map<IFitsHeader, BackupResoreUnCompressedHeaderCard> UNCOMPRESSED_HEADER_MAPPING = new HashMap<>();
 
     public static CompressedImageHDU fromImageHDU(ImageHDU imageHDU, int... tileAxis) throws FitsException {
         Header header = new Header();
@@ -70,7 +70,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
         Cursor<String, HeaderCard> imageIterator = imageHDU.getHeader().iterator();
         while (imageIterator.hasNext()) {
             HeaderCard card = imageIterator.next();
-            UncompressHeaderCardMapping.copyBack(card, iterator);
+            BackupResoreUnCompressedHeaderCard.restore(card, iterator);
         }
         CompressedImageHDU compressedImageHDU = new CompressedImageHDU(header, compressedData);
         compressedData.prepareUncompressedData(imageHDU.getData().getData(), header);
@@ -102,7 +102,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
         Cursor<String, HeaderCard> iterator = getHeader().iterator();
         while (iterator.hasNext()) {
             HeaderCard card = iterator.next();
-            UncompressHeaderCardMapping.copy(card, imageIterator);
+            BackupResoreUnCompressedHeaderCard.backup(card, imageIterator);
         }
         ImageData data = (ImageData) ImageHDU.manufactureData(header);
         ImageHDU imageHDU = new ImageHDU(header, data);

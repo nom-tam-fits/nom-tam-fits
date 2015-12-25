@@ -73,17 +73,17 @@ import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.util.Cursor;
 
-enum UncompressHeaderCardMapping {
+enum BackupResoreUnCompressedHeaderCard {
     MAP_ANY(null) {
 
         @Override
-        protected void copyCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+        protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
             // unhandled card so just copy it to the uncompressed header
             headerIterator.add(card.copy());
         }
 
         @Override
-        protected void copyCardBack(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+        protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
             // unhandled card so just copy it to the uncompressed header
             headerIterator.add(card.copy());
         }
@@ -94,9 +94,9 @@ enum UncompressHeaderCardMapping {
     MAP_EXTNAME(EXTNAME) {
 
         @Override
-        protected void copyCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+        protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
             if (!card.getValue().equals("COMPRESSED_IMAGE")) {
-                super.copyCard(card, headerIterator);
+                super.backupCard(card, headerIterator);
             }
         }
     },
@@ -123,16 +123,17 @@ enum UncompressHeaderCardMapping {
     MAP_ZNAXISn(ZNAXISn) {
 
         @Override
-        protected void copyCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-            String newKey = this.uncompressedHeaderKey.n(GenericKey.getN(card.getKey())).key();
+        protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+            String newKey = uncompressedHeaderKey().n(GenericKey.getN(card.getKey())).key();
             headerIterator.add(new HeaderCard(newKey, card.getValue(Integer.class, 0), card.getComment()));
         }
 
         @Override
-        protected void copyCardBack(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-            String newKey = this.compressedHeaderKey.n(GenericKey.getN(card.getKey())).key();
+        protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+            String newKey = compressedHeaderKey().n(GenericKey.getN(card.getKey())).key();
             headerIterator.add(new HeaderCard(newKey, card.getValue(Integer.class, 0), card.getComment()));
         }
+
     },
     MAP_ZPCOUNT(ZPCOUNT),
     MAP_ZQUANTIZ(ZQUANTIZ),
@@ -141,20 +142,20 @@ enum UncompressHeaderCardMapping {
     MAP_ZTILEn(ZTILEn),
     MAP_ZVALn(ZVALn);
 
-    protected static void copy(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        UncompressHeaderCardMapping mapping = selectMapping(CompressedImageHDU.UNCOMPRESSED_HEADER_MAPPING, card);
-        mapping.copyCard(card, headerIterator);
+    public static void backup(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+        BackupResoreUnCompressedHeaderCard mapping = selectMapping(CompressedImageHDU.UNCOMPRESSED_HEADER_MAPPING, card);
+        mapping.backupCard(card, headerIterator);
     }
 
-    protected static void copyBack(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        UncompressHeaderCardMapping mapping = selectMapping(CompressedImageHDU.COMPRESSED_HEADER_MAPPING, card);
-        mapping.copyCardBack(card, headerIterator);
+    public static void restore(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+        BackupResoreUnCompressedHeaderCard mapping = selectMapping(CompressedImageHDU.COMPRESSED_HEADER_MAPPING, card);
+        mapping.restoreCard(card, headerIterator);
     }
 
-    protected static UncompressHeaderCardMapping selectMapping(Map<IFitsHeader, UncompressHeaderCardMapping> mappings, HeaderCard card) {
+    protected static BackupResoreUnCompressedHeaderCard selectMapping(Map<IFitsHeader, BackupResoreUnCompressedHeaderCard> mappings, HeaderCard card) {
         IFitsHeader key = GenericKey.lookup(card.getKey());
         if (key != null) {
-            UncompressHeaderCardMapping mapping = mappings.get(key);
+            BackupResoreUnCompressedHeaderCard mapping = mappings.get(key);
             if (mapping != null) {
                 return mapping;
             }
@@ -162,11 +163,11 @@ enum UncompressHeaderCardMapping {
         return MAP_ANY;
     }
 
-    protected final IFitsHeader compressedHeaderKey;
+    private final IFitsHeader compressedHeaderKey;
 
-    protected final IFitsHeader uncompressedHeaderKey;
+    private final IFitsHeader uncompressedHeaderKey;
 
-    private UncompressHeaderCardMapping(IFitsHeader header) {
+    private BackupResoreUnCompressedHeaderCard(IFitsHeader header) {
         this.compressedHeaderKey = header;
         if (header instanceof Compression) {
             this.uncompressedHeaderKey = ((Compression) this.compressedHeaderKey).getUncompressedKey();
@@ -180,23 +181,7 @@ enum UncompressHeaderCardMapping {
         }
     }
 
-    /**
-     * default behaviour is to ignore the card and by that to exclude it from the
-     * uncompressed header if it does not have a uncompressed equivalent..
-     *
-     * @param card
-     *            the card from the compressed header
-     * @param headerIterator
-     *            the iterator for the uncompressed header.
-     * @throws HeaderCardException
-     *             if the card could not be copied
-     */
-    protected void copyCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        IFitsHeader uncompressedKey = this.uncompressedHeaderKey;
-        copyCard(card, headerIterator, uncompressedKey);
-    }
-
-    protected void copyCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator, IFitsHeader targetKey) throws HeaderCardException {
+    private void addHEaderCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator, IFitsHeader targetKey) throws HeaderCardException {
         if (targetKey != null) {
             if (targetKey.valueType() == VALUE.INTEGER) {
                 headerIterator.add(new HeaderCard(targetKey.key(), card.getValue(Integer.class, 0), card.getComment()));
@@ -208,7 +193,31 @@ enum UncompressHeaderCardMapping {
         }
     }
 
-    protected void copyCardBack(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        copyCard(card, headerIterator, this.compressedHeaderKey);
+    /**
+     * default behaviour is to ignore the card and by that to exclude it from
+     * the uncompressed header if it does not have a uncompressed equivalent..
+     *
+     * @param card
+     *            the card from the compressed header
+     * @param headerIterator
+     *            the iterator for the uncompressed header.
+     * @throws HeaderCardException
+     *             if the card could not be copied
+     */
+    protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+        IFitsHeader uncompressedKey = this.uncompressedHeaderKey;
+        addHEaderCard(card, headerIterator, uncompressedKey);
+    }
+
+    protected IFitsHeader compressedHeaderKey() {
+        return this.compressedHeaderKey;
+    }
+
+    protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+        addHEaderCard(card, headerIterator, this.compressedHeaderKey);
+    }
+
+    protected IFitsHeader uncompressedHeaderKey() {
+        return this.uncompressedHeaderKey;
     }
 }

@@ -60,7 +60,7 @@ abstract class Tile implements Runnable {
 
     protected Future<?> future;
 
-    protected TileImageRowBasedView imageDataView;
+    protected TileBuffer tileBuffer;
 
     protected double scale = Double.NaN;
 
@@ -102,7 +102,7 @@ abstract class Tile implements Runnable {
      * @return the number of pixels in this tile.
      */
     public int getPixelSize() {
-        return this.imageDataView.getPixelSize();
+        return this.tileBuffer.getPixelSize();
     }
 
     public double getScale() {
@@ -132,9 +132,9 @@ abstract class Tile implements Runnable {
 
     public Tile setDimensions(int dataOffset, int width, int height) {
         if (this.array.getImageWidth() > width) {
-            this.imageDataView = new TileImageColumnBasedView(this, dataOffset, this.array.getImageWidth(), width, height);
+            this.tileBuffer = new TileBufferColumnBased(this, dataOffset, this.array.getImageWidth(), width, height);
         } else {
-            this.imageDataView = new TileImageRowBasedView(this, dataOffset, width, height);
+            this.tileBuffer = new TileBufferRowBased(this, dataOffset, width, height);
         }
         return this;
     }
@@ -154,7 +154,7 @@ abstract class Tile implements Runnable {
      *            the buffer that describes the whole image.
      */
     public void setWholeImageBuffer(Buffer buffer) {
-        this.imageDataView.setDecompressedData(buffer);
+        this.tileBuffer.setDecompressedData(buffer);
     }
 
     /**

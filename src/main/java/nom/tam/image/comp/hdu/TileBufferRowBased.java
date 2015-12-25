@@ -33,66 +33,15 @@ package nom.tam.image.comp.hdu;
 
 import java.nio.Buffer;
 
-/**
- * This view on the image data represents a tile that is row based, so a tile
- * that fills the whole width of the image.
- */
-class TileImageRowBasedView {
+public class TileBufferRowBased extends TileBuffer {
 
-    private Buffer buffer;
-
-    private final int height;
-
-    private final int offset;
-
-    /**
-     * the tile this view is connected to
-     */
-    private final Tile tile;
-
-    private final int width;
-
-    public TileImageRowBasedView(Tile tile, int dataOffset, int width, int height) {
-        this.tile = tile;
-        this.offset = dataOffset;
-        this.width = width;
-        this.height = height;
+    public TileBufferRowBased(Tile tile, int dataOffset, int width, int height) {
+        super(tile, dataOffset, width, height);
     }
 
+    @Override
     public Buffer getBuffer() {
-        return this.buffer;
+        return getImageBuffer();
     }
 
-    public int getDataOffset() {
-        return this.offset;
-    }
-
-    public int getHeight() {
-        return this.height;
-    }
-
-    /**
-     * @return the number of pixels in the tile this view represents.
-     */
-    public int getPixelSize() {
-        return this.width * this.height;
-    }
-
-    public int getWidth() {
-        return this.width;
-    }
-
-    public TileImageRowBasedView setDecompressedData(Buffer value) {
-        value.position(this.offset);
-        this.buffer = this.tile.array.getBaseType().sliceBuffer(value);
-        this.buffer.limit(getPixelSize());
-        return this;
-    }
-
-    /**
-     * nothing to do in the normal case, overwrite this method if post
-     * processing is necessary.
-     */
-    public void finish() {
-    }
 }

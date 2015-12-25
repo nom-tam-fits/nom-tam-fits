@@ -53,15 +53,15 @@ public class DecompressingTile extends Tile {
                         .setBZero(this.zero) //
                         .setBScale(this.scale) //
                         .setBNull(this.blank)//
-                        .setTileWidth(this.imageDataView.getWidth()) //
-                        .setTileHeight(this.imageDataView.getHeight());
+                        .setTileWidth(this.tileBuffer.getWidth()) //
+                        .setTileHeight(this.tileBuffer.getHeight());
             }
-            this.array.getCompressorControl().decompress(this.compressedData, this.imageDataView.getBuffer(), this.tileOptions);
+            this.array.getCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer(), this.tileOptions);
         } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
-            this.array.getGzipCompressorControl().decompress(this.compressedData, this.imageDataView.getBuffer());
+            this.array.getGzipCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer());
         } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {
             Buffer typedBuffer = this.array.getBaseType().asTypedBuffer(this.compressedData);
-            this.array.getBaseType().appendBuffer(this.imageDataView.getBuffer(), typedBuffer);
+            this.array.getBaseType().appendBuffer(this.tileBuffer.getBuffer(), typedBuffer);
         } else {
             LOG.severe("Unknown compression column");
             throw new IllegalStateException("Unknown compression column");
@@ -71,6 +71,6 @@ public class DecompressingTile extends Tile {
     @Override
     public void run() {
         decompress();
-        this.imageDataView.finish();
+        this.tileBuffer.finish();
     }
 }

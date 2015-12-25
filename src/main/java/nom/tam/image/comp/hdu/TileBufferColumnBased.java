@@ -42,7 +42,7 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  * describing the image does not match the buffer describing the tile. That is
  * why a temporary buffer is needed to make the buffer continuous.
  */
-class TileImageColumnBasedView extends TileImageRowBasedView {
+class TileBufferColumnBased extends TileBuffer {
 
     /**
      * the buffer representing the tile data gap less. this will exist only
@@ -58,7 +58,7 @@ class TileImageColumnBasedView extends TileImageRowBasedView {
      */
     private final int imageWidth;
 
-    public TileImageColumnBasedView(Tile tile, int dataOffset, int imageWidth, int width, int height) {
+    public TileBufferColumnBased(Tile tile, int dataOffset, int imageWidth, int width, int height) {
         super(tile, dataOffset, width, height);
         this.imageWidth = imageWidth;
     }
@@ -115,10 +115,6 @@ class TileImageColumnBasedView extends TileImageRowBasedView {
             createGapLessBuffer();
         }
         return this.gapLessBuffer;
-    }
-
-    private Buffer getImageBuffer() {
-        return super.getBuffer();
     }
 
     /**

@@ -67,15 +67,15 @@ public class CompressingTile extends Tile {
     }
 
     private void compress() {
-        this.compressedData.limit(this.imageDataView.getPixelSize() * this.array.getBaseType().size());
+        this.compressedData.limit(this.tileBuffer.getPixelSize() * this.array.getBaseType().size());
         this.tileOptions = Arrays.copyOf(this.array.getCompressOptions(), this.array.getCompressOptions().length);
         for (int index = 0; index < this.tileOptions.length; index++) {
             this.tileOptions[index] = this.tileOptions[index].copy() //
-                    .setTileWidth(this.imageDataView.getWidth()) //
-                    .setTileHeight(this.imageDataView.getHeight());
+                    .setTileWidth(this.tileBuffer.getWidth()) //
+                    .setTileHeight(this.tileBuffer.getHeight());
         }
         this.compressionType = TileCompressionType.COMPRESSED;
-        boolean compressSuccess = this.array.getCompressorControl().compress(this.imageDataView.getBuffer(), this.compressedData, this.tileOptions);
+        boolean compressSuccess = this.array.getCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData, this.tileOptions);
         if (compressSuccess) {
             for (ICompressOption tileOption : this.tileOptions) {
                 this.zero = Double.isNaN(this.zero) ? tileOption.getBZero() : this.zero;
@@ -85,15 +85,15 @@ public class CompressingTile extends Tile {
         } else {
             this.compressionType = TileCompressionType.GZIP_COMPRESSED;
             this.compressedData.rewind();
-            this.imageDataView.getBuffer().rewind();
+            this.tileBuffer.getBuffer().rewind();
 
-            compressSuccess = this.array.getGzipCompressorControl().compress(this.imageDataView.getBuffer(), this.compressedData);
+            compressSuccess = this.array.getGzipCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData);
         }
         if (!compressSuccess) {
             this.compressionType = TileCompressionType.UNCOMPRESSED;
             this.compressedData.rewind();
-            this.imageDataView.getBuffer().rewind();
-            this.array.getBaseType().appendToByteBuffer(this.compressedData, this.imageDataView.getBuffer());
+            this.tileBuffer.getBuffer().rewind();
+            this.array.getBaseType().appendToByteBuffer(this.compressedData, this.tileBuffer.getBuffer());
         }
         this.compressedData.limit(this.compressedData.position());
         this.compressedData.rewind();
