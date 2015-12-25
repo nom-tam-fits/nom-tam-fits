@@ -165,7 +165,7 @@ public class TileOperationsOfImage {
         return this.compressOptions;
     }
 
-    private void createTiles(ITileInitialisation init) {
+    private void createTiles(ITileOperationInitialisation init) {
         final int imageWidth = this.axes[0];
         final int imageHeight = this.axes[1];
         final int tileWidth = this.tileAxes[0];
@@ -187,7 +187,7 @@ public class TileOperationsOfImage {
             for (int x = 0; x < imageWidth; x += tileWidth) {
                 boolean lastX = x + tileWidth >= imageWidth;
                 int dataOffset = y * imageWidth + x;
-                this.tileOperations[tileIndex] = init.createTile(tileIndex)//
+                this.tileOperations[tileIndex] = init.createTileOperation(tileIndex)//
                         .setDimensions(dataOffset, lastX ? lastTileWidth : tileWidth, lastY ? lastTileHeight : tileHeight);
                 init.init(this.tileOperations[tileIndex]);
                 tileIndex++;
@@ -274,10 +274,10 @@ public class TileOperationsOfImage {
 
     public TileOperationsOfImage prepareUncompressedData(final Buffer buffer) {
         this.compressedWholeArea = ByteBuffer.wrap(new byte[this.baseType.size() * this.axes[0] * this.axes[1]]);
-        createTiles(new ITileInitialisation() {
+        createTiles(new ITileOperationInitialisation() {
 
             @Override
-            public TileOperation createTile(int tileIndex) {
+            public TileOperation createTileOperation(int tileIndex) {
                 return new TileCompresser(TileOperationsOfImage.this, tileIndex);
             }
 
@@ -305,10 +305,10 @@ public class TileOperationsOfImage {
         final double[] zscale = getNullableColumn(header, double[].class, ZSCALE_COLUMN);
         final int[] zblankColumn = getNullableColumn(header, int[].class, ZBLANK_COLUMN);
 
-        createTiles(new ITileInitialisation() {
+        createTiles(new ITileOperationInitialisation() {
 
             @Override
-            public TileOperation createTile(int tileIndex) {
+            public TileOperation createTileOperation(int tileIndex) {
                 return new TileDecompressor(TileOperationsOfImage.this, tileIndex);
             }
 

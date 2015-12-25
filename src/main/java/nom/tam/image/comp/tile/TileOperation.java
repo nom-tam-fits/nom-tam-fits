@@ -38,6 +38,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.tile.buffer.TileBuffer;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 
@@ -131,11 +132,10 @@ abstract class TileOperation implements Runnable {
     }
 
     public TileOperation setDimensions(int dataOffset, int width, int height) {
-        if (this.tileOperationsArray.getImageWidth() > width) {
-            this.tileBuffer = new TileBufferColumnBased(this, dataOffset, this.tileOperationsArray.getImageWidth(), width, height);
-        } else {
-            this.tileBuffer = new TileBufferRowBased(this, dataOffset, width, height);
-        }
+        this.tileBuffer = TileBuffer.createTileBuffer(this.tileOperationsArray.getBaseType(), //
+                dataOffset, //
+                this.tileOperationsArray.getImageWidth(), //
+                width, height);
         return this;
     }
 

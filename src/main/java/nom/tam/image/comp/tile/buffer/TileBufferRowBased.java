@@ -1,4 +1,4 @@
-package nom.tam.image.comp.tile;
+package nom.tam.image.comp.tile.buffer;
 
 /*
  * #%L
@@ -31,9 +31,19 @@ package nom.tam.image.comp.tile;
  * #L%
  */
 
-interface ITileInitialisation {
+import java.nio.Buffer;
 
-    TileOperation createTile(int tileIndex);
+import nom.tam.util.type.PrimitiveType;
 
-    void init(TileOperation tileOperation);
+public class TileBufferRowBased extends TileBuffer {
+
+    public TileBufferRowBased(PrimitiveType<Buffer> baseType, int dataOffset, int width, int height) {
+        super(baseType, dataOffset, width, height);
+    }
+
+    @Override
+    public Buffer getBuffer() {
+        return getImageBuffer();
+    }
+
 }

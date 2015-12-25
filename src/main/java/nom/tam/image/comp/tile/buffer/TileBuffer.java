@@ -1,4 +1,4 @@
-package nom.tam.image.comp.tile;
+package nom.tam.image.comp.tile.buffer;
 
 /*
  * #%L
@@ -33,11 +33,21 @@ package nom.tam.image.comp.tile;
 
 import java.nio.Buffer;
 
+import nom.tam.util.type.PrimitiveType;
+
 /**
  * This view on the image data represents a tileOperation that is row based, so
  * a tileOperation that fills the whole width of the image.
  */
-abstract class TileBuffer {
+public abstract class TileBuffer {
+
+    public static TileBuffer createTileBuffer(PrimitiveType<Buffer> baseType, int dataOffset, int imageWidth, int width, int height) {
+        if (imageWidth > width) {
+            return new TileBufferColumnBased(baseType, dataOffset, imageWidth, width, height);
+        } else {
+            return new TileBufferRowBased(baseType, dataOffset, width, height);
+        }
+    }
 
     private Buffer imageBuffer;
 
@@ -48,12 +58,12 @@ abstract class TileBuffer {
     /**
      * the tileOperation this view is connected to
      */
-    private final TileOperation tileOperation;
+    private final PrimitiveType<Buffer> baseType;
 
     private final int width;
 
-    public TileBuffer(TileOperation tileOperation, int dataOffset, int width, int height) {
-        this.tileOperation = tileOperation;
+    protected TileBuffer(PrimitiveType<Buffer> baseType, int dataOffset, int width, int height) {
+        this.baseType = baseType;
         this.offset = dataOffset;
         this.width = width;
         this.height = height;
@@ -68,15 +78,11 @@ abstract class TileBuffer {
 
     public abstract Buffer getBuffer();
 
-    public int getDataOffset() {
-        return this.offset;
-    }
-
     public int getHeight() {
         return this.height;
     }
 
-    public Buffer getImageBuffer() {
+    protected Buffer getImageBuffer() {
         return this.imageBuffer;
     }
 
@@ -93,7 +99,7 @@ abstract class TileBuffer {
 
     public TileBuffer setDecompressedData(Buffer value) {
         value.position(this.offset);
-        this.imageBuffer = this.tileOperation.tileOperationsArray.getBaseType().sliceBuffer(value);
+        this.imageBuffer = this.baseType.sliceBuffer(value);
         this.imageBuffer.limit(getPixelSize());
         return this;
     }

@@ -31,17 +31,9 @@ package nom.tam.image.comp.tile;
  * #L%
  */
 
-import java.nio.Buffer;
+interface ITileOperationInitialisation {
 
-public class TileBufferRowBased extends TileBuffer {
+    TileOperation createTileOperation(int tileIndex);
 
-    public TileBufferRowBased(TileOperation tileOperation, int dataOffset, int width, int height) {
-        super(tileOperation, dataOffset, width, height);
-    }
-
-    @Override
-    public Buffer getBuffer() {
-        return getImageBuffer();
-    }
-
+    void init(TileOperation tileOperation);
 }
