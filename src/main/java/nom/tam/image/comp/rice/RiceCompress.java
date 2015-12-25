@@ -246,7 +246,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
     }
 
     /**
-     * compress the integer array on a rise compressed byte buffer.
+     * compress the integer tileOperationsArray on a rise compressed byte buffer.
      * 
      * @param dataLength
      *            length of the data to compress
@@ -279,7 +279,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
             double pixelsum = 0.0;
             int nextpix;
             /*
-             * array for differences mapped to non-negative values
+             * tileOperationsArray for differences mapped to non-negative values
              */
             for (int j = 0; j < thisblock; j++) {
                 nextpix = nextPixel();

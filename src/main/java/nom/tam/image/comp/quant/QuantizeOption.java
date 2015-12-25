@@ -39,7 +39,7 @@ public class QuantizeOption implements ICompressOption {
     /**
      * and including NULL_VALUE. These values may not be used to represent the
      * quantized and scaled floating point pixel values If lossy Hcompression is
-     * used, and the array contains null values, then it is also possible for
+     * used, and the tileOperationsArray contains null values, then it is also possible for
      * the compressed values to slightly exceed the range of the actual
      * (lossless) values so we must reserve a little more space value used to
      * represent undefined pixels

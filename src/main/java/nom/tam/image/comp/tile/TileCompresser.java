@@ -1,4 +1,4 @@
-package nom.tam.image.comp.hdu;
+package nom.tam.image.comp.tile;
 
 /*
  * #%L
@@ -32,14 +32,13 @@ package nom.tam.image.comp.hdu;
  */
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.util.type.PrimitiveType;
 
-public class CompressingTile extends Tile {
+public class TileCompresser extends TileOperation {
 
-    public CompressingTile(TileArray array, int tileIndex) {
+    public TileCompresser(TileOperationsOfImage array, int tileIndex) {
         super(array, tileIndex);
     }
 
@@ -52,8 +51,8 @@ public class CompressingTile extends Tile {
         if (this.tileIndex > 0) {
             try {
                 // wait for the previous tile to finish.
-                this.array.getTile(this.tileIndex - 1).future.get();
-                ByteBuffer compressedWholeArea = this.array.getCompressedWholeArea();
+                this.tileOperationsArray.getTile(this.tileIndex - 1).future.get();
+                ByteBuffer compressedWholeArea = this.tileOperationsArray.getCompressedWholeArea();
                 this.compressedOffset = compressedWholeArea.position();
                 PrimitiveType.BYTE.appendBuffer(compressedWholeArea, this.compressedData);
                 replaceCompressedBufferWithTargetArea(compressedWholeArea);
@@ -62,43 +61,41 @@ public class CompressingTile extends Tile {
             }
         } else {
             this.compressedOffset = 0;
-            this.array.getCompressedWholeArea().position(this.compressedData.limit());
+            this.tileOperationsArray.getCompressedWholeArea().position(this.compressedData.limit());
         }
     }
 
     private void compress() {
-        this.compressedData.limit(this.tileBuffer.getPixelSize() * this.array.getBaseType().size());
-        this.tileOptions = Arrays.copyOf(this.array.getCompressOptions(), this.array.getCompressOptions().length);
-        for (int index = 0; index < this.tileOptions.length; index++) {
-            this.tileOptions[index] = this.tileOptions[index].copy() //
-                    .setTileWidth(this.tileBuffer.getWidth()) //
-                    .setTileHeight(this.tileBuffer.getHeight());
-        }
+        this.compressedData.limit(this.tileBuffer.getPixelSize() * this.tileOperationsArray.getBaseType().size());
+        setTileOptions();
         this.compressionType = TileCompressionType.COMPRESSED;
-        boolean compressSuccess = this.array.getCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData, this.tileOptions);
+        boolean compressSuccess = this.tileOperationsArray.getCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData, this.tileOptions);
         if (compressSuccess) {
-            for (ICompressOption tileOption : this.tileOptions) {
-                this.zero = Double.isNaN(this.zero) ? tileOption.getBZero() : this.zero;
-                this.scale = Double.isNaN(this.scale) ? tileOption.getBScale() : this.scale;
-                this.blank = this.blank == null ? tileOption.getBNull() : this.blank;
-            }
+            fillTileOptions();
         } else {
             this.compressionType = TileCompressionType.GZIP_COMPRESSED;
             this.compressedData.rewind();
             this.tileBuffer.getBuffer().rewind();
-
-            compressSuccess = this.array.getGzipCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData);
+            compressSuccess = this.tileOperationsArray.getGzipCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData);
         }
         if (!compressSuccess) {
             this.compressionType = TileCompressionType.UNCOMPRESSED;
             this.compressedData.rewind();
             this.tileBuffer.getBuffer().rewind();
-            this.array.getBaseType().appendToByteBuffer(this.compressedData, this.tileBuffer.getBuffer());
+            this.tileOperationsArray.getBaseType().appendToByteBuffer(this.compressedData, this.tileBuffer.getBuffer());
         }
         this.compressedData.limit(this.compressedData.position());
         this.compressedData.rewind();
 
         compactCompressedData();
+    }
+
+    private void fillTileOptions() {
+        for (ICompressOption tileOption : this.tileOptions) {
+            this.zero = Double.isNaN(this.zero) ? tileOption.getBZero() : this.zero;
+            this.scale = Double.isNaN(this.scale) ? tileOption.getBScale() : this.scale;
+            this.blank = this.blank == null ? tileOption.getBNull() : this.blank;
+        }
     }
 
     private void replaceCompressedBufferWithTargetArea(ByteBuffer compressedWholeArea) {
@@ -113,5 +110,14 @@ public class CompressingTile extends Tile {
     @Override
     public void run() {
         compress();
+    }
+
+    private void setTileOptions() {
+        this.tileOptions = new ICompressOption[this.tileOperationsArray.compressOptions().size()];
+        for (int index = 0; index < this.tileOptions.length; index++) {
+            this.tileOptions[index] = this.tileOperationsArray.compressOptions().get(index).copy() //
+                    .setTileWidth(this.tileBuffer.getWidth()) //
+                    .setTileHeight(this.tileBuffer.getHeight());
+        }
     }
 }

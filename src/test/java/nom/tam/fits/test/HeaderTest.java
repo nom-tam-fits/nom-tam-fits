@@ -514,7 +514,7 @@ public class HeaderTest {
         assertEquals("tuhc1", c1.getComment(), HeaderCommentsMap.getComment("header:simple:1"));
         c1 = f.getHDU(0).getHeader().findCard(BITPIX.key());
         assertEquals("tuhc2", c1.getComment(), HeaderCommentsMap.getComment("header:bitpix:1"));
-        HeaderCommentsMap.updateComment("header:bitpix:1", "A byte array");
+        HeaderCommentsMap.updateComment("header:bitpix:1", "A byte tileOperationsArray");
         HeaderCommentsMap.deleteComment("header:simple:1");
         f = new Fits();
         f.addHDU(FitsFactory.hduFactory(z));
@@ -525,7 +525,7 @@ public class HeaderTest {
         c1 = f.getHDU(0).getHeader().findCard(SIMPLE.key());
         assertEquals("tuhc1", c1.getComment(), null);
         c1 = f.getHDU(0).getHeader().findCard(BITPIX.key());
-        assertEquals("tuhc2", c1.getComment(), "A byte array");
+        assertEquals("tuhc2", c1.getComment(), "A byte tileOperationsArray");
     }
 
     @Test

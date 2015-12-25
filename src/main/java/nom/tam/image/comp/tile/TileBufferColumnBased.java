@@ -1,4 +1,4 @@
-package nom.tam.image.comp.hdu;
+package nom.tam.image.comp.tile;
 
 /*
  * #%L
@@ -58,8 +58,8 @@ class TileBufferColumnBased extends TileBuffer {
      */
     private final int imageWidth;
 
-    public TileBufferColumnBased(Tile tile, int dataOffset, int imageWidth, int width, int height) {
-        super(tile, dataOffset, width, height);
+    public TileBufferColumnBased(TileOperation tileOperation, int dataOffset, int imageWidth, int width, int height) {
+        super(tileOperation, dataOffset, width, height);
         this.imageWidth = imageWidth;
     }
 

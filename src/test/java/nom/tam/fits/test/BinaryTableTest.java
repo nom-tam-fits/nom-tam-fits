@@ -81,8 +81,8 @@ import org.junit.Test;
  *     Reading and writing data of all valid types.
  *     Reading and writing variable length da
  *     Creating binary tables from:
- *        Object[][] array
- *        Object[] array
+ *        Object[][] tileOperationsArray
+ *        Object[] tileOperationsArray
  *        ColumnTable
  *        Column x Column
  *        Row x Row
@@ -210,7 +210,7 @@ public class BinaryTableTest {
         int[] sizes = btab.getSizes();
         assertEquals("t0", types[0], 'F');
         assertEquals("t1", types[1], 'I'); // Pointers
-        assertEquals("s0", sizes[0], 16); // 4x4 array
+        assertEquals("s0", sizes[0], 16); // 4x4 tileOperationsArray
         assertEquals("s1", sizes[1], 2); // size,offset
         assertEquals("dims", types.length, sizes.length);
         assertEquals("dims2", types.length, btab.getNCols());
@@ -897,7 +897,7 @@ public class BinaryTableTest {
     @Test
     public void testObj() throws Exception {
 
-        /*** Create a binary table from an Object[][] array */
+        /*** Create a binary table from an Object[][] tileOperationsArray */
         Object[][] x = new Object[5][3];
         for (int i = 0; i < 5; i += 1) {
             x[i][0] = new float[]{
@@ -1183,7 +1183,7 @@ public class BinaryTableTest {
         bhdu.setColumnName(0, "bytes", null);
         bhdu.setColumnName(1, "bits", "bits later on");
         bhdu.setColumnName(6, "doubles", null);
-        bhdu.setColumnName(5, "floats", "4 x 4 array");
+        bhdu.setColumnName(5, "floats", "4 x 4 tileOperationsArray");
 
         BufferedFile bf = new BufferedFile("target/bt1.fits", "rw");
         f.write(bf);

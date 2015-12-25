@@ -1,4 +1,4 @@
-package nom.tam.image.comp.hdu;
+package nom.tam.image.comp.tile;
 
 /*
  * #%L
@@ -32,36 +32,31 @@ package nom.tam.image.comp.hdu;
  */
 
 import java.nio.Buffer;
+import java.util.List;
 import java.util.logging.Logger;
 
-public class DecompressingTile extends Tile {
+import nom.tam.image.comp.ICompressOption;
+
+public class TileDecompressor extends TileOperation {
 
     /**
      * logger to log to.
      */
-    private static final Logger LOG = Logger.getLogger(DecompressingTile.class.getName());
+    private static final Logger LOG = Logger.getLogger(TileDecompressor.class.getName());
 
-    public DecompressingTile(TileArray array, int tileIndex) {
+    public TileDecompressor(TileOperationsOfImage array, int tileIndex) {
         super(array, tileIndex);
     }
 
     private void decompress() {
         if (this.compressionType == TileCompressionType.COMPRESSED) {
-            this.tileOptions = this.array.getCompressOptions().clone();
-            for (int index = 0; index < this.tileOptions.length; index++) {
-                this.tileOptions[index] = this.tileOptions[index].copy() //
-                        .setBZero(this.zero) //
-                        .setBScale(this.scale) //
-                        .setBNull(this.blank)//
-                        .setTileWidth(this.tileBuffer.getWidth()) //
-                        .setTileHeight(this.tileBuffer.getHeight());
-            }
-            this.array.getCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer(), this.tileOptions);
+            setTileOptions();
+            this.tileOperationsArray.getCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer(), this.tileOptions);
         } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
-            this.array.getGzipCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer());
+            this.tileOperationsArray.getGzipCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer());
         } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {
-            Buffer typedBuffer = this.array.getBaseType().asTypedBuffer(this.compressedData);
-            this.array.getBaseType().appendBuffer(this.tileBuffer.getBuffer(), typedBuffer);
+            Buffer typedBuffer = this.tileOperationsArray.getBaseType().asTypedBuffer(this.compressedData);
+            this.tileOperationsArray.getBaseType().appendBuffer(this.tileBuffer.getBuffer(), typedBuffer);
         } else {
             LOG.severe("Unknown compression column");
             throw new IllegalStateException("Unknown compression column");
@@ -72,5 +67,18 @@ public class DecompressingTile extends Tile {
     public void run() {
         decompress();
         this.tileBuffer.finish();
+    }
+
+    private void setTileOptions() {
+        List<ICompressOption> compressOptions = this.tileOperationsArray.compressOptions();
+        this.tileOptions = new ICompressOption[compressOptions.size()];
+        for (int index = 0; index < this.tileOptions.length; index++) {
+            this.tileOptions[index] = compressOptions.get(index).copy() //
+                    .setBZero(this.zero) //
+                    .setBScale(this.scale) //
+                    .setBNull(this.blank)//
+                    .setTileWidth(this.tileBuffer.getWidth()) //
+                    .setTileHeight(this.tileBuffer.getHeight());
+        }
     }
 }

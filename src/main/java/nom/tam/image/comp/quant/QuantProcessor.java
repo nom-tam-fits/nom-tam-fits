@@ -95,14 +95,14 @@ public class QuantProcessor {
 
         private double[] initRandoms() {
 
-            /* initialize an array of random numbers */
+            /* initialize an tileOperationsArray of random numbers */
 
             int ii;
             double a = RANDOM_START_VALUE;
             double m = MAX_INT_AS_DOUBLE;
             double temp, seed;
 
-            /* allocate array for the random number sequence */
+            /* allocate tileOperationsArray for the random number sequence */
             double[] randomValue = new double[N_RANDOM];
 
             /*

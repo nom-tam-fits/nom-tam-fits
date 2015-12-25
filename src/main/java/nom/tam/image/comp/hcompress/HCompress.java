@@ -174,15 +174,16 @@ public class HCompress {
     protected void compress(long[] aa, int ny, int nx, int scale, ByteBuffer output) {
         /*
          * compress the input image using the H-compress algorithm a - input
-         * image array nx - size of X axis of image ny - size of Y axis of image
-         * scale - quantization scale factor. Larger values results in more
-         * (lossy) compression scale = 0 does lossless compression output -
-         * pre-allocated array to hold the output compressed stream of bytes
-         * nbyts - input value = size of the output buffer; returned value =
-         * size of the compressed byte stream, in bytes NOTE: the nx and ny
-         * dimensions as defined within this code are reversed from the usual
-         * FITS notation. ny is the fastest varying dimension, which is usually
-         * considered the X axis in the FITS image display
+         * image tileOperationsArray nx - size of X axis of image ny - size of Y
+         * axis of image scale - quantization scale factor. Larger values
+         * results in more (lossy) compression scale = 0 does lossless
+         * compression output - pre-allocated tileOperationsArray to hold the
+         * output compressed stream of bytes nbyts - input value = size of the
+         * output buffer; returned value = size of the compressed byte stream,
+         * in bytes NOTE: the nx and ny dimensions as defined within this code
+         * are reversed from the usual FITS notation. ny is the fastest varying
+         * dimension, which is usually considered the X axis in the FITS image
+         * display
          */
 
         /* H-transform */
@@ -193,7 +194,7 @@ public class HCompress {
         /* digitize */
         digitize(a, 0, nx, ny, scale);
 
-        /* encode and write to output array */
+        /* encode and write to output tileOperationsArray */
         encode(output, a, nx, ny, scale);
 
     }
@@ -286,7 +287,8 @@ public class HCompress {
 
         a.put(0, 0);
         /*
-         * allocate array for sign bits and save values, 8 per byte
+         * allocate tileOperationsArray for sign bits and save values, 8 per
+         * byte
          */
         byte[] signbits = new byte[(nel + BITS_OF_1_BYTE - 1) / BITS_OF_1_BYTE];
 
@@ -372,7 +374,7 @@ public class HCompress {
         compressedBytes.put(nbitplanes, 0, nbitplanes.length);
 
         /*
-         * write coded array
+         * write coded tileOperationsArray
          */
         doencode(compressedBytes, a, nx, ny, nbitplanes);
         /*
@@ -410,8 +412,8 @@ public class HCompress {
         long prnd2 = prnd << 1;
         long nrnd2 = prnd2 - 1;
         /*
-         * do log2n reductions We're indexing a as a 2-D array with dimensions
-         * (nx,ny).
+         * do log2n reductions We're indexing a as a 2-D tileOperationsArray
+         * with dimensions (nx,ny).
          */
         int nxtop = nx;
         int nytop = ny;
@@ -536,8 +538,8 @@ public class HCompress {
 
     private void outputNnybble(ByteBuffer outfile, int n, byte[] array) {
         /*
-         * pack the 4 lower bits in each element of the array into the outfile
-         * array
+         * pack the 4 lower bits in each element of the tileOperationsArray into
+         * the outfile tileOperationsArray
          */
 
         int ii, jj, kk = 0, shift;
@@ -553,7 +555,7 @@ public class HCompress {
         if (this.bitsToGo2 <= BITS_OF_1_NYBBLE) {
             /* just room for 1 nybble; write it out separately */
             outputNybble(outfile, array[0]);
-            kk++; /* index to next array element */
+            kk++; /* index to next tileOperationsArray element */
 
             if (n == 2) {
                 // only 1 more nybble to write out
@@ -647,9 +649,9 @@ public class HCompress {
         nqy2 = (nqy + 1) / 2;
         bmax = (nqx2 * nqy2 + 1) / 2;
         /*
-         * We're indexing A as a 2-D array with dimensions (nqx,nqy). Scratch is
-         * 2-D with dimensions (nqx/2,nqy/2) rounded up. Buffer is used to store
-         * string of codes for output.
+         * We're indexing A as a 2-D tileOperationsArray with dimensions
+         * (nqx,nqy). Scratch is 2-D with dimensions (nqx/2,nqy/2) rounded up.
+         * Buffer is used to store string of codes for output.
          */
         scratch = new byte[(int) (2 * bmax)];
         buffer = new byte[(int) bmax];
@@ -665,7 +667,7 @@ public class HCompress {
             this.bitbuffer = 0;
             this.bitsToGo3 = 0;
             /*
-             * on first pass copy A to scratch array
+             * on first pass copy A to scratch tileOperationsArray
              */
             qtreeOnebit(a, n, nqx, nqy, scratch, bit);
             nx = nqx + 1 >> 1;
@@ -709,7 +711,8 @@ public class HCompress {
                     outputNbits(outfile, this.bitbuffer & (1 << this.bitsToGo3) - 1, this.bitsToGo3);
                 } else {
                     /*
-                     * have to write a zero nybble if there are no 1's in array
+                     * have to write a zero nybble if there are no 1's in
+                     * tileOperationsArray
                      */
                     outputNbits(outfile, CODE[0], NCODE[0]);
                 }
@@ -836,8 +839,8 @@ public class HCompress {
     private void shuffle(long[] a, int aOffet, int n, int n2, long[] tmp) {
 
         /*
-         * int a[]; array to shuffle int n; number of elements to shuffle int
-         * n2; second dimension int tmp[]; scratch storage
+         * int a[]; tileOperationsArray to shuffle int n; number of elements to
+         * shuffle int n2; second dimension int tmp[]; scratch storage
          */
 
         int i;
@@ -893,7 +896,7 @@ public class HCompress {
          */
         outputNybble(outfile, 0x0);
         /*
-         * Copy A to scratch array (again!), packing 4 bits/nybble
+         * Copy A to scratch tileOperationsArray (again!), packing 4 bits/nybble
          */
         qtreeOnebit(a, n, nqx, nqy, scratch, bit);
         /*

@@ -65,9 +65,9 @@ import org.junit.Test;
  * BufferedDataInputStream and BufferedDataOutputStream. A limited comparison to
  * the standard I/O classes can also be made.
  * <p>
- * Input and output of all primitive scalar and array types is tested, however
+ * Input and output of all primitive scalar and tileOperationsArray types is tested, however
  * input and output of String data is not. Users may choose to test the
- * BufferedFile class, the BufferedDataXPUT classes array methods, the
+ * BufferedFile class, the BufferedDataXPUT classes tileOperationsArray methods, the
  * BufferedDataXPUT classes using the methods of DataXput, the traditional I/O
  * classes, or any combination thereof.
  */
@@ -232,7 +232,7 @@ public class BufferedFileTest {
         boolean bls2;
 
         System.out.println("New libraries: nom.tam.util.BufferedFile");
-        System.out.println("               Using array I/O methods.");
+        System.out.println("               Using tileOperationsArray I/O methods.");
 
         BufferedFile f = new BufferedFile(filename, "rw");
 
@@ -325,7 +325,7 @@ public class BufferedFileTest {
         ds2 = f.readDouble();
         bls2 = f.readBoolean();
 
-        // Now read only pieces of the multidimensional array.
+        // Now read only pieces of the multidimensional tileOperationsArray.
         for (int i = 0; i < 5; i += 1) {
             // Skip the odd initial indices and
             // read the evens.
@@ -396,7 +396,7 @@ public class BufferedFileTest {
         boolean bls = Math.random() > 0.5;
         boolean bls2;
         System.out.println("New libraries: nom.tam.util.BufferedDataXXputStream");
-        System.out.println("               Using array I/O methods");
+        System.out.println("               Using tileOperationsArray I/O methods");
 
         {
             BufferedDataOutputStream f = new BufferedDataOutputStream(new FileOutputStream(filename));
@@ -499,7 +499,7 @@ public class BufferedFileTest {
                 multi2[i][i][i][i] = 0;
             }
 
-            // Now read only pieces of the multidimensional array.
+            // Now read only pieces of the multidimensional tileOperationsArray.
             for (int i = 0; i < 5; i += 1) {
                 System.out.println("Multiread:" + i);
                 // Skip the odd initial indices and
@@ -552,7 +552,7 @@ public class BufferedFileTest {
     public void buffStreamSimpleTest(String filename, int iter, int[] in, int[] in2) throws Exception {
 
         System.out.println("New libraries:  nom.tam.BufferedDataXXputStream");
-        System.out.println("                Using non-array I/O");
+        System.out.println("                Using non-tileOperationsArray I/O");
         BufferedDataOutputStream f = new BufferedDataOutputStream(new FileOutputStream(filename), 32768);
         resetTime();
         int dim = in.length;
@@ -595,7 +595,7 @@ public class BufferedFileTest {
      * Usage: java nom.tam.util.test.BufferedFileTester file [dim [iter
      * [flags]]] where file is the file to be read and written. dim is the
      * dimension of the arrays to be written. iter is the number of times each
-     * array is written. flags a string indicating what I/O to test O -- test
+     * tileOperationsArray is written. flags a string indicating what I/O to test O -- test
      * old I/O (RandomAccessFile and standard streams) R -- BufferedFile (i.e.,
      * random access) S -- BufferedDataXPutStream X -- BufferedDataXPutStream
      * using standard methods

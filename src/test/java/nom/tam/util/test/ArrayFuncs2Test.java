@@ -91,7 +91,7 @@ public class ArrayFuncs2Test {
         assertEquals("computeSize(Object[])", 2880 + 14 + 1600 + 0, ArrayFuncs.computeSize(agg));
         assertEquals("computeLSize(Object[])", 2880L + 14 + 1600 + 0, ArrayFuncs.computeLSize(agg));
 
-        // Try allocating a very large array. This is likely to fail
+        // Try allocating a very large tileOperationsArray. This is likely to fail
         // in the allocation step, so don't consider that to be a failure.
         try {
             float[][] data = new float[10000][30000];
@@ -99,7 +99,7 @@ public class ArrayFuncs2Test {
             assertEquals("computLSize(big)", ArrayFuncs.computeLSize(data), expect);
 
         } catch (Error e) {
-            System.out.println("Unable to allocate large array. Test skipped");
+            System.out.println("Unable to allocate large tileOperationsArray. Test skipped");
         }
 
         for (int i = 0; i < test1.length; i += 1) {

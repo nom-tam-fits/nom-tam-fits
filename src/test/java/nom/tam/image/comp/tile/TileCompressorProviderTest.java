@@ -1,4 +1,4 @@
-package nom.tam.image.comp.hdu;
+package nom.tam.image.comp.tile;
 
 /*
  * #%L
@@ -44,7 +44,11 @@ import nom.tam.image.comp.ITileCompressor;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
 import nom.tam.image.comp.TileCompressorAlternativProvider;
 import nom.tam.image.comp.TileCompressorProvider;
+import nom.tam.image.comp.hdu.CompressedImageData;
 import nom.tam.image.comp.rice.RiceCompressOption;
+import nom.tam.image.comp.tile.TileDecompressor;
+import nom.tam.image.comp.tile.TileOperation;
+import nom.tam.image.comp.tile.TileOperationsOfImage;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -68,12 +72,12 @@ public class TileCompressorProviderTest {
             super(enptyHeader());
         }
 
-        Tile getTile() {
-            return new DecompressingTile(getTileArray(), 0);
+        TileOperation getTile() {
+            return new TileDecompressor(getTileArray(), 0);
         }
 
-        TileArray getTileArray() {
-            return new TileArray(this);
+        TileOperationsOfImage getTileArray() {
+            return new TileOperationsOfImage(this);
         }
     }
 
@@ -186,15 +190,15 @@ public class TileCompressorProviderTest {
 
     @Test(expected = IllegalStateException.class)
     public void testTileCompressionError() throws Exception {
-        Tile tile = new Access2().getTile();
-        tile.execute(FitsFactory.threadPool());
+        TileOperation tileOperation = new Access2().getTile();
+        tileOperation.execute(FitsFactory.threadPool());
         Thread.sleep(20);
-        tile.waitForResult();
+        tileOperation.waitForResult();
     }
 
     @Test
     public void testTileToString() throws Exception {
         String toString = new Access2().getTile().toString();
-        Assert.assertEquals("DecompressingTile(0,null,0)", toString);
+        Assert.assertEquals("TileDecompressor(0,null,0)", toString);
     }
 }

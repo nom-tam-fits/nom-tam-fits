@@ -198,8 +198,8 @@ public class HDecompress {
     }
 
     /**
-     * char *infile; input file long *a; address of output array [nx][ny] int
-     * *nx,*ny; size of output array int *scale; scale factor for digitization
+     * char *infile; input file long *a; address of output tileOperationsArray [nx][ny] int
+     * *nx,*ny; size of output tileOperationsArray int *scale; scale factor for digitization
      * 
      * @param infile
      * @param a
@@ -238,7 +238,7 @@ public class HDecompress {
 
     /**
      * decompress the input byte stream using the H-compress algorithm input -
-     * input array of compressed bytes a - pre-allocated array to hold the
+     * input tileOperationsArray of compressed bytes a - pre-allocated tileOperationsArray to hold the
      * output uncompressed image nx - returned X axis size ny - returned Y axis
      * size NOTE: the nx and ny dimensions as defined within this code are
      * reversed from the usual FITS notation. ny is the fastest varying
@@ -250,13 +250,13 @@ public class HDecompress {
      * @param smooth
      *            should the image be smoothed
      * @param aa
-     *            the resulting long array
+     *            the resulting long tileOperationsArray
      */
     public void decompress(ByteBuffer input, boolean smooth, long[] aa) {
 
         LongArrayPointer a = new LongArrayPointer(aa);
 
-        /* decode the input array */
+        /* decode the input tileOperationsArray */
 
         decode64(input, a);
 
@@ -346,7 +346,7 @@ public class HDecompress {
         long nrnd2 = prnd2 - 1;
         // round h0 to multiple of bit2
         a.set(0, a.get(0) + (a.get(0) >= 0 ? prnd2 : nrnd2) & mask2);
-        // do log2n expansions We're indexing a as a 2-D array with dimensions
+        // do log2n expansions We're indexing a as a 2-D tileOperationsArray with dimensions
         // (nx,ny).
         int nxtop = 1;
         int nytop = 1;
@@ -465,8 +465,8 @@ public class HDecompress {
     }
 
     /**
-     * long a[]; array of H-transform coefficients int nxtop,nytop; size of
-     * coefficient block to use int ny; actual 1st dimension of array int scale;
+     * long a[]; tileOperationsArray of H-transform coefficients int nxtop,nytop; size of
+     * coefficient block to use int ny; actual 1st dimension of tileOperationsArray int scale;
      * truncation scale factor that was used
      */
     private void hsmooth64(LongArrayPointer a, int nxtop, int nytop) {
@@ -485,9 +485,9 @@ public class HDecompress {
         }
         ny2 = this.ny << 1;
         /*
-         * We're indexing a as a 2-D array with dimensions (nxtop,ny) of which
+         * We're indexing a as a 2-D tileOperationsArray with dimensions (nxtop,ny) of which
          * only (nxtop,nytop) are used. The coefficients on the edge of the
-         * array are not adjusted (which is why the loops below start at 2
+         * tileOperationsArray are not adjusted (which is why the loops below start at 2
          * instead of 0 and end at nxtop-2 instead of nxtop.)
          */
         /*
@@ -724,7 +724,7 @@ public class HDecompress {
     /* INITIALIZE BIT INPUT */
 
     private int inputNnybble(ByteBuffer infile, int n, byte[] array) {
-        /* copy n 4-bit nybbles from infile to the lower 4 bits of array */
+        /* copy n 4-bit nybbles from infile to the lower 4 bits of tileOperationsArray */
 
         int ii, kk, shift1, shift2;
 
@@ -740,7 +740,7 @@ public class HDecompress {
         if (this.bitsToGo == BITS_OF_1_BYTE) {
             /*
              * already have 2 full nybbles in buffer2, so backspace the infile
-             * array to reuse last char
+             * tileOperationsArray to reuse last char
              */
             infile.position(infile.position() - 1);
             this.bitsToGo = 0;
@@ -809,8 +809,8 @@ public class HDecompress {
     /**
      * Copy 4-bit values from a[(nx+1)/2,(ny+1)/2] to b[nx,ny], expanding each
      * value to 2x2 pixels and inserting into bitplane BIT of B. A,B may NOT be
-     * same array (it wouldn't make sense to be inserting bits into the same
-     * array anyway.)
+     * same tileOperationsArray (it wouldn't make sense to be inserting bits into the same
+     * tileOperationsArray anyway.)
      */
     private void qtreeBitins64(byte[] a, int lnx, int lny, LongArrayPointer b, int n, int bit) {
         int i, j, s00;
@@ -885,12 +885,12 @@ public class HDecompress {
 
     /**
      * copy 4-bit values from a[(nx+1)/2,(ny+1)/2] to b[nx,ny], expanding each
-     * value to 2x2 pixels a,b may be same array
+     * value to 2x2 pixels a,b may be same tileOperationsArray
      */
     private void qtreeCopy(byte[] a, int lnx, int lny, byte[] b, int n) {
         int i, j, k, nx2, ny2;
         int s00, s10;
-        // first copy 4-bit values to b start at end in case a,b are same array
+        // first copy 4-bit values to b start at end in case a,b are same tileOperationsArray
         nx2 = (lnx + 1) / 2;
         ny2 = (lny + 1) / 2;
         k = ny2 * (nx2 - 1) + ny2 - 1; /* k is index of a[i,j] */
@@ -942,7 +942,7 @@ public class HDecompress {
     }
 
     /**
-     * char *infile; long a[]; a is 2-D array with dimensions (n,n) int n;
+     * char *infile; long a[]; a is 2-D tileOperationsArray with dimensions (n,n) int n;
      * length of full row in a int nqx; partial length of row to decode int nqy;
      * partial length of column (<=n) int nbitplanes; number of bitplanes to
      * decode
@@ -958,7 +958,7 @@ public class HDecompress {
         int nqmax = nqx > nqy ? nqx : nqy;
         int log2n = calculateLog2N(nqmax);
         /*
-         * allocate scratch array for working space
+         * allocate scratch tileOperationsArray for working space
          */
         int nqx2 = (nqx + 1) / 2;
         int nqy2 = (nqy + 1) / 2;
@@ -1016,7 +1016,7 @@ public class HDecompress {
                     qtreeExpand(infile, scratch, nx2, ny2, scratch);
                 }
                 /*
-                 * now copy last set of 4-bit codes to bitplane bit of array a
+                 * now copy last set of 4-bit codes to bitplane bit of tileOperationsArray a
                  */
                 qtreeBitins64(scratch, nqx, nqy, a, n, bit);
             }
@@ -1025,7 +1025,7 @@ public class HDecompress {
     }
 
     /*
-     * do one quadtree expansion step on array a[(nqx+1)/2,(nqy+1)/2] results
+     * do one quadtree expansion step on tileOperationsArray a[(nqx+1)/2,(nqy+1)/2] results
      * put into b[nqx,nqy] (which may be the same as a)
      */
     private void qtreeExpand(ByteBuffer infile, byte[] a, int nx2, int ny2, byte[] b) {
@@ -1091,7 +1091,7 @@ public class HDecompress {
     }
 
     /**
-     * long a[]; array to shuffle int n; number of elements to shuffle int n2;
+     * long a[]; tileOperationsArray to shuffle int n; number of elements to shuffle int n2;
      * second dimension long tmp[]; scratch storage
      */
     private void unshuffle64(LongArrayPointer a, int n, int n2, long[] tmp) {
@@ -1100,7 +1100,7 @@ public class HDecompress {
         LongArrayPointer p1, p2, pt;
 
         /*
-         * copy 2nd half of array to tmp
+         * copy 2nd half of tileOperationsArray to tmp
          */
         nhalf = n + 1 >> 1;
         pt = new LongArrayPointer(tmp);
@@ -1111,7 +1111,7 @@ public class HDecompress {
             pt.offset += 1;
         }
         /*
-         * distribute 1st half of array to even elements
+         * distribute 1st half of tileOperationsArray to even elements
          */
         p2 = a.copy(n2 * (nhalf - 1)); /* pointer to a[i] */
         p1 = a.copy(n2 * (nhalf - 1) << 1); /* pointer to a[2*i] */
@@ -1121,7 +1121,7 @@ public class HDecompress {
             p1.offset -= n2 + n2;
         }
         /*
-         * now distribute 2nd half of array (in tmp) to odd elements
+         * now distribute 2nd half of tileOperationsArray (in tmp) to odd elements
          */
         pt = new LongArrayPointer(tmp);
         p1 = a.copy(n2); /* pointer to a[i] */

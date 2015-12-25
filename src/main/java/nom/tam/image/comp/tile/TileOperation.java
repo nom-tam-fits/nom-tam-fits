@@ -1,4 +1,4 @@
-package nom.tam.image.comp.hdu;
+package nom.tam.image.comp.tile;
 
 /*
  * #%L
@@ -46,9 +46,9 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  * part of the image. Will be sub classed for compression and decompression
  * variants.
  */
-abstract class Tile implements Runnable {
+abstract class TileOperation implements Runnable {
 
-    protected final TileArray array;
+    protected final TileOperationsOfImage tileOperationsArray;
 
     protected Integer blank = null;
 
@@ -70,8 +70,8 @@ abstract class Tile implements Runnable {
 
     protected double zero = Double.NaN;
 
-    public Tile(TileArray array, int tileIndex) {
-        this.array = array;
+    public TileOperation(TileOperationsOfImage array, int tileIndex) {
+        this.tileOperationsArray = array;
         this.tileIndex = tileIndex;
     }
 
@@ -117,12 +117,12 @@ abstract class Tile implements Runnable {
         return this.zero;
     }
 
-    public Tile setBlank(Integer value) {
+    public TileOperation setBlank(Integer value) {
         this.blank = value;
         return this;
     }
 
-    public Tile setCompressed(Object data, TileCompressionType type) {
+    public TileOperation setCompressed(Object data, TileCompressionType type) {
         if (data != null && Array.getLength(data) > 0) {
             this.compressionType = type;
             this.compressedData = convertToBuffer(data);
@@ -130,16 +130,16 @@ abstract class Tile implements Runnable {
         return this;
     }
 
-    public Tile setDimensions(int dataOffset, int width, int height) {
-        if (this.array.getImageWidth() > width) {
-            this.tileBuffer = new TileBufferColumnBased(this, dataOffset, this.array.getImageWidth(), width, height);
+    public TileOperation setDimensions(int dataOffset, int width, int height) {
+        if (this.tileOperationsArray.getImageWidth() > width) {
+            this.tileBuffer = new TileBufferColumnBased(this, dataOffset, this.tileOperationsArray.getImageWidth(), width, height);
         } else {
             this.tileBuffer = new TileBufferRowBased(this, dataOffset, width, height);
         }
         return this;
     }
 
-    public Tile setScale(double value) {
+    public TileOperation setScale(double value) {
         this.scale = value;
         return this;
     }
@@ -169,13 +169,13 @@ abstract class Tile implements Runnable {
      *            the buffer that describes the whole image.
      */
     public void setWholeImageCompressedBuffer(ByteBuffer compressed) {
-        compressed.position(getPixelSize() * this.tileIndex * this.array.getBaseType().size());
+        compressed.position(getPixelSize() * this.tileIndex * this.tileOperationsArray.getBaseType().size());
         this.compressedData = compressed.slice();
         // we do not limit this buffer but is expected not to write more than
         // the uncompressed size.
     }
 
-    public Tile setZero(double value) {
+    public TileOperation setZero(double value) {
         this.zero = value;
         return this;
     }

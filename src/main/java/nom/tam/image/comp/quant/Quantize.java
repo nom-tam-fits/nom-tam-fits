@@ -134,7 +134,7 @@ public class Quantize {
      * computed for each row of the image.
      * 
      * @param arrayIn
-     *            2 dimensional array of image pixels
+     *            2 dimensional tileOperationsArray of image pixels
      * @param nx
      *            number of pixels in each row of the image
      * @param ny
@@ -149,7 +149,7 @@ public class Quantize {
         DoubleArrayPointer array = new DoubleArrayPointer(arrayIn);
         initializeNoise();
         if (nx < MINIMUM_PIXEL_WIDTH) {
-            // treat entire array as an image with a single row
+            // treat entire tileOperationsArray as an image with a single row
             nx = nx * ny;
             ny = 1;
         }
@@ -220,7 +220,7 @@ public class Quantize {
                     continue; /* hit end of row */
                 }
                 double v9 = getNextPixelAndCheckMinMax(rowpix, ii);
-                /* construct array of absolute differences */
+                /* construct tileOperationsArray of absolute differences */
                 if (!(v5 == v6 && v6 == v7)) {
                     differences2[nvals2] = Math.abs(v5 - v7);
                     nvals2++;
@@ -355,19 +355,19 @@ public class Quantize {
 
     /**
      * arguments: long row i: tile number = row number in the binary table
-     * double fdata[] i: array of image pixels to be compressed long nxpix i:
-     * number of pixels in each row of fdata long nypix i: number of rows in
-     * fdata nullcheck i: check for nullvalues in fdata? double in_null_value i:
-     * value used to represent undefined pixels in fdata float qlevel i:
-     * quantization level int dither_method i; which dithering method to use int
-     * idata[] o: values of fdata after applying bzero and bscale double bscale
-     * o: scale factor double bzero o: zero offset int iminval o: minimum
-     * quantized value that is returned int imaxval o: maximum quantized value
-     * that is returned The function value will be one if the input fdata were
-     * copied to idata; in this case the parameters bscale and bzero can be used
-     * to convert back to nearly the original floating point values: fdata ~=
-     * idata * bscale + bzero. If the function value is zero, the data were not
-     * copied to idata.
+     * double fdata[] i: tileOperationsArray of image pixels to be compressed
+     * long nxpix i: number of pixels in each row of fdata long nypix i: number
+     * of rows in fdata nullcheck i: check for nullvalues in fdata? double
+     * in_null_value i: value used to represent undefined pixels in fdata float
+     * qlevel i: quantization level int dither_method i; which dithering method
+     * to use int idata[] o: values of fdata after applying bzero and bscale
+     * double bscale o: scale factor double bzero o: zero offset int iminval o:
+     * minimum quantized value that is returned int imaxval o: maximum quantized
+     * value that is returned The function value will be one if the input fdata
+     * were copied to idata; in this case the parameters bscale and bzero can be
+     * used to convert back to nearly the original floating point values: fdata
+     * ~= idata * bscale + bzero. If the function value is zero, the data were
+     * not copied to idata.
      * 
      * @param fdata
      *            the data to quantinize

@@ -39,6 +39,7 @@ import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.tile.TileOperationsOfImage;
 import nom.tam.util.ArrayFuncs;
 
 public class CompressedImageData extends BinaryTable {
@@ -46,7 +47,7 @@ public class CompressedImageData extends BinaryTable {
     /**
      * tile information, only available during compressing or decompressing.
      */
-    private TileArray tileArray;
+    private TileOperationsOfImage tileOperationsOfImage;
 
     public CompressedImageData() throws FitsException {
         super();
@@ -57,7 +58,7 @@ public class CompressedImageData extends BinaryTable {
     }
 
     public void compress(CompressedImageHDU hdu) throws FitsException {
-        tileArray().compress(hdu);
+        tileOperationsOfImage().compress(hdu);
     }
 
     @Override
@@ -67,7 +68,7 @@ public class CompressedImageData extends BinaryTable {
     }
 
     public <T extends ICompressOption> T getCompressOption(Class<T> clazz) {
-        for (ICompressOption option : tileArray().compressOptions()) {
+        for (ICompressOption option : tileOperationsOfImage().compressOptions()) {
             if (clazz.isAssignableFrom(option.getClass())) {
                 return clazz.cast(option);
             }
@@ -77,43 +78,43 @@ public class CompressedImageData extends BinaryTable {
 
     public Buffer getUncompressedData(Header hdr) throws FitsException {
         try {
-            this.tileArray = new TileArray(this).read(hdr);
-            return this.tileArray.decompress(null, hdr);
+            this.tileOperationsOfImage = new TileOperationsOfImage(this).read(hdr);
+            return this.tileOperationsOfImage.decompress(null, hdr);
         } finally {
-            this.tileArray = null;
+            this.tileOperationsOfImage = null;
         }
     }
 
     public void prepareUncompressedData(Object data, Header header) throws FitsException {
-        tileArray().readHeader(header);
+        tileOperationsOfImage().readHeader(header);
         if (data instanceof Buffer) {
-            tileArray().prepareUncompressedData((Buffer) data);
+            tileOperationsOfImage().prepareUncompressedData((Buffer) data);
         } else {
-            Buffer source = tileArray().getBaseType().newBuffer(this.tileArray.getBufferSize());
+            Buffer source = tileOperationsOfImage().getBaseType().newBuffer(this.tileOperationsOfImage.getBufferSize());
             ArrayFuncs.copyInto(data, source.array());
-            tileArray().prepareUncompressedData(source);
+            tileOperationsOfImage().prepareUncompressedData(source);
         }
     }
 
     public CompressedImageData setCompressAlgorithm(String compressAlgorithm) {
-        tileArray().setCompressAlgorithm(compressAlgorithm);
+        tileOperationsOfImage().setCompressAlgorithm(compressAlgorithm);
         return this;
     }
 
     public CompressedImageData setQuantAlgorithm(String quantAlgorithm) {
-        tileArray().setQuantAlgorithm(quantAlgorithm);
+        tileOperationsOfImage().setQuantAlgorithm(quantAlgorithm);
         return this;
     }
 
     protected CompressedImageData setTileSize(int... axes) {
-        tileArray().setTileAxes(axes);
+        tileOperationsOfImage().setTileAxes(axes);
         return this;
     }
 
-    private TileArray tileArray() {
-        if (this.tileArray == null) {
-            this.tileArray = new TileArray(this);
+    private TileOperationsOfImage tileOperationsOfImage() {
+        if (this.tileOperationsOfImage == null) {
+            this.tileOperationsOfImage = new TileOperationsOfImage(this);
         }
-        return this.tileArray;
+        return this.tileOperationsOfImage;
     }
 }

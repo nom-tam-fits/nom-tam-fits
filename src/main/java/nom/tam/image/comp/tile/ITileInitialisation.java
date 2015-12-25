@@ -1,4 +1,4 @@
-package nom.tam.image.comp.hdu;
+package nom.tam.image.comp.tile;
 
 /*
  * #%L
@@ -33,7 +33,7 @@ package nom.tam.image.comp.hdu;
 
 interface ITileInitialisation {
 
-    Tile createTile(int tileIndex);
+    TileOperation createTile(int tileIndex);
 
-    void init(Tile tile);
+    void init(TileOperation tileOperation);
 }

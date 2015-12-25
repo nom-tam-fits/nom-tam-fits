@@ -1,4 +1,4 @@
-package nom.tam.image.comp.hdu;
+package nom.tam.image.comp.tile;
 
 /*
  * #%L
@@ -34,8 +34,8 @@ package nom.tam.image.comp.hdu;
 import java.nio.Buffer;
 
 /**
- * This view on the image data represents a tile that is row based, so a tile
- * that fills the whole width of the image.
+ * This view on the image data represents a tileOperation that is row based, so
+ * a tileOperation that fills the whole width of the image.
  */
 abstract class TileBuffer {
 
@@ -46,14 +46,14 @@ abstract class TileBuffer {
     private final int offset;
 
     /**
-     * the tile this view is connected to
+     * the tileOperation this view is connected to
      */
-    private final Tile tile;
+    private final TileOperation tileOperation;
 
     private final int width;
 
-    public TileBuffer(Tile tile, int dataOffset, int width, int height) {
-        this.tile = tile;
+    public TileBuffer(TileOperation tileOperation, int dataOffset, int width, int height) {
+        this.tileOperation = tileOperation;
         this.offset = dataOffset;
         this.width = width;
         this.height = height;
@@ -81,7 +81,7 @@ abstract class TileBuffer {
     }
 
     /**
-     * @return the number of pixels in the tile this view represents.
+     * @return the number of pixels in the tileOperation this view represents.
      */
     public int getPixelSize() {
         return this.width * this.height;
@@ -93,7 +93,7 @@ abstract class TileBuffer {
 
     public TileBuffer setDecompressedData(Buffer value) {
         value.position(this.offset);
-        this.imageBuffer = this.tile.array.getBaseType().sliceBuffer(value);
+        this.imageBuffer = this.tileOperation.tileOperationsArray.getBaseType().sliceBuffer(value);
         this.imageBuffer.limit(getPixelSize());
         return this;
     }

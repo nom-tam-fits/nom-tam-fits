@@ -223,7 +223,7 @@ public final class FitsCheckSum {
 
         /*
          * Convert the entire sequence of 2880 byte header cards into a byte
-         * array. The main benefit compared to the C implementations is that we
+         * tileOperationsArray. The main benefit compared to the C implementations is that we
          * do not need to worry about the particular byte order on machines
          * (Linux/VAX/MIPS vs Hp-UX, Sparc...) supposed that the correct
          * implementation is in the write() interface.

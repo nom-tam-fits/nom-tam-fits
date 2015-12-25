@@ -1,4 +1,4 @@
-package nom.tam.image.comp.hdu;
+package nom.tam.image.comp.tile;
 
 /*
  * #%L
@@ -31,8 +31,17 @@ package nom.tam.image.comp.hdu;
  * #L%
  */
 
-enum TileCompressionType {
-    COMPRESSED,
-    GZIP_COMPRESSED,
-    UNCOMPRESSED
+import java.nio.Buffer;
+
+public class TileBufferRowBased extends TileBuffer {
+
+    public TileBufferRowBased(TileOperation tileOperation, int dataOffset, int width, int height) {
+        super(tileOperation, dataOffset, width, height);
+    }
+
+    @Override
+    public Buffer getBuffer() {
+        return getImageBuffer();
+    }
+
 }
