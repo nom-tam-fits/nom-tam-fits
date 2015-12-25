@@ -98,12 +98,15 @@ public class TileOperationsOfImage {
 
     private ICompressOption.Parameter[] compressionParameter;
 
+    // Note: field is initialized lazily: use getter within class!
     private List<ICompressOption> compressOptions;
 
+    // Note: field is initialized lazily: use getter within class!
     private ITileCompressorControl compressorControl;
 
     private Buffer decompressedWholeArea;
 
+    // Note: field is initialized lazily: use getter within class!
     private ITileCompressorControl gzipCompressorControl;
 
     private int naxis;
@@ -153,14 +156,8 @@ public class TileOperationsOfImage {
     }
 
     public List<ICompressOption> compressOptions() {
-        if (this.compressorControl == null) {
-            this.compressorControl = TileCompressorProvider.findCompressorControl(this.quantAlgorithm, this.compressAlgorithm, this.baseType.primitiveClass());
-        }
-        if (this.gzipCompressorControl == null) {
-            this.gzipCompressorControl = TileCompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_GZIP_1, this.baseType.primitiveClass());
-        }
         if (this.compressOptions == null) {
-            this.compressOptions = Arrays.asList(this.compressorControl.options());
+            this.compressOptions = Arrays.asList(getCompressorControl().options());
         }
         return this.compressOptions;
     }
@@ -243,10 +240,16 @@ public class TileOperationsOfImage {
     }
 
     protected ITileCompressorControl getCompressorControl() {
+        if (this.compressorControl == null) {
+            this.compressorControl = TileCompressorProvider.findCompressorControl(this.quantAlgorithm, this.compressAlgorithm, this.baseType.primitiveClass());
+        }
         return this.compressorControl;
     }
 
     protected ITileCompressorControl getGzipCompressorControl() {
+        if (this.gzipCompressorControl == null) {
+            this.gzipCompressorControl = TileCompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_GZIP_1, this.baseType.primitiveClass());
+        }
         return this.gzipCompressorControl;
     }
 
@@ -255,7 +258,7 @@ public class TileOperationsOfImage {
     }
 
     private <T> T getNullableColumn(Header header, Class<T> class1, String columnName) throws FitsException {
-        for (int i = 1; i <= this.binaryTable.getNCols(); i += 1) {
+        for (int i = 1; i <= this.binaryTable.getNCols(); i++) {
             String val = header.getStringValue(TTYPEn.n(i));
             if (val != null && val.trim().equals(columnName)) {
                 return class1.cast(this.binaryTable.getColumn(i - 1));
@@ -289,7 +292,6 @@ public class TileOperationsOfImage {
             public void init(TileOperation tileOperation) {
                 tileOperation.setWholeImageBuffer(buffer);
                 tileOperation.setWholeImageCompressedBuffer(TileOperationsOfImage.this.compressedWholeArea);
-
             }
         });
         this.compressedWholeArea.rewind();
@@ -337,7 +339,7 @@ public class TileOperationsOfImage {
         if (this.axes == null || this.axes.length == 0) {
             this.naxis = header.getIntValue(ZNAXIS);
             this.axes = new int[this.naxis];
-            for (int i = 1; i <= this.naxis; i += 1) {
+            for (int i = 1; i <= this.naxis; i++) {
                 int axisValue = header.getIntValue(ZNAXISn.n(i), -1);
                 this.axes[i - 1] = axisValue;
                 if (this.axes[i - 1] == -1) {
@@ -364,7 +366,7 @@ public class TileOperationsOfImage {
             this.tileAxes = new int[this.axes.length];
             Arrays.fill(this.tileAxes, 1);
             this.tileAxes[0] = this.axes[0];
-            for (int i = 1; i <= this.naxis; i += 1) {
+            for (int i = 1; i <= this.naxis; i++) {
                 HeaderCard card = header.findCard(ZTILEn.n(i));
                 if (card != null) {
                     this.tileAxes[i - 1] = card.getValue(Integer.class, this.axes[i - 1]);
@@ -457,7 +459,7 @@ public class TileOperationsOfImage {
         if (this.quantAlgorithm != null) {
             cardBuilder.card(ZQUANTIZ).value(this.quantAlgorithm);
         }
-        for (int i = 1; i <= this.tileAxes.length; i += 1) {
+        for (int i = 1; i <= this.tileAxes.length; i++) {
             cardBuilder.card(ZTILEn.n(i)).value(this.tileAxes[i - 1]);
         }
         int nval = 1;
