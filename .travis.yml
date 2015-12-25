@@ -22,6 +22,7 @@ notifications:
   email:
     - richard.vannieuwenhoven@adesso.at
     - Tom.McGlynn@nasa.gov
+    - erik.koerber@gmail.com
     
 env:
  global:
