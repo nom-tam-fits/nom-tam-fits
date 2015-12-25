@@ -46,4 +46,10 @@ public class TileBufferRowBased extends TileBuffer {
         return getImageBuffer();
     }
 
+    @Override
+    public TileBufferRowBased setDecompressedData(Buffer value) {
+        super.setDecompressedData(value);
+        getImageBuffer().limit(getPixelSize());
+        return this;
+    }
 }

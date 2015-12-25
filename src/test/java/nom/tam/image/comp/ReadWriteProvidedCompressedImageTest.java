@@ -561,7 +561,7 @@ public class ReadWriteProvidedCompressedImageTest {
             f.addHDU(compressedHdu);
             f.write(bdos);
         }
-        if (1 == 1) {
+        if (1==1) {
             return;
         }
         try (Fits f = new Fits("target/testBlanksInCompressedFloatImage.fits.fz")) {
