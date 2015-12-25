@@ -278,7 +278,7 @@ public class TileOperationsOfImage {
 
             @Override
             public TileOperation createTileOperation(int tileIndex) {
-                return new TileCompresser(TileOperationsOfImage.this, tileIndex);
+                return new TileCompressor(TileOperationsOfImage.this, tileIndex);
             }
 
             @Override
