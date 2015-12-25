@@ -7,12 +7,12 @@ package nom.tam.image.comp.tile;
  * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.comp.tile;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -71,7 +71,7 @@ abstract class TileOperation implements Runnable {
 
     protected double zero = Double.NaN;
 
-    public TileOperation(TileOperationsOfImage array, int tileIndex) {
+    protected TileOperation(TileOperationsOfImage array, int tileIndex) {
         this.tileOperationsArray = array;
         this.tileIndex = tileIndex;
     }
@@ -80,50 +80,50 @@ abstract class TileOperation implements Runnable {
         return PrimitiveTypeHandler.valueOf(data.getClass().getComponentType()).convertToByteBuffer(data);
     }
 
-    public void execute(ExecutorService threadPool) {
+    protected void execute(ExecutorService threadPool) {
         this.future = threadPool.submit(this);
     }
 
-    public Integer getBlank() {
+    protected Integer getBlank() {
         return this.blank;
     }
 
-    public byte[] getCompressedData() {
+    protected byte[] getCompressedData() {
         byte[] data = new byte[this.compressedData.limit()];
         this.compressedData.rewind();
         PrimitiveType.BYTE.getArray(this.compressedData, data);
         return data;
     }
 
-    public TileCompressionType getCompressionType() {
+    protected TileCompressionType getCompressionType() {
         return this.compressionType;
     }
 
     /**
      * @return the number of pixels in this tile.
      */
-    public int getPixelSize() {
+    protected int getPixelSize() {
         return this.tileBuffer.getPixelSize();
     }
 
-    public double getScale() {
+    protected double getScale() {
         return this.scale;
     }
 
-    public int getTileIndex() {
+    protected int getTileIndex() {
         return this.tileIndex;
     }
 
-    public double getZero() {
+    protected double getZero() {
         return this.zero;
     }
 
-    public TileOperation setBlank(Integer value) {
+    protected TileOperation setBlank(Integer value) {
         this.blank = value;
         return this;
     }
 
-    public TileOperation setCompressed(Object data, TileCompressionType type) {
+    protected TileOperation setCompressed(Object data, TileCompressionType type) {
         if (data != null && Array.getLength(data) > 0) {
             this.compressionType = type;
             this.compressedData = convertToBuffer(data);
@@ -131,7 +131,7 @@ abstract class TileOperation implements Runnable {
         return this;
     }
 
-    public TileOperation setDimensions(int dataOffset, int width, int height) {
+    protected TileOperation setDimensions(int dataOffset, int width, int height) {
         this.tileBuffer = TileBuffer.createTileBuffer(this.tileOperationsArray.getBaseType(), //
                 dataOffset, //
                 this.tileOperationsArray.getImageWidth(), //
@@ -139,7 +139,7 @@ abstract class TileOperation implements Runnable {
         return this;
     }
 
-    public TileOperation setScale(double value) {
+    protected TileOperation setScale(double value) {
         this.scale = value;
         return this;
     }
@@ -153,7 +153,7 @@ abstract class TileOperation implements Runnable {
      * @param buffer
      *            the buffer that describes the whole image.
      */
-    public void setWholeImageBuffer(Buffer buffer) {
+    protected void setWholeImageBuffer(Buffer buffer) {
         this.tileBuffer.setDecompressedData(buffer);
     }
 
@@ -168,14 +168,14 @@ abstract class TileOperation implements Runnable {
      * @param compressed
      *            the buffer that describes the whole image.
      */
-    public void setWholeImageCompressedBuffer(ByteBuffer compressed) {
+    protected void setWholeImageCompressedBuffer(ByteBuffer compressed) {
         compressed.position(getPixelSize() * this.tileIndex * this.tileOperationsArray.getBaseType().size());
         this.compressedData = compressed.slice();
         // we do not limit this buffer but is expected not to write more than
         // the uncompressed size.
     }
 
-    public TileOperation setZero(double value) {
+    protected TileOperation setZero(double value) {
         this.zero = value;
         return this;
     }
@@ -185,7 +185,7 @@ abstract class TileOperation implements Runnable {
         return getClass().getSimpleName() + "(" + this.tileIndex + "," + this.compressionType + "," + this.compressedOffset + ")";
     }
 
-    public void waitForResult() {
+    protected void waitForResult() {
         try {
             this.future.get();
         } catch (Exception e) {

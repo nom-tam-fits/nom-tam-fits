@@ -7,12 +7,12 @@ package nom.tam.image.comp.tile;
  * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.comp.tile;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -57,6 +57,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+import nom.tam.fits.BinaryTable;
+import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
@@ -67,8 +69,6 @@ import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ICompressOption.Parameter;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
 import nom.tam.image.comp.TileCompressorProvider;
-import nom.tam.image.comp.hdu.CompressedImageData;
-import nom.tam.image.comp.hdu.CompressedImageHDU;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 
@@ -92,7 +92,7 @@ public class TileOperationsOfImage {
      */
     private String compressAlgorithm;
 
-    private final CompressedImageData compressedImageData;
+    private final BinaryTable binaryTable;
 
     private ByteBuffer compressedWholeArea;
 
@@ -122,20 +122,20 @@ public class TileOperationsOfImage {
     /**
      * create a TileOperationsOfImage based on a compressed image data.
      *
-     * @param compressedImageData
+     * @param binaryTable
      *            the compressed image data.
      */
-    public TileOperationsOfImage(CompressedImageData compressedImageData) {
-        this.compressedImageData = compressedImageData;
+    public TileOperationsOfImage(BinaryTable binaryTable) {
+        this.binaryTable = binaryTable;
     }
 
-    private void addColumnToTable(CompressedImageHDU hdu, Object column, String columnName) throws FitsException {
+    private void addColumnToTable(BinaryTableHDU hdu, Object column, String columnName) throws FitsException {
         if (column != null) {
             hdu.setColumnName(hdu.addColumn(column) - 1, columnName, null);
         }
     }
 
-    public void compress(CompressedImageHDU hdu) throws FitsException {
+    public void compress(BinaryTableHDU hdu) throws FitsException {
         executeAllTiles();
         // take the first blank as default value (if there is one)
         this.zblank = this.tileOperations[0].getBlank();
@@ -234,27 +234,27 @@ public class TileOperationsOfImage {
         return bufferSize;
     }
 
-    public ByteBuffer getCompressedWholeArea() {
+    protected ByteBuffer getCompressedWholeArea() {
         return this.compressedWholeArea;
     }
 
-    public ITileCompressorControl getCompressorControl() {
+    protected ITileCompressorControl getCompressorControl() {
         return this.compressorControl;
     }
 
-    public ITileCompressorControl getGzipCompressorControl() {
+    protected ITileCompressorControl getGzipCompressorControl() {
         return this.gzipCompressorControl;
     }
 
-    public int getImageWidth() {
+    protected int getImageWidth() {
         return this.axes[0];
     }
 
     private <T> T getNullableColumn(Header header, Class<T> class1, String columnName) throws FitsException {
-        for (int i = 1; i <= this.compressedImageData.getNCols(); i += 1) {
+        for (int i = 1; i <= this.binaryTable.getNCols(); i += 1) {
             String val = header.getStringValue(TTYPEn.n(i));
             if (val != null && val.trim().equals(columnName)) {
-                return class1.cast(this.compressedImageData.getColumn(i - 1));
+                return class1.cast(this.binaryTable.getColumn(i - 1));
             }
         }
         return null;
@@ -268,7 +268,7 @@ public class TileOperationsOfImage {
         return null;
     }
 
-    public TileOperation getTile(int i) {
+    protected TileOperation getTile(int i) {
         return this.tileOperations[i];
     }
 
@@ -411,7 +411,7 @@ public class TileOperationsOfImage {
         return this;
     }
 
-    private void writeColumns(CompressedImageHDU hdu) throws FitsException {
+    private void writeColumns(BinaryTableHDU hdu) throws FitsException {
         Object compressedColumn = null;
         Object uncompressedColumn = null;
         Object gzipColumn = null;
