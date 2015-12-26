@@ -50,7 +50,7 @@ public class TileDecompressor extends TileOperation {
 
     private void decompress() {
         if (this.compressionType == TileCompressionType.COMPRESSED) {
-            setTileOptions();
+            initTileOptions();
             this.tileOperationsArray.getCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer(), this.tileOptions);
         } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
             this.tileOperationsArray.getGzipCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer());
@@ -69,7 +69,7 @@ public class TileDecompressor extends TileOperation {
         this.tileBuffer.finish();
     }
 
-    private void setTileOptions() {
+    private void initTileOptions() {
         List<ICompressOption> compressOptions = this.tileOperationsArray.compressOptions();
         this.tileOptions = new ICompressOption[compressOptions.size()];
         for (int index = 0; index < this.tileOptions.length; index++) {

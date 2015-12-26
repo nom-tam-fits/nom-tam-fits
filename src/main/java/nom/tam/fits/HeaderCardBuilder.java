@@ -85,6 +85,71 @@ public class HeaderCardBuilder {
     }
 
     /**
+     * Convenience method: equivalent to {@code card(newKey).value(newValue)}.
+     * 
+     * @param newKey
+     * @param newValue
+     * @return this
+     * @throws HeaderCardException
+     */
+    public HeaderCardBuilder card(IFitsHeader newKey, boolean newValue) throws HeaderCardException {
+        card(newKey);
+        return value(newValue);
+    }
+
+    /**
+     * Convenience method: equivalent to {@code card(newKey).value(newValue)}.
+     * 
+     * @param newKey
+     * @param newValue
+     * @return this
+     * @throws HeaderCardException
+     */
+    public HeaderCardBuilder card(IFitsHeader newKey, double newValue) throws HeaderCardException {
+        card(newKey);
+        return value(newValue);
+    }
+
+    /**
+     * Convenience method: equivalent to {@code card(newKey).value(newValue)}.
+     * 
+     * @param newKey
+     * @param newValue
+     * @return this
+     * @throws HeaderCardException
+     */
+    public HeaderCardBuilder card(IFitsHeader newKey, Integer newValue) throws HeaderCardException {
+        card(newKey);
+        return value(newValue);
+    }
+
+    /**
+     * Convenience method: equivalent to {@code card(newKey).value(newValue)}.
+     * 
+     * @param newKey
+     * @param newValue
+     * @return this
+     * @throws HeaderCardException
+     */
+    public HeaderCardBuilder card(IFitsHeader newKey, float newValue) throws HeaderCardException {
+        card(newKey);
+        return value(newValue);
+    }
+
+    /**
+     * Convenience method: equivalent to {@code card(newKey).value(newValue)}.
+     * 
+     * @param newKey
+     * @param newValue
+     * @return this
+     * @throws HeaderCardException
+     */
+    public HeaderCardBuilder card(IFitsHeader newKey, String newValue) throws HeaderCardException {
+        card(newKey);
+        return value(newValue);
+    }
+
+    /**
      * set the value of the current card.If the card did not exist yet the card
      * will be created.
      * 
@@ -237,5 +302,4 @@ public class HeaderCardBuilder {
         card.setComment(newComment);
         return this;
     }
-
 }

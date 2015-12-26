@@ -1574,7 +1574,7 @@ public class BinaryTableTest {
         Header fitsHeader = new Header();
         fitsHeader//
                 .card(Standard.PCOUNT).value(Integer.MAX_VALUE)//
-                .card(Standard.THEAP).value(-10);
+                .card(Standard.THEAP, -10);
         new BinaryTable(fitsHeader);
     }
 

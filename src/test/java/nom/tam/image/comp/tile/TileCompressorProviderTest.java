@@ -58,7 +58,7 @@ public class TileCompressorProviderTest {
 
     static class Access2 extends CompressedImageData {
 
-        private static Header enptyHeader() {
+        private static Header emptyHeader() {
             Header header = new Header();
             try {
                 header.card(Standard.NAXIS1).value(1);
@@ -69,7 +69,7 @@ public class TileCompressorProviderTest {
         }
 
         public Access2() throws FitsException {
-            super(enptyHeader());
+            super(emptyHeader());
         }
 
         TileOperation getTile() {

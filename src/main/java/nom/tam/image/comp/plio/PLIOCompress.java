@@ -125,8 +125,8 @@ public abstract class PLIOCompress {
     private static final int MINI_HEADER_SIZE_FIELD = 2;
 
     /**
-     * The exact meening of this var is not clear at the moment of porting the
-     * algorithm to java.
+     * The exact meaning of this var is not clear at the moment of porting the
+     * algorithm to Java.
      */
     private static final int N20481 = 20481;
 

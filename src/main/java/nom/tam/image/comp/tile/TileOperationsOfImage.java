@@ -139,7 +139,7 @@ public class TileOperationsOfImage {
     }
 
     public void compress(BinaryTableHDU hdu) throws FitsException {
-        executeAllTiles();
+        processAllTiles();
         // take the first blank as default value (if there is one)
         this.zblank = this.tileOperations[0].getBlank();
         for (ICompressOption option : compressOptions()) {
@@ -208,12 +208,12 @@ public class TileOperationsOfImage {
         for (ICompressOption option : compressOptions()) {
             option.setCompressionParameter(this.compressionParameter);
         }
-        executeAllTiles();
+        processAllTiles();
         this.decompressedWholeArea.rewind();
         return this.decompressedWholeArea;
     }
 
-    private void executeAllTiles() {
+    private void processAllTiles() {
         ExecutorService threadPool = FitsFactory.threadPool();
         for (TileOperation tileOperation : this.tileOperations) {
             tileOperation.execute(threadPool);
@@ -267,10 +267,10 @@ public class TileOperationsOfImage {
         return null;
     }
 
-    private <T> T getNullableValue(Header header, Class<T> clazz) {
+    private Integer getZblankValue(Header header) {
         HeaderCard card = header.findCard(ZBLANK);
         if (card != null) {
-            return card.getValue(clazz, null);
+            return card.getValue(Integer.class, null);
         }
         return null;
     }
@@ -301,7 +301,7 @@ public class TileOperationsOfImage {
     public TileOperationsOfImage read(Header header) throws FitsException {
         readHeader(header);
         this.compressAlgorithm = header.getStringValue(ZCMPTYPE);
-        this.zblank = getNullableValue(header, Integer.class);
+        this.zblank = getZblankValue(header);
         this.quantAlgorithm = header.getStringValue(ZQUANTIZ);
         readZVALs(header);
         final Object[] compressed = getNullableColumn(header, Object[].class, COMPRESSED_DATA_COLUMN);
@@ -452,15 +452,15 @@ public class TileOperationsOfImage {
     private void writeHeader(Header header) throws FitsException {
         HeaderCardBuilder cardBuilder = header.card(ZBITPIX);
         cardBuilder.value(this.baseType.bitPix())//
-                .card(ZCMPTYPE).value(this.compressAlgorithm);
+                .card(ZCMPTYPE, this.compressAlgorithm);
         if (this.zblank != null) {
-            cardBuilder.card(ZBLANK).value(this.zblank);
+            cardBuilder.card(ZBLANK, this.zblank);
         }
         if (this.quantAlgorithm != null) {
-            cardBuilder.card(ZQUANTIZ).value(this.quantAlgorithm);
+            cardBuilder.card(ZQUANTIZ, this.quantAlgorithm);
         }
         for (int i = 1; i <= this.tileAxes.length; i++) {
-            cardBuilder.card(ZTILEn.n(i)).value(this.tileAxes[i - 1]);
+            cardBuilder.card(ZTILEn.n(i), this.tileAxes[i - 1]);
         }
         int nval = 1;
         for (Parameter parameter : this.compressionParameter) {

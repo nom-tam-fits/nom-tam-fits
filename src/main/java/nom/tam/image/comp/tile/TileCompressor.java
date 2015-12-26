@@ -67,7 +67,7 @@ public class TileCompressor extends TileOperation {
 
     private void compress() {
         this.compressedData.limit(this.tileBuffer.getPixelSize() * this.tileOperationsArray.getBaseType().size());
-        setTileOptions();
+        initTileOptions();
         this.compressionType = TileCompressionType.COMPRESSED;
         boolean compressSuccess = this.tileOperationsArray.getCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData, this.tileOptions);
         if (compressSuccess) {
@@ -112,7 +112,7 @@ public class TileCompressor extends TileOperation {
         compress();
     }
 
-    private void setTileOptions() {
+    private void initTileOptions() {
         this.tileOptions = new ICompressOption[this.tileOperationsArray.compressOptions().size()];
         for (int index = 0; index < this.tileOptions.length; index++) {
             this.tileOptions[index] = this.tileOperationsArray.compressOptions().get(index).copy() //

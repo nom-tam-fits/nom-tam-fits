@@ -110,7 +110,7 @@ public class TileCompressorProvider implements ITileCompressorProvider {
                 }
                 return result;
             } catch (Exception e) {
-                throw new IllegalStateException("could not instanciate option classes for " + this.constructor, e);
+                throw new IllegalStateException("could not instantiate option classes for " + this.constructor, e);
             }
         }
     }
