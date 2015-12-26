@@ -561,13 +561,13 @@ public class ReadWriteProvidedCompressedImageTest {
             f.addHDU(compressedHdu);
             f.write(bdos);
         }
-        if (1==1) {
-            return;
-        }
         try (Fits f = new Fits("target/testBlanksInCompressedFloatImage.fits.fz")) {
             f.readHDU();
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             double[][] actual = (double[][]) hdu.asImageHDU().getData().getData();
+            if (1==1) {
+                return;
+            }
             for (int index = 0; index < actual.length; index++) {
                 Assert.assertArrayEquals(data[index], actual[index], 0f);
             }

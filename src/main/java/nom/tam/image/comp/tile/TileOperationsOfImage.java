@@ -182,14 +182,18 @@ public class TileOperationsOfImage {
         }
         int tileIndex = 0;
         this.tileOperations = new TileOperation[nrOfTilesOnXAxis * nrOfTilesOnYAxis];
+        int compressedOffset = 0;
         for (int y = 0; y < imageHeight; y += tileHeight) {
             boolean lastY = y + tileHeight >= imageHeight;
             for (int x = 0; x < imageWidth; x += tileWidth) {
                 boolean lastX = x + tileWidth >= imageWidth;
                 int dataOffset = y * imageWidth + x;
                 this.tileOperations[tileIndex] = init.createTileOperation(tileIndex)//
-                        .setDimensions(dataOffset, lastX ? lastTileWidth : tileWidth, lastY ? lastTileHeight : tileHeight);
+                        .setDimensions(dataOffset, lastX ? lastTileWidth : tileWidth, lastY ? lastTileHeight : tileHeight)//
+                        .setCompressedOffset(compressedOffset);
+
                 init.init(this.tileOperations[tileIndex]);
+                compressedOffset += this.tileOperations[tileIndex].getPixelSize();
                 tileIndex++;
             }
         }

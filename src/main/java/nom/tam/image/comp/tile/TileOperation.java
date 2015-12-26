@@ -7,12 +7,12 @@ package nom.tam.image.comp.tile;
  * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- *
+ * 
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * 
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.comp.tile;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -127,7 +127,13 @@ abstract class TileOperation implements Runnable {
         if (data != null && Array.getLength(data) > 0) {
             this.compressionType = type;
             this.compressedData = convertToBuffer(data);
+            this.compressedOffset = 0;
         }
+        return this;
+    }
+
+    protected TileOperation setCompressedOffset(int value) {
+        this.compressedOffset = value;
         return this;
     }
 
@@ -169,8 +175,9 @@ abstract class TileOperation implements Runnable {
      *            the buffer that describes the whole image.
      */
     protected void setWholeImageCompressedBuffer(ByteBuffer compressed) {
-        compressed.position(this.tileBuffer.getOffset() * this.tileOperationsArray.getBaseType().size());
+        compressed.position(this.compressedOffset * this.tileOperationsArray.getBaseType().size());
         this.compressedData = compressed.slice();
+        this.compressedOffset = 0;
         // we do not limit this buffer but is expected not to write more than
         // the uncompressed size.
     }
