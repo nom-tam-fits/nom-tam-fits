@@ -401,10 +401,10 @@ public class Quantize {
                 // use the minimum of noise2, noise3, and noise5 as the best
                 // noise value
                 stdev = this.noise3;
-                if (this.noise2 != 0. && this.noise2 < stdev) {
+                if (this.noise2 != 0. && (this.noise2 < stdev || stdev == 0.)) {
                     stdev = this.noise2;
                 }
-                if (this.noise5 != 0. && this.noise5 < stdev) {
+                if (this.noise5 != 0. && (this.noise5 < stdev || stdev == 0.)) {
                     stdev = this.noise5;
                 }
             }

@@ -31,7 +31,16 @@ package nom.tam.image.comp.tile;
  * #L%
  */
 
+import static nom.tam.fits.header.Compression.ZBITPIX;
+import static nom.tam.fits.header.Compression.ZNAXIS;
+import static nom.tam.fits.header.Compression.ZNAXISn;
+import static nom.tam.fits.header.Compression.ZTILEn;
+
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
@@ -46,9 +55,6 @@ import nom.tam.image.comp.TileCompressorAlternativProvider;
 import nom.tam.image.comp.TileCompressorProvider;
 import nom.tam.image.comp.hdu.CompressedImageData;
 import nom.tam.image.comp.rice.RiceCompressOption;
-import nom.tam.image.comp.tile.TileDecompressor;
-import nom.tam.image.comp.tile.TileOperation;
-import nom.tam.image.comp.tile.TileOperationsOfImage;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -200,5 +206,82 @@ public class TileCompressorProviderTest {
     public void testTileToString() throws Exception {
         String toString = new Access2().getTile().toString();
         Assert.assertEquals("TileDecompressor(0,null,0)", toString);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testTileWrongHeader1() throws Exception {
+        TileOperationsOfImage operationsOfImage = new TileOperationsOfImage(null);
+        Header header = new Header();
+        header.addValue(ZBITPIX, 32);
+        header.addValue(ZNAXIS, 2);
+        header.addValue(ZNAXISn.n(1), 100);
+        header.addValue(ZTILEn.n(1), 15);
+        header.addValue(ZTILEn.n(2), 15);
+        operationsOfImage.readHeader(header);
+    }
+
+    @Test
+    public void testTileSizes() throws Exception {
+        int[] sizes = {
+            1,
+            3,
+            15,
+            33,
+            50,
+            66,
+            100
+        };
+        for (int tileWidth : sizes) {
+            for (int tileHeigth : sizes) {
+                testTileSizes(tileWidth, tileHeigth);
+            }
+        }
+    }
+
+    private void testTileSizes(int tileWidth, int tileHeigth) throws HeaderCardException, FitsException {
+        int imageSize = 100;
+        TileOperationsOfImage operationsOfImage = new TileOperationsOfImage(null);
+        Buffer buffer = IntBuffer.allocate(imageSize * imageSize);
+        Header header = new Header();
+        header.addValue(ZBITPIX, 32);
+        header.addValue(ZNAXIS, 2);
+        header.addValue(ZNAXISn.n(1), imageSize);
+        header.addValue(ZNAXISn.n(2), imageSize);
+        header.addValue(ZTILEn.n(1), tileWidth);
+        header.addValue(ZTILEn.n(2), tileHeigth);
+
+        operationsOfImage.readHeader(header);
+        operationsOfImage.prepareUncompressedData(buffer);
+        List<TileOperation> tiles = getTiles(operationsOfImage);
+        int heigth = 0;
+        int width = 0;
+        int pixels = 0;
+        for (TileOperation tileOperation : tiles) {
+            if (tileWidth == imageSize) {
+                heigth += tileOperation.tileBuffer.getHeight();
+            } else if (tileHeigth == imageSize) {
+                width += tileOperation.tileBuffer.getWidth();
+            }
+            pixels += tileOperation.tileBuffer.getHeight() * tileOperation.tileBuffer.getWidth();
+        }
+        Assert.assertEquals(imageSize * imageSize, pixels);
+        if (heigth != 0) {
+            Assert.assertEquals(imageSize, heigth);
+        }
+        if (width != 0) {
+            Assert.assertEquals(imageSize, width);
+        }
+    }
+
+    private List<TileOperation> getTiles(TileOperationsOfImage operationsOfImage) {
+        List<TileOperation> tiles = new ArrayList<>();
+        try {
+            for (int index = 0; index < 10000; index++) {
+                tiles.add(operationsOfImage.getTile(index));
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return tiles;
+        }
+        return tiles;
     }
 }

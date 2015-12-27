@@ -138,6 +138,16 @@ public class TileOperationsOfImage {
         }
     }
 
+    private void setNullEntries(Object column, Object defaultValue) {
+        if (column != null) {
+            for (int index = 0; index < Array.getLength(column); index++) {
+                if (Array.get(column, index) == null) {
+                    Array.set(column, index, defaultValue);
+                }
+            }
+        }
+    }
+
     public void compress(BinaryTableHDU hdu) throws FitsException {
         processAllTiles();
         // take the first blank as default value (if there is one)
@@ -170,13 +180,7 @@ public class TileOperationsOfImage {
         final int nrOfTilesOnXAxis = new BigDecimal((double) imageWidth / (double) tileWidth).setScale(0, RoundingMode.CEILING).intValue();
         final int nrOfTilesOnYAxis = new BigDecimal((double) imageHeight / (double) tileHeight).setScale(0, RoundingMode.CEILING).intValue();
         int lastTileWidth = imageWidth - (nrOfTilesOnXAxis - 1) * tileWidth;
-        if (lastTileWidth == 0) {
-            lastTileWidth = tileWidth;
-        }
         int lastTileHeight = imageHeight - (nrOfTilesOnYAxis - 1) * tileHeight;
-        if (lastTileHeight == 0) {
-            lastTileHeight = tileHeight;
-        }
         int tileIndex = 0;
         this.tileOperations = new TileOperation[nrOfTilesOnXAxis * nrOfTilesOnYAxis];
         int compressedOffset = 0;
@@ -279,6 +283,10 @@ public class TileOperationsOfImage {
         return this.tileOperations[i];
     }
 
+    protected Integer getZBlank() {
+        return this.zblank;
+    }
+
     public TileOperationsOfImage prepareUncompressedData(final Buffer buffer) {
         this.compressedWholeArea = ByteBuffer.wrap(new byte[this.baseType.size() * this.axes[0] * this.axes[1]]);
         createTiles(new ITileOperationInitialisation() {
@@ -322,11 +330,8 @@ public class TileOperationsOfImage {
             public void init(TileOperation tileOperation) {
                 tileOperation.setCompressed(compressed != null ? compressed[tileOperation.getTileIndex()] : null, TileCompressionType.COMPRESSED)//
                         .setCompressed(uncompressed != null ? uncompressed[tileOperation.getTileIndex()] : null, TileCompressionType.UNCOMPRESSED)//
-                        .setCompressed(gzipCompressed != null ? gzipCompressed[tileOperation.getTileIndex()] : null, TileCompressionType.GZIP_COMPRESSED)
-                        //
-                        .setBlank(
-                                TileOperationsOfImage.this.zblank != null ? TileOperationsOfImage.this.zblank : zblankColumn == null ? null : zblankColumn[tileOperation
-                                        .getTileIndex()])//
+                        .setCompressed(gzipCompressed != null ? gzipCompressed[tileOperation.getTileIndex()] : null, TileCompressionType.GZIP_COMPRESSED)//
+                        .setBlank(tileOperation.getZBlank(zblankColumn))//
                         .setZero(zzero == null ? Double.NaN : zzero[tileOperation.getTileIndex()])//
                         .setScale(zscale == null ? Double.NaN : zscale[tileOperation.getTileIndex()]);
             }
@@ -440,6 +445,9 @@ public class TileOperationsOfImage {
             zzeroColumn = setInColumn(zzeroColumn, !Double.isNaN(tileOperation.getZero()), tileOperation, double.class, tileOperation.getZero());
             zscaleColumn = setInColumn(zscaleColumn, !Double.isNaN(tileOperation.getScale()), tileOperation, double.class, tileOperation.getScale());
         }
+        setNullEntries(compressedColumn, new byte[0]);
+        setNullEntries(gzipColumn, new byte[0]);
+        setNullEntries(uncompressedColumn, new byte[0]);
         addColumnToTable(hdu, compressedColumn, COMPRESSED_DATA_COLUMN);
         addColumnToTable(hdu, gzipColumn, GZIP_COMPRESSED_DATA_COLUMN);
         addColumnToTable(hdu, uncompressedColumn, UNCOMPRESSED_DATA_COLUMN);
@@ -474,4 +482,5 @@ public class TileOperationsOfImage {
             nval++;
         }
     }
+
 }
