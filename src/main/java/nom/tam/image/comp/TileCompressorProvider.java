@@ -84,12 +84,11 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         @Override
         public boolean compress(Buffer in, ByteBuffer out, ICompressOption... options) {
             try {
-                this.constructor.newInstance((Object[]) options).compress(in, out);
+                return this.constructor.newInstance((Object[]) options).compress(in, out);
             } catch (Exception e) {
                 LOG.log(Level.FINE, "could not compress using " + this.constructor + " must fallback to other compression method", e);
                 return false;
             }
-            return true;
         }
 
         @Override

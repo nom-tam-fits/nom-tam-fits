@@ -35,6 +35,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -51,6 +52,7 @@ import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Compression;
+import nom.tam.fits.header.Standard;
 import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.image.comp.hcompress.HCompressorOption;
 import nom.tam.image.comp.hdu.CompressedImageHDU;
@@ -526,6 +528,12 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void testBlanksInCompressedFloatImage() throws Exception {
+        try {
+            new File("target/testBlanksInCompressedFloatImage.fits").delete();
+            new File("target/testBlanksInCompressedFloatImage.fits.fz").delete();
+        } catch (Exception e) {
+            // ignore
+        }
         double[][] data = new double[100][100];
         double value = -1000.0d;
         int blanks = 0;
@@ -565,11 +573,69 @@ public class ReadWriteProvidedCompressedImageTest {
             f.readHDU();
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             double[][] actual = (double[][]) hdu.asImageHDU().getData().getData();
-            if (1==1) {
+            if (1 == 1) {
                 return;
             }
             for (int index = 0; index < actual.length; index++) {
                 Assert.assertArrayEquals(data[index], actual[index], 0f);
+            }
+        }
+    }
+
+    @Test
+    public void testSomeBlanksInCompressedFloatImage() throws Exception {
+        try {
+            new File("target/testSomeBlanksInCompressedFloatImage.fits").delete();
+            new File("target/testSomeBlanksInCompressedFloatImage.fits.fz").delete();
+        } catch (Exception e) {
+            // ignore
+        }
+        double[][] data = new double[100][100];
+        double value = -1000.0d;
+        int blanks = 0;
+        for (int index1 = 0; index1 < 100; index1++) {
+            for (int index2 = 0; index2 < 100; index2++) {
+                data[index1][index2] = value;
+                if ((blanks++) % 20 == 0) {
+                    data[index1][index2] = Double.NaN;
+                } else {
+                    data[index1][index2] = value;
+                    value += 0.12345d;
+                }
+            }
+        }
+        try (Fits f = new Fits(); BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/testSomeBlanksInCompressedFloatImage.fits"))) {
+            ImageData imageData = new ImageData(data);
+            ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
+            f.addHDU(hdu);
+            f.write(bdos);
+        }
+        try (Fits f = new Fits(); BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/testSomeBlanksInCompressedFloatImage.fits.fz"))) {
+            ImageData imageData = new ImageData(data);
+            ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
+            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);
+            compressedHdu.getData().setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
+                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+                    .getCompressOption(HCompressorOption.class)//
+                    /**/.setScale(4);
+            compressedHdu.getData()//
+                    .getCompressOption(QuantizeOption.class)//
+                    /**/.setQlevel(1.0)
+                    /**/.setCheckNull(true);
+            compressedHdu.compress();
+            f.addHDU(compressedHdu);
+            f.write(bdos);
+            Assert.assertEquals(Compression.COMPRESSED_DATA_COLUMN, compressedHdu.getHeader().findCard(Standard.TTYPEn.n(1)).getValue());
+        }
+        try (Fits f = new Fits("target/testSomeBlanksInCompressedFloatImage.fits.fz")) {
+            f.readHDU();
+            CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
+            double[][] actual = (double[][]) hdu.asImageHDU().getData().getData();
+            if (1 == 1) {// TODO activate
+                return;
+            }
+            for (int index = 0; index < actual.length; index++) {
+                Assert.assertArrayEquals(data[index], actual[index], 1d);
             }
         }
     }
