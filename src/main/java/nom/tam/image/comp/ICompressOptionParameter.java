@@ -31,38 +31,45 @@ package nom.tam.image.comp;
  * #L%
  */
 
-public interface ICompressOption extends Cloneable {
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 
-    ICompressOption copy();
+public interface ICompressOptionParameter {
 
-    <T> T unwrap(Class<T> clazz);
+    enum Type {
+        HEADER,
+        ZVAL,
+        COLUMN
+    }
 
-    Integer getBNull();
+    ICompressOptionParameter NULL = new ICompressOptionParameter() {
 
-    double getBScale();
+        @Override
+        public String getName() {
+            return "";
+        }
 
-    double getBZero();
+        @Override
+        public Type getType() {
+            return null;
+        }
 
-    /**
-     * @param name
-     *            the name of the parameter to search
-     * @return get a compression paramater by its name or null if not existent.
-     *         in java 8 use a default implementation.
-     */
-    ICompressOptionParameter getCompressionParameter(String name);
+        @Override
+        public void getValueFromHeader(HeaderCard value) {
+        }
 
-    ICompressOptionParameter[] getCompressionParameters();
+        @Override
+        public int setValueInHeader(Header header, int zvalIndex) {
+            return zvalIndex;
+        }
+    };
 
-    ICompressOption setBNull(Integer blank);
+    String getName();
 
-    ICompressOption setBScale(double scale);
+    Type getType();
 
-    ICompressOption setBZero(double zero);
+    void getValueFromHeader(HeaderCard value);
 
-    void setReadDefaults();
-
-    ICompressOption setTileHeight(int value);
-
-    ICompressOption setTileWidth(int value);
-
+    int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException;
 }

@@ -71,6 +71,15 @@ public class HeaderCardBuilder {
     }
 
     /**
+     * get the current build card of the builder.
+     * 
+     * @return the current card
+     */
+    public HeaderCard card() {
+        return this.card;
+    }
+
+    /**
      * switch focus to the card with the specified key. If the card does not
      * exist the card will be created when the value or the comment is set.
      * 
@@ -80,132 +89,27 @@ public class HeaderCardBuilder {
      */
     public HeaderCardBuilder card(IFitsHeader newKey) {
         this.key = newKey;
-        this.card = header.findCard(this.key);
+        this.card = this.header.findCard(this.key);
         return this;
     }
 
     /**
-     * Convenience method: equivalent to {@code card(newKey).value(newValue)}.
+     * set the comment of the current card. If the card does not exist yet the
+     * card is created with a null value, if the card needs a value use the
+     * value setter first!
      * 
-     * @param newKey
-     * @param newValue
-     * @return this
-     * @throws HeaderCardException
-     */
-    public HeaderCardBuilder card(IFitsHeader newKey, boolean newValue) throws HeaderCardException {
-        card(newKey);
-        return value(newValue);
-    }
-
-    /**
-     * Convenience method: equivalent to {@code card(newKey).value(newValue)}.
-     * 
-     * @param newKey
-     * @param newValue
-     * @return this
-     * @throws HeaderCardException
-     */
-    public HeaderCardBuilder card(IFitsHeader newKey, double newValue) throws HeaderCardException {
-        card(newKey);
-        return value(newValue);
-    }
-
-    /**
-     * Convenience method: equivalent to {@code card(newKey).value(newValue)}.
-     * 
-     * @param newKey
-     * @param newValue
-     * @return this
-     * @throws HeaderCardException
-     */
-    public HeaderCardBuilder card(IFitsHeader newKey, Integer newValue) throws HeaderCardException {
-        card(newKey);
-        return value(newValue);
-    }
-
-    /**
-     * Convenience method: equivalent to {@code card(newKey).value(newValue)}.
-     * 
-     * @param newKey
-     * @param newValue
-     * @return this
-     * @throws HeaderCardException
-     */
-    public HeaderCardBuilder card(IFitsHeader newKey, float newValue) throws HeaderCardException {
-        card(newKey);
-        return value(newValue);
-    }
-
-    /**
-     * Convenience method: equivalent to {@code card(newKey).value(newValue)}.
-     * 
-     * @param newKey
-     * @param newValue
-     * @return this
-     * @throws HeaderCardException
-     */
-    public HeaderCardBuilder card(IFitsHeader newKey, String newValue) throws HeaderCardException {
-        card(newKey);
-        return value(newValue);
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
+     * @param newComment
+     *            the new comment to set.
      * @return this
      * @throws HeaderCardException
      *             if the card creation failed.
      */
-    public HeaderCardBuilder value(String newValue) throws HeaderCardException {
+    public HeaderCardBuilder comment(String newComment) throws HeaderCardException {
         if (this.card == null) {
-            this.card = new HeaderCard(key.key(), newValue, null);
-            header.addLine(this.card);
-        } else {
-            this.card.setValue(newValue);
+            this.card = new HeaderCard(this.key.key(), (String) null, null);
+            this.header.addLine(this.card);
         }
-        return this;
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(double newValue) throws HeaderCardException {
-        if (this.card == null) {
-            this.card = new HeaderCard(key.key(), newValue, null);
-            header.addLine(this.card);
-        } else {
-            this.card.setValue(newValue);
-        }
-        return this;
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(float newValue) throws HeaderCardException {
-        if (this.card == null) {
-            this.card = new HeaderCard(key.key(), newValue, null);
-            header.addLine(this.card);
-        } else {
-            this.card.setValue(newValue);
-        }
+        this.card.setComment(newComment);
         return this;
     }
 
@@ -221,48 +125,8 @@ public class HeaderCardBuilder {
      */
     public HeaderCardBuilder value(boolean newValue) throws HeaderCardException {
         if (this.card == null) {
-            this.card = new HeaderCard(key.key(), newValue, null);
-            header.addLine(this.card);
-        } else {
-            this.card.setValue(newValue);
-        }
-        return this;
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(int newValue) throws HeaderCardException {
-        if (this.card == null) {
-            this.card = new HeaderCard(key.key(), newValue, null);
-            header.addLine(this.card);
-        } else {
-            this.card.setValue(newValue);
-        }
-        return this;
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(long newValue) throws HeaderCardException {
-        if (this.card == null) {
-            this.card = new HeaderCard(key.key(), newValue, null);
-            header.addLine(this.card);
+            this.card = new HeaderCard(this.key.key(), newValue, null);
+            this.header.addLine(this.card);
         } else {
             this.card.setValue(newValue);
         }
@@ -284,22 +148,102 @@ public class HeaderCardBuilder {
     }
 
     /**
-     * set the comment of the current card. If the card does not exist yet the
-     * card is created with a null value, if the card needs a value use the
-     * value setter first!
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
      * 
-     * @param newComment
-     *            the new comment to set.
+     * @param newValue
+     *            the new value to set.
      * @return this
      * @throws HeaderCardException
      *             if the card creation failed.
      */
-    public HeaderCardBuilder comment(String newComment) throws HeaderCardException {
+    public HeaderCardBuilder value(double newValue) throws HeaderCardException {
         if (this.card == null) {
-            this.card = new HeaderCard(key.key(), (String) null, null);
-            header.addLine(this.card);
+            this.card = new HeaderCard(this.key.key(), newValue, null);
+            this.header.addLine(this.card);
+        } else {
+            this.card.setValue(newValue);
         }
-        card.setComment(newComment);
+        return this;
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(float newValue) throws HeaderCardException {
+        if (this.card == null) {
+            this.card = new HeaderCard(this.key.key(), newValue, null);
+            this.header.addLine(this.card);
+        } else {
+            this.card.setValue(newValue);
+        }
+        return this;
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(int newValue) throws HeaderCardException {
+        if (this.card == null) {
+            this.card = new HeaderCard(this.key.key(), newValue, null);
+            this.header.addLine(this.card);
+        } else {
+            this.card.setValue(newValue);
+        }
+        return this;
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(long newValue) throws HeaderCardException {
+        if (this.card == null) {
+            this.card = new HeaderCard(this.key.key(), newValue, null);
+            this.header.addLine(this.card);
+        } else {
+            this.card.setValue(newValue);
+        }
+        return this;
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(String newValue) throws HeaderCardException {
+        if (this.card == null) {
+            this.card = new HeaderCard(this.key.key(), newValue, null);
+            this.header.addLine(this.card);
+        } else {
+            this.card.setValue(newValue);
+        }
         return this;
     }
 }

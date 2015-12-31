@@ -38,6 +38,7 @@ import java.nio.Buffer;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.tile.TileOperationsOfImage;
 import nom.tam.util.ArrayFuncs;
@@ -96,14 +97,12 @@ public class CompressedImageData extends BinaryTable {
         }
     }
 
-    public CompressedImageData setCompressAlgorithm(String compressAlgorithm) {
-        tileOperationsOfImage().setCompressAlgorithm(compressAlgorithm);
-        return this;
+    protected void setCompressAlgorithm(HeaderCard compressAlgorithmCard) {
+        tileOperationsOfImage().setCompressAlgorithm(compressAlgorithmCard);
     }
 
-    public CompressedImageData setQuantAlgorithm(String quantAlgorithm) {
-        tileOperationsOfImage().setQuantAlgorithm(quantAlgorithm);
-        return this;
+    protected void setQuantAlgorithm(HeaderCard quantAlgorithmCard) throws FitsException {
+        tileOperationsOfImage().setQuantAlgorithm(quantAlgorithmCard);
     }
 
     protected CompressedImageData setTileSize(int... axes) {

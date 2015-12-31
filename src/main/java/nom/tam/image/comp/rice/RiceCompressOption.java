@@ -31,8 +31,14 @@ package nom.tam.image.comp.rice;
  * #L%
  */
 
+import java.util.Arrays;
+
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.ICompressOptionParameter;
 import nom.tam.util.type.PrimitiveType;
 
 public class RiceCompressOption implements ICompressOption {
@@ -40,6 +46,58 @@ public class RiceCompressOption implements ICompressOption {
     public static final int DEFAULT_RICE_BLOCKSIZE = 32;
 
     public static final int DEFAULT_RICE_BYTEPIX = PrimitiveType.INT.size();
+
+    private final ICompressOptionParameter[] parameters = new ICompressOptionParameter[]{
+        new ICompressOptionParameter() {
+
+            @Override
+            public String getName() {
+                return Compression.BLOCKSIZE;
+            }
+
+            @Override
+            public Type getType() {
+                return Type.ZVAL;
+            }
+
+            @Override
+            public void getValueFromHeader(HeaderCard value) {
+                RiceCompressOption.this.blockSize = value.getValue(Integer.class, DEFAULT_RICE_BLOCKSIZE);
+
+            }
+
+            @Override
+            public int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException {
+                header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
+                header.addValue(Compression.ZVALn.n(zvalIndex), RiceCompressOption.this.blockSize);
+                return zvalIndex + 1;
+            }
+        },
+        new ICompressOptionParameter() {
+
+            @Override
+            public String getName() {
+                return Compression.BYTEPIX;
+            }
+
+            @Override
+            public Type getType() {
+                return Type.ZVAL;
+            }
+
+            @Override
+            public void getValueFromHeader(HeaderCard value) {
+                RiceCompressOption.this.bytePix = value.getValue(Integer.class, null);
+            }
+
+            @Override
+            public int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException {
+                header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
+                header.addValue(Compression.ZVALn.n(zvalIndex), RiceCompressOption.this.bytePix);
+                return zvalIndex + 1;
+            }
+        },
+    };
 
     private int blockSize = DEFAULT_RICE_BLOCKSIZE;
 
@@ -82,11 +140,18 @@ public class RiceCompressOption implements ICompressOption {
     }
 
     @Override
-    public Parameter[] getCompressionParameters() {
-        return new Parameter[]{
-            new Parameter(Compression.BLOCKSIZE, this.blockSize),
-            new Parameter(Compression.BYTEPIX, this.bytePix),
-        };
+    public ICompressOptionParameter getCompressionParameter(String name) {
+        for (ICompressOptionParameter parameter : this.parameters) {
+            if (parameter.getName().equals(name)) {
+                return parameter;
+            }
+        }
+        return ICompressOptionParameter.NULL;
+    }
+
+    @Override
+    public ICompressOptionParameter[] getCompressionParameters() {
+        return Arrays.copyOf(this.parameters, this.parameters.length);
     }
 
     public RiceCompressOption setBlockSize(int value) {
@@ -114,18 +179,6 @@ public class RiceCompressOption implements ICompressOption {
         return this;
     }
 
-    @Override
-    public ICompressOption setCompressionParameter(Parameter[] parameters) {
-        for (Parameter parameter : parameters) {
-            if (Compression.BLOCKSIZE.equals(parameter.getName())) {
-                setBlockSize(parameter.getValue(Integer.class));
-            } else if (Compression.BYTEPIX.equals(parameter.getName())) {
-                setBytePix(parameter.getValue(Integer.class));
-            }
-        }
-        return setDefaultBytePix(DEFAULT_RICE_BYTEPIX);
-    }
-
     protected RiceCompressOption setDefaultBytePix(int defaultBytePix) {
         if (this.original != null) {
             this.original.setDefaultBytePix(defaultBytePix);
@@ -137,6 +190,11 @@ public class RiceCompressOption implements ICompressOption {
     }
 
     @Override
+    public void setReadDefaults() {
+        this.bytePix = DEFAULT_RICE_BYTEPIX;
+    }
+
+    @Override
     public RiceCompressOption setTileHeight(int value) {
         return this;
     }
@@ -144,5 +202,13 @@ public class RiceCompressOption implements ICompressOption {
     @Override
     public RiceCompressOption setTileWidth(int value) {
         return this;
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> clazz) {
+        if (clazz.isAssignableFrom(this.getClass())) {
+            return clazz.cast(this);
+        }
+        return null;
     }
 }

@@ -43,7 +43,9 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.image.comp.ICompressOption;
 import nom.tam.util.Cursor;
 
 /**
@@ -114,6 +116,10 @@ public class CompressedImageHDU extends BinaryTableHDU {
         getData().compress(this);
     }
 
+    public <T extends ICompressOption> T getCompressOption(Class<T> clazz) {
+        return getData().getCompressOption(clazz);
+    }
+
     @Override
     public CompressedImageData getData() {
         return (CompressedImageData) super.getData();
@@ -131,5 +137,17 @@ public class CompressedImageHDU extends BinaryTableHDU {
     @Override
     public boolean isHeader() {
         return super.isHeader() && isHeader(this.myHeader);
+    }
+
+    public CompressedImageHDU setCompressAlgorithm(String compressAlgorithm) throws FitsException {
+        HeaderCard compressAlgorithmCard = getHeader().card(Compression.ZCMPTYPE).value(compressAlgorithm).card();
+        getData().setCompressAlgorithm(compressAlgorithmCard);
+        return this;
+    }
+
+    public CompressedImageHDU setQuantAlgorithm(String quantAlgorithm) throws FitsException {
+        HeaderCard quantAlgorithmCard = getHeader().card(Compression.ZQUANTIZ).value(quantAlgorithm).card();
+        getData().setQuantAlgorithm(quantAlgorithmCard);
+        return this;
     }
 }

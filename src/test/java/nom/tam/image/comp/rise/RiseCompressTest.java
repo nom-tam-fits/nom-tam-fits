@@ -36,8 +36,9 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
-import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.rice.RiceCompress.ByteRiceCompress;
 import nom.tam.image.comp.rice.RiceCompress.IntRiceCompress;
 import nom.tam.image.comp.rice.RiceCompress.ShortRiceCompress;
@@ -50,6 +51,59 @@ import org.junit.Test;
 public class RiseCompressTest {
 
     private static final RiceCompressOption option = new RiceCompressOption().setBlockSize(32);
+
+    @Test
+    public void testOption() throws HeaderCardException {
+        RiceCompressOption option = new RiceCompressOption() {
+
+            @Override
+            protected Object clone() throws CloneNotSupportedException {
+                throw new CloneNotSupportedException("this can not be cloned");
+            }
+        };
+        IllegalStateException expected = null;
+        try {
+            option.copy();
+        } catch (IllegalStateException e) {
+            expected = e;
+        }
+        Assert.assertNotNull(expected);
+        option.getCompressionParameter(Compression.BLOCKSIZE).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 32, null));
+        option.getCompressionParameter(Compression.BYTEPIX).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 16, null));
+        option.getCompressionParameter(Compression.SCALE).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 1, null));
+        option.getCompressionParameter(Compression.SMOOTH).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), true, null));
+
+        Assert.assertEquals(32, option.getBlockSize());
+        Assert.assertEquals(16, option.getBytePix());
+    }
+
+    @Test
+    public void testRiseByte() throws Exception {
+        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
+                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data8.rise", "r");//
+
+        ) {
+            byte[] bytes = new byte[(int) file.length()];
+            file.read(bytes);
+            byte[] expectedBytes = new byte[(int) expected.length()];
+            expected.read(expectedBytes);
+
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
+            ByteRiceCompress compressor = new ByteRiceCompress(option.setBytePix(PrimitiveType.BYTE.size()));
+            compressor.compress(ByteBuffer.wrap(bytes), compressed);
+
+            byte[] compressedArray = new byte[compressed.position()];
+            compressed.position(0);
+            compressed.get(compressedArray, 0, compressedArray.length);
+            Assert.assertArrayEquals(expectedBytes, compressedArray);
+
+            byte[] decompressedArray = new byte[bytes.length];
+            compressed.position(0);
+            compressor.decompress(compressed, ByteBuffer.wrap(decompressedArray));
+            Assert.assertArrayEquals(bytes, decompressedArray);
+        }
+
+    }
 
     @Test
     public void testRiseInt() throws Exception {
@@ -108,59 +162,5 @@ public class RiseCompressTest {
             Assert.assertArrayEquals(shortArray, decompressedArray);
         }
 
-    }
-
-    @Test
-    public void testRiseByte() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data8.rise", "r");//
-
-        ) {
-            byte[] bytes = new byte[(int) file.length()];
-            file.read(bytes);
-            byte[] expectedBytes = new byte[(int) expected.length()];
-            expected.read(expectedBytes);
-
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
-            ByteRiceCompress compressor = new ByteRiceCompress(option.setBytePix(PrimitiveType.BYTE.size()));
-            compressor.compress(ByteBuffer.wrap(bytes), compressed);
-
-            byte[] compressedArray = new byte[compressed.position()];
-            compressed.position(0);
-            compressed.get(compressedArray, 0, compressedArray.length);
-            Assert.assertArrayEquals(expectedBytes, compressedArray);
-
-            byte[] decompressedArray = new byte[bytes.length];
-            compressed.position(0);
-            compressor.decompress(compressed, ByteBuffer.wrap(decompressedArray));
-            Assert.assertArrayEquals(bytes, decompressedArray);
-        }
-
-    }
-
-    @Test
-    public void testOption() {
-        RiceCompressOption option = new RiceCompressOption() {
-
-            @Override
-            protected Object clone() throws CloneNotSupportedException {
-                throw new CloneNotSupportedException("this can not be cloned");
-            }
-        };
-        IllegalStateException expected = null;
-        try {
-            option.copy();
-        } catch (IllegalStateException e) {
-            expected = e;
-        }
-        Assert.assertNotNull(expected);
-        option.setCompressionParameter(new ICompressOption.Parameter[]{
-            new ICompressOption.Parameter(Compression.BLOCKSIZE, 32),
-            new ICompressOption.Parameter(Compression.BYTEPIX, 16),
-            new ICompressOption.Parameter(Compression.SCALE, 1),
-            new ICompressOption.Parameter(Compression.SMOOTH, true),
-        });
-        Assert.assertEquals(32, option.getBlockSize());
-        Assert.assertEquals(16, option.getBytePix());
     }
 }

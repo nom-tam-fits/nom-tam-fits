@@ -31,10 +31,67 @@ package nom.tam.image.comp.hcompress;
  * #L%
  */
 
+import java.util.Arrays;
+
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.ICompressOptionParameter;
 
 public class HCompressorOption implements ICompressOption {
+
+    private final ICompressOptionParameter[] parameters = new ICompressOptionParameter[]{
+        new ICompressOptionParameter() {
+
+            @Override
+            public String getName() {
+                return Compression.SCALE;
+            }
+
+            @Override
+            public Type getType() {
+                return Type.ZVAL;
+            }
+
+            @Override
+            public void getValueFromHeader(HeaderCard value) {
+                HCompressorOption.this.scale = value.getValue(Integer.class, -1);
+            }
+
+            @Override
+            public int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException {
+                header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
+                header.addValue(Compression.ZVALn.n(zvalIndex), HCompressorOption.this.scale);
+                return zvalIndex + 1;
+            }
+        },
+        new ICompressOptionParameter() {
+
+            @Override
+            public String getName() {
+                return Compression.SMOOTH;
+            }
+
+            @Override
+            public Type getType() {
+                return Type.ZVAL;
+            }
+
+            @Override
+            public void getValueFromHeader(HeaderCard value) {
+                HCompressorOption.this.smooth = value.getValue(Integer.class, 0) != 0;
+            }
+
+            @Override
+            public int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException {
+                header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
+                header.addValue(Compression.ZVALn.n(zvalIndex), HCompressorOption.this.smooth ? 1 : 0);
+                return zvalIndex + 1;
+            }
+        },
+    };
 
     private int scale;
 
@@ -69,11 +126,18 @@ public class HCompressorOption implements ICompressOption {
     }
 
     @Override
-    public Parameter[] getCompressionParameters() {
-        return new Parameter[]{
-            new Parameter(Compression.SMOOTH, this.smooth ? 1 : 0),
-            new Parameter(Compression.SCALE, this.scale),
-        };
+    public ICompressOptionParameter getCompressionParameter(String name) {
+        for (ICompressOptionParameter parameter : this.parameters) {
+            if (parameter.getName().equals(name)) {
+                return parameter;
+            }
+        }
+        return ICompressOptionParameter.NULL;
+    }
+
+    @Override
+    public ICompressOptionParameter[] getCompressionParameters() {
+        return Arrays.copyOf(this.parameters, this.parameters.length);
     }
 
     public int getScale() {
@@ -108,15 +172,7 @@ public class HCompressorOption implements ICompressOption {
     }
 
     @Override
-    public ICompressOption setCompressionParameter(Parameter[] parameters) {
-        for (Parameter parameter : parameters) {
-            if (Compression.SMOOTH.equals(parameter.getName())) {
-                setSmooth(parameter.getValue(Integer.class).intValue() != 0);
-            } else if (Compression.SCALE.equals(parameter.getName())) {
-                setScale(parameter.getValue(Integer.class));
-            }
-        }
-        return this;
+    public void setReadDefaults() {
     }
 
     public HCompressorOption setScale(int value) {
@@ -139,5 +195,13 @@ public class HCompressorOption implements ICompressOption {
     public HCompressorOption setTileWidth(int value) {
         this.tileWidth = value;
         return this;
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> clazz) {
+        if (clazz.isAssignableFrom(this.getClass())) {
+            return clazz.cast(this);
+        }
+        return null;
     }
 }

@@ -1,7 +1,13 @@
 package nom.tam.image.comp.quant;
 
+import java.util.Arrays;
+
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.ICompressOptionParameter;
 
 /*
  * #%L
@@ -39,12 +45,55 @@ public class QuantizeOption implements ICompressOption {
     /**
      * and including NULL_VALUE. These values may not be used to represent the
      * quantized and scaled floating point pixel values If lossy Hcompression is
-     * used, and the tileOperationsArray contains null values, then it is also possible for
-     * the compressed values to slightly exceed the range of the actual
-     * (lossless) values so we must reserve a little more space value used to
-     * represent undefined pixels
+     * used, and the tileOperationsArray contains null values, then it is also
+     * possible for the compressed values to slightly exceed the range of the
+     * actual (lossless) values so we must reserve a little more space value
+     * used to represent undefined pixels
      */
     private static final int NULL_VALUE = Integer.MIN_VALUE + 1;
+
+    private final ICompressOptionParameter[] parameters = new ICompressOptionParameter[]{
+        new ICompressOptionParameter() {
+
+            @Override
+            public String getName() {
+                return Compression.ZQUANTIZ.name();
+            }
+
+            @Override
+            public Type getType() {
+                return Type.HEADER;
+            }
+
+            @Override
+            public void getValueFromHeader(HeaderCard value) {
+                if (value.getValue().equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)) {
+                    setDither(true);
+                    setDither2(true);
+                } else if (value.getValue().equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)) {
+                    setDither(true);
+                    setDither2(false);
+                } else {
+                    setDither(false);
+                    setDither2(false);
+                }
+            }
+
+            @Override
+            public int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException {
+                String value;
+                if (isDither2()) {
+                    value = Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2;
+                } else if (isDither()) {
+                    value = Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1;
+                } else {
+                    value = Compression.ZQUANTIZ_NO_DITHER;
+                }
+                header.card(Compression.ZQUANTIZ).value(value);
+                return zvalIndex;
+            }
+        }
+    };
 
     private double bScale = Double.NaN;
 
@@ -80,10 +129,16 @@ public class QuantizeOption implements ICompressOption {
 
     private int tileWidth;
 
+    private ICompressOption wrappedOption;
+
     @Override
     public QuantizeOption copy() {
         try {
-            return (QuantizeOption) clone();
+            QuantizeOption copy = (QuantizeOption) clone();
+            if (copy.wrappedOption != null) {
+                copy.wrappedOption = copy.wrappedOption.copy();
+            }
+            return copy;
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException("option could not be cloned", e);
         }
@@ -105,8 +160,18 @@ public class QuantizeOption implements ICompressOption {
     }
 
     @Override
-    public Parameter[] getCompressionParameters() {
-        return null;
+    public ICompressOptionParameter getCompressionParameter(String name) {
+        for (ICompressOptionParameter parameter : this.parameters) {
+            if (parameter.getName().equals(name)) {
+                return parameter;
+            }
+        }
+        return ICompressOptionParameter.NULL;
+    }
+
+    @Override
+    public ICompressOptionParameter[] getCompressionParameters() {
+        return Arrays.copyOf(this.parameters, this.parameters.length);
     }
 
     public int getIntMaxValue() {
@@ -208,22 +273,6 @@ public class QuantizeOption implements ICompressOption {
         return this;
     }
 
-    @Override
-    public ICompressOption setCompressionParameter(Parameter[] parameters) {
-        for (Parameter parameter : parameters) {
-            if (Compression.ZQUANTIZ.name().equals(parameter.getName())) {
-                if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(parameter.getValue())) {
-                    setDither(true);
-                    setDither2(false);
-                } else if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(parameter.getValue())) {
-                    setDither(true);
-                    setDither2(true);
-                }
-            }
-        }
-        return this;
-    }
-
     public QuantizeOption setDither(boolean value) {
         this.dither = value;
         return this;
@@ -264,6 +313,10 @@ public class QuantizeOption implements ICompressOption {
         return this;
     }
 
+    @Override
+    public void setReadDefaults() {
+    }
+
     public QuantizeOption setSeed(long value) {
         this.seed = value;
         return this;
@@ -279,5 +332,15 @@ public class QuantizeOption implements ICompressOption {
     public QuantizeOption setTileWidth(int value) {
         this.tileWidth = value;
         return this;
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> clazz) {
+        if (clazz.isAssignableFrom(this.getClass())) {
+            return clazz.cast(this);
+        } else if (this.wrappedOption != null) {
+            return this.wrappedOption.unwrap(clazz);
+        }
+        return null;
     }
 }
