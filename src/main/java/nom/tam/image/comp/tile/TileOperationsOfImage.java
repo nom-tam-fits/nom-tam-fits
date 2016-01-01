@@ -472,13 +472,13 @@ public class TileOperationsOfImage {
                 .card(ZBITPIX).value(this.baseType.bitPix())//
                 .card(ZCMPTYPE).value(this.compressAlgorithm);
         if (this.zblank != null) {
-            cardBuilder.card(ZBLANK, this.zblank);
+            cardBuilder.card(ZBLANK).value(this.zblank);
         }
         if (this.quantAlgorithm != null) {
-            cardBuilder.card(ZQUANTIZ, this.quantAlgorithm);
+            cardBuilder.card(ZQUANTIZ).value(this.quantAlgorithm);
         }
         for (int i = 1; i <= this.tileAxes.length; i++) {
-            cardBuilder.card(ZTILEn.n(i), this.tileAxes[i - 1]);
+            cardBuilder.card(ZTILEn.n(i)).value(this.tileAxes[i - 1]);
         }
         int nval = 1;
         for (ICompressOption option : compressOptions()) {

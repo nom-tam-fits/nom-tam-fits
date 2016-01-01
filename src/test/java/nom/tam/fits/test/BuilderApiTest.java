@@ -65,13 +65,13 @@ public class BuilderApiTest {
         Date date = new FitsDate("2015-07-11T05:21:25.446").toDate();
 
         header.card(DATE_OBS).value(date).comment("observe date")//
-                .card(INSTRUME, "The very best")//
-                .card(ORIGIN, "private")//
+                .card(INSTRUME).value("The very best")//
+                .card(ORIGIN).value("private")//
                 .card(COMMENT).comment("something to comment")//
-                .card(DATAMIN, 1)//
-                .card(DATAMAX, 2f)//
-                .card(DATAMAX, 3d)//
-                .card(AUTHOR, true);
+                .card(DATAMIN).value(1)//
+                .card(DATAMAX).value(2f)//
+                .card(DATAMAX).value(3d)//
+                .card(AUTHOR).value(true);
 
         Assert.assertEquals("2015-07-11T05:21:25.446", header.getStringValue(DATE_OBS));
         Assert.assertEquals("observe date", header.findCard(DATE_OBS).getComment());
@@ -86,12 +86,12 @@ public class BuilderApiTest {
         date = new FitsDate("2015-07-12T05:21:25.446").toDate();
         BasicHDU<?> hdu = Fits.makeHDU(header);
         hdu.card(DATE_OBS).value(date).comment("observation date")//
-                .card(INSTRUME, "The very very best")//
-                .card(ORIGIN, "other")//
+                .card(INSTRUME).value("The very very best")//
+                .card(ORIGIN).value("other")//
                 .card(COMMENT).comment("something else to comment")//
-                .card(DATAMIN, 100)//
-                .card(DATAMAX, 200f)//
-                .card(AUTHOR, false);
+                .card(DATAMIN).value(100)//
+                .card(DATAMAX).value(200f)//
+                .card(AUTHOR).value(false);
 
         Assert.assertEquals("2015-07-12T05:21:25.446", header.getStringValue(DATE_OBS));
         Assert.assertEquals("observation date", header.findCard(DATE_OBS).getComment());
