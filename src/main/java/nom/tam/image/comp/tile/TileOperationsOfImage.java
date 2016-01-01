@@ -203,16 +203,6 @@ public class TileOperationsOfImage {
         }
     }
 
-    private void processAllTiles() {
-        ExecutorService threadPool = FitsFactory.threadPool();
-        for (TileOperation tileOperation : this.tileOperations) {
-            tileOperation.execute(threadPool);
-        }
-        for (TileOperation tileOperation : this.tileOperations) {
-            tileOperation.waitForResult();
-        }
-    }
-
     public PrimitiveType<Buffer> getBaseType() {
         return this.baseType;
     }
@@ -257,20 +247,20 @@ public class TileOperationsOfImage {
         return null;
     }
 
-    private Integer getZblankValue(Header header) {
-        HeaderCard card = header.findCard(ZBLANK);
-        if (card != null) {
-            return card.getValue(Integer.class, null);
-        }
-        return null;
-    }
-
     protected TileOperation getTile(int i) {
         return this.tileOperations[i];
     }
 
     protected Integer getZBlank() {
         return this.zblank;
+    }
+
+    private Integer getZblankValue(Header header) {
+        HeaderCard card = header.findCard(ZBLANK);
+        if (card != null) {
+            return card.getValue(Integer.class, null);
+        }
+        return null;
     }
 
     public TileOperationsOfImage prepareUncompressedData(final Buffer buffer) {
@@ -290,6 +280,16 @@ public class TileOperationsOfImage {
         });
         this.compressedWholeArea.rewind();
         return this;
+    }
+
+    private void processAllTiles() {
+        ExecutorService threadPool = FitsFactory.threadPool();
+        for (TileOperation tileOperation : this.tileOperations) {
+            tileOperation.execute(threadPool);
+        }
+        for (TileOperation tileOperation : this.tileOperations) {
+            tileOperation.waitForResult();
+        }
     }
 
     public TileOperationsOfImage read(Header header) throws FitsException {

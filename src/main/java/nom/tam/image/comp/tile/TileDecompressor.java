@@ -63,12 +63,6 @@ public class TileDecompressor extends TileOperation {
         }
     }
 
-    @Override
-    public void run() {
-        decompress();
-        this.tileBuffer.finish();
-    }
-
     private void initTileOptions() {
         List<ICompressOption> compressOptions = this.tileOperationsArray.compressOptions();
         this.tileOptions = new ICompressOption[compressOptions.size()];
@@ -80,5 +74,11 @@ public class TileDecompressor extends TileOperation {
                     .setTileWidth(this.tileBuffer.getWidth()) //
                     .setTileHeight(this.tileBuffer.getHeight());
         }
+    }
+
+    @Override
+    public void run() {
+        decompress();
+        this.tileBuffer.finish();
     }
 }

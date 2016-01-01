@@ -120,7 +120,7 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         IntRiceCompress.class,
         FloatRiceCompress.class,
         DoubleRiceCompress.class,
-        
+
         BytePLIOCompress.class,
         ShortPLIOCompress.class,
 

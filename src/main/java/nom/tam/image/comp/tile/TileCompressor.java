@@ -98,6 +98,15 @@ public class TileCompressor extends TileOperation {
         }
     }
 
+    private void initTileOptions() {
+        this.tileOptions = new ICompressOption[this.tileOperationsArray.compressOptions().size()];
+        for (int index = 0; index < this.tileOptions.length; index++) {
+            this.tileOptions[index] = this.tileOperationsArray.compressOptions().get(index).copy() //
+                    .setTileWidth(this.tileBuffer.getWidth()) //
+                    .setTileHeight(this.tileBuffer.getHeight());
+        }
+    }
+
     private void replaceCompressedBufferWithTargetArea(ByteBuffer compressedWholeArea) {
         int compressedSize = this.compressedData.limit();
         int latest = compressedWholeArea.position();
@@ -110,14 +119,5 @@ public class TileCompressor extends TileOperation {
     @Override
     public void run() {
         compress();
-    }
-
-    private void initTileOptions() {
-        this.tileOptions = new ICompressOption[this.tileOperationsArray.compressOptions().size()];
-        for (int index = 0; index < this.tileOptions.length; index++) {
-            this.tileOptions[index] = this.tileOperationsArray.compressOptions().get(index).copy() //
-                    .setTileWidth(this.tileBuffer.getWidth()) //
-                    .setTileHeight(this.tileBuffer.getHeight());
-        }
     }
 }

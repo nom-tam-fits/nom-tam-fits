@@ -35,8 +35,6 @@ public interface ICompressOption extends Cloneable {
 
     ICompressOption copy();
 
-    <T> T unwrap(Class<T> clazz);
-
     Integer getBNull();
 
     double getBScale();
@@ -64,5 +62,7 @@ public interface ICompressOption extends Cloneable {
     ICompressOption setTileHeight(int value);
 
     ICompressOption setTileWidth(int value);
+
+    <T> T unwrap(Class<T> clazz);
 
 }
