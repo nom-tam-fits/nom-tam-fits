@@ -151,7 +151,7 @@ public class TileCompressorProviderTest {
     @Test(expected = IllegalStateException.class)
     public void testBadProviderCasesBadCompressConstruct() {
         ITileCompressorControl provider = new BrokenClass(null).getProvider();
-        ICompressOption[] options = provider.options();
+        ICompressOption options = provider.option();
         exceptionInConstructor = true;
         provider.decompress(null, null, options);
     }
@@ -159,7 +159,7 @@ public class TileCompressorProviderTest {
     @Test
     public void testBadProviderCasesBadCompressMethod() {
         ITileCompressorControl provider = new BrokenClass(null).getProvider();
-        ICompressOption[] options = provider.options();
+        ICompressOption options = provider.option();
         exceptionInMethod = true;
         Assert.assertFalse(provider.compress(null, null, options));
     }
@@ -167,7 +167,7 @@ public class TileCompressorProviderTest {
     @Test(expected = IllegalStateException.class)
     public void testBadProviderCasesBadDeCompressMethod() {
         ITileCompressorControl provider = new BrokenClass(null).getProvider();
-        ICompressOption[] options = provider.options();
+        ICompressOption options = provider.option();
         exceptionInMethod = true;
         provider.decompress(null, null, options);
     }
@@ -176,20 +176,20 @@ public class TileCompressorProviderTest {
     public void testBadProviderCasesBadOption() {
         ITileCompressorControl provider = new BrokenClass(null).getProvider();
         exceptionInConstructor = true;
-        provider.options();
+        provider.option();
     }
 
     @Test
     public void testBadProviderCasesSuccess() {
         ITileCompressorControl provider = new BrokenClass(null).getProvider();
-        ICompressOption[] options = provider.options();
+        ICompressOption options = provider.option();
         provider.decompress(null, null, options);
     }
 
     @Test
     public void testBadProviderCasesSuccessCompressMethod() {
         ITileCompressorControl provider = new BrokenClass(null).getProvider();
-        ICompressOption[] options = provider.options();
+        ICompressOption options = provider.option();
         provider.decompress(null, null, options);
         provider.compress(null, null, options);
     }

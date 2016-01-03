@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 import nom.tam.image.comp.ITileCompressor;
 import nom.tam.image.comp.quant.QuantProcessor.DoubleQuantCompressor;
 import nom.tam.image.comp.quant.QuantProcessor.FloatQuantCompressor;
-import nom.tam.image.comp.quant.QuantizeOption;
 import nom.tam.util.FitsIO;
 import nom.tam.util.type.PrimitiveType;
 
@@ -51,17 +50,12 @@ import nom.tam.util.type.PrimitiveType;
  * java by R. van Nieuwenhoven. Later it was massively refactored to
  * harmonizered the different compression algorithms and reduce the duplicate
  * code peaces without obscuring the algorithm itself as good as possible.
- * 
+ *
  * @author Richard White
  * @author William Pence
  * @author Richard van Nieuwenhoven
  */
 public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<T> {
-
-    /**
-     * logger to log to.
-     */
-    private static final Logger LOG = Logger.getLogger(RiceCompress.class.getName());
 
     public static class ByteRiceCompress extends RiceCompress<ByteBuffer> {
 
@@ -72,24 +66,40 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         }
 
         @Override
+        public boolean compress(ByteBuffer buffer, ByteBuffer writeBuffer) {
+            this.pixelBuffer = buffer;
+            super.compress(buffer.limit(), this.pixelBuffer.get(this.pixelBuffer.position()), new BitBuffer(writeBuffer));
+            return true;
+        }
+
+        @Override
+        public void decompress(ByteBuffer readBuffer, ByteBuffer buffer) {
+            this.pixelBuffer = buffer;
+            super.decompressBuffer(readBuffer, buffer.limit());
+        }
+
+        @Override
         protected int nextPixel() {
-            return pixelBuffer.get();
+            return this.pixelBuffer.get();
         }
 
         @Override
         protected void nextPixel(int pixel) {
-            pixelBuffer.put((byte) pixel);
+            this.pixelBuffer.put((byte) pixel);
         }
+    }
 
-        public boolean compress(ByteBuffer buffer, ByteBuffer writeBuffer) {
-            this.pixelBuffer = buffer;
-            super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()), new BitBuffer(writeBuffer));
-            return true;
+    public static class DoubleRiceCompress extends DoubleQuantCompressor {
+
+        public DoubleRiceCompress(QuantizeRiceCompressOption options) {
+            super(options, new IntRiceCompress(options.getRiceCompressOption()));
         }
+    }
 
-        public void decompress(ByteBuffer readBuffer, ByteBuffer buffer) {
-            this.pixelBuffer = buffer;
-            super.decompressBuffer(readBuffer, buffer.limit());
+    public static class FloatRiceCompress extends FloatQuantCompressor {
+
+        public FloatRiceCompress(QuantizeRiceCompressOption options) {
+            super(options, new IntRiceCompress(options.getRiceCompressOption()));
         }
     }
 
@@ -102,24 +112,26 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         }
 
         @Override
+        public boolean compress(IntBuffer buffer, ByteBuffer writeBuffer) {
+            this.pixelBuffer = buffer;
+            super.compress(buffer.limit(), this.pixelBuffer.get(this.pixelBuffer.position()), new BitBuffer(writeBuffer));
+            return true;
+        }
+
+        @Override
+        public void decompress(ByteBuffer readBuffer, IntBuffer buffer) {
+            this.pixelBuffer = buffer;
+            super.decompressBuffer(readBuffer, buffer.limit());
+        }
+
+        @Override
         protected int nextPixel() {
-            return pixelBuffer.get();
+            return this.pixelBuffer.get();
         }
 
         @Override
         protected void nextPixel(int pixel) {
-            pixelBuffer.put(pixel);
-        }
-
-        public boolean compress(IntBuffer buffer, ByteBuffer writeBuffer) {
-            this.pixelBuffer = buffer;
-            super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()), new BitBuffer(writeBuffer));
-            return true;
-        }
-
-        public void decompress(ByteBuffer readBuffer, IntBuffer buffer) {
-            this.pixelBuffer = buffer;
-            super.decompressBuffer(readBuffer, buffer.limit());
+            this.pixelBuffer.put(pixel);
         }
     }
 
@@ -132,40 +144,33 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         }
 
         @Override
-        protected int nextPixel() {
-            return pixelBuffer.get();
-        }
-
-        @Override
-        protected void nextPixel(int pixel) {
-            pixelBuffer.put((short) pixel);
-        }
-
         public boolean compress(ShortBuffer buffer, ByteBuffer writeBuffer) {
             this.pixelBuffer = buffer;
-            super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()), new BitBuffer(writeBuffer));
+            super.compress(buffer.limit(), this.pixelBuffer.get(this.pixelBuffer.position()), new BitBuffer(writeBuffer));
             return true;
         }
 
+        @Override
         public void decompress(ByteBuffer readBuffer, ShortBuffer buffer) {
             this.pixelBuffer = buffer;
             super.decompressBuffer(readBuffer, buffer.limit());
         }
-    }
 
-    public static class FloatRiceCompress extends FloatQuantCompressor {
+        @Override
+        protected int nextPixel() {
+            return this.pixelBuffer.get();
+        }
 
-        public FloatRiceCompress(QuantizeOption quantizeOption, RiceCompressOption options) {
-            super(quantizeOption, new IntRiceCompress(options));
+        @Override
+        protected void nextPixel(int pixel) {
+            this.pixelBuffer.put((short) pixel);
         }
     }
 
-    public static class DoubleRiceCompress extends DoubleQuantCompressor {
-
-        public DoubleRiceCompress(QuantizeOption quantizeOption, RiceCompressOption options) {
-            super(quantizeOption, new IntRiceCompress(options));
-        }
-    }
+    /**
+     * logger to log to.
+     */
+    private static final Logger LOG = Logger.getLogger(RiceCompress.class.getName());
 
     private static final int BITS_OF_1_BYTE = 8;
 
@@ -192,21 +197,21 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
      * @formatter:off
      */
     private static final int[] NONZERO_COUNT = {
-        0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 
-        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 
-        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 
-        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 
-        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 
-        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 
-        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 
-        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
+        0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
         8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8
     };
     // @formatter:on
@@ -242,12 +247,13 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
          * From bsize derive: FSBITS = # bits required to store FS FSMAX =
          * maximum value for FS BBITS = bits/pixel for direct coding
          */
-        this.bBits = 1 << fsBits;
+        this.bBits = 1 << this.fsBits;
     }
 
     /**
-     * compress the integer tileOperationsArray on a rise compressed byte buffer.
-     * 
+     * compress the integer tileOperationsArray on a rise compressed byte
+     * buffer.
+     *
      * @param dataLength
      *            length of the data to compress
      * @param firstPixel
@@ -373,7 +379,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
 
     /**
      * decompress the readbuffer and fill the pixelarray.
-     * 
+     *
      * @param readBuffer
      *            input buffer
      * @param nx
@@ -383,11 +389,11 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         /* first x bytes of input buffer contain the value of the first */
         /* x byte integer value, without any encoding */
         int lastpix = 0;
-        if (bitsPerPixel == PrimitiveType.BYTE.bitPix()) {
+        if (this.bitsPerPixel == PrimitiveType.BYTE.bitPix()) {
             lastpix = readBuffer.get();
-        } else if (bitsPerPixel == PrimitiveType.SHORT.bitPix()) {
+        } else if (this.bitsPerPixel == PrimitiveType.SHORT.bitPix()) {
             lastpix = readBuffer.getShort();
-        } else if (bitsPerPixel == PrimitiveType.INT.bitPix()) {
+        } else if (this.bitsPerPixel == PrimitiveType.INT.bitPix()) {
             lastpix = readBuffer.getInt();
         }
         int b = readBuffer.get() & BYTE_MASK; /* bit buffer */

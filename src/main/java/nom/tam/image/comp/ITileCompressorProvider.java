@@ -38,11 +38,11 @@ public interface ITileCompressorProvider {
 
     interface ITileCompressorControl {
 
-        boolean compress(Buffer in, ByteBuffer out, ICompressOption... options);
+        boolean compress(Buffer in, ByteBuffer out, ICompressOption option);
 
-        void decompress(ByteBuffer in, Buffer out, ICompressOption... options);
+        void decompress(ByteBuffer in, Buffer out, ICompressOption option);
 
-        ICompressOption[] options();
+        ICompressOption option();
     }
 
     ITileCompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType);

@@ -37,7 +37,6 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import nom.tam.image.comp.ITileCompressor;
-import nom.tam.image.comp.quant.QuantizeOption;
 import nom.tam.image.comp.quant.QuantProcessor.DoubleQuantCompressor;
 import nom.tam.image.comp.quant.QuantProcessor.FloatQuantCompressor;
 import nom.tam.util.ArrayFuncs;
@@ -73,6 +72,20 @@ public abstract class HCompressor<T extends Buffer> implements ITileCompressor<T
             }
         }
 
+    }
+
+    public static class DoubleHCompress extends DoubleQuantCompressor {
+
+        public DoubleHCompress(QuantizeHCompressorOption options) {
+            super(options, new IntHCompress(options.getHCompressorOption()));
+        }
+    }
+
+    public static class FloatHCompress extends FloatQuantCompressor {
+
+        public FloatHCompress(QuantizeHCompressorOption options) {
+            super(options, new IntHCompress(options.getHCompressorOption()));
+        }
     }
 
     public static class IntHCompress extends HCompressor<IntBuffer> {
@@ -125,20 +138,6 @@ public abstract class HCompressor<T extends Buffer> implements ITileCompressor<T
             for (long element : longArray) {
                 buffer.put((short) element);
             }
-        }
-    }
-
-    public static class FloatHCompress extends FloatQuantCompressor {
-
-        public FloatHCompress(QuantizeOption quantizeOption, HCompressorOption options) {
-            super(quantizeOption, new IntHCompress(options));
-        }
-    }
-
-    public static class DoubleHCompress extends DoubleQuantCompressor {
-
-        public DoubleHCompress(QuantizeOption quantizeOption, HCompressorOption options) {
-            super(quantizeOption, new IntHCompress(options));
         }
     }
 

@@ -33,7 +33,6 @@ package nom.tam.image.comp.tile;
 
 import java.nio.ByteBuffer;
 
-import nom.tam.image.comp.ICompressOption;
 import nom.tam.util.type.PrimitiveType;
 
 public class TileCompressor extends TileOperation {
@@ -67,16 +66,13 @@ public class TileCompressor extends TileOperation {
 
     private void compress() {
         this.compressedData.limit(this.tileBuffer.getPixelSize() * this.tileOperationsArray.getBaseType().size());
-        initTileOptions();
         this.compressionType = TileCompressionType.COMPRESSED;
         boolean compressSuccess = this.tileOperationsArray.getCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData, this.tileOptions);
-        if (compressSuccess) {
-            fillTileOptions();
-        } else {
+        if (!compressSuccess) {
             this.compressionType = TileCompressionType.GZIP_COMPRESSED;
             this.compressedData.rewind();
             this.tileBuffer.getBuffer().rewind();
-            compressSuccess = this.tileOperationsArray.getGzipCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData);
+            compressSuccess = this.tileOperationsArray.getGzipCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData, null);
         }
         if (!compressSuccess) {
             this.compressionType = TileCompressionType.UNCOMPRESSED;
@@ -88,23 +84,6 @@ public class TileCompressor extends TileOperation {
         this.compressedData.rewind();
 
         compactCompressedData();
-    }
-
-    private void fillTileOptions() {
-        for (ICompressOption tileOption : this.tileOptions) {
-            this.zero = Double.isNaN(this.zero) ? tileOption.getBZero() : this.zero;
-            this.scale = Double.isNaN(this.scale) ? tileOption.getBScale() : this.scale;
-            this.blank = this.blank == null ? tileOption.getBNull() : this.blank;
-        }
-    }
-
-    private void initTileOptions() {
-        this.tileOptions = new ICompressOption[this.tileOperationsArray.compressOptions().size()];
-        for (int index = 0; index < this.tileOptions.length; index++) {
-            this.tileOptions[index] = this.tileOperationsArray.compressOptions().get(index).copy() //
-                    .setTileWidth(this.tileBuffer.getWidth()) //
-                    .setTileHeight(this.tileBuffer.getHeight());
-        }
     }
 
     private void replaceCompressedBufferWithTargetArea(ByteBuffer compressedWholeArea) {

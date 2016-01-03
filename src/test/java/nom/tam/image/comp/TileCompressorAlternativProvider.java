@@ -49,19 +49,19 @@ public class TileCompressorAlternativProvider implements ITileCompressorProvider
             return new ITileCompressorControl() {
 
                 @Override
-                public boolean compress(Buffer in, ByteBuffer out, ICompressOption... options) {
+                public boolean compress(Buffer in, ByteBuffer out, ICompressOption options) {
                     new LongGZip2Compress().compress((LongBuffer) in, out);
                     return true;
                 }
 
                 @Override
-                public void decompress(ByteBuffer in, Buffer out, ICompressOption... options) {
+                public void decompress(ByteBuffer in, Buffer out, ICompressOption options) {
                     new LongGZip2Compress().decompress(in, (LongBuffer) out);
                 }
 
                 @Override
-                public ICompressOption[] options() {
-                    return new ICompressOption[0];
+                public ICompressOption option() {
+                    return null;
                 }
 
             };

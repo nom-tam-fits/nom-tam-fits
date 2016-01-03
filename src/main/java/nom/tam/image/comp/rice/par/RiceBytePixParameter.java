@@ -1,10 +1,10 @@
-package nom.tam.image.comp.tile;
+package nom.tam.image.comp.rice.par;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2016 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,11 +31,43 @@ package nom.tam.image.comp.tile;
  * #L%
  */
 
-interface ITileOperationInitialisation {
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.header.Compression;
+import nom.tam.image.comp.ICompressOptionHeaderParameter;
+import nom.tam.image.comp.rice.RiceCompressOption;
 
-    TileOperation createTileOperation(int tileIndex);
+public final class RiceBytePixParameter implements ICompressOptionHeaderParameter {
 
-    void init(TileOperation tileOperation);
+    private final RiceCompressOption riceCompressOption;
 
-    void tileCount(int tileCount);
+    /**
+     * @param riceCompressOption
+     */
+    public RiceBytePixParameter(RiceCompressOption riceCompressOption) {
+        this.riceCompressOption = riceCompressOption;
+    }
+
+    @Override
+    public String getName() {
+        return Compression.BYTEPIX;
+    }
+
+    @Override
+    public Type getType() {
+        return Type.ZVAL;
+    }
+
+    @Override
+    public void getValueFromHeader(HeaderCard value) {
+        this.riceCompressOption.setBytePix(value.getValue(Integer.class, null));
+    }
+
+    @Override
+    public int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException {
+        header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
+        header.addValue(Compression.ZVALn.n(zvalIndex), this.riceCompressOption.getBytePix());
+        return zvalIndex + 1;
+    }
 }

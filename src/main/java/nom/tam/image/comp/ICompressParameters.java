@@ -1,11 +1,10 @@
 package nom.tam.image.comp;
 
-
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2016 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -32,50 +31,30 @@ package nom.tam.image.comp;
  * #L%
  */
 
-public interface ICompressOption extends Cloneable {
+public interface ICompressParameters {
 
-    ICompressOption NULL = new ICompressOption() {
+    ICompressParameters NULL = new ICompressParameters() {
 
         @Override
-        public ICompressOption copy() {
+        public ICompressOptionColumnParameter[] columnParameters() {
+            return new ICompressOptionColumnParameter[0];
+        }
+
+        @Override
+        public ICompressParameters copy(ICompressOption clone) {
             return this;
         }
 
         @Override
-        public ICompressParameters getCompressionParameters() {
-            return ICompressParameters.NULL;
-        }
-
-        @Override
-        public void setReadDefaults() {
-        }
-
-        @Override
-        public ICompressOption setTileHeight(int value) {
-            return this;
-        }
-
-        @Override
-        public ICompressOption setTileWidth(int value) {
-            return this;
-        }
-
-        @Override
-        public <T> T unwrap(Class<T> clazz) {
-            return clazz.isAssignableFrom(this.getClass()) ? clazz.cast(this) : null;
+        public ICompressOptionHeaderParameter[] headerParameters() {
+            return new ICompressOptionHeaderParameter[0];
         }
     };
 
-    ICompressOption copy();
+    ICompressOptionColumnParameter[] columnParameters();
 
-    ICompressParameters getCompressionParameters();
+    ICompressParameters copy(ICompressOption clone);
 
-    void setReadDefaults();
-
-    ICompressOption setTileHeight(int value);
-
-    ICompressOption setTileWidth(int value);
-
-    <T> T unwrap(Class<T> clazz);
+    ICompressOptionHeaderParameter[] headerParameters();
 
 }

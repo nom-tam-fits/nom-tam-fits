@@ -41,12 +41,13 @@ import java.nio.ShortBuffer;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
+import nom.tam.image.comp.ICompressOptionHeaderParameter;
 import nom.tam.image.comp.hcompress.HCompressor.ByteHCompress;
 import nom.tam.image.comp.hcompress.HCompressor.DoubleHCompress;
 import nom.tam.image.comp.hcompress.HCompressor.FloatHCompress;
 import nom.tam.image.comp.hcompress.HCompressor.IntHCompress;
 import nom.tam.image.comp.hcompress.HCompressor.ShortHCompress;
-import nom.tam.image.comp.quant.QuantizeOption;
+import nom.tam.image.comp.rice.RiceCompressOption;
 import nom.tam.util.ArrayFuncs;
 
 import org.junit.Assert;
@@ -151,19 +152,15 @@ public class HCompressTest {
     public void testHcompressDouble() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-64.bin", "r")) {
 
-            QuantizeOption quant;
-            DoubleHCompress doubleHCompress = new DoubleHCompress(//
-                    quant = new QuantizeOption()//
-                            .setDither(true)//
-                            .setSeed(8864L)//
-                            .setQlevel(4)//
-                            .setCheckNull(false)//
-                            .setTileHeight(100)//
-                            .setTileWidth(100), //
-                    new HCompressorOption()//
-                            .setTileWidth(100)//
-                            .setTileHeight(100)//
-                            .setScale(0));
+            QuantizeHCompressorOption quant = new QuantizeHCompressorOption();
+            quant.setDither(true);
+            quant.setSeed(8864L);
+            quant.setQlevel(4);
+            quant.setCheckNull(false);
+            quant.setTileHeight(100);
+            quant.setTileWidth(100);
+            quant.unwrap(HCompressorOption.class).setScale(0);
+            DoubleHCompress doubleHCompress = new DoubleHCompress(quant);
 
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
@@ -188,19 +185,16 @@ public class HCompressTest {
     @Test
     public void testHcompressFloat() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-32.bin", "r")) {
-            QuantizeOption quant;
-            FloatHCompress floatHCompress = new FloatHCompress(//
-                    quant = new QuantizeOption()//
-                            .setDither(true)//
-                            .setSeed(8864L)//
-                            .setQlevel(4)//
-                            .setCheckNull(false)//
-                            .setTileHeight(100)//
-                            .setTileWidth(100), //
-                    new HCompressorOption()//
-                            .setTileWidth(100)//
-                            .setTileHeight(100)//
-                            .setScale(0));
+
+            QuantizeHCompressorOption quant = new QuantizeHCompressorOption();
+            quant.setDither(true);
+            quant.setSeed(8864L);
+            quant.setQlevel(4);
+            quant.setCheckNull(false);
+            quant.setTileHeight(100);
+            quant.setTileWidth(100);
+            quant.unwrap(HCompressorOption.class).setScale(0);
+            FloatHCompress floatHCompress = new FloatHCompress(quant);
 
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
@@ -443,11 +437,19 @@ public class HCompressTest {
             expected = e;
         }
         Assert.assertNotNull(expected);
-        option.getCompressionParameter(Compression.BLOCKSIZE).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 32, null));
-        option.getCompressionParameter(Compression.BYTEPIX).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(2).key(), 32, null));
-        option.getCompressionParameter(Compression.SCALE).getValueFromHeader(new HeaderCard(Compression.SCALE, 1, null));
-        option.getCompressionParameter(Compression.SMOOTH).getValueFromHeader(new HeaderCard(Compression.SMOOTH, 1, null));
+        getCompressionParameter(option, Compression.SCALE).getValueFromHeader(new HeaderCard(Compression.SCALE, 1, null));
+        getCompressionParameter(option, Compression.SMOOTH).getValueFromHeader(new HeaderCard(Compression.SMOOTH, 1, null));
         Assert.assertTrue(option.isSmooth());
         Assert.assertEquals(1, option.getScale());
     }
+
+    private ICompressOptionHeaderParameter getCompressionParameter(HCompressorOption option, String name) {
+        for (ICompressOptionHeaderParameter parameter : option.getCompressionParameters().headerParameters()) {
+            if (parameter.getName().equals(name)) {
+                return parameter;
+            }
+        }
+        return null;
+    }
+
 }

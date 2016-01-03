@@ -32,6 +32,7 @@ package nom.tam.image.comp;
  */
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
@@ -73,18 +74,18 @@ public class TileCompressorProvider implements ITileCompressorProvider {
 
         private final Constructor<ITileCompressor<Buffer>> constructor;
 
-        private final Class<? extends ICompressOption>[] optionClasses;
+        private final Class<? extends ICompressOption> optionClass;
 
         @SuppressWarnings("unchecked")
         protected TileCompressorControl(Class<?> compressorClass) {
             this.constructor = (Constructor<ITileCompressor<Buffer>>) compressorClass.getConstructors()[0];
-            this.optionClasses = (Class<? extends ICompressOption>[]) this.constructor.getParameterTypes();
+            this.optionClass = (Class<? extends ICompressOption>) (this.constructor.getParameterTypes().length == 0 ? null : this.constructor.getParameterTypes()[0]);
         }
 
         @Override
-        public boolean compress(Buffer in, ByteBuffer out, ICompressOption... options) {
+        public boolean compress(Buffer in, ByteBuffer out, ICompressOption option) {
             try {
-                return this.constructor.newInstance((Object[]) options).compress(in, out);
+                return newCompressor(option).compress(in, out);
             } catch (Exception e) {
                 LOG.log(Level.FINE, "could not compress using " + this.constructor + " must fallback to other compression method", e);
                 return false;
@@ -92,25 +93,28 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         }
 
         @Override
-        public void decompress(ByteBuffer in, Buffer out, ICompressOption... options) {
+        public void decompress(ByteBuffer in, Buffer out, ICompressOption option) {
             try {
-                this.constructor.newInstance((Object[]) options).decompress(in, out);
+                newCompressor(option).decompress(in, out);
             } catch (Exception e) {
                 throw new IllegalStateException("could not decompress " + this.constructor, e);
             }
         }
 
+        private ITileCompressor<Buffer> newCompressor(ICompressOption option) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+            return this.constructor.getParameterTypes().length == 0 ? this.constructor.newInstance() : this.constructor.newInstance(option);
+        }
+
         @Override
-        public ICompressOption[] options() {
-            try {
-                ICompressOption[] result = new ICompressOption[this.optionClasses.length];
-                for (int index = 0; index < result.length; index++) {
-                    result[index] = this.optionClasses[index].newInstance();
+        public ICompressOption option() {
+            if (this.optionClass != null) {
+                try {
+                    return this.optionClass.newInstance();
+                } catch (Exception e) {
+                    throw new IllegalStateException("could not instantiate option class for " + this.constructor, e);
                 }
-                return result;
-            } catch (Exception e) {
-                throw new IllegalStateException("could not instantiate option classes for " + this.constructor, e);
             }
+            return ICompressOption.NULL;
         }
     }
 

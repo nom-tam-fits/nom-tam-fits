@@ -51,8 +51,6 @@ abstract class TileOperation implements Runnable {
 
     protected final TileOperationsOfImage tileOperationsArray;
 
-    protected Integer blank = null;
-
     protected ByteBuffer compressedData;
 
     protected int compressedOffset;
@@ -63,13 +61,9 @@ abstract class TileOperation implements Runnable {
 
     protected TileBuffer tileBuffer;
 
-    protected double scale = Double.NaN;
-
     protected final int tileIndex;
 
-    protected ICompressOption[] tileOptions;
-
-    protected double zero = Double.NaN;
+    protected ICompressOption tileOptions;
 
     protected TileOperation(TileOperationsOfImage array, int tileIndex) {
         this.tileOperationsArray = array;
@@ -82,10 +76,6 @@ abstract class TileOperation implements Runnable {
 
     protected void execute(ExecutorService threadPool) {
         this.future = threadPool.submit(this);
-    }
-
-    protected Integer getBlank() {
-        return this.blank;
     }
 
     protected byte[] getCompressedData() {
@@ -106,31 +96,15 @@ abstract class TileOperation implements Runnable {
         return this.tileBuffer.getPixelSize();
     }
 
-    protected double getScale() {
-        return this.scale;
-    }
-
     protected int getTileIndex() {
         return this.tileIndex;
     }
 
-    protected Integer getZBlank(final int[] zblankColumn) {
-        Integer zBlank = this.tileOperationsArray.getZBlank();
-        if (zBlank != null) {
-            return zBlank;
-        } else if (zblankColumn == null) {
-            return null;
-        } else {
-            return zblankColumn[this.tileIndex];
-        }
-    }
-
-    protected double getZero() {
-        return this.zero;
-    }
-
-    protected TileOperation setBlank(Integer value) {
-        this.blank = value;
+    protected TileOperation initTileOptions() {
+        ICompressOption compressOptions = this.tileOperationsArray.compressOptions();
+        this.tileOptions = compressOptions.copy() //
+                .setTileWidth(this.tileBuffer.getWidth()) //
+                .setTileHeight(this.tileBuffer.getHeight());
         return this;
     }
 
@@ -153,11 +127,6 @@ abstract class TileOperation implements Runnable {
                 dataOffset, //
                 this.tileOperationsArray.getImageWidth(), //
                 width, height);
-        return this;
-    }
-
-    protected TileOperation setScale(double value) {
-        this.scale = value;
         return this;
     }
 
@@ -191,11 +160,6 @@ abstract class TileOperation implements Runnable {
         this.compressedOffset = 0;
         // we do not limit this buffer but is expected not to write more than
         // the uncompressed size.
-    }
-
-    protected TileOperation setZero(double value) {
-        this.zero = value;
-        return this;
     }
 
     @Override

@@ -32,10 +32,7 @@ package nom.tam.image.comp.tile;
  */
 
 import java.nio.Buffer;
-import java.util.List;
 import java.util.logging.Logger;
-
-import nom.tam.image.comp.ICompressOption;
 
 public class TileDecompressor extends TileOperation {
 
@@ -50,29 +47,15 @@ public class TileDecompressor extends TileOperation {
 
     private void decompress() {
         if (this.compressionType == TileCompressionType.COMPRESSED) {
-            initTileOptions();
             this.tileOperationsArray.getCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer(), this.tileOptions);
         } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
-            this.tileOperationsArray.getGzipCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer());
+            this.tileOperationsArray.getGzipCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer(), null);
         } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {
             Buffer typedBuffer = this.tileOperationsArray.getBaseType().asTypedBuffer(this.compressedData);
             this.tileOperationsArray.getBaseType().appendBuffer(this.tileBuffer.getBuffer(), typedBuffer);
         } else {
             LOG.severe("Unknown compression column");
             throw new IllegalStateException("Unknown compression column");
-        }
-    }
-
-    private void initTileOptions() {
-        List<ICompressOption> compressOptions = this.tileOperationsArray.compressOptions();
-        this.tileOptions = new ICompressOption[compressOptions.size()];
-        for (int index = 0; index < this.tileOptions.length; index++) {
-            this.tileOptions[index] = compressOptions.get(index).copy() //
-                    .setBZero(this.zero) //
-                    .setBScale(this.scale) //
-                    .setBNull(this.blank)//
-                    .setTileWidth(this.tileBuffer.getWidth()) //
-                    .setTileHeight(this.tileBuffer.getHeight());
         }
     }
 

@@ -39,6 +39,8 @@ import java.nio.ShortBuffer;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
+import nom.tam.image.comp.ICompressOptionHeaderParameter;
+import nom.tam.image.comp.quant.QuantizeOption;
 import nom.tam.image.comp.rice.RiceCompress.ByteRiceCompress;
 import nom.tam.image.comp.rice.RiceCompress.IntRiceCompress;
 import nom.tam.image.comp.rice.RiceCompress.ShortRiceCompress;
@@ -68,13 +70,20 @@ public class RiseCompressTest {
             expected = e;
         }
         Assert.assertNotNull(expected);
-        option.getCompressionParameter(Compression.BLOCKSIZE).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 32, null));
-        option.getCompressionParameter(Compression.BYTEPIX).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 16, null));
-        option.getCompressionParameter(Compression.SCALE).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 1, null));
-        option.getCompressionParameter(Compression.SMOOTH).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), true, null));
+        getCompressionParameter(option, Compression.BLOCKSIZE).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 32, null));
+        getCompressionParameter(option, Compression.BYTEPIX).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 16, null));
 
         Assert.assertEquals(32, option.getBlockSize());
         Assert.assertEquals(16, option.getBytePix());
+    }
+
+    private ICompressOptionHeaderParameter getCompressionParameter(RiceCompressOption option, String name) {
+        for (ICompressOptionHeaderParameter parameter : option.getCompressionParameters().headerParameters()) {
+            if (parameter.getName().equals(name)) {
+                return parameter;
+            }
+        }
+        return null;
     }
 
     @Test

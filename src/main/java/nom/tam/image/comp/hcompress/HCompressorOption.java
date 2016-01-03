@@ -31,67 +31,16 @@ package nom.tam.image.comp.hcompress;
  * #L%
  */
 
-import java.util.Arrays;
-
-import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.image.comp.ICompressOptionParameter;
+import nom.tam.image.comp.ICompressParameters;
+import nom.tam.image.comp.hcompress.par.HCompressParameters;
 
 public class HCompressorOption implements ICompressOption {
 
-    private final ICompressOptionParameter[] parameters = new ICompressOptionParameter[]{
-        new ICompressOptionParameter() {
-
-            @Override
-            public String getName() {
-                return Compression.SCALE;
-            }
-
-            @Override
-            public Type getType() {
-                return Type.ZVAL;
-            }
-
-            @Override
-            public void getValueFromHeader(HeaderCard value) {
-                HCompressorOption.this.scale = value.getValue(Integer.class, -1);
-            }
-
-            @Override
-            public int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException {
-                header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
-                header.addValue(Compression.ZVALn.n(zvalIndex), HCompressorOption.this.scale);
-                return zvalIndex + 1;
-            }
-        },
-        new ICompressOptionParameter() {
-
-            @Override
-            public String getName() {
-                return Compression.SMOOTH;
-            }
-
-            @Override
-            public Type getType() {
-                return Type.ZVAL;
-            }
-
-            @Override
-            public void getValueFromHeader(HeaderCard value) {
-                HCompressorOption.this.smooth = value.getValue(Integer.class, 0) != 0;
-            }
-
-            @Override
-            public int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException {
-                header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
-                header.addValue(Compression.ZVALn.n(zvalIndex), HCompressorOption.this.smooth ? 1 : 0);
-                return zvalIndex + 1;
-            }
-        },
-    };
+    /**
+     * circular dependency, has to be cut.
+     */
+    private final ICompressParameters parameters = new HCompressParameters(this);
 
     private int scale;
 
@@ -111,33 +60,8 @@ public class HCompressorOption implements ICompressOption {
     }
 
     @Override
-    public Integer getBNull() {
-        return null;
-    }
-
-    @Override
-    public double getBScale() {
-        return Double.NaN;
-    }
-
-    @Override
-    public double getBZero() {
-        return Double.NaN;
-    }
-
-    @Override
-    public ICompressOptionParameter getCompressionParameter(String name) {
-        for (ICompressOptionParameter parameter : this.parameters) {
-            if (parameter.getName().equals(name)) {
-                return parameter;
-            }
-        }
-        return ICompressOptionParameter.NULL;
-    }
-
-    @Override
-    public ICompressOptionParameter[] getCompressionParameters() {
-        return Arrays.copyOf(this.parameters, this.parameters.length);
+    public ICompressParameters getCompressionParameters() {
+        return this.parameters;
     }
 
     public int getScale() {
@@ -154,21 +78,6 @@ public class HCompressorOption implements ICompressOption {
 
     public boolean isSmooth() {
         return this.smooth;
-    }
-
-    @Override
-    public ICompressOption setBNull(Integer blank) {
-        return this;
-    }
-
-    @Override
-    public ICompressOption setBScale(double value) {
-        return this;
-    }
-
-    @Override
-    public ICompressOption setBZero(double value) {
-        return this;
     }
 
     @Override

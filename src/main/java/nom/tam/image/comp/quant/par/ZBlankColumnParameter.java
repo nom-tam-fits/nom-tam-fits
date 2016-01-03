@@ -1,11 +1,10 @@
-package nom.tam.image.comp;
-
+package nom.tam.image.comp.quant.par;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2016 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -32,50 +31,38 @@ package nom.tam.image.comp;
  * #L%
  */
 
-public interface ICompressOption extends Cloneable {
+import nom.tam.fits.header.Compression;
+import nom.tam.image.comp.quant.QuantizeOption;
 
-    ICompressOption NULL = new ICompressOption() {
+public final class ZBlankColumnParameter extends QuantizeColumnParameter<int[]> {
 
-        @Override
-        public ICompressOption copy() {
-            return this;
+    private final QuantizeOption quantizeOption;
+
+    public ZBlankColumnParameter(QuantizeOption quantizeOption) {
+        super(Compression.ZBLANK_COLUMN, int[].class);
+        this.quantizeOption = quantizeOption;
+    }
+
+    @Override
+    public void getValueFromColumn(int index) {
+        if (this.column != null) {
+            this.quantizeOption.setBNull(this.column[index]);
+        } else if (this.quantizeOption.getOriginal() != null) {
+            this.quantizeOption.setBNull(this.quantizeOption.getOriginal().getBNull());
         }
+    }
 
-        @Override
-        public ICompressParameters getCompressionParameters() {
-            return ICompressParameters.NULL;
+    @Override
+    public void setValueInColumn(int index) {
+        if (this.quantizeOption.getOriginal() != null && !equals(this.quantizeOption.getBNull(), this.quantizeOption.getOriginal().getBNull())) {
+            initializedColumn()[index] = this.quantizeOption.getBNull();
         }
+    }
 
-        @Override
-        public void setReadDefaults() {
+    private boolean equals(Integer i1, Integer i2) {
+        if (i1 == null) {
+            return i2 == null;
         }
-
-        @Override
-        public ICompressOption setTileHeight(int value) {
-            return this;
-        }
-
-        @Override
-        public ICompressOption setTileWidth(int value) {
-            return this;
-        }
-
-        @Override
-        public <T> T unwrap(Class<T> clazz) {
-            return clazz.isAssignableFrom(this.getClass()) ? clazz.cast(this) : null;
-        }
-    };
-
-    ICompressOption copy();
-
-    ICompressParameters getCompressionParameters();
-
-    void setReadDefaults();
-
-    ICompressOption setTileHeight(int value);
-
-    ICompressOption setTileWidth(int value);
-
-    <T> T unwrap(Class<T> clazz);
-
+        return i1.equals(i2);
+    }
 }

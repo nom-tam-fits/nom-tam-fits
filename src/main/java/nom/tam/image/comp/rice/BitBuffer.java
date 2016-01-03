@@ -139,7 +139,7 @@ public class BitBuffer {
         }
         do {
             if (bits >= BITS_OF_1_BYTE) {
-                putByte((byte) (((i & BYTE_MASK << bits - BITS_OF_1_BYTE) >>> bits - BITS_OF_1_BYTE) & BYTE_MASK));
+                putByte((byte) ((i & BYTE_MASK << bits - BITS_OF_1_BYTE) >>> bits - BITS_OF_1_BYTE & BYTE_MASK));
                 bits -= BITS_OF_1_BYTE;
             } else {
                 putByte((byte) (i & BYTE_MASK >> -(bits - BITS_OF_1_BYTE)), bits);

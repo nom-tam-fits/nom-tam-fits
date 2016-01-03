@@ -1,11 +1,10 @@
-package nom.tam.image.comp;
-
+package nom.tam.image.comp.hcompress.par;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2016 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -32,50 +31,38 @@ package nom.tam.image.comp;
  * #L%
  */
 
-public interface ICompressOption extends Cloneable {
+import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.ICompressOptionColumnParameter;
+import nom.tam.image.comp.ICompressOptionHeaderParameter;
+import nom.tam.image.comp.ICompressParameters;
+import nom.tam.image.comp.hcompress.HCompressorOption;
 
-    ICompressOption NULL = new ICompressOption() {
+public class HCompressParameters implements ICompressParameters {
 
-        @Override
-        public ICompressOption copy() {
-            return this;
-        }
+    private HCompressScaleParameter scale;
 
-        @Override
-        public ICompressParameters getCompressionParameters() {
-            return ICompressParameters.NULL;
-        }
+    private HCompressSmoothParameter smooth;
 
-        @Override
-        public void setReadDefaults() {
-        }
+    public HCompressParameters(HCompressorOption option) {
+        this.scale = new HCompressScaleParameter(option);
+        this.smooth = new HCompressSmoothParameter(option);
+    }
 
-        @Override
-        public ICompressOption setTileHeight(int value) {
-            return this;
-        }
+    @Override
+    public ICompressParameters copy(ICompressOption clone) {
+        return new HCompressParameters((HCompressorOption) clone);
+    }
 
-        @Override
-        public ICompressOption setTileWidth(int value) {
-            return this;
-        }
+    @Override
+    public ICompressOptionColumnParameter[] columnParameters() {
+        return new ICompressOptionColumnParameter[0];
+    }
 
-        @Override
-        public <T> T unwrap(Class<T> clazz) {
-            return clazz.isAssignableFrom(this.getClass()) ? clazz.cast(this) : null;
-        }
-    };
-
-    ICompressOption copy();
-
-    ICompressParameters getCompressionParameters();
-
-    void setReadDefaults();
-
-    ICompressOption setTileHeight(int value);
-
-    ICompressOption setTileWidth(int value);
-
-    <T> T unwrap(Class<T> clazz);
-
+    @Override
+    public ICompressOptionHeaderParameter[] headerParameters() {
+        return new ICompressOptionHeaderParameter[]{
+            scale,
+            smooth
+        };
+    }
 }

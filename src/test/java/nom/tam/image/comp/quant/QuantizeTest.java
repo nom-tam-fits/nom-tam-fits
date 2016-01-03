@@ -40,6 +40,7 @@ import java.util.Arrays;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
+import nom.tam.image.comp.ICompressOptionHeaderParameter;
 import nom.tam.util.ArrayFuncs;
 
 import org.junit.Assert;
@@ -594,33 +595,30 @@ public class QuantizeTest {
         }
         Assert.assertNotNull(expected);
 
-        option.getCompressionParameter(Compression.ZQUANTIZ.name()).getValueFromHeader(
+        getCompressionParameter(option,Compression.ZQUANTIZ.name()).getValueFromHeader(
                 new HeaderCard(Compression.ZVALn.n(1).key(), Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2, null));
-        option.getCompressionParameter(Compression.BLOCKSIZE).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 32, null));
-        option.getCompressionParameter(Compression.BYTEPIX).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 16, null));
-        option.getCompressionParameter(Compression.SCALE).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 1, null));
-        option.getCompressionParameter(Compression.SMOOTH).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), true, null));
         Assert.assertTrue(option.isDither2());
         Assert.assertTrue(option.isDither());
         option = new QuantizeOption();
-        option.getCompressionParameter(Compression.BLOCKSIZE).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 32, null));
-        option.getCompressionParameter(Compression.BYTEPIX).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 16, null));
-        option.getCompressionParameter(Compression.SCALE).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 1, null));
-        option.getCompressionParameter(Compression.SMOOTH).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), true, null));
 
         Assert.assertFalse(option.isDither2());
         Assert.assertFalse(option.isDither());
 
         option = new QuantizeOption();
-        option.getCompressionParameter(Compression.ZQUANTIZ.name()).getValueFromHeader(
+        getCompressionParameter(option,Compression.ZQUANTIZ.name()).getValueFromHeader(
                 new HeaderCard(Compression.ZVALn.n(1).key(), Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1, null));
-        option.getCompressionParameter(Compression.BLOCKSIZE).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 32, null));
-        option.getCompressionParameter(Compression.BYTEPIX).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 16, null));
-        option.getCompressionParameter(Compression.SCALE).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), 1, null));
-        option.getCompressionParameter(Compression.SMOOTH).getValueFromHeader(new HeaderCard(Compression.ZVALn.n(1).key(), true, null));
 
         Assert.assertFalse(option.isDither2());
         Assert.assertTrue(option.isDither());
+    }
+
+    private ICompressOptionHeaderParameter getCompressionParameter(QuantizeOption option, String name) {
+       for (ICompressOptionHeaderParameter parameter:option.getCompressionParameters().headerParameters()) {
+           if (parameter.getName().equals(name)) {
+               return parameter;
+           }
+       }
+        return null;
     }
 
     @Test

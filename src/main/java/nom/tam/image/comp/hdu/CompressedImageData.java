@@ -69,12 +69,7 @@ public class CompressedImageData extends BinaryTable {
     }
 
     public <T extends ICompressOption> T getCompressOption(Class<T> clazz) {
-        for (ICompressOption option : tileOperationsOfImage().compressOptions()) {
-            if (clazz.isAssignableFrom(option.getClass())) {
-                return clazz.cast(option);
-            }
-        }
-        return null;
+        return tileOperationsOfImage().compressOptions().unwrap(clazz);
     }
 
     public Buffer getUncompressedData(Header hdr) throws FitsException {
