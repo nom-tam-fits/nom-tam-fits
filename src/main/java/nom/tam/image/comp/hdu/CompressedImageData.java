@@ -82,7 +82,7 @@ public class CompressedImageData extends BinaryTable {
     }
 
     public void prepareUncompressedData(Object data, Header header) throws FitsException {
-        tileOperationsOfImage().readHeader(header);
+        tileOperationsOfImage().readPrimaryHeaders(header);
         if (data instanceof Buffer) {
             tileOperationsOfImage().prepareUncompressedData((Buffer) data);
         } else {

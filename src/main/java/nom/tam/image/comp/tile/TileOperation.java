@@ -100,6 +100,10 @@ abstract class TileOperation implements Runnable {
         return this.tileIndex;
     }
 
+    protected ICompressOption getTileOptions() {
+        return this.tileOptions;
+    }
+
     protected TileOperation initTileOptions() {
         ICompressOption compressOptions = this.tileOperationsArray.compressOptions();
         this.tileOptions = compressOptions.copy() //

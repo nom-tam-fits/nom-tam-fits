@@ -217,7 +217,7 @@ public class TileCompressorProviderTest {
         header.addValue(ZNAXISn.n(1), 100);
         header.addValue(ZTILEn.n(1), 15);
         header.addValue(ZTILEn.n(2), 15);
-        operationsOfImage.readHeader(header);
+        operationsOfImage.readPrimaryHeaders(header);
     }
 
     @Test
@@ -250,7 +250,7 @@ public class TileCompressorProviderTest {
         header.addValue(ZTILEn.n(1), tileWidth);
         header.addValue(ZTILEn.n(2), tileHeigth);
 
-        operationsOfImage.readHeader(header);
+        operationsOfImage.readPrimaryHeaders(header);
         operationsOfImage.prepareUncompressedData(buffer);
         List<TileOperation> tiles = getTiles(operationsOfImage);
         int heigth = 0;

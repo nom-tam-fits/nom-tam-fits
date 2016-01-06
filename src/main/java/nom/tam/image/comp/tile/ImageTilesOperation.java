@@ -186,6 +186,10 @@ public class ImageTilesOperation {
         return this.baseType;
     }
 
+    protected BinaryTable getBinaryTable() {
+        return this.binaryTable;
+    }
+
     public int getBufferSize() {
         int bufferSize = 1;
         for (int axisValue : this.axes) {
@@ -246,23 +250,7 @@ public class ImageTilesOperation {
 
     public ImageTilesOperation prepareUncompressedData(final Buffer buffer) {
         this.compressedWholeArea = ByteBuffer.wrap(new byte[this.baseType.size() * this.axes[0] * this.axes[1]]);
-        createTiles(new ITileOperationInitialisation() {
-
-            @Override
-            public TileOperation createTileOperation(int tileIndex) {
-                return new TileCompressor(ImageTilesOperation.this, tileIndex);
-            }
-
-            @Override
-            public void init(TileOperation tileOperation) {
-                tileOperation.setWholeImageBuffer(buffer);
-                tileOperation.setWholeImageCompressedBuffer(ImageTilesOperation.this.compressedWholeArea);
-            }
-
-            @Override
-            public void tileCount(int tileCount) {
-            }
-        });
+        createTiles(new TileDecompressorInitialisation(this, buffer));
         this.compressedWholeArea.rewind();
         return this;
     }
@@ -278,39 +266,15 @@ public class ImageTilesOperation {
     }
 
     public ImageTilesOperation read(final Header header) throws FitsException {
-        readHeader(header);
+        readPrimaryHeaders(header);
         setCompressAlgorithm(header.findCard(ZCMPTYPE));
         setQuantAlgorithm(header.findCard(ZQUANTIZ));
         readCompressionHeaders(header);
-        final Object[] compressed = getNullableColumn(header, Object[].class, COMPRESSED_DATA_COLUMN);
-        final Object[] uncompressed = getNullableColumn(header, Object[].class, UNCOMPRESSED_DATA_COLUMN);
-        final Object[] gzipCompressed = getNullableColumn(header, Object[].class, GZIP_COMPRESSED_DATA_COLUMN);
-
-        createTiles(new ITileOperationInitialisation() {
-
-            @Override
-            public TileOperation createTileOperation(int tileIndex) {
-                return new TileDecompressor(ImageTilesOperation.this, tileIndex);
-            }
-
-            @Override
-            public void init(TileOperation tileOperation) {
-                tileOperation.initTileOptions();
-                tileOperation.tileOptions.getCompressionParameters().getValuesFromColumn(tileOperation.getTileIndex());
-                tileOperation.setCompressed(compressed != null ? compressed[tileOperation.getTileIndex()] : null, COMPRESSED)//
-                        .setCompressed(uncompressed != null ? uncompressed[tileOperation.getTileIndex()] : null, UNCOMPRESSED)//
-                        .setCompressed(gzipCompressed != null ? gzipCompressed[tileOperation.getTileIndex()] : null, GZIP_COMPRESSED);
-            }
-
-            @Override
-            public void tileCount(int tileCount) {
-                try {
-                    compressOptions().getCompressionParameters().initializeColumns(header, ImageTilesOperation.this.binaryTable, tileCount);
-                } catch (FitsException e) {
-                    throw new IllegalStateException("Columns of table inconsistent", e);
-                }
-            }
-        });
+        createTiles(new TileCompressorInitialisation(this, //
+                getNullableColumn(header, Object[].class, UNCOMPRESSED_DATA_COLUMN), //
+                getNullableColumn(header, Object[].class, COMPRESSED_DATA_COLUMN), //
+                getNullableColumn(header, Object[].class, GZIP_COMPRESSED_DATA_COLUMN), //
+                header));
 
         return this;
     }
@@ -339,7 +303,7 @@ public class ImageTilesOperation {
         compressOptions().getCompressionParameters().getValuesFromHeader(header);
     }
 
-    public void readHeader(Header header) throws FitsException {
+    public void readPrimaryHeaders(Header header) throws FitsException {
         readBaseType(header);
         readAxis(header);
         readTileAxis(header);
