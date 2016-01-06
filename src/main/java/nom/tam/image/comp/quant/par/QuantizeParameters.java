@@ -31,13 +31,14 @@ package nom.tam.image.comp.quant.par;
  * #L%
  */
 
+import nom.tam.image.comp.ICompressColumnParameter;
+import nom.tam.image.comp.ICompressHeaderParameter;
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.image.comp.ICompressOptionColumnParameter;
-import nom.tam.image.comp.ICompressOptionHeaderParameter;
 import nom.tam.image.comp.ICompressParameters;
+import nom.tam.image.comp.par.CompressionParameters;
 import nom.tam.image.comp.quant.QuantizeOption;
 
-public class QuantizeParameters implements ICompressParameters {
+public class QuantizeParameters extends CompressionParameters {
 
     private final ZQuantizParameter quantz;
 
@@ -58,8 +59,8 @@ public class QuantizeParameters implements ICompressParameters {
     }
 
     @Override
-    public ICompressOptionColumnParameter[] columnParameters() {
-        return new ICompressOptionColumnParameter[]{
+    protected ICompressColumnParameter[] columnParameters() {
+        return new ICompressColumnParameter[]{
             this.blankColumn,
             this.zero,
             this.scale
@@ -79,14 +80,14 @@ public class QuantizeParameters implements ICompressParameters {
     }
 
     @Override
-    public ICompressOptionHeaderParameter[] headerParameters() {
+    protected ICompressHeaderParameter[] headerParameters() {
         if (this.blank.isActive()) {
-            return new ICompressOptionHeaderParameter[]{
+            return new ICompressHeaderParameter[]{
                 this.quantz,
                 this.blank
             };
         } else {
-            return new ICompressOptionHeaderParameter[]{
+            return new ICompressHeaderParameter[]{
                 this.quantz
             };
         }

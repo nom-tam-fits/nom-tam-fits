@@ -33,15 +33,15 @@ package nom.tam.image.comp.hcompress.par;
 
 import java.util.Arrays;
 
+import nom.tam.image.comp.ICompressHeaderParameter;
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.image.comp.ICompressOptionHeaderParameter;
 import nom.tam.image.comp.ICompressParameters;
 import nom.tam.image.comp.hcompress.QuantizeHCompressorOption;
 import nom.tam.image.comp.quant.par.QuantizeParameters;
 
 public class HCompressQuantizCompressParameter extends QuantizeParameters {
 
-    private HCompressParameters hCompressParameters;
+    private final HCompressParameters hCompressParameters;
 
     public HCompressQuantizCompressParameter(QuantizeHCompressorOption option) {
         super(option);
@@ -54,9 +54,9 @@ public class HCompressQuantizCompressParameter extends QuantizeParameters {
     }
 
     @Override
-    public ICompressOptionHeaderParameter[] headerParameters() {
-        ICompressOptionHeaderParameter[] headerParameters = super.headerParameters();
-        ICompressOptionHeaderParameter[] aditional = hCompressParameters.headerParameters();
+    public ICompressHeaderParameter[] headerParameters() {
+        ICompressHeaderParameter[] headerParameters = super.headerParameters();
+        ICompressHeaderParameter[] aditional = this.hCompressParameters.headerParameters();
         headerParameters = Arrays.copyOf(headerParameters, headerParameters.length + aditional.length);
         System.arraycopy(aditional, 0, headerParameters, headerParameters.length - aditional.length, aditional.length);
         return headerParameters;

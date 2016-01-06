@@ -31,17 +31,17 @@ package nom.tam.image.comp.hcompress.par;
  * #L%
  */
 
+import nom.tam.image.comp.ICompressHeaderParameter;
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.image.comp.ICompressOptionColumnParameter;
-import nom.tam.image.comp.ICompressOptionHeaderParameter;
 import nom.tam.image.comp.ICompressParameters;
 import nom.tam.image.comp.hcompress.HCompressorOption;
+import nom.tam.image.comp.par.CompressionParameters;
 
-public class HCompressParameters implements ICompressParameters {
+public class HCompressParameters extends CompressionParameters {
 
-    private HCompressScaleParameter scale;
+    private final HCompressScaleParameter scale;
 
-    private HCompressSmoothParameter smooth;
+    private final HCompressSmoothParameter smooth;
 
     public HCompressParameters(HCompressorOption option) {
         this.scale = new HCompressScaleParameter(option);
@@ -54,15 +54,10 @@ public class HCompressParameters implements ICompressParameters {
     }
 
     @Override
-    public ICompressOptionColumnParameter[] columnParameters() {
-        return new ICompressOptionColumnParameter[0];
-    }
-
-    @Override
-    public ICompressOptionHeaderParameter[] headerParameters() {
-        return new ICompressOptionHeaderParameter[]{
-            scale,
-            smooth
+    protected ICompressHeaderParameter[] headerParameters() {
+        return new ICompressHeaderParameter[]{
+            this.scale,
+            this.smooth
         };
     }
 }

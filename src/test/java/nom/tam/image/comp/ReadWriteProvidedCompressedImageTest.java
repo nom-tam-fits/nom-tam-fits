@@ -655,17 +655,13 @@ public class ReadWriteProvidedCompressedImageTest {
     }
 
     private HeaderCard findCompressOption(Header header, String key) {
-        try {
-            int index = 1;
-            while (true) {
-                HeaderCard card = header.findCard(Compression.ZNAMEn.n(index));
-                if (card.getValue().equals(key)) {
-                    return header.findCard(Compression.ZVALn.n(index));
-                }
-                index++;
+        int index = 1;
+        while (true) {
+            HeaderCard card = header.findCard(Compression.ZNAMEn.n(index));
+            if (card.getValue().equals(key)) {
+                return header.findCard(Compression.ZVALn.n(index));
             }
-        } catch (Exception e) {
-            return null;
+            index++;
         }
     }
 }

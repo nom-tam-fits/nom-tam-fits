@@ -37,12 +37,10 @@ import static nom.tam.fits.header.Compression.UNCOMPRESSED_DATA_COLUMN;
 import static nom.tam.fits.header.Compression.ZBITPIX;
 import static nom.tam.fits.header.Compression.ZCMPTYPE;
 import static nom.tam.fits.header.Compression.ZCMPTYPE_GZIP_1;
-import static nom.tam.fits.header.Compression.ZNAMEn;
 import static nom.tam.fits.header.Compression.ZNAXIS;
 import static nom.tam.fits.header.Compression.ZNAXISn;
 import static nom.tam.fits.header.Compression.ZQUANTIZ;
 import static nom.tam.fits.header.Compression.ZTILEn;
-import static nom.tam.fits.header.Compression.ZVALn;
 import static nom.tam.fits.header.Standard.TTYPEn;
 import static nom.tam.image.comp.tile.TileCompressionType.COMPRESSED;
 import static nom.tam.image.comp.tile.TileCompressionType.GZIP_COMPRESSED;
@@ -64,8 +62,6 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardBuilder;
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.image.comp.ICompressOptionColumnParameter;
-import nom.tam.image.comp.ICompressOptionHeaderParameter;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
 import nom.tam.image.comp.TileCompressorProvider;
 import nom.tam.util.type.PrimitiveType;
@@ -77,7 +73,7 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  * tileOperations all have the same geometry only the tileOperations at the
  * right side and the bottom side can have different sizes.
  */
-public class TileOperationsOfImage {
+public class ImageTilesOperation {
 
     private int[] axes;
 
@@ -117,12 +113,12 @@ public class TileOperationsOfImage {
     private ICompressOption imageOptions;
 
     /**
-     * create a TileOperationsOfImage based on a compressed image data.
+     * create a ImageTilesOperation based on a compressed image data.
      *
      * @param binaryTable
      *            the compressed image data.
      */
-    public TileOperationsOfImage(BinaryTable binaryTable) {
+    public ImageTilesOperation(BinaryTable binaryTable) {
         this.binaryTable = binaryTable;
     }
 
@@ -186,14 +182,6 @@ public class TileOperationsOfImage {
         return this.decompressedWholeArea;
     }
 
-    /**
-     * some compress options have to be set to defaults, only before reading the
-     * header.
-     */
-    private void defaultReadCompressOptions() {
-        compressOptions().setReadDefaults();
-    }
-
     public PrimitiveType<Buffer> getBaseType() {
         return this.baseType;
     }
@@ -240,16 +228,6 @@ public class TileOperationsOfImage {
         return this.tileOperations[i];
     }
 
-    private void initializeColumnOptions(Header header, int tileCount) {
-        try {
-            for (ICompressOptionColumnParameter parameter : compressOptions().getCompressionParameters().columnParameters()) {
-                parameter.column(getNullableColumn(header, Object.class, parameter.getName()), tileCount);
-            }
-        } catch (FitsException e) {
-            throw new IllegalStateException("Columns of table inconsistent", e);
-        }
-    }
-
     private void initializeCompressionControl() {
         if (this.compressorControl == null) {
             this.compressorControl = TileCompressorProvider.findCompressorControl(this.quantAlgorithm, this.compressAlgorithm, this.baseType.primitiveClass());
@@ -266,19 +244,19 @@ public class TileOperationsOfImage {
         }
     }
 
-    public TileOperationsOfImage prepareUncompressedData(final Buffer buffer) {
+    public ImageTilesOperation prepareUncompressedData(final Buffer buffer) {
         this.compressedWholeArea = ByteBuffer.wrap(new byte[this.baseType.size() * this.axes[0] * this.axes[1]]);
         createTiles(new ITileOperationInitialisation() {
 
             @Override
             public TileOperation createTileOperation(int tileIndex) {
-                return new TileCompressor(TileOperationsOfImage.this, tileIndex);
+                return new TileCompressor(ImageTilesOperation.this, tileIndex);
             }
 
             @Override
             public void init(TileOperation tileOperation) {
                 tileOperation.setWholeImageBuffer(buffer);
-                tileOperation.setWholeImageCompressedBuffer(TileOperationsOfImage.this.compressedWholeArea);
+                tileOperation.setWholeImageCompressedBuffer(ImageTilesOperation.this.compressedWholeArea);
             }
 
             @Override
@@ -299,13 +277,11 @@ public class TileOperationsOfImage {
         }
     }
 
-    public TileOperationsOfImage read(final Header header) throws FitsException {
+    public ImageTilesOperation read(final Header header) throws FitsException {
         readHeader(header);
         setCompressAlgorithm(header.findCard(ZCMPTYPE));
         setQuantAlgorithm(header.findCard(ZQUANTIZ));
         readCompressionHeaders(header);
-        defaultReadCompressOptions();
-        readZVALs(header);
         final Object[] compressed = getNullableColumn(header, Object[].class, COMPRESSED_DATA_COLUMN);
         final Object[] uncompressed = getNullableColumn(header, Object[].class, UNCOMPRESSED_DATA_COLUMN);
         final Object[] gzipCompressed = getNullableColumn(header, Object[].class, GZIP_COMPRESSED_DATA_COLUMN);
@@ -314,15 +290,13 @@ public class TileOperationsOfImage {
 
             @Override
             public TileOperation createTileOperation(int tileIndex) {
-                return new TileDecompressor(TileOperationsOfImage.this, tileIndex);
+                return new TileDecompressor(ImageTilesOperation.this, tileIndex);
             }
 
             @Override
             public void init(TileOperation tileOperation) {
                 tileOperation.initTileOptions();
-                for (ICompressOptionColumnParameter parameter : tileOperation.tileOptions.getCompressionParameters().columnParameters()) {
-                    parameter.getValueFromColumn(tileOperation.getTileIndex());
-                }
+                tileOperation.tileOptions.getCompressionParameters().getValuesFromColumn(tileOperation.getTileIndex());
                 tileOperation.setCompressed(compressed != null ? compressed[tileOperation.getTileIndex()] : null, COMPRESSED)//
                         .setCompressed(uncompressed != null ? uncompressed[tileOperation.getTileIndex()] : null, UNCOMPRESSED)//
                         .setCompressed(gzipCompressed != null ? gzipCompressed[tileOperation.getTileIndex()] : null, GZIP_COMPRESSED);
@@ -330,7 +304,11 @@ public class TileOperationsOfImage {
 
             @Override
             public void tileCount(int tileCount) {
-                initializeColumnOptions(header, tileCount);
+                try {
+                    compressOptions().getCompressionParameters().initializeColumns(header, ImageTilesOperation.this.binaryTable, tileCount);
+                } catch (FitsException e) {
+                    throw new IllegalStateException("Columns of table inconsistent", e);
+                }
             }
         });
 
@@ -358,12 +336,7 @@ public class TileOperationsOfImage {
     }
 
     private void readCompressionHeaders(Header header) {
-        for (ICompressOptionHeaderParameter compressionParameter : compressOptions().getCompressionParameters().headerParameters()) {
-            HeaderCard card = header.findCard(compressionParameter.getName());
-            if (card != null) {
-                compressionParameter.getValueFromHeader(card);
-            }
-        }
+        compressOptions().getCompressionParameters().getValuesFromHeader(header);
     }
 
     public void readHeader(Header header) throws FitsException {
@@ -386,39 +359,9 @@ public class TileOperationsOfImage {
         }
     }
 
-    private void readZVALs(Header header) {
-        int nval = 1;
-        HeaderCard card = header.findCard(ZNAMEn.n(nval));
-        HeaderCard value;
-        while (card != null) {
-            card = header.findCard(ZNAMEn.n(++nval));
-        }
-        while (nval-- > 0) {
-            card = header.findCard(ZNAMEn.n(nval));
-            value = header.findCard(ZVALn.n(nval));
-            if (card != null) {
-                setCompresseionParameterFromHeader(card.getValue(), value);
-            } else {
-                break;
-            }
-        }
-        setCompresseionParameterFromHeader(ZQUANTIZ.name(), header.findCard(ZQUANTIZ));
-    }
-
-    public TileOperationsOfImage setCompressAlgorithm(HeaderCard compressAlgorithmCard) {
+    public ImageTilesOperation setCompressAlgorithm(HeaderCard compressAlgorithmCard) {
         this.compressAlgorithm = compressAlgorithmCard.getValue();
         return this;
-    }
-
-    private void setCompresseionParameterFromHeader(String name, HeaderCard value) {
-        if (value != null) {
-            for (ICompressOptionHeaderParameter parameter : compressOptions().getCompressionParameters().headerParameters()) {
-                if (parameter.getName().equals(name)) {
-                    parameter.getValueFromHeader(value);
-                    break;
-                }
-            }
-        }
     }
 
     private <T> Object setInColumn(Object column, boolean predicate, TileOperation tileOperation, Class<T> clazz, T value) {
@@ -441,17 +384,16 @@ public class TileOperationsOfImage {
         }
     }
 
-    public TileOperationsOfImage setQuantAlgorithm(HeaderCard quantAlgorithmCard) throws FitsException {
+    public ImageTilesOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) throws FitsException {
         if (quantAlgorithmCard != null) {
             this.quantAlgorithm = quantAlgorithmCard.getValue();
-            if (this.quantAlgorithm != null) {
-                setCompresseionParameterFromHeader(ZQUANTIZ.name(), quantAlgorithmCard);
-            }
+        } else {
+            this.quantAlgorithm = null;
         }
         return this;
     }
 
-    public TileOperationsOfImage setTileAxes(int... value) {
+    public ImageTilesOperation setTileAxes(int... value) {
         this.tileAxes = value;
         return this;
     }
@@ -460,17 +402,16 @@ public class TileOperationsOfImage {
         Object compressedColumn = null;
         Object uncompressedColumn = null;
         Object gzipColumn = null;
-        for (ICompressOptionColumnParameter parameter : this.imageOptions.getCompressionParameters().columnParameters()) {
-            parameter.column(null, this.tileOperations.length);
-        }
+        this.imageOptions.getCompressionParameters().initializeColumns(this.tileOperations.length);
         for (TileOperation tileOperation : this.tileOperations) {
-            compressedColumn = setInColumn(compressedColumn, tileOperation.getCompressionType() == COMPRESSED, tileOperation, byte[].class, tileOperation.getCompressedData());
-            gzipColumn = setInColumn(gzipColumn, tileOperation.getCompressionType() == GZIP_COMPRESSED, tileOperation, byte[].class, tileOperation.getCompressedData());
-            uncompressedColumn =
-                    setInColumn(uncompressedColumn, tileOperation.getCompressionType() == UNCOMPRESSED, tileOperation, byte[].class, tileOperation.getCompressedData());
-            for (ICompressOptionColumnParameter parameter : this.imageOptions.getCompressionParameters().columnParameters()) {
-                parameter.setValueInColumn(tileOperation.getTileIndex());
-            }
+            TileCompressionType compression = tileOperation.getCompressionType();
+            byte[] compressedData = tileOperation.getCompressedData();
+
+            compressedColumn = setInColumn(compressedColumn, compression == COMPRESSED, tileOperation, byte[].class, compressedData);
+            gzipColumn = setInColumn(gzipColumn, compression == GZIP_COMPRESSED, tileOperation, byte[].class, compressedData);
+            uncompressedColumn = setInColumn(uncompressedColumn, compression == UNCOMPRESSED, tileOperation, byte[].class, compressedData);
+
+            this.imageOptions.getCompressionParameters().setValueFromColumn(tileOperation.getTileIndex());
         }
         setNullEntries(compressedColumn, new byte[0]);
         setNullEntries(gzipColumn, new byte[0]);
@@ -479,9 +420,7 @@ public class TileOperationsOfImage {
         addColumnToTable(hdu, gzipColumn, GZIP_COMPRESSED_DATA_COLUMN);
         addColumnToTable(hdu, uncompressedColumn, UNCOMPRESSED_DATA_COLUMN);
 
-        for (ICompressOptionColumnParameter parameter : this.imageOptions.getCompressionParameters().columnParameters()) {
-            addColumnToTable(hdu, parameter.column(), parameter.getName());
-        }
+        this.imageOptions.getCompressionParameters().addColumnsToTable(hdu);
         hdu.getData().fillHeader(hdu.getHeader());
     }
 
@@ -492,9 +431,6 @@ public class TileOperationsOfImage {
         for (int i = 1; i <= this.tileAxes.length; i++) {
             cardBuilder.card(ZTILEn.n(i)).value(this.tileAxes[i - 1]);
         }
-        int nval = 1;
-        for (ICompressOptionHeaderParameter parameter : compressOptions().getCompressionParameters().headerParameters()) {
-            nval = parameter.setValueInHeader(header, nval);
-        }
+        compressOptions().getCompressionParameters().setValuesInHeader(header);
     }
 }

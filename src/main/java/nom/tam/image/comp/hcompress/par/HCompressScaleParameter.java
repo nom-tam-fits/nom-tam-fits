@@ -35,39 +35,30 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
-import nom.tam.image.comp.ICompressOptionHeaderParameter;
 import nom.tam.image.comp.hcompress.HCompressorOption;
+import nom.tam.image.comp.par.CompressHeaderParameter;
 
-public final class HCompressScaleParameter implements ICompressOptionHeaderParameter {
-
-    private final HCompressorOption hCompressorOption;
+public final class HCompressScaleParameter extends CompressHeaderParameter<HCompressorOption> {
 
     /**
      * @param hCompressorOption
      */
     HCompressScaleParameter(HCompressorOption hCompressorOption) {
-        this.hCompressorOption = hCompressorOption;
+        super(Compression.SCALE, hCompressorOption);
     }
 
     @Override
-    public String getName() {
-        return Compression.SCALE;
+    public void getValueFromHeader(Header header) {
+        HeaderCard value = findZVal(header);
+        if (value != null) {
+            getOption().setScale(value.getValue(Integer.class, -1));
+        }
     }
 
     @Override
-    public Type getType() {
-        return Type.ZVAL;
-    }
-
-    @Override
-    public void getValueFromHeader(HeaderCard value) {
-        this.hCompressorOption.setScale(value.getValue(Integer.class, -1));
-    }
-
-    @Override
-    public int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException {
+    public void setValueInHeader(Header header) throws HeaderCardException {
+        int zvalIndex = nextFreeZVal(header);
         header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
-        header.addValue(Compression.ZVALn.n(zvalIndex), this.hCompressorOption.getScale());
-        return zvalIndex + 1;
+        header.addValue(Compression.ZVALn.n(zvalIndex), getOption().getScale());
     }
 }

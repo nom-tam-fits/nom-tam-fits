@@ -146,8 +146,12 @@ public class CompressedImageHDU extends BinaryTableHDU {
     }
 
     public CompressedImageHDU setQuantAlgorithm(String quantAlgorithm) throws FitsException {
-        HeaderCard quantAlgorithmCard = getHeader().card(Compression.ZQUANTIZ).value(quantAlgorithm).card();
-        getData().setQuantAlgorithm(quantAlgorithmCard);
+        if (quantAlgorithm != null && !quantAlgorithm.isEmpty()) {
+            HeaderCard quantAlgorithmCard = getHeader().card(Compression.ZQUANTIZ).value(quantAlgorithm).card();
+            getData().setQuantAlgorithm(quantAlgorithmCard);
+        } else {
+            getData().setQuantAlgorithm(null);
+        }
         return this;
     }
 }

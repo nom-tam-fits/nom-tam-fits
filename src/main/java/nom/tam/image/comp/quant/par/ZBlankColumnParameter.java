@@ -32,31 +32,13 @@ package nom.tam.image.comp.quant.par;
  */
 
 import nom.tam.fits.header.Compression;
+import nom.tam.image.comp.par.CompressColumnParameter;
 import nom.tam.image.comp.quant.QuantizeOption;
 
-public final class ZBlankColumnParameter extends QuantizeColumnParameter<int[]> {
-
-    private final QuantizeOption quantizeOption;
+public final class ZBlankColumnParameter extends CompressColumnParameter<int[], QuantizeOption> {
 
     public ZBlankColumnParameter(QuantizeOption quantizeOption) {
-        super(Compression.ZBLANK_COLUMN, int[].class);
-        this.quantizeOption = quantizeOption;
-    }
-
-    @Override
-    public void getValueFromColumn(int index) {
-        if (this.column != null) {
-            this.quantizeOption.setBNull(this.column[index]);
-        } else if (this.quantizeOption.getOriginal() != null) {
-            this.quantizeOption.setBNull(this.quantizeOption.getOriginal().getBNull());
-        }
-    }
-
-    @Override
-    public void setValueInColumn(int index) {
-        if (this.quantizeOption.getOriginal() != null && !equals(this.quantizeOption.getBNull(), this.quantizeOption.getOriginal().getBNull())) {
-            initializedColumn()[index] = this.quantizeOption.getBNull();
-        }
+        super(Compression.ZBLANK_COLUMN, quantizeOption, int[].class);
     }
 
     private boolean equals(Integer i1, Integer i2) {
@@ -64,5 +46,21 @@ public final class ZBlankColumnParameter extends QuantizeColumnParameter<int[]> 
             return i2 == null;
         }
         return i1.equals(i2);
+    }
+
+    @Override
+    public void getValueFromColumn(int index) {
+        if (this.column != null) {
+            getOption().setBNull(this.column[index]);
+        } else if (getOption().getOriginal() != null) {
+            getOption().setBNull(getOption().getOriginal().getBNull());
+        }
+    }
+
+    @Override
+    public void setValueInColumn(int index) {
+        if (getOption().getOriginal() != null && !equals(getOption().getBNull(), getOption().getOriginal().getBNull())) {
+            initializedColumn()[index] = getOption().getBNull();
+        }
     }
 }

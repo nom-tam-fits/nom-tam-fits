@@ -35,39 +35,30 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
-import nom.tam.image.comp.ICompressOptionHeaderParameter;
 import nom.tam.image.comp.hcompress.HCompressorOption;
+import nom.tam.image.comp.par.CompressHeaderParameter;
 
-public final class HCompressSmoothParameter implements ICompressOptionHeaderParameter {
-
-    private final HCompressorOption hCompressorOption;
+public final class HCompressSmoothParameter extends CompressHeaderParameter<HCompressorOption> {
 
     /**
      * @param hCompressorOption
      */
     HCompressSmoothParameter(HCompressorOption hCompressorOption) {
-        this.hCompressorOption = hCompressorOption;
+        super(Compression.SMOOTH, hCompressorOption);
     }
 
     @Override
-    public String getName() {
-        return Compression.SMOOTH;
+    public void getValueFromHeader(Header header) {
+        HeaderCard value = findZVal(header);
+        if (value != null) {
+            getOption().setSmooth(value.getValue(Integer.class, 0) != 0);
+        }
     }
 
     @Override
-    public Type getType() {
-        return Type.ZVAL;
-    }
-
-    @Override
-    public void getValueFromHeader(HeaderCard value) {
-        this.hCompressorOption.setSmooth(value.getValue(Integer.class, 0) != 0);
-    }
-
-    @Override
-    public int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException {
+    public void setValueInHeader(Header header) throws HeaderCardException {
+        int zvalIndex = nextFreeZVal(header);
         header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
-        header.addValue(Compression.ZVALn.n(zvalIndex), this.hCompressorOption.isSmooth() ? 1 : 0);
-        return zvalIndex + 1;
+        header.addValue(Compression.ZVALn.n(zvalIndex), getOption().isSmooth() ? 1 : 0);
     }
 }

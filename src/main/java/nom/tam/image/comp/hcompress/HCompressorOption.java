@@ -80,10 +80,6 @@ public class HCompressorOption implements ICompressOption {
         return this.smooth;
     }
 
-    @Override
-    public void setReadDefaults() {
-    }
-
     public HCompressorOption setScale(int value) {
         this.scale = value;
         return this;

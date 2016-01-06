@@ -1,4 +1,4 @@
-package nom.tam.image.comp.hcompress;
+package nom.tam.image.comp.par;
 
 /*
  * #%L
@@ -31,50 +31,41 @@ package nom.tam.image.comp.hcompress;
  * #L%
  */
 
-import nom.tam.image.comp.hcompress.par.HCompressQuantizCompressParameter;
-import nom.tam.image.comp.quant.QuantizeOption;
+import static nom.tam.fits.header.Compression.ZNAMEn;
+import static nom.tam.fits.header.Compression.ZVALn;
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.image.comp.ICompressHeaderParameter;
 
-public class QuantizeHCompressorOption extends QuantizeOption {
+public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<OPTION> implements ICompressHeaderParameter {
 
-    private HCompressorOption hCompressorOption = new HCompressorOption();
-
-    public QuantizeHCompressorOption() {
-        super();
-        this.parameters = new HCompressQuantizCompressParameter(this);
+    protected CompressHeaderParameter(String name, OPTION option) {
+        super(name, option);
     }
 
-    @Override
-    public QuantizeHCompressorOption copy() {
-        QuantizeHCompressorOption copy = (QuantizeHCompressorOption) super.copy();
-        copy.hCompressorOption = this.hCompressorOption.copy();
-        return copy;
-    }
-
-    public HCompressorOption getHCompressorOption() {
-        return this.hCompressorOption;
-    }
-
-    @Override
-    public QuantizeHCompressorOption setTileHeight(int value) {
-        super.setTileHeight(value);
-        this.hCompressorOption.setTileHeight(value);
-        return this;
-    }
-
-    @Override
-    public QuantizeHCompressorOption setTileWidth(int value) {
-        super.setTileWidth(value);
-        this.hCompressorOption.setTileWidth(value);
-        return this;
-    }
-
-    @Override
-    public <T> T unwrap(Class<T> clazz) {
-        T result = super.unwrap(clazz);
-        if (result == null) {
-            return this.hCompressorOption.unwrap(clazz);
+    public HeaderCard findZVal(Header header) {
+        int nval = 1;
+        HeaderCard card = header.findCard(ZNAMEn.n(nval));
+        while (card != null) {
+            if (card.getValue().equals(getName())) {
+                return header.findCard(ZVALn.n(nval));
+            }
+            card = header.findCard(ZNAMEn.n(++nval));
         }
-        return result;
+        return null;
     }
 
+    @Override
+    public Type getType() {
+        return Type.HEADER;
+    }
+
+    public int nextFreeZVal(Header header) {
+        int nval = 1;
+        HeaderCard card = header.findCard(ZNAMEn.n(nval));
+        while (card != null) {
+            card = header.findCard(ZNAMEn.n(++nval));
+        }
+        return nval;
+    }
 }

@@ -31,13 +31,14 @@ package nom.tam.image.comp;
  * #L%
  */
 
-import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardException;
+public interface ICompressColumnParameter extends ICompressParameter {
 
-public interface ICompressOptionHeaderParameter extends ICompressOptionParameter {
+    Object column();
 
-    void getValueFromHeader(HeaderCard value);
+    void column(Object column, int size);
 
-    int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException;
+    void getValueFromColumn(int index);
+
+    void setValueInColumn(int index);
+
 }

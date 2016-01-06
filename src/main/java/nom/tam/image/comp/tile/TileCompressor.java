@@ -37,7 +37,7 @@ import nom.tam.util.type.PrimitiveType;
 
 public class TileCompressor extends TileOperation {
 
-    protected TileCompressor(TileOperationsOfImage array, int tileIndex) {
+    protected TileCompressor(ImageTilesOperation array, int tileIndex) {
         super(array, tileIndex);
     }
 

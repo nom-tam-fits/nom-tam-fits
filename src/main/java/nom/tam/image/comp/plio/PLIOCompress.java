@@ -40,10 +40,10 @@ import nom.tam.image.comp.ITileCompressor;
  * The original decompression code was written by Doug Tody, NRAO and included
  * (ported to c and adapted) in cfitsio by William Pence, NASA/GSFC. That code
  * was then ported to Java by R. van Nieuwenhoven. Later it was massively
- * refactored to harmonize the different compression algorithms and reduce
- * the duplicate code pieces without obscuring the algorithm itself as good as
+ * refactored to harmonize the different compression algorithms and reduce the
+ * duplicate code pieces without obscuring the algorithm itself as good as
  * possible.
- * 
+ *
  * @author Doug Tody
  * @author William Pence
  * @author Richard van Nieuwenhoven
@@ -163,9 +163,9 @@ public abstract class PLIOCompress {
     private static final int VALUE_OF_BIT_13_AND14_ON = 12288;
 
     /**
-     * PL_P2L -- Convert a pixel tileOperationsArray to a line list. The length of the list is
-     * returned as the function value.
-     * 
+     * PL_P2L -- Convert a pixel tileOperationsArray to a line list. The length
+     * of the list is returned as the function value.
+     *
      * @param compressedData
      *            encoded line list
      * @param npix
@@ -256,9 +256,10 @@ public abstract class PLIOCompress {
     }
 
     /**
-     * PL_L2PI -- Translate a PLIO line list into an integer pixel tileOperationsArray. The
-     * number of pixels output (always npix) is returned as the function value.
-     * 
+     * PL_L2PI -- Translate a PLIO line list into an integer pixel
+     * tileOperationsArray. The number of pixels output (always npix) is
+     * returned as the function value.
+     *
      * @param compressedData
      *            encoded line list
      * @param npix

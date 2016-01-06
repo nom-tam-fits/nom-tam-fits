@@ -35,48 +35,36 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
-import nom.tam.image.comp.ICompressOptionHeaderParameter;
+import nom.tam.image.comp.par.CompressHeaderParameter;
 import nom.tam.image.comp.quant.QuantizeOption;
 
-final class ZBlankParameter implements ICompressOptionHeaderParameter {
-
-    /**
-     *
-     */
-    private final QuantizeOption quantizeOption;
+final class ZBlankParameter extends CompressHeaderParameter<QuantizeOption> {
 
     /**
      * @param quantizeOption
      */
     ZBlankParameter(QuantizeOption quantizeOption) {
-        this.quantizeOption = quantizeOption;
+        super(Compression.ZBLANK.name(), quantizeOption);
     }
 
     @Override
-    public String getName() {
-        return Compression.ZBLANK.name();
+    public void getValueFromHeader(Header header) {
+        HeaderCard value = header.findCard(getName());
+        if (value != null) {
+            getOption().setBNull(value.getValue(Integer.class, getOption().getBNull()));
+        }
     }
 
     @Override
-    public Type getType() {
-        return Type.HEADER;
-    }
-
-    @Override
-    public void getValueFromHeader(HeaderCard value) {
-        this.quantizeOption.setBNull(value.getValue(Integer.class, this.quantizeOption.getBNull()));
-    }
-
     public boolean isActive() {
-        return this.quantizeOption.getOriginal() == null;
+        return getOption().getOriginal() == null;
     }
 
     @Override
-    public int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException {
-        Integer bNull = this.quantizeOption.getBNull();
+    public void setValueInHeader(Header header) throws HeaderCardException {
+        Integer bNull = getOption().getBNull();
         if (bNull != null) {
             header.card(Compression.ZBLANK).value(bNull);
         }
-        return zvalIndex;
     }
 }

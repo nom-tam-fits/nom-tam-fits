@@ -262,10 +262,6 @@ public class QuantizeOption implements ICompressOption {
         return this;
     }
 
-    @Override
-    public void setReadDefaults() {
-    }
-
     public QuantizeOption setSeed(long value) {
         this.seed = value;
         return this;

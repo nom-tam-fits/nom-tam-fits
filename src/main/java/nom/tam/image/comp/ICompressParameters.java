@@ -1,5 +1,11 @@
 package nom.tam.image.comp;
 
+import nom.tam.fits.BinaryTable;
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCardException;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -36,8 +42,7 @@ public interface ICompressParameters {
     ICompressParameters NULL = new ICompressParameters() {
 
         @Override
-        public ICompressOptionColumnParameter[] columnParameters() {
-            return new ICompressOptionColumnParameter[0];
+        public void addColumnsToTable(BinaryTableHDU hdu) {
         }
 
         @Override
@@ -46,15 +51,44 @@ public interface ICompressParameters {
         }
 
         @Override
-        public ICompressOptionHeaderParameter[] headerParameters() {
-            return new ICompressOptionHeaderParameter[0];
+        public void getValuesFromColumn(int index) {
+        }
+
+        @Override
+        public void getValuesFromHeader(Header header) {
+        }
+
+        @Override
+        public void initializeColumns(Header header, BinaryTable binaryTable, int size) throws FitsException {
+        }
+
+        @Override
+        public void initializeColumns(int length) {
+        }
+
+        @Override
+        public void setValueFromColumn(int index) {
+        }
+
+        @Override
+        public void setValuesInHeader(Header header) {
         }
     };
 
-    ICompressOptionColumnParameter[] columnParameters();
+    void addColumnsToTable(BinaryTableHDU hdu) throws FitsException;
 
     ICompressParameters copy(ICompressOption clone);
 
-    ICompressOptionHeaderParameter[] headerParameters();
+    void getValuesFromColumn(int index);
+
+    void getValuesFromHeader(Header header);
+
+    void initializeColumns(Header header, BinaryTable binaryTable, int size) throws FitsException;
+
+    void initializeColumns(int length);
+
+    void setValueFromColumn(int index);
+
+    void setValuesInHeader(Header header) throws HeaderCardException;
 
 }

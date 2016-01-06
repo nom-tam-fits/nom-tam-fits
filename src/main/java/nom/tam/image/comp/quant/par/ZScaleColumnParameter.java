@@ -32,31 +32,26 @@ package nom.tam.image.comp.quant.par;
  */
 
 import nom.tam.fits.header.Compression;
+import nom.tam.image.comp.par.CompressColumnParameter;
 import nom.tam.image.comp.quant.QuantizeOption;
 
-final class ZScaleColumnParameter extends QuantizeColumnParameter<double[]> {
-
-    /**
-     *
-     */
-    private final QuantizeOption quantizeOption;
+final class ZScaleColumnParameter extends CompressColumnParameter<double[], QuantizeOption> {
 
     public ZScaleColumnParameter(QuantizeOption quantizeOption) {
-        super(Compression.ZSCALE_COLUMN, double[].class);
-        this.quantizeOption = quantizeOption;
+        super(Compression.ZSCALE_COLUMN, quantizeOption, double[].class);
     }
 
     @Override
     public void getValueFromColumn(int index) {
         if (this.column != null) {
-            this.quantizeOption.setBScale(this.column[index]);
+            getOption().setBScale(this.column[index]);
         }
     }
 
     @Override
     public void setValueInColumn(int index) {
-        if (Double.isNaN(this.quantizeOption.getBScale())) {
-            initializedColumn()[index] = this.quantizeOption.getBScale();
+        if (Double.isNaN(getOption().getBScale())) {
+            initializedColumn()[index] = getOption().getBScale();
         }
     }
 

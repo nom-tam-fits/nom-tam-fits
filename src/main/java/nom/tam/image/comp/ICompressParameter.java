@@ -31,16 +31,14 @@ package nom.tam.image.comp;
  * #L%
  */
 
-
-public interface ICompressOptionParameter {
+public interface ICompressParameter {
 
     enum Type {
         HEADER,
-        ZVAL,
         COLUMN
     }
 
-    ICompressOptionParameter NULL = new ICompressOptionParameter() {
+    ICompressParameter NULL = new ICompressParameter() {
 
         @Override
         public String getName() {

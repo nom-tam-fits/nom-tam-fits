@@ -49,7 +49,7 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  */
 abstract class TileOperation implements Runnable {
 
-    protected final TileOperationsOfImage tileOperationsArray;
+    protected final ImageTilesOperation tileOperationsArray;
 
     protected ByteBuffer compressedData;
 
@@ -65,7 +65,7 @@ abstract class TileOperation implements Runnable {
 
     protected ICompressOption tileOptions;
 
-    protected TileOperation(TileOperationsOfImage array, int tileIndex) {
+    protected TileOperation(ImageTilesOperation array, int tileIndex) {
         this.tileOperationsArray = array;
         this.tileIndex = tileIndex;
     }

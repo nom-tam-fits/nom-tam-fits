@@ -35,39 +35,29 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
-import nom.tam.image.comp.ICompressOptionHeaderParameter;
+import nom.tam.image.comp.par.CompressHeaderParameter;
 import nom.tam.image.comp.rice.RiceCompressOption;
 
-public final class RiceBytePixParameter implements ICompressOptionHeaderParameter {
+public final class RiceBytePixParameter extends CompressHeaderParameter<RiceCompressOption> {
 
-    private final RiceCompressOption riceCompressOption;
-
-    /**
-     * @param riceCompressOption
-     */
     public RiceBytePixParameter(RiceCompressOption riceCompressOption) {
-        this.riceCompressOption = riceCompressOption;
+        super(Compression.BYTEPIX, riceCompressOption);
     }
 
     @Override
-    public String getName() {
-        return Compression.BYTEPIX;
+    public void getValueFromHeader(Header header) {
+        HeaderCard value = findZVal(header);
+        if (value != null) {
+            getOption().setBytePix(value.getValue(Integer.class, RiceCompressOption.DEFAULT_RICE_BYTEPIX));
+        } else {
+            getOption().setBytePix(RiceCompressOption.DEFAULT_RICE_BYTEPIX);
+        }
     }
 
     @Override
-    public Type getType() {
-        return Type.ZVAL;
-    }
-
-    @Override
-    public void getValueFromHeader(HeaderCard value) {
-        this.riceCompressOption.setBytePix(value.getValue(Integer.class, null));
-    }
-
-    @Override
-    public int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException {
+    public void setValueInHeader(Header header) throws HeaderCardException {
+        int zvalIndex = nextFreeZVal(header);
         header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
-        header.addValue(Compression.ZVALn.n(zvalIndex), this.riceCompressOption.getBytePix());
-        return zvalIndex + 1;
+        header.addValue(Compression.ZVALn.n(zvalIndex), getOption().getBytePix());
     }
 }

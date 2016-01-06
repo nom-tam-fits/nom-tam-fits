@@ -38,10 +38,11 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
+import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
-import nom.tam.image.comp.ICompressOptionHeaderParameter;
+import nom.tam.image.comp.ICompressHeaderParameter;
 import nom.tam.image.comp.hcompress.HCompressor.ByteHCompress;
 import nom.tam.image.comp.hcompress.HCompressor.DoubleHCompress;
 import nom.tam.image.comp.hcompress.HCompressor.FloatHCompress;
@@ -437,19 +438,16 @@ public class HCompressTest {
             expected = e;
         }
         Assert.assertNotNull(expected);
-        getCompressionParameter(option, Compression.SCALE).getValueFromHeader(new HeaderCard(Compression.SCALE, 1, null));
-        getCompressionParameter(option, Compression.SMOOTH).getValueFromHeader(new HeaderCard(Compression.SMOOTH, 1, null));
+
+        Header header = new Header();
+        header.addValue(Compression.ZNAMEn.n(1).key(), Compression.SCALE, null);
+        header.addValue(Compression.ZVALn.n(1).key(), 1, null);
+        header.addValue(Compression.ZNAMEn.n(2).key(), Compression.SMOOTH, null);
+        header.addValue(Compression.ZVALn.n(2).key(), 1, null);
+        option.getCompressionParameters().getValuesFromHeader(header);
+
         Assert.assertTrue(option.isSmooth());
         Assert.assertEquals(1, option.getScale());
-    }
-
-    private ICompressOptionHeaderParameter getCompressionParameter(HCompressorOption option, String name) {
-        for (ICompressOptionHeaderParameter parameter : option.getCompressionParameters().headerParameters()) {
-            if (parameter.getName().equals(name)) {
-                return parameter;
-            }
-        }
-        return null;
     }
 
 }

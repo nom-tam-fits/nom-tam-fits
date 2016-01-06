@@ -37,10 +37,11 @@ import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
+import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
-import nom.tam.image.comp.ICompressOptionHeaderParameter;
+import nom.tam.image.comp.ICompressHeaderParameter;
 import nom.tam.util.ArrayFuncs;
 
 import org.junit.Assert;
@@ -595,8 +596,9 @@ public class QuantizeTest {
         }
         Assert.assertNotNull(expected);
 
-        getCompressionParameter(option,Compression.ZQUANTIZ.name()).getValueFromHeader(
-                new HeaderCard(Compression.ZVALn.n(1).key(), Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2, null));
+        Header header = new Header();
+        header.addValue(Compression.ZQUANTIZ, Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2);
+        option.getCompressionParameters().getValuesFromHeader(header);
         Assert.assertTrue(option.isDither2());
         Assert.assertTrue(option.isDither());
         option = new QuantizeOption();
@@ -605,20 +607,12 @@ public class QuantizeTest {
         Assert.assertFalse(option.isDither());
 
         option = new QuantizeOption();
-        getCompressionParameter(option,Compression.ZQUANTIZ.name()).getValueFromHeader(
-                new HeaderCard(Compression.ZVALn.n(1).key(), Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1, null));
+        header = new Header();
+        header.addValue(Compression.ZQUANTIZ, Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1);
+        option.getCompressionParameters().getValuesFromHeader(header);
 
         Assert.assertFalse(option.isDither2());
         Assert.assertTrue(option.isDither());
-    }
-
-    private ICompressOptionHeaderParameter getCompressionParameter(QuantizeOption option, String name) {
-       for (ICompressOptionHeaderParameter parameter:option.getCompressionParameters().headerParameters()) {
-           if (parameter.getName().equals(name)) {
-               return parameter;
-           }
-       }
-        return null;
     }
 
     @Test

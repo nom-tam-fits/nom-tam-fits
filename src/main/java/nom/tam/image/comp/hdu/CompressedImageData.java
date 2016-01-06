@@ -40,7 +40,7 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.image.comp.ICompressOption;
-import nom.tam.image.comp.tile.TileOperationsOfImage;
+import nom.tam.image.comp.tile.ImageTilesOperation;
 import nom.tam.util.ArrayFuncs;
 
 public class CompressedImageData extends BinaryTable {
@@ -48,7 +48,7 @@ public class CompressedImageData extends BinaryTable {
     /**
      * tile information, only available during compressing or decompressing.
      */
-    private TileOperationsOfImage tileOperationsOfImage;
+    private ImageTilesOperation tileOperationsOfImage;
 
     public CompressedImageData() throws FitsException {
         super();
@@ -74,7 +74,7 @@ public class CompressedImageData extends BinaryTable {
 
     public Buffer getUncompressedData(Header hdr) throws FitsException {
         try {
-            this.tileOperationsOfImage = new TileOperationsOfImage(this).read(hdr);
+            this.tileOperationsOfImage = new ImageTilesOperation(this).read(hdr);
             return this.tileOperationsOfImage.decompress(null, hdr);
         } finally {
             this.tileOperationsOfImage = null;
@@ -105,9 +105,9 @@ public class CompressedImageData extends BinaryTable {
         return this;
     }
 
-    private TileOperationsOfImage tileOperationsOfImage() {
+    private ImageTilesOperation tileOperationsOfImage() {
         if (this.tileOperationsOfImage == null) {
-            this.tileOperationsOfImage = new TileOperationsOfImage(this);
+            this.tileOperationsOfImage = new ImageTilesOperation(this);
         }
         return this.tileOperationsOfImage;
     }

@@ -1,4 +1,4 @@
-package nom.tam.image.comp;
+package nom.tam.image.comp.par;
 
 /*
  * #%L
@@ -31,14 +31,26 @@ package nom.tam.image.comp;
  * #L%
  */
 
-public interface ICompressOptionColumnParameter extends ICompressOptionParameter {
+public class CompressParameter<OPTION> {
 
-    Object column();
+    private final String name;
 
-    void column(Object column, int size);
+    private final OPTION option;
 
-    void getValueFromColumn(int index);
+    protected CompressParameter(String name, OPTION option) {
+        this.name = name;
+        this.option = option;
+    }
 
-    void setValueInColumn(int index);
+    public final String getName() {
+        return this.name;
+    }
 
+    protected final OPTION getOption() {
+        return this.option;
+    }
+
+    public boolean isActive() {
+        return true;
+    }
 }

@@ -32,61 +32,45 @@ package nom.tam.image.comp.quant.par;
  */
 
 import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
-import nom.tam.image.comp.ICompressOptionHeaderParameter;
+import nom.tam.image.comp.par.CompressHeaderParameter;
 import nom.tam.image.comp.quant.QuantizeOption;
 
-final class ZQuantizParameter implements ICompressOptionHeaderParameter {
-
-    /**
-     *
-     */
-    private final QuantizeOption quantizeOption;
+final class ZQuantizParameter extends CompressHeaderParameter<QuantizeOption> {
 
     /**
      * @param quantizeOption
      */
     ZQuantizParameter(QuantizeOption quantizeOption) {
-        this.quantizeOption = quantizeOption;
+        super(Compression.ZQUANTIZ.name(), quantizeOption);
     }
 
     @Override
-    public String getName() {
-        return Compression.ZQUANTIZ.name();
-    }
-
-    @Override
-    public Type getType() {
-        return Type.HEADER;
-    }
-
-    @Override
-    public void getValueFromHeader(HeaderCard value) {
-        if (value.getValue().equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)) {
-            this.quantizeOption.setDither(true);
-            this.quantizeOption.setDither2(true);
-        } else if (value.getValue().equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)) {
-            this.quantizeOption.setDither(true);
-            this.quantizeOption.setDither2(false);
+    public void getValueFromHeader(Header header) {
+        String value = header.getStringValue(getName());
+        if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(value)) {
+            getOption().setDither(true);
+            getOption().setDither2(true);
+        } else if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(value)) {
+            getOption().setDither(true);
+            getOption().setDither2(false);
         } else {
-            this.quantizeOption.setDither(false);
-            this.quantizeOption.setDither2(false);
+            getOption().setDither(false);
+            getOption().setDither2(false);
         }
     }
 
     @Override
-    public int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException {
+    public void setValueInHeader(Header header) throws HeaderCardException {
         String value;
-        if (this.quantizeOption.isDither2()) {
+        if (getOption().isDither2()) {
             value = Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2;
-        } else if (this.quantizeOption.isDither()) {
+        } else if (getOption().isDither()) {
             value = Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1;
         } else {
             value = Compression.ZQUANTIZ_NO_DITHER;
         }
         header.card(Compression.ZQUANTIZ).value(value);
-        return zvalIndex;
     }
 }

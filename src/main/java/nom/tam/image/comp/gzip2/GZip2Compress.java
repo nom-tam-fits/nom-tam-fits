@@ -44,29 +44,7 @@ import nom.tam.image.comp.gzip.GZipCompress;
 
 public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
 
-    public GZip2Compress(int primitivSize) {
-        super(primitivSize);
-    }
-
     public static class ByteGZip2Compress extends ByteGZipCompress {
-    }
-
-    public static class ShortGZip2Compress extends GZip2Compress<ShortBuffer> {
-
-        protected static final int BYTE_SIZE_OF_SHORT = 2;
-
-        public ShortGZip2Compress() {
-            super(BYTE_SIZE_OF_SHORT);
-        }
-
-        protected void getPixel(ShortBuffer pixelData, byte[] pixelBytes) {
-            ShortBuffer shortBuffer = ByteBuffer.wrap(pixelBytes).asShortBuffer();
-            shortBuffer.put(pixelData);
-        }
-
-        protected void setPixel(ShortBuffer pixelData, byte[] pixelBytes) {
-            pixelData.put(ByteBuffer.wrap(pixelBytes).asShortBuffer());
-        }
     }
 
     public static class IntGZip2Compress extends GZip2Compress<IntBuffer> {
@@ -77,11 +55,13 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
             super(BYTE_SIZE_OF_INT);
         }
 
+        @Override
         protected void getPixel(IntBuffer pixelData, byte[] pixelBytes) {
             IntBuffer pixelBuffer = ByteBuffer.wrap(pixelBytes).asIntBuffer();
             pixelBuffer.put(pixelData);
         }
 
+        @Override
         protected void setPixel(IntBuffer pixelData, byte[] pixelBytes) {
             pixelData.put(ByteBuffer.wrap(pixelBytes).asIntBuffer());
         }
@@ -95,20 +75,55 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
             super(BYTE_SIZE_OF_LONG);
         }
 
+        @Override
         protected void getPixel(LongBuffer pixelData, byte[] pixelBytes) {
             LongBuffer pixelBuffer = ByteBuffer.wrap(pixelBytes).asLongBuffer();
             pixelBuffer.put(pixelData);
         }
 
+        @Override
         protected void setPixel(LongBuffer pixelData, byte[] pixelBytes) {
             pixelData.put(ByteBuffer.wrap(pixelBytes).asLongBuffer());
         }
     }
 
+    public static class ShortGZip2Compress extends GZip2Compress<ShortBuffer> {
+
+        protected static final int BYTE_SIZE_OF_SHORT = 2;
+
+        public ShortGZip2Compress() {
+            super(BYTE_SIZE_OF_SHORT);
+        }
+
+        @Override
+        protected void getPixel(ShortBuffer pixelData, byte[] pixelBytes) {
+            ShortBuffer shortBuffer = ByteBuffer.wrap(pixelBytes).asShortBuffer();
+            shortBuffer.put(pixelData);
+        }
+
+        @Override
+        protected void setPixel(ShortBuffer pixelData, byte[] pixelBytes) {
+            pixelData.put(ByteBuffer.wrap(pixelBytes).asShortBuffer());
+        }
+    }
+
+    public GZip2Compress(int primitivSize) {
+        super(primitivSize);
+    }
+
+    private int[] calculateOffsets(byte[] byteArray) {
+        int[] offset = new int[this.primitiveSize];
+        offset[0] = 0;
+        for (int primitivIndex = 1; primitivIndex < this.primitiveSize; primitivIndex++) {
+            offset[primitivIndex] = offset[primitivIndex - 1] + byteArray.length / this.primitiveSize;
+        }
+        return offset;
+    }
+
     @Override
     public boolean compress(T pixelData, ByteBuffer compressed) {
         int pixelDataLimit = pixelData.limit();
-        byte[] pixelBytes = new byte[pixelDataLimit * primitiveSize];
+        byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];
         getPixel(pixelData, pixelBytes);
         pixelBytes = shuffle(pixelBytes);
         try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {
@@ -122,7 +137,7 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
     @Override
     public void decompress(ByteBuffer compressed, T pixelData) {
         int pixelDataLimit = pixelData.limit();
-        byte[] pixelBytes = new byte[pixelDataLimit * primitiveSize];
+        byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];
         try (GZIPInputStream zip = createGZipInputStream(compressed)) {
             int count = 0;
             int offset = 0;
@@ -143,8 +158,8 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
         byte[] result = new byte[byteArray.length];
         int resultIndex = 0;
         int[] offset = calculateOffsets(byteArray);
-        for (int index = 0; index < byteArray.length; index += primitiveSize) {
-            for (int primitivIndex = 0; primitivIndex < primitiveSize; primitivIndex++) {
+        for (int index = 0; index < byteArray.length; index += this.primitiveSize) {
+            for (int primitivIndex = 0; primitivIndex < this.primitiveSize; primitivIndex++) {
                 result[resultIndex + offset[primitivIndex]] = byteArray[index + primitivIndex];
             }
             resultIndex++;
@@ -152,21 +167,12 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
         return result;
     }
 
-    private int[] calculateOffsets(byte[] byteArray) {
-        int[] offset = new int[primitiveSize];
-        offset[0] = 0;
-        for (int primitivIndex = 1; primitivIndex < primitiveSize; primitivIndex++) {
-            offset[primitivIndex] = offset[primitivIndex - 1] + (byteArray.length / primitiveSize);
-        }
-        return offset;
-    }
-
     public byte[] unshuffle(byte[] byteArray) {
         byte[] result = new byte[byteArray.length];
         int resultIndex = 0;
         int[] offset = calculateOffsets(byteArray);
-        for (int index = 0; index < byteArray.length; index += primitiveSize) {
-            for (int primitivIndex = 0; primitivIndex < primitiveSize; primitivIndex++) {
+        for (int index = 0; index < byteArray.length; index += this.primitiveSize) {
+            for (int primitivIndex = 0; primitivIndex < this.primitiveSize; primitivIndex++) {
                 result[index + primitivIndex] = byteArray[resultIndex + offset[primitivIndex]];
             }
             resultIndex++;

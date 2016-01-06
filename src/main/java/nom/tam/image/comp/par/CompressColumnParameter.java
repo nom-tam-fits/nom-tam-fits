@@ -1,4 +1,4 @@
-package nom.tam.image.comp.quant.par;
+package nom.tam.image.comp.par;
 
 /*
  * #%L
@@ -33,11 +33,9 @@ package nom.tam.image.comp.quant.par;
 
 import java.lang.reflect.Array;
 
-import nom.tam.image.comp.ICompressOptionColumnParameter;
+import nom.tam.image.comp.ICompressColumnParameter;
 
-abstract class QuantizeColumnParameter<T> implements ICompressOptionColumnParameter {
-
-    private final String name;
+public abstract class CompressColumnParameter<T, OPTION> extends CompressParameter<OPTION> implements ICompressColumnParameter {
 
     protected T column;
 
@@ -45,9 +43,8 @@ abstract class QuantizeColumnParameter<T> implements ICompressOptionColumnParame
 
     private int size;
 
-    protected QuantizeColumnParameter(String name, Class<T> clazz) {
-        super();
-        this.name = name;
+    protected CompressColumnParameter(String name, OPTION option, Class<T> clazz) {
+        super(name, option);
         this.clazz = clazz;
     }
 
@@ -56,20 +53,15 @@ abstract class QuantizeColumnParameter<T> implements ICompressOptionColumnParame
         return this.column;
     }
 
-    @Override
-    public void column(Object columnValue, int sizeValue) {
-        this.column = this.clazz.cast(columnValue);
-        this.size = sizeValue;
-    }
-
-    protected void column(QuantizeColumnParameter<T> original) {
+    public void column(CompressColumnParameter<T, OPTION> original) {
         this.column = original.column;
         this.size = original.size;
     }
 
     @Override
-    public final String getName() {
-        return this.name;
+    public void column(Object columnValue, int sizeValue) {
+        this.column = this.clazz.cast(columnValue);
+        this.size = sizeValue;
     }
 
     @Override

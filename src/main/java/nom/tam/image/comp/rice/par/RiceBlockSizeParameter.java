@@ -35,40 +35,29 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
-import nom.tam.image.comp.ICompressOptionHeaderParameter;
+import nom.tam.image.comp.par.CompressHeaderParameter;
 import nom.tam.image.comp.rice.RiceCompressOption;
 
-public final class RiceBlockSizeParameter implements ICompressOptionHeaderParameter {
+public final class RiceBlockSizeParameter extends CompressHeaderParameter<RiceCompressOption> {
 
-    private final RiceCompressOption riceCompressOption;
-
-    /**
-     * @param riceCompressOption
-     */
     public RiceBlockSizeParameter(RiceCompressOption riceCompressOption) {
-        this.riceCompressOption = riceCompressOption;
+        super(Compression.BLOCKSIZE, riceCompressOption);
     }
 
     @Override
-    public String getName() {
-        return Compression.BLOCKSIZE;
+    public void getValueFromHeader(Header header) {
+        HeaderCard value = super.findZVal(header);
+        if (value != null) {
+            getOption().setBlockSize(value.getValue(Integer.class, RiceCompressOption.DEFAULT_RICE_BLOCKSIZE));
+        } else {
+            getOption().setBlockSize(RiceCompressOption.DEFAULT_RICE_BLOCKSIZE);
+        }
     }
 
     @Override
-    public Type getType() {
-        return Type.ZVAL;
-    }
-
-    @Override
-    public void getValueFromHeader(HeaderCard value) {
-        this.riceCompressOption.setBlockSize(value.getValue(Integer.class, RiceCompressOption.DEFAULT_RICE_BLOCKSIZE));
-
-    }
-
-    @Override
-    public int setValueInHeader(Header header, int zvalIndex) throws HeaderCardException {
+    public void setValueInHeader(Header header) throws HeaderCardException {
+        int zvalIndex = nextFreeZVal(header);
         header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
-        header.addValue(Compression.ZVALn.n(zvalIndex), this.riceCompressOption.getBlockSize());
-        return zvalIndex + 1;
+        header.addValue(Compression.ZVALn.n(zvalIndex), getOption().getBlockSize());
     }
 }

@@ -82,8 +82,8 @@ public class TileCompressorProviderTest {
             return new TileDecompressor(getTileArray(), 0);
         }
 
-        TileOperationsOfImage getTileArray() {
-            return new TileOperationsOfImage(this);
+        ImageTilesOperation getTileArray() {
+            return new ImageTilesOperation(this);
         }
     }
 
@@ -210,7 +210,7 @@ public class TileCompressorProviderTest {
 
     @Test(expected = FitsException.class)
     public void testTileWrongHeader1() throws Exception {
-        TileOperationsOfImage operationsOfImage = new TileOperationsOfImage(null);
+        ImageTilesOperation operationsOfImage = new ImageTilesOperation(null);
         Header header = new Header();
         header.addValue(ZBITPIX, 32);
         header.addValue(ZNAXIS, 2);
@@ -240,7 +240,7 @@ public class TileCompressorProviderTest {
 
     private void testTileSizes(int tileWidth, int tileHeigth) throws HeaderCardException, FitsException {
         int imageSize = 100;
-        TileOperationsOfImage operationsOfImage = new TileOperationsOfImage(null);
+        ImageTilesOperation operationsOfImage = new ImageTilesOperation(null);
         Buffer buffer = IntBuffer.allocate(imageSize * imageSize);
         Header header = new Header();
         header.addValue(ZBITPIX, 32);
@@ -273,7 +273,7 @@ public class TileCompressorProviderTest {
         }
     }
 
-    private List<TileOperation> getTiles(TileOperationsOfImage operationsOfImage) {
+    private List<TileOperation> getTiles(ImageTilesOperation operationsOfImage) {
         List<TileOperation> tiles = new ArrayList<>();
         try {
             for (int index = 0; index < 10000; index++) {

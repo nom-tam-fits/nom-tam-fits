@@ -41,7 +41,7 @@ public class TileDecompressor extends TileOperation {
      */
     private static final Logger LOG = Logger.getLogger(TileDecompressor.class.getName());
 
-    protected TileDecompressor(TileOperationsOfImage array, int tileIndex) {
+    protected TileDecompressor(ImageTilesOperation array, int tileIndex) {
         super(array, tileIndex);
     }
 

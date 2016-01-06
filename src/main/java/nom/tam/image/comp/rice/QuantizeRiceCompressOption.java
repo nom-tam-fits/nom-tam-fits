@@ -56,12 +56,6 @@ public class QuantizeRiceCompressOption extends QuantizeOption {
     }
 
     @Override
-    public void setReadDefaults() {
-        super.setReadDefaults();
-        this.riceCompressOption.setReadDefaults();
-    }
-
-    @Override
     public QuantizeRiceCompressOption setTileHeight(int value) {
         super.setTileHeight(value);
         this.riceCompressOption.setTileHeight(value);

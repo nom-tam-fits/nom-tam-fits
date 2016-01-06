@@ -102,11 +102,6 @@ public class RiceCompressOption implements ICompressOption {
     }
 
     @Override
-    public void setReadDefaults() {
-        this.bytePix = DEFAULT_RICE_BYTEPIX;
-    }
-
-    @Override
     public RiceCompressOption setTileHeight(int value) {
         return this;
     }
