@@ -31,10 +31,18 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
+import nom.tam.fits.util.BlackBoxImages;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class UserProvidedTest {
@@ -58,5 +66,26 @@ public class UserProvidedTest {
             FitsFactory.setUseHierarch(useHierarch);
 
         }
+    }
+
+    private static ArrayList<Header> getHeaders(String filename) throws IOException, FitsException {
+        ArrayList<Header> list = new ArrayList<Header>();
+        try (Fits f = new Fits(filename)) {
+            BasicHDU<?> readHDU = f.readHDU();
+            while (readHDU != null) {
+                f.deleteHDU(0);
+                list.add(readHDU.getHeader());
+                readHDU = f.readHDU();
+            }
+        }
+        return list;
+    }
+
+    @Test
+    public void testDoRead() throws FileNotFoundException, Exception {
+        FitsFactory.setLongStringsEnabled(true);
+        ArrayList<Header> headers = getHeaders(BlackBoxImages.getBlackBoxImage("bad.fits"));
+        Assert.assertTrue(headers.get(0).getStringValue("INFO____").endsWith("&"));
+        Assert.assertEquals(6, headers.size());
     }
 }

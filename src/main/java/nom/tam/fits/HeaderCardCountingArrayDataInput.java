@@ -31,6 +31,8 @@ package nom.tam.fits;
  * #L%
  */
 
+import java.io.IOException;
+
 import nom.tam.util.ArrayDataInput;
 
 /**
@@ -50,6 +52,8 @@ public class HeaderCardCountingArrayDataInput {
      * the number of 80 byte cards read.
      */
     private int physicalCardsRead;
+
+    private int markedPhysicalCardsRead;
 
     protected HeaderCardCountingArrayDataInput(ArrayDataInput input) {
         this.input = input;
@@ -74,6 +78,28 @@ public class HeaderCardCountingArrayDataInput {
      */
     public void cardRead() {
         physicalCardsRead++;
+    }
+
+    /**
+     * mark the current position in the stream.
+     * 
+     * @throws IOException
+     *             if the underlaying stream does not allow the mark.
+     */
+    public void mark() throws IOException {
+        input.mark(HeaderCard.FITS_HEADER_CARD_SIZE);
+        markedPhysicalCardsRead = physicalCardsRead;
+    }
+
+    /**
+     * reset the stream th the last marked prosition.
+     * 
+     * @throws IOException
+     *             if the underlaying stream does not allow the mark.
+     */
+    public void reset() throws IOException {
+        input.reset();
+        physicalCardsRead = markedPhysicalCardsRead;
     }
 
 }

@@ -620,7 +620,7 @@ public class HeaderCard implements CursorValue<String> {
             continueCard = null;
             if (longValue.charAt(longValue.length() - 1) == '&') {
                 longValue.setLength(longValue.length() - 1);
-                dis.in().mark(FITS_HEADER_CARD_SIZE);
+                dis.mark();
                 String card = readOneHeaderLine(dis);
                 if (card.startsWith(CONTINUE.key())) {
                     // extract the value/comment part of the string
@@ -629,7 +629,7 @@ public class HeaderCard implements CursorValue<String> {
                     // the & was part of the string put it back.
                     longValue.append('&');
                     // ok move the imputstream one card back.
-                    dis.in().reset();
+                    dis.reset();
                 }
             }
         } while (continueCard != null);
