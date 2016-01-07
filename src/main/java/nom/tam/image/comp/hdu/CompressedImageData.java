@@ -50,7 +50,7 @@ public class CompressedImageData extends BinaryTable {
      */
     private ImageTilesOperation tileOperationsOfImage;
 
-    public CompressedImageData() throws FitsException {
+    public CompressedImageData() {
         super();
     }
 

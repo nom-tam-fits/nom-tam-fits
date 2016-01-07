@@ -35,7 +35,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -155,10 +154,8 @@ public class TileCompressorProvider implements ITileCompressorProvider {
     private static final Logger LOG = Logger.getLogger(TileCompressorProvider.class.getName());
 
     public static ITileCompressorControl findCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
-        Iterator<ITileCompressorProvider> providers = ServiceLoader.load(ITileCompressorProvider.class, Thread.currentThread().getContextClassLoader()).iterator();
         ITileCompressorProvider defaultProvider = null;
-        while (providers.hasNext()) {
-            ITileCompressorProvider iTileCompressorProvider = providers.next();
+        for (ITileCompressorProvider iTileCompressorProvider : ServiceLoader.load(ITileCompressorProvider.class, Thread.currentThread().getContextClassLoader())) {
             if (iTileCompressorProvider instanceof TileCompressorProvider) {
                 defaultProvider = iTileCompressorProvider;
             } else {

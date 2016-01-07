@@ -167,7 +167,7 @@ enum BackupRestoreUnCompressedHeaderCard {
 
     private final IFitsHeader uncompressedHeaderKey;
 
-    private BackupRestoreUnCompressedHeaderCard(IFitsHeader header) {
+    BackupRestoreUnCompressedHeaderCard(IFitsHeader header) {
         this.compressedHeaderKey = header;
         if (header instanceof Compression) {
             this.uncompressedHeaderKey = ((Compression) this.compressedHeaderKey).getUncompressedKey();
@@ -181,7 +181,7 @@ enum BackupRestoreUnCompressedHeaderCard {
         }
     }
 
-    private void addHEaderCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator, IFitsHeader targetKey) throws HeaderCardException {
+    private void addHeaderCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator, IFitsHeader targetKey) throws HeaderCardException {
         if (targetKey != null) {
             if (targetKey.valueType() == VALUE.INTEGER) {
                 headerIterator.add(new HeaderCard(targetKey.key(), card.getValue(Integer.class, 0), card.getComment()));
@@ -206,7 +206,7 @@ enum BackupRestoreUnCompressedHeaderCard {
      */
     protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
         IFitsHeader uncompressedKey = this.uncompressedHeaderKey;
-        addHEaderCard(card, headerIterator, uncompressedKey);
+        addHeaderCard(card, headerIterator, uncompressedKey);
     }
 
     protected IFitsHeader compressedHeaderKey() {
@@ -214,7 +214,7 @@ enum BackupRestoreUnCompressedHeaderCard {
     }
 
     protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        addHEaderCard(card, headerIterator, this.compressedHeaderKey);
+        addHeaderCard(card, headerIterator, this.compressedHeaderKey);
     }
 
     protected IFitsHeader uncompressedHeaderKey() {

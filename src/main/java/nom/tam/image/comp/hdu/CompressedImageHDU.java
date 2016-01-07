@@ -50,9 +50,9 @@ import nom.tam.util.Cursor;
 
 /**
  * A compressed image is a normal binary table with a defined structure. The
- * image is splitted in tiles and each tile is compressed on it's own. the
+ * image is split in tiles and each tile is compressed on its own. The
  * compressed data is then stored in the 3 data columns of this binary table
- * (compressed, gzip and uncompressed) depending on the compression type used in
+ * (compressed, gzipped and uncompressed) depending on the compression type used in
  * the tile.
  */
 public class CompressedImageHDU extends BinaryTableHDU {

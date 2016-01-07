@@ -94,8 +94,6 @@ public class ImageTilesOperation {
     // Note: field is initialized lazily: use getter within class!
     private ITileCompressorControl compressorControl;
 
-    private Buffer decompressedWholeArea;
-
     // Note: field is initialized lazily: use getter within class!
     private ITileCompressorControl gzipCompressorControl;
 
@@ -170,16 +168,16 @@ public class ImageTilesOperation {
 
     public Buffer decompress(Buffer decompressed, Header header) {
         int pixels = this.axes[0] * this.axes[1];
-        this.decompressedWholeArea = decompressed;
-        if (this.decompressedWholeArea == null) {
-            this.decompressedWholeArea = this.baseType.newBuffer(pixels);
+        Buffer decompressedWholeArea = decompressed;
+        if (decompressedWholeArea == null) {
+            decompressedWholeArea = this.baseType.newBuffer(pixels);
         }
         for (TileOperation tileOperation : this.tileOperations) {
-            tileOperation.setWholeImageBuffer(this.decompressedWholeArea);
+            tileOperation.setWholeImageBuffer(decompressedWholeArea);
         }
         processAllTiles();
-        this.decompressedWholeArea.rewind();
-        return this.decompressedWholeArea;
+        decompressedWholeArea.rewind();
+        return decompressedWholeArea;
     }
 
     public PrimitiveType<Buffer> getBaseType() {
@@ -352,7 +350,7 @@ public class ImageTilesOperation {
         }
     }
 
-    public ImageTilesOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) throws FitsException {
+    public ImageTilesOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
         if (quantAlgorithmCard != null) {
             this.quantAlgorithm = quantAlgorithmCard.getValue();
         } else {

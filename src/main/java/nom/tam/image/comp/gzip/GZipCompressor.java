@@ -287,11 +287,10 @@ public abstract class GZipCompressor<T extends Buffer> implements ITileCompresso
                 int uncompressedSize = this.sizeBuffer.get(0);
                 if (uncompressedSize > 0) {
                     compressed.position(oldPosition);
-                    int nrOfPixelsInTile = nrOfPrimitiveElements;
-                    if (uncompressedSize % nrOfPixelsInTile == 0) {
-                        int compressedPrimitiveSize = uncompressedSize / nrOfPixelsInTile;
+                    if (uncompressedSize % nrOfPrimitiveElements == 0) {
+                        int compressedPrimitiveSize = uncompressedSize / nrOfPrimitiveElements;
                         if (compressedPrimitiveSize != this.primitiveSize) {
-                            return new TypeConversion<Buffer>(getPrimitiveType(compressedPrimitiveSize));
+                            return new TypeConversion<>(getPrimitiveType(compressedPrimitiveSize));
                         }
                     }
                 }

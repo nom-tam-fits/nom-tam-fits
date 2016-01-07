@@ -38,9 +38,9 @@ import java.nio.LongBuffer;
  * The original compression code was written by Richard White at the STScI and
  * included (ported to c and adapted) in cfitsio by William Pence, NASA/GSFC.
  * That code was then ported to java by R. van Nieuwenhoven. Later it was
- * massively refactored to harmonizered the different compression algorithms and
- * reduce the duplicate code peaces without obscuring the algorithm itself as
- * good as possible. The original site for the algorithm is
+ * massively refactored to harmonize the different compression algorithms and
+ * reduce the duplicate code pieces without obscuring the algorithm itself as
+ * far as possible. The original site for the algorithm is
  * 
  * <pre>
  *  @see <a href="http://www.stsci.edu/software/hcompress.html">http://www.stsci.edu/software/hcompress.html</a>
@@ -232,14 +232,14 @@ public class HCompress {
      * @param nbitplanes
      *            Number of bit planes in quadrants
      */
-    private void doencode(ByteBuffer compressedBytes, LongBuffer pixels, int nx, int ny, byte[] nbitplanes) {
+    private void doEncode(ByteBuffer compressedBytes, LongBuffer pixels, int nx, int ny, byte[] nbitplanes) {
 
         int nx2 = (nx + 1) / 2;
         int ny2 = (ny + 1) / 2;
         /*
          * Initialize bit output
          */
-        startOutputingBits();
+        startOutputtingBits();
         /*
          * write out the bit planes for each quadrant
          */
@@ -254,11 +254,11 @@ public class HCompress {
          * Add zero as an EOF symbol
          */
         outputNybble(compressedBytes, 0);
-        doneOutputingBits(compressedBytes);
+        doneOutputtingBits(compressedBytes);
 
     }
 
-    private void doneOutputingBits(ByteBuffer outfile) {
+    private void doneOutputtingBits(ByteBuffer outfile) {
         if (this.bitsToGo2 < BITS_OF_1_BYTE) {
             /* putc(buffer2<<bits_to_go2,outfile); */
 
@@ -376,7 +376,7 @@ public class HCompress {
         /*
          * write coded tileOperationsArray
          */
-        doencode(compressedBytes, a, nx, ny, nbitplanes);
+        doEncode(compressedBytes, a, nx, ny, nbitplanes);
         /*
          * write sign bits
          */
@@ -575,7 +575,7 @@ public class HCompress {
 
         if (this.bitsToGo2 == BITS_OF_1_BYTE) {
             /* special case if nybbles are aligned on byte boundary */
-            /* this actually seems to make very little differnece in speed */
+            /* this actually seems to make very little difference in speed */
             this.buffer2 = 0;
             for (ii = 0; ii < jj; ii++) {
                 outfile.put((byte) ((array[kk] & NYBBLE_MASK) << BITS_OF_1_NYBBLE | array[kk + 1] & NYBBLE_MASK));
@@ -598,8 +598,6 @@ public class HCompress {
         if (kk != n) {
             outputNybble(outfile, array[n - 1]);
         }
-
-        return;
     }
 
     private void outputNybble(ByteBuffer outfile, int bits) {
@@ -836,7 +834,7 @@ public class HCompress {
         }
     }
 
-    private void shuffle(long[] a, int aOffet, int n, int n2, long[] tmp) {
+    private void shuffle(long[] a, int aOffset, int n, int n2, long[] tmp) {
 
         /*
          * int a[]; tileOperationsArray to shuffle int n; number of elements to
@@ -854,7 +852,7 @@ public class HCompress {
         pt = tmp;
         ptOffset = 0;
         p1 = a;
-        p1Offset = aOffet + n2;
+        p1Offset = aOffset + n2;
         for (i = 1; i < n; i += 2) {
             pt[ptOffset] = p1[p1Offset];
             ptOffset += 1;
@@ -864,9 +862,9 @@ public class HCompress {
          * compress even elements into first half of A
          */
         p1 = a;
-        p1Offset = aOffet + n2;
+        p1Offset = aOffset + n2;
         p2 = a;
-        p2Offset = aOffet + n2 + n2;
+        p2Offset = aOffset + n2 + n2;
         for (i = 2; i < n; i += 2) {
             p1[p1Offset] = p2[p2Offset];
             p1Offset += n2;
@@ -884,7 +882,7 @@ public class HCompress {
         }
     }
 
-    private void startOutputingBits() {
+    private void startOutputtingBits() {
         this.buffer2 = 0; /* Buffer is empty to start */
         this.bitsToGo2 = BITS_OF_1_BYTE; /* with */
     }

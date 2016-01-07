@@ -107,8 +107,8 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         }
     }
 
-    public GZip2Compressor(int primitivSize) {
-        super(primitivSize);
+    public GZip2Compressor(int primitiveSize) {
+        super(primitiveSize);
     }
 
     private int[] calculateOffsets(byte[] byteArray) {
@@ -159,8 +159,8 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         int resultIndex = 0;
         int[] offset = calculateOffsets(byteArray);
         for (int index = 0; index < byteArray.length; index += this.primitiveSize) {
-            for (int primitivIndex = 0; primitivIndex < this.primitiveSize; primitivIndex++) {
-                result[resultIndex + offset[primitivIndex]] = byteArray[index + primitivIndex];
+            for (int primitiveIndex = 0; primitiveIndex < this.primitiveSize; primitiveIndex++) {
+                result[resultIndex + offset[primitiveIndex]] = byteArray[index + primitiveIndex];
             }
             resultIndex++;
         }
@@ -172,8 +172,8 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         int resultIndex = 0;
         int[] offset = calculateOffsets(byteArray);
         for (int index = 0; index < byteArray.length; index += this.primitiveSize) {
-            for (int primitivIndex = 0; primitivIndex < this.primitiveSize; primitivIndex++) {
-                result[index + primitivIndex] = byteArray[resultIndex + offset[primitivIndex]];
+            for (int primitiveIndex = 0; primitiveIndex < this.primitiveSize; primitiveIndex++) {
+                result[index + primitiveIndex] = byteArray[resultIndex + offset[primitiveIndex]];
             }
             resultIndex++;
         }
