@@ -35,9 +35,9 @@ import nom.tam.image.comp.ICompressHeaderParameter;
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ICompressParameters;
 import nom.tam.image.comp.hcompress.HCompressorOption;
-import nom.tam.image.comp.par.CompressionParameters;
+import nom.tam.image.comp.par.CompressParameters;
 
-public class HCompressParameters extends CompressionParameters {
+public class HCompressParameters extends CompressParameters {
 
     private final HCompressScaleParameter scale;
 

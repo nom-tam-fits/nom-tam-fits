@@ -1,4 +1,4 @@
-package nom.tam.image.comp.rice;
+package nom.tam.image.comp.quant.par;
 
 /*
  * #%L
@@ -31,51 +31,46 @@ package nom.tam.image.comp.rice;
  * #L%
  */
 
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.header.Compression;
+import nom.tam.image.comp.par.CompressHeaderParameter;
 import nom.tam.image.comp.quant.QuantizeOption;
-import nom.tam.image.comp.rice.par.RiceQuantizCompressParameter;
 
-public class QuantizeRiceCompressOption extends QuantizeOption {
+final class ZQuantizeParameter extends CompressHeaderParameter<QuantizeOption> {
 
-    private RiceCompressOption riceCompressOption = new RiceCompressOption();
-
-    public QuantizeRiceCompressOption() {
-        super();
-        // circulat dependency, musst be cut.
-        this.parameters = new RiceQuantizCompressParameter(this);
+    /**
+     * @param quantizeOption
+     */
+    ZQuantizeParameter(QuantizeOption quantizeOption) {
+        super(Compression.ZQUANTIZ.name(), quantizeOption);
     }
 
     @Override
-    public QuantizeRiceCompressOption copy() {
-        QuantizeRiceCompressOption copy = (QuantizeRiceCompressOption) super.copy();
-        copy.riceCompressOption = this.riceCompressOption.copy();
-        return copy;
-    }
-
-    public RiceCompressOption getRiceCompressOption() {
-        return this.riceCompressOption;
-    }
-
-    @Override
-    public QuantizeRiceCompressOption setTileHeight(int value) {
-        super.setTileHeight(value);
-        this.riceCompressOption.setTileHeight(value);
-        return this;
-    }
-
-    @Override
-    public QuantizeRiceCompressOption setTileWidth(int value) {
-        super.setTileWidth(value);
-        this.riceCompressOption.setTileWidth(value);
-        return this;
-    }
-
-    @Override
-    public <T> T unwrap(Class<T> clazz) {
-        T result = super.unwrap(clazz);
-        if (result == null) {
-            return this.riceCompressOption.unwrap(clazz);
+    public void getValueFromHeader(Header header) {
+        String value = header.getStringValue(getName());
+        if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(value)) {
+            getOption().setDither(true);
+            getOption().setDither2(true);
+        } else if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(value)) {
+            getOption().setDither(true);
+            getOption().setDither2(false);
+        } else {
+            getOption().setDither(false);
+            getOption().setDither2(false);
         }
-        return result;
     }
 
+    @Override
+    public void setValueInHeader(Header header) throws HeaderCardException {
+        String value;
+        if (getOption().isDither2()) {
+            value = Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2;
+        } else if (getOption().isDither()) {
+            value = Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1;
+        } else {
+            value = Compression.ZQUANTIZ_NO_DITHER;
+        }
+        header.card(Compression.ZQUANTIZ).value(value);
+    }
 }

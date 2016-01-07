@@ -40,18 +40,18 @@ import java.nio.ShortBuffer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import nom.tam.image.comp.gzip.GZipCompress;
+import nom.tam.image.comp.gzip.GZipCompressor;
 
-public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
+public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T> {
 
-    public static class ByteGZip2Compress extends ByteGZipCompress {
+    public static class ByteGZip2Compress extends ByteGZipCompressor {
     }
 
-    public static class IntGZip2Compress extends GZip2Compress<IntBuffer> {
+    public static class IntGZip2Compressor extends GZip2Compressor<IntBuffer> {
 
         protected static final int BYTE_SIZE_OF_INT = 4;
 
-        public IntGZip2Compress() {
+        public IntGZip2Compressor() {
             super(BYTE_SIZE_OF_INT);
         }
 
@@ -67,11 +67,11 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
         }
     }
 
-    public static class LongGZip2Compress extends GZip2Compress<LongBuffer> {
+    public static class LongGZip2Compressor extends GZip2Compressor<LongBuffer> {
 
         protected static final int BYTE_SIZE_OF_LONG = 8;
 
-        public LongGZip2Compress() {
+        public LongGZip2Compressor() {
             super(BYTE_SIZE_OF_LONG);
         }
 
@@ -87,11 +87,11 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
         }
     }
 
-    public static class ShortGZip2Compress extends GZip2Compress<ShortBuffer> {
+    public static class ShortGZip2Compressor extends GZip2Compressor<ShortBuffer> {
 
         protected static final int BYTE_SIZE_OF_SHORT = 2;
 
-        public ShortGZip2Compress() {
+        public ShortGZip2Compressor() {
             super(BYTE_SIZE_OF_SHORT);
         }
 
@@ -107,7 +107,7 @@ public abstract class GZip2Compress<T extends Buffer> extends GZipCompress<T> {
         }
     }
 
-    public GZip2Compress(int primitivSize) {
+    public GZip2Compressor(int primitivSize) {
         super(primitivSize);
     }
 

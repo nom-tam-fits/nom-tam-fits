@@ -1,4 +1,4 @@
-package nom.tam.image.comp.hcompress.par;
+package nom.tam.image.comp.rice.par;
 
 /*
  * #%L
@@ -36,27 +36,27 @@ import java.util.Arrays;
 import nom.tam.image.comp.ICompressHeaderParameter;
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ICompressParameters;
-import nom.tam.image.comp.hcompress.QuantizeHCompressorOption;
 import nom.tam.image.comp.quant.par.QuantizeParameters;
+import nom.tam.image.comp.rice.RiceQuantizeCompressOption;
 
-public class HCompressQuantizCompressParameter extends QuantizeParameters {
+public class RiceQuantizeCompressParameter extends QuantizeParameters {
 
-    private final HCompressParameters hCompressParameters;
+    private final RiceCompressParameters riceCompressPrameters;
 
-    public HCompressQuantizCompressParameter(QuantizeHCompressorOption option) {
+    public RiceQuantizeCompressParameter(RiceQuantizeCompressOption option) {
         super(option);
-        this.hCompressParameters = new HCompressParameters(option.getHCompressorOption());
+        this.riceCompressPrameters = new RiceCompressParameters(option.getRiceCompressOption());
     }
 
     @Override
     public ICompressParameters copy(ICompressOption option) {
-        return copyColumnDetails(new HCompressQuantizCompressParameter((QuantizeHCompressorOption) option));
+        return copyColumnDetails(new RiceQuantizeCompressParameter((RiceQuantizeCompressOption) option));
     }
 
     @Override
     public ICompressHeaderParameter[] headerParameters() {
         ICompressHeaderParameter[] headerParameters = super.headerParameters();
-        ICompressHeaderParameter[] aditional = this.hCompressParameters.headerParameters();
+        ICompressHeaderParameter[] aditional = this.riceCompressPrameters.headerParameters();
         headerParameters = Arrays.copyOf(headerParameters, headerParameters.length + aditional.length);
         System.arraycopy(aditional, 0, headerParameters, headerParameters.length - aditional.length, aditional.length);
         return headerParameters;

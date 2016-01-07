@@ -36,8 +36,8 @@ import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 import java.util.Arrays;
 
-import nom.tam.image.comp.plio.PLIOCompress.BytePLIOCompress;
-import nom.tam.image.comp.plio.PLIOCompress.ShortPLIOCompress;
+import nom.tam.image.comp.plio.PLIOCompress.BytePLIOCompressor;
+import nom.tam.image.comp.plio.PLIOCompress.ShortPLIOCompressor;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -64,11 +64,11 @@ public class PLIOCompressTest {
             short[] expectedCompressedShorts = new short[(int) expected.length() / 2];
             ByteBuffer.wrap(expectedCompressedBytes).asShortBuffer().get(expectedCompressedShorts);
 
-            new ShortPLIOCompress().compress(ShortBuffer.wrap(shortArray), compressed);
+            new ShortPLIOCompressor().compress(ShortBuffer.wrap(shortArray), compressed);
 
             Assert.assertArrayEquals(expectedCompressedBytes, compressed.array());
             ShortBuffer px_dst = ShortBuffer.allocate(shortArray.length);
-            new ShortPLIOCompress().decompress(compressed, px_dst);
+            new ShortPLIOCompressor().decompress(compressed, px_dst);
 
             Assert.assertArrayEquals(shortArray, px_dst.array());
 
@@ -82,7 +82,7 @@ public class PLIOCompressTest {
 
             Arrays.fill(px_dst.array(), (short) 0);
 
-            new ShortPLIOCompress().decompress(wrap, px_dst);
+            new ShortPLIOCompressor().decompress(wrap, px_dst);
             Assert.assertArrayEquals(shortArray, px_dst.array());
         }
     }
@@ -103,11 +103,11 @@ public class PLIOCompressTest {
             short[] expectedCompressedShorts = new short[(int) expected.length() / 2];
             ByteBuffer.wrap(expectedCompressedBytes).asShortBuffer().get(expectedCompressedShorts);
 
-            new BytePLIOCompress().compress(ByteBuffer.wrap(bytes), compressed);
+            new BytePLIOCompressor().compress(ByteBuffer.wrap(bytes), compressed);
 
             Assert.assertArrayEquals(expectedCompressedBytes, compressed.array());
             ByteBuffer px_dst = ByteBuffer.allocate(bytes.length);
-            new BytePLIOCompress().decompress(compressed, px_dst);
+            new BytePLIOCompressor().decompress(compressed, px_dst);
 
             Assert.assertArrayEquals(bytes, px_dst.array());
         }
@@ -129,11 +129,11 @@ public class PLIOCompressTest {
             short[] expectedCompressedShorts = new short[(int) expected.length() / 2];
             ByteBuffer.wrap(expectedCompressedBytes).asShortBuffer().get(expectedCompressedShorts);
 
-            new BytePLIOCompress().compress(ByteBuffer.wrap(bytes), compressed);
+            new BytePLIOCompressor().compress(ByteBuffer.wrap(bytes), compressed);
 
             Assert.assertArrayEquals(expectedCompressedBytes, compressed.array());
             ByteBuffer px_dst = ByteBuffer.allocate(bytes.length);
-            new BytePLIOCompress().decompress(compressed, px_dst);
+            new BytePLIOCompressor().decompress(compressed, px_dst);
 
             Assert.assertArrayEquals(bytes, px_dst.array());
         }

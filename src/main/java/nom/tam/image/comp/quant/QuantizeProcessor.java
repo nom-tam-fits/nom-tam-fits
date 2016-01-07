@@ -38,7 +38,7 @@ import java.nio.IntBuffer;
 
 import nom.tam.image.comp.ITileCompressor;
 
-public class QuantProcessor {
+public class QuantizeProcessor {
 
     private class BaseFilter extends PixelFilter {
 
@@ -52,12 +52,12 @@ public class QuantProcessor {
 
         @Override
         protected double toDouble(int pixel) {
-            return (pixel + ROUNDING_HALF) * QuantProcessor.this.bScale + QuantProcessor.this.bZero;
+            return (pixel + ROUNDING_HALF) * QuantizeProcessor.this.bScale + QuantizeProcessor.this.bZero;
         }
 
         @Override
         protected int toInt(double pixel) {
-            return nint((pixel - QuantProcessor.this.bZero) / QuantProcessor.this.bScale + ROUNDING_HALF);
+            return nint((pixel - QuantizeProcessor.this.bZero) / QuantizeProcessor.this.bScale + ROUNDING_HALF);
         }
     }
 
@@ -152,16 +152,16 @@ public class QuantProcessor {
 
         @Override
         protected double toDouble(int pixel) {
-            return (pixel - nextRandom() + ROUNDING_HALF) * QuantProcessor.this.bScale + QuantProcessor.this.bZero;
+            return (pixel - nextRandom() + ROUNDING_HALF) * QuantizeProcessor.this.bScale + QuantizeProcessor.this.bZero;
         }
 
         @Override
         protected int toInt(double pixel) {
-            return nint((pixel - QuantProcessor.this.bZero) / QuantProcessor.this.bScale + nextRandom() - ROUNDING_HALF);
+            return nint((pixel - QuantizeProcessor.this.bZero) / QuantizeProcessor.this.bScale + nextRandom() - ROUNDING_HALF);
         }
     }
 
-    public static class DoubleQuantCompressor extends QuantProcessor implements ITileCompressor<DoubleBuffer> {
+    public static class DoubleQuantCompressor extends QuantizeProcessor implements ITileCompressor<DoubleBuffer> {
 
         private final ITileCompressor<IntBuffer> postCompressor;
 
@@ -195,7 +195,7 @@ public class QuantProcessor {
     /**
      * TODO this is done very inefficient and should be refactored!
      */
-    public static class FloatQuantCompressor extends QuantProcessor implements ITileCompressor<FloatBuffer> {
+    public static class FloatQuantCompressor extends QuantizeProcessor implements ITileCompressor<FloatBuffer> {
 
         private final ITileCompressor<IntBuffer> postCompressor;
 
@@ -341,7 +341,7 @@ public class QuantProcessor {
 
     protected final QuantizeOption quantizeOption;
 
-    public QuantProcessor(QuantizeOption quantizeOption) {
+    public QuantizeProcessor(QuantizeOption quantizeOption) {
         this.quantizeOption = quantizeOption;
         this.bScale = quantizeOption.getBScale();
         this.bZero = quantizeOption.getBZero();

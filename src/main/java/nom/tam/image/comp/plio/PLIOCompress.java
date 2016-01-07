@@ -50,7 +50,7 @@ import nom.tam.image.comp.ITileCompressor;
  */
 public abstract class PLIOCompress {
 
-    public static class BytePLIOCompress extends PLIOCompress implements ITileCompressor<ByteBuffer> {
+    public static class BytePLIOCompressor extends PLIOCompress implements ITileCompressor<ByteBuffer> {
 
         private ByteBuffer pixelData;
 
@@ -78,7 +78,7 @@ public abstract class PLIOCompress {
         }
     }
 
-    public static class ShortPLIOCompress extends PLIOCompress implements ITileCompressor<ShortBuffer> {
+    public static class ShortPLIOCompressor extends PLIOCompress implements ITileCompressor<ShortBuffer> {
 
         private ShortBuffer pixelData;
 

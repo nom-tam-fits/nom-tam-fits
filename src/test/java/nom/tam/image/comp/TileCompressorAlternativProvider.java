@@ -35,7 +35,7 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 
-import nom.tam.image.comp.gzip2.GZip2Compress.LongGZip2Compress;
+import nom.tam.image.comp.gzip2.GZip2Compressor.LongGZip2Compressor;
 
 public class TileCompressorAlternativProvider implements ITileCompressorProvider {
 
@@ -50,13 +50,13 @@ public class TileCompressorAlternativProvider implements ITileCompressorProvider
 
                 @Override
                 public boolean compress(Buffer in, ByteBuffer out, ICompressOption options) {
-                    new LongGZip2Compress().compress((LongBuffer) in, out);
+                    new LongGZip2Compressor().compress((LongBuffer) in, out);
                     return true;
                 }
 
                 @Override
                 public void decompress(ByteBuffer in, Buffer out, ICompressOption options) {
-                    new LongGZip2Compress().decompress(in, (LongBuffer) out);
+                    new LongGZip2Compressor().decompress(in, (LongBuffer) out);
                 }
 
                 @Override

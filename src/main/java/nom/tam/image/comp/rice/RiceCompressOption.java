@@ -33,7 +33,7 @@ package nom.tam.image.comp.rice;
 
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ICompressParameters;
-import nom.tam.image.comp.rice.par.RiceCompressPrameters;
+import nom.tam.image.comp.rice.par.RiceCompressParameters;
 import nom.tam.util.type.PrimitiveType;
 
 public class RiceCompressOption implements ICompressOption {
@@ -45,7 +45,7 @@ public class RiceCompressOption implements ICompressOption {
     /**
      * this is a circular dependency that still has to be cut.
      */
-    private ICompressParameters parameters = new RiceCompressPrameters(this);
+    private ICompressParameters parameters = new RiceCompressParameters(this);
 
     private int blockSize = DEFAULT_RICE_BLOCKSIZE;
 

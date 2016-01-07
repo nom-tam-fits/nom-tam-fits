@@ -1,4 +1,4 @@
-package nom.tam.image.comp.quant.par;
+package nom.tam.image.comp.rice;
 
 /*
  * #%L
@@ -31,46 +31,51 @@ package nom.tam.image.comp.quant.par;
  * #L%
  */
 
-import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.header.Compression;
-import nom.tam.image.comp.par.CompressHeaderParameter;
 import nom.tam.image.comp.quant.QuantizeOption;
+import nom.tam.image.comp.rice.par.RiceQuantizeCompressParameter;
 
-final class ZQuantizParameter extends CompressHeaderParameter<QuantizeOption> {
+public class RiceQuantizeCompressOption extends QuantizeOption {
 
-    /**
-     * @param quantizeOption
-     */
-    ZQuantizParameter(QuantizeOption quantizeOption) {
-        super(Compression.ZQUANTIZ.name(), quantizeOption);
+    private RiceCompressOption riceCompressOption = new RiceCompressOption();
+
+    public RiceQuantizeCompressOption() {
+        super();
+        // circulat dependency, musst be cut.
+        this.parameters = new RiceQuantizeCompressParameter(this);
     }
 
     @Override
-    public void getValueFromHeader(Header header) {
-        String value = header.getStringValue(getName());
-        if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(value)) {
-            getOption().setDither(true);
-            getOption().setDither2(true);
-        } else if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(value)) {
-            getOption().setDither(true);
-            getOption().setDither2(false);
-        } else {
-            getOption().setDither(false);
-            getOption().setDither2(false);
-        }
+    public RiceQuantizeCompressOption copy() {
+        RiceQuantizeCompressOption copy = (RiceQuantizeCompressOption) super.copy();
+        copy.riceCompressOption = this.riceCompressOption.copy();
+        return copy;
+    }
+
+    public RiceCompressOption getRiceCompressOption() {
+        return this.riceCompressOption;
     }
 
     @Override
-    public void setValueInHeader(Header header) throws HeaderCardException {
-        String value;
-        if (getOption().isDither2()) {
-            value = Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2;
-        } else if (getOption().isDither()) {
-            value = Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1;
-        } else {
-            value = Compression.ZQUANTIZ_NO_DITHER;
-        }
-        header.card(Compression.ZQUANTIZ).value(value);
+    public RiceQuantizeCompressOption setTileHeight(int value) {
+        super.setTileHeight(value);
+        this.riceCompressOption.setTileHeight(value);
+        return this;
     }
+
+    @Override
+    public RiceQuantizeCompressOption setTileWidth(int value) {
+        super.setTileWidth(value);
+        this.riceCompressOption.setTileWidth(value);
+        return this;
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> clazz) {
+        T result = super.unwrap(clazz);
+        if (result == null) {
+            return this.riceCompressOption.unwrap(clazz);
+        }
+        return result;
+    }
+
 }

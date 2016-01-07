@@ -51,7 +51,7 @@ public class QuantizeTest {
 
     private static final double NULL_VALUE = -9.1191291391491004e-36;
 
-    private void checkRequantedValues(QuantProcessor quantize, IntBuffer buffer, double[] doubles, QuantizeOption option, boolean check) {
+    private void checkRequantedValues(QuantizeProcessor quantize, IntBuffer buffer, double[] doubles, QuantizeOption option, boolean check) {
         double[] output = new double[option.getTileWidth() * option.getTileHeight()];
         quantize.unquantize(buffer, DoubleBuffer.wrap(output));
         if (check) {
@@ -295,7 +295,7 @@ public class QuantizeTest {
             Arrays.fill(matrix, index, xsize, NULL_VALUE);
 
             QuantizeOption option;
-            QuantProcessor quantProcessor = new QuantProcessor(option = new QuantizeOption()//
+            QuantizeProcessor quantProcessor = new QuantizeProcessor(option = new QuantizeOption()//
                     .setDither(true)//
                     .setDither2(index % 2 != 1)//
                     .setSeed(3942L)//
@@ -327,7 +327,7 @@ public class QuantizeTest {
     public void testDifferentfailQuantCases() {
         double[] matrix = initMatrix();
 
-        QuantProcessor quantProcessor = new QuantProcessor(new QuantizeOption()//
+        QuantizeProcessor quantProcessor = new QuantizeProcessor(new QuantizeOption()//
                 .setDither(false)//
                 .setDither2(false)//
                 .setQlevel(4.)//
@@ -339,7 +339,7 @@ public class QuantizeTest {
 
         // test very small image
         matrix = initMatrix();
-        quantProcessor = new QuantProcessor(new QuantizeOption()//
+        quantProcessor = new QuantizeProcessor(new QuantizeOption()//
                 .setDither(false)//
                 .setDither2(false)//
                 .setQlevel(4.)//
@@ -355,7 +355,7 @@ public class QuantizeTest {
         double[] matrix = initMatrix();
 
         matrix[5] = NULL_VALUE;
-        QuantProcessor quantProcessor = new QuantProcessor(new QuantizeOption()//
+        QuantizeProcessor quantProcessor = new QuantizeProcessor(new QuantizeOption()//
                 .setDither(false)//
                 .setDither2(false)//
                 .setQlevel(4.)//
@@ -385,7 +385,7 @@ public class QuantizeTest {
         // 2.18229623080869316709e+02, 2.27977523535188396409e+02
 
         QuantizeOption option;
-        QuantProcessor quantProcessor = new QuantProcessor(option = new QuantizeOption()//
+        QuantizeProcessor quantProcessor = new QuantizeProcessor(option = new QuantizeOption()//
                 .setDither(true)//
                 .setDither2(true)//
                 .setSeed(3942L)//
@@ -440,7 +440,7 @@ public class QuantizeTest {
         double[] matrix = initMatrix();
 
         QuantizeOption option;
-        QuantProcessor quantProcessor = new QuantProcessor(option = new QuantizeOption()//
+        QuantizeProcessor quantProcessor = new QuantizeProcessor(option = new QuantizeOption()//
                 .setDither(false)//
                 .setNullValue(NULL_VALUE)//
                 .setQlevel(0)//
@@ -470,7 +470,7 @@ public class QuantizeTest {
         Arrays.fill(matrix, 11, xsize + 1, NULL_VALUE);
 
         QuantizeOption option;
-        QuantProcessor quantProcessor = new QuantProcessor(option = new QuantizeOption()//
+        QuantizeProcessor quantProcessor = new QuantizeProcessor(option = new QuantizeOption()//
                 .setDither(false)//
                 .setNullValue(NULL_VALUE)//
                 .setQlevel(4)//
@@ -501,7 +501,7 @@ public class QuantizeTest {
         Arrays.fill(matrix, 11, xsize + 1, NULL_VALUE);
 
         QuantizeOption option;
-        QuantProcessor quantProcessor = new QuantProcessor(option = new QuantizeOption()//
+        QuantizeProcessor quantProcessor = new QuantizeProcessor(option = new QuantizeOption()//
                 .setDither(false)//
                 .setQlevel(4)//
                 .setNullValue(NULL_VALUE)//
@@ -530,7 +530,7 @@ public class QuantizeTest {
         Arrays.fill(matrix, NULL_VALUE);
 
         QuantizeOption option;
-        QuantProcessor quantProcessor = new QuantProcessor(option = new QuantizeOption()//
+        QuantizeProcessor quantProcessor = new QuantizeProcessor(option = new QuantizeOption()//
                 .setDither(false)//
                 .setQlevel(4)//
                 .setCheckNull(true)//
@@ -625,7 +625,7 @@ public class QuantizeTest {
             ByteBuffer.wrap(bytes).asDoubleBuffer().get(doubles);
 
             QuantizeOption option;
-            QuantProcessor quantProcessor = new QuantProcessor(option = new QuantizeOption()//
+            QuantizeProcessor quantProcessor = new QuantizeProcessor(option = new QuantizeOption()//
                     .setDither(true)//
                     .setSeed(8864L)//
                     .setQlevel(4)//
@@ -662,7 +662,7 @@ public class QuantizeTest {
             ArrayFuncs.copyInto(floats, doubles);
 
             QuantizeOption option;
-            QuantProcessor quantProcessor = new QuantProcessor(option = new QuantizeOption()//
+            QuantizeProcessor quantProcessor = new QuantizeProcessor(option = new QuantizeOption()//
                     .setDither(true)//
                     .setSeed(3942L)//
                     .setQlevel(4)//

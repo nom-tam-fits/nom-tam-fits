@@ -35,12 +35,12 @@ import nom.tam.image.comp.ICompressColumnParameter;
 import nom.tam.image.comp.ICompressHeaderParameter;
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ICompressParameters;
-import nom.tam.image.comp.par.CompressionParameters;
+import nom.tam.image.comp.par.CompressParameters;
 import nom.tam.image.comp.quant.QuantizeOption;
 
-public class QuantizeParameters extends CompressionParameters {
+public class QuantizeParameters extends CompressParameters {
 
-    private final ZQuantizParameter quantz;
+    private final ZQuantizeParameter quantz;
 
     private final ZBlankParameter blank;
 
@@ -51,7 +51,7 @@ public class QuantizeParameters extends CompressionParameters {
     private final ZScaleColumnParameter scale;
 
     public QuantizeParameters(QuantizeOption option) {
-        this.quantz = new ZQuantizParameter(option);
+        this.quantz = new ZQuantizeParameter(option);
         this.blank = new ZBlankParameter(option);
         this.blankColumn = new ZBlankColumnParameter(option);
         this.zero = new ZZeroColumnParameter(option);

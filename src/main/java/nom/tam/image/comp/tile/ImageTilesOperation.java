@@ -235,6 +235,10 @@ public class ImageTilesOperation {
     private void initializeCompressionControl() {
         if (this.compressorControl == null) {
             this.compressorControl = TileCompressorProvider.findCompressorControl(this.quantAlgorithm, this.compressAlgorithm, this.baseType.primitiveClass());
+            if (compressorControl == null) {
+                throw new IllegalStateException("Found no compressor control for compression algorithm:" + compressAlgorithm + //
+                        " (quantize algorithm = " + quantAlgorithm + ", base type = " + baseType.primitiveClass() + ")");
+            }
             initImageOptions();
         }
     }

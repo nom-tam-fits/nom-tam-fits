@@ -41,7 +41,7 @@ import nom.tam.image.comp.ICompressColumnParameter;
 import nom.tam.image.comp.ICompressHeaderParameter;
 import nom.tam.image.comp.ICompressParameters;
 
-public abstract class CompressionParameters implements ICompressParameters {
+public abstract class CompressParameters implements ICompressParameters {
 
     @Override
     public void addColumnsToTable(BinaryTableHDU hdu) throws FitsException {

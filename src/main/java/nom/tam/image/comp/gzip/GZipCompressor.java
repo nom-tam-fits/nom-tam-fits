@@ -51,15 +51,15 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  * #L%
  */
 
-public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<T> {
+public abstract class GZipCompressor<T extends Buffer> implements ITileCompressor<T> {
 
     /**
      * Byte compress is a special case, the only one that does not extends
      * GZipCompress because it can write the buffer directly.
      */
-    public static class ByteGZipCompress extends GZipCompress<ByteBuffer> {
+    public static class ByteGZipCompressor extends GZipCompressor<ByteBuffer> {
 
-        public ByteGZipCompress() {
+        public ByteGZipCompressor() {
             super(1);
             this.nioBuffer = ByteBuffer.wrap(this.buffer);
         }
@@ -75,11 +75,11 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
         }
     }
 
-    public static class DoubleGZipCompress extends GZipCompress<DoubleBuffer> {
+    public static class DoubleGZipCompressor extends GZipCompressor<DoubleBuffer> {
 
         protected static final int BYTE_SIZE_OF_DOUBLE = 8;
 
-        public DoubleGZipCompress() {
+        public DoubleGZipCompressor() {
             super(BYTE_SIZE_OF_DOUBLE);
             this.nioBuffer = ByteBuffer.wrap(this.buffer).asDoubleBuffer();
         }
@@ -95,11 +95,11 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
         }
     }
 
-    public static class FloatGZipCompress extends GZipCompress<FloatBuffer> {
+    public static class FloatGZipCompressor extends GZipCompressor<FloatBuffer> {
 
         protected static final int BYTE_SIZE_OF_FLOAT = 4;
 
-        public FloatGZipCompress() {
+        public FloatGZipCompressor() {
             super(BYTE_SIZE_OF_FLOAT);
             this.nioBuffer = ByteBuffer.wrap(this.buffer).asFloatBuffer();
         }
@@ -115,11 +115,11 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
         }
     }
 
-    public static class IntGZipCompress extends GZipCompress<IntBuffer> {
+    public static class IntGZipCompressor extends GZipCompressor<IntBuffer> {
 
         protected static final int BYTE_SIZE_OF_INT = 4;
 
-        public IntGZipCompress() {
+        public IntGZipCompressor() {
             super(BYTE_SIZE_OF_INT);
             this.nioBuffer = ByteBuffer.wrap(this.buffer).asIntBuffer();
         }
@@ -135,11 +135,11 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
         }
     }
 
-    public static class LongGZipCompress extends GZipCompress<LongBuffer> {
+    public static class LongGZipCompressor extends GZipCompressor<LongBuffer> {
 
         protected static final int BYTE_SIZE_OF_LONG = 8;
 
-        public LongGZipCompress() {
+        public LongGZipCompressor() {
             super(BYTE_SIZE_OF_LONG);
             this.nioBuffer = ByteBuffer.wrap(this.buffer).asLongBuffer();
         }
@@ -155,11 +155,11 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
         }
     }
 
-    public static class ShortGZipCompress extends GZipCompress<ShortBuffer> {
+    public static class ShortGZipCompressor extends GZipCompressor<ShortBuffer> {
 
         protected static final int BYTE_SIZE_OF_SHORT = 2;
 
-        public ShortGZipCompress() {
+        public ShortGZipCompressor() {
             super(BYTE_SIZE_OF_SHORT);
             this.nioBuffer = ByteBuffer.wrap(this.buffer).asShortBuffer();
         }
@@ -191,9 +191,9 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
 
         private TypeConversion(PrimitiveType<B> from) {
             this.from = from;
-            this.to = getPrimitiveType(GZipCompress.this.primitiveSize);
-            this.toBuffer = GZipCompress.this.nioBuffer;
-            this.fromBuffer = from.asTypedBuffer(ByteBuffer.wrap(GZipCompress.this.buffer));
+            this.to = getPrimitiveType(GZipCompressor.this.primitiveSize);
+            this.toBuffer = GZipCompressor.this.nioBuffer;
+            this.fromBuffer = from.asTypedBuffer(ByteBuffer.wrap(GZipCompressor.this.buffer));
             this.fromArray = from.newArray(DEFAULT_GZIP_BUFFER_SIZE / from.size());
             this.toArray = this.to.newArray(DEFAULT_GZIP_BUFFER_SIZE / this.to.size());
         }
@@ -220,7 +220,7 @@ public abstract class GZipCompress<T extends Buffer> implements ITileCompressor<
 
     private final IntBuffer sizeBuffer = ByteBuffer.wrap(this.sizeArray).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 
-    public GZipCompress(int primitiveSize) {
+    public GZipCompressor(int primitiveSize) {
         this.primitiveSize = primitiveSize;
     }
 

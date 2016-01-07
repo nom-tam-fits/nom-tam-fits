@@ -73,7 +73,7 @@ import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.util.Cursor;
 
-enum BackupResoreUnCompressedHeaderCard {
+enum BackupRestoreUnCompressedHeaderCard {
     MAP_ANY(null) {
 
         @Override
@@ -143,19 +143,19 @@ enum BackupResoreUnCompressedHeaderCard {
     MAP_ZVALn(ZVALn);
 
     public static void backup(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        BackupResoreUnCompressedHeaderCard mapping = selectMapping(CompressedImageHDU.UNCOMPRESSED_HEADER_MAPPING, card);
+        BackupRestoreUnCompressedHeaderCard mapping = selectMapping(CompressedImageHDU.UNCOMPRESSED_HEADER_MAPPING, card);
         mapping.backupCard(card, headerIterator);
     }
 
     public static void restore(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        BackupResoreUnCompressedHeaderCard mapping = selectMapping(CompressedImageHDU.COMPRESSED_HEADER_MAPPING, card);
+        BackupRestoreUnCompressedHeaderCard mapping = selectMapping(CompressedImageHDU.COMPRESSED_HEADER_MAPPING, card);
         mapping.restoreCard(card, headerIterator);
     }
 
-    protected static BackupResoreUnCompressedHeaderCard selectMapping(Map<IFitsHeader, BackupResoreUnCompressedHeaderCard> mappings, HeaderCard card) {
+    protected static BackupRestoreUnCompressedHeaderCard selectMapping(Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> mappings, HeaderCard card) {
         IFitsHeader key = GenericKey.lookup(card.getKey());
         if (key != null) {
-            BackupResoreUnCompressedHeaderCard mapping = mappings.get(key);
+            BackupRestoreUnCompressedHeaderCard mapping = mappings.get(key);
             if (mapping != null) {
                 return mapping;
             }
@@ -167,7 +167,7 @@ enum BackupResoreUnCompressedHeaderCard {
 
     private final IFitsHeader uncompressedHeaderKey;
 
-    private BackupResoreUnCompressedHeaderCard(IFitsHeader header) {
+    private BackupRestoreUnCompressedHeaderCard(IFitsHeader header) {
         this.compressedHeaderKey = header;
         if (header instanceof Compression) {
             this.uncompressedHeaderKey = ((Compression) this.compressedHeaderKey).getUncompressedKey();

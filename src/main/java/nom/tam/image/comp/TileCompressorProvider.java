@@ -41,30 +41,32 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.header.Compression;
-import nom.tam.image.comp.gzip.GZipCompress.ByteGZipCompress;
-import nom.tam.image.comp.gzip.GZipCompress.DoubleGZipCompress;
-import nom.tam.image.comp.gzip.GZipCompress.FloatGZipCompress;
-import nom.tam.image.comp.gzip.GZipCompress.IntGZipCompress;
-import nom.tam.image.comp.gzip.GZipCompress.LongGZipCompress;
-import nom.tam.image.comp.gzip.GZipCompress.ShortGZipCompress;
-import nom.tam.image.comp.gzip2.GZip2Compress.ByteGZip2Compress;
-import nom.tam.image.comp.gzip2.GZip2Compress.IntGZip2Compress;
-import nom.tam.image.comp.gzip2.GZip2Compress.LongGZip2Compress;
-import nom.tam.image.comp.gzip2.GZip2Compress.ShortGZip2Compress;
-import nom.tam.image.comp.hcompress.HCompressor.ByteHCompress;
-import nom.tam.image.comp.hcompress.HCompressor.DoubleHCompress;
-import nom.tam.image.comp.hcompress.HCompressor.FloatHCompress;
-import nom.tam.image.comp.hcompress.HCompressor.IntHCompress;
-import nom.tam.image.comp.hcompress.HCompressor.ShortHCompress;
-import nom.tam.image.comp.plio.PLIOCompress.BytePLIOCompress;
-import nom.tam.image.comp.plio.PLIOCompress.ShortPLIOCompress;
-import nom.tam.image.comp.rice.RiceCompress.ByteRiceCompress;
-import nom.tam.image.comp.rice.RiceCompress.DoubleRiceCompress;
-import nom.tam.image.comp.rice.RiceCompress.FloatRiceCompress;
-import nom.tam.image.comp.rice.RiceCompress.IntRiceCompress;
-import nom.tam.image.comp.rice.RiceCompress.ShortRiceCompress;
+import nom.tam.image.comp.gzip.GZipCompressor.ByteGZipCompressor;
+import nom.tam.image.comp.gzip.GZipCompressor.DoubleGZipCompressor;
+import nom.tam.image.comp.gzip.GZipCompressor.FloatGZipCompressor;
+import nom.tam.image.comp.gzip.GZipCompressor.IntGZipCompressor;
+import nom.tam.image.comp.gzip.GZipCompressor.LongGZipCompressor;
+import nom.tam.image.comp.gzip.GZipCompressor.ShortGZipCompressor;
+import nom.tam.image.comp.gzip2.GZip2Compressor.ByteGZip2Compress;
+import nom.tam.image.comp.gzip2.GZip2Compressor.IntGZip2Compressor;
+import nom.tam.image.comp.gzip2.GZip2Compressor.LongGZip2Compressor;
+import nom.tam.image.comp.gzip2.GZip2Compressor.ShortGZip2Compressor;
+import nom.tam.image.comp.hcompress.HCompressor.ByteHCompressor;
+import nom.tam.image.comp.hcompress.HCompressor.DoubleHCompressor;
+import nom.tam.image.comp.hcompress.HCompressor.FloatHCompressor;
+import nom.tam.image.comp.hcompress.HCompressor.IntHCompressor;
+import nom.tam.image.comp.hcompress.HCompressor.ShortHCompressor;
+import nom.tam.image.comp.plio.PLIOCompress.BytePLIOCompressor;
+import nom.tam.image.comp.plio.PLIOCompress.ShortPLIOCompressor;
+import nom.tam.image.comp.rice.RiceCompressor.ByteRiceCompressor;
+import nom.tam.image.comp.rice.RiceCompressor.DoubleRiceCompressor;
+import nom.tam.image.comp.rice.RiceCompressor.FloatRiceCompressor;
+import nom.tam.image.comp.rice.RiceCompressor.IntRiceCompressor;
+import nom.tam.image.comp.rice.RiceCompressor.ShortRiceCompressor;
 
 public class TileCompressorProvider implements ITileCompressorProvider {
+
+    private static final String COMPRESSOR_CLASS_SUFFIX = "Compressor";
 
     /**
      * private implementation of the tile compression provider, all is based on
@@ -119,32 +121,32 @@ public class TileCompressorProvider implements ITileCompressorProvider {
     }
 
     private static final Class<?>[] AVAILABLE_COMPRESSORS = {
-        ByteRiceCompress.class,
-        ShortRiceCompress.class,
-        IntRiceCompress.class,
-        FloatRiceCompress.class,
-        DoubleRiceCompress.class,
+        ByteRiceCompressor.class,
+        ShortRiceCompressor.class,
+        IntRiceCompressor.class,
+        FloatRiceCompressor.class,
+        DoubleRiceCompressor.class,
 
-        BytePLIOCompress.class,
-        ShortPLIOCompress.class,
+        BytePLIOCompressor.class,
+        ShortPLIOCompressor.class,
 
-        ByteHCompress.class,
-        ShortHCompress.class,
-        IntHCompress.class,
-        FloatHCompress.class,
-        DoubleHCompress.class,
+        ByteHCompressor.class,
+        ShortHCompressor.class,
+        IntHCompressor.class,
+        FloatHCompressor.class,
+        DoubleHCompressor.class,
 
         ByteGZip2Compress.class,
-        ShortGZip2Compress.class,
-        IntGZip2Compress.class,
-        LongGZip2Compress.class,
+        ShortGZip2Compressor.class,
+        IntGZip2Compressor.class,
+        LongGZip2Compressor.class,
 
-        ByteGZipCompress.class,
-        ShortGZipCompress.class,
-        IntGZipCompress.class,
-        LongGZipCompress.class,
-        FloatGZipCompress.class,
-        DoubleGZipCompress.class
+        ByteGZipCompressor.class,
+        ShortGZipCompressor.class,
+        IntGZipCompressor.class,
+        LongGZipCompressor.class,
+        FloatGZipCompressor.class,
+        DoubleGZipCompressor.class
     };
 
     /**
@@ -169,24 +171,24 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         return defaultProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);
     }
 
-    private String classNameForCompresseion(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
-        StringBuilder classsName = new StringBuilder();
-        classsName.append(standardizeBaseType(baseType.getSimpleName()));
-        if (classsName.indexOf(Float.class.getSimpleName()) == 0 || classsName.indexOf(Double.class.getSimpleName()) == 0) {
+    private String classNameForCompression(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
+        StringBuilder className = new StringBuilder();
+        className.append(standardizeBaseType(baseType.getSimpleName()));
+        if (className.indexOf(Float.class.getSimpleName()) == 0 || className.indexOf(Double.class.getSimpleName()) == 0) {
             quantAlgorithm = null; // default so not in the className
         }
-        classsName.append(standardizeQuantAlgorithm(quantAlgorithm, baseType));
-        classsName.append(standardizeCompressionAlgorithm(compressionAlgorithm));
-        classsName.append("Compress");
-        return classsName.toString();
+        className.append(standardizeQuantAlgorithm(quantAlgorithm, baseType));
+        className.append(standardizeCompressionAlgorithm(compressionAlgorithm));
+        className.append(COMPRESSOR_CLASS_SUFFIX);
+        return className.toString();
     }
 
     @Override
     public ITileCompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
 
-        String classsName = classNameForCompresseion(quantAlgorithm, compressionAlgorithm, baseType);
+        String className = classNameForCompression(quantAlgorithm, compressionAlgorithm, baseType);
         for (Class<?> clazz : AVAILABLE_COMPRESSORS) {
-            if (clazz.getSimpleName().equals(classsName)) {
+            if (clazz.getSimpleName().equals(className)) {
                 return new TileCompressorControl(clazz);
             }
         }

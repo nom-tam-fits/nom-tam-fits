@@ -1,4 +1,4 @@
-package nom.tam.image.comp.hcompress;
+package nom.tam.image.comp.hcompress.par;
 
 /*
  * #%L
@@ -31,50 +31,34 @@ package nom.tam.image.comp.hcompress;
  * #L%
  */
 
-import nom.tam.image.comp.hcompress.par.HCompressQuantizCompressParameter;
-import nom.tam.image.comp.quant.QuantizeOption;
+import java.util.Arrays;
 
-public class QuantizeHCompressorOption extends QuantizeOption {
+import nom.tam.image.comp.ICompressHeaderParameter;
+import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.ICompressParameters;
+import nom.tam.image.comp.hcompress.HCompressorQuantizeOption;
+import nom.tam.image.comp.quant.par.QuantizeParameters;
 
-    private HCompressorOption hCompressorOption = new HCompressorOption();
+public class HCompressQuantizeParameter extends QuantizeParameters {
 
-    public QuantizeHCompressorOption() {
-        super();
-        this.parameters = new HCompressQuantizCompressParameter(this);
+    private final HCompressParameters hCompressParameters;
+
+    public HCompressQuantizeParameter(HCompressorQuantizeOption option) {
+        super(option);
+        this.hCompressParameters = new HCompressParameters(option.getHCompressorOption());
     }
 
     @Override
-    public QuantizeHCompressorOption copy() {
-        QuantizeHCompressorOption copy = (QuantizeHCompressorOption) super.copy();
-        copy.hCompressorOption = this.hCompressorOption.copy();
-        return copy;
-    }
-
-    public HCompressorOption getHCompressorOption() {
-        return this.hCompressorOption;
+    public ICompressParameters copy(ICompressOption option) {
+        return copyColumnDetails(new HCompressQuantizeParameter((HCompressorQuantizeOption) option));
     }
 
     @Override
-    public QuantizeHCompressorOption setTileHeight(int value) {
-        super.setTileHeight(value);
-        this.hCompressorOption.setTileHeight(value);
-        return this;
+    public ICompressHeaderParameter[] headerParameters() {
+        ICompressHeaderParameter[] headerParameters = super.headerParameters();
+        ICompressHeaderParameter[] aditional = this.hCompressParameters.headerParameters();
+        headerParameters = Arrays.copyOf(headerParameters, headerParameters.length + aditional.length);
+        System.arraycopy(aditional, 0, headerParameters, headerParameters.length - aditional.length, aditional.length);
+        return headerParameters;
     }
-
-    @Override
-    public QuantizeHCompressorOption setTileWidth(int value) {
-        super.setTileWidth(value);
-        this.hCompressorOption.setTileWidth(value);
-        return this;
-    }
-
-    @Override
-    public <T> T unwrap(Class<T> clazz) {
-        T result = super.unwrap(clazz);
-        if (result == null) {
-            return this.hCompressorOption.unwrap(clazz);
-        }
-        return result;
-    }
-
 }

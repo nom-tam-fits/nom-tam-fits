@@ -37,17 +37,17 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import nom.tam.image.comp.ITileCompressor;
-import nom.tam.image.comp.quant.QuantProcessor.DoubleQuantCompressor;
-import nom.tam.image.comp.quant.QuantProcessor.FloatQuantCompressor;
+import nom.tam.image.comp.quant.QuantizeProcessor.DoubleQuantCompressor;
+import nom.tam.image.comp.quant.QuantizeProcessor.FloatQuantCompressor;
 import nom.tam.util.ArrayFuncs;
 
 public abstract class HCompressor<T extends Buffer> implements ITileCompressor<T> {
 
-    public static class ByteHCompress extends HCompressor<ByteBuffer> {
+    public static class ByteHCompressor extends HCompressor<ByteBuffer> {
 
         private static final long BYTE_MASK_FOR_LONG = 0xFFL;
 
-        public ByteHCompress(HCompressorOption options) {
+        public ByteHCompressor(HCompressorOption options) {
             super(options);
         }
 
@@ -74,23 +74,23 @@ public abstract class HCompressor<T extends Buffer> implements ITileCompressor<T
 
     }
 
-    public static class DoubleHCompress extends DoubleQuantCompressor {
+    public static class DoubleHCompressor extends DoubleQuantCompressor {
 
-        public DoubleHCompress(QuantizeHCompressorOption options) {
-            super(options, new IntHCompress(options.getHCompressorOption()));
+        public DoubleHCompressor(HCompressorQuantizeOption options) {
+            super(options, new IntHCompressor(options.getHCompressorOption()));
         }
     }
 
-    public static class FloatHCompress extends FloatQuantCompressor {
+    public static class FloatHCompressor extends FloatQuantCompressor {
 
-        public FloatHCompress(QuantizeHCompressorOption options) {
-            super(options, new IntHCompress(options.getHCompressorOption()));
+        public FloatHCompressor(HCompressorQuantizeOption options) {
+            super(options, new IntHCompressor(options.getHCompressorOption()));
         }
     }
 
-    public static class IntHCompress extends HCompressor<IntBuffer> {
+    public static class IntHCompressor extends HCompressor<IntBuffer> {
 
-        public IntHCompress(HCompressorOption options) {
+        public IntHCompressor(HCompressorOption options) {
             super(options);
         }
 
@@ -115,9 +115,9 @@ public abstract class HCompressor<T extends Buffer> implements ITileCompressor<T
 
     }
 
-    public static class ShortHCompress extends HCompressor<ShortBuffer> {
+    public static class ShortHCompressor extends HCompressor<ShortBuffer> {
 
-        public ShortHCompress(HCompressorOption options) {
+        public ShortHCompressor(HCompressorOption options) {
             super(options);
         }
 

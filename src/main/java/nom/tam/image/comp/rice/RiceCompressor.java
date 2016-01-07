@@ -7,8 +7,8 @@ import java.nio.ShortBuffer;
 import java.util.logging.Logger;
 
 import nom.tam.image.comp.ITileCompressor;
-import nom.tam.image.comp.quant.QuantProcessor.DoubleQuantCompressor;
-import nom.tam.image.comp.quant.QuantProcessor.FloatQuantCompressor;
+import nom.tam.image.comp.quant.QuantizeProcessor.DoubleQuantCompressor;
+import nom.tam.image.comp.quant.QuantizeProcessor.FloatQuantCompressor;
 import nom.tam.util.FitsIO;
 import nom.tam.util.type.PrimitiveType;
 
@@ -48,20 +48,20 @@ import nom.tam.util.type.PrimitiveType;
  * written by Richard White at STSc at the STScI and included (ported to c and
  * adapted) in cfitsio by William Pence, NASA/GSFC. That code was then ported to
  * java by R. van Nieuwenhoven. Later it was massively refactored to
- * harmonizered the different compression algorithms and reduce the duplicate
- * code peaces without obscuring the algorithm itself as good as possible.
+ * harmonize the different compression algorithms and reduce the duplicate
+ * code pieces without obscuring the algorithm itself as far as possible.
  *
  * @author Richard White
  * @author William Pence
  * @author Richard van Nieuwenhoven
  */
-public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<T> {
+public abstract class RiceCompressor<T extends Buffer> implements ITileCompressor<T> {
 
-    public static class ByteRiceCompress extends RiceCompress<ByteBuffer> {
+    public static class ByteRiceCompressor extends RiceCompressor<ByteBuffer> {
 
         private ByteBuffer pixelBuffer;
 
-        public ByteRiceCompress(RiceCompressOption option) {
+        public ByteRiceCompressor(RiceCompressOption option) {
             super(option.setDefaultBytePix(PrimitiveType.BYTE.size()));
         }
 
@@ -89,25 +89,25 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         }
     }
 
-    public static class DoubleRiceCompress extends DoubleQuantCompressor {
+    public static class DoubleRiceCompressor extends DoubleQuantCompressor {
 
-        public DoubleRiceCompress(QuantizeRiceCompressOption options) {
-            super(options, new IntRiceCompress(options.getRiceCompressOption()));
+        public DoubleRiceCompressor(RiceQuantizeCompressOption options) {
+            super(options, new IntRiceCompressor(options.getRiceCompressOption()));
         }
     }
 
-    public static class FloatRiceCompress extends FloatQuantCompressor {
+    public static class FloatRiceCompressor extends FloatQuantCompressor {
 
-        public FloatRiceCompress(QuantizeRiceCompressOption options) {
-            super(options, new IntRiceCompress(options.getRiceCompressOption()));
+        public FloatRiceCompressor(RiceQuantizeCompressOption options) {
+            super(options, new IntRiceCompressor(options.getRiceCompressOption()));
         }
     }
 
-    public static class IntRiceCompress extends RiceCompress<IntBuffer> {
+    public static class IntRiceCompressor extends RiceCompressor<IntBuffer> {
 
         private IntBuffer pixelBuffer;
 
-        public IntRiceCompress(RiceCompressOption option) {
+        public IntRiceCompressor(RiceCompressOption option) {
             super(option.setDefaultBytePix(PrimitiveType.INT.size()));
         }
 
@@ -135,11 +135,11 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
         }
     }
 
-    public static class ShortRiceCompress extends RiceCompress<ShortBuffer> {
+    public static class ShortRiceCompressor extends RiceCompressor<ShortBuffer> {
 
         private ShortBuffer pixelBuffer;
 
-        public ShortRiceCompress(RiceCompressOption option) {
+        public ShortRiceCompressor(RiceCompressOption option) {
             super(option.setDefaultBytePix(PrimitiveType.SHORT.size()));
         }
 
@@ -170,7 +170,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
     /**
      * logger to log to.
      */
-    private static final Logger LOG = Logger.getLogger(RiceCompress.class.getName());
+    private static final Logger LOG = Logger.getLogger(RiceCompressor.class.getName());
 
     private static final int BITS_OF_1_BYTE = 8;
 
@@ -226,7 +226,7 @@ public abstract class RiceCompress<T extends Buffer> implements ITileCompressor<
 
     private final int fsMax;
 
-    private RiceCompress(RiceCompressOption option) {
+    private RiceCompressor(RiceCompressOption option) {
         this.blockSize = option.getBlockSize();
         if (option.getBytePix() == PrimitiveType.BYTE.size()) {
             this.fsBits = FS_BITS_FOR_BYTE;

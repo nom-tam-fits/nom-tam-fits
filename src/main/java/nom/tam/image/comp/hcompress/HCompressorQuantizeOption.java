@@ -1,4 +1,4 @@
-package nom.tam.image.comp.rice.par;
+package nom.tam.image.comp.hcompress;
 
 /*
  * #%L
@@ -31,34 +31,50 @@ package nom.tam.image.comp.rice.par;
  * #L%
  */
 
-import java.util.Arrays;
+import nom.tam.image.comp.hcompress.par.HCompressQuantizeParameter;
+import nom.tam.image.comp.quant.QuantizeOption;
 
-import nom.tam.image.comp.ICompressHeaderParameter;
-import nom.tam.image.comp.ICompressOption;
-import nom.tam.image.comp.ICompressParameters;
-import nom.tam.image.comp.quant.par.QuantizeParameters;
-import nom.tam.image.comp.rice.QuantizeRiceCompressOption;
+public class HCompressorQuantizeOption extends QuantizeOption {
 
-public class RiceQuantizCompressParameter extends QuantizeParameters {
+    private HCompressorOption hCompressorOption = new HCompressorOption();
 
-    private final RiceCompressPrameters riceCompressPrameters;
-
-    public RiceQuantizCompressParameter(QuantizeRiceCompressOption option) {
-        super(option);
-        this.riceCompressPrameters = new RiceCompressPrameters(option.getRiceCompressOption());
+    public HCompressorQuantizeOption() {
+        super();
+        this.parameters = new HCompressQuantizeParameter(this);
     }
 
     @Override
-    public ICompressParameters copy(ICompressOption option) {
-        return copyColumnDetails(new RiceQuantizCompressParameter((QuantizeRiceCompressOption) option));
+    public HCompressorQuantizeOption copy() {
+        HCompressorQuantizeOption copy = (HCompressorQuantizeOption) super.copy();
+        copy.hCompressorOption = this.hCompressorOption.copy();
+        return copy;
+    }
+
+    public HCompressorOption getHCompressorOption() {
+        return this.hCompressorOption;
     }
 
     @Override
-    public ICompressHeaderParameter[] headerParameters() {
-        ICompressHeaderParameter[] headerParameters = super.headerParameters();
-        ICompressHeaderParameter[] aditional = this.riceCompressPrameters.headerParameters();
-        headerParameters = Arrays.copyOf(headerParameters, headerParameters.length + aditional.length);
-        System.arraycopy(aditional, 0, headerParameters, headerParameters.length - aditional.length, aditional.length);
-        return headerParameters;
+    public HCompressorQuantizeOption setTileHeight(int value) {
+        super.setTileHeight(value);
+        this.hCompressorOption.setTileHeight(value);
+        return this;
     }
+
+    @Override
+    public HCompressorQuantizeOption setTileWidth(int value) {
+        super.setTileWidth(value);
+        this.hCompressorOption.setTileWidth(value);
+        return this;
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> clazz) {
+        T result = super.unwrap(clazz);
+        if (result == null) {
+            return this.hCompressorOption.unwrap(clazz);
+        }
+        return result;
+    }
+
 }

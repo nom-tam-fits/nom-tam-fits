@@ -34,23 +34,23 @@ package nom.tam.image.comp.rice.par;
 import nom.tam.image.comp.ICompressHeaderParameter;
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ICompressParameters;
-import nom.tam.image.comp.par.CompressionParameters;
+import nom.tam.image.comp.par.CompressParameters;
 import nom.tam.image.comp.rice.RiceCompressOption;
 
-public class RiceCompressPrameters extends CompressionParameters {
+public class RiceCompressParameters extends CompressParameters {
 
     private final RiceBlockSizeParameter blockSize;
 
     private final RiceBytePixParameter bytePix;
 
-    public RiceCompressPrameters(RiceCompressOption option) {
+    public RiceCompressParameters(RiceCompressOption option) {
         this.blockSize = new RiceBlockSizeParameter(option);
         this.bytePix = new RiceBytePixParameter(option);
     }
 
     @Override
     public ICompressParameters copy(ICompressOption option) {
-        return new RiceCompressPrameters((RiceCompressOption) option);
+        return new RiceCompressParameters((RiceCompressOption) option);
     }
 
     @Override
