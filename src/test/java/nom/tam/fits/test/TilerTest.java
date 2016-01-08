@@ -152,24 +152,21 @@ public class TilerTest {
 
     private void doTest(Object data, String suffix) throws IOException, FitsException, Exception {
 
-        Fits f = new Fits();
+        try (Fits f = new Fits(); BufferedFile bf = new BufferedFile("target/tiler" + suffix + ".fits", "rw")) {
+            f.addHDU(Fits.makeHDU(data));
+            f.write(bf);
+        }
 
-        BufferedFile bf = new BufferedFile("target/tiler" + suffix + ".fits", "rw");
-        f.addHDU(Fits.makeHDU(data));
-
-        f.write(bf);
-        bf.close();
-
-        f = new Fits("target/tiler" + suffix + ".fits");
-
-        ImageHDU h = (ImageHDU) f.readHDU();
-
-        StandardImageTiler t = h.getTiler();
-        doTile("t1", data, t, 200, 200, 50, 50);
-        doTile("t2", data, t, 133, 133, 72, 26);
-
-        Object o = h.getData().getKernel();
-        doTile("t3", data, t, 200, 200, 50, 50);
-        doTile("t4", data, t, 133, 133, 72, 26);
+        try (Fits f = new Fits("target/tiler" + suffix + ".fits")) {
+            ImageHDU h = (ImageHDU) f.readHDU();
+    
+            StandardImageTiler t = h.getTiler();
+            doTile("t1", data, t, 200, 200, 50, 50);
+            doTile("t2", data, t, 133, 133, 72, 26);
+    
+            h.getData().getKernel();
+            doTile("t3", data, t, 200, 200, 50, 50);
+            doTile("t4", data, t, 133, 133, 72, 26);
+        }
     }
 }

@@ -37,11 +37,8 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
-import nom.tam.image.comp.ICompressHeaderParameter;
-import nom.tam.image.comp.quant.QuantizeOption;
 import nom.tam.image.comp.rice.RiceCompressor.ByteRiceCompressor;
 import nom.tam.image.comp.rice.RiceCompressor.IntRiceCompressor;
 import nom.tam.image.comp.rice.RiceCompressor.ShortRiceCompressor;

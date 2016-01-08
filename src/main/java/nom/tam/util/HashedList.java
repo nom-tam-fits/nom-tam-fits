@@ -453,6 +453,7 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
         return toArray(o);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T[] toArray(T[] o) {
         if (o.length < size()) {

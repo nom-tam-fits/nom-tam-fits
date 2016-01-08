@@ -469,11 +469,13 @@ public class StreamTest {
     @Test
     public void testReadWriteLine() throws Exception {
         ByteArrayOutputStream o = new ByteArrayOutputStream();
-        BufferedDataOutputStream out = new BufferedDataOutputStream(o);
-        out.writeBytes("bla bla\n");
-        out.close();
-        String line = new BufferedDataInputStream(new ByteArrayInputStream(o.toByteArray())).readLine();
-        Assert.assertEquals("bla bla", line);
+        try (BufferedDataOutputStream out = new BufferedDataOutputStream(o)) {
+            out.writeBytes("bla bla\n");
+        }
+        try (BufferedDataInputStream input = new BufferedDataInputStream(new ByteArrayInputStream(o.toByteArray()))){
+            String line = input.readLine();
+            Assert.assertEquals("bla bla", line);
+        }
     }
 
     private BufferedDataInputStream create8ByteInput() {

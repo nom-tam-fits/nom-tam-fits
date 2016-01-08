@@ -38,10 +38,8 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
-import nom.tam.image.comp.ICompressHeaderParameter;
 import nom.tam.util.ArrayFuncs;
 
 import org.junit.Assert;

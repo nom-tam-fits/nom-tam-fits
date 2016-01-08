@@ -47,8 +47,7 @@ import org.junit.Test;
 public class JunkTest {
 
     boolean readSuccess(String file) {
-        try {
-            Fits f = new Fits(file);
+        try (Fits f = new Fits(file)) {
             f.read();
             return true;
         } catch (Exception e) {
@@ -59,46 +58,46 @@ public class JunkTest {
     @Test
     public void test() throws Exception {
 
-        Fits f = new Fits();
-
-        byte[] bimg = new byte[40];
-        for (int i = 10; i < bimg.length; i += 1) {
-            bimg[i] = (byte) i;
+        try (Fits f = new Fits()) {
+    
+            byte[] bimg = new byte[40];
+            for (int i = 10; i < bimg.length; i += 1) {
+                bimg[i] = (byte) i;
+            }
+    
+            // Make HDUs of various types.
+            f.addHDU(Fits.makeHDU(bimg));
+    
+            // Write a FITS file.
+    
+            // Valid FITS with one HDU
+            try (BufferedFile bf = new BufferedFile("target/j1.fits", "rw")) {
+                f.write(bf);
+                bf.flush();
+            }
+    
+            // Invalid junk with no valid FITS.
+            BufferedFile bf = new BufferedFile("target/j2.fits", "rw");
+            bf.write(new byte[10]);
+            bf.close();
+    
+            // Valid FITS followed by short junk.
+            bf = new BufferedFile("target/j3.fits", "rw");
+            f.write(bf);
+            bf.write("JUNKJUNK".getBytes());
+            bf.close();
+    
+            // Valid FITS followed by long junk.
+            bf = new BufferedFile("target/j4.fits", "rw");
+            f.write(bf);
+            for (int i = 0; i < 100; i += 1) {
+                bf.write("A random string".getBytes());
+            }
+            bf.close();
         }
-
-        // Make HDUs of various types.
-        f.addHDU(Fits.makeHDU(bimg));
-
-        // Write a FITS file.
-
-        // Valid FITS with one HDU
-        BufferedFile bf = new BufferedFile("target/j1.fits", "rw");
-        f.write(bf);
-        bf.flush();
-        bf.close();
-
-        // Invalid junk with no valid FITS.
-        bf = new BufferedFile("target/j2.fits", "rw");
-        bf.write(new byte[10]);
-        bf.close();
-
-        // Valid FITS followed by short junk.
-        bf = new BufferedFile("target/j3.fits", "rw");
-        f.write(bf);
-        bf.write("JUNKJUNK".getBytes());
-        bf.close();
-
-        // Valid FITS followed by long junk.
-        bf = new BufferedFile("target/j4.fits", "rw");
-        f.write(bf);
-        for (int i = 0; i < 100; i += 1) {
-            bf.write("A random string".getBytes());
-        }
-        bf.close();
 
         int pos = 0;
-        try {
-            f = new Fits("target/j1.fits");
+        try (Fits f = new Fits("target/j1.fits")) {
             f.read();
         } catch (Exception e) {
             pos = 1;
