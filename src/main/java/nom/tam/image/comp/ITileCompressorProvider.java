@@ -45,6 +45,10 @@ public interface ITileCompressorProvider {
         ICompressOption option();
     }
 
+    /**
+     * @return the {@code ITileCompressorControl} to use for the specified
+     * quantize and compression algorithms and base type.
+     */
     ITileCompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType);
 
 }

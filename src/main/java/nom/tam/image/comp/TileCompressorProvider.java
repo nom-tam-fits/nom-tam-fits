@@ -39,7 +39,6 @@ import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import nom.tam.fits.header.Compression;
 import nom.tam.image.comp.gzip.GZipCompressor.ByteGZipCompressor;
 import nom.tam.image.comp.gzip.GZipCompressor.DoubleGZipCompressor;
 import nom.tam.image.comp.gzip.GZipCompressor.FloatGZipCompressor;
@@ -63,6 +62,9 @@ import nom.tam.image.comp.rice.RiceCompressor.FloatRiceCompressor;
 import nom.tam.image.comp.rice.RiceCompressor.IntRiceCompressor;
 import nom.tam.image.comp.rice.RiceCompressor.ShortRiceCompressor;
 
+/**
+ * Standard implementation of the {@code ITileCompressorProvider} interface.
+ */
 public class TileCompressorProvider implements ITileCompressorProvider {
 
     /**
@@ -117,8 +119,6 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         }
     }
 
-    private static final String COMPRESSOR_CLASS_SUFFIX = "Compressor";
-
     private static final Class<?>[] AVAILABLE_COMPRESSORS = {
         ByteRiceCompressor.class,
         ShortRiceCompressor.class,
@@ -147,6 +147,8 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         FloatGZipCompressor.class,
         DoubleGZipCompressor.class
     };
+    
+    private static final TileCompressorControlNameComputer NAME_COMPUTER = new TileCompressorControlNameComputer();
 
     /**
      * logger to log to.
@@ -168,60 +170,15 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         return defaultProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);
     }
 
-    private String classNameForCompression(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
-        StringBuilder className = new StringBuilder();
-        className.append(standardizeBaseType(baseType.getSimpleName()));
-        if (className.indexOf(Float.class.getSimpleName()) == 0 || className.indexOf(Double.class.getSimpleName()) == 0) {
-            quantAlgorithm = null; // default so not in the className
-        }
-        className.append(standardizeQuantAlgorithm(quantAlgorithm, baseType));
-        className.append(standardizeCompressionAlgorithm(compressionAlgorithm));
-        className.append(COMPRESSOR_CLASS_SUFFIX);
-        return className.toString();
-    }
-
     @Override
     public ITileCompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
 
-        String className = classNameForCompression(quantAlgorithm, compressionAlgorithm, baseType);
+        String className = NAME_COMPUTER.createCompressorClassName(quantAlgorithm, compressionAlgorithm, baseType);
         for (Class<?> clazz : AVAILABLE_COMPRESSORS) {
             if (clazz.getSimpleName().equals(className)) {
                 return new TileCompressorControl(clazz);
             }
         }
         return null;
-    }
-
-    private Object standardizeBaseType(String simpleName) {
-        return Character.toUpperCase(simpleName.charAt(0)) + simpleName.substring(1).toLowerCase();
-    }
-
-    private Object standardizeCompressionAlgorithm(String compressionAlgorithm) {
-        if (Compression.ZCMPTYPE_RICE_1.equalsIgnoreCase(compressionAlgorithm) || //
-                Compression.ZCMPTYPE_RICE_ONE.equalsIgnoreCase(compressionAlgorithm)) {
-            return "Rice";
-        } else if (Compression.ZCMPTYPE_PLIO_1.equalsIgnoreCase(compressionAlgorithm)) {
-            return "PLIO";
-        } else if (Compression.ZCMPTYPE_HCOMPRESS_1.equalsIgnoreCase(compressionAlgorithm)) {
-            return "H";
-        } else if (Compression.ZCMPTYPE_GZIP_2.equalsIgnoreCase(compressionAlgorithm)) {
-            return "GZip2";
-        } else if (Compression.ZCMPTYPE_GZIP_1.equalsIgnoreCase(compressionAlgorithm)) {
-            return "GZip";
-        }
-        return "Unknown";
-    }
-
-    private Object standardizeQuantAlgorithm(String quantAlgorithm, Class<?> baseType) {
-        if (quantAlgorithm != null) {
-            if (Compression.ZQUANTIZ_NO_DITHER.equalsIgnoreCase(quantAlgorithm) || //
-                    Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equalsIgnoreCase(quantAlgorithm) || //
-                    Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equalsIgnoreCase(quantAlgorithm)) {
-                return "Quant";
-            } else {
-                return "Unknown";
-            }
-        }
-        return "";
     }
 }
