@@ -139,7 +139,7 @@ public class Header implements FitsElement {
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
      */
-    private final HashedList<String, HeaderCard> cards = new HashedList<String, HeaderCard>();
+    private final HashedList<String, HeaderCard> cards = new HashedList<>();
 
     /**
      * This iterator allows one to run through the list.
@@ -208,7 +208,7 @@ public class Header implements FitsElement {
         if (!COMMENT.key().equals(dup.getKey()) && !HISTORY.key().equals(dup.getKey())) {
             LOG.log(Level.WARNING, "Warning: multiple occurrences of key:" + dup.getKey());
             if (this.duplicates == null) {
-                this.duplicates = new ArrayList<HeaderCard>();
+                this.duplicates = new ArrayList<>();
             }
             this.duplicates.add(dup);
         }
@@ -590,7 +590,7 @@ public class Header implements FitsElement {
      *         HeaderCard object otherwise.
      */
     public HeaderCard findCard(String key) {
-        HeaderCard card = (HeaderCard) this.cards.get(key);
+        HeaderCard card = this.cards.get(key);
         if (card != null) {
             this.iter.setKey(key);
         }
@@ -1308,7 +1308,7 @@ public class Header implements FitsElement {
 
                 String key = fcard.getKey();
                 if (key != null && this.cards.containsKey(key)) {
-                    addDuplicate((HeaderCard) this.cards.get(key));
+                    addDuplicate(this.cards.get(key));
                 }
 
                 // We don't check the value here. If the user

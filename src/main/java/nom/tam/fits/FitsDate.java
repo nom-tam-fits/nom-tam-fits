@@ -116,7 +116,7 @@ public class FitsDate {
     public static String getFitsDateString(Date epoch, boolean timeOfDay) {
         Calendar cal = Calendar.getInstance(FitsDate.GMT);
         cal.setTime(epoch);
-        StringBuffer fitsDate = new StringBuffer();
+        StringBuilder fitsDate = new StringBuilder();
         DecimalFormat df = new DecimalFormat("0000");
         fitsDate.append(df.format(cal.get(Calendar.YEAR)));
         fitsDate.append("-");
@@ -193,7 +193,7 @@ public class FitsDate {
         }
     }
 
-    private int getInt(Matcher match, int groupIndex) {
+    private static int getInt(Matcher match, int groupIndex) {
         String value = match.group(groupIndex);
         if (value != null) {
             return Integer.parseInt(value);
@@ -201,7 +201,7 @@ public class FitsDate {
         return -1;
     }
 
-    private int getMilliseconds(Matcher match, int groupIndex) {
+    private static int getMilliseconds(Matcher match, int groupIndex) {
         String value = match.group(groupIndex);
         if (value != null) {
             int result = Integer.parseInt(value);
@@ -269,7 +269,7 @@ public class FitsDate {
         if (this.year == -1) {
             return "";
         }
-        StringBuffer buf = new StringBuffer(FitsDate.FITS_DATE_STRING_SIZE);
+        StringBuilder buf = new StringBuilder(FitsDate.FITS_DATE_STRING_SIZE);
         buf.append(this.year);
         buf.append('-');
         appendTwoDigitValue(buf, this.month);
@@ -290,14 +290,14 @@ public class FitsDate {
         return buf.toString();
     }
 
-    private void appendThreeDigitValue(StringBuffer buf, int value) {
+    private void appendThreeDigitValue(StringBuilder buf, int value) {
         if (value < FitsDate.FIRST_THREE_CHARACTER_VALUE) {
             buf.append('0');
         }
         appendTwoDigitValue(buf, value);
     }
 
-    private void appendTwoDigitValue(StringBuffer buf, int value) {
+    private void appendTwoDigitValue(StringBuilder buf, int value) {
         if (value < FitsDate.FIRST_TWO_CHARACTER_VALUE) {
             buf.append('0');
         }

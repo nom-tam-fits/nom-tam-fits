@@ -49,7 +49,6 @@ package nom.tam.util;
  * referenced objects.
  *
  */
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -128,7 +127,7 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
 
             } else {
                 VALUE entry = HashedList.this.ordered.get(this.current);
-                this.current += 1;
+                this.current++;
                 return entry;
             }
         }
@@ -146,9 +145,8 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
             if (this.current <= 0) {
                 throw new NoSuchElementException("Before beginning of list");
             }
-            this.current -= 1;
-            VALUE entry = HashedList.this.ordered.get(this.current);
-            return entry;
+            this.current--;
+            return HashedList.this.ordered.get(this.current);
         }
 
         @Override
@@ -160,7 +158,7 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
                 // If we just removed the last entry, then we need
                 // to go back one.
                 if (this.current > 0) {
-                    this.current -= 1;
+                    this.current--;
                 }
             }
         }
@@ -281,9 +279,8 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
      * @param key
      *            the key to search for
      */
-    public Object get(Object key) {
-        VALUE entry = this.keyed.get(key);
-        return entry == null ? null : entry;
+    public VALUE get(Object key) {
+        return this.keyed.get(key);
     }
 
     private int indexOf(VALUE entry) {
@@ -349,20 +346,23 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
      */
     public boolean remove(int index) {
         if (index >= 0 && index < this.ordered.size()) {
-            VALUE entry = this.ordered.get(index);
-            this.keyed.remove(entry.getKey());
-            this.ordered.remove(index);
-            return true;
+            return internalRemove(index, this.ordered.get(index));
         }
         return false;
     }
 
+    private boolean internalRemove(int index, VALUE entry) {
+        this.keyed.remove(entry.getKey());
+        this.ordered.remove(index);
+        return true;
+    }
+
     @Override
     public boolean remove(Object o) {
-        for (int i = 0; i < this.ordered.size(); i += 1) {
+        for (int i = 0; i < this.ordered.size(); i++) {
             VALUE entry = this.ordered.get(i);
             if (o.equals(entry)) {
-                return remove(i);
+                return internalRemove(i, entry);
             }
         }
         return false;
@@ -372,7 +372,7 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
     public boolean removeAll(Collection<?> c) {
         boolean result = false;
         for (Object element : c.toArray()) {
-            result = result | remove(element);
+            result = remove(element) || result;
         }
         return result;
     }
@@ -411,7 +411,7 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
             return false;
         }
         VALUE oldVal = this.keyed.get(oldKey);
-        // same entry in hashmap and orderd son only one change.
+        // same entry in hashmap and ordered so only one change.
         this.keyed.remove(oldKey);
         this.keyed.put(newKey, oldVal);
         return true;
@@ -449,20 +449,12 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
 
     @Override
     public Object[] toArray() {
-        Object[] o = new Object[this.ordered.size()];
-        return toArray(o);
+        return ordered.toArray();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T> T[] toArray(T[] o) {
-        if (o.length < size()) {
-            o = (T[]) Array.newInstance(o.getClass().getComponentType(), size());
-        }
-        for (int index = 0; index < o.length; index++) {
-            o[index] = (T) this.ordered.get(index);
-        }
-        return o;
+        return ordered.toArray(o);
     }
 
     @Override
