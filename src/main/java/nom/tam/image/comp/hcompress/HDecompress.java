@@ -218,7 +218,7 @@ public class HDecompress {
          * check for correct magic code value
          */
         if (tmagic[0] != CODE_MAGIC[0] || tmagic[1] != CODE_MAGIC[1]) {
-            throw new RuntimeException("compresseionError");
+            throw new RuntimeException("Compression error");
         }
         this.nx = infile.getInt(); /* x size of image */
         this.ny = infile.getInt(); /* y size of image */
@@ -306,7 +306,7 @@ public class HDecompress {
          * make sure there is an EOF symbol (nybble=0) at end
          */
         if (inputNybble(infile) != 0) {
-            throw new RuntimeException("compresseionError");
+            throw new RuntimeException("Compression error");
         }
         /*
          * now get the sign bits Re-initialize bit input
@@ -988,7 +988,7 @@ public class HDecompress {
                  */
                 readBdirect64(infile, a, n, nqx, nqy, scratch, bit);
             } else if (b != NYBBLE_MASK) {
-                throw new RuntimeException("compresseionError");
+                throw new RuntimeException("Compression error");
             } else {
                 /*
                  * bitmap was quadtree-coded, do log2n expansions read first
