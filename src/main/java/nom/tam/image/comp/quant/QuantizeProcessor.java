@@ -95,14 +95,14 @@ public class QuantizeProcessor {
 
         private double[] initRandoms() {
 
-            /* initialize an tileOperationsArray of random numbers */
+            /* initialize an tiledImageOperation of random numbers */
 
             int ii;
             double a = RANDOM_START_VALUE;
             double m = MAX_INT_AS_DOUBLE;
             double temp, seed;
 
-            /* allocate tileOperationsArray for the random number sequence */
+            /* allocate tiledImageOperation for the random number sequence */
             double[] randomValue = new double[N_RANDOM];
 
             /*

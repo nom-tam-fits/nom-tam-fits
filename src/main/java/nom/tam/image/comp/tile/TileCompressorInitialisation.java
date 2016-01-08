@@ -31,52 +31,31 @@ package nom.tam.image.comp.tile;
  * #L%
  */
 
-import static nom.tam.image.comp.tile.TileCompressionType.COMPRESSED;
-import static nom.tam.image.comp.tile.TileCompressionType.GZIP_COMPRESSED;
-import static nom.tam.image.comp.tile.TileCompressionType.UNCOMPRESSED;
-import nom.tam.fits.FitsException;
-import nom.tam.fits.Header;
+import java.nio.Buffer;
 
 final class TileCompressorInitialisation implements ITileOperationInitialisation {
 
-    private final Object[] uncompressed;
+    private final Buffer buffer;
 
-    private final Object[] compressed;
+    private final TiledImageOperation imageTilesOperation;
 
-    private final Object[] gzipCompressed;
-
-    private final Header header;
-
-    private final ImageTilesOperation imageTilesOperation;
-
-    protected TileCompressorInitialisation(ImageTilesOperation imageTilesOperation, Object[] uncompressed, Object[] compressed, Object[] gzipCompressed, Header header) {
+    protected TileCompressorInitialisation(TiledImageOperation imageTilesOperation, Buffer buffer) {
         this.imageTilesOperation = imageTilesOperation;
-        this.uncompressed = uncompressed;
-        this.compressed = compressed;
-        this.gzipCompressed = gzipCompressed;
-        this.header = header;
+        this.buffer = buffer;
     }
 
     @Override
     public TileOperation createTileOperation(int tileIndex) {
-        return new TileDecompressor(this.imageTilesOperation, tileIndex);
+        return new TileCompressor(this.imageTilesOperation, tileIndex);
     }
 
     @Override
     public void init(TileOperation tileOperation) {
-        tileOperation.initTileOptions();
-        tileOperation.getTileOptions().getCompressionParameters().getValuesFromColumn(tileOperation.getTileIndex());
-        tileOperation.setCompressed(this.compressed != null ? this.compressed[tileOperation.getTileIndex()] : null, COMPRESSED)//
-                .setCompressed(this.uncompressed != null ? this.uncompressed[tileOperation.getTileIndex()] : null, UNCOMPRESSED)//
-                .setCompressed(this.gzipCompressed != null ? this.gzipCompressed[tileOperation.getTileIndex()] : null, GZIP_COMPRESSED);
+        tileOperation.setWholeImageBuffer(this.buffer);
+        tileOperation.setWholeImageCompressedBuffer(this.imageTilesOperation.getCompressedWholeArea());
     }
 
     @Override
     public void tileCount(int tileCount) {
-        try {
-            this.imageTilesOperation.compressOptions().getCompressionParameters().initializeColumns(this.header, this.imageTilesOperation.getBinaryTable(), tileCount);
-        } catch (FitsException e) {
-            throw new IllegalStateException("Columns of table inconsistent", e);
-        }
     }
 }

@@ -73,9 +73,9 @@ public class QuantizeParameters extends CompressParameters {
     }
 
     protected ICompressParameters copyColumnDetails(QuantizeParameters quantizeParameters) {
-        quantizeParameters.blankColumn.column(this.blankColumn);
-        quantizeParameters.zero.column(this.zero);
-        quantizeParameters.scale.column(this.scale);
+        quantizeParameters.blankColumn.setOriginal(this.blankColumn);
+        quantizeParameters.zero.setOriginal(this.zero);
+        quantizeParameters.scale.setOriginal(this.scale);
         return quantizeParameters;
     }
 

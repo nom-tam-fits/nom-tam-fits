@@ -163,7 +163,7 @@ public abstract class PLIOCompress {
     private static final int VALUE_OF_BIT_13_AND14_ON = 12288;
 
     /**
-     * PL_P2L -- Convert a pixel tileOperationsArray to a line list. The length
+     * PL_P2L -- Convert a pixel tiledImageOperation to a line list. The length
      * of the list is returned as the function value.
      *
      * @param compressedData
@@ -257,7 +257,7 @@ public abstract class PLIOCompress {
 
     /**
      * PL_L2PI -- Translate a PLIO line list into an integer pixel
-     * tileOperationsArray. The number of pixels output (always npix) is
+     * tiledImageOperation. The number of pixels output (always npix) is
      * returned as the function value.
      *
      * @param compressedData

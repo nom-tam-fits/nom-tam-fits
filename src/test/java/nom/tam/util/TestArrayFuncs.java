@@ -57,7 +57,7 @@ public class TestArrayFuncs {
      * returns true if every element of the arrays match. The inputs may be of
      * any dimensionality. The dimensionality and dimensions of the arrays must
      * match as well as any elements. If the elements are non-primitive.
-     * non-tileOperationsArray objects, then the equals method is called for each element. If
+     * non-tiledImageOperation objects, then the equals method is called for each element. If
      * both elements are multi-dimensional arrays, then the method recurses.
      */
     public static boolean arrayEquals(Object x, Object y) {
@@ -70,7 +70,7 @@ public class TestArrayFuncs {
      * returns true if every element of the arrays match. The inputs may be of
      * any dimensionality. The dimensionality and dimensions of the arrays must
      * match as well as any elements. If the elements are non-primitive.
-     * non-tileOperationsArray objects, then the equals method is called for each element. If
+     * non-tiledImageOperation objects, then the equals method is called for each element. If
      * both elements are multi-dimensional arrays, then the method recurses.
      */
     public static boolean arrayEquals(Object x, Object y, double tolf, double told) {
@@ -168,7 +168,7 @@ public class TestArrayFuncs {
      * bytes because they can be cast to any other numeric type.
      * 
      * @param o
-     *            The tileOperationsArray in which the test pattern is to be set.
+     *            The tiledImageOperation in which the test pattern is to be set.
      * @param start
      *            The value for the first element.
      */
@@ -190,18 +190,18 @@ public class TestArrayFuncs {
     }
 
     /**
-     * Create an tileOperationsArray and populate it with a test pattern.
+     * Create an tiledImageOperation and populate it with a test pattern.
      * 
      * @param baseType
-     *            The base type of the tileOperationsArray. This is expected to be a numeric
+     *            The base type of the tiledImageOperation. This is expected to be a numeric
      *            type, but this is not checked.
      * @param dims
      *            The desired dimensions.
-     * @return An tileOperationsArray object populated with a simple test pattern.
+     * @return An tiledImageOperation object populated with a simple test pattern.
      */
     public static Object generateArray(Class<?> baseType, int[] dims) {
 
-        // Generate an tileOperationsArray and populate it with a test pattern of
+        // Generate an tiledImageOperation and populate it with a test pattern of
         // data.
 
         Object x = ArrayFuncs.newInstance(baseType, dims);

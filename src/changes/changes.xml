@@ -1,5 +1,21 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
+		<release version="1.14.0" date="2016-01-10" description="full Image compression support">
+			<action type="update">
+				Image compression is now fully supported by nom-tam-fits. A 100% java implementation of the compression libraries available in cfitsio
+				where implemented. An API for easy handling of compressed images is now provided. Attention the binary table compression and the NULL_PIXEL_MASK features are due for the next release.
+				For the de/compressions all available cpu's are automatically utilized.  
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="26">
+				Wrong checksum calculation corrected.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="54">
+				Some problems with data segments that are bigger than 2GB corrected.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="62">
+				Header parsing performance optimization.
+			</action>
+		</release>
 		<release version="1.13.1" date="2015-08-21" description="Maintenance release with fixes for hierarch/longstring and rewrite bugs">
 			<action type="update">
 				Maintenance release with fixes for hierarch/longstring and rewrite bugs.

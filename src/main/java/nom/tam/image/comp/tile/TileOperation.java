@@ -49,7 +49,7 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  */
 abstract class TileOperation implements Runnable {
 
-    protected final ImageTilesOperation tileOperationsArray;
+    protected final TiledImageOperation tiledImageOperation;
 
     protected ByteBuffer compressedData;
 
@@ -65,8 +65,8 @@ abstract class TileOperation implements Runnable {
 
     protected ICompressOption tileOptions;
 
-    protected TileOperation(ImageTilesOperation array, int tileIndex) {
-        this.tileOperationsArray = array;
+    protected TileOperation(TiledImageOperation array, int tileIndex) {
+        this.tiledImageOperation = array;
         this.tileIndex = tileIndex;
     }
 
@@ -105,7 +105,7 @@ abstract class TileOperation implements Runnable {
     }
 
     protected TileOperation initTileOptions() {
-        ICompressOption compressOptions = this.tileOperationsArray.compressOptions();
+        ICompressOption compressOptions = this.tiledImageOperation.compressOptions();
         this.tileOptions = compressOptions.copy() //
                 .setTileWidth(this.tileBuffer.getWidth()) //
                 .setTileHeight(this.tileBuffer.getHeight());
@@ -127,9 +127,9 @@ abstract class TileOperation implements Runnable {
     }
 
     protected TileOperation setDimensions(int dataOffset, int width, int height) {
-        this.tileBuffer = TileBuffer.createTileBuffer(this.tileOperationsArray.getBaseType(), //
+        this.tileBuffer = TileBuffer.createTileBuffer(this.tiledImageOperation.getBaseType(), //
                 dataOffset, //
-                this.tileOperationsArray.getImageWidth(), //
+                this.tiledImageOperation.getImageWidth(), //
                 width, height);
         return this;
     }
@@ -159,7 +159,7 @@ abstract class TileOperation implements Runnable {
      *            the buffer that describes the whole image.
      */
     protected void setWholeImageCompressedBuffer(ByteBuffer compressed) {
-        compressed.position(this.compressedOffset * this.tileOperationsArray.getBaseType().size());
+        compressed.position(this.compressedOffset * this.tiledImageOperation.getBaseType().size());
         this.compressedData = compressed.slice();
         this.compressedOffset = 0;
         // we do not limit this buffer but is expected not to write more than

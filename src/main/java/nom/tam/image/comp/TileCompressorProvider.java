@@ -65,8 +65,6 @@ import nom.tam.image.comp.rice.RiceCompressor.ShortRiceCompressor;
 
 public class TileCompressorProvider implements ITileCompressorProvider {
 
-    private static final String COMPRESSOR_CLASS_SUFFIX = "Compressor";
-
     /**
      * private implementation of the tile compression provider, all is based on
      * the option based constructor of the compressors.
@@ -118,6 +116,8 @@ public class TileCompressorProvider implements ITileCompressorProvider {
             return ICompressOption.NULL;
         }
     }
+
+    private static final String COMPRESSOR_CLASS_SUFFIX = "Compressor";
 
     private static final Class<?>[] AVAILABLE_COMPRESSORS = {
         ByteRiceCompressor.class,

@@ -50,16 +50,26 @@ public final class ZBlankColumnParameter extends CompressColumnParameter<int[], 
 
     @Override
     public void getValueFromColumn(int index) {
-        if (this.column != null) {
-            getOption().setBNull(this.column[index]);
-        } else if (getOption().getOriginal() != null) {
-            getOption().setBNull(getOption().getOriginal().getBNull());
+        Integer bNull;
+        if (this.original != null) {
+            bNull = getOption().getOriginal().getBNull();
+        } else {
+            bNull = getOption().getBNull();
+        }
+        if (bNull == null) {
+            int[] originalColumn = originalColumn();
+            if (originalColumn != null) {
+                bNull = originalColumn[index];
+            }
+        }
+        if (bNull != null) {
+            getOption().setBNull(bNull);
         }
     }
 
     @Override
     public void setValueInColumn(int index) {
-        if (getOption().getOriginal() != null && !equals(getOption().getBNull(), getOption().getOriginal().getBNull())) {
+        if (this.original != null && !equals(getOption().getBNull(), getOption().getOriginal().getBNull())) {
             initializedColumn()[index] = getOption().getBNull();
         }
     }

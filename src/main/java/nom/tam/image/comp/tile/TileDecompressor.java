@@ -41,18 +41,20 @@ public class TileDecompressor extends TileOperation {
      */
     private static final Logger LOG = Logger.getLogger(TileDecompressor.class.getName());
 
-    protected TileDecompressor(ImageTilesOperation array, int tileIndex) {
+    protected TileDecompressor(TiledImageOperation array, int tileIndex) {
         super(array, tileIndex);
     }
 
     private void decompress() {
+        initTileOptions();
+        this.tileOptions.getCompressionParameters().getValuesFromColumn(this.tileIndex);
         if (this.compressionType == TileCompressionType.COMPRESSED) {
-            this.tileOperationsArray.getCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer(), this.tileOptions);
+            this.tiledImageOperation.getCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer(), this.tileOptions);
         } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
-            this.tileOperationsArray.getGzipCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer(), null);
+            this.tiledImageOperation.getGzipCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer(), null);
         } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {
-            Buffer typedBuffer = this.tileOperationsArray.getBaseType().asTypedBuffer(this.compressedData);
-            this.tileOperationsArray.getBaseType().appendBuffer(this.tileBuffer.getBuffer(), typedBuffer);
+            Buffer typedBuffer = this.tiledImageOperation.getBaseType().asTypedBuffer(this.compressedData);
+            this.tiledImageOperation.getBaseType().appendBuffer(this.tileBuffer.getBuffer(), typedBuffer);
         } else {
             LOG.severe("Unknown compression column");
             throw new IllegalStateException("Unknown compression column");

@@ -55,11 +55,6 @@ public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<
         return null;
     }
 
-    @Override
-    public Type getType() {
-        return Type.HEADER;
-    }
-
     public int nextFreeZVal(Header header) {
         int nval = 1;
         HeaderCard card = header.findCard(ZNAMEn.n(nval));

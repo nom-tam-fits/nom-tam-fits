@@ -47,9 +47,9 @@ import nom.tam.util.type.PrimitiveType;
  * The original compression was designed by Rice, Yeh, and Miller the code was
  * written by Richard White at STSc at the STScI and included (ported to c and
  * adapted) in cfitsio by William Pence, NASA/GSFC. That code was then ported to
- * java by R. van Nieuwenhoven. Later it was massively refactored to
- * harmonize the different compression algorithms and reduce the duplicate
- * code pieces without obscuring the algorithm itself as far as possible.
+ * java by R. van Nieuwenhoven. Later it was massively refactored to harmonize
+ * the different compression algorithms and reduce the duplicate code pieces
+ * without obscuring the algorithm itself as far as possible.
  *
  * @author Richard White
  * @author William Pence
@@ -251,7 +251,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ITileCompresso
     }
 
     /**
-     * compress the integer tileOperationsArray on a rise compressed byte
+     * compress the integer tiledImageOperation on a rise compressed byte
      * buffer.
      *
      * @param dataLength
@@ -285,7 +285,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ITileCompresso
             double pixelsum = 0.0;
             int nextpix;
             /*
-             * tileOperationsArray for differences mapped to non-negative values
+             * tiledImageOperation for differences mapped to non-negative values
              */
             for (int j = 0; j < thisblock; j++) {
                 nextpix = nextPixel();

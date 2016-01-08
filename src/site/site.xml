@@ -36,6 +36,7 @@
 			<item name="Introduction" href="intro.html" />
 			<item name="Fits keywords" href="header.html" />
 			<item name="Download" href="download.html" />
+			<item name="Compression" href="compression.html" />
 		</menu>
 		<menu ref="modules" />
 		<menu ref="reports" />

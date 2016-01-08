@@ -43,6 +43,8 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
 
     private int size;
 
+    protected CompressColumnParameter<T, OPTION> original;
+
     protected CompressColumnParameter(String name, OPTION option, Class<T> clazz) {
         super(name, option);
         this.clazz = clazz;
@@ -53,26 +55,36 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
         return this.column;
     }
 
-    public void column(CompressColumnParameter<T, OPTION> original) {
-        this.column = original.column;
-        this.size = original.size;
-    }
-
     @Override
     public void column(Object columnValue, int sizeValue) {
         this.column = this.clazz.cast(columnValue);
         this.size = sizeValue;
     }
 
-    @Override
-    public final Type getType() {
-        return Type.COLUMN;
+    protected final T initializedColumn() {
+        if (this.original != null) {
+            return this.original.initializedColumn();
+        } else {
+            final int arraySize = this.size;
+            final Class<T> arrayClass = this.clazz;
+            synchronized (this) {
+                if (this.column == null) {
+                    this.column = arrayClass.cast(Array.newInstance(arrayClass.getComponentType(), arraySize));
+                }
+            }
+            return this.column;
+        }
     }
 
-    protected T initializedColumn() {
-        if (this.column == null) {
-            this.column = this.clazz.cast(Array.newInstance(this.clazz.getComponentType(), this.size));
+    protected final T originalColumn() {
+        if (this.original != null) {
+            return this.original.originalColumn();
+        } else {
+            return this.column;
         }
-        return this.column;
+    }
+
+    public void setOriginal(CompressColumnParameter<T, OPTION> value) {
+        this.original = value;
     }
 }

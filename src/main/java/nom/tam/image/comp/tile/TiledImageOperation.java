@@ -61,6 +61,7 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardBuilder;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
 import nom.tam.image.comp.TileCompressorProvider;
@@ -68,12 +69,12 @@ import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 
 /**
- * This class represents a complete tileOperationsArray of tileOperations
+ * This class represents a complete tiledImageOperation of tileOperations
  * describing an image ordered from left to right and top down. the
  * tileOperations all have the same geometry only the tileOperations at the
  * right side and the bottom side can have different sizes.
  */
-public class ImageTilesOperation {
+public class TiledImageOperation {
 
     private int[] axes;
 
@@ -111,12 +112,12 @@ public class ImageTilesOperation {
     private ICompressOption imageOptions;
 
     /**
-     * create a ImageTilesOperation based on a compressed image data.
+     * create a TiledImageOperation based on a compressed image data.
      *
      * @param binaryTable
      *            the compressed image data.
      */
-    public ImageTilesOperation(BinaryTable binaryTable) {
+    public TiledImageOperation(BinaryTable binaryTable) {
         this.binaryTable = binaryTable;
     }
 
@@ -233,26 +234,39 @@ public class ImageTilesOperation {
     private void initializeCompressionControl() {
         if (this.compressorControl == null) {
             this.compressorControl = TileCompressorProvider.findCompressorControl(this.quantAlgorithm, this.compressAlgorithm, this.baseType.primitiveClass());
-            if (compressorControl == null) {
-                throw new IllegalStateException("Found no compressor control for compression algorithm:" + compressAlgorithm + //
-                        " (quantize algorithm = " + quantAlgorithm + ", base type = " + baseType.primitiveClass() + ")");
+            if (this.compressorControl == null) {
+                throw new IllegalStateException("Found no compressor control for compression algorithm:" + this.compressAlgorithm + //
+                        " (quantize algorithm = " + this.quantAlgorithm + ", base type = " + this.baseType.primitiveClass() + ")");
             }
             initImageOptions();
         }
     }
 
-    private void initImageOptions() {
-        this.imageOptions = this.compressorControl.option();
-        if (this.tileOperations != null) {
-            for (TileOperation tileOper : this.tileOperations) {
-                tileOper.initTileOptions();
+    /**
+     * very bad design but nessesary for now. we need deep access to an
+     * parameter.
+     */
+    protected void initializeQuantAlgorithm() {
+        if (this.quantAlgorithm != null) {
+            try {
+                Header header = new Header();
+                header.addValue(ZQUANTIZ, this.quantAlgorithm);
+                this.imageOptions.getCompressionParameters().getValuesFromHeader(header);
+            } catch (HeaderCardException e) {
+                throw new IllegalStateException("this should not happen", e);
             }
         }
     }
 
-    public ImageTilesOperation prepareUncompressedData(final Buffer buffer) {
+    private void initImageOptions() {
+        this.imageOptions = this.compressorControl.option();
+        initializeQuantAlgorithm();
+        this.imageOptions.getCompressionParameters().initializeColumns(this.tileOperations.length);
+    }
+
+    public TiledImageOperation prepareUncompressedData(final Buffer buffer) {
         this.compressedWholeArea = ByteBuffer.wrap(new byte[this.baseType.size() * this.axes[0] * this.axes[1]]);
-        createTiles(new TileDecompressorInitialisation(this, buffer));
+        createTiles(new TileCompressorInitialisation(this, buffer));
         this.compressedWholeArea.rewind();
         return this;
     }
@@ -267,17 +281,16 @@ public class ImageTilesOperation {
         }
     }
 
-    public ImageTilesOperation read(final Header header) throws FitsException {
+    public TiledImageOperation read(final Header header) throws FitsException {
         readPrimaryHeaders(header);
         setCompressAlgorithm(header.findCard(ZCMPTYPE));
         setQuantAlgorithm(header.findCard(ZQUANTIZ));
-        readCompressionHeaders(header);
-        createTiles(new TileCompressorInitialisation(this, //
+        createTiles(new TileDecompressorInitialisation(this, //
                 getNullableColumn(header, Object[].class, UNCOMPRESSED_DATA_COLUMN), //
                 getNullableColumn(header, Object[].class, COMPRESSED_DATA_COLUMN), //
                 getNullableColumn(header, Object[].class, GZIP_COMPRESSED_DATA_COLUMN), //
                 header));
-
+        readCompressionHeaders(header);
         return this;
     }
 
@@ -325,7 +338,7 @@ public class ImageTilesOperation {
         }
     }
 
-    public ImageTilesOperation setCompressAlgorithm(HeaderCard compressAlgorithmCard) {
+    public TiledImageOperation setCompressAlgorithm(HeaderCard compressAlgorithmCard) {
         this.compressAlgorithm = compressAlgorithmCard.getValue();
         return this;
     }
@@ -350,7 +363,7 @@ public class ImageTilesOperation {
         }
     }
 
-    public ImageTilesOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
+    public TiledImageOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
         if (quantAlgorithmCard != null) {
             this.quantAlgorithm = quantAlgorithmCard.getValue();
         } else {
@@ -359,7 +372,7 @@ public class ImageTilesOperation {
         return this;
     }
 
-    public ImageTilesOperation setTileAxes(int... value) {
+    public TiledImageOperation setTileAxes(int... value) {
         this.tileAxes = value;
         return this;
     }
@@ -368,7 +381,6 @@ public class ImageTilesOperation {
         Object compressedColumn = null;
         Object uncompressedColumn = null;
         Object gzipColumn = null;
-        this.imageOptions.getCompressionParameters().initializeColumns(this.tileOperations.length);
         for (TileOperation tileOperation : this.tileOperations) {
             TileCompressionType compression = tileOperation.getCompressionType();
             byte[] compressedData = tileOperation.getCompressedData();
@@ -376,8 +388,6 @@ public class ImageTilesOperation {
             compressedColumn = setInColumn(compressedColumn, compression == COMPRESSED, tileOperation, byte[].class, compressedData);
             gzipColumn = setInColumn(gzipColumn, compression == GZIP_COMPRESSED, tileOperation, byte[].class, compressedData);
             uncompressedColumn = setInColumn(uncompressedColumn, compression == UNCOMPRESSED, tileOperation, byte[].class, compressedData);
-
-            this.imageOptions.getCompressionParameters().setValueFromColumn(tileOperation.getTileIndex());
         }
         setNullEntries(compressedColumn, new byte[0]);
         setNullEntries(gzipColumn, new byte[0]);

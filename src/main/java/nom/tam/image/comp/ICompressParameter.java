@@ -33,11 +33,6 @@ package nom.tam.image.comp;
 
 public interface ICompressParameter {
 
-    enum Type {
-        HEADER,
-        COLUMN
-    }
-
     ICompressParameter NULL = new ICompressParameter() {
 
         @Override
@@ -45,15 +40,7 @@ public interface ICompressParameter {
             return "";
         }
 
-        @Override
-        public Type getType() {
-            return null;
-        }
-
     };
 
     String getName();
-
-    Type getType();
-
 }

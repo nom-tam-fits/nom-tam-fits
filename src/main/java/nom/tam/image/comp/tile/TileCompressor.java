@@ -37,7 +37,7 @@ import nom.tam.util.type.PrimitiveType;
 
 public class TileCompressor extends TileOperation {
 
-    protected TileCompressor(ImageTilesOperation array, int tileIndex) {
+    protected TileCompressor(TiledImageOperation array, int tileIndex) {
         super(array, tileIndex);
     }
 
@@ -50,8 +50,8 @@ public class TileCompressor extends TileOperation {
         if (this.tileIndex > 0) {
             try {
                 // wait for the previous tile to finish.
-                this.tileOperationsArray.getTile(this.tileIndex - 1).future.get();
-                ByteBuffer compressedWholeArea = this.tileOperationsArray.getCompressedWholeArea();
+                this.tiledImageOperation.getTile(this.tileIndex - 1).future.get();
+                ByteBuffer compressedWholeArea = this.tiledImageOperation.getCompressedWholeArea();
                 this.compressedOffset = compressedWholeArea.position();
                 PrimitiveType.BYTE.appendBuffer(compressedWholeArea, this.compressedData);
                 replaceCompressedBufferWithTargetArea(compressedWholeArea);
@@ -60,29 +60,30 @@ public class TileCompressor extends TileOperation {
             }
         } else {
             this.compressedOffset = 0;
-            this.tileOperationsArray.getCompressedWholeArea().position(this.compressedData.limit());
+            this.tiledImageOperation.getCompressedWholeArea().position(this.compressedData.limit());
         }
     }
 
     private void compress() {
-        this.compressedData.limit(this.tileBuffer.getPixelSize() * this.tileOperationsArray.getBaseType().size());
+        initTileOptions();
+        this.compressedData.limit(this.tileBuffer.getPixelSize() * this.tiledImageOperation.getBaseType().size());
         this.compressionType = TileCompressionType.COMPRESSED;
-        boolean compressSuccess = this.tileOperationsArray.getCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData, this.tileOptions);
+        boolean compressSuccess = this.tiledImageOperation.getCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData, this.tileOptions);
         if (!compressSuccess) {
             this.compressionType = TileCompressionType.GZIP_COMPRESSED;
             this.compressedData.rewind();
             this.tileBuffer.getBuffer().rewind();
-            compressSuccess = this.tileOperationsArray.getGzipCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData, null);
+            compressSuccess = this.tiledImageOperation.getGzipCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData, null);
         }
         if (!compressSuccess) {
             this.compressionType = TileCompressionType.UNCOMPRESSED;
             this.compressedData.rewind();
             this.tileBuffer.getBuffer().rewind();
-            this.tileOperationsArray.getBaseType().appendToByteBuffer(this.compressedData, this.tileBuffer.getBuffer());
+            this.tiledImageOperation.getBaseType().appendToByteBuffer(this.compressedData, this.tileBuffer.getBuffer());
         }
         this.compressedData.limit(this.compressedData.position());
         this.compressedData.rewind();
-
+        this.tileOptions.getCompressionParameters().setValueFromColumn(this.tileIndex);
         compactCompressedData();
     }
 
