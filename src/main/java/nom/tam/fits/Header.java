@@ -139,7 +139,7 @@ public class Header implements FitsElement {
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
      */
-    private final HashedList<String, HeaderCard> cards = new HashedList<>();
+    private final HashedList<HeaderCard> cards = new HashedList<>();
 
     /**
      * This iterator allows one to run through the list.
@@ -1349,7 +1349,7 @@ public class Header implements FitsElement {
         try {
             dis.skipAllBytes(FitsUtil.padding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE));
         } catch (IOException e) {
-            throw new TruncatedFileException(e.getMessage());
+            throw new TruncatedFileException("Failed to skip " + FitsUtil.padding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE) + " bytes", e);
         }
     }
 
@@ -1414,6 +1414,7 @@ public class Header implements FitsElement {
             FitsUtil.reposition(this.input, this.fileOffset);
             return true;
         } catch (Exception e) {
+            LOG.log(Level.WARNING, "Exception while repositioning " + input, e);
             return false;
         }
     }

@@ -92,11 +92,10 @@ public class HashedListTest {
         public int hashCode() {
             return this.key.hashCode();
         }
-
     }
 
-    void show(HashedList h, String msg) {
-        Iterator t = h.iterator();
+    void show(HashedList<?> h, String msg) {
+        Iterator<?> t = h.iterator();
         System.out.println("\n Looking at list:" + msg);
         while (t.hasNext()) {
             System.out.println("Has element:" + t.next());
@@ -106,10 +105,8 @@ public class HashedListTest {
     @Test
     public void testCollection() {
 
-        HashedList<String, TestCursorValue> h1 = new HashedList<>();
-        HashedList<String, TestCursorValue> h2 = new HashedList<>();
-        Cursor i = h1.iterator(0);
-        Iterator j;
+        HashedList<TestCursorValue> h1 = new HashedList<>();
+        HashedList<TestCursorValue> h2 = new HashedList<>();
 
         // Add a few unkeyed rows.
 
@@ -200,7 +197,7 @@ public class HashedListTest {
 
     @Test
     public void testCursor() {
-        HashedList<String, TestCursorValue> h1 = new HashedList<>();
+        HashedList<TestCursorValue> h1 = new HashedList<>();
 
         h1.add(new TestCursorValue("key 1", "Row 1"));
         h1.add(new TestCursorValue("Row 3"));
@@ -249,7 +246,7 @@ public class HashedListTest {
     @Test
     public void testIterator() {
 
-        HashedList<String, TestCursorValue> h1 = new HashedList<>();
+        HashedList<TestCursorValue> h1 = new HashedList<>();
 
         h1.add(new TestCursorValue("key 4", "Row 4"));
         h1.add(new TestCursorValue("key 5", "Row 5"));

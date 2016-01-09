@@ -473,7 +473,7 @@ public class Fits implements Closeable {
                 randomInit(myFile);
             }
         } catch (IOException e) {
-            throw new FitsException("Unable to create Input Stream from File: " + myFile);
+            throw new FitsException("Unable to create Input Stream from File: " + myFile, e);
         }
     }
 
@@ -559,7 +559,7 @@ public class Fits implements Closeable {
                 this.hduList.add(position, myHDU);
             }
         } catch (NoSuchElementException e) {
-            throw new FitsException("hduList inconsistency in insertHDU");
+            throw new FitsException("hduList inconsistency in insertHDU", e);
         }
     }
 
@@ -585,7 +585,7 @@ public class Fits implements Closeable {
             this.dataStr = new BufferedFile(file, permissions);
             ((BufferedFile) this.dataStr).seek(0);
         } catch (IOException e) {
-            throw new FitsException("Unable to open file " + file.getPath());
+            throw new FitsException("Unable to open file " + file.getPath(), e);
         }
     }
 
@@ -602,7 +602,7 @@ public class Fits implements Closeable {
         readToEnd();
         int size = getNumberOfHDUs();
         if (size == 0) {
-            return null;
+            return new BasicHDU<?>[0];
         }
         return this.hduList.toArray(new BasicHDU<?>[size]);
     }
@@ -614,10 +614,8 @@ public class Fits implements Closeable {
      *            The InputStream stream whence the FITS information is found.
      * @throws FitsException
      *             if the data read could not be interpreted
-     * @throws IOException
-     *             if the underlying stream failed.
      */
-    public void read(InputStream is) throws FitsException, IOException {
+    public void read(InputStream is) throws FitsException {
         if (is instanceof ArrayDataInput) {
             this.dataStr = (ArrayDataInput) is;
         } else {

@@ -44,4 +44,8 @@ public class TruncatedFileException extends FitsException {
     public TruncatedFileException(String msg) {
         super(msg);
     }
+
+    public TruncatedFileException(String msg, Exception cause) {
+        super(msg, cause);
+    }
 }

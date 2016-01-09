@@ -60,18 +60,16 @@ import java.util.NoSuchElementException;
 /**
  * a ordered hash map implementation.
  *
- * @param <KEY>
- *            key of the map
  * @param <VALUE>
  *            value of the map
  */
-public class HashedList<KEY extends String, VALUE extends CursorValue<KEY>> implements Collection<VALUE> {
+public class HashedList<VALUE extends CursorValue<String>> implements Collection<VALUE> {
 
-    private static final class EntryComparator<KEY, VALUE extends CursorValue<KEY>> implements Comparator<VALUE> {
+    private static final class EntryComparator<VALUE extends CursorValue<String>> implements Comparator<VALUE> {
 
-        private final Comparator<KEY> comp;
+        private final Comparator<String> comp;
 
-        private EntryComparator(Comparator<KEY> comp) {
+        private EntryComparator(Comparator<String> comp) {
             this.comp = comp;
         }
 
@@ -81,7 +79,7 @@ public class HashedList<KEY extends String, VALUE extends CursorValue<KEY>> impl
         }
     }
 
-    private class HashedListIterator implements Cursor<KEY, VALUE> {
+    private class HashedListIterator implements Cursor<String, VALUE> {
 
         /**
          * This index points to the value that would be returned in the next
@@ -94,7 +92,7 @@ public class HashedList<KEY extends String, VALUE extends CursorValue<KEY>> impl
         }
 
         @Override
-        public void add(KEY key, VALUE ref) {
+        public void add(String key, VALUE ref) {
             add(ref);
         }
 
@@ -164,7 +162,7 @@ public class HashedList<KEY extends String, VALUE extends CursorValue<KEY>> impl
         }
 
         @Override
-        public void setKey(KEY key) {
+        public void setKey(String key) {
             VALUE entry = HashedList.this.keyed.get(key);
             if (entry != null) {
                 this.current = indexOf(entry);
@@ -179,7 +177,7 @@ public class HashedList<KEY extends String, VALUE extends CursorValue<KEY>> impl
     private final ArrayList<VALUE> ordered = new ArrayList<>();
 
     /** The key value pairs */
-    private final HashMap<KEY, VALUE> keyed = new HashMap<>();
+    private final HashMap<String, VALUE> keyed = new HashMap<>();
 
     /**
      * Add an element to the list.
@@ -192,7 +190,7 @@ public class HashedList<KEY extends String, VALUE extends CursorValue<KEY>> impl
      */
     private void add(int pos, VALUE reference) {
         VALUE entry = reference;
-        KEY key = entry.getKey();
+        String key = entry.getKey();
         if (this.keyed.containsKey(key) && !unkeyedKey(key)) {
             int oldPos = indexOf(entry);
             if (oldPos == -1) {
@@ -212,7 +210,7 @@ public class HashedList<KEY extends String, VALUE extends CursorValue<KEY>> impl
         }
     }
 
-    private boolean unkeyedKey(KEY key) {
+    private boolean unkeyedKey(String key) {
         return "COMMENT".equals(key) || "HISTORY".equals(key) || key.trim().isEmpty();
     }
 
@@ -285,7 +283,7 @@ public class HashedList<KEY extends String, VALUE extends CursorValue<KEY>> impl
 
     private int indexOf(VALUE entry) {
         for (int index = 0; index < this.ordered.size(); index++) {
-            KEY searchKEy = entry.getKey();
+            String searchKEy = entry.getKey();
             if (searchKEy.equals(this.ordered.get(index).getKey())) {
                 return index;
             }
@@ -314,7 +312,7 @@ public class HashedList<KEY extends String, VALUE extends CursorValue<KEY>> impl
      * @param n
      *            the index to start the iterator
      */
-    public Cursor<KEY, VALUE> iterator(int n) {
+    public Cursor<String, VALUE> iterator(int n) {
         if (n >= 0 && n <= this.ordered.size()) {
             return new HashedListIterator(n);
         } else {
@@ -328,7 +326,7 @@ public class HashedList<KEY extends String, VALUE extends CursorValue<KEY>> impl
      * @param key
      *            the key to use as a start point
      */
-    public HashedListIterator iterator(KEY key) {
+    public HashedListIterator iterator(String key) {
         VALUE entry = this.keyed.get(key);
         if (entry != null) {
             return new HashedListIterator(indexOf(entry));
@@ -405,7 +403,7 @@ public class HashedList<KEY extends String, VALUE extends CursorValue<KEY>> impl
      *            The new key. This key must not be present in the hash.
      * @return if the replacement was successful.
      */
-    public boolean replaceKey(KEY oldKey, KEY newKey) {
+    public boolean replaceKey(String oldKey, String newKey) {
 
         if (!this.keyed.containsKey(oldKey) || this.keyed.containsKey(newKey)) {
             return false;
@@ -443,8 +441,8 @@ public class HashedList<KEY extends String, VALUE extends CursorValue<KEY>> impl
      * @param comp
      *            the comparator to use for the sorting
      */
-    public void sort(final Comparator<KEY> comp) {
-        java.util.Collections.sort(this.ordered, new EntryComparator<KEY, VALUE>(comp));
+    public void sort(final Comparator<String> comp) {
+        java.util.Collections.sort(this.ordered, new EntryComparator<VALUE>(comp));
     }
 
     @Override
