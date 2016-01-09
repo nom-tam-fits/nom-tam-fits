@@ -62,6 +62,8 @@ public class Quantize {
 
     private static final int MINIMUM_PIXEL_WIDTH = 9;
 
+    private static final int MINIMUM_PIXEL_WIDTH_COLLAPS_ROWS = 5;
+
     /**
      * number of reserved values, starting with
      */
@@ -70,8 +72,6 @@ public class Quantize {
     private static final int N4 = 4;
 
     private static final int N6 = 6;
-
-    private static final int N8 = 8;
 
     private static final double NOISE_2_MULTIPLICATOR = 1.0483579;
 
@@ -148,7 +148,7 @@ public class Quantize {
     private void calculateNoise(double[] arrayIn, int nx, int ny) {
         DoubleArrayPointer array = new DoubleArrayPointer(arrayIn);
         initializeNoise();
-        if (nx < MINIMUM_PIXEL_WIDTH) {
+        if (nx < MINIMUM_PIXEL_WIDTH_COLLAPS_ROWS) {
             // treat entire tiledImageOperation as an image with a single row
             nx = nx * ny;
             ny = 1;
@@ -175,43 +175,51 @@ public class Quantize {
                 continue; /* hit end of row */
             }
             double v1 = getNextPixelAndCheckMinMax(rowpix, ii);
+            ngoodpix++;
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
             if (ii == nx) {
                 continue; /* hit end of row */
             }
             double v2 = getNextPixelAndCheckMinMax(rowpix, ii);
+            ngoodpix++;
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
             if (ii == nx) {
                 continue; /* hit end of row */
             }
             double v3 = getNextPixelAndCheckMinMax(rowpix, ii);
+            ngoodpix++;
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
             if (ii == nx) {
                 continue; /* hit end of row */
             }
             double v4 = getNextPixelAndCheckMinMax(rowpix, ii);
+            ngoodpix++;
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
             if (ii == nx) {
                 continue; /* hit end of row */
             }
             double v5 = getNextPixelAndCheckMinMax(rowpix, ii);
+            ngoodpix++;
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
             if (ii == nx) {
                 continue; /* hit end of row */
             }
             double v6 = getNextPixelAndCheckMinMax(rowpix, ii);
+            ngoodpix++;
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
             if (ii == nx) {
                 continue; /* hit end of row */
             }
             double v7 = getNextPixelAndCheckMinMax(rowpix, ii);
+            ngoodpix++;
             ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);
             if (ii == nx) {
                 continue; /* hit end of row */
             }
             double v8 = getNextPixelAndCheckMinMax(rowpix, ii);
-            /* now populate the differences arrays */
-            /* for the remaining pixels in the row */
+            ngoodpix++;
+            // now populate the differences arrays for the remaining pixels in
+            // the row */
             int nvals = 0;
             int nvals2 = 0;
             for (ii++; ii < nx; ii++) {
@@ -243,10 +251,9 @@ public class Quantize {
                 v7 = v8;
                 v8 = v9;
             } /* end of loop over pixels in the row */
-            // compute the median diffs
-            // Note that there are 8 more pixel values than there are diffs
-            // values.
-            ngoodpix += nvals + N8;
+            // compute the median diffs Note that there are 8 more pixel values
+            // than there are diffs values.
+            ngoodpix += nvals;
             if (nvals == 0) {
                 continue; /* cannot compute medians on this row */
             } else if (nvals == 1) {
@@ -267,7 +274,12 @@ public class Quantize {
             }
             nrows++;
         } /* end of loop over rows */
-        /* compute median of the values for each row */
+        computeMedianOfValuesEachRow(nrows, nrows2, diffs2, diffs3, diffs5);
+        setNoiseResult(ngoodpix);
+    }
+
+    protected void computeMedianOfValuesEachRow(int nrows, int nrows2, double[] diffs2, double[] diffs3, double[] diffs5) {
+        // compute median of the values for each row.
         if (nrows == 0) {
             this.xnoise3 = 0;
             this.xnoise5 = 0;
@@ -288,7 +300,6 @@ public class Quantize {
             Arrays.sort(diffs2, 0, nrows2);
             this.xnoise2 = (diffs2[(nrows2 - 1) / 2] + diffs2[nrows2 / 2]) / 2.;
         }
-        setNoiseResult(ngoodpix);
     }
 
     private boolean calculateNoiseShortRow(DoubleArrayPointer array, int nx, int ny) {

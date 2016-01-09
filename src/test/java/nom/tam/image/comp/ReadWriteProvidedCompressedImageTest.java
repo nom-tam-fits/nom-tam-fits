@@ -574,9 +574,6 @@ public class ReadWriteProvidedCompressedImageTest {
             f.readHDU();
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             double[][] actual = (double[][]) hdu.asImageHDU().getData().getData();
-            if (1 == 1) {
-                return;
-            }
             for (int index = 0; index < actual.length; index++) {
                 Assert.assertArrayEquals(data[index], actual[index], 0f);
             }
