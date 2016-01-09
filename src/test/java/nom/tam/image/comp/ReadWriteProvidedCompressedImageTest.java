@@ -40,6 +40,8 @@ import java.io.FileOutputStream;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -63,6 +65,7 @@ import nom.tam.util.BufferedDataOutputStream;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ReadWriteProvidedCompressedImageTest {
@@ -153,6 +156,58 @@ public class ReadWriteProvidedCompressedImageTest {
         assertFloatImage(result, expected, 6500f);
     }
 
+    @Test
+    public void blackboxTest_c4s_060126_182642_zri() throws Exception {
+        List<short[][]> actual = readAllCompressed(resolveLocalOrRemoteFileName("c4s_060126_182642_zri.fits.fz"), short[][].class);
+        List<short[][]> expected = readAllUnCompressed(resolveLocalOrRemoteFileName("c4s_060126_182642_zri.fits"), short[][].class);
+        assert_short_image(actual, expected);
+    }
+
+    protected void assert_short_image(List<short[][]> actual, List<short[][]> expected) {
+        Assert.assertEquals(expected.size(), actual.size());
+        for (int index = 0; index < expected.size(); index++) {
+            for (int axis0 = 0; axis0 < expected.get(index).length; axis0++) {
+                Assert.assertArrayEquals(expected.get(index)[axis0], actual.get(index)[axis0]);
+            }
+        }
+    }
+
+    @Test
+    public void blackboxTest_c4s_060127_070751_cri() throws Exception {
+        List<short[][]> actual = readAllCompressed(resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits.fz"), short[][].class);
+        List<short[][]> expected = readAllUnCompressed(resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits"), short[][].class);
+        assert_short_image(actual, expected);
+    }
+
+    @Test
+    public void blackboxTest_kwi_041217_212603_fri() throws Exception {
+        List<short[][]> actual = readAllCompressed(resolveLocalOrRemoteFileName("kwi_041217_212603_fri.fits.fz"), short[][].class);
+        List<short[][]> expected = readAllUnCompressed(resolveLocalOrRemoteFileName("kwi_041217_212603_fri.fits"), short[][].class);
+        assert_short_image(actual, expected);
+
+    }
+
+    @Test
+    public void blackboxTest_kwi_041217_213100_fri() throws Exception {
+        List<short[][]> actual = readAllCompressed(resolveLocalOrRemoteFileName("kwi_041217_213100_fri.fits.fz"), short[][].class);
+        List<short[][]> expected = readAllUnCompressed(resolveLocalOrRemoteFileName("kwi_041217_213100_fri.fits"), short[][].class);
+        assert_short_image(actual, expected);
+    }
+
+    @Test
+    public void blackboxTest_psa_140305_191552_zri() throws Exception {
+        List<short[][]> actual = readAllCompressed(resolveLocalOrRemoteFileName("psa_140305_191552_zri.fits.fz"), short[][].class);
+        List<short[][]> expected = readAllUnCompressed(resolveLocalOrRemoteFileName("psa_140305_191552_zri.fits"), short[][].class);
+        assert_short_image(actual, expected);
+    }
+
+    @Test
+    public void blackboxTest_psa_140305_194520_fri() throws Exception {
+        List<short[][]> actual = readAllCompressed(resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits.fz"), short[][].class);
+        List<short[][]> expected = readAllUnCompressed(resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits"), short[][].class);
+        assert_short_image(actual, expected);
+    }
+
     private void dispayImage(short[][] data) {
         JFrame frame = new JFrame("FrameDemo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -192,6 +247,39 @@ public class ReadWriteProvidedCompressedImageTest {
             }
         }
         return null;
+    }
+
+    private <T> List<T> readAllCompressed(String fileName, Class<T> clazz) throws Exception {
+        List<T> datas = new ArrayList<>();
+        try (Fits f = new Fits(fileName)) {
+            BasicHDU<?> hdu = f.readHDU();
+            while (hdu != null) {
+                if (hdu instanceof CompressedImageHDU) {
+                    CompressedImageHDU bhdu = (CompressedImageHDU) hdu;
+                    datas.add((T) bhdu.asImageHDU().getData().getData());
+                }
+                hdu = f.readHDU();
+            }
+        }
+        return datas;
+    }
+
+    private <T> List<T> readAllUnCompressed(String fileName, Class<T> clazz) throws Exception {
+        List<T> datas = new ArrayList<>();
+        try (Fits f = new Fits(fileName)) {
+            BasicHDU<?> hdu = f.readHDU();
+            while (hdu != null) {
+                if (hdu instanceof ImageHDU) {
+                    ImageHDU bhdu = (ImageHDU) hdu;
+                    T data = (T) bhdu.getData().getData();
+                    if (data != null) {
+                        datas.add(data);
+                    }
+                }
+                hdu = f.readHDU();
+            }
+        }
+        return datas;
     }
 
     private ImageHDU readCompressedHdu(String fileName, int index) throws Exception {
@@ -629,11 +717,26 @@ public class ReadWriteProvidedCompressedImageTest {
             f.readHDU();
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             double[][] actual = (double[][]) hdu.asImageHDU().getData().getData();
-            if (1 == 1) {// TODO activate
-                return;
-            }
             for (int index = 0; index < actual.length; index++) {
-                Assert.assertArrayEquals(data[index], actual[index], 1d);
+                assertArrayEquals(data[index], actual[index], 1d);
+            }
+        }
+    }
+
+    /**
+     * This is an assertion for a special case when a loss full algorithm is
+     * used and a quantification with null checks. The will result in wrong null
+     * values, because some of the values representing blank will be lost.
+     */
+    private void assertArrayEquals(double[] expected, double[] actual, double delta) {
+        Assert.assertEquals(expected.length, actual.length);
+        for (int index = 0; index < actual.length; index++) {
+            double d1 = expected[index];
+            double d2 = actual[index];
+            if (Double.isNaN(d1) || Double.isNaN(d2)) {
+                Assert.assertTrue(true); // ;-)
+            } else {
+                Assert.assertEquals(d1, d2, delta);
             }
         }
     }

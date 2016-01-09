@@ -127,9 +127,10 @@ public final class GenericKey {
      * @return the found fits key or null
      */
     public static IFitsHeader lookup(String key) {
-        if (Character.isDigit(key.charAt(key.length() - 1))) {
+        int keyLength = key.length();
+        if (keyLength > 0 && Character.isDigit(key.charAt(keyLength - 1))) {
             StringBuilder builder = new StringBuilder();
-            for (int index = 0; index < key.length(); index++) {
+            for (int index = 0; index < keyLength; index++) {
                 char character = key.charAt(index);
                 if (Character.isDigit(character)) {
                     if (builder.charAt(builder.length() - 1) != 'n') {
