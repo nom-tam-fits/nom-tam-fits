@@ -65,7 +65,7 @@ import java.util.NoSuchElementException;
  * @param <VALUE>
  *            value of the map
  */
-public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collection<VALUE> {
+public class HashedList<KEY extends String, VALUE extends CursorValue<KEY>> implements Collection<VALUE> {
 
     private static final class EntryComparator<KEY, VALUE extends CursorValue<KEY>> implements Comparator<VALUE> {
 
@@ -213,7 +213,7 @@ public class HashedList<KEY, VALUE extends CursorValue<KEY>> implements Collecti
     }
 
     private boolean unkeyedKey(KEY key) {
-        return "COMMENT".equals(key) || "HISTORY".equals(key);
+        return "COMMENT".equals(key) || "HISTORY".equals(key) || key.trim().isEmpty();
     }
 
     @Override

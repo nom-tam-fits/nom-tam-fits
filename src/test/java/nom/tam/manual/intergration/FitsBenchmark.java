@@ -32,6 +32,7 @@ package nom.tam.manual.intergration;
  */
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -39,16 +40,24 @@ import nom.tam.fits.util.BlackBoxImages;
 
 import org.openjdk.jmh.Main;
 import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.runner.RunnerException;
 
+@State(Scope.Benchmark)
 public class FitsBenchmark {
+
+    String blankKey = "      ";
+
+    boolean result;
+
+    Pattern ws = Pattern.compile("[COMMENT|HISTORY]? *");
 
     public static void main(String[] args) throws RunnerException, IOException {
         Main.main(args);
     }
 
-    @Benchmark
-    public void helloWorld() {
+    private void helloWorld() {
         try {
             long count = 0;
             try (Fits f = new Fits(BlackBoxImages.getBlackBoxImage("OEP.fits"))) {
@@ -65,4 +74,22 @@ public class FitsBenchmark {
         }
     }
 
+    @Benchmark()
+    public void testEmptyString1() {
+        result = unkeyedKey(blankKey);
+    }
+
+    private boolean unkeyedKey(String key) {
+        return "COMMENT".equals(key) || "HISTORY".equals(key) || key.trim().isEmpty();
+    }
+    
+
+    @Benchmark
+    public void testEmptyString2() {
+        result = unkeyedKey2(blankKey);
+    }
+
+    private boolean unkeyedKey2(String key) {
+        return ws.matcher(key).matches();
+    }
 }
