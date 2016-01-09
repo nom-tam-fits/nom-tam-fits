@@ -43,6 +43,18 @@
 				<picUrl>http://www.gravatar.com/avatar/9e2c2e7aa94335b72952a4b2d56bfc89.png</picUrl>
 			</properties>
 		</developer>
+		<developer>
+			<id>erikfk</id>
+			<name>Erik Koerber</name>
+			<email>erik.koerber [at] gmail [dot] com</email>
+			<roles>
+				<role>Developer</role>
+				<role>Admin</role>
+			</roles>
+			<properties>
+				<picUrl>http://www.gravatar.com/avatar/6f82a608d349cc24f05604242422b1b8.png</picUrl>
+			</properties>
+		</developer>
 	</developers>
 	<contributors>
 		<contributor>
