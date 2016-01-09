@@ -34,9 +34,9 @@ package nom.tam.image.comp;
 import nom.tam.fits.header.Compression;
 
 /**
- * Computes the name of the tile compressor class name given the algorithm
+ * <p>Computes the name of the tile compressor class name given the algorithm
  * used to quantize and compress the tile and the type of data the tile
- * contains.<br/>
+ * contains.</p>
  * The name of the class is built of four parts:
  * <ul>
  * <li>the capitalized simple name of the base type of the elements in the tile
@@ -48,7 +48,7 @@ import nom.tam.fits.header.Compression;
  * etc.) or the word "Unknown" if the algorithm is not supported;</li>
  * <li>the suffix "Compressor"</li>
  * </ul>
- * Following exception to above rules exist:<br/>
+ * <p>Following exception to above rules exist:</p>
  * <ul>
  * <li>If the primitive type is double or float, the quantize algorithm is
  * ignored (as if it were specified as null)</li>
