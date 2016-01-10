@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.zip.GZIPInputStream;
 
@@ -47,6 +48,9 @@ public class BlackBoxImages {
             return "../blackbox-images/" + fileName;
         } else if (new File("../blackbox-images/" + fileName + ".gz").exists()) {
             gunzipIt(new File("../blackbox-images/" + fileName + ".gz"), new File("../blackbox-images/" + fileName));
+            return "../blackbox-images/" + fileName;
+        } else if (new File("../blackbox-images/" + fileName + "00.part").exists()) {
+            unsplitt(new File("../blackbox-images/" + fileName), new File("../blackbox-images/" + fileName));
             return "../blackbox-images/" + fileName;
         } else {
             new File("target/blackbox-images").mkdirs();
@@ -62,9 +66,38 @@ public class BlackBoxImages {
                 gunzipIt(new File(gzFileName), new File(loadedFileName));
                 return loadedFileName;
             }
+            int partNumber = 0;
+            url = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName + String.format("%02d", partNumber) + ".part";
+            loadedFileName = "target/blackbox-images/" + fileName;
+            String partFileName = loadedFileName + String.format("%02d", partNumber) + ".part";
+            while (new File(partFileName).exists() || downloadImage(url, partFileName)) {
+                partNumber++;
+                url = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName + String.format("%02d", partNumber) + ".part";
+                partFileName = loadedFileName + String.format("%02d", partNumber) + ".part";
+            }
+            if (new File(loadedFileName + "00.part").exists()) {
+                unsplitt(new File(loadedFileName), new File(loadedFileName));
+                return loadedFileName;
+            }
 
         }
         throw new UnsupportedOperationException("could not get blackbox image from anywhere");
+    }
+
+    private static void unsplitt(File base, File to) {
+        try (FileOutputStream out = new FileOutputStream(to); FileChannel outChannel = out.getChannel()) {
+            int number = 0;
+            long offset = 0L;
+            File from = new File(base.getParentFile(), base.getName() + String.format("%02d", number) + ".part");
+            while (from.exists()) {
+                ReadableByteChannel rbc = Channels.newChannel(new FileInputStream(from));
+                offset += outChannel.transferFrom(rbc, offset, Long.MAX_VALUE);
+                number++;
+                from = new File(base.getParentFile(), base.getName() + String.format("%02d", number) + ".part");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected static boolean downloadImage(String url, String localFile) {

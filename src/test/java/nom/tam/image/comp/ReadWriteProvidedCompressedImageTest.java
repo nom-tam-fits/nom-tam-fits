@@ -172,6 +172,24 @@ public class ReadWriteProvidedCompressedImageTest {
         }
     }
 
+    protected void assert_int_image(List<int[][]> actual, List<int[][]> expected) {
+        Assert.assertEquals(expected.size(), actual.size());
+        for (int index = 0; index < expected.size(); index++) {
+            for (int axis0 = 0; axis0 < expected.get(index).length; axis0++) {
+                Assert.assertArrayEquals(expected.get(index)[axis0], actual.get(index)[axis0]);
+            }
+        }
+    }
+
+    protected void assert_float_image(List<float[][]> actual, List<float[][]> expected, float delta) {
+        Assert.assertEquals(expected.size(), actual.size());
+        for (int index = 0; index < expected.size(); index++) {
+            for (int axis0 = 0; axis0 < expected.get(index).length; axis0++) {
+                Assert.assertArrayEquals(expected.get(index)[axis0], actual.get(index)[axis0], delta);
+            }
+        }
+    }
+
     @Test
     public void blackboxTest_c4s_060127_070751_cri() throws Exception {
         List<short[][]> actual = readAllCompressed(resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits.fz"), short[][].class);
@@ -206,6 +224,20 @@ public class ReadWriteProvidedCompressedImageTest {
         List<short[][]> actual = readAllCompressed(resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits.fz"), short[][].class);
         List<short[][]> expected = readAllUnCompressed(resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits"), short[][].class);
         assert_short_image(actual, expected);
+    }
+
+    @Test
+    public void blackboxTest_tu1134529() throws Exception {
+        List<int[][]> expected = readAllUnCompressed(resolveLocalOrRemoteFileName("tu1134529.fits"), int[][].class);
+        List<int[][]> actual = readAllCompressed(resolveLocalOrRemoteFileName("tu1134529.fits.fz"), int[][].class);
+        assert_int_image(actual, expected);
+    }
+
+    @Test
+    public void blackboxTest_tu1134531() throws Exception {
+        List<float[][]> expected = readAllUnCompressed(resolveLocalOrRemoteFileName("tu1134531.fits"), float[][].class);
+        List<float[][]> actual = readAllCompressed(resolveLocalOrRemoteFileName("tu1134531.fits.fz"), float[][].class);
+        assert_float_image(actual, expected, 15f);
     }
 
     private void dispayImage(short[][] data) {
