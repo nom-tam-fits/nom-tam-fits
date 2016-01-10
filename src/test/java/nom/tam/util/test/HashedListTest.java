@@ -32,8 +32,10 @@ package nom.tam.util.test;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import nom.tam.util.Cursor;
 import nom.tam.util.CursorValue;
@@ -279,5 +281,69 @@ public class HashedListTest {
         assertEquals("n5", true, j.hasNext());
         assertEquals("n5v", "Row 5", j.next().value);
         assertEquals("n6", false, j.hasNext());
+    }
+    
+    @Test(expected = NoSuchElementException.class)
+    public void testIteratorWithNegativeIndex() {
+        HashedList<TestCursorValue> h = new HashedList<>();
+        
+        h.iterator(-1);
+    }
+    
+    @Test(expected = NoSuchElementException.class)
+    public void testIteratorWithTooBigIndex() {
+        HashedList<TestCursorValue> h = new HashedList<>();
+        
+        h.iterator(h.size() + 1);
+    }
+    
+    @Test(expected = NoSuchElementException.class)
+    public void testIteratorForNonPresentKey() {
+        HashedList<TestCursorValue> h = new HashedList<>();
+        h.add(new TestCursorValue("K", "R"));
+        
+        h.iterator("K1");
+    }
+    
+    @Test(expected = NoSuchElementException.class)
+    public void testPrevWhenNone() {
+        HashedList<TestCursorValue> h = new HashedList<>();
+        h.add(new TestCursorValue("K", "R"));
+        
+        h.iterator(0).prev();
+    }
+    
+    @Test
+    public void testRemoveWhenIndexOutsideBounds() {
+        HashedList<TestCursorValue> h = new HashedList<>();
+        h.add(new TestCursorValue("K", "R"));
+        
+        assertFalse(h.remove(-1));
+        assertFalse(h.remove(h.size()));
+    }
+    
+    @Test
+    public void testRemoveWhenNotPresent() {
+        HashedList<TestCursorValue> h = new HashedList<>();
+        h.add(new TestCursorValue("K", "R"));
+        
+        assertFalse(h.remove("R1"));
+    }
+    
+    @Test
+    public void testRemoveKeyWhenNotPresent() {
+        HashedList<TestCursorValue> h = new HashedList<>();
+        h.add(new TestCursorValue("K", "R"));
+        
+        assertFalse(h.removeKey("K1"));
+    }
+    
+    @Test
+   public void testReplaceKeySpecialCases() {
+        HashedList<TestCursorValue> h = new HashedList<>();
+        h.add(new TestCursorValue("K", "R"));
+        
+        assertFalse(h.replaceKey("K1", "K2"));
+        assertFalse(h.replaceKey("K", "K"));
     }
 }

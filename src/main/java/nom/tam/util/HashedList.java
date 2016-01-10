@@ -143,8 +143,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
             if (this.current <= 0) {
                 throw new NoSuchElementException("Before beginning of list");
             }
-            this.current--;
-            return HashedList.this.ordered.get(this.current);
+            return HashedList.this.ordered.get(--this.current);
         }
 
         @Override
@@ -172,7 +171,9 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     private final HashMap<String, VALUE> keyed = new HashMap<>();
 
     /**
-     * Add an element to the list.
+     * Add an element to the list at a specified position. If that element was
+     * already in the list, it is first removed from the list then added again
+     * -  
      *
      * @param pos
      *            The element before which the current element be placed. If pos
@@ -188,7 +189,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
             this.keyed.remove(key);
             this.ordered.remove(oldPos);
             if (oldPos < pos) {
-                pos -= 1;
+                pos--;
             }
         }
         this.keyed.put(key, entry);
@@ -199,7 +200,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         }
     }
 
-    private boolean unkeyedKey(String key) {
+    private static boolean unkeyedKey(String key) {
         return "COMMENT".equals(key) || "HISTORY".equals(key) || key.trim().isEmpty();
     }
 
