@@ -1,4 +1,4 @@
-package nom.tam.image.comp;
+package nom.tam.image.comp.provider;
 
 /*
  * #%L
@@ -39,6 +39,10 @@ import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.ITileCompressor;
+import nom.tam.image.comp.ITileCompressorProvider;
+import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
 import nom.tam.image.comp.gzip.GZipCompressor.ByteGZipCompressor;
 import nom.tam.image.comp.gzip.GZipCompressor.DoubleGZipCompressor;
 import nom.tam.image.comp.gzip.GZipCompressor.FloatGZipCompressor;

@@ -1,4 +1,4 @@
-package nom.tam.image.comp;
+package nom.tam.image.comp.provider;
 
 /*
  * #%L

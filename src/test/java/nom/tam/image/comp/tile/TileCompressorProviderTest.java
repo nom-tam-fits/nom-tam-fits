@@ -51,9 +51,9 @@ import nom.tam.fits.header.Standard;
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ITileCompressor;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
-import nom.tam.image.comp.TileCompressorAlternativProvider;
-import nom.tam.image.comp.TileCompressorProvider;
 import nom.tam.image.comp.hdu.CompressedImageData;
+import nom.tam.image.comp.provider.TileCompressorAlternativProvider;
+import nom.tam.image.comp.provider.TileCompressorProvider;
 import nom.tam.image.comp.rice.RiceCompressOption;
 
 import org.junit.Assert;

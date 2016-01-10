@@ -35,8 +35,8 @@ import static nom.tam.fits.header.Compression.ZCMPTYPE_HCOMPRESS_1;
 import static nom.tam.fits.header.Compression.ZCMPTYPE_PLIO_1;
 import static nom.tam.fits.header.Compression.ZCMPTYPE_RICE_1;
 import static nom.tam.fits.header.Compression.ZQUANTIZ_NO_DITHER;
-
 import static org.junit.Assert.assertEquals;
+import nom.tam.image.comp.provider.TileCompressorControlNameComputer;
 
 import org.junit.Before;
 import org.junit.Test;

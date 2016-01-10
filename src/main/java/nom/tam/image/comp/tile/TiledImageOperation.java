@@ -64,7 +64,7 @@ import nom.tam.fits.HeaderCardBuilder;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
-import nom.tam.image.comp.TileCompressorProvider;
+import nom.tam.image.comp.provider.TileCompressorProvider;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 
