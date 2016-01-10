@@ -150,14 +150,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         @Override
         public void remove() {
             if (this.current > 0 && this.current <= HashedList.this.ordered.size()) {
-
-                HashedList.this.remove(this.current - 1);
-
-                // If we just removed the last entry, then we need
-                // to go back one.
-                if (this.current > 0) {
-                    this.current--;
-                }
+                HashedList.this.remove(--this.current);
             }
         }
 
@@ -169,7 +162,6 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
             } else {
                 this.current = HashedList.this.ordered.size();
             }
-
         }
     }
 
