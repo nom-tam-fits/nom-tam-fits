@@ -119,10 +119,8 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
 
         @Override
         public VALUE next() {
-
             if (this.current < 0 || this.current >= HashedList.this.ordered.size()) {
                 throw new NoSuchElementException("Outside list");
-
             } else {
                 VALUE entry = HashedList.this.ordered.get(this.current);
                 this.current++;
@@ -173,13 +171,15 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     /**
      * Add an element to the list at a specified position. If that element was
      * already in the list, it is first removed from the list then added again
-     * -  
+     * - if it was removed from a position before the position where it was to
+     * be added, that position is decremented by one.
      *
      * @param pos
-     *            The element before which the current element be placed. If pos
-     *            is null put the element at the end of the list.
+     *            The position at which the specified element is to be added.
+     *            If pos is bigger than the size of the list the element is
+     *            put at the end of the list.
      * @param reference
-     *            The actual object being stored.
+     *            The element to add to the list.
      */
     private void add(int pos, VALUE reference) {
         VALUE entry = reference;
@@ -271,14 +271,18 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         return this.keyed.get(key);
     }
 
-    private int indexOf(VALUE entry) {
+    // Note that, if the entry is not found, a NoSuchElementException is
+    // thrown instead of returning -1 (as is usual in indexOf methods) because
+    // the method is used internally in situations where the entry must be
+    // there.
+    int indexOf(VALUE entry) {
         for (int index = 0; index < this.ordered.size(); index++) {
-            String searchKEy = entry.getKey();
-            if (searchKEy.equals(this.ordered.get(index).getKey())) {
+            String searchKey = entry.getKey();
+            if (searchKey.equals(this.ordered.get(index).getKey())) {
                 return index;
             }
         }
-        return -1;
+        throw new NoSuchElementException("Internal error: " + entry + " should have been found in " + ordered);
     }
 
     @Override
@@ -287,13 +291,10 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     }
 
     /**
-     * @return an iterator over the entire list. The iterator may be used to
-     *         delete entries as well as to retrieve existing entries. A
-     *         knowledgeable user can cast this to a HashedListIterator and use
-     *         it to add as well as delete entries.
+     * @return a HashedListIterator over the entire list.
      */
     @Override
-    public Iterator<VALUE> iterator() {
+    public HashedListIterator iterator() {
         return new HashedListIterator(0);
     }
 

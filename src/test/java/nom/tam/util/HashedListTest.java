@@ -1,4 +1,4 @@
-package nom.tam.util.test;
+package nom.tam.util;
 
 /*
  * #%L
@@ -33,19 +33,16 @@ package nom.tam.util.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import nom.tam.util.Cursor;
-import nom.tam.util.CursorValue;
-import nom.tam.util.HashedList;
 
 import org.junit.Test;
 
 /**
  * This class tests and illustrates the use of the HashedList class. Tests are
- * in three parts.
+ * in four parts.
  * <p>
  * The first section (in testCollection) tests the methods that are present in
  * the Collection interface. All of the optional methods of that interface are
@@ -58,14 +55,18 @@ import org.junit.Test;
  * The third set of tests (in testCursor) tests the extended capabilities of the
  * HashedListIterator to add rows to the table, and to work as a cursor to move
  * in a non-linear fashion through the list.
+ * <p>
+ * The fourth set consists of all other test methods that test special cases of
+ * the implementation of the various methods of HashedList - to obtain 100%
+ * code coverage for HashedList.
  */
 public class HashedListTest {
 
     static class TestCursorValue implements CursorValue<String> {
 
-        String key;
+        final String key;
 
-        String value;
+        final String value;
 
         public TestCursorValue(String value) {
             this.key = value;
@@ -92,7 +93,7 @@ public class HashedListTest {
 
         @Override
         public int hashCode() {
-            return this.key.hashCode();
+            return this.value.hashCode();
         }
     }
 
@@ -194,7 +195,6 @@ public class HashedListTest {
         assertEquals("Adding back again", 5, h1.size());
         h1.retainAll(h2);
         assertEquals("retainAll()", 2, h1.size());
-
     }
 
     @Test
@@ -282,7 +282,24 @@ public class HashedListTest {
         assertEquals("n5v", "Row 5", j.next().value);
         assertEquals("n6", false, j.hasNext());
     }
-    
+
+    @Test(expected = NoSuchElementException.class)
+    public void testIndexOfWhenNotInList() {
+        HashedList<TestCursorValue> h = new HashedList<>();
+
+        h.indexOf(new TestCursorValue("K", "R"));
+    }
+
+    @Deprecated
+    @Test
+    public void testIteratorAddWithKeyAndValue() {
+        HashedList<TestCursorValue> h = new HashedList<>();
+        h.iterator(0).add("OtherK", new TestCursorValue("K", "R"));
+
+        assertFalse(h.containsKey("OtherK"));
+        assertTrue(h.containsKey("K"));
+    }
+
     @Test(expected = NoSuchElementException.class)
     public void testIteratorWithNegativeIndex() {
         HashedList<TestCursorValue> h = new HashedList<>();
@@ -305,14 +322,31 @@ public class HashedListTest {
         h.iterator("K1");
     }
     
-    @Test(expected = NoSuchElementException.class)
-    public void testPrevWhenNone() {
+    @Test
+    public void testIteratorNextWithCount() {
         HashedList<TestCursorValue> h = new HashedList<>();
-        h.add(new TestCursorValue("K", "R"));
-        
+        h.add(new TestCursorValue("K1", "R1"));
+        h.add(new TestCursorValue("K2", "R2"));
+        h.add(new TestCursorValue("K3", "R3"));
+
+        TestCursorValue cursorValue = h.iterator(0).next(2);
+        assertEquals("K2", cursorValue.key);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testIteratorNextWhenNone() {
+        HashedList<TestCursorValue> h = new HashedList<>();
+
+        h.iterator(0).next();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testIteratorPrevWhenNone() {
+        HashedList<TestCursorValue> h = new HashedList<>();
+
         h.iterator(0).prev();
     }
-    
+
     @Test
     public void testRemoveWhenIndexOutsideBounds() {
         HashedList<TestCursorValue> h = new HashedList<>();
