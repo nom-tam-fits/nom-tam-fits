@@ -62,8 +62,6 @@ public class Quantize {
 
     private static final int MINIMUM_PIXEL_WIDTH = 9;
 
-    private static final int MINIMUM_PIXEL_WIDTH_COLLAPS_ROWS = 5;
-
     /**
      * number of reserved values, starting with
      */
@@ -148,7 +146,7 @@ public class Quantize {
     private void calculateNoise(double[] arrayIn, int nx, int ny) {
         DoubleArrayPointer array = new DoubleArrayPointer(arrayIn);
         initializeNoise();
-        if (nx < MINIMUM_PIXEL_WIDTH_COLLAPS_ROWS) {
+        if (nx < MINIMUM_PIXEL_WIDTH) {
             // treat entire tiledImageOperation as an image with a single row
             nx = nx * ny;
             ny = 1;
