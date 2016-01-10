@@ -362,9 +362,10 @@ public class HCompress {
         /* this is a more efficient way to do this, */
 
         for (int q = 0; q < N3; q++) {
-            for (nbitplanes[q] = 0; vmax[q] > 0; vmax[q] = vmax[q] >> 1, nbitplanes[q]++) {
-                // noop for later refactoring
-                "".toString();
+            nbitplanes[q] = 0;
+            while (vmax[q] > 0) {
+                vmax[q] = vmax[q] >> 1;
+                nbitplanes[q]++;
             }
         }
 

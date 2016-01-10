@@ -193,9 +193,6 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         String key = entry.getKey();
         if (this.keyed.containsKey(key) && !unkeyedKey(key)) {
             int oldPos = indexOf(entry);
-            if (oldPos == -1) {
-                "".toString();
-            }
             this.keyed.remove(key);
             this.ordered.remove(oldPos);
             if (oldPos < pos) {
