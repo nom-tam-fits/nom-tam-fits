@@ -42,7 +42,6 @@ import java.util.logging.Logger;
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ITileCompressor;
 import nom.tam.image.comp.ITileCompressorProvider;
-import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
 import nom.tam.image.comp.gzip.GZipCompressor.ByteGZipCompressor;
 import nom.tam.image.comp.gzip.GZipCompressor.DoubleGZipCompressor;
 import nom.tam.image.comp.gzip.GZipCompressor.FloatGZipCompressor;
@@ -59,6 +58,7 @@ import nom.tam.image.comp.hcompress.HCompressor.FloatHCompressor;
 import nom.tam.image.comp.hcompress.HCompressor.IntHCompressor;
 import nom.tam.image.comp.hcompress.HCompressor.ShortHCompressor;
 import nom.tam.image.comp.plio.PLIOCompress.BytePLIOCompressor;
+import nom.tam.image.comp.plio.PLIOCompress.IntPLIOCompressor;
 import nom.tam.image.comp.plio.PLIOCompress.ShortPLIOCompressor;
 import nom.tam.image.comp.rice.RiceCompressor.ByteRiceCompressor;
 import nom.tam.image.comp.rice.RiceCompressor.DoubleRiceCompressor;
@@ -132,6 +132,7 @@ public class TileCompressorProvider implements ITileCompressorProvider {
 
         BytePLIOCompressor.class,
         ShortPLIOCompressor.class,
+        IntPLIOCompressor.class,
 
         ByteHCompressor.class,
         ShortHCompressor.class,
@@ -151,7 +152,7 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         FloatGZipCompressor.class,
         DoubleGZipCompressor.class
     };
-    
+
     private static final TileCompressorControlNameComputer NAME_COMPUTER = new TileCompressorControlNameComputer();
 
     /**

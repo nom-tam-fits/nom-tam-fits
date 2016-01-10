@@ -1,6 +1,7 @@
 package nom.tam.image.comp.plio;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import nom.tam.image.comp.ITileCompressor;
@@ -91,6 +92,34 @@ public abstract class PLIOCompress {
 
         @Override
         public void decompress(ByteBuffer compressed, ShortBuffer buffer) {
+            this.pixelData = buffer;
+            decompress(compressed.asShortBuffer(), this.pixelData.limit());
+        }
+
+        @Override
+        protected int nextPixel() {
+            return this.pixelData.get();
+        }
+
+        @Override
+        protected void put(int index, int pixel) {
+            this.pixelData.put(index, (short) pixel);
+        }
+    }
+
+    public static class IntPLIOCompressor extends PLIOCompress implements ITileCompressor<IntBuffer> {
+
+        private IntBuffer pixelData;
+
+        @Override
+        public boolean compress(IntBuffer buffer, ByteBuffer compressed) {
+            this.pixelData = buffer;
+            super.compress(compressed.asShortBuffer(), this.pixelData.limit());
+            return true;
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, IntBuffer buffer) {
             this.pixelData = buffer;
             decompress(compressed.asShortBuffer(), this.pixelData.limit());
         }
