@@ -227,7 +227,6 @@ public class ReadWriteProvidedCompressedImageTest {
     }
 
     @Test
-    @Ignore
     public void blackboxTest_tu1134529() throws Exception {
         List<int[][]> expected = readAllUnCompressed(resolveLocalOrRemoteFileName("tu1134529.fits"), int[][].class);
         List<int[][]> actual = readAllCompressed(resolveLocalOrRemoteFileName("tu1134529.fits.fz"), int[][].class);
@@ -235,7 +234,6 @@ public class ReadWriteProvidedCompressedImageTest {
     }
 
     @Test
-    @Ignore
     public void blackboxTest_tu1134531() throws Exception {
         List<float[][]> expected = readAllUnCompressed(resolveLocalOrRemoteFileName("tu1134531.fits"), float[][].class);
         List<float[][]> actual = readAllCompressed(resolveLocalOrRemoteFileName("tu1134531.fits.fz"), float[][].class);

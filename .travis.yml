@@ -6,6 +6,9 @@ branches:
   except:
     - blackbox-images
 
+before_script:
+  - echo "MAVEN_OPTS='-Xmx3g -XX:MaxPermSize=512m'" > ~/.mavenrc
+  
 install:
   - git clone --depth=50 --branch=master https://github.com/nom-tam-fits/blackbox-images.git ../blackbox-images
   - mvn install -DskipTests=true
