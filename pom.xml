@@ -475,6 +475,7 @@
 							src/test/resources/logging.properties
 						</java.util.logging.config.file>
 					</systemPropertyVariables>
+					 <argLine>-Xmx3g</argLine>
 				</configuration>
 			</plugin>
 
