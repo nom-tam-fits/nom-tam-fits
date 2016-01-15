@@ -377,6 +377,21 @@ public class Quantize {
      * used to convert back to nearly the original floating point values: fdata
      * ~= idata * bscale + bzero. If the function value is zero, the data were
      * not copied to idata.
+     * <p>
+     * In earlier implementations of the compression code, we only used the
+     * noise3 value as the most reliable estimate of the background noise in an
+     * image. If it is not possible to compute a noise3 value, then this serves
+     * as a red flag to indicate that quantizing the image could cause a loss of
+     * significant information in the image.
+     * </p>
+     * <p>
+     * At some later date, we decided to take the more conservative approach of
+     * using the minimum of all three of the noise values (while still requiring
+     * that noise3 has a defined value) as the best estimate of the noise. Note
+     * that if an image contains pure Gaussian distributed noise, then noise2,
+     * noise3, and noise5 will have exactly the same value (within statistical
+     * measurement errors).
+     * </p>
      * 
      * @param fdata
      *            the data to quantinize
@@ -410,10 +425,10 @@ public class Quantize {
                 // use the minimum of noise2, noise3, and noise5 as the best
                 // noise value
                 stdev = this.noise3;
-                if (this.noise2 != 0. && (this.noise2 < stdev || stdev == 0.)) {
+                if (this.noise2 != 0. && (this.noise2 < stdev)) {
                     stdev = this.noise2;
                 }
-                if (this.noise5 != 0. && (this.noise5 < stdev || stdev == 0.)) {
+                if (this.noise5 != 0. && (this.noise5 < stdev)) {
                     stdev = this.noise5;
                 }
             }

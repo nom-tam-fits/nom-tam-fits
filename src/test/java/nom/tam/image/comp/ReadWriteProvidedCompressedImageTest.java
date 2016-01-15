@@ -42,6 +42,7 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -713,14 +714,15 @@ public class ReadWriteProvidedCompressedImageTest {
         double[][] data = new double[100][100];
         double value = -1000.0d;
         int blanks = 0;
+        Random random = new Random();
         for (int index1 = 0; index1 < 100; index1++) {
             for (int index2 = 0; index2 < 100; index2++) {
                 data[index1][index2] = value;
-                if ((blanks++) % 20 == 0) {
+                if (((blanks++) % 20) == 0) {
                     data[index1][index2] = Double.NaN;
                 } else {
                     data[index1][index2] = value;
-                    value += 0.12345d;
+                    value += 0.12345d + (random.nextDouble() / 1000d);
                 }
             }
         }
