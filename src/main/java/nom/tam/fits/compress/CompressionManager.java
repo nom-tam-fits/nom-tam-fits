@@ -92,10 +92,9 @@ public final class CompressionManager {
             } else {
                 return pb;
             }
-
         } catch (IOException e) {
             // This is probably a prelude to failure...
-            throw new FitsException("Unable to analyze input stream");
+            throw new FitsException("Unable to analyze input stream", e);
         }
     }
 
@@ -119,6 +118,7 @@ public final class CompressionManager {
             }
 
         } catch (IOException e) {
+            LOG.log(Level.FINEST, "Error while  checkinf if file " + file + " is compressed", e);
             // This is probably a prelude to failure...
             return false;
 
@@ -170,8 +170,8 @@ public final class CompressionManager {
         }
         ServiceLoader<ICompressProvider> compressionProviders = ServiceLoader.load(ICompressProvider.class, Thread.currentThread().getContextClassLoader());
         for (ICompressProvider provider : compressionProviders) {
-            if (provider.priority() > 0 && provider.priority() > priority && provider.priority() < maxPriority && //
-                    provider != old && provider.provides(mag1, mag2)) {
+            if (provider.priority() > Math.max(0, priority) && provider.priority() < maxPriority && provider != old && //
+                    provider.provides(mag1, mag2)) {
                 priority = provider.priority();
                 selectedProvider = provider;
             }

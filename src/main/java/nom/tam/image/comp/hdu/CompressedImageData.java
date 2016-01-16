@@ -75,7 +75,7 @@ public class CompressedImageData extends BinaryTable {
     public Buffer getUncompressedData(Header hdr) throws FitsException {
         try {
             this.tiledImageOperation = new TiledImageOperation(this).read(hdr);
-            return this.tiledImageOperation.decompress(null, hdr);
+            return this.tiledImageOperation.decompress();
         } finally {
             this.tiledImageOperation = null;
         }

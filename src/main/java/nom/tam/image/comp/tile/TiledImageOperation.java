@@ -121,7 +121,7 @@ public class TiledImageOperation {
         this.binaryTable = binaryTable;
     }
 
-    private void addColumnToTable(BinaryTableHDU hdu, Object column, String columnName) throws FitsException {
+    private static void addColumnToTable(BinaryTableHDU hdu, Object column, String columnName) throws FitsException {
         if (column != null) {
             hdu.setColumnName(hdu.addColumn(column) - 1, columnName, null);
         }
@@ -143,8 +143,8 @@ public class TiledImageOperation {
         final int imageHeight = this.axes[1];
         final int tileWidth = this.tileAxes[0];
         final int tileHeight = this.tileAxes[1];
-        final int nrOfTilesOnXAxis = new BigDecimal((double) imageWidth / (double) tileWidth).setScale(0, RoundingMode.CEILING).intValue();
-        final int nrOfTilesOnYAxis = new BigDecimal((double) imageHeight / (double) tileHeight).setScale(0, RoundingMode.CEILING).intValue();
+        final int nrOfTilesOnXAxis = BigDecimal.valueOf((double) imageWidth / (double) tileWidth).setScale(0, RoundingMode.CEILING).intValue();
+        final int nrOfTilesOnYAxis = BigDecimal.valueOf((double) imageHeight / (double) tileHeight).setScale(0, RoundingMode.CEILING).intValue();
         int lastTileWidth = imageWidth - (nrOfTilesOnXAxis - 1) * tileWidth;
         int lastTileHeight = imageHeight - (nrOfTilesOnYAxis - 1) * tileHeight;
         int tileIndex = 0;
@@ -167,12 +167,9 @@ public class TiledImageOperation {
         }
     }
 
-    public Buffer decompress(Buffer decompressed, Header header) {
+    public Buffer decompress() {
         int pixels = this.axes[0] * this.axes[1];
-        Buffer decompressedWholeArea = decompressed;
-        if (decompressedWholeArea == null) {
-            decompressedWholeArea = this.baseType.newBuffer(pixels);
-        }
+        Buffer decompressedWholeArea = this.baseType.newBuffer(pixels);
         for (TileOperation tileOperation : this.tileOperations) {
             tileOperation.setWholeImageBuffer(decompressedWholeArea);
         }
@@ -243,7 +240,7 @@ public class TiledImageOperation {
     }
 
     /**
-     * very bad design but nessesary for now. we need deep access to an
+     * very bad design but necessary for now. we need deep access to an
      * parameter.
      */
     protected void initializeQuantAlgorithm() {
@@ -353,7 +350,7 @@ public class TiledImageOperation {
         return column;
     }
 
-    private void setNullEntries(Object column, Object defaultValue) {
+    private static void setNullEntries(Object column, Object defaultValue) {
         if (column != null) {
             for (int index = 0; index < Array.getLength(column); index++) {
                 if (Array.get(column, index) == null) {
