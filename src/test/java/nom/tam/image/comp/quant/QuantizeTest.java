@@ -40,6 +40,8 @@ import java.util.Arrays;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
+import nom.tam.image.comp.hcompress.par.HCompressParameters;
+import nom.tam.image.comp.quant.par.QuantizeParameters;
 import nom.tam.util.ArrayFuncs;
 
 import org.junit.Assert;
@@ -586,6 +588,7 @@ public class QuantizeTest {
                 throw new CloneNotSupportedException("this can not be cloned");
             }
         };
+        option.setParameters(new QuantizeParameters(option));
         IllegalStateException expected = null;
         try {
             option.copy();
@@ -605,6 +608,7 @@ public class QuantizeTest {
         Assert.assertFalse(option.isDither());
 
         option = new QuantizeOption();
+        option.setParameters(new QuantizeParameters(option));
         header = new Header();
         header.addValue(Compression.ZQUANTIZ, Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1);
         option.getCompressionParameters().getValuesFromHeader(header);

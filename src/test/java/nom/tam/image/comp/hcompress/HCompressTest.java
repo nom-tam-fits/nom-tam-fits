@@ -39,16 +39,14 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
-import nom.tam.image.comp.ICompressHeaderParameter;
 import nom.tam.image.comp.hcompress.HCompressor.ByteHCompressor;
 import nom.tam.image.comp.hcompress.HCompressor.DoubleHCompressor;
 import nom.tam.image.comp.hcompress.HCompressor.FloatHCompressor;
 import nom.tam.image.comp.hcompress.HCompressor.IntHCompressor;
 import nom.tam.image.comp.hcompress.HCompressor.ShortHCompressor;
-import nom.tam.image.comp.rice.RiceCompressOption;
+import nom.tam.image.comp.hcompress.par.HCompressParameters;
 import nom.tam.util.ArrayFuncs;
 
 import org.junit.Assert;
@@ -431,6 +429,7 @@ public class HCompressTest {
                 throw new CloneNotSupportedException("this can not be cloned");
             }
         };
+        option.setParameters(new HCompressParameters(option));
         IllegalStateException expected = null;
         try {
             option.copy();

@@ -32,7 +32,7 @@ package nom.tam.image.comp.rice;
  */
 
 import nom.tam.image.comp.quant.QuantizeOption;
-import nom.tam.image.comp.rice.par.RiceQuantizeCompressParameter;
+import nom.tam.image.comp.rice.par.RiceQuantizeCompressParameters;
 
 public class RiceQuantizeCompressOption extends QuantizeOption {
 
@@ -41,7 +41,7 @@ public class RiceQuantizeCompressOption extends QuantizeOption {
     public RiceQuantizeCompressOption() {
         super();
         // circulat dependency, musst be cut.
-        this.parameters = new RiceQuantizeCompressParameter(this);
+        this.parameters = new RiceQuantizeCompressParameters(this);
     }
 
     @Override

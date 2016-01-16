@@ -31,7 +31,7 @@ package nom.tam.image.comp.hcompress;
  * #L%
  */
 
-import nom.tam.image.comp.hcompress.par.HCompressQuantizeParameter;
+import nom.tam.image.comp.hcompress.par.HCompressQuantizeParameters;
 import nom.tam.image.comp.quant.QuantizeOption;
 
 public class HCompressorQuantizeOption extends QuantizeOption {
@@ -40,7 +40,7 @@ public class HCompressorQuantizeOption extends QuantizeOption {
 
     public HCompressorQuantizeOption() {
         super();
-        this.parameters = new HCompressQuantizeParameter(this);
+        this.parameters = new HCompressQuantizeParameters(this);
     }
 
     @Override

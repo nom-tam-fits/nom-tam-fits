@@ -59,6 +59,10 @@ public interface ICompressOption extends Cloneable {
         public <T> T unwrap(Class<T> clazz) {
             return clazz.isAssignableFrom(this.getClass()) ? clazz.cast(this) : null;
         }
+
+        @Override
+        public void setParameters(ICompressParameters parameters) {
+        }
     };
 
     ICompressOption copy();
@@ -70,5 +74,7 @@ public interface ICompressOption extends Cloneable {
     ICompressOption setTileWidth(int value);
 
     <T> T unwrap(Class<T> clazz);
+
+    void setParameters(ICompressParameters parameters);
 
 }

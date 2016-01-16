@@ -33,14 +33,13 @@ package nom.tam.image.comp.hcompress;
 
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ICompressParameters;
-import nom.tam.image.comp.hcompress.par.HCompressParameters;
 
 public class HCompressorOption implements ICompressOption {
 
     /**
      * circular dependency, has to be cut.
      */
-    private final ICompressParameters parameters = new HCompressParameters(this);
+    private ICompressParameters parameters;
 
     private int scale;
 
@@ -78,6 +77,11 @@ public class HCompressorOption implements ICompressOption {
 
     public boolean isSmooth() {
         return this.smooth;
+    }
+
+    @Override
+    public void setParameters(ICompressParameters parameters) {
+        this.parameters = parameters;
     }
 
     public HCompressorOption setScale(int value) {

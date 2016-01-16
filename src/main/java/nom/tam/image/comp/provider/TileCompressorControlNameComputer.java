@@ -34,21 +34,24 @@ package nom.tam.image.comp.provider;
 import nom.tam.fits.header.Compression;
 
 /**
- * <p>Computes the name of the tile compressor class name given the algorithm
- * used to quantize and compress the tile and the type of data the tile
- * contains.</p>
+ * <p>
+ * Computes the name of the tile compressor class name given the algorithm used
+ * to quantize and compress the tile and the type of data the tile contains.
+ * </p>
  * The name of the class is built of four parts:
  * <ul>
  * <li>the capitalized simple name of the base type of the elements in the tile
  * (like Int, Long etc.);</li>
  * <li>if a known quantize algorithm is used, the word "Quant", the word
- * "Unknown" if the quantize algorithm is not recognized, nothing 
- * (i.e. the empty string) if it is null;</li>
+ * "Unknown" if the quantize algorithm is not recognized, nothing (i.e. the
+ * empty string) if it is null;</li>
  * <li>the short name of the compression algorithm to use (Rice, PLIO, Gzip
  * etc.) or the word "Unknown" if the algorithm is not supported;</li>
  * <li>the suffix "Compressor"</li>
  * </ul>
- * <p>Following exception to above rules exist:</p>
+ * <p>
+ * Following exception to above rules exist:
+ * </p>
  * <ul>
  * <li>If the primitive type is double or float, the quantize algorithm is
  * ignored (as if it were specified as null)</li>
@@ -58,22 +61,6 @@ import nom.tam.fits.header.Compression;
 public class TileCompressorControlNameComputer {
 
     private static final String COMPRESSOR_CLASS_SUFFIX = "Compressor";
-
-    public TileCompressorControlNameComputer() {
-        super();
-    }
-
-    public String createCompressorClassName(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
-        StringBuilder className = new StringBuilder();
-        className.append(standardizeBaseType(baseType.getSimpleName()));
-        if (className.indexOf(Float.class.getSimpleName()) == 0 || className.indexOf(Double.class.getSimpleName()) == 0) {
-            quantAlgorithm = null; // default so not in the className
-        }
-        className.append(standardizeQuantAlgorithm(quantAlgorithm));
-        className.append(standardizeCompressionAlgorithm(compressionAlgorithm));
-        className.append(COMPRESSOR_CLASS_SUFFIX);
-        return className.toString();
-    }
 
     private static String standardizeBaseType(String simpleName) {
         return Character.toUpperCase(simpleName.charAt(0)) + simpleName.substring(1).toLowerCase();
@@ -106,5 +93,21 @@ public class TileCompressorControlNameComputer {
             }
         }
         return "";
+    }
+
+    public TileCompressorControlNameComputer() {
+        super();
+    }
+
+    public String createCompressorClassName(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
+        StringBuilder className = new StringBuilder();
+        className.append(standardizeBaseType(baseType.getSimpleName()));
+        if (className.indexOf(Float.class.getSimpleName()) == 0 || className.indexOf(Double.class.getSimpleName()) == 0) {
+            quantAlgorithm = null; // default so not in the className
+        }
+        className.append(standardizeQuantAlgorithm(quantAlgorithm));
+        className.append(standardizeCompressionAlgorithm(compressionAlgorithm));
+        className.append(COMPRESSOR_CLASS_SUFFIX);
+        return className.toString();
     }
 }

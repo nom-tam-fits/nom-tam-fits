@@ -2,7 +2,6 @@ package nom.tam.image.comp.quant;
 
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ICompressParameters;
-import nom.tam.image.comp.quant.par.QuantizeParameters;
 
 /*
  * #%L
@@ -84,11 +83,6 @@ public class QuantizeOption implements ICompressOption {
     private int tileWidth;
 
     private QuantizeOption original;
-
-    public QuantizeOption() {
-        // this is a circular dependency that still has to be cut.
-        this.parameters = new QuantizeParameters(this);
-    }
 
     @Override
     public QuantizeOption copy() {
@@ -255,6 +249,11 @@ public class QuantizeOption implements ICompressOption {
         this.original = quantizeOption;
         this.parameters = this.parameters.copy(this);
         return this;
+    }
+
+    @Override
+    public void setParameters(ICompressParameters parameters) {
+        this.parameters = parameters;
     }
 
     public QuantizeOption setQlevel(double value) {

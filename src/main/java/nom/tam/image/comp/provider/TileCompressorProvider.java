@@ -40,6 +40,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.ICompressParameters;
 import nom.tam.image.comp.ITileCompressor;
 import nom.tam.image.comp.ITileCompressorProvider;
 import nom.tam.image.comp.gzip.GZipCompressor.ByteGZipCompressor;
@@ -48,7 +49,6 @@ import nom.tam.image.comp.gzip.GZipCompressor.FloatGZipCompressor;
 import nom.tam.image.comp.gzip.GZipCompressor.IntGZipCompressor;
 import nom.tam.image.comp.gzip.GZipCompressor.LongGZipCompressor;
 import nom.tam.image.comp.gzip.GZipCompressor.ShortGZipCompressor;
-import nom.tam.image.comp.gzip2.GZip2Compressor.ByteGZip2Compress;
 import nom.tam.image.comp.gzip2.GZip2Compressor.IntGZip2Compressor;
 import nom.tam.image.comp.gzip2.GZip2Compressor.LongGZip2Compressor;
 import nom.tam.image.comp.gzip2.GZip2Compressor.ShortGZip2Compressor;
@@ -57,6 +57,8 @@ import nom.tam.image.comp.hcompress.HCompressor.DoubleHCompressor;
 import nom.tam.image.comp.hcompress.HCompressor.FloatHCompressor;
 import nom.tam.image.comp.hcompress.HCompressor.IntHCompressor;
 import nom.tam.image.comp.hcompress.HCompressor.ShortHCompressor;
+import nom.tam.image.comp.hcompress.par.HCompressParameters;
+import nom.tam.image.comp.hcompress.par.HCompressQuantizeParameters;
 import nom.tam.image.comp.plio.PLIOCompress.BytePLIOCompressor;
 import nom.tam.image.comp.plio.PLIOCompress.IntPLIOCompressor;
 import nom.tam.image.comp.plio.PLIOCompress.ShortPLIOCompressor;
@@ -65,6 +67,8 @@ import nom.tam.image.comp.rice.RiceCompressor.DoubleRiceCompressor;
 import nom.tam.image.comp.rice.RiceCompressor.FloatRiceCompressor;
 import nom.tam.image.comp.rice.RiceCompressor.IntRiceCompressor;
 import nom.tam.image.comp.rice.RiceCompressor.ShortRiceCompressor;
+import nom.tam.image.comp.rice.par.RiceCompressParameters;
+import nom.tam.image.comp.rice.par.RiceQuantizeCompressParameters;
 
 /**
  * Standard implementation of the {@code ITileCompressorProvider} interface.
@@ -81,10 +85,21 @@ public class TileCompressorProvider implements ITileCompressorProvider {
 
         private final Class<? extends ICompressOption> optionClass;
 
-        @SuppressWarnings("unchecked")
+        private final Constructor<ICompressParameters> parametersConstructor;
+
         protected TileCompressorControl(Class<?> compressorClass) {
+            this(compressorClass, null);
+        }
+
+        @SuppressWarnings("unchecked")
+        protected TileCompressorControl(Class<?> compressorClass, Class<?> parametersClass) {
             this.constructor = (Constructor<ITileCompressor<Buffer>>) compressorClass.getConstructors()[0];
             this.optionClass = (Class<? extends ICompressOption>) (this.constructor.getParameterTypes().length == 0 ? null : this.constructor.getParameterTypes()[0]);
+            if (parametersClass != null) {
+                this.parametersConstructor = (Constructor<ICompressParameters>) parametersClass.getConstructors()[0];
+            } else {
+                this.parametersConstructor = null;
+            }
         }
 
         @Override
@@ -114,7 +129,13 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         public ICompressOption option() {
             if (this.optionClass != null) {
                 try {
-                    return this.optionClass.newInstance();
+                    ICompressOption option = this.optionClass.newInstance();
+                    if (this.parametersConstructor != null) {
+                        option.setParameters(this.parametersConstructor.newInstance(option));
+                    } else {
+                        option.setParameters(ICompressParameters.NULL);
+                    }
+                    return option;
                 } catch (Exception e) {
                     throw new IllegalStateException("could not instantiate option class for " + this.constructor, e);
                 }
@@ -123,35 +144,33 @@ public class TileCompressorProvider implements ITileCompressorProvider {
         }
     }
 
-    private static final Class<?>[] AVAILABLE_COMPRESSORS = {
-        ByteRiceCompressor.class,
-        ShortRiceCompressor.class,
-        IntRiceCompressor.class,
-        FloatRiceCompressor.class,
-        DoubleRiceCompressor.class,
-
-        BytePLIOCompressor.class,
-        ShortPLIOCompressor.class,
-        IntPLIOCompressor.class,
-
-        ByteHCompressor.class,
-        ShortHCompressor.class,
-        IntHCompressor.class,
-        FloatHCompressor.class,
-        DoubleHCompressor.class,
-
-        ByteGZip2Compress.class,
-        ShortGZip2Compressor.class,
-        IntGZip2Compressor.class,
-        LongGZip2Compressor.class,
-
-        ByteGZipCompressor.class,
-        ShortGZipCompressor.class,
-        IntGZipCompressor.class,
-        LongGZipCompressor.class,
-        FloatGZipCompressor.class,
-        DoubleGZipCompressor.class
+    // @formatter:off
+    private static final Class<?>[][] AVAILABLE_COMPRESSORS = {
+        {ByteRiceCompressor.class, RiceCompressParameters.class},
+        {ShortRiceCompressor.class, RiceCompressParameters.class},
+        {IntRiceCompressor.class, RiceCompressParameters.class},
+        {FloatRiceCompressor.class, RiceQuantizeCompressParameters.class},
+        {DoubleRiceCompressor.class, RiceQuantizeCompressParameters.class},
+        {BytePLIOCompressor.class},
+        {ShortPLIOCompressor.class},
+        {IntPLIOCompressor.class},
+        {ByteHCompressor.class, HCompressParameters.class},
+        {ShortHCompressor.class, HCompressParameters.class},
+        {IntHCompressor.class, HCompressParameters.class},
+        {FloatHCompressor.class, HCompressQuantizeParameters.class},
+        {DoubleHCompressor.class, HCompressQuantizeParameters.class},
+        {DoubleHCompressor.class},
+        {ShortGZip2Compressor.class},
+        {IntGZip2Compressor.class},
+        {LongGZip2Compressor.class},
+        {ByteGZipCompressor.class},
+        {ShortGZipCompressor.class},
+        {IntGZipCompressor.class},
+        {LongGZipCompressor.class},
+        {FloatGZipCompressor.class},
+        {DoubleGZipCompressor.class},
     };
+    // @formatter:on
 
     private static final TileCompressorControlNameComputer NAME_COMPUTER = new TileCompressorControlNameComputer();
 
@@ -179,9 +198,15 @@ public class TileCompressorProvider implements ITileCompressorProvider {
     public ITileCompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
 
         String className = NAME_COMPUTER.createCompressorClassName(quantAlgorithm, compressionAlgorithm, baseType);
-        for (Class<?> clazz : AVAILABLE_COMPRESSORS) {
-            if (clazz.getSimpleName().equals(className)) {
-                return new TileCompressorControl(clazz);
+        for (Class<?>[] clazz : AVAILABLE_COMPRESSORS) {
+            Class<?> compressorClass = clazz[0];
+            if (compressorClass.getSimpleName().equals(className)) {
+                if (clazz.length > 1) {
+                    Class<?> parametersClass = clazz[1];
+                    return new TileCompressorControl(compressorClass, parametersClass);
+                } else {
+                    return new TileCompressorControl(compressorClass);
+                }
             }
         }
         return null;

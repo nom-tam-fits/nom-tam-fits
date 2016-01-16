@@ -276,6 +276,29 @@ public class Quantize {
         setNoiseResult(ngoodpix);
     }
 
+    private boolean calculateNoiseShortRow(DoubleArrayPointer array, int nx, int ny) {
+        /* rows must have at least 9 pixels */
+        if (nx < MINIMUM_PIXEL_WIDTH) {
+            int ngoodpix = 0;
+            for (int index = 0; index < nx; index++) {
+                if (isNull(array.get(index))) {
+                    continue;
+                } else {
+                    if (array.get(index) < this.xminval) {
+                        this.xminval = array.get(index);
+                    }
+                    if (array.get(index) > this.xmaxval) {
+                        this.xmaxval = array.get(index);
+                    }
+                    ngoodpix++;
+                }
+            }
+            setNoiseResult(ngoodpix);
+            return true;
+        }
+        return false;
+    }
+
     protected void computeMedianOfValuesEachRow(int nrows, int nrows2, double[] diffs2, double[] diffs3, double[] diffs5) {
         // compute median of the values for each row.
         if (nrows == 0) {
@@ -298,29 +321,6 @@ public class Quantize {
             Arrays.sort(diffs2, 0, nrows2);
             this.xnoise2 = (diffs2[(nrows2 - 1) / 2] + diffs2[nrows2 / 2]) / 2.;
         }
-    }
-
-    private boolean calculateNoiseShortRow(DoubleArrayPointer array, int nx, int ny) {
-        /* rows must have at least 9 pixels */
-        if (nx < MINIMUM_PIXEL_WIDTH) {
-            int ngoodpix = 0;
-            for (int index = 0; index < nx; index++) {
-                if (isNull(array.get(index))) {
-                    continue;
-                } else {
-                    if (array.get(index) < this.xminval) {
-                        this.xminval = array.get(index);
-                    }
-                    if (array.get(index) > this.xmaxval) {
-                        this.xmaxval = array.get(index);
-                    }
-                    ngoodpix++;
-                }
-            }
-            setNoiseResult(ngoodpix);
-            return true;
-        }
-        return false;
     }
 
     protected int findNextValidPixelWithNullCheck(int nx, DoubleArrayPointer rowpix, int ii) {
@@ -425,10 +425,10 @@ public class Quantize {
                 // use the minimum of noise2, noise3, and noise5 as the best
                 // noise value
                 stdev = this.noise3;
-                if (this.noise2 != 0. && (this.noise2 < stdev)) {
+                if (this.noise2 != 0. && this.noise2 < stdev) {
                     stdev = this.noise2;
                 }
-                if (this.noise5 != 0. && (this.noise5 < stdev)) {
+                if (this.noise5 != 0. && this.noise5 < stdev) {
                     stdev = this.noise5;
                 }
             }

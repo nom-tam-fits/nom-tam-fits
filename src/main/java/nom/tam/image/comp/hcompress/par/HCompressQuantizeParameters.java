@@ -39,18 +39,19 @@ import nom.tam.image.comp.ICompressParameters;
 import nom.tam.image.comp.hcompress.HCompressorQuantizeOption;
 import nom.tam.image.comp.quant.par.QuantizeParameters;
 
-public class HCompressQuantizeParameter extends QuantizeParameters {
+public class HCompressQuantizeParameters extends QuantizeParameters {
 
     private final HCompressParameters hCompressParameters;
 
-    public HCompressQuantizeParameter(HCompressorQuantizeOption option) {
+    public HCompressQuantizeParameters(HCompressorQuantizeOption option) {
         super(option);
         this.hCompressParameters = new HCompressParameters(option.getHCompressorOption());
+        option.getHCompressorOption().setParameters(this.hCompressParameters);
     }
 
     @Override
     public ICompressParameters copy(ICompressOption option) {
-        return copyColumnDetails(new HCompressQuantizeParameter((HCompressorQuantizeOption) option));
+        return copyColumnDetails(new HCompressQuantizeParameters((HCompressorQuantizeOption) option));
     }
 
     @Override

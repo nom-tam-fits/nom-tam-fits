@@ -39,18 +39,19 @@ import nom.tam.image.comp.ICompressParameters;
 import nom.tam.image.comp.quant.par.QuantizeParameters;
 import nom.tam.image.comp.rice.RiceQuantizeCompressOption;
 
-public class RiceQuantizeCompressParameter extends QuantizeParameters {
+public class RiceQuantizeCompressParameters extends QuantizeParameters {
 
     private final RiceCompressParameters riceCompressPrameters;
 
-    public RiceQuantizeCompressParameter(RiceQuantizeCompressOption option) {
+    public RiceQuantizeCompressParameters(RiceQuantizeCompressOption option) {
         super(option);
         this.riceCompressPrameters = new RiceCompressParameters(option.getRiceCompressOption());
+        option.getRiceCompressOption().setParameters(this.riceCompressPrameters);
     }
 
     @Override
     public ICompressParameters copy(ICompressOption option) {
-        return copyColumnDetails(new RiceQuantizeCompressParameter((RiceQuantizeCompressOption) option));
+        return copyColumnDetails(new RiceQuantizeCompressParameters((RiceQuantizeCompressOption) option));
     }
 
     @Override

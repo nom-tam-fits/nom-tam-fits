@@ -39,10 +39,11 @@ import java.nio.ShortBuffer;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
+import nom.tam.image.comp.rice.RiceCompressOption;
 import nom.tam.image.comp.rice.RiceCompressor.ByteRiceCompressor;
 import nom.tam.image.comp.rice.RiceCompressor.IntRiceCompressor;
 import nom.tam.image.comp.rice.RiceCompressor.ShortRiceCompressor;
-import nom.tam.image.comp.rice.RiceCompressOption;
+import nom.tam.image.comp.rice.par.RiceCompressParameters;
 import nom.tam.util.type.PrimitiveType;
 
 import org.junit.Assert;
@@ -61,6 +62,7 @@ public class RiseCompressTest {
                 throw new CloneNotSupportedException("this can not be cloned");
             }
         };
+        option.setParameters(new RiceCompressParameters(option));
         IllegalStateException expected = null;
         try {
             option.copy();
