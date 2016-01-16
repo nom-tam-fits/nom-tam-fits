@@ -78,10 +78,28 @@ import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class HeaderTest {
+
+    private boolean longStringsEnabled;
+
+    private boolean useHierarch;
+
+    @Before
+    public void before() {
+        longStringsEnabled = FitsFactory.isLongStringsEnabled();
+        useHierarch = FitsFactory.getUseHierarch();
+    }
+
+    @After
+    public void after() {
+        FitsFactory.setLongStringsEnabled(longStringsEnabled);
+        FitsFactory.setUseHierarch(useHierarch);
+    }
 
     @Test
     public void cursorTest() throws Exception {
@@ -90,7 +108,7 @@ public class HeaderTest {
             ImageHDU hdu = (ImageHDU) f.getHDU(0);
             Header hdr = hdu.getHeader();
             Cursor<String, HeaderCard> c = hdr.iterator();
-    
+
             c.setKey("XXX");
             c.add(new HeaderCard(CTYPE1.key(), "GLON-CAR", "Galactic Longitude"));
             c.add(new HeaderCard(CTYPE2.key(), "GLAT-CAR", "Galactic Latitude"));
@@ -104,10 +122,10 @@ public class HeaderTest {
             c.add(new HeaderCard(CRPIX2.key(), BigDecimal.valueOf(0.), "Reference pixel Y"));
             c.add(new HeaderCard("INV2", true, "Invertible axis"));
             c.add(new HeaderCard("SYM2", "YZ SYMMETRIC", "Symmetries..."));
-    
+
             assertEquals(CTYPE1.key(), "GLON-CAR", hdr.getStringValue(CTYPE1));
             assertEquals(CRPIX2.key(), 0., hdr.getDoubleValue(CRPIX2, -2.), 0);
-    
+
             c.setKey(CRVAL1.key());
             HeaderCard hc = (HeaderCard) c.next();
             assertEquals("CRVAL1_c", CRVAL1.key(), hc.getKey());
@@ -125,7 +143,7 @@ public class HeaderTest {
             assertEquals("SYM2_c", "SYM2", hc.getKey());
             hc = (HeaderCard) c.next();
             assertEquals("CTYPE2_c", CTYPE2.key(), hc.getKey());
-    
+
             hdr.findCard(CRPIX1.key());
             hdr.addValue("INTVAL1", 1, "An integer value");
             hdr.addValue("LOG1", true, "A true value");
@@ -133,7 +151,7 @@ public class HeaderTest {
             hdr.addValue("FLT1", 1.34, "A float value");
             hdr.addValue("FLT2", -1.234567890e-134, "A very long float");
             hdr.insertComment("Comment after flt2");
-    
+
             c.setKey("INTVAL1");
             hc = (HeaderCard) c.next();
             assertEquals("INTVAL1", "INTVAL1", hc.getKey());
@@ -148,7 +166,7 @@ public class HeaderTest {
             c.next(); // Skip comment
             hc = (HeaderCard) c.next();
             assertEquals("CRPIX1x", CRPIX1.key(), hc.getKey());
-    
+
             assertEquals("FLT1", 1.34, hdr.getDoubleValue("FLT1", 0), 0);
             c.setKey("FLT1");
             c.next();
@@ -176,10 +194,10 @@ public class HeaderTest {
         }
         try (Fits f = new Fits("target/ht1.fits")) {
             Header h = f.getHDU(0).getHeader();
-    
+
             // We should be pointed after the EXTEND and before TESTKEY
             h.addValue("TESTKEY2", "TESTVAL2", null); // Should precede TESTKEY
-    
+
             Cursor<String, HeaderCard> c = h.iterator();
             assertEquals("E1", c.next().getKey(), SIMPLE.key());
             assertEquals("E2", c.next().getKey(), BITPIX.key());
@@ -194,7 +212,7 @@ public class HeaderTest {
 
     @Test
     public void longStringTest() throws Exception {
-
+        FitsFactory.setLongStringsEnabled(false);
         String seq = "0123456789";
         String lng = "";
         String sixty = seq + seq + seq + seq + seq + seq;
@@ -212,10 +230,10 @@ public class HeaderTest {
             hdr.addValue("SHORT", "A STRING ENDING IN A &", null);
             hdr.addValue("LONGISH", lng + "&", null);
             hdr.addValue("LONGSTRN", "OGIP 1.0", "Uses long strings");
-    
+
             hdr.addValue("APOS1", sixty + "''''''''''", "Should be 70 chars long");
             hdr.addValue("APOS2", sixty + " ''''''''''", "Should be 71 chars long");
-    
+
             // Now try to read the values back.
             try (BufferedFile bf = new BufferedFile("target/ht4.hdr", "rw")) {
                 hdr.write(bf);
@@ -226,13 +244,13 @@ public class HeaderTest {
             assertEquals("LongT2", val, "xx'yy'zz" + lng);
             assertEquals("APOS1", hdr.getStringValue("APOS1").length(), 70);
             assertEquals("APOS2", hdr.getStringValue("APOS2").length(), 71);
-    
+
             String string = hdr.findCard("LONG1").toString();
             val = FitsHeaderCardParser.parseCardValue(string).getValue();
             FitsFactory.setLongStringsEnabled(false);
             val = FitsHeaderCardParser.parseCardValue(string).getValue();
             FitsFactory.setLongStringsEnabled(true);
-    
+
             assertEquals("LongT3", true, !val.equals(lng));
             assertEquals("Longt4", true, val.length() <= 70);
             assertEquals("longamp1", hdr.getStringValue("SHORT"), "A STRING ENDING IN A &");
@@ -249,7 +267,7 @@ public class HeaderTest {
                 assertEquals("APOS2c", hdr.getStringValue("APOS2"), sixty + " ''''''''''");
                 assertEquals("longamp1b", hdr.getStringValue("SHORT"), "A STRING ENDING IN A &");
                 assertEquals("longamp2b", hdr.getStringValue("LONGISH"), lng + "&");
-        
+
                 int cnt = hdr.getNumberOfCards();
                 int pcnt = hdr.getNumberOfPhysicalCards();
                 // This should remove all three cards associated with
@@ -257,7 +275,7 @@ public class HeaderTest {
                 hdr.removeCard("LONG1");
                 assertEquals("deltest", cnt - 1, hdr.getNumberOfCards());
                 assertEquals("deltest", pcnt - 4, hdr.getNumberOfPhysicalCards());
-        
+
                 hdr.removeCard("LONG2");
                 assertEquals("deltest2", pcnt - 8, hdr.getNumberOfPhysicalCards());
                 assertEquals("deltest2", cnt - 2, hdr.getNumberOfCards());
@@ -363,29 +381,29 @@ public class HeaderTest {
         try (Fits f = new Fits("target/ht1.fits")) {
             ImageHDU hdu = (ImageHDU) f.getHDU(0);
             Header hdr = hdu.getHeader();
-    
+
             assertEquals("NAXIS", 2, hdr.getIntValue(NAXIS));
             assertEquals("NAXIS1", 300, hdr.getIntValue(NAXISn.n(1)));
             assertEquals("NAXIS2", 300, hdr.getIntValue(NAXISn.n(2)));
             assertEquals("NAXIS2a", 300, hdr.getIntValue(NAXISn.n(2), -1));
             assertEquals("NAXIS3", -1, hdr.getIntValue(NAXISn.n(3), -1));
             assertEquals("NAXIS3", -1, hdr.getIntValue(NAXISn.n(3).key(), -1));
-    
+
             assertEquals("BITPIX", BigInteger.valueOf(-32), hdr.getBigIntegerValue(BITPIX.name()));
-    
+
             Cursor<String, HeaderCard> c = hdr.iterator();
             HeaderCard hc = c.next();
             assertEquals("SIMPLE_1", SIMPLE.key(), hc.getKey());
-    
+
             hc = c.next();
             assertEquals("BITPIX_2", BITPIX.key(), hc.getKey());
-    
+
             hc = c.next();
             assertEquals("NAXIS_3", NAXIS.key(), hc.getKey());
-    
+
             hc = c.next();
             assertEquals("NAXIS1_4", NAXISn.n(1).key(), hc.getKey());
-    
+
             hc = c.next();
             assertEquals("NAXIS2_5", NAXISn.n(2).key(), hc.getKey());
         }
@@ -398,7 +416,7 @@ public class HeaderTest {
             ImageHDU hdu = (ImageHDU) f.getHDU(0);
             Header hdr = hdu.getHeader();
             Cursor<String, HeaderCard> c = hdr.iterator();
-    
+
             c = hdr.iterator();
             c.next();
             c.next();
@@ -416,7 +434,7 @@ public class HeaderTest {
     @Test
     public void testHeaderCommentsDrift() throws Exception {
         byte[][] z = new byte[4][4];
-        try (Fits f = new Fits()){
+        try (Fits f = new Fits()) {
             BasicHDU<?> hdu = FitsFactory.hduFactory(z);
             f.addHDU(hdu);
             Cursor<String, HeaderCard> iter = hdu.getHeader().iterator();
@@ -474,14 +492,14 @@ public class HeaderTest {
         // Should be rewriteable until we add enough cards to
         // start a new block.
 
-        try (Fits f = new Fits("target/ht1.fits")){
+        try (Fits f = new Fits("target/ht1.fits")) {
             ImageHDU hdu = (ImageHDU) f.getHDU(0);
             Header hdr = hdu.getHeader();
             Cursor<String, HeaderCard> c = hdr.iterator();
-    
+
             int nc = hdr.getNumberOfCards();
             int nb = (nc - 1) / 36;
-    
+
             while (hdr.rewriteable()) {
                 int nbx = (hdr.getNumberOfCards() - 1) / 36;
                 assertEquals("Rewrite:" + nbx, nb == nbx, hdr.rewriteable());
@@ -492,6 +510,7 @@ public class HeaderTest {
 
     @Test
     public void testStringLengthProblems() throws HeaderCardException {
+        FitsFactory.setLongStringsEnabled(false);
         HeaderCard card = null;
         try {
             new HeaderCard("TESTKEY", "random value just for testing purpose - random value just for testing", "");
@@ -507,7 +526,7 @@ public class HeaderTest {
     @Test
     public void testUpdateHeaderComments() throws Exception {
         byte[][] z = new byte[4][4];
-        try (Fits f = new Fits(); BufferedFile bf = new BufferedFile("target/hx1.fits", "rw")){
+        try (Fits f = new Fits(); BufferedFile bf = new BufferedFile("target/hx1.fits", "rw")) {
             f.addHDU(FitsFactory.hduFactory(z));
             f.write(bf);
         }
@@ -534,50 +553,49 @@ public class HeaderTest {
 
     @Test
     public void addValueTests() throws Exception {
-        try (FileInputStream in = new FileInputStream("target/ht1.fits");
-                Fits fits = new Fits()) {
+        try (FileInputStream in = new FileInputStream("target/ht1.fits"); Fits fits = new Fits()) {
             fits.read(in);
-    
+
             BasicHDU<?> hdu = fits.getHDU(0);
             Header hdr = hdu.getHeader();
-    
+
             hdu.addValue(CTYPE1, true);
             assertEquals(hdr.getBooleanValue(CTYPE1.name()), true);
             assertEquals(hdr.getBooleanValue(CTYPE1), true);
-    
+
             hdu.addValue(CTYPE1.name(), false, "bla");
             assertEquals(hdr.getBooleanValue(CTYPE1.name()), false);
             assertEquals(hdr.getBooleanValue(CTYPE1), false);
-    
+
             hdu.addValue(CTYPE1.name(), 5, "bla");
             assertEquals(hdr.getIntValue(CTYPE1.name()), 5);
             assertEquals(hdr.getIntValue(CTYPE1), 5);
-    
+
             hdu.addValue(CTYPE1.name(), "XX", "bla");
             assertEquals(hdr.getStringValue(CTYPE1.name()), "XX");
             assertEquals(hdr.getStringValue(CTYPE1), "XX");
-    
+
             hdr.addValue(CTYPE2, true);
             assertEquals(hdr.getBooleanValue(CTYPE2.name()), true);
             assertEquals(hdr.getBooleanValue(CTYPE2), true);
-    
+
             hdr.addValue(CTYPE2, 5.0);
             assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
-    
+
             hdr.addValue(CTYPE2.name(), BigDecimal.valueOf(5.0), "nothing special");
             assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue(CTYPE2, -1d), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
             assertEquals(hdr.getBigDecimalValue(CTYPE2.name()), BigDecimal.valueOf(5.0));
             assertEquals(hdr.getBigDecimalValue(CTYPE2), BigDecimal.valueOf(5.0));
-    
+
             hdr.addValue(CTYPE2.name(), 5.0f, "nothing special");
             assertEquals(hdr.getFloatValue(CTYPE2.name()), 5.0f, 0.000001);
             assertEquals(hdr.getFloatValue(CTYPE2), 5.0f, 0.000001);
             assertEquals(hdr.getFloatValue(CTYPE2.name(), -1f), 5.0f, 0.000001);
             assertEquals(hdr.getFloatValue(CTYPE2, -1f), 5.0f, 0.000001);
-    
+
             hdr.addValue(CTYPE2.name(), BigInteger.valueOf(5), "nothing special");
             assertEquals(hdr.getIntValue(CTYPE2.name()), 5);
             assertEquals(hdr.getIntValue(CTYPE2), 5);
@@ -598,9 +616,9 @@ public class HeaderTest {
             assertTrue(result.indexOf("NAXIS   =                    2") >= 0);
             assertTrue(result.indexOf("NAXIS1  =                  300") >= 0);
             assertTrue(result.indexOf("NAXIS2  =                  300") >= 0);
-    
+
             assertEquals("NAXIS1  =                  300 / size of the n'th axis", hdr.findKey("NAXIS1").trim());
-    
+
             assertEquals("SIMPLE", hdr.getKey(0));
             assertEquals(7, hdr.size());
             assertEquals(362880, hdu.getSize());
@@ -751,9 +769,9 @@ public class HeaderTest {
 
             try (Fits f = new Fits()) {
                 BasicHDU<?> primaryHdu = FitsFactory.hduFactory(new float[0]);
-    
+
                 primaryHdu.getHeader().addValue("HIERARCH.TEST.THIS.LONG.HEADER", "aaaaaaaabbbbbbbbbcccccccccccdddddddddddeeeeeeeeeee", "");
-    
+
                 for (int index = 1; index < 60; index++) {
                     StringBuilder buildder = new StringBuilder();
                     for (int charIndex = 0; charIndex < index; charIndex++) {
@@ -761,7 +779,7 @@ public class HeaderTest {
                     }
                     primaryHdu.getHeader().addValue("HIERARCH.X" + buildder.toString(), "_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!", buildder.toString());
                 }
-    
+
                 f.addHDU(primaryHdu);
                 try (BufferedFile bf = new BufferedFile(filename, "rw")) {
                     f.write(bf);

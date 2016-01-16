@@ -44,12 +44,34 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
+import nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class HeaderCardTest {
+
+    private boolean longStringsEnabled;
+
+    private boolean useHierarch;
+
+    @Before
+    public void before() {
+        longStringsEnabled = FitsFactory.isLongStringsEnabled();
+        useHierarch = FitsFactory.getUseHierarch();
+    }
+
+    @After
+    public void after() {
+        FitsFactory.setLongStringsEnabled(longStringsEnabled);
+        FitsFactory.setUseHierarch(useHierarch);
+        FitsFactory.setHierarchFormater(new StandardIHierarchKeyFormatter());
+
+    }
 
     @Test
     public void test1() throws Exception {
@@ -333,49 +355,58 @@ public class HeaderCardTest {
 
     @Test
     public void testCardSize() throws Exception {
-        boolean longStringsEnabled = FitsFactory.isLongStringsEnabled();
-        boolean useHierarch = FitsFactory.getUseHierarch();
-        try {
-            FitsFactory.setLongStringsEnabled(true);
-            FitsFactory.setUseHierarch(true);
 
-            HeaderCard hc =
-                    new HeaderCard(
-                            "HIERARCH.TEST.TEST.TEST.TEST.TEST.TEST",//
-                            "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla ",
-                            "dummy");
-            assertEquals(4, hc.cardSize());
+        FitsFactory.setLongStringsEnabled(true);
+        FitsFactory.setUseHierarch(true);
 
-        } finally {
-            FitsFactory.setLongStringsEnabled(longStringsEnabled);
-            FitsFactory.setUseHierarch(useHierarch);
-
-        }
+        HeaderCard hc =
+                new HeaderCard(
+                        "HIERARCH.TEST.TEST.TEST.TEST.TEST.TEST",//
+                        "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla ",
+                        "dummy");
+        assertEquals(4, hc.cardSize());
     }
 
     @Test
     public void testHierarchCard() throws Exception {
-        boolean longStringsEnabled = FitsFactory.isLongStringsEnabled();
-        boolean useHierarch = FitsFactory.getUseHierarch();
-        try {
-            FitsFactory.setLongStringsEnabled(true);
-            FitsFactory.setUseHierarch(true);
+        FitsFactory.setLongStringsEnabled(true);
+        FitsFactory.setUseHierarch(true);
 
-            HeaderCard hc =
-                    new HeaderCard(
-                            "HIERARCH.TEST.TEST.TEST.TEST.TEST.TEST",//
-                            "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla ",
-                            " dummy");
-            BufferedDataInputStream data = new BufferedDataInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(hc.toString())));
-            HeaderCard headerCard = new HeaderCard(data);
-            assertEquals(hc.getKey(), headerCard.getKey());
-            assertEquals(hc.getValue(), headerCard.getValue());
-
-        } finally {
-            FitsFactory.setLongStringsEnabled(longStringsEnabled);
-            FitsFactory.setUseHierarch(useHierarch);
-
-        }
+        HeaderCard hc =
+                new HeaderCard(
+                        "HIERARCH.TEST.TEST.TEST.TEST.TEST.TEST",//
+                        "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla ",
+                        " dummy");
+        BufferedDataInputStream data = headerCardToStream(hc);
+        HeaderCard headerCard = new HeaderCard(data);
+        assertEquals(hc.getKey(), headerCard.getKey());
+        assertEquals(hc.getValue(), headerCard.getValue());
 
     }
+
+    protected BufferedDataInputStream headerCardToStream(HeaderCard hc) {
+        BufferedDataInputStream data = new BufferedDataInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(hc.toString())));
+        return data;
+    }
+
+    @Test
+    public void testHierarchAlternatives() throws Exception {
+        FitsFactory.setUseHierarch(true);
+        HeaderCard headerCard = new HeaderCard("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", "xy", null);
+        assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
+        assertEquals("HIERARCH TEST1 TEST2 TEST3 TEST4 TEST5 TEST6= 'xy'                              ", headerCard.toString());
+        assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", new HeaderCard(headerCardToStream(headerCard)).getKey());
+
+        FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(1));
+        assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
+        assertEquals("HIERARCH TEST1.TEST2.TEST3.TEST4.TEST5.TEST6= 'xy'                              ", headerCard.toString());
+        assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", new HeaderCard(headerCardToStream(headerCard)).getKey());
+
+        FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
+        assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
+        assertEquals("HIERARCH  TEST1.TEST2.TEST3.TEST4.TEST5.TEST6= 'xy'                             ", headerCard.toString());
+        assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", new HeaderCard(headerCardToStream(headerCard)).getKey());
+
+    }
+
 }

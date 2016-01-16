@@ -181,4 +181,9 @@ public class FitsLineAppender {
     public String toString() {
         return this.buffer.toString();
     }
+
+    public void append(String key, int start, int end) {
+        this.buffer.append(key, start, end);
+        this.charCount += end - start;
+    }
 }
