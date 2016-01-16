@@ -4,6 +4,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import nom.tam.fits.header.hierarch.IHierarchKeyFormatter;
+import nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter;
 import nom.tam.image.comp.hdu.CompressedImageData;
 import nom.tam.image.comp.hdu.CompressedImageHDU;
 
@@ -60,6 +62,8 @@ public final class FitsFactory {
 
         private boolean longStringsEnabled = false;
 
+        private IHierarchKeyFormatter hierarchKeyFormatter = new StandardIHierarchKeyFormatter();
+
         private FitsSettings copy() {
             FitsSettings settings = new FitsSettings();
             settings.useAsciiTables = this.useAsciiTables;
@@ -67,6 +71,7 @@ public final class FitsFactory {
             settings.checkAsciiStrings = this.checkAsciiStrings;
             settings.allowTerminalJunk = this.allowTerminalJunk;
             settings.longStringsEnabled = this.longStringsEnabled;
+            settings.hierarchKeyFormatter = this.hierarchKeyFormatter;
             return settings;
         }
 
@@ -317,6 +322,25 @@ public final class FitsFactory {
      */
     public static void setUseAsciiTables(boolean useAsciiTables) {
         current().useAsciiTables = useAsciiTables;
+    }
+
+    /**
+     * There is not a real standard how to write hierarch keys, default we use
+     * the one where every key is separated by a blank. If you want or need
+     * another format assing the formater here.
+     * 
+     * @param formatter
+     *            the hierarch key formatter.
+     */
+    public static void setHierarchFormater(IHierarchKeyFormatter formatter) {
+        current().hierarchKeyFormatter = formatter;
+    }
+
+    /**
+     * @return the formatter to use for hierarch keys.
+     */
+    public static IHierarchKeyFormatter getHierarchFormater() {
+        return current().hierarchKeyFormatter;
     }
 
     /**

@@ -771,7 +771,7 @@ public class HeaderCard implements CursorValue<String> {
         // start with the keyword, if there is one
         if (this.key != null) {
             if (this.key.length() > HIERARCH_WITH_BLANK_LENGTH && this.key.substring(0, HIERARCH_WITH_BLANK_LENGTH).equals(HIERARCH_WITH_DOT)) {
-                buf.appendRepacing(this.key, '.', ' ');
+                FitsFactory.getHierarchFormater().append(this.key, buf);
                 alignSmallString = HIERARCH_SMALL_STRING_ALIGN_POSITION;
                 alignPosition = HIERARCH_ALIGN_POSITION;
             } else {

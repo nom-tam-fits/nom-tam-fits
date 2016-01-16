@@ -74,7 +74,7 @@ public class FitsSubString {
      * @param buffer
      *            the buffer to append to.
      */
-    public void appendTo(StringBuffer buffer) {
+    public void appendTo(StringBuilder buffer) {
         buffer.append(this.originalString, this.offset, this.offset + this.length);
     }
 

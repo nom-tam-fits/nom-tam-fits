@@ -49,9 +49,9 @@ public class FitsLineAppender {
     private static final String FULL_CARD_AS_SPACES = "                                                                                ";
 
     /**
-     * the underlying StringBuffer to which the writing of fits lines happens.
+     * the underlying StringBuilder to which the writing of fits lines happens.
      */
-    private final StringBuffer buffer;
+    private final StringBuilder buffer;
 
     /**
      * the char current position in the line.
@@ -63,7 +63,7 @@ public class FitsLineAppender {
      * line.
      */
     public FitsLineAppender() {
-        this.buffer = new StringBuffer(HeaderCard.FITS_HEADER_CARD_SIZE);
+        this.buffer = new StringBuilder(HeaderCard.FITS_HEADER_CARD_SIZE);
     }
 
     /**
