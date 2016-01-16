@@ -34,9 +34,27 @@ package nom.tam.image.comp;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
 
+/**
+ * Compression parameter that must be stored along the header meta data of the
+ * hdu.
+ */
 public interface ICompressHeaderParameter extends ICompressParameter {
 
+    /**
+     * get the value from the header and set it in the compression option.
+     * 
+     * @param header
+     *            the header of the hdu
+     */
     void getValueFromHeader(Header header);
 
+    /**
+     * Get the parameter value from the option and set it into the fits header.
+     * 
+     * @param header
+     *            the header to add the parameter.
+     * @throws HeaderCardException
+     *             if the card could not be created in the header.
+     */
     void setValueInHeader(Header header) throws HeaderCardException;
 }

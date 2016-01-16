@@ -39,9 +39,14 @@ import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import nom.tam.fits.BinaryTable;
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.Header;
 import nom.tam.image.comp.ICompressOption;
 import nom.tam.image.comp.ICompressParameters;
 import nom.tam.image.comp.ITileCompressor;
+import nom.tam.image.comp.ITileCompressorControl;
 import nom.tam.image.comp.ITileCompressorProvider;
 import nom.tam.image.comp.gzip.GZipCompressor.ByteGZipCompressor;
 import nom.tam.image.comp.gzip.GZipCompressor.DoubleGZipCompressor;
@@ -74,6 +79,74 @@ import nom.tam.image.comp.rice.par.RiceQuantizeCompressParameters;
  * Standard implementation of the {@code ITileCompressorProvider} interface.
  */
 public class TileCompressorProvider implements ITileCompressorProvider {
+
+    private static final ICompressOption NULL_OPTION = new ICompressOption() {
+
+        @Override
+        public ICompressOption copy() {
+            return this;
+        }
+
+        @Override
+        public ICompressParameters getCompressionParameters() {
+            return NULL_PARAMETERS;
+        }
+
+        @Override
+        public ICompressOption setTileHeight(int value) {
+            return this;
+        }
+
+        @Override
+        public ICompressOption setTileWidth(int value) {
+            return this;
+        }
+
+        @Override
+        public <T> T unwrap(Class<T> clazz) {
+            return clazz.isAssignableFrom(this.getClass()) ? clazz.cast(this) : null;
+        }
+
+        @Override
+        public void setParameters(ICompressParameters parameters) {
+        }
+    };
+
+    private static final ICompressParameters NULL_PARAMETERS = new ICompressParameters() {
+
+        @Override
+        public void addColumnsToTable(BinaryTableHDU hdu) {
+        }
+
+        @Override
+        public ICompressParameters copy(ICompressOption clone) {
+            return this;
+        }
+
+        @Override
+        public void getValuesFromColumn(int index) {
+        }
+
+        @Override
+        public void getValuesFromHeader(Header header) {
+        }
+
+        @Override
+        public void initializeColumns(Header header, BinaryTable binaryTable, int size) throws FitsException {
+        }
+
+        @Override
+        public void initializeColumns(int length) {
+        }
+
+        @Override
+        public void setValueFromColumn(int index) {
+        }
+
+        @Override
+        public void setValuesInHeader(Header header) {
+        }
+    };
 
     /**
      * private implementation of the tile compression provider, all is based on
@@ -133,14 +206,14 @@ public class TileCompressorProvider implements ITileCompressorProvider {
                     if (this.parametersConstructor != null) {
                         option.setParameters(this.parametersConstructor.newInstance(option));
                     } else {
-                        option.setParameters(ICompressParameters.NULL);
+                        option.setParameters(NULL_PARAMETERS);
                     }
                     return option;
                 } catch (Exception e) {
                     throw new IllegalStateException("could not instantiate option class for " + this.constructor, e);
                 }
             }
-            return ICompressOption.NULL;
+            return NULL_OPTION;
         }
     }
 

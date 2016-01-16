@@ -31,50 +31,58 @@ package nom.tam.image.comp;
  * #L%
  */
 
+/**
+ * Option for the compression algorithm, implementors are used to control the
+ * compression algorithm.
+ */
 public interface ICompressOption extends Cloneable {
 
-    ICompressOption NULL = new ICompressOption() {
-
-        @Override
-        public ICompressOption copy() {
-            return this;
-        }
-
-        @Override
-        public ICompressParameters getCompressionParameters() {
-            return ICompressParameters.NULL;
-        }
-
-        @Override
-        public ICompressOption setTileHeight(int value) {
-            return this;
-        }
-
-        @Override
-        public ICompressOption setTileWidth(int value) {
-            return this;
-        }
-
-        @Override
-        public <T> T unwrap(Class<T> clazz) {
-            return clazz.isAssignableFrom(this.getClass()) ? clazz.cast(this) : null;
-        }
-
-        @Override
-        public void setParameters(ICompressParameters parameters) {
-        }
-    };
-
+    /**
+     * @return copy the option (normally the option from with the copy happened
+     *         is saved as original).
+     */
     ICompressOption copy();
 
+    /**
+     * @return the parameters that must be synchronized with the hdu meta data.
+     */
     ICompressParameters getCompressionParameters();
 
+    /**
+     * set the tile height in pixel.
+     * 
+     * @param value
+     *            the number of pixel.
+     * @return this (builder pattern)
+     */
     ICompressOption setTileHeight(int value);
 
+    /**
+     * set the tile width.
+     * 
+     * @param value
+     *            the number of pixel.
+     * @return this (builder pattern)
+     */
     ICompressOption setTileWidth(int value);
 
+    /**
+     * un wrap a specific implementation detail.
+     * 
+     * @param clazz
+     *            the type to unwrap
+     * @param <T>
+     *            the class to unrwap
+     * @return the implementation detail or null if no such detail is avalable.
+     */
     <T> T unwrap(Class<T> clazz);
 
+    /**
+     * set the parameters that must be synchronized with the hdu meta data.
+     * 
+     * @param parameters
+     *            the parameters to synchronized
+     */
     void setParameters(ICompressParameters parameters);
 
 }

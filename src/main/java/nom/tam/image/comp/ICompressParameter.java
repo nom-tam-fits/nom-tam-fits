@@ -31,16 +31,14 @@ package nom.tam.image.comp;
  * #L%
  */
 
+/**
+ * Compression parameter that must be stored along the meta data.
+ */
 public interface ICompressParameter {
 
-    ICompressParameter NULL = new ICompressParameter() {
-
-        @Override
-        public String getName() {
-            return "";
-        }
-
-    };
-
+    /**
+     * @return the name of the parameter, normally the fits header key or column
+     *         name.
+     */
     String getName();
 }

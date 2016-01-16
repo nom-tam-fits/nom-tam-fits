@@ -36,8 +36,8 @@ import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 
 import nom.tam.image.comp.ICompressOption;
+import nom.tam.image.comp.ITileCompressorControl;
 import nom.tam.image.comp.ITileCompressorProvider;
-import nom.tam.image.comp.ITileCompressorProvider.ITileCompressorControl;
 import nom.tam.image.comp.gzip2.GZip2Compressor.LongGZip2Compressor;
 import nom.tam.image.comp.provider.TileCompressorProvider;
 

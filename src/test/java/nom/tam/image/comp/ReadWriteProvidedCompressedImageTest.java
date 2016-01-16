@@ -517,18 +517,18 @@ public class ReadWriteProvidedCompressedImageTest {
         try (Fits f = new Fits(); BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/testBlanksInCompressedFloatImage.fits.fz"))) {
             ImageData imageData = new ImageData(data);
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
-            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);
-            compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
-                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
-                    .getCompressOption(HCompressorOption.class)//
-                    /**/.setScale(4);
-            compressedHdu//
-                    .getCompressOption(QuantizeOption.class)//
-                    /**/.setQlevel(1.0)
-                    /**/.setCheckNull(true);
-            compressedHdu.compress();
-            f.addHDU(compressedHdu);
-            f.write(bdos);
+CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);
+compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
+        .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+        .getCompressOption(HCompressorOption.class)//
+        /**/.setScale(4);
+compressedHdu//
+        .getCompressOption(QuantizeOption.class)//
+        /**/.setQlevel(1.0)
+        /**/.setCheckNull(true);
+compressedHdu.compress();
+f.addHDU(compressedHdu);
+f.write(bdos);
         }
         try (Fits f = new Fits("target/testBlanksInCompressedFloatImage.fits.fz")) {
             f.readHDU();

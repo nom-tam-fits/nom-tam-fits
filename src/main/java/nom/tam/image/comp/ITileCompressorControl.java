@@ -4,7 +4,7 @@ package nom.tam.image.comp;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2016 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,21 +31,45 @@ package nom.tam.image.comp;
  * #L%
  */
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+
 /**
- * Service loader Interface to provide compression algorithms to fits.
+ * The interface to a provided compression algorithm.
  */
-public interface ITileCompressorProvider {
+public interface ITileCompressorControl {
 
     /**
-     * @return the {@code ITileCompressorControl} to use for the specified
-     *         quantize and compression algorithms and base type.
-     * @param quantAlgorithm
-     *            the quantification algorithm to use or null if none
-     * @param compressionAlgorithm
-     *            the compression algorithm to use
-     * @param baseType
-     *            the base type of the data to (de)compress.
+     * Compress the buffer into the byte buffer using the specified options.
+     * 
+     * @param in
+     *            the buffer to compress.
+     * @param out
+     *            the compressed data to fill (must already be allocated with
+     *            enough space)
+     * @param option
+     *            the options to use for the compression
+     * @return true if the compression succeded.
      */
-    ITileCompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType);
+    boolean compress(Buffer in, ByteBuffer out, ICompressOption option);
 
+    /**
+     * decompress the byte buffer back into the buffer using the specified
+     * options.
+     * 
+     * @param in
+     *            the bytes to decompress.
+     * @param out
+     *            the buffer to fill with the decompressed data (must already be
+     *            allocated with enough space)
+     * @param option
+     *            the options to use for decompressing.
+     */
+    void decompress(ByteBuffer in, Buffer out, ICompressOption option);
+
+    /**
+     * @return a option instance that can be used to control the compression
+     *         meganism.
+     */
+    ICompressOption option();
 }

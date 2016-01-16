@@ -36,59 +36,90 @@ import nom.tam.fits.HeaderCardException;
  * OTHER DEALINGS IN THE SOFTWARE.
  * #L%
  */
-
+/**
+ * Group of parameters that must be synchronized with the hdu meta data for a
+ * specific compression algorithm.
+ */
 public interface ICompressParameters {
 
-    ICompressParameters NULL = new ICompressParameters() {
-
-        @Override
-        public void addColumnsToTable(BinaryTableHDU hdu) {
-        }
-
-        @Override
-        public ICompressParameters copy(ICompressOption clone) {
-            return this;
-        }
-
-        @Override
-        public void getValuesFromColumn(int index) {
-        }
-
-        @Override
-        public void getValuesFromHeader(Header header) {
-        }
-
-        @Override
-        public void initializeColumns(Header header, BinaryTable binaryTable, int size) throws FitsException {
-        }
-
-        @Override
-        public void initializeColumns(int length) {
-        }
-
-        @Override
-        public void setValueFromColumn(int index) {
-        }
-
-        @Override
-        public void setValuesInHeader(Header header) {
-        }
-    };
-
+    /**
+     * Add the columns that hold the metadata for the parameters that are column
+     * based to the dhu.
+     * 
+     * @param hdu
+     *            the hdu to add the column
+     * @throws FitsException
+     *             if the column could not be added.
+     */
     void addColumnsToTable(BinaryTableHDU hdu) throws FitsException;
 
-    ICompressParameters copy(ICompressOption clone);
+    /**
+     * create a copy of this parameter for another option (normally a copy of
+     * the current option).
+     * 
+     * @param option
+     *            the new option for the copied parameter
+     * @return this (builder pattern)
+     */
+    ICompressParameters copy(ICompressOption option);
 
+    /**
+     * extract the option data from the column and set it in the option.
+     * 
+     * @param index
+     *            the index in the column.
+     */
     void getValuesFromColumn(int index);
 
+    /**
+     * extract the option values that are represented by headers from the hdu
+     * header.
+     * 
+     * @param header
+     *            the header to extract the option values.
+     */
     void getValuesFromHeader(Header header);
 
+    /**
+     * initialize the column based options of the compression algorithm from the
+     * binary table.
+     * 
+     * @param header
+     *            the header of the hdu
+     * @param binaryTable
+     *            the table of the hdu
+     * @param size
+     *            the column size
+     * @throws FitsException
+     *             if the column could not be initialized
+     */
     void initializeColumns(Header header, BinaryTable binaryTable, int size) throws FitsException;
 
+    /**
+     * initialize the column based parameter to the specified column length.
+     * 
+     * @param length
+     *            the column length.
+     */
     void initializeColumns(int length);
 
+    /**
+     * set the option values, that are column based, into the columns at the
+     * specified index.
+     * 
+     * @param index
+     *            the index in the columns to set.
+     */
     void setValueFromColumn(int index);
 
+    /**
+     * set the options values, that are hdu based, into the header.
+     * 
+     * @param header
+     *            the header to set the option value
+     * @throws HeaderCardException
+     *             if the header could not be set.
+     */
     void setValuesInHeader(Header header) throws HeaderCardException;
 
 }
