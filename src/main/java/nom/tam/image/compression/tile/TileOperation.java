@@ -32,13 +32,10 @@ package nom.tam.image.compression.tile;
  */
 
 import java.lang.reflect.Array;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
-import nom.tam.image.compression.tile.buffer.TileBuffer;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 
@@ -47,9 +44,7 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  * part of the image. Will be sub classed for compression and decompression
  * variants.
  */
-abstract class TileOperation implements Runnable {
-
-    protected final TiledImageOperation tiledImageOperation;
+abstract class TileOperation extends AbstractTileOperation implements Runnable {
 
     protected ByteBuffer compressedData;
 
@@ -57,17 +52,10 @@ abstract class TileOperation implements Runnable {
 
     protected TileCompressionType compressionType;
 
-    protected Future<?> future;
-
-    protected TileBuffer tileBuffer;
-
-    protected final int tileIndex;
-
     protected ICompressOption tileOptions;
 
-    protected TileOperation(TiledImageOperation array, int tileIndex) {
-        this.tiledImageOperation = array;
-        this.tileIndex = tileIndex;
+    protected TileOperation(TiledImageOperation operation, int tileIndex) {
+        super(operation, tileIndex);
     }
 
     private ByteBuffer convertToBuffer(Object data) {
@@ -87,17 +75,6 @@ abstract class TileOperation implements Runnable {
 
     protected TileCompressionType getCompressionType() {
         return this.compressionType;
-    }
-
-    /**
-     * @return the number of pixels in this tile.
-     */
-    protected int getPixelSize() {
-        return this.tileBuffer.getPixelSize();
-    }
-
-    protected int getTileIndex() {
-        return this.tileIndex;
     }
 
     protected ICompressOption getTileOptions() {
@@ -125,28 +102,13 @@ abstract class TileOperation implements Runnable {
         this.compressedOffset = value;
         return this;
     }
-
+    
+    @Override
     protected TileOperation setDimensions(int dataOffset, int width, int height) {
-        this.tileBuffer = TileBuffer.createTileBuffer(this.tiledImageOperation.getBaseType(), //
-                dataOffset, //
-                this.tiledImageOperation.getImageWidth(), //
-                width, height);
+        super.setDimensions(dataOffset, width, height);
         return this;
     }
-
-    /**
-     * set the buffer that describes the whole image and let the tile create a
-     * slice of it from the position where the tile starts in the whole image.
-     * Attention this method is not thread-safe because it changes the position
-     * of the buffer parameter.
-     *
-     * @param buffer
-     *            the buffer that describes the whole image.
-     */
-    protected void setWholeImageBuffer(Buffer buffer) {
-        this.tileBuffer.setDecompressedData(buffer);
-    }
-
+ 
     /**
      * set the buffer that describes the whole compressed image and let the tile
      * create a slice of it from the position where the tile starts in the whole
@@ -169,13 +131,5 @@ abstract class TileOperation implements Runnable {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + this.tileIndex + "," + this.compressionType + "," + this.compressedOffset + ")";
-    }
-
-    protected void waitForResult() {
-        try {
-            this.future.get();
-        } catch (Exception e) {
-            throw new IllegalStateException("could not (de)compress tile", e);
-        }
     }
 }

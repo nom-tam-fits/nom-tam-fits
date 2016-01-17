@@ -97,7 +97,7 @@ public abstract class TileBuffer {
         return this.width;
     }
 
-    public TileBuffer setDecompressedData(Buffer value) {
+    public TileBuffer setData(Buffer value) {
         value.position(this.offset);
         this.imageBuffer = this.baseType.sliceBuffer(value);
         return this;
