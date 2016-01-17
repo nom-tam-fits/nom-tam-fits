@@ -46,7 +46,6 @@ import nom.tam.fits.Header;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressor;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
-import nom.tam.fits.compression.algorithm.api.ICompressorProvider;
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.ByteGZipCompressor;
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.DoubleGZipCompressor;
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.FloatGZipCompressor;
@@ -69,6 +68,7 @@ import nom.tam.fits.compression.algorithm.rice.RiceCompressor.DoubleRiceCompress
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.FloatRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.IntRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompressor;
+import nom.tam.fits.compression.provider.api.ICompressorProvider;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressQuantizeParameters;

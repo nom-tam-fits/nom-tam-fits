@@ -37,9 +37,9 @@ import java.nio.LongBuffer;
 
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
-import nom.tam.fits.compression.algorithm.api.ICompressorProvider;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
 import nom.tam.fits.compression.provider.CompressorProvider;
+import nom.tam.fits.compression.provider.api.ICompressorProvider;
 
 public class TileCompressorAlternativProvider implements ICompressorProvider {
 

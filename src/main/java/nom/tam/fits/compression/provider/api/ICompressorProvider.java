@@ -1,4 +1,6 @@
-package nom.tam.fits.compression.algorithm.api;
+package nom.tam.fits.compression.provider.api;
+
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 
 /*
  * #%L
