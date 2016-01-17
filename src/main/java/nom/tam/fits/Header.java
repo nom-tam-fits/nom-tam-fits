@@ -164,6 +164,7 @@ public class Header implements FitsElement {
 
     /** Create an empty header */
     public Header() {
+        super();
     }
 
     /**
@@ -212,6 +213,11 @@ public class Header implements FitsElement {
             }
             this.duplicates.add(dup);
         }
+    }
+
+    private void addHeaderCard(String key, HeaderCard card) {
+        deleteKey(key);
+        this.iter.add(card);
     }
 
     /**
@@ -266,7 +272,7 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      */
-    public void addValue(IFitsHeader key, long val) throws HeaderCardException {
+    public void addValue(IFitsHeader key, int val) throws HeaderCardException {
         addValue(key.key(), val, key.comment());
     }
 
@@ -281,7 +287,7 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      */
-    public void addValue(IFitsHeader key, int val) throws HeaderCardException {
+    public void addValue(IFitsHeader key, long val) throws HeaderCardException {
         addValue(key.key(), val, key.comment());
     }
 
@@ -313,8 +319,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, BigDecimal val, String comment) throws HeaderCardException {
-        deleteKey(key);
-        this.iter.add(new HeaderCard(key, val, comment));
+        addHeaderCard(key, new HeaderCard(key, val, comment));
     }
 
     /**
@@ -331,8 +336,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, BigInteger val, String comment) throws HeaderCardException {
-        deleteKey(key);
-        this.iter.add(new HeaderCard(key, val, comment));
+        addHeaderCard(key, new HeaderCard(key, val, comment));
     }
 
     /**
@@ -348,8 +352,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
-        deleteKey(key);
-        this.iter.add(new HeaderCard(key, val, comment));
+        addHeaderCard(key, new HeaderCard(key, val, comment));
     }
 
     /**
@@ -366,8 +369,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, double val, String comment) throws HeaderCardException {
-        deleteKey(key);
-        this.iter.add(new HeaderCard(key, val, comment));
+        addHeaderCard(key, new HeaderCard(key, val, comment));
     }
 
     /**
@@ -384,8 +386,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, long val, String comment) throws HeaderCardException {
-        deleteKey(key);
-        this.iter.add(new HeaderCard(key, val, comment));
+        addHeaderCard(key, new HeaderCard(key, val, comment));
     }
 
     /**
@@ -401,8 +402,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, String val, String comment) throws HeaderCardException {
-        deleteKey(key);
-        this.iter.add(new HeaderCard(key, val, comment));
+        addHeaderCard(key, new HeaderCard(key, val, comment));
     }
 
     /**
@@ -473,7 +473,10 @@ public class Header implements FitsElement {
                 isTable = true;
             }
         }
+        doCardChecks(isTable, isExtension);
+    }
 
+    private void doCardChecks(boolean isTable, boolean isExtension) throws FitsException {
         cardCheck(BITPIX);
         cardCheck(NAXIS);
         int nax = getIntValue(NAXIS);
@@ -513,6 +516,16 @@ public class Header implements FitsElement {
         }
         // End cannot have a comment
         this.iter.add(HeaderCard.saveNewHeaderCard(END.key(), null, false));
+    }
+
+    private void checkFirstCard(String key) throws IOException {
+        if (key == null || !key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {
+            if (this.fileOffset > 0 && FitsFactory.getAllowTerminalJunk()) {
+                throw new EOFException("Not FITS format at " + this.fileOffset + ":" + key);
+            } else {
+                throw new IOException("Not FITS format at " + this.fileOffset + ":" + key);
+            }
+        }
     }
 
     /**
@@ -589,12 +602,8 @@ public class Header implements FitsElement {
      * @return <CODE>null</CODE> if the keyword could not be found; return the
      *         HeaderCard object otherwise.
      */
-    public HeaderCard findCard(String key) {
-        HeaderCard card = this.cards.get(key);
-        if (card != null) {
-            this.iter.setKey(key);
-        }
-        return card;
+    public HeaderCard findCard(IFitsHeader key) {
+        return this.findCard(key.key());
     }
 
     /**
@@ -606,8 +615,12 @@ public class Header implements FitsElement {
      * @return <CODE>null</CODE> if the keyword could not be found; return the
      *         HeaderCard object otherwise.
      */
-    public HeaderCard findCard(IFitsHeader key) {
-        return this.findCard(key.key());
+    public HeaderCard findCard(String key) {
+        HeaderCard card = this.cards.get(key);
+        if (card != null) {
+            this.iter.setKey(key);
+        }
+        return card;
     }
 
     /**
@@ -724,6 +737,20 @@ public class Header implements FitsElement {
      * 
      * @param key
      *            The header key.
+     * @param dft
+     *            The value to be returned if the key cannot be found or if the
+     *            parameter does not seem to be a boolean.
+     * @return the associated value.
+     */
+    public boolean getBooleanValue(IFitsHeader key, boolean dft) {
+        return getBooleanValue(key.key(), dft);
+    }
+
+    /**
+     * Get the <CODE>boolean</CODE> value associated with the given key.
+     * 
+     * @param key
+     *            The header key.
      * @return The value found, or false if not found or if the keyword is not a
      *         logical keyword.
      */
@@ -742,24 +769,6 @@ public class Header implements FitsElement {
      * @return the associated value.
      */
     public boolean getBooleanValue(String key, boolean dft) {
-        HeaderCard fcard = findCard(key);
-        if (fcard == null) {
-            return dft;
-        }
-        return fcard.getValue(Boolean.class, dft).booleanValue();
-    }
-
-    /**
-     * Get the <CODE>boolean</CODE> value associated with the given key.
-     * 
-     * @param key
-     *            The header key.
-     * @param dft
-     *            The value to be returned if the key cannot be found or if the
-     *            parameter does not seem to be a boolean.
-     * @return the associated value.
-     */
-    public boolean getBooleanValue(IFitsHeader key, boolean dft) {
         HeaderCard fcard = findCard(key);
         if (fcard == null) {
             return dft;
@@ -1173,10 +1182,7 @@ public class Header implements FitsElement {
         while (this.iter.hasNext()) {
             key = this.iter.next().getKey();
         }
-        if (!key.equals(END.key())) {
-            return false;
-        }
-        return true;
+        return key.equals(END.key());
 
     }
 
@@ -1294,19 +1300,12 @@ public class Header implements FitsElement {
         try {
             while (true) {
                 HeaderCard fcard = new HeaderCard(cardCountingArray);
+                String key = fcard.getKey();
                 if (firstCard) {
-                    String key = fcard.getKey();
-                    if (key == null || !key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {
-                        if (this.fileOffset > 0 && FitsFactory.getAllowTerminalJunk()) {
-                            throw new EOFException("Not FITS format at " + this.fileOffset + ":" + key);
-                        } else {
-                            throw new IOException("Not FITS format at " + this.fileOffset + ":" + key);
-                        }
-                    }
+                    checkFirstCard(key);
                     firstCard = false;
                 }
 
-                String key = fcard.getKey();
                 if (key != null && this.cards.containsKey(key)) {
                     addDuplicate(this.cards.get(key));
                 }
@@ -1633,7 +1632,7 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             if the operation failed
      */
-    public void updateLine(String key, HeaderCard card) throws HeaderCardException {
+    public void updateLine(IFitsHeader key, HeaderCard card) throws HeaderCardException {
         deleteKey(key);
         this.iter.add(card);
     }
@@ -1648,9 +1647,8 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             if the operation failed
      */
-    public void updateLine(IFitsHeader key, HeaderCard card) throws HeaderCardException {
-        deleteKey(key);
-        this.iter.add(card);
+    public void updateLine(String key, HeaderCard card) throws HeaderCardException {
+        addHeaderCard(key, card);
     }
 
     /**
