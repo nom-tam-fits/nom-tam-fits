@@ -6,8 +6,8 @@ import java.util.concurrent.ThreadFactory;
 
 import nom.tam.fits.header.hierarch.IHierarchKeyFormatter;
 import nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter;
-import nom.tam.image.comp.hdu.CompressedImageData;
-import nom.tam.image.comp.hdu.CompressedImageHDU;
+import nom.tam.image.compression.hdu.CompressedImageData;
+import nom.tam.image.compression.hdu.CompressedImageHDU;
 
 /*
  * #%L
