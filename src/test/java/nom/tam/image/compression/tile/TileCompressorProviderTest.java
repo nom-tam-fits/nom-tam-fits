@@ -46,12 +46,12 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.compression.api.ICompressOption;
-import nom.tam.fits.compression.api.ITileCompressor;
-import nom.tam.fits.compression.api.ITileCompressorControl;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.api.ICompressor;
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
+import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
 import nom.tam.fits.compression.provider.TileCompressorAlternativProvider;
-import nom.tam.fits.compression.provider.TileCompressorProvider;
-import nom.tam.fits.compression.rice.RiceCompressOption;
+import nom.tam.fits.compression.provider.CompressorProvider;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.Standard;
 import nom.tam.image.compression.hdu.CompressedImageData;
@@ -90,7 +90,7 @@ public class TileCompressorProviderTest {
         }
     }
 
-    public static class BrokenClass extends TileCompressorProvider implements ITileCompressor<ByteBuffer> {
+    public static class BrokenClass extends CompressorProvider implements ICompressor<ByteBuffer> {
 
         public BrokenClass(BrokenOption option) {
             if (exceptionInConstructor) {
@@ -113,7 +113,7 @@ public class TileCompressorProviderTest {
             }
         }
 
-        private ITileCompressorControl getProvider() {
+        private ICompressorControl getProvider() {
             return TileCompressorAlternativProvider.createControl(BrokenClass.class);
         }
     }
@@ -139,21 +139,21 @@ public class TileCompressorProviderTest {
 
     @Test
     public void testAlternativeTileProcessor() throws Exception {
-        ITileCompressorControl compressor = TileCompressorProvider.findCompressorControl(null, "X", long.class);
+        ICompressorControl compressor = CompressorProvider.findCompressorControl(null, "X", long.class);
         Assert.assertTrue(compressor.getClass().getName().indexOf(TileCompressorAlternativProvider.class.getSimpleName()) > 0);
 
-        Assert.assertNotNull(TileCompressorProvider.findCompressorControl(null, "X", long.class));
+        Assert.assertNotNull(CompressorProvider.findCompressorControl(null, "X", long.class));
 
-        Assert.assertNull(TileCompressorProvider.findCompressorControl("AA", Compression.ZCMPTYPE_RICE_1, int.class));
-        Assert.assertNull(TileCompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2, "BB", int.class));
-        Assert.assertNull(TileCompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2, Compression.ZCMPTYPE_RICE_1, String.class));
+        Assert.assertNull(CompressorProvider.findCompressorControl("AA", Compression.ZCMPTYPE_RICE_1, int.class));
+        Assert.assertNull(CompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2, "BB", int.class));
+        Assert.assertNull(CompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2, Compression.ZCMPTYPE_RICE_1, String.class));
 
-        Assert.assertNotNull(TileCompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_GZIP_2, int.class));
+        Assert.assertNotNull(CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_GZIP_2, int.class));
     }
 
     @Test(expected = IllegalStateException.class)
     public void testBadProviderCasesBadCompressConstruct() {
-        ITileCompressorControl provider = new BrokenClass(null).getProvider();
+        ICompressorControl provider = new BrokenClass(null).getProvider();
         ICompressOption options = provider.option();
         exceptionInConstructor = true;
         provider.decompress(null, null, options);
@@ -161,7 +161,7 @@ public class TileCompressorProviderTest {
 
     @Test
     public void testBadProviderCasesBadCompressMethod() {
-        ITileCompressorControl provider = new BrokenClass(null).getProvider();
+        ICompressorControl provider = new BrokenClass(null).getProvider();
         ICompressOption options = provider.option();
         exceptionInMethod = true;
         Assert.assertFalse(provider.compress(null, null, options));
@@ -169,7 +169,7 @@ public class TileCompressorProviderTest {
 
     @Test(expected = IllegalStateException.class)
     public void testBadProviderCasesBadDeCompressMethod() {
-        ITileCompressorControl provider = new BrokenClass(null).getProvider();
+        ICompressorControl provider = new BrokenClass(null).getProvider();
         ICompressOption options = provider.option();
         exceptionInMethod = true;
         provider.decompress(null, null, options);
@@ -177,21 +177,21 @@ public class TileCompressorProviderTest {
 
     @Test(expected = IllegalStateException.class)
     public void testBadProviderCasesBadOption() {
-        ITileCompressorControl provider = new BrokenClass(null).getProvider();
+        ICompressorControl provider = new BrokenClass(null).getProvider();
         exceptionInConstructor = true;
         provider.option();
     }
 
     @Test
     public void testBadProviderCasesSuccess() {
-        ITileCompressorControl provider = new BrokenClass(null).getProvider();
+        ICompressorControl provider = new BrokenClass(null).getProvider();
         ICompressOption options = provider.option();
         provider.decompress(null, null, options);
     }
 
     @Test
     public void testBadProviderCasesSuccessCompressMethod() {
-        ITileCompressorControl provider = new BrokenClass(null).getProvider();
+        ICompressorControl provider = new BrokenClass(null).getProvider();
         ICompressOption options = provider.option();
         provider.decompress(null, null, options);
         provider.compress(null, null, options);

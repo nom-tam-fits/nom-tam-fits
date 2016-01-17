@@ -35,22 +35,22 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 
-import nom.tam.fits.compression.api.ICompressOption;
-import nom.tam.fits.compression.api.ITileCompressorControl;
-import nom.tam.fits.compression.api.ITileCompressorProvider;
-import nom.tam.fits.compression.gzip2.GZip2Compressor.LongGZip2Compressor;
-import nom.tam.fits.compression.provider.TileCompressorProvider;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
+import nom.tam.fits.compression.algorithm.api.ICompressorProvider;
+import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
+import nom.tam.fits.compression.provider.CompressorProvider;
 
-public class TileCompressorAlternativProvider implements ITileCompressorProvider {
+public class TileCompressorAlternativProvider implements ICompressorProvider {
 
-    public static ITileCompressorControl createControl(Class<?> clazz) {
-        return new TileCompressorProvider.TileCompressorControl(clazz);
+    public static ICompressorControl createControl(Class<?> clazz) {
+        return new CompressorProvider.TileCompressorControl(clazz);
     }
 
     @Override
-    public ITileCompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
+    public ICompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
         if ("X".equalsIgnoreCase(compressionAlgorithm) && quantAlgorithm == null && baseType.equals(long.class)) {
-            return new ITileCompressorControl() {
+            return new ICompressorControl() {
 
                 @Override
                 public boolean compress(Buffer in, ByteBuffer out, ICompressOption options) {

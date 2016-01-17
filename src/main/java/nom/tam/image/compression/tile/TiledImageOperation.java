@@ -62,9 +62,9 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardBuilder;
 import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.compression.api.ICompressOption;
-import nom.tam.fits.compression.api.ITileCompressorControl;
-import nom.tam.fits.compression.provider.TileCompressorProvider;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
+import nom.tam.fits.compression.provider.CompressorProvider;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 
@@ -93,10 +93,10 @@ public class TiledImageOperation {
     private ByteBuffer compressedWholeArea;
 
     // Note: field is initialized lazily: use getter within class!
-    private ITileCompressorControl compressorControl;
+    private ICompressorControl compressorControl;
 
     // Note: field is initialized lazily: use getter within class!
-    private ITileCompressorControl gzipCompressorControl;
+    private ICompressorControl gzipCompressorControl;
 
     private int naxis;
 
@@ -198,14 +198,14 @@ public class TiledImageOperation {
         return this.compressedWholeArea;
     }
 
-    protected ITileCompressorControl getCompressorControl() {
+    protected ICompressorControl getCompressorControl() {
         initializeCompressionControl();
         return this.compressorControl;
     }
 
-    protected ITileCompressorControl getGzipCompressorControl() {
+    protected ICompressorControl getGzipCompressorControl() {
         if (this.gzipCompressorControl == null) {
-            this.gzipCompressorControl = TileCompressorProvider.findCompressorControl(null, ZCMPTYPE_GZIP_1, this.baseType.primitiveClass());
+            this.gzipCompressorControl = CompressorProvider.findCompressorControl(null, ZCMPTYPE_GZIP_1, this.baseType.primitiveClass());
         }
         return this.gzipCompressorControl;
     }
@@ -230,7 +230,7 @@ public class TiledImageOperation {
 
     private void initializeCompressionControl() {
         if (this.compressorControl == null) {
-            this.compressorControl = TileCompressorProvider.findCompressorControl(this.quantAlgorithm, this.compressAlgorithm, this.baseType.primitiveClass());
+            this.compressorControl = CompressorProvider.findCompressorControl(this.quantAlgorithm, this.compressAlgorithm, this.baseType.primitiveClass());
             if (this.compressorControl == null) {
                 throw new IllegalStateException("Found no compressor control for compression algorithm:" + this.compressAlgorithm + //
                         " (quantize algorithm = " + this.quantAlgorithm + ", base type = " + this.baseType.primitiveClass() + ")");

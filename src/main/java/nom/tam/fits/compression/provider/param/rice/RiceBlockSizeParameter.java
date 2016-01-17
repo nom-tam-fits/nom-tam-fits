@@ -34,8 +34,8 @@ package nom.tam.fits.compression.provider.param.rice;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
-import nom.tam.fits.compression.rice.RiceCompressOption;
 import nom.tam.fits.header.Compression;
 
 public final class RiceBlockSizeParameter extends CompressHeaderParameter<RiceCompressOption> {

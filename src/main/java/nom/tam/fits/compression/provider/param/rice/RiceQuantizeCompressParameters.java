@@ -33,11 +33,11 @@ package nom.tam.fits.compression.provider.param.rice;
 
 import java.util.Arrays;
 
-import nom.tam.fits.compression.api.ICompressHeaderParameter;
-import nom.tam.fits.compression.api.ICompressOption;
-import nom.tam.fits.compression.api.ICompressParameters;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.rice.RiceQuantizeCompressOption;
+import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.quant.QuantizeParameters;
-import nom.tam.fits.compression.rice.RiceQuantizeCompressOption;
 
 public class RiceQuantizeCompressParameters extends QuantizeParameters {
 

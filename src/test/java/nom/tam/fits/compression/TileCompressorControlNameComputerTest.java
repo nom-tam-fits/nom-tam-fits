@@ -36,7 +36,7 @@ import static nom.tam.fits.header.Compression.ZCMPTYPE_PLIO_1;
 import static nom.tam.fits.header.Compression.ZCMPTYPE_RICE_1;
 import static nom.tam.fits.header.Compression.ZQUANTIZ_NO_DITHER;
 import static org.junit.Assert.assertEquals;
-import nom.tam.fits.compression.provider.TileCompressorControlNameComputer;
+import nom.tam.fits.compression.provider.CompressorControlNameComputer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,11 +47,11 @@ import org.junit.Test;
  * for the latter purpose.
  */
 public class TileCompressorControlNameComputerTest {
-    private TileCompressorControlNameComputer nameComputer;
+    private CompressorControlNameComputer nameComputer;
 
     @Before
     public void setUp() {
-        nameComputer = new TileCompressorControlNameComputer();
+        nameComputer = new CompressorControlNameComputer();
     }
 
     @Test

@@ -37,7 +37,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import nom.tam.fits.compression.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.image.compression.tile.buffer.TileBuffer;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;

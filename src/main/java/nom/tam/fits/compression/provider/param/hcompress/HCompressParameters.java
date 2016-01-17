@@ -31,10 +31,10 @@ package nom.tam.fits.compression.provider.param.hcompress;
  * #L%
  */
 
-import nom.tam.fits.compression.api.ICompressHeaderParameter;
-import nom.tam.fits.compression.api.ICompressOption;
-import nom.tam.fits.compression.api.ICompressParameters;
-import nom.tam.fits.compression.hcompress.HCompressorOption;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.hcompress.HCompressorOption;
+import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.base.CompressParameters;
 
 public class HCompressParameters extends CompressParameters {

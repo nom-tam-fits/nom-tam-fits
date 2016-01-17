@@ -35,7 +35,7 @@ import static nom.tam.fits.header.Compression.ZNAMEn;
 import static nom.tam.fits.header.Compression.ZVALn;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.compression.api.ICompressHeaderParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 
 public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<OPTION> implements ICompressHeaderParameter {
 

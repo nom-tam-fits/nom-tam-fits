@@ -33,8 +33,8 @@ package nom.tam.fits.compression.provider.param.quant;
 
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
-import nom.tam.fits.compression.quant.QuantizeOption;
 import nom.tam.fits.header.Compression;
 
 final class ZQuantizeParameter extends CompressHeaderParameter<QuantizeOption> {

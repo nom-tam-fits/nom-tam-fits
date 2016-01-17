@@ -33,7 +33,7 @@ package nom.tam.fits.compression.provider.param.base;
 
 import java.lang.reflect.Array;
 
-import nom.tam.fits.compression.api.ICompressColumnParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
 
 public abstract class CompressColumnParameter<T, OPTION> extends CompressParameter<OPTION> implements ICompressColumnParameter {
 

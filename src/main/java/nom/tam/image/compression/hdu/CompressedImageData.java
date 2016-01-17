@@ -39,7 +39,7 @@ import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.compression.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.image.compression.tile.TiledImageOperation;
 import nom.tam.util.ArrayFuncs;
 

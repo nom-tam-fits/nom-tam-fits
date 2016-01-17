@@ -31,12 +31,12 @@ package nom.tam.fits.compression.provider.param.quant;
  * #L%
  */
 
-import nom.tam.fits.compression.api.ICompressColumnParameter;
-import nom.tam.fits.compression.api.ICompressHeaderParameter;
-import nom.tam.fits.compression.api.ICompressOption;
-import nom.tam.fits.compression.api.ICompressParameters;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
+import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.base.CompressParameters;
-import nom.tam.fits.compression.quant.QuantizeOption;
 
 public class QuantizeParameters extends CompressParameters {
 

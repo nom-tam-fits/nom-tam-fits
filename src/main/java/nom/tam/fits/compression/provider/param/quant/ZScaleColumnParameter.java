@@ -31,8 +31,8 @@ package nom.tam.fits.compression.provider.param.quant;
  * #L%
  */
 
+import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
 import nom.tam.fits.compression.provider.param.base.CompressColumnParameter;
-import nom.tam.fits.compression.quant.QuantizeOption;
 import nom.tam.fits.header.Compression;
 
 final class ZScaleColumnParameter extends CompressColumnParameter<double[], QuantizeOption> {

@@ -33,10 +33,10 @@ package nom.tam.fits.compression.provider.param.hcompress;
 
 import java.util.Arrays;
 
-import nom.tam.fits.compression.api.ICompressHeaderParameter;
-import nom.tam.fits.compression.api.ICompressOption;
-import nom.tam.fits.compression.api.ICompressParameters;
-import nom.tam.fits.compression.hcompress.HCompressorQuantizeOption;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.hcompress.HCompressorQuantizeOption;
+import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.quant.QuantizeParameters;
 
 public class HCompressQuantizeParameters extends QuantizeParameters {

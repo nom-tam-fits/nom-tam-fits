@@ -37,9 +37,9 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.compression.api.ICompressColumnParameter;
-import nom.tam.fits.compression.api.ICompressHeaderParameter;
-import nom.tam.fits.compression.api.ICompressParameters;
+import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 
 public abstract class CompressParameters implements ICompressParameters {
 
