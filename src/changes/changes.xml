@@ -2,12 +2,26 @@
 	<body>
 		<release version="1.14.0" date="2016-01-10" description="full Image compression support">
 			<action type="update">
-				Image compression is now fully supported by nom-tam-fits. A 100% java implementation of the compression libraries available in cfitsio
-				where implemented. An API for easy handling of compressed images is now provided. Attention the binary table compression and the NULL_PIXEL_MASK features are due for the next release.
-				For the de/compressions all available cpu's are automatically utilized.
+				Image compression and tiling are now fully supported by nom-tam-fits. A 100% Java implementation of the compression libraries available in cfitsio
+				was implemented. An API for easy handling of compressed images is now provided. Support for binary table compression and the NULL_PIXEL_MASK features is
+				anticipated in the next release.
+				
+				When [de]compressing all available CPU's are automatically utilized.
+				
+				Internal compression allows FITS files to be created where the data are efficiently stored, but the
+				metadata is still easily accessible.  The tiling of images is particularly critical 
+				for supporting efficient access to subsets of very large images.  A user can easily access
+				only the tiles that overlap the region of interest and can skip data not of interest.
+				While some skipping might be possible with uncompressed FITS files (i.e., read only the rows
+				overlapping the desired subset), internal tiles can be much more efficient when the image is
+				substantially larger than the subset.  Most compression algorithms interfere with the ability to 
+				skip uninteresting data, but tiles are compressed independently, so users can benefit both from
+				the compression and the selection of only a subset of the image.
+				
 			</action>
 			<action type="add" dev="ritchieGitHub" issue="48">
-				Added a de/compression api with all compression methods from the fits standard.
+				Added a [de]compression API supporting all compression methods in the proposed updates
+				to the  FITS standard.
 			</action>
 			<action type="fix" dev="ritchieGitHub" issue="26">
 				Wrong checksum calculation corrected.
@@ -22,10 +36,10 @@
 				Comment style cards with a empty key value can now be used multiple times.
 			</action>
 			<action type="update" dev="ritchieGitHub" issue="68">
-				Alignement of hierarch headercard values deacivated.
+				Alignment of hierarch headercard values deactivated.
 			</action>
 			<action type="add" dev="ritchieGitHub" issue="72">
-				The foratting of hierarch card keys can mow be be controlled by a provided interface. Two formats are profided.
+				The formatting of hierarch card keys can mow be be controlled. Two formats are provided.
 			</action>
 		</release>
 		<release version="1.13.1" date="2015-08-21" description="Maintenance release with fixes for hierarch/longstring and rewrite bugs">
