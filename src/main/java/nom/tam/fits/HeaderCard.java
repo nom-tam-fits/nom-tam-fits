@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.utilities.FitsHeaderCardParser;
 import nom.tam.fits.utilities.FitsHeaderCardParser.ParsedValue;
 import nom.tam.fits.utilities.FitsLineAppender;
@@ -70,11 +71,11 @@ public class HeaderCard implements CursorValue<String> {
 
     private static final int HIERARCH_SMALL_STRING_ALIGN_POSITION = 29;
 
-    private static final String HIERARCH_WITH_BLANK = "HIERARCH ";
+    private static final String HIERARCH_WITH_BLANK = NonStandard.HIERARCH.key() + " ";
 
     private static final int HIERARCH_WITH_BLANK_LENGTH = HIERARCH_WITH_BLANK.length();
 
-    private static final String HIERARCH_WITH_DOT = "HIERARCH.";
+    private static final String HIERARCH_WITH_DOT = NonStandard.HIERARCH.key() + ".";
 
     /**
      * regexp for IEEE floats
@@ -582,9 +583,7 @@ public class HeaderCard implements CursorValue<String> {
      * @param dis
      */
     private void hierarchCard(String card, HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
-
         this.key = FitsHeaderCardParser.parseCardKey(card);
-
         extractValueCommentFromString(dis, card);
     }
 
@@ -618,7 +617,7 @@ public class HeaderCard implements CursorValue<String> {
                 longComment.append(continueCard.getComment());
             }
             continueCard = null;
-            if (longValue.charAt(longValue.length() - 1) == '&') {
+            if (longValue.length() > 0 && longValue.charAt(longValue.length() - 1) == '&') {
                 longValue.setLength(longValue.length() - 1);
                 dis.mark();
                 String card = readOneHeaderLine(dis);

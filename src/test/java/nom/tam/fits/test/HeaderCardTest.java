@@ -261,6 +261,18 @@ public class HeaderCardTest {
     }
 
     @Test
+    public void testHierarchFormatting() throws Exception {
+        FitsFactory.setUseHierarch(true);
+        HeaderCard hc;
+        hc = new HeaderCard("HIERARCH.TEST1.INT", "xx", "Comment");
+        assertEquals("HIERARCH TEST1 INT= 'xx      '          / Comment                               ", hc.toString());
+        hc = new HeaderCard("HIERARCH.TEST1.TEST2.INT", "xx", "Comment");
+        assertEquals("HIERARCH TEST1 TEST2 INT= 'xx'          / Comment                               ", hc.toString());
+        hc = new HeaderCard("HIERARCH.TEST1.TEST3.B", "xx", "Comment");
+        assertEquals("HIERARCH TEST1 TEST3 B= 'xx  '          / Comment                               ", hc.toString());
+    }
+
+    @Test
     public void testHierarch() throws Exception {
 
         HeaderCard hc;

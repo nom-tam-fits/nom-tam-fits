@@ -125,4 +125,12 @@ public class UserProvidedTest {
         }
     }
 
+    @Test
+    public void testSpecialLongStringCase() throws FitsException, IOException {
+        try (Fits f = new Fits(BlackBoxImages.getBlackBoxImage("16913-1.fits"))) {
+            Header header = f.readHDU().getHeader();
+            Assert.assertEquals("", header.findCard("META_0").getValue());
+        }
+    }
+
 }
