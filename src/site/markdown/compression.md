@@ -8,9 +8,10 @@ available cpu's. To compress an existing image HDU:
         compressedHdu
             .setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
             .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+            .getCompressOption(QuantizeOption.class)//
+            /**/.setQlevel(1.0)//
             .getCompressOption(HCompressorOption.class)//
             /**/.setScale(1);
-        compressedHdu.getCompressOption(QuantizeOption.class).setQlevel(1.0);
         compressedHdu.compress();
         f.addHDU(compressedHdu);
         try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("something.fits.fz"))) {

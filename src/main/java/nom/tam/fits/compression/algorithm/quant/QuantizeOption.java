@@ -285,4 +285,9 @@ public class QuantizeOption implements ICompressOption {
         }
         return null;
     }
+
+    public <T> T getCompressOption(Class<T> clazz) {
+        return unwrap(clazz);
+    }
+
 }
