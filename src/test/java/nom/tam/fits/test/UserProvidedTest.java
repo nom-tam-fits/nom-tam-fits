@@ -41,14 +41,33 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class UserProvidedTest {
+
+    private boolean longStringsEnabled;
+
+    private boolean useHierarch;
+
+    @Before
+    public void before() {
+        longStringsEnabled = FitsFactory.isLongStringsEnabled();
+        useHierarch = FitsFactory.getUseHierarch();
+    }
+
+    @After
+    public void after() {
+        FitsFactory.setLongStringsEnabled(longStringsEnabled);
+        FitsFactory.setUseHierarch(useHierarch);
+    }
 
     @Test
     public void testRewriteableHierarchImageWithLongStrings() throws Exception {
@@ -126,11 +145,20 @@ public class UserProvidedTest {
     }
 
     @Test
-    public void testSpecialLongStringCase() throws FitsException, IOException {
+    public void testSpecialLongStringCaseWithDuplicateHierarch() throws FitsException, IOException {
+        FitsFactory.setUseHierarch(true);
+        int hierarchKeys = 0;
         try (Fits f = new Fits(BlackBoxImages.getBlackBoxImage("16913-1.fits"))) {
             Header header = f.readHDU().getHeader();
             Assert.assertEquals("", header.findCard("META_0").getValue());
+            Cursor<String, HeaderCard> iter = header.iterator();
+            while (iter.hasNext()) {
+                HeaderCard headerCard = iter.next();
+                if (headerCard.getKey().startsWith(NonStandard.HIERARCH.key())) {
+                    hierarchKeys++;
+                }
+            }
+            Assert.assertEquals(10, hierarchKeys);
         }
     }
-
 }
