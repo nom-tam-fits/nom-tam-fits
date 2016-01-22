@@ -265,11 +265,11 @@ public class HeaderCardTest {
         FitsFactory.setUseHierarch(true);
         HeaderCard hc;
         hc = new HeaderCard("HIERARCH.TEST1.INT", "xx", "Comment");
-        assertEquals("HIERARCH TEST1 INT= 'xx      '          / Comment                               ", hc.toString());
+        assertEquals("HIERARCH TEST1 INT= 'xx' / Comment                                              ", hc.toString());
         hc = new HeaderCard("HIERARCH.TEST1.TEST2.INT", "xx", "Comment");
-        assertEquals("HIERARCH TEST1 TEST2 INT= 'xx'          / Comment                               ", hc.toString());
+        assertEquals("HIERARCH TEST1 TEST2 INT= 'xx' / Comment                                        ", hc.toString());
         hc = new HeaderCard("HIERARCH.TEST1.TEST3.B", "xx", "Comment");
-        assertEquals("HIERARCH TEST1 TEST3 B= 'xx  '          / Comment                               ", hc.toString());
+        assertEquals("HIERARCH TEST1 TEST3 B= 'xx' / Comment                                          ", hc.toString());
     }
 
     @Test
@@ -296,7 +296,7 @@ public class HeaderCardTest {
 
         hc = new HeaderCard(key, 123, "Comment");
 
-        assertEquals("HIERARCH TEST1 TEST2 INT=           123 / Comment", hc.toString().trim());
+        assertEquals("HIERARCH TEST1 TEST2 INT= 123 / Comment", hc.toString().trim());
 
         assertEquals("h5", key, hc.getKey());
         assertEquals("h6", "123", hc.getValue());

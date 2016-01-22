@@ -67,10 +67,6 @@ public class HeaderCard implements CursorValue<String> {
 
     public static final int FITS_HEADER_CARD_SIZE = 80;
 
-    private static final int HIERARCH_ALIGN_POSITION = 39;
-
-    private static final int HIERARCH_SMALL_STRING_ALIGN_POSITION = 29;
-
     private static final String HIERARCH_WITH_BLANK = NonStandard.HIERARCH.key() + " ";
 
     private static final int HIERARCH_WITH_BLANK_LENGTH = HIERARCH_WITH_BLANK.length();
@@ -771,8 +767,8 @@ public class HeaderCard implements CursorValue<String> {
         if (this.key != null) {
             if (this.key.length() > HIERARCH_WITH_BLANK_LENGTH && this.key.substring(0, HIERARCH_WITH_BLANK_LENGTH).equals(HIERARCH_WITH_DOT)) {
                 FitsFactory.getHierarchFormater().append(this.key, buf);
-                alignSmallString = HIERARCH_SMALL_STRING_ALIGN_POSITION;
-                alignPosition = HIERARCH_ALIGN_POSITION;
+                alignSmallString  = buf.length();
+                alignPosition =  buf.length();
             } else {
                 buf.append(this.key);
                 buf.appendSpacesTo(MAX_KEYWORD_LENGTH);
