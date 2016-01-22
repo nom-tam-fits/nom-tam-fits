@@ -4,7 +4,10 @@
 			<action type="update">
 				Image compression is now fully supported by nom-tam-fits. A 100% java implementation of the compression libraries available in cfitsio
 				where implemented. An API for easy handling of compressed images is now provided. Attention the binary table compression and the NULL_PIXEL_MASK features are due for the next release.
-				For the de/compressions all available cpu's are automatically utilized.  
+				For the de/compressions all available cpu's are automatically utilized.
+			</action>
+			<action type="add" dev="ritchieGitHub" issue="48">
+				Added a de/compression api with all compression methods from the fits standard.
 			</action>
 			<action type="fix" dev="ritchieGitHub" issue="26">
 				Wrong checksum calculation corrected.
@@ -17,6 +20,12 @@
 			</action>
 			<action type="fix" dev="ritchieGitHub" issue="68">
 				Comment style cards with a empty key value can now be used multiple times.
+			</action>
+			<action type="update" dev="ritchieGitHub" issue="68">
+				Alignement of hierarch headercard values deacivated.
+			</action>
+			<action type="add" dev="ritchieGitHub" issue="72">
+				The foratting of hierarch card keys can mow be be controlled by a provided interface. Two formats are profided.
 			</action>
 		</release>
 		<release version="1.13.1" date="2015-08-21" description="Maintenance release with fixes for hierarch/longstring and rewrite bugs">
