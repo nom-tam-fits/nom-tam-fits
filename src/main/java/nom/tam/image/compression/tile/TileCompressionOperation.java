@@ -36,6 +36,7 @@ import java.nio.ByteBuffer;
 
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
+import nom.tam.image.tile.operation.AbstractTileOperation;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 
@@ -44,7 +45,7 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  * part of the image. Will be sub classed for compression and decompression
  * variants.
  */
-abstract class TileOperation extends AbstractTileOperation {
+abstract class TileCompressionOperation extends AbstractTileOperation<TileCompressionOperation, TiledImageCompressionOperation> {
 
     protected ByteBuffer compressedData;
 
@@ -54,7 +55,7 @@ abstract class TileOperation extends AbstractTileOperation {
 
     protected ICompressOption tileOptions;
 
-    protected TileOperation(TiledImageOperation operation, int tileIndex) {
+    protected TileCompressionOperation(TiledImageCompressionOperation operation, int tileIndex) {
         super(operation, tileIndex);
     }
 
@@ -94,7 +95,7 @@ abstract class TileOperation extends AbstractTileOperation {
         return this.tileOptions;
     }
 
-    protected TileOperation initTileOptions() {
+    protected TileCompressionOperation initTileOptions() {
         ICompressOption compressOptions = getTiledImageOperation().compressOptions();
         this.tileOptions = compressOptions.copy() //
                 .setTileWidth(getTileBuffer().getWidth()) //
@@ -102,7 +103,7 @@ abstract class TileOperation extends AbstractTileOperation {
         return this;
     }
 
-    protected TileOperation setCompressed(Object data, TileCompressionType type) {
+    protected TileCompressionOperation setCompressed(Object data, TileCompressionType type) {
         if (data != null && Array.getLength(data) > 0) {
             this.compressionType = type;
             this.compressedData = convertToBuffer(data);
@@ -111,13 +112,13 @@ abstract class TileOperation extends AbstractTileOperation {
         return this;
     }
 
-    protected TileOperation setCompressedOffset(int value) {
+    protected TileCompressionOperation setCompressedOffset(int value) {
         this.compressedOffset = value;
         return this;
     }
 
     @Override
-    protected TileOperation setDimensions(int dataOffset, int width, int height) {
+    protected TileCompressionOperation setDimensions(int dataOffset, int width, int height) {
         super.setDimensions(dataOffset, width, height);
         return this;
     }

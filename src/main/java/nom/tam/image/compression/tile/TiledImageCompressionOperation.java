@@ -63,6 +63,7 @@ import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.provider.CompressorProvider;
+import nom.tam.image.tile.operation.AbstractTiledImageOperation;
 import nom.tam.util.type.PrimitiveTypeHandler;
 
 /**
@@ -71,7 +72,7 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  * tileOperations all have the same geometry only the tileOperations at the
  * right side and the bottom side can have different sizes.
  */
-public class TiledImageOperation extends AbstractTiledImageOperation<TileOperation> {
+public class TiledImageCompressionOperation extends AbstractTiledImageOperation<TileCompressionOperation> {
 
     /**
      * ZCMPTYPE name of the algorithm that was used to compress
@@ -112,13 +113,13 @@ public class TiledImageOperation extends AbstractTiledImageOperation<TileOperati
     }
 
     /**
-     * create a TiledImageOperation based on a compressed image data.
+     * create a TiledImageCompressionOperation based on a compressed image data.
      *
      * @param binaryTable
      *            the compressed image data.
      */
-    public TiledImageOperation(BinaryTable binaryTable) {
-        super(TileOperation.class);
+    public TiledImageCompressionOperation(BinaryTable binaryTable) {
+        super(TileCompressionOperation.class);
         this.binaryTable = binaryTable;
     }
 
@@ -135,7 +136,7 @@ public class TiledImageOperation extends AbstractTiledImageOperation<TileOperati
 
     public Buffer decompress() {
         Buffer decompressedWholeArea = getBaseType().newBuffer(getBufferSize());
-        for (TileOperation tileOperation : getTileOperations()) {
+        for (TileCompressionOperation tileOperation : getTileOperations()) {
             tileOperation.setWholeImageBuffer(decompressedWholeArea);
         }
         processAllTiles();
@@ -143,14 +144,14 @@ public class TiledImageOperation extends AbstractTiledImageOperation<TileOperati
         return decompressedWholeArea;
     }
 
-    public TiledImageOperation prepareUncompressedData(final Buffer buffer) {
+    public TiledImageCompressionOperation prepareUncompressedData(final Buffer buffer) {
         this.compressedWholeArea = ByteBuffer.wrap(new byte[getBaseType().size() * getBufferSize()]);
         createTiles(new TileCompressorInitialisation(this, buffer));
         this.compressedWholeArea.rewind();
         return this;
     }
 
-    public TiledImageOperation read(final Header header) throws FitsException {
+    public TiledImageCompressionOperation read(final Header header) throws FitsException {
         readPrimaryHeaders(header);
         setCompressAlgorithm(header.findCard(ZCMPTYPE));
         setQuantAlgorithm(header.findCard(ZQUANTIZ));
@@ -169,12 +170,12 @@ public class TiledImageOperation extends AbstractTiledImageOperation<TileOperati
         readTileAxis(header);
     }
 
-    public TiledImageOperation setCompressAlgorithm(HeaderCard compressAlgorithmCard) {
+    public TiledImageCompressionOperation setCompressAlgorithm(HeaderCard compressAlgorithmCard) {
         this.compressAlgorithm = compressAlgorithmCard.getValue();
         return this;
     }
 
-    public TiledImageOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
+    public TiledImageCompressionOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
         if (quantAlgorithmCard != null) {
             this.quantAlgorithm = quantAlgorithmCard.getValue();
         } else {
@@ -212,10 +213,10 @@ public class TiledImageOperation extends AbstractTiledImageOperation<TileOperati
 
     private void processAllTiles() {
         ExecutorService threadPool = FitsFactory.threadPool();
-        for (TileOperation tileOperation : getTileOperations()) {
+        for (TileCompressionOperation tileOperation : getTileOperations()) {
             tileOperation.execute(threadPool);
         }
-        for (TileOperation tileOperation : getTileOperations()) {
+        for (TileCompressionOperation tileOperation : getTileOperations()) {
             tileOperation.waitForResult();
         }
     }
@@ -260,7 +261,7 @@ public class TiledImageOperation extends AbstractTiledImageOperation<TileOperati
         }
     }
 
-    private <T> Object setInColumn(Object column, boolean predicate, TileOperation tileOperation, Class<T> clazz, T value) {
+    private <T> Object setInColumn(Object column, boolean predicate, TileCompressionOperation tileOperation, Class<T> clazz, T value) {
         if (predicate) {
             if (column == null) {
                 column = Array.newInstance(clazz, getNumberOfTileOperations());
@@ -274,7 +275,7 @@ public class TiledImageOperation extends AbstractTiledImageOperation<TileOperati
         Object compressedColumn = null;
         Object uncompressedColumn = null;
         Object gzipColumn = null;
-        for (TileOperation tileOperation : getTileOperations()) {
+        for (TileCompressionOperation tileOperation : getTileOperations()) {
             TileCompressionType compression = tileOperation.getCompressionType();
             byte[] compressedData = tileOperation.getCompressedData();
 

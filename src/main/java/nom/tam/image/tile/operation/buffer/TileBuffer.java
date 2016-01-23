@@ -1,4 +1,4 @@
-package nom.tam.image.compression.tile.buffer;
+package nom.tam.image.tile.operation.buffer;
 
 /*
  * #%L
@@ -41,14 +41,6 @@ import nom.tam.util.type.PrimitiveType;
  */
 public abstract class TileBuffer {
 
-    public static TileBuffer createTileBuffer(PrimitiveType<Buffer> baseType, int dataOffset, int imageWidth, int width, int height) {
-        if (imageWidth > width) {
-            return new TileBufferColumnBased(baseType, dataOffset, imageWidth, width, height);
-        } else {
-            return new TileBufferRowBased(baseType, dataOffset, width, height);
-        }
-    }
-
     private Buffer imageBuffer;
 
     private final int height;
@@ -61,6 +53,14 @@ public abstract class TileBuffer {
     private final PrimitiveType<Buffer> baseType;
 
     private final int width;
+
+    public static TileBuffer createTileBuffer(PrimitiveType<Buffer> baseType, int dataOffset, int imageWidth, int width, int height) {
+        if (imageWidth > width) {
+            return new TileBufferColumnBased(baseType, dataOffset, imageWidth, width, height);
+        } else {
+            return new TileBufferRowBased(baseType, dataOffset, width, height);
+        }
+    }
 
     protected TileBuffer(PrimitiveType<Buffer> baseType, int dataOffset, int width, int height) {
         this.baseType = baseType;
@@ -82,10 +82,6 @@ public abstract class TileBuffer {
         return this.height;
     }
 
-    protected Buffer getImageBuffer() {
-        return this.imageBuffer;
-    }
-
     /**
      * @return the number of pixels in the tileOperation this view represents.
      */
@@ -101,5 +97,9 @@ public abstract class TileBuffer {
         value.position(this.offset);
         this.imageBuffer = this.baseType.sliceBuffer(value);
         return this;
+    }
+
+    protected Buffer getImageBuffer() {
+        return this.imageBuffer;
     }
 }

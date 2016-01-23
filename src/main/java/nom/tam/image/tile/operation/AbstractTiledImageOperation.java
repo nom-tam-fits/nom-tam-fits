@@ -1,4 +1,4 @@
-package nom.tam.image.compression.tile;
+package nom.tam.image.tile.operation;
 
 /*
  * #%L

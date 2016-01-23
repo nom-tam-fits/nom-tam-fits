@@ -35,9 +35,9 @@ import java.nio.ByteBuffer;
 
 import nom.tam.util.type.PrimitiveType;
 
-public class TileCompressor extends TileOperation {
+public class TileCompressor extends TileCompressionOperation {
 
-    protected TileCompressor(TiledImageOperation array, int tileIndex) {
+    protected TileCompressor(TiledImageCompressionOperation array, int tileIndex) {
         super(array, tileIndex);
     }
 

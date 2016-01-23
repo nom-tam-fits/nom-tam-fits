@@ -1,4 +1,4 @@
-package nom.tam.image.compression.tile.buffer;
+package nom.tam.image.tile.operation.buffer;
 
 /*
  * #%L
@@ -63,6 +63,19 @@ class TileBufferColumnBased extends TileBuffer {
         this.imageWidth = imageWidth;
     }
 
+    @Override
+    public void finish() {
+        desolveGapLessBuffer();
+    }
+
+    @Override
+    public Buffer getBuffer() {
+        if (this.gapLessBuffer == null) {
+            createGapLessBuffer();
+        }
+        return this.gapLessBuffer;
+    }
+
     /**
      * create the temporary buffer that contains no data gaps.
      */
@@ -102,19 +115,6 @@ class TileBufferColumnBased extends TileBuffer {
             imagebuffer.position(Math.min(imagebuffer.position() + gap, imagebuffer.limit()));
         }
         this.gapLessBuffer = null;
-    }
-
-    @Override
-    public void finish() {
-        desolveGapLessBuffer();
-    }
-
-    @Override
-    public Buffer getBuffer() {
-        if (this.gapLessBuffer == null) {
-            createGapLessBuffer();
-        }
-        return this.gapLessBuffer;
     }
 
     /**

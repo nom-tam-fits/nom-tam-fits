@@ -1,4 +1,4 @@
-package nom.tam.image.compression.tile;
+package nom.tam.image.tile.operation;
 
 /*
  * #%L
@@ -35,12 +35,12 @@ import java.nio.Buffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import nom.tam.image.compression.tile.buffer.TileBuffer;
+import nom.tam.image.tile.operation.buffer.TileBuffer;
 import nom.tam.util.type.PrimitiveType;
 
-public abstract class AbstractTileOperation implements Runnable {
+public abstract class AbstractTileOperation<OPERATION extends AbstractTileOperation, IMAGE_OPERATION extends AbstractTiledImageOperation<OPERATION>> implements Runnable {
 
-    private final TiledImageOperation tiledImageOperation;
+    private final IMAGE_OPERATION tiledImageOperation;
 
     private Future<?> future;
 
@@ -48,52 +48,24 @@ public abstract class AbstractTileOperation implements Runnable {
 
     private final int tileIndex;
 
-    public AbstractTileOperation(TiledImageOperation operation, int tileIndex) {
+    public AbstractTileOperation(IMAGE_OPERATION operation, int tileIndex) {
         this.tiledImageOperation = operation;
         this.tileIndex = tileIndex;
     }
 
-    protected void execute(ExecutorService threadPool) {
+    public void execute(ExecutorService threadPool) {
         this.future = threadPool.submit(this);
-    }
-
-    protected PrimitiveType<Buffer> getBaseType() {
-        return this.tiledImageOperation.getBaseType();
     }
 
     /**
      * @return the number of pixels in this tile.
      */
-    protected int getPixelSize() {
+    public int getPixelSize() {
         return this.tileBuffer.getPixelSize();
     }
 
-    protected AbstractTileOperation getPreviousTile() {
-        return this.tiledImageOperation.getTile(getTileIndex() - 1);
-    }
-
-    protected TileBuffer getTileBuffer() {
-        return this.tileBuffer;
-    }
-
-    protected TiledImageOperation getTiledImageOperation() {
-        return this.tiledImageOperation;
-    }
-
-    protected int getTileIndex() {
+    public int getTileIndex() {
         return this.tileIndex;
-    }
-
-    protected AbstractTileOperation setDimensions(int dataOffset, int width, int height) {
-        setTileBuffer(TileBuffer.createTileBuffer(getBaseType(), //
-                dataOffset, //
-                this.tiledImageOperation.getImageWidth(), //
-                width, height));
-        return this;
-    }
-
-    protected void setTileBuffer(TileBuffer tileBuffer) {
-        this.tileBuffer = tileBuffer;
     }
 
     /**
@@ -105,19 +77,47 @@ public abstract class AbstractTileOperation implements Runnable {
      * @param buffer
      *            the buffer that describes the whole image.
      */
-    protected void setWholeImageBuffer(Buffer buffer) {
+    public void setWholeImageBuffer(Buffer buffer) {
         this.tileBuffer.setData(buffer);
     }
 
     /**
      * Wait for the result of the tile processing.
      */
-    protected void waitForResult() {
+    public void waitForResult() {
         try {
             this.future.get();
         } catch (Exception e) {
             throw new IllegalStateException("could not process tile", e);
         }
+    }
+
+    protected PrimitiveType<Buffer> getBaseType() {
+        return this.tiledImageOperation.getBaseType();
+    }
+
+    protected OPERATION getPreviousTile() {
+        return this.tiledImageOperation.getTile(getTileIndex() - 1);
+    }
+
+    protected TileBuffer getTileBuffer() {
+        return this.tileBuffer;
+    }
+
+    protected IMAGE_OPERATION getTiledImageOperation() {
+        return this.tiledImageOperation;
+    }
+
+    protected OPERATION setDimensions(int dataOffset, int width, int height) {
+        setTileBuffer(TileBuffer.createTileBuffer(getBaseType(), //
+                dataOffset, //
+                this.tiledImageOperation.getImageWidth(), //
+                width, height));
+        return (OPERATION) this;
+    }
+
+    protected void setTileBuffer(TileBuffer tileBuffer) {
+        this.tileBuffer = tileBuffer;
     }
 
 }

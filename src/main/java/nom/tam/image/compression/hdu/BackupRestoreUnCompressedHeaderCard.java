@@ -142,6 +142,10 @@ enum BackupRestoreUnCompressedHeaderCard {
     MAP_ZTILEn(ZTILEn),
     MAP_ZVALn(ZVALn);
 
+    private final IFitsHeader compressedHeaderKey;
+
+    private final IFitsHeader uncompressedHeaderKey;
+
     public static void backup(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
         BackupRestoreUnCompressedHeaderCard mapping = selectMapping(CompressedImageHDU.UNCOMPRESSED_HEADER_MAPPING, card);
         mapping.backupCard(card, headerIterator);
@@ -162,10 +166,6 @@ enum BackupRestoreUnCompressedHeaderCard {
         }
         return MAP_ANY;
     }
-
-    private final IFitsHeader compressedHeaderKey;
-
-    private final IFitsHeader uncompressedHeaderKey;
 
     BackupRestoreUnCompressedHeaderCard(IFitsHeader header) {
         this.compressedHeaderKey = header;

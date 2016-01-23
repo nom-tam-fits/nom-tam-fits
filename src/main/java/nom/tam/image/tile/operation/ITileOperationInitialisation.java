@@ -1,10 +1,10 @@
-package nom.tam.image.compression.tile;
+package nom.tam.image.tile.operation;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2016 nom-tam-fits
+ * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,37 +31,11 @@ package nom.tam.image.compression.tile;
  * #L%
  */
 
-import java.nio.Buffer;
+public interface ITileOperationInitialisation<OPERATION extends AbstractTileOperation> {
 
-import nom.tam.image.tile.operation.ITileOperationInitialisation;
+    OPERATION createTileOperation(int tileIndex);
 
-final class TileCompressorInitialisation implements ITileOperationInitialisation<TileCompressionOperation> {
+    void init(OPERATION tileOperation);
 
-    private final Buffer buffer;
-
-    private final TiledImageCompressionOperation imageTilesOperation;
-
-    private int compressedOffset = 0;
-
-    protected TileCompressorInitialisation(TiledImageCompressionOperation imageTilesOperation, Buffer buffer) {
-        this.imageTilesOperation = imageTilesOperation;
-        this.buffer = buffer;
-    }
-
-    @Override
-    public TileCompressionOperation createTileOperation(int tileIndex) {
-        return new TileCompressor(this.imageTilesOperation, tileIndex);
-    }
-
-    @Override
-    public void init(TileCompressionOperation tileOperation) {
-        tileOperation.setCompressedOffset(this.compressedOffset);
-        tileOperation.setWholeImageBuffer(this.buffer);
-        tileOperation.setWholeImageCompressedBuffer(this.imageTilesOperation.getCompressedWholeArea());
-        this.compressedOffset += tileOperation.getPixelSize();
-    }
-
-    @Override
-    public void tileCount(int tileCount) {
-    }
+    void tileCount(int tileCount);
 }

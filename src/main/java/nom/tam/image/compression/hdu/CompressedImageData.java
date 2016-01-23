@@ -40,7 +40,7 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
-import nom.tam.image.compression.tile.TiledImageOperation;
+import nom.tam.image.compression.tile.TiledImageCompressionOperation;
 import nom.tam.util.ArrayFuncs;
 
 public class CompressedImageData extends BinaryTable {
@@ -48,7 +48,7 @@ public class CompressedImageData extends BinaryTable {
     /**
      * tile information, only available during compressing or decompressing.
      */
-    private TiledImageOperation tiledImageOperation;
+    private TiledImageCompressionOperation tiledImageOperation;
 
     public CompressedImageData() {
         super();
@@ -74,7 +74,7 @@ public class CompressedImageData extends BinaryTable {
 
     public Buffer getUncompressedData(Header hdr) throws FitsException {
         try {
-            this.tiledImageOperation = new TiledImageOperation(this).read(hdr);
+            this.tiledImageOperation = new TiledImageCompressionOperation(this).read(hdr);
             return this.tiledImageOperation.decompress();
         } finally {
             this.tiledImageOperation = null;
@@ -92,6 +92,13 @@ public class CompressedImageData extends BinaryTable {
         }
     }
 
+    private TiledImageCompressionOperation tiledImageOperation() {
+        if (this.tiledImageOperation == null) {
+            this.tiledImageOperation = new TiledImageCompressionOperation(this);
+        }
+        return this.tiledImageOperation;
+    }
+
     protected void setCompressAlgorithm(HeaderCard compressAlgorithmCard) {
         tiledImageOperation().setCompressAlgorithm(compressAlgorithmCard);
     }
@@ -103,12 +110,5 @@ public class CompressedImageData extends BinaryTable {
     protected CompressedImageData setTileSize(int... axes) {
         tiledImageOperation().setTileAxes(axes);
         return this;
-    }
-
-    private TiledImageOperation tiledImageOperation() {
-        if (this.tiledImageOperation == null) {
-            this.tiledImageOperation = new TiledImageOperation(this);
-        }
-        return this.tiledImageOperation;
     }
 }

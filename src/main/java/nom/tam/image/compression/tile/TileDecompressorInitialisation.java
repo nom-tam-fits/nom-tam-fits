@@ -36,8 +36,9 @@ import static nom.tam.image.compression.tile.TileCompressionType.GZIP_COMPRESSED
 import static nom.tam.image.compression.tile.TileCompressionType.UNCOMPRESSED;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
+import nom.tam.image.tile.operation.ITileOperationInitialisation;
 
-final class TileDecompressorInitialisation implements ITileOperationInitialisation<TileOperation> {
+final class TileDecompressorInitialisation implements ITileOperationInitialisation<TileCompressionOperation> {
 
     private final Object[] uncompressed;
 
@@ -47,11 +48,12 @@ final class TileDecompressorInitialisation implements ITileOperationInitialisati
 
     private final Header header;
 
-    private final TiledImageOperation imageTilesOperation;
+    private final TiledImageCompressionOperation imageTilesOperation;
 
     private int compressedOffset = 0;
 
-    protected TileDecompressorInitialisation(TiledImageOperation imageTilesOperation, Object[] uncompressed, Object[] compressed, Object[] gzipCompressed, Header header) {
+    protected TileDecompressorInitialisation(TiledImageCompressionOperation imageTilesOperation, Object[] uncompressed, Object[] compressed, Object[] gzipCompressed,
+            Header header) {
         this.imageTilesOperation = imageTilesOperation;
         this.uncompressed = uncompressed;
         this.compressed = compressed;
@@ -60,12 +62,12 @@ final class TileDecompressorInitialisation implements ITileOperationInitialisati
     }
 
     @Override
-    public TileOperation createTileOperation(int tileIndex) {
+    public TileCompressionOperation createTileOperation(int tileIndex) {
         return new TileDecompressor(this.imageTilesOperation, tileIndex);
     }
 
     @Override
-    public void init(TileOperation tileOperation) {
+    public void init(TileCompressionOperation tileOperation) {
         tileOperation.setCompressedOffset(this.compressedOffset)//
                 .setCompressed(this.compressed != null ? this.compressed[tileOperation.getTileIndex()] : null, COMPRESSED)//
                 .setCompressed(this.uncompressed != null ? this.uncompressed[tileOperation.getTileIndex()] : null, UNCOMPRESSED)//

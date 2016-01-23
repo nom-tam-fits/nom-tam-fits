@@ -56,8 +56,9 @@ import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.Standard;
 import nom.tam.image.compression.hdu.CompressedImageData;
 import nom.tam.image.compression.tile.TileDecompressor;
-import nom.tam.image.compression.tile.TileOperation;
-import nom.tam.image.compression.tile.TiledImageOperation;
+import nom.tam.image.compression.tile.TileCompressionOperation;
+import nom.tam.image.compression.tile.TiledImageCompressionOperation;
+import nom.tam.image.tile.operation.Access;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -81,12 +82,12 @@ public class TileCompressorProviderTest {
             super(emptyHeader());
         }
 
-        TileOperation getTile() {
+        TileCompressionOperation getTile() {
             return new TileDecompressor(getTileArray(), 0);
         }
 
-        TiledImageOperation getTileArray() {
-            return new TiledImageOperation(this);
+        TiledImageCompressionOperation getTileArray() {
+            return new TiledImageCompressionOperation(this);
         }
     }
 
@@ -199,7 +200,7 @@ public class TileCompressorProviderTest {
 
     @Test(expected = IllegalStateException.class)
     public void testTileCompressionError() throws Exception {
-        TileOperation tileOperation = new Access2().getTile();
+        TileCompressionOperation tileOperation = new Access2().getTile();
         tileOperation.execute(FitsFactory.threadPool());
         Thread.sleep(20);
         tileOperation.waitForResult();
@@ -213,7 +214,7 @@ public class TileCompressorProviderTest {
 
     @Test(expected = FitsException.class)
     public void testTileWrongHeader1() throws Exception {
-        TiledImageOperation operationsOfImage = new TiledImageOperation(null);
+        TiledImageCompressionOperation operationsOfImage = new TiledImageCompressionOperation(null);
         Header header = new Header();
         header.addValue(ZBITPIX, 32);
         header.addValue(ZNAXIS, 2);
@@ -243,7 +244,7 @@ public class TileCompressorProviderTest {
 
     private void testTileSizes(int tileWidth, int tileHeigth) throws HeaderCardException, FitsException {
         int imageSize = 100;
-        TiledImageOperation operationsOfImage = new TiledImageOperation(null);
+        TiledImageCompressionOperation operationsOfImage = new TiledImageCompressionOperation(null);
         Buffer buffer = IntBuffer.allocate(imageSize * imageSize);
         Header header = new Header();
         header.addValue(ZBITPIX, 32);
@@ -255,17 +256,17 @@ public class TileCompressorProviderTest {
 
         operationsOfImage.readPrimaryHeaders(header);
         operationsOfImage.prepareUncompressedData(buffer);
-        List<TileOperation> tiles = getTiles(operationsOfImage);
+        List<TileCompressionOperation> tiles = getTiles(operationsOfImage);
         int heigth = 0;
         int width = 0;
         int pixels = 0;
-        for (TileOperation tileOperation : tiles) {
+        for (TileCompressionOperation tileOperation : tiles) {
             if (tileWidth == imageSize) {
-                heigth += tileOperation.getTileBuffer().getHeight();
+                heigth += Access.getTileBuffer(tileOperation).getHeight();
             } else if (tileHeigth == imageSize) {
-                width += tileOperation.getTileBuffer().getWidth();
+                width += Access.getTileBuffer(tileOperation).getWidth();
             }
-            pixels += tileOperation.getTileBuffer().getHeight() * tileOperation.getTileBuffer().getWidth();
+            pixels += Access.getTileBuffer(tileOperation).getHeight() * Access.getTileBuffer(tileOperation).getWidth();
         }
         Assert.assertEquals(imageSize * imageSize, pixels);
         if (heigth != 0) {
@@ -276,11 +277,11 @@ public class TileCompressorProviderTest {
         }
     }
 
-    private List<TileOperation> getTiles(TiledImageOperation operationsOfImage) {
-        List<TileOperation> tiles = new ArrayList<>();
+    private List<TileCompressionOperation> getTiles(TiledImageCompressionOperation operationsOfImage) {
+        List<TileCompressionOperation> tiles = new ArrayList<>();
         try {
             for (int index = 0; index < 10000; index++) {
-                tiles.add(operationsOfImage.getTile(index));
+                tiles.add((TileCompressionOperation) Access.getTile(operationsOfImage,index));
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             return tiles;

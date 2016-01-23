@@ -34,14 +34,14 @@ package nom.tam.image.compression.tile;
 import java.nio.Buffer;
 import java.util.logging.Logger;
 
-public class TileDecompressor extends TileOperation {
+public class TileDecompressor extends TileCompressionOperation {
 
     /**
      * logger to log to.
      */
     private static final Logger LOG = Logger.getLogger(TileDecompressor.class.getName());
 
-    protected TileDecompressor(TiledImageOperation array, int tileIndex) {
+    protected TileDecompressor(TiledImageCompressionOperation array, int tileIndex) {
         super(array, tileIndex);
     }
 

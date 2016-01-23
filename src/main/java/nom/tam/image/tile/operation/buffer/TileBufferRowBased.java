@@ -1,4 +1,4 @@
-package nom.tam.image.compression.tile;
+package nom.tam.image.tile.operation.buffer;
 
 /*
  * #%L
@@ -31,11 +31,25 @@ package nom.tam.image.compression.tile;
  * #L%
  */
 
-interface ITileOperationInitialisation<OPERATION extends AbstractTileOperation> {
+import java.nio.Buffer;
 
-    OPERATION createTileOperation(int tileIndex);
+import nom.tam.util.type.PrimitiveType;
 
-    void init(OPERATION tileOperation);
+public class TileBufferRowBased extends TileBuffer {
 
-    void tileCount(int tileCount);
+    public TileBufferRowBased(PrimitiveType<Buffer> baseType, int dataOffset, int width, int height) {
+        super(baseType, dataOffset, width, height);
+    }
+
+    @Override
+    public Buffer getBuffer() {
+        return getImageBuffer();
+    }
+
+    @Override
+    public TileBufferRowBased setData(Buffer value) {
+        super.setData(value);
+        getImageBuffer().limit(getPixelSize());
+        return this;
+    }
 }
