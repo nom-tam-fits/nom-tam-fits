@@ -854,12 +854,12 @@ public class ReadWriteProvidedCompressedImageTest {
                     /*  */.setBlockSize(32);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
-            try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13real_own.fits.fz"))) {
+            try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13real_own_noloss.fits.fz"))) {
                 f.write(bdos);
             }
         }
 
-        try (Fits f = new Fits("target/write_m13real_own.fits.fz")) {
+        try (Fits f = new Fits("target/write_m13real_own_noloss.fits.fz")) {
             f.readHDU();
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             float[][] actualShortArray = (float[][]) hdu.asImageHDU().getData().getData();
