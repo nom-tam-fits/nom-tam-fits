@@ -840,4 +840,30 @@ public class ReadWriteProvidedCompressedImageTest {
             assertArrayEquals(this.m13_data_real, actualShortArray, 6f);
         }
     }
+
+    @Test
+    public void writeRiceFloatWithForceNoLoss() throws Exception {
+        try (Fits f = new Fits()) {
+            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(this.m13real, 300, 15);
+            compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
+                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+                    .forceNoLoss(140, 140, 20, 20)//
+                    .getCompressOption(QuantizeOption.class)//
+                    /**/.setQlevel(1.0)//
+                    /**/.getCompressOption(RiceCompressOption.class)//
+                    /*  */.setBlockSize(32);
+            compressedHdu.compress();
+            f.addHDU(compressedHdu);
+            try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13real_own.fits.fz"))) {
+                f.write(bdos);
+            }
+        }
+
+        try (Fits f = new Fits("target/write_m13real_own.fits.fz")) {
+            f.readHDU();
+            CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
+            float[][] actualShortArray = (float[][]) hdu.asImageHDU().getData().getData();
+            assertArrayEquals(this.m13_data_real, actualShortArray, 9f);
+        }
+    }
 }

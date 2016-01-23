@@ -340,4 +340,8 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
             }
         }
     }
+
+    public void forceNoLoss(int x, int y, int width, int heigth) {
+        //TODO: force the hit tiles to no loss compression
+    }
 }

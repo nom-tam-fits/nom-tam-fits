@@ -72,6 +72,10 @@ public class CompressedImageData extends BinaryTable {
         return tiledImageOperation().compressOptions().unwrap(clazz);
     }
 
+    protected void forceNoLoss(int x, int y, int width, int heigth) {
+        this.tiledImageOperation.forceNoLoss(x, y, width, heigth);
+    }
+
     public Buffer getUncompressedData(Header hdr) throws FitsException {
         try {
             this.tiledImageOperation = new TiledImageCompressionOperation(this).read(hdr);

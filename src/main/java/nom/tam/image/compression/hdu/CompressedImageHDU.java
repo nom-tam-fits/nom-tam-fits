@@ -154,4 +154,9 @@ public class CompressedImageHDU extends BinaryTableHDU {
         }
         return this;
     }
+
+    public CompressedImageHDU forceNoLoss(int x, int y, int width, int heigth) {
+        getData().forceNoLoss(x, y, width, heigth);
+        return this;
+    }
 }
