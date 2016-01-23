@@ -37,7 +37,7 @@ import static nom.tam.image.compression.tile.TileCompressionType.UNCOMPRESSED;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 
-final class TileDecompressorInitialisation implements ITileOperationInitialisation {
+final class TileDecompressorInitialisation implements ITileOperationInitialisation<TileOperation> {
 
     private final Object[] uncompressed;
 
@@ -48,6 +48,8 @@ final class TileDecompressorInitialisation implements ITileOperationInitialisati
     private final Header header;
 
     private final TiledImageOperation imageTilesOperation;
+
+    private int compressedOffset = 0;
 
     protected TileDecompressorInitialisation(TiledImageOperation imageTilesOperation, Object[] uncompressed, Object[] compressed, Object[] gzipCompressed, Header header) {
         this.imageTilesOperation = imageTilesOperation;
@@ -64,9 +66,11 @@ final class TileDecompressorInitialisation implements ITileOperationInitialisati
 
     @Override
     public void init(TileOperation tileOperation) {
-        tileOperation.setCompressed(this.compressed != null ? this.compressed[tileOperation.getTileIndex()] : null, COMPRESSED)//
+        tileOperation.setCompressedOffset(this.compressedOffset)//
+                .setCompressed(this.compressed != null ? this.compressed[tileOperation.getTileIndex()] : null, COMPRESSED)//
                 .setCompressed(this.uncompressed != null ? this.uncompressed[tileOperation.getTileIndex()] : null, UNCOMPRESSED)//
                 .setCompressed(this.gzipCompressed != null ? this.gzipCompressed[tileOperation.getTileIndex()] : null, GZIP_COMPRESSED);
+        this.compressedOffset += tileOperation.getPixelSize();
     }
 
     @Override

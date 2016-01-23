@@ -261,11 +261,11 @@ public class TileCompressorProviderTest {
         int pixels = 0;
         for (TileOperation tileOperation : tiles) {
             if (tileWidth == imageSize) {
-                heigth += tileOperation.tileBuffer.getHeight();
+                heigth += tileOperation.getTileBuffer().getHeight();
             } else if (tileHeigth == imageSize) {
-                width += tileOperation.tileBuffer.getWidth();
+                width += tileOperation.getTileBuffer().getWidth();
             }
-            pixels += tileOperation.tileBuffer.getHeight() * tileOperation.tileBuffer.getWidth();
+            pixels += tileOperation.getTileBuffer().getHeight() * tileOperation.getTileBuffer().getWidth();
         }
         Assert.assertEquals(imageSize * imageSize, pixels);
         if (heigth != 0) {

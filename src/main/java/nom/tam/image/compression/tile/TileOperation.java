@@ -33,9 +33,9 @@ package nom.tam.image.compression.tile;
 
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
-import java.util.concurrent.ExecutorService;
 
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 
@@ -44,7 +44,7 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  * part of the image. Will be sub classed for compression and decompression
  * variants.
  */
-abstract class TileOperation extends AbstractTileOperation implements Runnable {
+abstract class TileOperation extends AbstractTileOperation {
 
     protected ByteBuffer compressedData;
 
@@ -58,12 +58,13 @@ abstract class TileOperation extends AbstractTileOperation implements Runnable {
         super(operation, tileIndex);
     }
 
-    private ByteBuffer convertToBuffer(Object data) {
-        return PrimitiveTypeHandler.valueOf(data.getClass().getComponentType()).convertToByteBuffer(data);
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + getTileIndex() + "," + this.compressionType + "," + this.compressedOffset + ")";
     }
 
-    protected void execute(ExecutorService threadPool) {
-        this.future = threadPool.submit(this);
+    private ByteBuffer convertToBuffer(Object data) {
+        return PrimitiveTypeHandler.valueOf(data.getClass().getComponentType()).convertToByteBuffer(data);
     }
 
     protected byte[] getCompressedData() {
@@ -73,8 +74,20 @@ abstract class TileOperation extends AbstractTileOperation implements Runnable {
         return data;
     }
 
+    protected ByteBuffer getCompressedWholeArea() {
+        return getTiledImageOperation().getCompressedWholeArea();
+    }
+
     protected TileCompressionType getCompressionType() {
         return this.compressionType;
+    }
+
+    protected ICompressorControl getCompressorControl() {
+        return getTiledImageOperation().getCompressorControl();
+    }
+
+    protected ICompressorControl getGzipCompressorControl() {
+        return getTiledImageOperation().getGzipCompressorControl();
     }
 
     protected ICompressOption getTileOptions() {
@@ -82,10 +95,10 @@ abstract class TileOperation extends AbstractTileOperation implements Runnable {
     }
 
     protected TileOperation initTileOptions() {
-        ICompressOption compressOptions = this.tiledImageOperation.compressOptions();
+        ICompressOption compressOptions = getTiledImageOperation().compressOptions();
         this.tileOptions = compressOptions.copy() //
-                .setTileWidth(this.tileBuffer.getWidth()) //
-                .setTileHeight(this.tileBuffer.getHeight());
+                .setTileWidth(getTileBuffer().getWidth()) //
+                .setTileHeight(getTileBuffer().getHeight());
         return this;
     }
 
@@ -102,13 +115,13 @@ abstract class TileOperation extends AbstractTileOperation implements Runnable {
         this.compressedOffset = value;
         return this;
     }
-    
+
     @Override
     protected TileOperation setDimensions(int dataOffset, int width, int height) {
         super.setDimensions(dataOffset, width, height);
         return this;
     }
- 
+
     /**
      * set the buffer that describes the whole compressed image and let the tile
      * create a slice of it from the position where the tile starts in the whole
@@ -121,15 +134,10 @@ abstract class TileOperation extends AbstractTileOperation implements Runnable {
      *            the buffer that describes the whole image.
      */
     protected void setWholeImageCompressedBuffer(ByteBuffer compressed) {
-        compressed.position(this.compressedOffset * this.tiledImageOperation.getBaseType().size());
+        compressed.position(this.compressedOffset * getBaseType().size());
         this.compressedData = compressed.slice();
         this.compressedOffset = 0;
         // we do not limit this buffer but is expected not to write more than
         // the uncompressed size.
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + this.tileIndex + "," + this.compressionType + "," + this.compressedOffset + ")";
     }
 }

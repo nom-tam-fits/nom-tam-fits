@@ -41,17 +41,22 @@ public class TileCompressor extends TileOperation {
         super(array, tileIndex);
     }
 
+    @Override
+    public void run() {
+        compress();
+    }
+
     /**
      * lets close the gaps in the data as soon as the previous tiles are also
      * compressed. the compressed data of the first tile is used to append the
      * complete block.
      */
     private void compactCompressedData() {
-        if (this.tileIndex > 0) {
+        if (getTileIndex() > 0) {
             try {
                 // wait for the previous tile to finish.
-                this.tiledImageOperation.getTile(this.tileIndex - 1).future.get();
-                ByteBuffer compressedWholeArea = this.tiledImageOperation.getCompressedWholeArea();
+                getPreviousTile().waitForResult();
+                ByteBuffer compressedWholeArea = getCompressedWholeArea();
                 this.compressedOffset = compressedWholeArea.position();
                 PrimitiveType.BYTE.appendBuffer(compressedWholeArea, this.compressedData);
                 replaceCompressedBufferWithTargetArea(compressedWholeArea);
@@ -60,30 +65,30 @@ public class TileCompressor extends TileOperation {
             }
         } else {
             this.compressedOffset = 0;
-            this.tiledImageOperation.getCompressedWholeArea().position(this.compressedData.limit());
+            getCompressedWholeArea().position(this.compressedData.limit());
         }
     }
 
     private void compress() {
         initTileOptions();
-        this.compressedData.limit(this.tileBuffer.getPixelSize() * this.tiledImageOperation.getBaseType().size());
+        this.compressedData.limit(getTileBuffer().getPixelSize() * getBaseType().size());
         this.compressionType = TileCompressionType.COMPRESSED;
-        boolean compressSuccess = this.tiledImageOperation.getCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData, this.tileOptions);
+        boolean compressSuccess = getCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData, this.tileOptions);
         if (!compressSuccess) {
             this.compressionType = TileCompressionType.GZIP_COMPRESSED;
             this.compressedData.rewind();
-            this.tileBuffer.getBuffer().rewind();
-            compressSuccess = this.tiledImageOperation.getGzipCompressorControl().compress(this.tileBuffer.getBuffer(), this.compressedData, null);
+            getTileBuffer().getBuffer().rewind();
+            compressSuccess = getGzipCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData, null);
         }
         if (!compressSuccess) {
             this.compressionType = TileCompressionType.UNCOMPRESSED;
             this.compressedData.rewind();
-            this.tileBuffer.getBuffer().rewind();
-            this.tiledImageOperation.getBaseType().appendToByteBuffer(this.compressedData, this.tileBuffer.getBuffer());
+            getTileBuffer().getBuffer().rewind();
+            getBaseType().appendToByteBuffer(this.compressedData, getTileBuffer().getBuffer());
         }
         this.compressedData.limit(this.compressedData.position());
         this.compressedData.rewind();
-        this.tileOptions.getCompressionParameters().setValueFromColumn(this.tileIndex);
+        this.tileOptions.getCompressionParameters().setValueFromColumn(getTileIndex());
         compactCompressedData();
     }
 
@@ -94,10 +99,5 @@ public class TileCompressor extends TileOperation {
         this.compressedData = compressedWholeArea.slice();
         this.compressedData.limit(compressedSize);
         compressedWholeArea.position(latest);
-    }
-
-    @Override
-    public void run() {
-        compress();
     }
 }

@@ -45,25 +45,25 @@ public class TileDecompressor extends TileOperation {
         super(array, tileIndex);
     }
 
+    @Override
+    public void run() {
+        decompress();
+        getTileBuffer().finish();
+    }
+
     private void decompress() {
         initTileOptions();
-        this.tileOptions.getCompressionParameters().getValuesFromColumn(this.tileIndex);
+        this.tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());
         if (this.compressionType == TileCompressionType.COMPRESSED) {
-            this.tiledImageOperation.getCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer(), this.tileOptions);
+            getCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), this.tileOptions);
         } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
-            this.tiledImageOperation.getGzipCompressorControl().decompress(this.compressedData, this.tileBuffer.getBuffer(), null);
+            getGzipCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), null);
         } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {
-            Buffer typedBuffer = this.tiledImageOperation.getBaseType().asTypedBuffer(this.compressedData);
-            this.tiledImageOperation.getBaseType().appendBuffer(this.tileBuffer.getBuffer(), typedBuffer);
+            Buffer typedBuffer = getBaseType().asTypedBuffer(this.compressedData);
+            getBaseType().appendBuffer(getTileBuffer().getBuffer(), typedBuffer);
         } else {
             LOG.severe("Unknown compression column");
             throw new IllegalStateException("Unknown compression column");
         }
-    }
-
-    @Override
-    public void run() {
-        decompress();
-        this.tileBuffer.finish();
     }
 }

@@ -31,11 +31,11 @@ package nom.tam.image.compression.tile;
  * #L%
  */
 
-interface ITileOperationInitialisation {
+interface ITileOperationInitialisation<OPERATION extends AbstractTileOperation> {
 
-    TileOperation createTileOperation(int tileIndex);
+    OPERATION createTileOperation(int tileIndex);
 
-    void init(TileOperation tileOperation);
+    void init(OPERATION tileOperation);
 
     void tileCount(int tileCount);
 }

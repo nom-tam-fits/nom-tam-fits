@@ -33,11 +33,13 @@ package nom.tam.image.compression.tile;
 
 import java.nio.Buffer;
 
-final class TileCompressorInitialisation implements ITileOperationInitialisation {
+final class TileCompressorInitialisation implements ITileOperationInitialisation<TileOperation> {
 
     private final Buffer buffer;
 
     private final TiledImageOperation imageTilesOperation;
+
+    private int compressedOffset = 0;
 
     protected TileCompressorInitialisation(TiledImageOperation imageTilesOperation, Buffer buffer) {
         this.imageTilesOperation = imageTilesOperation;
@@ -51,8 +53,10 @@ final class TileCompressorInitialisation implements ITileOperationInitialisation
 
     @Override
     public void init(TileOperation tileOperation) {
+        tileOperation.setCompressedOffset(this.compressedOffset);
         tileOperation.setWholeImageBuffer(this.buffer);
         tileOperation.setWholeImageCompressedBuffer(this.imageTilesOperation.getCompressedWholeArea());
+        this.compressedOffset += tileOperation.getPixelSize();
     }
 
     @Override

@@ -32,23 +32,33 @@ package nom.tam.image.compression.tile;
  */
 
 import java.nio.Buffer;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import nom.tam.image.compression.tile.buffer.TileBuffer;
+import nom.tam.util.type.PrimitiveType;
 
-public class AbstractTileOperation {
+public abstract class AbstractTileOperation implements Runnable {
 
-    protected final TiledImageOperation tiledImageOperation;
+    private final TiledImageOperation tiledImageOperation;
 
-    protected Future<?> future;
+    private Future<?> future;
 
-    protected TileBuffer tileBuffer;
+    private TileBuffer tileBuffer;
 
-    protected final int tileIndex;
+    private final int tileIndex;
 
     public AbstractTileOperation(TiledImageOperation operation, int tileIndex) {
         this.tiledImageOperation = operation;
         this.tileIndex = tileIndex;
+    }
+
+    protected void execute(ExecutorService threadPool) {
+        this.future = threadPool.submit(this);
+    }
+
+    protected PrimitiveType<Buffer> getBaseType() {
+        return this.tiledImageOperation.getBaseType();
     }
 
     /**
@@ -58,16 +68,32 @@ public class AbstractTileOperation {
         return this.tileBuffer.getPixelSize();
     }
 
+    protected AbstractTileOperation getPreviousTile() {
+        return this.tiledImageOperation.getTile(getTileIndex() - 1);
+    }
+
+    protected TileBuffer getTileBuffer() {
+        return this.tileBuffer;
+    }
+
+    protected TiledImageOperation getTiledImageOperation() {
+        return this.tiledImageOperation;
+    }
+
     protected int getTileIndex() {
         return this.tileIndex;
     }
 
     protected AbstractTileOperation setDimensions(int dataOffset, int width, int height) {
-        this.tileBuffer = TileBuffer.createTileBuffer(this.tiledImageOperation.getBaseType(), //
+        setTileBuffer(TileBuffer.createTileBuffer(getBaseType(), //
                 dataOffset, //
                 this.tiledImageOperation.getImageWidth(), //
-                width, height);
+                width, height));
         return this;
+    }
+
+    protected void setTileBuffer(TileBuffer tileBuffer) {
+        this.tileBuffer = tileBuffer;
     }
 
     /**
@@ -93,4 +119,5 @@ public class AbstractTileOperation {
             throw new IllegalStateException("could not process tile", e);
         }
     }
+
 }
