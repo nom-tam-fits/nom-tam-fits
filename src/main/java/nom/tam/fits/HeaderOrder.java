@@ -14,8 +14,6 @@ import static nom.tam.fits.header.Standard.XTENSION;
 
 import java.io.Serializable;
 
-import nom.tam.fits.header.Standard;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -171,20 +169,10 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
     }
 
     /** Find the index for NAXISn keywords */
-    private int naxisN(String key) {
-        int startOfNumber = Standard.NAXIS.key().length();
-        if (key.length() > startOfNumber && key.regionMatches(false, 0, Standard.NAXIS.key(), 0, startOfNumber)) {
-            for (int i = startOfNumber; i < key.length(); i += 1) {
-                boolean number = true;
-                char c = key.charAt(i);
-                if ('0' > c || c > '9') {
-                    number = false;
-                    break;
-                }
-                if (number) {
-                    return Integer.parseInt(key.substring(startOfNumber));
-                }
-            }
+    private static int naxisN(String key) {
+        int startOfNumber = NAXIS.key().length();
+        if (key.length() > startOfNumber && key.startsWith(NAXIS.key()) && Character.isDigit(key.charAt(startOfNumber))) {
+            return Integer.parseInt(key.substring(startOfNumber));
         }
         return -1;
     }

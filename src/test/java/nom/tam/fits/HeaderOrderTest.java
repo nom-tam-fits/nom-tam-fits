@@ -1,4 +1,4 @@
-package nom.tam.fits.header.hierarch;
+package nom.tam.fits;
 
 /*
  * #%L
@@ -31,13 +31,29 @@ package nom.tam.fits.header.hierarch;
  * #L%
  */
 
-import nom.tam.fits.utilities.FitsLineAppender;
+import static org.junit.Assert.*;
 
-public class StandardIHierarchKeyFormatter implements IHierarchKeyFormatter {
+import org.junit.Test;
 
-    @Override
-    public void append(String key, FitsLineAppender buffer) {
-        buffer.appendReplacing(key, '.', ' ');
+
+public class HeaderOrderTest {
+
+    private HeaderOrder headerOrder = new HeaderOrder();
+
+    @Test
+    public void compareNaxis() {
+        assertEquals(0, headerOrder.compare("NAXIS", "NAXIS"));
     }
 
+    @Test
+    public void compareNaxisn() {
+        assertEquals(0, headerOrder.compare("NAXIS1", "NAXIS1"));
+        assertEquals(-1, headerOrder.compare("NAXIS1", "NAXIS2"));
+        assertEquals(1, headerOrder.compare("NAXIS2", "NAXIS1"));
+    }
+
+    @Test
+    public void compareWrongNaxisn() {
+        assertEquals(-1, headerOrder.compare("NAXIS1", "NAXISn"));
+    }
 }

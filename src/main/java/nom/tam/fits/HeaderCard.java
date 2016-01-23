@@ -223,7 +223,7 @@ public class HeaderCard implements CursorValue<String> {
 
         String card = readOneHeaderLine(dis);
 
-        if (FitsFactory.getUseHierarch() && card.length() > HIERARCH_WITH_BLANK_LENGTH && card.regionMatches(0, HIERARCH_WITH_BLANK, 0, HIERARCH_WITH_BLANK_LENGTH)) {
+        if (FitsFactory.getUseHierarch() && card.length() > HIERARCH_WITH_BLANK_LENGTH && card.startsWith(HIERARCH_WITH_BLANK)) {
             hierarchCard(card, dis);
             return;
         }
@@ -249,7 +249,7 @@ public class HeaderCard implements CursorValue<String> {
         }
 
         // Non-key/value pair lines are treated as keyed comments
-        if (this.key.equals(COMMENT.key()) || this.key.equals(HISTORY.key()) || !card.regionMatches(MAX_KEYWORD_LENGTH, "= ", 0, 2)) {
+        if (this.key.equals(COMMENT.key()) || this.key.equals(HISTORY.key()) || !card.startsWith("= ", MAX_KEYWORD_LENGTH)) {
             this.comment = card.substring(MAX_KEYWORD_LENGTH).trim();
             return;
         }
@@ -440,7 +440,7 @@ public class HeaderCard implements CursorValue<String> {
         if (key == null && value != null) {
             throw new HeaderCardException("Null keyword with non-null value");
         } else if (key != null && key.length() > HeaderCard.MAX_KEYWORD_LENGTH && //
-                (!FitsFactory.getUseHierarch() || !key.substring(0, HIERARCH_WITH_BLANK_LENGTH).equals(HIERARCH_WITH_DOT))) {
+                (!FitsFactory.getUseHierarch() || !key.startsWith(HIERARCH_WITH_DOT))) {
             throw new HeaderCardException("Keyword too long");
         }
         if (value != null) {
@@ -456,7 +456,6 @@ public class HeaderCard implements CursorValue<String> {
             if (!FitsFactory.isLongStringsEnabled() && value.replace("'", "''").length() > (this.isString ? HeaderCard.MAX_STRING_VALUE_LENGTH : HeaderCard.MAX_VALUE_LENGTH)) {
                 throw new HeaderCardException("Value too long");
             }
-
         }
 
         this.key = key;
@@ -541,12 +540,7 @@ public class HeaderCard implements CursorValue<String> {
         } else if (this.value == null || this.value.isEmpty()) {
             return defaultValue;
         } else if (Boolean.class.isAssignableFrom(clazz)) {
-            if ("T".equals(this.value)) {
-                return clazz.cast(Boolean.TRUE);
-            } else if ("F".equals(this.value)) {
-                return clazz.cast(Boolean.FALSE);
-            }
-            return clazz.cast(defaultValue);
+            return clazz.cast(getBooleanValue((Boolean) defaultValue));
         }
         BigDecimal parsedValue;
         try {
@@ -569,6 +563,15 @@ public class HeaderCard implements CursorValue<String> {
         } else {
             throw new IllegalArgumentException("unsupported class " + clazz);
         }
+    }
+
+    private Boolean getBooleanValue(Boolean defaultValue) {
+        if ("T".equals(this.value)) {
+            return Boolean.TRUE;
+        } else if ("F".equals(this.value)) {
+            return Boolean.FALSE;
+        }
+        return defaultValue;
     }
 
     /**
@@ -623,7 +626,7 @@ public class HeaderCard implements CursorValue<String> {
                 } else {
                     // the & was part of the string put it back.
                     longValue.append('&');
-                    // ok move the imputstream one card back.
+                    // ok move the input stream one card back.
                     dis.reset();
                 }
             }
@@ -641,7 +644,7 @@ public class HeaderCard implements CursorValue<String> {
         return maxStringValueLength;
     }
 
-    private String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
+    private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
         byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
         int len;
         int need = FITS_HEADER_CARD_SIZE;
@@ -685,7 +688,7 @@ public class HeaderCard implements CursorValue<String> {
      *
      * @param update
      *            the new value to set
-     * @return the headercard itself
+     * @return the HeaderCard itself
      */
     public HeaderCard setValue(boolean update) {
         this.value = update ? "T" : "F";
@@ -697,7 +700,7 @@ public class HeaderCard implements CursorValue<String> {
      *
      * @param update
      *            the new value to set
-     * @return the headercard itself
+     * @return the HeaderCard itself
      */
     public HeaderCard setValue(double update) {
         this.value = dblString(update);
@@ -709,7 +712,7 @@ public class HeaderCard implements CursorValue<String> {
      *
      * @param update
      *            the new value to set
-     * @return the headercard itself
+     * @return the HeaderCard itself
      */
     public HeaderCard setValue(float update) {
         this.value = dblString(update);
@@ -721,7 +724,7 @@ public class HeaderCard implements CursorValue<String> {
      *
      * @param update
      *            the new value to set
-     * @return the headercard itself
+     * @return the HeaderCard itself
      */
     public HeaderCard setValue(int update) {
         this.value = String.valueOf(update);
@@ -733,7 +736,7 @@ public class HeaderCard implements CursorValue<String> {
      *
      * @param update
      *            the new value to set
-     * @return the headercard itself
+     * @return the HeaderCard itself
      */
     public HeaderCard setValue(long update) {
         this.value = String.valueOf(update);
@@ -745,7 +748,7 @@ public class HeaderCard implements CursorValue<String> {
      *
      * @param update
      *            the new value to set
-     * @return the headercard itself
+     * @return the HeaderCard itself
      */
     public HeaderCard setValue(String update) {
         this.value = update;
@@ -756,7 +759,7 @@ public class HeaderCard implements CursorValue<String> {
      * Return the modulo 80 character card image, the toString tries to preserve
      * as much as possible of the comment value by reducing the alignment of the
      * Strings if the comment is longer and if longString is enabled the string
-     * can be splittet into one more card to have more space for the comment.
+     * can be split into one more card to have more space for the comment.
      */
     @Override
     public String toString() {
@@ -765,7 +768,7 @@ public class HeaderCard implements CursorValue<String> {
         FitsLineAppender buf = new FitsLineAppender();
         // start with the keyword, if there is one
         if (this.key != null) {
-            if (this.key.length() > HIERARCH_WITH_BLANK_LENGTH && this.key.substring(0, HIERARCH_WITH_BLANK_LENGTH).equals(HIERARCH_WITH_DOT)) {
+            if (this.key.length() > HIERARCH_WITH_BLANK_LENGTH && this.key.startsWith(HIERARCH_WITH_DOT)) {
                 FitsFactory.getHierarchFormater().append(this.key, buf);
                 alignSmallString  = buf.length();
                 alignPosition =  buf.length();
@@ -840,39 +843,47 @@ public class HeaderCard implements CursorValue<String> {
             return String.class;
         } else if (this.value != null) {
             String trimedValue = this.value.trim();
-            if (trimedValue.equals("T") || trimedValue.equals("F")) {
+            if ("T".equals(trimedValue) || "F".equals(trimedValue)) {
                 return Boolean.class;
             } else if (HeaderCard.LONG_REGEX.matcher(trimedValue).matches()) {
-                int length = trimedValue.length();
-                if (trimedValue.charAt(0) == '-' || trimedValue.charAt(0) == '+') {
-                    length--;
-                }
-                if (length <= HeaderCard.MAX_INTEGER_STRING_SIZE) {
-                    return Integer.class;
-                } else if (length <= HeaderCard.MAX_LONG_STRING_SIZE) {
-                    return Long.class;
-                } else {
-                    return BigInteger.class;
-                }
+                return getIntegerNumberType(trimedValue);
             } else if (HeaderCard.IEEE_REGEX.matcher(trimedValue).find()) {
-                // We should detect if we are loosing precision here
-                BigDecimal bigDecimal = null;
-
-                try {
-                    bigDecimal = new BigDecimal(this.value);
-                } catch (Exception e) {
-                    throw new NumberFormatException("could not parse " + this.value);
-                }
-                if (bigDecimal.abs().compareTo(HeaderCard.LONG_MAX_VALUE_AS_BIG_DECIMAL) > 0 && bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
-                    return BigInteger.class;
-                } else if (bigDecimal.doubleValue() == Double.valueOf(trimedValue)) {
-                    return Double.class;
-                } else {
-                    return BigDecimal.class;
-                }
+                return getDecimalNumberType(trimedValue);
             }
         }
         return null;
+    }
+
+    private static Class<?> getDecimalNumberType(String value) {
+        // We should detect if we are loosing precision here
+        BigDecimal bigDecimal = null;
+
+        try {
+            bigDecimal = new BigDecimal(value);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("could not parse " + value + " cause:" + e.getCause());
+        }
+        if (bigDecimal.abs().compareTo(HeaderCard.LONG_MAX_VALUE_AS_BIG_DECIMAL) > 0 && bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
+            return BigInteger.class;
+        } else if (bigDecimal.doubleValue() == Double.valueOf(value)) { // NOSONAR
+            return Double.class;
+        } else {
+            return BigDecimal.class;
+        }
+    }
+
+    private static Class<?> getIntegerNumberType(String value) {
+        int length = value.length();
+        if (value.charAt(0) == '-' || value.charAt(0) == '+') {
+            length--;
+        }
+        if (length <= HeaderCard.MAX_INTEGER_STRING_SIZE) {
+            return Integer.class;
+        } else if (length <= HeaderCard.MAX_LONG_STRING_SIZE) {
+            return Long.class;
+        } else {
+            return BigInteger.class;
+        }
     }
 
     private void writeLongStringValue(FitsLineAppender buf, String stringValueString) {

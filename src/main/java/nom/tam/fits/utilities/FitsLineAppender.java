@@ -46,7 +46,7 @@ public class FitsLineAppender {
     /**
      * A String of 80 spaces to fill up fits card space.
      */
-    private static final String FULL_CARD_AS_SPACES = "                                                                                ";
+    private static final String FULL_CARD_AS_SPACES = String.format("%80s", "");
 
     /**
      * the underlying StringBuilder to which the writing of fits lines happens.
@@ -78,7 +78,7 @@ public class FitsLineAppender {
     }
 
     /**
-     * Append a sub-sting to this line.
+     * Append a sub-string to this line.
      * 
      * @param stringValue
      *            the sub string to append.
@@ -108,7 +108,7 @@ public class FitsLineAppender {
     }
 
     /**
-     * append a string to the buffer but replace all occurrences of a character
+     * append a string to the buffer, replacing all occurrences of a character
      * with an other.
      * 
      * @param key
@@ -118,7 +118,7 @@ public class FitsLineAppender {
      * @param with
      *            the character to replace the toReplace character with.
      */
-    public void appendRepacing(String key, char toReplace, char with) {
+    public void appendReplacing(String key, char toReplace, char with) {
         int size = key.length();
         for (int index = 0; index < size; index++) {
             char character = key.charAt(index);
