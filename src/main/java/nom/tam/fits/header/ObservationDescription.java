@@ -226,7 +226,7 @@ public enum ObservationDescription implements IFitsHeader {
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
-    private ObservationDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
+    ObservationDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
     }
 

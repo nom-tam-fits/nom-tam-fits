@@ -139,9 +139,9 @@ public class UndefinedData extends Data {
         try {
             i.skipAllBytes(pad);
         } catch (EOFException e) {
-            throw new PaddingException("EOF skipping padding in undefined data", this);
+            throw new PaddingException("EOF skipping padding in undefined data", this, e);
         } catch (IOException e) {
-            throw new FitsException("Error skipping padding in undefined data");
+            throw new FitsException("Error skipping padding in undefined data", e);
         }
     }
 

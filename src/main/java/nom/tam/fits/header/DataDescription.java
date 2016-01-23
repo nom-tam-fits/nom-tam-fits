@@ -222,7 +222,7 @@ public enum DataDescription implements IFitsHeader {
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
-    private DataDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
+    DataDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
     }
 

@@ -226,11 +226,11 @@ public enum MaxImDLExt implements IFitsHeader {
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
-    private MaxImDLExt(String key, VALUE valueType, String comment) {
+    MaxImDLExt(String key, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(key, IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType, comment);
     }
 
-    private MaxImDLExt(VALUE valueType, String comment) {
+    MaxImDLExt(VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType, comment);
     }
 

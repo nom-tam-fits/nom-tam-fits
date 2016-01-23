@@ -178,7 +178,7 @@ public enum CXCExt implements IFitsHeader {
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
-    private CXCExt(String comment) {
+    CXCExt(String comment) {
         this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
     }
 

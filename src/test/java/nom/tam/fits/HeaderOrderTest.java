@@ -30,8 +30,7 @@ package nom.tam.fits;
  * OTHER DEALINGS IN THE SOFTWARE.
  * #L%
  */
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 

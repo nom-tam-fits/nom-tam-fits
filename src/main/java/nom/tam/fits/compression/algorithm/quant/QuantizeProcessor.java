@@ -42,7 +42,7 @@ public class QuantizeProcessor {
 
     private class BaseFilter extends PixelFilter {
 
-        public BaseFilter() {
+        BaseFilter() {
             super(null);
         }
 
@@ -82,7 +82,7 @@ public class QuantizeProcessor {
 
         private final double[] randomValues;
 
-        public DitherFilter(long seed) {
+        DitherFilter(long seed) {
             super(null);
             this.randomValues = initRandoms();
             initialize(seed);
@@ -100,7 +100,8 @@ public class QuantizeProcessor {
             int ii;
             double a = RANDOM_START_VALUE;
             double m = MAX_INT_AS_DOUBLE;
-            double temp, seed;
+            double temp;
+            double seed;
 
             /* allocate tiledImageOperation for the random number sequence */
             double[] randomValue = new double[N_RANDOM];
@@ -243,7 +244,7 @@ public class QuantizeProcessor {
 
         private final int nullValueIndicator;
 
-        public NullFilter(double nullValue, int nullValueIndicator, PixelFilter next) {
+        NullFilter(double nullValue, int nullValueIndicator, PixelFilter next) {
             super(next);
             this.nullValue = nullValue;
             this.isNaN = Double.isNaN(this.nullValue);
@@ -294,7 +295,7 @@ public class QuantizeProcessor {
 
     private class ZeroFilter extends PixelFilter {
 
-        public ZeroFilter(PixelFilter next) {
+        ZeroFilter(PixelFilter next) {
             super(next);
         }
 

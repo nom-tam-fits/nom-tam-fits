@@ -216,11 +216,11 @@ public enum STScIExt implements IFitsHeader {
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
-    private STScIExt(String comment) {
+    STScIExt(String comment) {
         this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
     }
 
-    private STScIExt(String key, String comment) {
+    STScIExt(String key, String comment) {
         this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
     }
 

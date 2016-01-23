@@ -1605,9 +1605,9 @@ public class BinaryTable extends AbstractTableData {
             try {
                 i.skipAllBytes(FitsUtil.padding(getTrueSize()));
             } catch (EOFException e) {
-                throw new PaddingException("Missing padding after binary table:" + e, this);
+                throw new PaddingException("Missing padding after binary table", this, e);
             } catch (IOException e) {
-                throw new FitsException("Error skipping padding after binary table:" + e, e);
+                throw new FitsException("Error skipping padding after binary table", e);
             }
 
         } else {
@@ -1648,7 +1648,7 @@ public class BinaryTable extends AbstractTableData {
      * Read table, heap and padding
      *
      * @param i
-     *            the sreatm to read the data from.
+     *            the stream to read the data from.
      * @throws FitsException
      *             if the reading failed
      */
@@ -1665,9 +1665,9 @@ public class BinaryTable extends AbstractTableData {
         try {
             i.skipAllBytes(FitsUtil.padding(getTrueSize()));
         } catch (EOFException e) {
-            throw new PaddingException("Error skipping padding after binary table", this);
+            throw new PaddingException("Error skipping padding after binary table", this, e);
         } catch (IOException e) {
-            throw new FitsException("Error reading binary table data padding:" + e, e);
+            throw new FitsException("Error reading binary table data padding", e);
         }
     }
 

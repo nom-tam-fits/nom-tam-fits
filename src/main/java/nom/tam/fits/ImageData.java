@@ -314,9 +314,9 @@ public class ImageData extends Data {
         try {
             i.skipAllBytes(pad);
         } catch (EOFException e) {
-            throw new PaddingException("Error skipping padding after image", this);
+            throw new PaddingException("Error skipping padding after image", this, e);
         } catch (IOException e) {
-            throw new FitsException("Error skipping padding after image");
+            throw new FitsException("Error skipping padding after image", e);
         }
     }
 

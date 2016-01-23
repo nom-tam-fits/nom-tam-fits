@@ -124,11 +124,11 @@ public enum ObservationDurationDescription implements IFitsHeader {
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
-    private ObservationDurationDescription(SOURCE status, HDU hdu, VALUE valueType, String comment) {
+    ObservationDurationDescription(SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
     }
 
-    private ObservationDurationDescription(String key, SOURCE status, HDU hdu, VALUE valueType, String comment) {
+    ObservationDurationDescription(String key, SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(key == null ? name() : key, status, hdu, valueType, comment);
     }
 

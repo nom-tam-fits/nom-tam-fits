@@ -216,11 +216,11 @@ public enum SBFitsExt implements IFitsHeader {
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
-    private SBFitsExt(String key, VALUE valueType, String comment) {
+    SBFitsExt(String key, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(key, IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);
     }
 
-    private SBFitsExt(VALUE valueType, String comment) {
+    SBFitsExt(VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);
     }
 

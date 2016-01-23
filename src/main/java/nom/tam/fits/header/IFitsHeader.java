@@ -33,7 +33,7 @@ package nom.tam.fits.header;
 
 public interface IFitsHeader {
 
-    public enum HDU {
+    enum HDU {
         ANY,
         ASCII_TABLE,
         BINTABLE,
@@ -45,7 +45,7 @@ public interface IFitsHeader {
         TABLE
     }
 
-    public enum SOURCE {
+    enum SOURCE {
         /**
          * <pre>
          *  @see <a href="http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html">checksum doc</a>
@@ -96,7 +96,7 @@ public interface IFitsHeader {
          */
         RESERVED("http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html"),
         /**
-         * rosat no link availabe.
+         * rosat no link available.
          */
         ROSAT(null),
         /**
@@ -124,17 +124,16 @@ public interface IFitsHeader {
 
         private final String url;
 
-        private SOURCE(String url) {
+        SOURCE(String url) {
             this.url = url;
         }
 
         public String url() {
             return this.url;
         }
-
     }
 
-    public enum VALUE {
+    enum VALUE {
         INTEGER,
         LOGICAL,
         NONE,

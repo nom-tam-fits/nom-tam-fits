@@ -41,7 +41,7 @@ public final class ZBlankColumnParameter extends CompressColumnParameter<int[], 
         super(Compression.ZBLANK_COLUMN, quantizeOption, int[].class);
     }
 
-    private boolean equals(Integer i1, Integer i2) {
+    private static boolean equals(Integer i1, Integer i2) {
         if (i1 == null) {
             return i2 == null;
         }

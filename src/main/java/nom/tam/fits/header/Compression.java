@@ -442,11 +442,11 @@ public enum Compression implements IFitsHeader {
 
     private final IFitsHeader uncompressedKey;
 
-    private Compression(HDU hdu, VALUE valueType, String comment) {
+    Compression(HDU hdu, VALUE valueType, String comment) {
         this(hdu, valueType, comment, null);
     }
 
-    private Compression(HDU hdu, VALUE valueType, String comment, IFitsHeader uncompressedKey) {
+    Compression(HDU hdu, VALUE valueType, String comment, IFitsHeader uncompressedKey) {
         this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.HEASARC, hdu, valueType, comment);
         this.uncompressedKey = uncompressedKey;
     }

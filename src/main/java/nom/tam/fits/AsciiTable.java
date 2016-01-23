@@ -810,9 +810,9 @@ public class AsciiTable extends AbstractTableData {
             }
             str.skipAllBytes(FitsUtil.padding(this.nRows * this.rowLen));
         } catch (EOFException e) {
-            throw new PaddingException("EOF skipping padding after ASCII Table:" + e, this);
+            throw new PaddingException("EOF skipping padding after ASCII Table", this, e);
         } catch (IOException e) {
-            throw new FitsException("Error skipping padding after ASCII Table:" + e.getMessage(), e);
+            throw new FitsException("Error skipping padding after ASCII Table", e);
         }
     }
 

@@ -63,7 +63,7 @@ public class HDecompress {
 
         private int offset;
 
-        public LongArrayPointer(long[] tmp) {
+        LongArrayPointer(long[] tmp) {
             this.a = tmp;
             this.offset = 0;
         }

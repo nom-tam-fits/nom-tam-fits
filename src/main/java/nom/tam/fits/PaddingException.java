@@ -58,8 +58,8 @@ public class PaddingException extends FitsException {
      */
     private BasicHDU<?> truncatedHDU;
 
-    public PaddingException(String msg, Data data) throws FitsException {
-        super(msg);
+    public PaddingException(String msg, Data data, Exception cause) throws FitsException {
+        super(msg, cause);
         this.truncatedHDU = FitsFactory.hduFactory(data.getKernel());
         this.truncatedHDU = FitsFactory.hduFactory(this.truncatedHDU.getHeader(), data);
     }

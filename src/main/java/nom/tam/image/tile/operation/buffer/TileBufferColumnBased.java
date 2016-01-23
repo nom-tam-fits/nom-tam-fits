@@ -58,7 +58,7 @@ class TileBufferColumnBased extends TileBuffer {
      */
     private final int imageWidth;
 
-    public TileBufferColumnBased(PrimitiveType<Buffer> baseType, int dataOffset, int imageWidth, int width, int height) {
+    TileBufferColumnBased(PrimitiveType<Buffer> baseType, int dataOffset, int imageWidth, int width, int height) {
         super(baseType, dataOffset, width, height);
         this.imageWidth = imageWidth;
     }

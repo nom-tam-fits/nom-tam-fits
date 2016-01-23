@@ -37,7 +37,7 @@ import nom.tam.fits.header.Compression;
 
 final class ZZeroColumnParameter extends CompressColumnParameter<double[], QuantizeOption> {
 
-    public ZZeroColumnParameter(QuantizeOption quantizeOption) {
+    ZZeroColumnParameter(QuantizeOption quantizeOption) {
         super(Compression.ZZERO_COLUMN, quantizeOption, double[].class);
     }
 

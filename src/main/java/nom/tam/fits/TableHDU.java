@@ -233,7 +233,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     public void deleteRows(final int firstRow, int nRow) throws FitsException {
 
         // Just ignore invalid requests.
-        if (nRow <= 0 || firstRow >= getNRows() || nRow <= 0) {
+        if (nRow <= 0 || firstRow >= getNRows() || firstRow <= 0) {
             return;
         }
 

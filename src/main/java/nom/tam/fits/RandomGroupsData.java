@@ -163,9 +163,9 @@ public class RandomGroupsData extends Data {
         try {
             str.skipAllBytes(pad);
         } catch (EOFException e) {
-            throw new PaddingException("EOF reading padding after random groups", this);
+            throw new PaddingException("EOF reading padding after random groups", this, e);
         } catch (IOException e) {
-            throw new FitsException("IO error reading padding after random groups");
+            throw new FitsException("IO error reading padding after random groups", e);
         }
     }
 

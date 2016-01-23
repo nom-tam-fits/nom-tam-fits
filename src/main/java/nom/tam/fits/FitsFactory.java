@@ -361,7 +361,7 @@ public final class FitsFactory {
     }
 
     /**
-     * Use thread local settings for the curretn thread instead of the lobal
+     * Use thread local settings for the current thread instead of the global
      * ones if the parameter is set to true, else use the shared global
      * settings.
      *

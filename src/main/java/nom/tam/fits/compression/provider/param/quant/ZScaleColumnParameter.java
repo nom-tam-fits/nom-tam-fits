@@ -37,7 +37,7 @@ import nom.tam.fits.header.Compression;
 
 final class ZScaleColumnParameter extends CompressColumnParameter<double[], QuantizeOption> {
 
-    public ZScaleColumnParameter(QuantizeOption quantizeOption) {
+    ZScaleColumnParameter(QuantizeOption quantizeOption) {
         super(Compression.ZSCALE_COLUMN, quantizeOption, double[].class);
     }
 

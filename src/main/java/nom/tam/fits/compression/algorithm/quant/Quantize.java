@@ -41,7 +41,7 @@ public class Quantize {
 
         private int startIndex;
 
-        public DoubleArrayPointer(double[] arrayIn) {
+        DoubleArrayPointer(double[] arrayIn) {
             this.array = arrayIn;
         }
 

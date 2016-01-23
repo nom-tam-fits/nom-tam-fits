@@ -87,7 +87,7 @@ public enum CXCStclSharedExt implements IFitsHeader {
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
-    private CXCStclSharedExt(String comment) {
+    CXCStclSharedExt(String comment) {
         this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
     }
 

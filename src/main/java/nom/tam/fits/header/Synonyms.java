@@ -52,7 +52,7 @@ public enum Synonyms {
 
     private final IFitsHeader[] synonyms;
 
-    private Synonyms(IFitsHeader primaryKeyword, IFitsHeader... synonyms) {
+    Synonyms(IFitsHeader primaryKeyword, IFitsHeader... synonyms) {
         this.primaryKeyword = primaryKeyword;
         this.synonyms = synonyms;
     }

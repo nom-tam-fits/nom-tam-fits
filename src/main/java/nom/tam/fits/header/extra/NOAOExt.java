@@ -8147,11 +8147,11 @@ public enum NOAOExt implements IFitsHeader {
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
-    private NOAOExt(HDU hdu, VALUE valueType, String comment) {
+    NOAOExt(HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
     }
 
-    private NOAOExt(String key, HDU hdu, VALUE valueType, String comment) {
+    NOAOExt(String key, HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
     }
 

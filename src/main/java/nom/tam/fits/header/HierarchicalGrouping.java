@@ -59,7 +59,7 @@ public enum HierarchicalGrouping implements IFitsHeader {
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
-    private HierarchicalGrouping(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
+    HierarchicalGrouping(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
     }
 
