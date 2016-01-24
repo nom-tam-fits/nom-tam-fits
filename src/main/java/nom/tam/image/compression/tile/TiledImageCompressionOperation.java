@@ -64,6 +64,7 @@ import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.provider.CompressorProvider;
 import nom.tam.image.tile.operation.AbstractTiledImageOperation;
+import nom.tam.image.tile.operation.TileArea;
 import nom.tam.util.type.PrimitiveTypeHandler;
 
 /**
@@ -142,6 +143,15 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         processAllTiles();
         decompressedWholeArea.rewind();
         return decompressedWholeArea;
+    }
+
+    public void forceNoLoss(int x, int y, int width, int heigth) {
+        TileArea tileArea = new TileArea().start(x, y).end(x + width, y + heigth);
+        for (TileCompressionOperation operation : getTileOperations()) {
+            if (operation.getArea().intersects(tileArea)) {
+                operation.forceNoLoss(true);
+            }
+        }
     }
 
     public TiledImageCompressionOperation prepareUncompressedData(final Buffer buffer) {
@@ -339,9 +349,5 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
                 throw new IllegalStateException("this should not happen", e);
             }
         }
-    }
-
-    public void forceNoLoss(int x, int y, int width, int heigth) {
-        //TODO: force the hit tiles to no loss compression
     }
 }

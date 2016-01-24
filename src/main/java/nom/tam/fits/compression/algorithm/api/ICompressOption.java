@@ -51,8 +51,23 @@ public interface ICompressOption extends Cloneable {
     ICompressParameters getCompressionParameters();
 
     /**
+     * @return true if the compression done with this specified options uses
+     *         approximations. That means if the reconstruction of the data is
+     *         excact the return should be false.
+     */
+    boolean isLossyCompression();
+
+    /**
+     * set the parameters that must be synchronized with the hdu meta data.
+     *
+     * @param parameters
+     *            the parameters to synchronized
+     */
+    void setParameters(ICompressParameters parameters);
+
+    /**
      * set the tile height in pixel.
-     * 
+     *
      * @param value
      *            the number of pixel.
      * @return this (builder pattern)
@@ -61,7 +76,7 @@ public interface ICompressOption extends Cloneable {
 
     /**
      * set the tile width.
-     * 
+     *
      * @param value
      *            the number of pixel.
      * @return this (builder pattern)
@@ -70,7 +85,7 @@ public interface ICompressOption extends Cloneable {
 
     /**
      * un wrap a specific implementation detail.
-     * 
+     *
      * @param clazz
      *            the type to unwrap
      * @param <T>
@@ -78,13 +93,4 @@ public interface ICompressOption extends Cloneable {
      * @return the implementation detail or null if no such detail is avalable.
      */
     <T> T unwrap(Class<T> clazz);
-
-    /**
-     * set the parameters that must be synchronized with the hdu meta data.
-     * 
-     * @param parameters
-     *            the parameters to synchronized
-     */
-    void setParameters(ICompressParameters parameters);
-
 }

@@ -1,4 +1,4 @@
-package nom.tam.image.compression.tile;
+package nom.tam.image.tile.operation;
 
 /*
  * #%L
@@ -31,38 +31,46 @@ package nom.tam.image.compression.tile;
  * #L%
  */
 
-import java.nio.Buffer;
+import java.util.Arrays;
 
-import nom.tam.image.tile.operation.ITileOperationInitialisation;
-import nom.tam.image.tile.operation.TileArea;
+/**
+ * Description of the erea the tile covers of an image, at the moment only 2
+ * dimentional tiles are supported.
+ */
+public class TileArea {
 
-final class TileCompressorInitialisation implements ITileOperationInitialisation<TileCompressionOperation> {
+    private int[] startPoint;
 
-    private final Buffer buffer;
+    private int[] endPoint;
 
-    private final TiledImageCompressionOperation imageTilesOperation;
-
-    private int compressedOffset = 0;
-
-    protected TileCompressorInitialisation(TiledImageCompressionOperation imageTilesOperation, Buffer buffer) {
-        this.imageTilesOperation = imageTilesOperation;
-        this.buffer = buffer;
+    public TileArea end(int... newEndPoint) {
+        this.endPoint = Arrays.copyOf(newEndPoint, newEndPoint.length);
+        return this;
     }
 
-    @Override
-    public TileCompressionOperation createTileOperation(int tileIndex, TileArea area) {
-        return new TileCompressor(this.imageTilesOperation, tileIndex, area);
+    /**
+     * @param other
+     *            the tile to test intersection with
+     * @return true if the tile intersects with the specified other tile?
+     */
+    public boolean intersects(TileArea other) {
+        double x0 = this.startPoint[0];
+        double y0 = this.startPoint[1];
+        return other.endPoint[0] > x0 && //
+                other.endPoint[1] > y0 && //
+                other.startPoint[0] < this.endPoint[0] && //
+                other.startPoint[1] < this.endPoint[1];
     }
 
-    @Override
-    public void init(TileCompressionOperation tileOperation) {
-        tileOperation.setCompressedOffset(this.compressedOffset);
-        tileOperation.setWholeImageBuffer(this.buffer);
-        tileOperation.setWholeImageCompressedBuffer(this.imageTilesOperation.getCompressedWholeArea());
-        this.compressedOffset += tileOperation.getPixelSize();
+    public void size(int... sizes) {
+        this.endPoint = new int[this.startPoint.length];
+        for (int index = 0; index < this.startPoint.length; index++) {
+            this.endPoint[index] = this.startPoint[index] + sizes[index];
+        }
     }
 
-    @Override
-    public void tileCount(int tileCount) {
+    public TileArea start(int... newStartPoint) {
+        this.startPoint = Arrays.copyOf(newStartPoint, newStartPoint.length);
+        return this;
     }
 }

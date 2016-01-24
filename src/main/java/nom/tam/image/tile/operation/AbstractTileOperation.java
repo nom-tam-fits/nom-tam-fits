@@ -48,13 +48,20 @@ public abstract class AbstractTileOperation<OPERATION extends AbstractTileOperat
 
     private final int tileIndex;
 
-    public AbstractTileOperation(IMAGE_OPERATION operation, int tileIndex) {
+    private final TileArea area;
+
+    public AbstractTileOperation(IMAGE_OPERATION operation, int tileIndex, TileArea area) {
         this.tiledImageOperation = operation;
         this.tileIndex = tileIndex;
+        this.area = area;
     }
 
     public void execute(ExecutorService threadPool) {
         this.future = threadPool.submit(this);
+    }
+
+    public TileArea getArea() {
+        return this.area;
     }
 
     /**
@@ -113,6 +120,7 @@ public abstract class AbstractTileOperation<OPERATION extends AbstractTileOperat
                 dataOffset, //
                 this.tiledImageOperation.getImageWidth(), //
                 width, height));
+        this.area.size(width, height);
         return (OPERATION) this;
     }
 

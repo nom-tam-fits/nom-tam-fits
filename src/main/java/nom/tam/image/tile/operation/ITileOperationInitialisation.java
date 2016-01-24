@@ -33,7 +33,7 @@ package nom.tam.image.tile.operation;
 
 public interface ITileOperationInitialisation<OPERATION extends AbstractTileOperation> {
 
-    OPERATION createTileOperation(int tileIndex);
+    OPERATION createTileOperation(int tileIndex, TileArea area);
 
     void init(OPERATION tileOperation);
 

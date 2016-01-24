@@ -80,74 +80,6 @@ import nom.tam.fits.compression.provider.param.rice.RiceQuantizeCompressParamete
  */
 public class CompressorProvider implements ICompressorProvider {
 
-    private static final ICompressOption NULL_OPTION = new ICompressOption() {
-
-        @Override
-        public ICompressOption copy() {
-            return this;
-        }
-
-        @Override
-        public ICompressParameters getCompressionParameters() {
-            return NULL_PARAMETERS;
-        }
-
-        @Override
-        public ICompressOption setTileHeight(int value) {
-            return this;
-        }
-
-        @Override
-        public ICompressOption setTileWidth(int value) {
-            return this;
-        }
-
-        @Override
-        public <T> T unwrap(Class<T> clazz) {
-            return clazz.isAssignableFrom(this.getClass()) ? clazz.cast(this) : null;
-        }
-
-        @Override
-        public void setParameters(ICompressParameters parameters) {
-        }
-    };
-
-    private static final ICompressParameters NULL_PARAMETERS = new ICompressParameters() {
-
-        @Override
-        public void addColumnsToTable(BinaryTableHDU hdu) {
-        }
-
-        @Override
-        public ICompressParameters copy(ICompressOption clone) {
-            return this;
-        }
-
-        @Override
-        public void getValuesFromColumn(int index) {
-        }
-
-        @Override
-        public void getValuesFromHeader(Header header) {
-        }
-
-        @Override
-        public void initializeColumns(Header header, BinaryTable binaryTable, int size) throws FitsException {
-        }
-
-        @Override
-        public void initializeColumns(int length) {
-        }
-
-        @Override
-        public void setValueFromColumn(int index) {
-        }
-
-        @Override
-        public void setValuesInHeader(Header header) {
-        }
-    };
-
     /**
      * private implementation of the tile compression provider, all is based on
      * the option based constructor of the compressors.
@@ -194,10 +126,6 @@ public class CompressorProvider implements ICompressorProvider {
             }
         }
 
-        private ICompressor<Buffer> newCompressor(ICompressOption option) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-            return this.constructor.getParameterTypes().length == 0 ? this.constructor.newInstance() : this.constructor.newInstance(option);
-        }
-
         @Override
         public ICompressOption option() {
             if (this.optionClass != null) {
@@ -215,7 +143,84 @@ public class CompressorProvider implements ICompressorProvider {
             }
             return NULL_OPTION;
         }
+
+        private ICompressor<Buffer> newCompressor(ICompressOption option) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+            return this.constructor.getParameterTypes().length == 0 ? this.constructor.newInstance() : this.constructor.newInstance(option);
+        }
     }
+
+    private static final ICompressOption NULL_OPTION = new ICompressOption() {
+
+        @Override
+        public ICompressOption copy() {
+            return this;
+        }
+
+        @Override
+        public ICompressParameters getCompressionParameters() {
+            return NULL_PARAMETERS;
+        }
+
+        @Override
+        public boolean isLossyCompression() {
+            return false;
+        }
+
+        @Override
+        public void setParameters(ICompressParameters parameters) {
+        }
+
+        @Override
+        public ICompressOption setTileHeight(int value) {
+            return this;
+        }
+
+        @Override
+        public ICompressOption setTileWidth(int value) {
+            return this;
+        }
+
+        @Override
+        public <T> T unwrap(Class<T> clazz) {
+            return clazz.isAssignableFrom(this.getClass()) ? clazz.cast(this) : null;
+        }
+    };
+
+    private static final ICompressParameters NULL_PARAMETERS = new ICompressParameters() {
+
+        @Override
+        public void addColumnsToTable(BinaryTableHDU hdu) {
+        }
+
+        @Override
+        public ICompressParameters copy(ICompressOption clone) {
+            return this;
+        }
+
+        @Override
+        public void getValuesFromColumn(int index) {
+        }
+
+        @Override
+        public void getValuesFromHeader(Header header) {
+        }
+
+        @Override
+        public void initializeColumns(Header header, BinaryTable binaryTable, int size) throws FitsException {
+        }
+
+        @Override
+        public void initializeColumns(int length) {
+        }
+
+        @Override
+        public void setValueFromColumn(int index) {
+        }
+
+        @Override
+        public void setValuesInHeader(Header header) {
+        }
+    };
 
     // @formatter:off
     private static final Class<?>[][] AVAILABLE_COMPRESSORS = {

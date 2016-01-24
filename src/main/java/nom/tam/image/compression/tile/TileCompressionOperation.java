@@ -37,6 +37,7 @@ import java.nio.ByteBuffer;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.image.tile.operation.AbstractTileOperation;
+import nom.tam.image.tile.operation.TileArea;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 
@@ -55,8 +56,8 @@ abstract class TileCompressionOperation extends AbstractTileOperation<TileCompre
 
     protected ICompressOption tileOptions;
 
-    protected TileCompressionOperation(TiledImageCompressionOperation operation, int tileIndex) {
-        super(operation, tileIndex);
+    protected TileCompressionOperation(TiledImageCompressionOperation operation, int tileIndex, TileArea area) {
+        super(operation, tileIndex, area);
     }
 
     @Override
@@ -66,6 +67,16 @@ abstract class TileCompressionOperation extends AbstractTileOperation<TileCompre
 
     private ByteBuffer convertToBuffer(Object data) {
         return PrimitiveTypeHandler.valueOf(data.getClass().getComponentType()).convertToByteBuffer(data);
+    }
+
+    /**
+     * should the data of this tile be forced to case no data loss. This
+     * information is not relevant in all cases that it is ignored by default.
+     *
+     * @param value
+     *            the value to set.
+     */
+    protected void forceNoLoss(boolean value) {
     }
 
     protected byte[] getCompressedData() {

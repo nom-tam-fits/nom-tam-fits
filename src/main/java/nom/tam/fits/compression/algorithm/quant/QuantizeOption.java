@@ -110,6 +110,10 @@ public class QuantizeOption implements ICompressOption {
         return this.parameters;
     }
 
+    public <T> T getCompressOption(Class<T> clazz) {
+        return unwrap(clazz);
+    }
+
     public int getIntMaxValue() {
         return this.intMaxValue;
     }
@@ -172,6 +176,11 @@ public class QuantizeOption implements ICompressOption {
 
     public boolean isDither2() {
         return this.dither2;
+    }
+
+    @Override
+    public boolean isLossyCompression() {
+        return true;
     }
 
     public ICompressOption setBNull(Integer blank) {
@@ -245,12 +254,6 @@ public class QuantizeOption implements ICompressOption {
         return this;
     }
 
-    private QuantizeOption setOriginal(QuantizeOption quantizeOption) {
-        this.original = quantizeOption;
-        this.parameters = this.parameters.copy(this);
-        return this;
-    }
-
     @Override
     public void setParameters(ICompressParameters parameters) {
         this.parameters = parameters;
@@ -286,8 +289,9 @@ public class QuantizeOption implements ICompressOption {
         return null;
     }
 
-    public <T> T getCompressOption(Class<T> clazz) {
-        return unwrap(clazz);
+    private QuantizeOption setOriginal(QuantizeOption quantizeOption) {
+        this.original = quantizeOption;
+        this.parameters = this.parameters.copy(this);
+        return this;
     }
-
 }

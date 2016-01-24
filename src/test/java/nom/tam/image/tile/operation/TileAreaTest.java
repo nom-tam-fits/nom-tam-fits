@@ -1,4 +1,4 @@
-package nom.tam.image.compression.tile;
+package nom.tam.image.tile.operation;
 
 /*
  * #%L
@@ -31,38 +31,20 @@ package nom.tam.image.compression.tile;
  * #L%
  */
 
-import java.nio.Buffer;
+import org.junit.Assert;
+import org.junit.Test;
 
-import nom.tam.image.tile.operation.ITileOperationInitialisation;
-import nom.tam.image.tile.operation.TileArea;
+public class TileAreaTest {
 
-final class TileCompressorInitialisation implements ITileOperationInitialisation<TileCompressionOperation> {
+    @Test
+    public void testIntersect() {
+        TileArea middle = new TileArea().start(140, 140).end(160, 160);
 
-    private final Buffer buffer;
+        Assert.assertTrue(new TileArea().start(0, 150).end(300, 165).intersects(middle));
+        Assert.assertFalse(new TileArea().start(0, 100).end(300, 115).intersects(middle));
+        Assert.assertFalse(new TileArea().start(15, 0).end(30, 300).intersects(middle));
+        Assert.assertFalse(new TileArea().start(170, 0).end(185, 300).intersects(middle));
+        Assert.assertFalse(new TileArea().start(0, 170).end(300, 175).intersects(middle));
 
-    private final TiledImageCompressionOperation imageTilesOperation;
-
-    private int compressedOffset = 0;
-
-    protected TileCompressorInitialisation(TiledImageCompressionOperation imageTilesOperation, Buffer buffer) {
-        this.imageTilesOperation = imageTilesOperation;
-        this.buffer = buffer;
-    }
-
-    @Override
-    public TileCompressionOperation createTileOperation(int tileIndex, TileArea area) {
-        return new TileCompressor(this.imageTilesOperation, tileIndex, area);
-    }
-
-    @Override
-    public void init(TileCompressionOperation tileOperation) {
-        tileOperation.setCompressedOffset(this.compressedOffset);
-        tileOperation.setWholeImageBuffer(this.buffer);
-        tileOperation.setWholeImageCompressedBuffer(this.imageTilesOperation.getCompressedWholeArea());
-        this.compressedOffset += tileOperation.getPixelSize();
-    }
-
-    @Override
-    public void tileCount(int tileCount) {
     }
 }

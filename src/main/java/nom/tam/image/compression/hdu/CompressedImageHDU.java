@@ -155,6 +155,23 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return this;
     }
 
+    /**
+     * Specify an areaWithin the image that will not undergo a lossy
+     * compression. This will only have affect it the selected compression
+     * (including the options) is a lossy compression. All tiles touched by this
+     * region will be handled so that there is no loss of any data, the
+     * reconstruction will be exact.
+     * 
+     * @param x
+     *            the x position in the image
+     * @param y
+     *            the y position in the image
+     * @param width
+     *            the width of the area
+     * @param heigth
+     *            the height of the area
+     * @return this
+     */
     public CompressedImageHDU forceNoLoss(int x, int y, int width, int heigth) {
         getData().forceNoLoss(x, y, width, heigth);
         return this;

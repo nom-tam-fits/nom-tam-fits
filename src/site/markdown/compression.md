@@ -1,7 +1,20 @@
 # Compression support
 
-From now on, 100% native Java support for compressed fits images is provided. The compression and decompression process automatically utilizes all
-available CPUs. To compress an existing image HDU, use code like:
+Image compression and tiling are now fully supported by nom-tam-fits. A 100% Java implementation of the compression libraries available in cfitsio was implemented. An API for easy handling of compressed images is now provided. Support for binary table compression and the NULL_PIXEL_MASK features is anticipated in the next release.
+
+When [de]compressing all available CPU's are automatically utilized.
+
+Internal compression allows FITS files to be created where the data are efficiently stored, but the
+metadata is still easily accessible. The tiling of images is particularly critical
+for supporting efficient access to subsets of very large images. A user can easily access
+only the tiles that overlap the region of interest and can skip data not of interest.
+While some skipping might be possible with uncompressed FITS files (i.e., read only the rows
+overlapping the desired subset), internal tiles can be much more efficient when the image is
+substantially larger than the subset. Most compression algorithms interfere with the ability to
+skip uninteresting data, but tiles are compressed independently, so users can benefit both from
+the compression and the selection of only a subset of the image.
+
+To compress an existing image HDU, use code like:
 
     try (Fits f = new Fits()) {
         CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(someImageHDU, 300, 15);

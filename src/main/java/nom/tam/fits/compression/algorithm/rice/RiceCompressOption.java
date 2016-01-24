@@ -74,6 +74,11 @@ public class RiceCompressOption implements ICompressOption {
         return this.parameters;
     }
 
+    @Override
+    public boolean isLossyCompression() {
+        return false;
+    }
+
     public RiceCompressOption setBlockSize(int value) {
         this.blockSize = value;
         return this;
@@ -81,22 +86,6 @@ public class RiceCompressOption implements ICompressOption {
 
     public RiceCompressOption setBytePix(int value) {
         this.bytePix = value;
-        return this;
-    }
-
-    protected RiceCompressOption setDefaultBytePix(int defaultBytePix) {
-        if (this.original != null) {
-            this.original.setDefaultBytePix(defaultBytePix);
-            this.bytePix = this.original.getBytePix();
-        } else if (this.bytePix == null) {
-            this.bytePix = defaultBytePix;
-        }
-        return this;
-    }
-
-    private RiceCompressOption setOriginal(RiceCompressOption riceCompressOption) {
-        this.original = riceCompressOption;
-        this.parameters = this.parameters.copy(this);
         return this;
     }
 
@@ -121,5 +110,21 @@ public class RiceCompressOption implements ICompressOption {
             return clazz.cast(this);
         }
         return null;
+    }
+
+    private RiceCompressOption setOriginal(RiceCompressOption riceCompressOption) {
+        this.original = riceCompressOption;
+        this.parameters = this.parameters.copy(this);
+        return this;
+    }
+
+    protected RiceCompressOption setDefaultBytePix(int defaultBytePix) {
+        if (this.original != null) {
+            this.original.setDefaultBytePix(defaultBytePix);
+            this.bytePix = this.original.getBytePix();
+        } else if (this.bytePix == null) {
+            this.bytePix = defaultBytePix;
+        }
+        return this;
     }
 }

@@ -75,6 +75,11 @@ public class HCompressorOption implements ICompressOption {
         return this.tileWidth;
     }
 
+    @Override
+    public boolean isLossyCompression() {
+        return this.scale > 1 || this.smooth;
+    }
+
     public boolean isSmooth() {
         return this.smooth;
     }

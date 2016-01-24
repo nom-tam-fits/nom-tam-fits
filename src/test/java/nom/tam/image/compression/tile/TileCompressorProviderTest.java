@@ -59,6 +59,7 @@ import nom.tam.image.compression.tile.TileDecompressor;
 import nom.tam.image.compression.tile.TileCompressionOperation;
 import nom.tam.image.compression.tile.TiledImageCompressionOperation;
 import nom.tam.image.tile.operation.Access;
+import nom.tam.image.tile.operation.TileArea;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -83,7 +84,7 @@ public class TileCompressorProviderTest {
         }
 
         TileCompressionOperation getTile() {
-            return new TileDecompressor(getTileArray(), 0);
+            return new TileDecompressor(getTileArray(), 0, new TileArea());
         }
 
         TiledImageCompressionOperation getTileArray() {
@@ -281,7 +282,7 @@ public class TileCompressorProviderTest {
         List<TileCompressionOperation> tiles = new ArrayList<>();
         try {
             for (int index = 0; index < 10000; index++) {
-                tiles.add((TileCompressionOperation) Access.getTile(operationsOfImage,index));
+                tiles.add((TileCompressionOperation) Access.getTile(operationsOfImage, index));
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             return tiles;

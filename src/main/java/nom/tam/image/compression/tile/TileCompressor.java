@@ -33,12 +33,15 @@ package nom.tam.image.compression.tile;
 
 import java.nio.ByteBuffer;
 
+import nom.tam.image.tile.operation.TileArea;
 import nom.tam.util.type.PrimitiveType;
 
 public class TileCompressor extends TileCompressionOperation {
 
-    protected TileCompressor(TiledImageCompressionOperation array, int tileIndex) {
-        super(array, tileIndex);
+    private boolean forceNoLoss = false;
+
+    protected TileCompressor(TiledImageCompressionOperation array, int tileIndex, TileArea area) {
+        super(array, tileIndex, area);
     }
 
     @Override
@@ -73,7 +76,11 @@ public class TileCompressor extends TileCompressionOperation {
         initTileOptions();
         this.compressedData.limit(getTileBuffer().getPixelSize() * getBaseType().size());
         this.compressionType = TileCompressionType.COMPRESSED;
-        boolean compressSuccess = getCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData, this.tileOptions);
+        boolean compressSuccess = false;
+        boolean tryNormalCompression = !(this.tileOptions.isLossyCompression() && this.forceNoLoss);
+        if (tryNormalCompression) {
+            compressSuccess = getCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData, this.tileOptions);
+        }
         if (!compressSuccess) {
             this.compressionType = TileCompressionType.GZIP_COMPRESSED;
             this.compressedData.rewind();
@@ -99,5 +106,10 @@ public class TileCompressor extends TileCompressionOperation {
         this.compressedData = compressedWholeArea.slice();
         this.compressedData.limit(compressedSize);
         compressedWholeArea.position(latest);
+    }
+
+    @Override
+    protected void forceNoLoss(boolean value) {
+        this.forceNoLoss = value;
     }
 }

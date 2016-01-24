@@ -37,6 +37,7 @@ import static nom.tam.image.compression.tile.TileCompressionType.UNCOMPRESSED;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.image.tile.operation.ITileOperationInitialisation;
+import nom.tam.image.tile.operation.TileArea;
 
 final class TileDecompressorInitialisation implements ITileOperationInitialisation<TileCompressionOperation> {
 
@@ -62,8 +63,8 @@ final class TileDecompressorInitialisation implements ITileOperationInitialisati
     }
 
     @Override
-    public TileCompressionOperation createTileOperation(int tileIndex) {
-        return new TileDecompressor(this.imageTilesOperation, tileIndex);
+    public TileCompressionOperation createTileOperation(int tileIndex, TileArea area) {
+        return new TileDecompressor(this.imageTilesOperation, tileIndex, area);
     }
 
     @Override

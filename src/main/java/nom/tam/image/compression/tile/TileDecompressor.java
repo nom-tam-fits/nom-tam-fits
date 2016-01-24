@@ -34,6 +34,8 @@ package nom.tam.image.compression.tile;
 import java.nio.Buffer;
 import java.util.logging.Logger;
 
+import nom.tam.image.tile.operation.TileArea;
+
 public class TileDecompressor extends TileCompressionOperation {
 
     /**
@@ -41,8 +43,8 @@ public class TileDecompressor extends TileCompressionOperation {
      */
     private static final Logger LOG = Logger.getLogger(TileDecompressor.class.getName());
 
-    protected TileDecompressor(TiledImageCompressionOperation array, int tileIndex) {
-        super(array, tileIndex);
+    protected TileDecompressor(TiledImageCompressionOperation array, int tileIndex, TileArea area) {
+        super(array, tileIndex, area);
     }
 
     @Override

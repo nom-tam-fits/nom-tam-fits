@@ -8,6 +8,7 @@
 	<toc name="Table of Contents" depth="5">
 		<item name="Usage" ref="intro.md" />
 		<item name="Headers" ref="header.md" />
+		<item name="Compression" ref="compression.md" />
 		<item name="Download" ref="download.md.vm" />
 	</toc>
 

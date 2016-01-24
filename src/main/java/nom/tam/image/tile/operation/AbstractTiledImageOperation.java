@@ -104,7 +104,7 @@ public class AbstractTiledImageOperation<OPERATION extends AbstractTileOperation
             for (int x = 0; x < imageWidth; x += tileWidth) {
                 boolean lastX = x + tileWidth >= imageWidth;
                 int dataOffset = y * imageWidth + x;
-                OPERATION tileOperation = init.createTileOperation(tileIndex);
+                OPERATION tileOperation = init.createTileOperation(tileIndex, new TileArea().start(x, y));
                 tileOperation.setDimensions(dataOffset, lastX ? lastTileWidth : tileWidth, lastY ? lastTileHeight : tileHeight);
                 this.tileOperations[tileIndex] = tileOperation;
                 init.init(tileOperation);

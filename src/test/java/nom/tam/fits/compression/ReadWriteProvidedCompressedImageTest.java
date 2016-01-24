@@ -863,7 +863,13 @@ public class ReadWriteProvidedCompressedImageTest {
             f.readHDU();
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             float[][] actualShortArray = (float[][]) hdu.asImageHDU().getData().getData();
-            assertArrayEquals(this.m13_data_real, actualShortArray, 9f);
+            assertArrayEquals(this.m13_data_real, actualShortArray, 3.5f);
+
+            for (int x = 140; x < 160; x++) {
+                for (int y = 140; y < 160; y++) {
+                    Assert.assertEquals(actualShortArray[x][y], this.m13_data_real[x][y], 0.0f);
+                }
+            }
         }
     }
 }
