@@ -43,7 +43,7 @@
  * 
  * @author Richard van Nieuwenhoven
  */
-<span class="pc" id="L46">public enum NonStandard implements IFitsHeader {</span>
+<span class="fc" id="L46">public enum NonStandard implements IFitsHeader {</span>
     /**
      * The CONTINUE keyword, when followed by spaces in columns 9 and 10 of the
      * card image and a character string enclosed in single quotes starting in
@@ -97,7 +97,7 @@
     @SuppressWarnings(&quot;CPD-START&quot;)
     private final IFitsHeader key;
 
-<span class="fc" id="L100">    private NonStandard(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L100">    NonStandard(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
 <span class="fc" id="L101">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
 <span class="fc" id="L102">    }</span>
 

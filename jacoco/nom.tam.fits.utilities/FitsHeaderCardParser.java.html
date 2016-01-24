@@ -35,6 +35,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import nom.tam.util.AsciiFuncs;
+
 /**
  * A helper utility class to parse header cards for there value (especially
  * strings) and comments.
@@ -46,61 +48,67 @@ public final class FitsHeaderCardParser {
     /**
      * value comment pair of the header card.
      */
-<span class="fc" id="L49">    public static class ParsedValue {</span>
+    public static class ParsedValue {
 
         /**
          * the comment specified with the value.
          */
-<span class="fc" id="L54">        private String comment = null;</span>
+        private String comment;
 
         /**
          * was the value quoted?
          */
-<span class="fc" id="L59">        private boolean isString = false;</span>
+        private final boolean isString;
 
         /**
          * the value of the card. (trimmed)
          */
-<span class="fc" id="L64">        private String value = null;</span>
+<span class="fc" id="L66">        private String value = null;</span>
+
+<span class="fc" id="L68">        public ParsedValue() {</span>
+<span class="fc" id="L69">            isString = false;</span>
+<span class="fc" id="L70">        }</span>
+
+<span class="fc" id="L72">        public ParsedValue(String value, String comment) {</span>
+<span class="fc" id="L73">            isString = true;</span>
+<span class="fc" id="L74">            this.value = value;</span>
+<span class="fc" id="L75">            this.comment = comment;</span>
+<span class="fc" id="L76">        }</span>
 
         /**
          * @return the comment of the card.
          */
         public String getComment() {
-<span class="fc" id="L70">            return this.comment;</span>
+<span class="fc" id="L82">            return this.comment;</span>
         }
 
         /**
          * @return the value of the card.
          */
         public String getValue() {
-<span class="fc" id="L77">            return this.value;</span>
+<span class="fc" id="L89">            return this.value;</span>
         }
 
         /**
          * @return true if the value was quoted.
          */
         public boolean isString() {
-<span class="fc" id="L84">            return this.isString;</span>
+<span class="fc" id="L96">            return this.isString;</span>
         }
 
     }
 
     /**
-     * pattern to replace the double quotes from string values to single quotes.
-     */
-<span class="fc" id="L92">    private static final Pattern DOUBLE_QUOTE_PATTERN = Pattern.compile(&quot;''&quot;);</span>
-
-    /**
      * pattern to match FITS keywords, specially to parse hirarchical keywords.
      */
-<span class="fc" id="L97">    private static final Pattern KEYWORD_PATTERN = Pattern.compile(&quot;([A-Z|a-z|0-9|_|-]+)([ |\\.]*=?)&quot;);</span>
+<span class="fc" id="L104">    private static final Pattern KEYWORD_PATTERN = Pattern.compile(&quot;([A-Z|a-z|0-9|_|-]+)([ |\\.]*=?)&quot;);</span>
 
     /**
      * pattern to match a quoted string where 2 quotes are used to escape a
-     * single quote inside the string.
+     * single quote inside the string. Attention this patern ist optimized as
+     * specified in http://www.perlmonks.org/?node_id=607740
      */
-<span class="fc" id="L103">    private static final Pattern STRING_PATTERN = Pattern.compile(&quot;'(?:[^']|'{2})*'&quot;);</span>
+<span class="fc" id="L111">    private static final Pattern STRING_PATTERN = Pattern.compile(&quot;'((?:[^']+(?=')|'')*)'(?!')&quot;);</span>
 
     /**
      * delete the start and trailing quote from the sting and replace all
@@ -112,20 +120,29 @@ public final class FitsHeaderCardParser {
      * @return the unquoted string
      */
     private static String deleteQuotes(String quotedString) {
-<span class="fc" id="L115">        Matcher doubleQuoteMatcher = FitsHeaderCardParser.DOUBLE_QUOTE_PATTERN.matcher(quotedString);</span>
-<span class="fc" id="L116">        StringBuffer sb = new StringBuffer();</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">        if (doubleQuoteMatcher.find(1)) {</span>
-            do {
-<span class="fc" id="L119">                doubleQuoteMatcher.appendReplacement(sb, &quot;'&quot;);</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">            } while (doubleQuoteMatcher.find());</span>
+<span class="fc" id="L123">        int indexOfQuote = quotedString.indexOf('\'');</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (indexOfQuote &lt; 0) {</span>
+<span class="fc" id="L125">            int newLength = quotedString.length();</span>
+<span class="fc bfc" id="L126" title="All 4 branches covered.">            while (newLength &gt; 0 &amp;&amp; AsciiFuncs.isWhitespace(quotedString.charAt(newLength - 1))) {</span>
+<span class="fc" id="L127">                newLength--;</span>
+            }
+<span class="fc" id="L129">            return quotedString.substring(0, newLength);</span>
+        } else {
+<span class="fc" id="L131">            int lastIndexOfQuote = 0;</span>
+<span class="fc" id="L132">            StringBuffer sb = new StringBuffer(quotedString.length());</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">            while (indexOfQuote &gt;= 0) {</span>
+<span class="fc" id="L134">                sb.append(quotedString, lastIndexOfQuote, indexOfQuote);</span>
+<span class="fc" id="L135">                lastIndexOfQuote = indexOfQuote + 1;</span>
+<span class="fc" id="L136">                indexOfQuote = quotedString.indexOf('\'', lastIndexOfQuote + 1);</span>
+            }
+<span class="fc" id="L138">            sb.append(quotedString, lastIndexOfQuote, quotedString.length());</span>
+<span class="fc" id="L139">            int newLength = sb.length();</span>
+<span class="pc bpc" id="L140" title="1 of 4 branches missed.">            while (newLength &gt; 0 &amp;&amp; AsciiFuncs.isWhitespace(sb.charAt(newLength - 1))) {</span>
+<span class="fc" id="L141">                newLength--;</span>
+            }
+<span class="fc" id="L143">            sb.setLength(newLength);</span>
+<span class="fc" id="L144">            return sb.toString();</span>
         }
-<span class="fc" id="L122">        doubleQuoteMatcher.appendTail(sb);</span>
-<span class="fc" id="L123">        sb.deleteCharAt(0);</span>
-<span class="fc" id="L124">        sb.setLength(sb.length() - 1);</span>
-<span class="fc bfc" id="L125" title="All 4 branches covered.">        while (sb.length() &gt; 0 &amp;&amp; Character.isWhitespace(sb.charAt(sb.length() - 1))) {</span>
-<span class="fc" id="L126">            sb.setLength(sb.length() - 1);</span>
-        }
-<span class="fc" id="L128">        return sb.toString();</span>
     }
 
     /**
@@ -139,11 +156,11 @@ public final class FitsHeaderCardParser {
      * @return the not empty comment or null if no comment was found.
      */
     private static String extractComment(String stringCard, int startPosition) {
-<span class="fc" id="L142">        int startOfComment = stringCard.indexOf('/', startPosition) + 1;</span>
-<span class="pc bpc" id="L143" title="1 of 4 branches missed.">        if (startOfComment &gt; 0 &amp;&amp; stringCard.length() &gt; startOfComment) {</span>
-<span class="fc" id="L144">            return stringCard.substring(startOfComment).trim();</span>
+<span class="fc" id="L159">        int startOfComment = stringCard.indexOf('/', startPosition) + 1;</span>
+<span class="pc bpc" id="L160" title="1 of 4 branches missed.">        if (startOfComment &gt; 0 &amp;&amp; stringCard.length() &gt; startOfComment) {</span>
+<span class="fc" id="L161">            return stringCard.substring(startOfComment).trim();</span>
         }
-<span class="fc" id="L146">        return null;</span>
+<span class="fc" id="L163">        return null;</span>
     }
 
     /**
@@ -154,19 +171,19 @@ public final class FitsHeaderCardParser {
      * @return dot separated key list
      */
     public static String parseCardKey(String card) {
-<span class="fc" id="L157">        int indexOfEquals = card.indexOf('=');</span>
-<span class="fc" id="L158">        StringBuilder builder = new StringBuilder();</span>
-<span class="fc" id="L159">        Matcher kewordMatcher = FitsHeaderCardParser.KEYWORD_PATTERN.matcher(card);</span>
-<span class="pc bpc" id="L160" title="1 of 4 branches missed.">        while (kewordMatcher.find() &amp;&amp; kewordMatcher.start() &lt; indexOfEquals) {</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">            if (builder.length() != 0) {</span>
-<span class="fc" id="L162">                builder.append('.');</span>
+<span class="fc" id="L174">        int indexOfEquals = card.indexOf('=');</span>
+<span class="fc" id="L175">        StringBuilder builder = new StringBuilder();</span>
+<span class="fc" id="L176">        Matcher kewordMatcher = FitsHeaderCardParser.KEYWORD_PATTERN.matcher(card);</span>
+<span class="pc bpc" id="L177" title="1 of 4 branches missed.">        while (kewordMatcher.find() &amp;&amp; kewordMatcher.start() &lt; indexOfEquals) {</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">            if (builder.length() != 0) {</span>
+<span class="fc" id="L179">                builder.append('.');</span>
             }
-<span class="fc" id="L164">            builder.append(kewordMatcher.group(1).toUpperCase(Locale.US));</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">            if (kewordMatcher.group(2).endsWith(&quot;=&quot;)) {</span>
-<span class="fc" id="L166">                break;</span>
+<span class="fc" id="L181">            builder.append(kewordMatcher.group(1).toUpperCase(Locale.US));</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">            if (kewordMatcher.group(2).endsWith(&quot;=&quot;)) {</span>
+<span class="fc" id="L183">                break;</span>
             }
         }
-<span class="fc" id="L169">        return builder.toString();</span>
+<span class="fc" id="L186">        return builder.toString();</span>
     }
 
     /**
@@ -179,23 +196,23 @@ public final class FitsHeaderCardParser {
      * @return a parsed card or null if no value could be detected.
      */
     public static ParsedValue parseCardValue(String card) {
-<span class="fc" id="L182">        ParsedValue value = parseStringValue(card);</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L199">        ParsedValue value = parseStringValue(card);</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        if (value == null) {</span>
             // ok no string lets check for an equals.
-<span class="fc" id="L185">            int indexOfEquals = card.indexOf('=');</span>
-<span class="pc bpc" id="L186" title="1 of 2 branches missed.">            if (indexOfEquals &gt; 0) {</span>
+<span class="fc" id="L202">            int indexOfEquals = card.indexOf('=');</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">            if (indexOfEquals &gt; 0) {</span>
                 // its no string so the value goes max till the comment
-<span class="fc" id="L188">                value = new ParsedValue();</span>
-<span class="fc" id="L189">                int endOfValue = card.length() - 1;</span>
-<span class="fc" id="L190">                int startOfComment = card.indexOf('/', indexOfEquals);</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">                if (startOfComment &gt; 0) {</span>
-<span class="fc" id="L192">                    endOfValue = startOfComment - 1;</span>
-<span class="fc" id="L193">                    value.comment = extractComment(card, startOfComment);</span>
+<span class="fc" id="L205">                value = new ParsedValue();</span>
+<span class="fc" id="L206">                int endOfValue = card.length() - 1;</span>
+<span class="fc" id="L207">                int startOfComment = card.indexOf('/', indexOfEquals);</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">                if (startOfComment &gt; 0) {</span>
+<span class="fc" id="L209">                    endOfValue = startOfComment - 1;</span>
+<span class="fc" id="L210">                    value.comment = extractComment(card, startOfComment);</span>
                 }
-<span class="fc" id="L195">                value.value = card.substring(indexOfEquals + 1, endOfValue + 1).trim();</span>
+<span class="fc" id="L212">                value.value = card.substring(indexOfEquals + 1, endOfValue + 1).trim();</span>
             }
         }
-<span class="fc" id="L198">        return value;</span>
+<span class="fc" id="L215">        return value;</span>
     }
 
     /**
@@ -207,27 +224,23 @@ public final class FitsHeaderCardParser {
      *         string was found.
      */
     private static ParsedValue parseStringValue(String card) {
-<span class="fc" id="L210">        ParsedValue stringValue = null;</span>
-<span class="fc" id="L211">        Matcher matcher = FitsHeaderCardParser.STRING_PATTERN.matcher(card);</span>
-<span class="fc bfc" id="L212" title="All 2 branches covered.">        if (matcher.find()) {</span>
-<span class="fc" id="L213">            int indexOfComment = card.indexOf('/');</span>
-<span class="fc bfc" id="L214" title="All 4 branches covered.">            if (indexOfComment &gt;= 0 &amp;&amp; indexOfComment &lt; matcher.start()) {</span>
-                // ok the string was commented, forget the string.
-<span class="fc" id="L216">                return null;</span>
+<span class="fc" id="L227">        int indexOfQuote = card.indexOf('\'');</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">        if (indexOfQuote &gt;= 0) {</span>
+<span class="fc" id="L229">            Matcher matcher = FitsHeaderCardParser.STRING_PATTERN.matcher(card);</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">            if (matcher.find(indexOfQuote)) {</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">                if (card.lastIndexOf('/', matcher.start()) &lt; 0) {</span>
+<span class="fc" id="L232">                    return new ParsedValue(deleteQuotes(matcher.group(1)), extractComment(card, matcher.end()));</span>
+                }
             }
-<span class="fc" id="L218">            stringValue = new ParsedValue();</span>
-<span class="fc" id="L219">            stringValue.isString = true;</span>
-<span class="fc" id="L220">            stringValue.value = deleteQuotes(matcher.group(0));</span>
-<span class="fc" id="L221">            stringValue.comment = extractComment(card, matcher.end());</span>
         }
-<span class="fc" id="L223">        return stringValue;</span>
+<span class="fc" id="L236">        return null;</span>
     }
 
     /**
      * utility class will not be instantiated.
      */
-<span class="fc" id="L229">    private FitsHeaderCardParser() {</span>
-<span class="fc" id="L230">    }</span>
+<span class="fc" id="L242">    private FitsHeaderCardParser() {</span>
+<span class="fc" id="L243">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

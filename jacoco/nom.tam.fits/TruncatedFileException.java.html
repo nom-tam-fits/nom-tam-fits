@@ -44,5 +44,9 @@ public class TruncatedFileException extends FitsException {
     public TruncatedFileException(String msg) {
 <span class="fc" id="L45">        super(msg);</span>
 <span class="fc" id="L46">    }</span>
+
+    public TruncatedFileException(String msg, Exception cause) {
+<span class="nc" id="L49">        super(msg, cause);</span>
+<span class="nc" id="L50">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

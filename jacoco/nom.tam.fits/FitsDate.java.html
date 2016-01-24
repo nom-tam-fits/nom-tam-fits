@@ -116,7 +116,7 @@ public class FitsDate {
     public static String getFitsDateString(Date epoch, boolean timeOfDay) {
 <span class="fc" id="L117">        Calendar cal = Calendar.getInstance(FitsDate.GMT);</span>
 <span class="fc" id="L118">        cal.setTime(epoch);</span>
-<span class="fc" id="L119">        StringBuffer fitsDate = new StringBuffer();</span>
+<span class="fc" id="L119">        StringBuilder fitsDate = new StringBuilder();</span>
 <span class="fc" id="L120">        DecimalFormat df = new DecimalFormat(&quot;0000&quot;);</span>
 <span class="fc" id="L121">        fitsDate.append(df.format(cal.get(Calendar.YEAR)));</span>
 <span class="fc" id="L122">        fitsDate.append(&quot;-&quot;);</span>
@@ -193,7 +193,7 @@ public class FitsDate {
         }
 <span class="fc" id="L194">    }</span>
 
-    private int getInt(Matcher match, int groupIndex) {
+    private static int getInt(Matcher match, int groupIndex) {
 <span class="fc" id="L197">        String value = match.group(groupIndex);</span>
 <span class="fc bfc" id="L198" title="All 2 branches covered.">        if (value != null) {</span>
 <span class="fc" id="L199">            return Integer.parseInt(value);</span>
@@ -201,7 +201,7 @@ public class FitsDate {
 <span class="fc" id="L201">        return -1;</span>
     }
 
-    private int getMilliseconds(Matcher match, int groupIndex) {
+    private static int getMilliseconds(Matcher match, int groupIndex) {
 <span class="fc" id="L205">        String value = match.group(groupIndex);</span>
 <span class="fc bfc" id="L206" title="All 2 branches covered.">        if (value != null) {</span>
 <span class="fc" id="L207">            int result = Integer.parseInt(value);</span>
@@ -269,7 +269,7 @@ public class FitsDate {
 <span class="fc bfc" id="L269" title="All 2 branches covered.">        if (this.year == -1) {</span>
 <span class="fc" id="L270">            return &quot;&quot;;</span>
         }
-<span class="fc" id="L272">        StringBuffer buf = new StringBuffer(FitsDate.FITS_DATE_STRING_SIZE);</span>
+<span class="fc" id="L272">        StringBuilder buf = new StringBuilder(FitsDate.FITS_DATE_STRING_SIZE);</span>
 <span class="fc" id="L273">        buf.append(this.year);</span>
 <span class="fc" id="L274">        buf.append('-');</span>
 <span class="fc" id="L275">        appendTwoDigitValue(buf, this.month);</span>
@@ -290,14 +290,14 @@ public class FitsDate {
 <span class="fc" id="L290">        return buf.toString();</span>
     }
 
-    private void appendThreeDigitValue(StringBuffer buf, int value) {
+    private void appendThreeDigitValue(StringBuilder buf, int value) {
 <span class="pc bpc" id="L294" title="1 of 2 branches missed.">        if (value &lt; FitsDate.FIRST_THREE_CHARACTER_VALUE) {</span>
 <span class="fc" id="L295">            buf.append('0');</span>
         }
 <span class="fc" id="L297">        appendTwoDigitValue(buf, value);</span>
 <span class="fc" id="L298">    }</span>
 
-    private void appendTwoDigitValue(StringBuffer buf, int value) {
+    private void appendTwoDigitValue(StringBuilder buf, int value) {
 <span class="fc bfc" id="L301" title="All 2 branches covered.">        if (value &lt; FitsDate.FIRST_TWO_CHARACTER_VALUE) {</span>
 <span class="fc" id="L302">            buf.append('0');</span>
         }

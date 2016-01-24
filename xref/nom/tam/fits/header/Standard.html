@@ -70,8 +70,8 @@
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment">     * computing the sizes of data structures. It shall specify the number of</em>
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment">     * bits that represent a data value. RANGE: -64,-32,8,16,32</em>
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>      BITPIX(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, <span class="jxr_string">"bits per data value"</span> <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>              , replaceable(<span class="jxr_string">"header:bitpix"</span>, Object.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>      BITPIX(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, <span class="jxr_string">"bits per data value"</span>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>              replaceable(<span class="jxr_string">"header:bitpix"</span>, Object.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>      ),
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment">     * This keyword shall be used only in primary array headers or IMAGE</em>
@@ -253,11 +253,11 @@
 <a class="jxr_linenumber" name="L245" href="#L245">245</a> <em class="jxr_javadoccomment">     * NAXIS=0, the NAXIS card image. The presence of this keyword with the</em>
 <a class="jxr_linenumber" name="L246" href="#L246">246</a> <em class="jxr_javadoccomment">     * value T in the primary key does not require that extensions be present.</em>
 <a class="jxr_linenumber" name="L247" href="#L247">247</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>     EXTEND(SOURCE.RESERVED, HDU.PRIMARY, VALUE.LOGICAL, <span class="jxr_string">"may the FITS file contain extensions?"</span> <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>             , replaceable(<span class="jxr_string">"basichdu:extend"</span>, BasicHDU.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Allow extensions"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>             , replaceable(<span class="jxr_string">"header:extend"</span>, Object.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Extensions are permitted"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L251" href="#L251">251</a>             , replaceable(<span class="jxr_string">"imagedata:extend"</span>, ImageData.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Extension permitted"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>             , replaceable(<span class="jxr_string">"undefineddata:extend"</span>, UndefinedData.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Extensions are permitted"</span>)
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>     EXTEND(SOURCE.RESERVED, HDU.PRIMARY, VALUE.LOGICAL, <span class="jxr_string">"may the FITS file contain extensions?"</span>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>             replaceable(<span class="jxr_string">"basichdu:extend"</span>, BasicHDU.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Allow extensions"</span>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>             replaceable(<span class="jxr_string">"header:extend"</span>, Object.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Extensions are permitted"</span>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L251" href="#L251">251</a>             replaceable(<span class="jxr_string">"imagedata:extend"</span>, ImageData.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Extension permitted"</span>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>             replaceable(<span class="jxr_string">"undefineddata:extend"</span>, UndefinedData.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Extensions are permitted"</span>)
 <a class="jxr_linenumber" name="L253" href="#L253">253</a> 
 <a class="jxr_linenumber" name="L254" href="#L254">254</a>     ),
 <a class="jxr_linenumber" name="L255" href="#L255">255</a> 
@@ -299,13 +299,13 @@
 <a class="jxr_linenumber" name="L291" href="#L291">291</a> <em class="jxr_javadoccomment">     * where it specifies the number of random groups present. In most other</em>
 <a class="jxr_linenumber" name="L292" href="#L292">292</a> <em class="jxr_javadoccomment">     * cases this keyword will have the value 1.</em>
 <a class="jxr_linenumber" name="L293" href="#L293">293</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>     GCOUNT(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.INTEGER, <span class="jxr_string">"group count"</span> <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>             , replaceable(<span class="jxr_string">"randomgroupsdata:gcount"</span>, RandomGroupsData.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>             , replaceable(<span class="jxr_string">"asciitable:gcount"</span>, AsciiTable.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>             , replaceable(<span class="jxr_string">"basichdu:gcount"</span>, Object.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Required value"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>             , replaceable(<span class="jxr_string">"binarytable:gcount"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>             , replaceable(<span class="jxr_string">"imagedata:gcount"</span>, ImageData.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"No extra parameters"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>             , replaceable(<span class="jxr_string">"undefineddata:gcount"</span>, UndefinedData.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L294" href="#L294">294</a>     GCOUNT(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.INTEGER, <span class="jxr_string">"group count"</span>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>             replaceable(<span class="jxr_string">"randomgroupsdata:gcount"</span>, RandomGroupsData.<strong class="jxr_keyword">class</strong>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>             replaceable(<span class="jxr_string">"asciitable:gcount"</span>, AsciiTable.<strong class="jxr_keyword">class</strong>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>             replaceable(<span class="jxr_string">"basichdu:gcount"</span>, Object.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Required value"</span>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>             replaceable(<span class="jxr_string">"binarytable:gcount"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>             replaceable(<span class="jxr_string">"imagedata:gcount"</span>, ImageData.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"No extra parameters"</span>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>             replaceable(<span class="jxr_string">"undefineddata:gcount"</span>, UndefinedData.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L301" href="#L301">301</a> 
 <a class="jxr_linenumber" name="L302" href="#L302">302</a>     ),
 <a class="jxr_linenumber" name="L303" href="#L303">303</a> 
@@ -314,8 +314,8 @@
 <a class="jxr_linenumber" name="L306" href="#L306">306</a> <em class="jxr_javadoccomment">     * associated with this keyword implies that random groups records are</em>
 <a class="jxr_linenumber" name="L307" href="#L307">307</a> <em class="jxr_javadoccomment">     * present.</em>
 <a class="jxr_linenumber" name="L308" href="#L308">308</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>     GROUPS(SOURCE.MANDATORY, HDU.GROUPS, VALUE.LOGICAL, <span class="jxr_string">"indicates random groups structure"</span> <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>             , replaceable(<span class="jxr_string">"randomgroupsdata:groups"</span>, RandomGroupsData.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>     GROUPS(SOURCE.MANDATORY, HDU.GROUPS, VALUE.LOGICAL, <span class="jxr_string">"indicates random groups structure"</span>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>             replaceable(<span class="jxr_string">"randomgroupsdata:groups"</span>, RandomGroupsData.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L311" href="#L311">311</a>     ),
 <a class="jxr_linenumber" name="L312" href="#L312">312</a> 
 <a class="jxr_linenumber" name="L313" href="#L313">313</a>     <em class="jxr_javadoccomment">/**</em>
@@ -339,8 +339,8 @@
 <a class="jxr_linenumber" name="L331" href="#L331">331</a> <em class="jxr_javadoccomment">     * FITS 'TABLE' or 'BINTABLE' extensions, the value of NAXIS is always</em>
 <a class="jxr_linenumber" name="L332" href="#L332">332</a> <em class="jxr_javadoccomment">     * 2.RANGE: [0:999]</em>
 <a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>     NAXIS(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, <span class="jxr_string">"number of axes"</span> <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L335" href="#L335">335</a>             , replaceable(<span class="jxr_string">"header:naxis"</span>, Object.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L334" href="#L334">334</a>     NAXIS(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, <span class="jxr_string">"number of axes"</span>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>             replaceable(<span class="jxr_string">"header:naxis"</span>, Object.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L336" href="#L336">336</a>     ),
 <a class="jxr_linenumber" name="L337" href="#L337">337</a> 
 <a class="jxr_linenumber" name="L338" href="#L338">338</a>     <em class="jxr_javadoccomment">/**</em>
@@ -351,388 +351,385 @@
 <a class="jxr_linenumber" name="L343" href="#L343">343</a> <em class="jxr_javadoccomment">     * that no data follow the key in the HDU. If NAXIS is equal to 0, there</em>
 <a class="jxr_linenumber" name="L344" href="#L344">344</a> <em class="jxr_javadoccomment">     * should not be any NAXISn keywords.RANGE: [0:]</em>
 <a class="jxr_linenumber" name="L345" href="#L345">345</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L346" href="#L346">346</a>     NAXISn(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, <span class="jxr_string">"size of the n'th axis"</span> <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>             , replaceable(<span class="jxr_string">"asciitable:naxis1"</span>, AsciiTable.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Size of row in bytes"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L348" href="#L348">348</a>             , replaceable(<span class="jxr_string">"binarytable:naxis1"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Bytes per row"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L349" href="#L349">349</a>             , replaceable(<span class="jxr_string">"randomgroupsdata:naxis1"</span>, RandomGroupsData.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>             , replaceable(<span class="jxr_string">"randomgroupsdata:naxisN"</span>, RandomGroupsData.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>             , replaceable(<span class="jxr_string">"tablehdu:naxis2"</span>, TableData.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>             , replaceable(<span class="jxr_string">"header:naxisN"</span>, Object.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L353" href="#L353">353</a>             , replaceable(<span class="jxr_string">"undefineddata:naxis1"</span>, UndefinedData.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Number of Bytes"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L354" href="#L354">354</a>     )
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>     NAXISn(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, <span class="jxr_string">"size of the n'th axis"</span>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>             replaceable(<span class="jxr_string">"asciitable:naxis1"</span>, AsciiTable.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Size of row in bytes"</span>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>             replaceable(<span class="jxr_string">"binarytable:naxis1"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Bytes per row"</span>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>             replaceable(<span class="jxr_string">"randomgroupsdata:naxis1"</span>, RandomGroupsData.<strong class="jxr_keyword">class</strong>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>             replaceable(<span class="jxr_string">"randomgroupsdata:naxisN"</span>, RandomGroupsData.<strong class="jxr_keyword">class</strong>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>             replaceable(<span class="jxr_string">"tablehdu:naxis2"</span>, TableData.<strong class="jxr_keyword">class</strong>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>             replaceable(<span class="jxr_string">"header:naxisN"</span>, Object.<strong class="jxr_keyword">class</strong>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>             replaceable(<span class="jxr_string">"undefineddata:naxis1"</span>, UndefinedData.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Number of Bytes"</span>) <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>     ),
 <a class="jxr_linenumber" name="L355" href="#L355">355</a> 
-<a class="jxr_linenumber" name="L356" href="#L356">356</a>     ,
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> 
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string giving a name for the</em>
-<a class="jxr_linenumber" name="L360" href="#L360">360</a> <em class="jxr_javadoccomment">     * object observed.</em>
-<a class="jxr_linenumber" name="L361" href="#L361">361</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>     OBJECT(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, <span class="jxr_string">"name of observed object"</span>),
-<a class="jxr_linenumber" name="L363" href="#L363">363</a> 
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string identifying who acquired</em>
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">     * the data associated with the key.</em>
-<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L368" href="#L368">368</a>     OBSERVER(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, <span class="jxr_string">"observer who acquired the data"</span>),
-<a class="jxr_linenumber" name="L369" href="#L369">369</a> 
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L371" href="#L371">371</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string identifying the</em>
-<a class="jxr_linenumber" name="L372" href="#L372">372</a> <em class="jxr_javadoccomment">     * organization or institution responsible for creating the FITS file.</em>
-<a class="jxr_linenumber" name="L373" href="#L373">373</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L374" href="#L374">374</a>     ORIGIN(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, <span class="jxr_string">"organization responsible for the data"</span>),
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> 
-<a class="jxr_linenumber" name="L376" href="#L376">376</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     * The value field shall contain an integer that shall be used in any way</em>
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     * appropriate to define the data structure, consistent with Eq. 5.2 in the</em>
-<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     * FITS Standard. This keyword was originated for use with FITS Random</em>
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> <em class="jxr_javadoccomment">     * Groups and represented the number of parameters preceding each group. It</em>
-<a class="jxr_linenumber" name="L381" href="#L381">381</a> <em class="jxr_javadoccomment">     * has since been used in 'BINTABLE' extensions to represent the size of the</em>
-<a class="jxr_linenumber" name="L382" href="#L382">382</a> <em class="jxr_javadoccomment">     * data heap following the main data table. In most other cases its value</em>
-<a class="jxr_linenumber" name="L383" href="#L383">383</a> <em class="jxr_javadoccomment">     * will be zero.</em>
-<a class="jxr_linenumber" name="L384" href="#L384">384</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>     PCOUNT(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.INTEGER, <span class="jxr_string">"parameter count"</span> <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L386" href="#L386">386</a>             , replaceable(<span class="jxr_string">"asciitable:pcount"</span>, AsciiTable.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"No group data"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L387" href="#L387">387</a>             , replaceable(<span class="jxr_string">"basichdu:pcount"</span>, Object.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Required value"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>             , replaceable(<span class="jxr_string">"binarytablehdu:pcount"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Includes heap"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L389" href="#L389">389</a>             , replaceable(<span class="jxr_string">"binarytable:pcount"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>             , replaceable(<span class="jxr_string">"imagedata:pcount"</span>, ImageData.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"One group"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L391" href="#L391">391</a>             , replaceable(<span class="jxr_string">"randomgroupsdata:pcount"</span>, RandomGroupsData.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>             , replaceable(<span class="jxr_string">"undefineddata:pcount"</span>, UndefinedData.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string giving a name for the</em>
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">     * object observed.</em>
+<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>     OBJECT(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, <span class="jxr_string">"name of observed object"</span>),
+<a class="jxr_linenumber" name="L361" href="#L361">361</a> 
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L363" href="#L363">363</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string identifying who acquired</em>
+<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">     * the data associated with the key.</em>
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>     OBSERVER(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, <span class="jxr_string">"observer who acquired the data"</span>),
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> 
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L369" href="#L369">369</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string identifying the</em>
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> <em class="jxr_javadoccomment">     * organization or institution responsible for creating the FITS file.</em>
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>     ORIGIN(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, <span class="jxr_string">"organization responsible for the data"</span>),
+<a class="jxr_linenumber" name="L373" href="#L373">373</a> 
+<a class="jxr_linenumber" name="L374" href="#L374">374</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">     * The value field shall contain an integer that shall be used in any way</em>
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     * appropriate to define the data structure, consistent with Eq. 5.2 in the</em>
+<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     * FITS Standard. This keyword was originated for use with FITS Random</em>
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     * Groups and represented the number of parameters preceding each group. It</em>
+<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     * has since been used in 'BINTABLE' extensions to represent the size of the</em>
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> <em class="jxr_javadoccomment">     * data heap following the main data table. In most other cases its value</em>
+<a class="jxr_linenumber" name="L381" href="#L381">381</a> <em class="jxr_javadoccomment">     * will be zero.</em>
+<a class="jxr_linenumber" name="L382" href="#L382">382</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>     PCOUNT(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.INTEGER, <span class="jxr_string">"parameter count"</span>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L384" href="#L384">384</a>             replaceable(<span class="jxr_string">"asciitable:pcount"</span>, AsciiTable.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"No group data"</span>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>             replaceable(<span class="jxr_string">"basichdu:pcount"</span>, Object.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Required value"</span>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>             replaceable(<span class="jxr_string">"binarytablehdu:pcount"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Includes heap"</span>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L387" href="#L387">387</a>             replaceable(<span class="jxr_string">"binarytable:pcount"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L388" href="#L388">388</a>             replaceable(<span class="jxr_string">"imagedata:pcount"</span>, ImageData.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"One group"</span>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>             replaceable(<span class="jxr_string">"randomgroupsdata:pcount"</span>, RandomGroupsData.<strong class="jxr_keyword">class</strong>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L390" href="#L390">390</a>             replaceable(<span class="jxr_string">"undefineddata:pcount"</span>, UndefinedData.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L391" href="#L391">391</a> 
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>     ),
 <a class="jxr_linenumber" name="L393" href="#L393">393</a> 
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>     ),
-<a class="jxr_linenumber" name="L395" href="#L395">395</a> 
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L397" href="#L397">397</a> <em class="jxr_javadoccomment">     * This keyword is reserved for use within the FITS Random Groups structure.</em>
-<a class="jxr_linenumber" name="L398" href="#L398">398</a> <em class="jxr_javadoccomment">     * This keyword shall be used, along with the PZEROn keyword, when the nth</em>
-<a class="jxr_linenumber" name="L399" href="#L399">399</a> <em class="jxr_javadoccomment">     * FITS group parameter value is not the true physical value, to transform</em>
-<a class="jxr_linenumber" name="L400" href="#L400">400</a> <em class="jxr_javadoccomment">     * the group parameter value to the true physical values it represents,</em>
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">     * using the equation, physical_value = PZEROn + PSCALn *</em>
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> <em class="jxr_javadoccomment">     * group_parameter_value. The value field shall contain a floating point</em>
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">     * number representing the coefficient of the linear term, the scaling</em>
-<a class="jxr_linenumber" name="L404" href="#L404">404</a> <em class="jxr_javadoccomment">     * factor between true values and group parameter values at zero offset. The</em>
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">     * default value for this keyword is 1.0.</em>
-<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L407" href="#L407">407</a>     PSCALn(SOURCE.RESERVED, HDU.GROUPS, VALUE.REAL, <span class="jxr_string">"parameter scaling factor"</span>),
-<a class="jxr_linenumber" name="L408" href="#L408">408</a> 
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">     * This keyword is reserved for use within the FITS Random Groups structure.</em>
-<a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string giving the name of</em>
-<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">     * parameter n. If the PTYPEn keywords for more than one value of n have the</em>
-<a class="jxr_linenumber" name="L413" href="#L413">413</a> <em class="jxr_javadoccomment">     * same associated name in the value field, then the data value for the</em>
-<a class="jxr_linenumber" name="L414" href="#L414">414</a> <em class="jxr_javadoccomment">     * parameter of that name is to be obtained by adding the derived data</em>
-<a class="jxr_linenumber" name="L415" href="#L415">415</a> <em class="jxr_javadoccomment">     * values of the corresponding parameters. This rule provides a mechanism by</em>
-<a class="jxr_linenumber" name="L416" href="#L416">416</a> <em class="jxr_javadoccomment">     * which a random parameter may have more precision than the accompanying</em>
-<a class="jxr_linenumber" name="L417" href="#L417">417</a> <em class="jxr_javadoccomment">     * data array elements; for example, by summing two 16-bit values with the</em>
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_javadoccomment">     * first scaled relative to the other such that the sum forms a number of up</em>
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_javadoccomment">     * to 32-bit precision.</em>
-<a class="jxr_linenumber" name="L420" href="#L420">420</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>     PTYPEn(SOURCE.RESERVED, HDU.GROUPS, VALUE.STRING, <span class="jxr_string">"name of random groups parameter"</span>),
-<a class="jxr_linenumber" name="L422" href="#L422">422</a> 
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L424" href="#L424">424</a> <em class="jxr_javadoccomment">     * This keyword is reserved for use within the FITS Random Groups structure.</em>
-<a class="jxr_linenumber" name="L425" href="#L425">425</a> <em class="jxr_javadoccomment">     * This keyword shall be used, along with the PSCALn keyword, when the nth</em>
-<a class="jxr_linenumber" name="L426" href="#L426">426</a> <em class="jxr_javadoccomment">     * FITS group parameter value is not the true physical value, to transform</em>
-<a class="jxr_linenumber" name="L427" href="#L427">427</a> <em class="jxr_javadoccomment">     * the group parameter value to the physical value. The value field shall</em>
-<a class="jxr_linenumber" name="L428" href="#L428">428</a> <em class="jxr_javadoccomment">     * contain a floating point number, representing the true value</em>
-<a class="jxr_linenumber" name="L429" href="#L429">429</a> <em class="jxr_javadoccomment">     * corresponding to a group parameter value of zero. The default value for</em>
-<a class="jxr_linenumber" name="L430" href="#L430">430</a> <em class="jxr_javadoccomment">     * this keyword is 0.0. The transformation equation is as follows:</em>
-<a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">     * physical_value = PZEROn + PSCALn * group_parameter_value.DEFAULT: 0.0</em>
-<a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>     PZEROn(SOURCE.RESERVED, HDU.GROUPS, VALUE.REAL, <span class="jxr_string">"parameter scaling zero point"</span>),
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> 
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">     * Coordinate reference frame of major/minor axes.If absent the default</em>
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">     * value is 'FK5'.</em>
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L439" href="#L439">439</a>     RADESYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, <span class="jxr_string">"Coordinate reference frame of major/minor axes."</span>),
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * Coordinate reference frame of major/minor axes. use RADESYS instead.</em>
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">     * @deprecated use {@link #RADESYS} instead.</em>
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>     @Deprecated
-<a class="jxr_linenumber" name="L446" href="#L446">446</a>     RADECSYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, <span class="jxr_string">"Coordinate reference frame of major/minor axes."</span>),
-<a class="jxr_linenumber" name="L447" href="#L447">447</a> 
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string citing a reference where</em>
-<a class="jxr_linenumber" name="L450" href="#L450">450</a> <em class="jxr_javadoccomment">     * the data associated with the key are published.</em>
-<a class="jxr_linenumber" name="L451" href="#L451">451</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>     REFERENC(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, <span class="jxr_string">"bibliographic reference"</span>),
-<a class="jxr_linenumber" name="L453" href="#L453">453</a> 
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> <em class="jxr_javadoccomment">     * The SIMPLE keyword is required to be the first keyword in the primary key</em>
-<a class="jxr_linenumber" name="L456" href="#L456">456</a> <em class="jxr_javadoccomment">     * of all FITS files. The value field shall contain a logical constant with</em>
-<a class="jxr_linenumber" name="L457" href="#L457">457</a> <em class="jxr_javadoccomment">     * the value T if the file conforms to the standard. This keyword is</em>
-<a class="jxr_linenumber" name="L458" href="#L458">458</a> <em class="jxr_javadoccomment">     * mandatory for the primary key and is not permitted in extension headers.</em>
-<a class="jxr_linenumber" name="L459" href="#L459">459</a> <em class="jxr_javadoccomment">     * A value of F signifies that the file does not conform to this standard.</em>
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L461" href="#L461">461</a>     SIMPLE(SOURCE.MANDATORY, HDU.PRIMARY, VALUE.LOGICAL, <span class="jxr_string">"does file conform to the Standard?"</span> <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L462" href="#L462">462</a>             , replaceable(<span class="jxr_string">"header:simple"</span>, Object.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Java FITS: "</span> + <strong class="jxr_keyword">new</strong> java.util.Date()) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>     ),
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> 
-<a class="jxr_linenumber" name="L465" href="#L465">465</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">     * The value field of this indexed keyword shall contain an integer</em>
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">     * specifying the column in which field n starts in an ASCII TABLE</em>
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">     * extension. The first column of a row is numbered 1.RANGE: [1:]</em>
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L470" href="#L470">470</a>     TBCOLn(SOURCE.MANDATORY, HDU.ASCII_TABLE, VALUE.INTEGER, <span class="jxr_string">"begining column number"</span> <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L471" href="#L471">471</a>             , replaceable(<span class="jxr_string">"asciitable:tbcolN"</span>, AsciiTable.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Column offset"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L472" href="#L472">472</a>     ),
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> 
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L475" href="#L475">475</a> <em class="jxr_javadoccomment">     * The value field of this indexed keyword shall contain a character string</em>
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> <em class="jxr_javadoccomment">     * describing how to interpret the contents of field n as a multidimensional</em>
-<a class="jxr_linenumber" name="L477" href="#L477">477</a> <em class="jxr_javadoccomment">     * array, providing the number of dimensions and the length along each axis.</em>
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> <em class="jxr_javadoccomment">     * The form of the value is not further specified by the Standard. A</em>
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> <em class="jxr_javadoccomment">     * proposed convention is described in Appendix B.2 of the FITS Standard in</em>
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> <em class="jxr_javadoccomment">     * which the value string has the format '(l,m,n...)' where l, m, n,... are</em>
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> <em class="jxr_javadoccomment">     * the dimensions of the array.</em>
-<a class="jxr_linenumber" name="L482" href="#L482">482</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L483" href="#L483">483</a>     TDIMn(SOURCE.RESERVED, HDU.BINTABLE, VALUE.STRING, <span class="jxr_string">"dimensionality of the array "</span> <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>             , replaceable(<span class="jxr_string">"binarytablehdu:tdimN"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>             , replaceable(<span class="jxr_string">"headercard:tdimN"</span>, Object.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>     ),
-<a class="jxr_linenumber" name="L487" href="#L487">487</a> 
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> <em class="jxr_javadoccomment">     * The value field of this indexed keyword shall contain a character string</em>
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> <em class="jxr_javadoccomment">     * describing the format recommended for the display of the contents of</em>
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> <em class="jxr_javadoccomment">     * field n. If the table value has been scaled, the physical value shall be</em>
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> <em class="jxr_javadoccomment">     * displayed. All elements in a field shall be displayed with a single,</em>
-<a class="jxr_linenumber" name="L493" href="#L493">493</a> <em class="jxr_javadoccomment">     * repeated format. For purposes of display, each byte of bit (type X) and</em>
-<a class="jxr_linenumber" name="L494" href="#L494">494</a> <em class="jxr_javadoccomment">     * byte (type B) arrays is treated as an unsigned integer. Arrays of type A</em>
-<a class="jxr_linenumber" name="L495" href="#L495">495</a> <em class="jxr_javadoccomment">     * may be terminated with a zero byte. Only the format codes in Table 8.6,</em>
-<a class="jxr_linenumber" name="L496" href="#L496">496</a> <em class="jxr_javadoccomment">     * discussed in section 8.3.4 of the FITS Standard, are permitted for</em>
-<a class="jxr_linenumber" name="L497" href="#L497">497</a> <em class="jxr_javadoccomment">     * encoding. The format codes must be specified in upper case. If the Bw.m,</em>
-<a class="jxr_linenumber" name="L498" href="#L498">498</a> <em class="jxr_javadoccomment">     * Ow.m, and Zw.m formats are not readily available to the reader, the Iw.m</em>
-<a class="jxr_linenumber" name="L499" href="#L499">499</a> <em class="jxr_javadoccomment">     * display format may be used instead, and if the ENw.d and ESw.d formats</em>
-<a class="jxr_linenumber" name="L500" href="#L500">500</a> <em class="jxr_javadoccomment">     * are not available, Ew.d may be used. The meaning of this keyword is not</em>
-<a class="jxr_linenumber" name="L501" href="#L501">501</a> <em class="jxr_javadoccomment">     * defined for fields of type P in the Standard but may be defined in</em>
-<a class="jxr_linenumber" name="L502" href="#L502">502</a> <em class="jxr_javadoccomment">     * conventions using such fields.</em>
-<a class="jxr_linenumber" name="L503" href="#L503">503</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>     TDISPn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, <span class="jxr_string">"display format"</span>),
-<a class="jxr_linenumber" name="L505" href="#L505">505</a> 
-<a class="jxr_linenumber" name="L506" href="#L506">506</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L507" href="#L507">507</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string identifying the</em>
-<a class="jxr_linenumber" name="L508" href="#L508">508</a> <em class="jxr_javadoccomment">     * telescope used to acquire the data associated with the key.</em>
-<a class="jxr_linenumber" name="L509" href="#L509">509</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L510" href="#L510">510</a>     TELESCOP(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, <span class="jxr_string">"name of telescope"</span>),
-<a class="jxr_linenumber" name="L511" href="#L511">511</a> 
-<a class="jxr_linenumber" name="L512" href="#L512">512</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L513" href="#L513">513</a> <em class="jxr_javadoccomment">     * The value field shall contain a non-negative integer representing the</em>
-<a class="jxr_linenumber" name="L514" href="#L514">514</a> <em class="jxr_javadoccomment">     * number of fields in each row of a 'TABLE' or 'BINTABLE' extension. The</em>
-<a class="jxr_linenumber" name="L515" href="#L515">515</a> <em class="jxr_javadoccomment">     * maximum permissible value is 999. RANGE: [0:999]</em>
-<a class="jxr_linenumber" name="L516" href="#L516">516</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L517" href="#L517">517</a>     TFIELDS(SOURCE.MANDATORY, HDU.TABLE, VALUE.INTEGER, <span class="jxr_string">"number of columns in the table"</span> <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L518" href="#L518">518</a>             , replaceable(<span class="jxr_string">"asciitablehdu:tfields"</span>, AsciiTable.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L519" href="#L519">519</a>             , replaceable(<span class="jxr_string">"binarytable:tfields"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L520" href="#L520">520</a>             , replaceable(<span class="jxr_string">"tablehdu:tfields"</span>, TableData.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Number of table fields"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L521" href="#L521">521</a>             , replaceable(<span class="jxr_string">"asciitable:tfields"</span>, AsciiTable.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Number of fields in table"</span>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L522" href="#L522">522</a>     ),
-<a class="jxr_linenumber" name="L523" href="#L523">523</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L524" href="#L524">524</a> <em class="jxr_javadoccomment">     * The value field of this indexed keyword shall contain a character string</em>
-<a class="jxr_linenumber" name="L525" href="#L525">525</a> <em class="jxr_javadoccomment">     * describing the format in which field n is encoded in a 'TABLE' or</em>
-<a class="jxr_linenumber" name="L526" href="#L526">526</a> <em class="jxr_javadoccomment">     * 'BINTABLE' extension.</em>
-<a class="jxr_linenumber" name="L527" href="#L527">527</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L528" href="#L528">528</a>     TFORMn(SOURCE.MANDATORY, HDU.TABLE, VALUE.STRING, <span class="jxr_string">"column data format"</span> <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L529" href="#L529">529</a>             , replaceable(<span class="jxr_string">"asciitable:tformN"</span>, AsciiTable.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L530" href="#L530">530</a>             , replaceable(<span class="jxr_string">"binarytable:tformN"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L395" href="#L395">395</a> <em class="jxr_javadoccomment">     * This keyword is reserved for use within the FITS Random Groups structure.</em>
+<a class="jxr_linenumber" name="L396" href="#L396">396</a> <em class="jxr_javadoccomment">     * This keyword shall be used, along with the PZEROn keyword, when the nth</em>
+<a class="jxr_linenumber" name="L397" href="#L397">397</a> <em class="jxr_javadoccomment">     * FITS group parameter value is not the true physical value, to transform</em>
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> <em class="jxr_javadoccomment">     * the group parameter value to the true physical values it represents,</em>
+<a class="jxr_linenumber" name="L399" href="#L399">399</a> <em class="jxr_javadoccomment">     * using the equation, physical_value = PZEROn + PSCALn *</em>
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> <em class="jxr_javadoccomment">     * group_parameter_value. The value field shall contain a floating point</em>
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">     * number representing the coefficient of the linear term, the scaling</em>
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> <em class="jxr_javadoccomment">     * factor between true values and group parameter values at zero offset. The</em>
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">     * default value for this keyword is 1.0.</em>
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L405" href="#L405">405</a>     PSCALn(SOURCE.RESERVED, HDU.GROUPS, VALUE.REAL, <span class="jxr_string">"parameter scaling factor"</span>),
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> 
+<a class="jxr_linenumber" name="L407" href="#L407">407</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">     * This keyword is reserved for use within the FITS Random Groups structure.</em>
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string giving the name of</em>
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">     * parameter n. If the PTYPEn keywords for more than one value of n have the</em>
+<a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">     * same associated name in the value field, then the data value for the</em>
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">     * parameter of that name is to be obtained by adding the derived data</em>
+<a class="jxr_linenumber" name="L413" href="#L413">413</a> <em class="jxr_javadoccomment">     * values of the corresponding parameters. This rule provides a mechanism by</em>
+<a class="jxr_linenumber" name="L414" href="#L414">414</a> <em class="jxr_javadoccomment">     * which a random parameter may have more precision than the accompanying</em>
+<a class="jxr_linenumber" name="L415" href="#L415">415</a> <em class="jxr_javadoccomment">     * data array elements; for example, by summing two 16-bit values with the</em>
+<a class="jxr_linenumber" name="L416" href="#L416">416</a> <em class="jxr_javadoccomment">     * first scaled relative to the other such that the sum forms a number of up</em>
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> <em class="jxr_javadoccomment">     * to 32-bit precision.</em>
+<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>     PTYPEn(SOURCE.RESERVED, HDU.GROUPS, VALUE.STRING, <span class="jxr_string">"name of random groups parameter"</span>),
+<a class="jxr_linenumber" name="L420" href="#L420">420</a> 
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> <em class="jxr_javadoccomment">     * This keyword is reserved for use within the FITS Random Groups structure.</em>
+<a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">     * This keyword shall be used, along with the PSCALn keyword, when the nth</em>
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> <em class="jxr_javadoccomment">     * FITS group parameter value is not the true physical value, to transform</em>
+<a class="jxr_linenumber" name="L425" href="#L425">425</a> <em class="jxr_javadoccomment">     * the group parameter value to the physical value. The value field shall</em>
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> <em class="jxr_javadoccomment">     * contain a floating point number, representing the true value</em>
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> <em class="jxr_javadoccomment">     * corresponding to a group parameter value of zero. The default value for</em>
+<a class="jxr_linenumber" name="L428" href="#L428">428</a> <em class="jxr_javadoccomment">     * this keyword is 0.0. The transformation equation is as follows:</em>
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> <em class="jxr_javadoccomment">     * physical_value = PZEROn + PSCALn * group_parameter_value.DEFAULT: 0.0</em>
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L431" href="#L431">431</a>     PZEROn(SOURCE.RESERVED, HDU.GROUPS, VALUE.REAL, <span class="jxr_string">"parameter scaling zero point"</span>),
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> 
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> <em class="jxr_javadoccomment">     * Coordinate reference frame of major/minor axes.If absent the default</em>
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">     * value is 'FK5'.</em>
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>     RADESYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, <span class="jxr_string">"Coordinate reference frame of major/minor axes."</span>),
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     * Coordinate reference frame of major/minor axes. use RADESYS instead.</em>
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * @deprecated use {@link #RADESYS} instead.</em>
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>     @Deprecated
+<a class="jxr_linenumber" name="L444" href="#L444">444</a>     RADECSYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, <span class="jxr_string">"Coordinate reference frame of major/minor axes."</span>),
+<a class="jxr_linenumber" name="L445" href="#L445">445</a> 
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string citing a reference where</em>
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> <em class="jxr_javadoccomment">     * the data associated with the key are published.</em>
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>     REFERENC(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, <span class="jxr_string">"bibliographic reference"</span>),
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> 
+<a class="jxr_linenumber" name="L452" href="#L452">452</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> <em class="jxr_javadoccomment">     * The SIMPLE keyword is required to be the first keyword in the primary key</em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> <em class="jxr_javadoccomment">     * of all FITS files. The value field shall contain a logical constant with</em>
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> <em class="jxr_javadoccomment">     * the value T if the file conforms to the standard. This keyword is</em>
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> <em class="jxr_javadoccomment">     * mandatory for the primary key and is not permitted in extension headers.</em>
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> <em class="jxr_javadoccomment">     * A value of F signifies that the file does not conform to this standard.</em>
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>     SIMPLE(SOURCE.MANDATORY, HDU.PRIMARY, VALUE.LOGICAL, <span class="jxr_string">"does file conform to the Standard?"</span>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>             replaceable(<span class="jxr_string">"header:simple"</span>, Object.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Java FITS: "</span> + <strong class="jxr_keyword">new</strong> java.util.Date()) <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>     ),
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> 
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">     * The value field of this indexed keyword shall contain an integer</em>
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> <em class="jxr_javadoccomment">     * specifying the column in which field n starts in an ASCII TABLE</em>
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">     * extension. The first column of a row is numbered 1.RANGE: [1:]</em>
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L468" href="#L468">468</a>     TBCOLn(SOURCE.MANDATORY, HDU.ASCII_TABLE, VALUE.INTEGER, <span class="jxr_string">"begining column number"</span>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L469" href="#L469">469</a>             replaceable(<span class="jxr_string">"asciitable:tbcolN"</span>, AsciiTable.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Column offset"</span>) <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L470" href="#L470">470</a>     ),
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> 
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> <em class="jxr_javadoccomment">     * The value field of this indexed keyword shall contain a character string</em>
+<a class="jxr_linenumber" name="L474" href="#L474">474</a> <em class="jxr_javadoccomment">     * describing how to interpret the contents of field n as a multidimensional</em>
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> <em class="jxr_javadoccomment">     * array, providing the number of dimensions and the length along each axis.</em>
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> <em class="jxr_javadoccomment">     * The form of the value is not further specified by the Standard. A</em>
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> <em class="jxr_javadoccomment">     * proposed convention is described in Appendix B.2 of the FITS Standard in</em>
+<a class="jxr_linenumber" name="L478" href="#L478">478</a> <em class="jxr_javadoccomment">     * which the value string has the format '(l,m,n...)' where l, m, n,... are</em>
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> <em class="jxr_javadoccomment">     * the dimensions of the array.</em>
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>     TDIMn(SOURCE.RESERVED, HDU.BINTABLE, VALUE.STRING, <span class="jxr_string">"dimensionality of the array "</span>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L482" href="#L482">482</a>             replaceable(<span class="jxr_string">"binarytablehdu:tdimN"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>             replaceable(<span class="jxr_string">"headercard:tdimN"</span>, Object.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>     ),
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> 
+<a class="jxr_linenumber" name="L486" href="#L486">486</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L487" href="#L487">487</a> <em class="jxr_javadoccomment">     * The value field of this indexed keyword shall contain a character string</em>
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> <em class="jxr_javadoccomment">     * describing the format recommended for the display of the contents of</em>
+<a class="jxr_linenumber" name="L489" href="#L489">489</a> <em class="jxr_javadoccomment">     * field n. If the table value has been scaled, the physical value shall be</em>
+<a class="jxr_linenumber" name="L490" href="#L490">490</a> <em class="jxr_javadoccomment">     * displayed. All elements in a field shall be displayed with a single,</em>
+<a class="jxr_linenumber" name="L491" href="#L491">491</a> <em class="jxr_javadoccomment">     * repeated format. For purposes of display, each byte of bit (type X) and</em>
+<a class="jxr_linenumber" name="L492" href="#L492">492</a> <em class="jxr_javadoccomment">     * byte (type B) arrays is treated as an unsigned integer. Arrays of type A</em>
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> <em class="jxr_javadoccomment">     * may be terminated with a zero byte. Only the format codes in Table 8.6,</em>
+<a class="jxr_linenumber" name="L494" href="#L494">494</a> <em class="jxr_javadoccomment">     * discussed in section 8.3.4 of the FITS Standard, are permitted for</em>
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> <em class="jxr_javadoccomment">     * encoding. The format codes must be specified in upper case. If the Bw.m,</em>
+<a class="jxr_linenumber" name="L496" href="#L496">496</a> <em class="jxr_javadoccomment">     * Ow.m, and Zw.m formats are not readily available to the reader, the Iw.m</em>
+<a class="jxr_linenumber" name="L497" href="#L497">497</a> <em class="jxr_javadoccomment">     * display format may be used instead, and if the ENw.d and ESw.d formats</em>
+<a class="jxr_linenumber" name="L498" href="#L498">498</a> <em class="jxr_javadoccomment">     * are not available, Ew.d may be used. The meaning of this keyword is not</em>
+<a class="jxr_linenumber" name="L499" href="#L499">499</a> <em class="jxr_javadoccomment">     * defined for fields of type P in the Standard but may be defined in</em>
+<a class="jxr_linenumber" name="L500" href="#L500">500</a> <em class="jxr_javadoccomment">     * conventions using such fields.</em>
+<a class="jxr_linenumber" name="L501" href="#L501">501</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L502" href="#L502">502</a>     TDISPn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, <span class="jxr_string">"display format"</span>),
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> 
+<a class="jxr_linenumber" name="L504" href="#L504">504</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L505" href="#L505">505</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string identifying the</em>
+<a class="jxr_linenumber" name="L506" href="#L506">506</a> <em class="jxr_javadoccomment">     * telescope used to acquire the data associated with the key.</em>
+<a class="jxr_linenumber" name="L507" href="#L507">507</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>     TELESCOP(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, <span class="jxr_string">"name of telescope"</span>),
+<a class="jxr_linenumber" name="L509" href="#L509">509</a> 
+<a class="jxr_linenumber" name="L510" href="#L510">510</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L511" href="#L511">511</a> <em class="jxr_javadoccomment">     * The value field shall contain a non-negative integer representing the</em>
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> <em class="jxr_javadoccomment">     * number of fields in each row of a 'TABLE' or 'BINTABLE' extension. The</em>
+<a class="jxr_linenumber" name="L513" href="#L513">513</a> <em class="jxr_javadoccomment">     * maximum permissible value is 999. RANGE: [0:999]</em>
+<a class="jxr_linenumber" name="L514" href="#L514">514</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L515" href="#L515">515</a>     TFIELDS(SOURCE.MANDATORY, HDU.TABLE, VALUE.INTEGER, <span class="jxr_string">"number of columns in the table"</span>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>             replaceable(<span class="jxr_string">"asciitablehdu:tfields"</span>, AsciiTable.<strong class="jxr_keyword">class</strong>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L517" href="#L517">517</a>             replaceable(<span class="jxr_string">"binarytable:tfields"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L518" href="#L518">518</a>             replaceable(<span class="jxr_string">"tablehdu:tfields"</span>, TableData.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Number of table fields"</span>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L519" href="#L519">519</a>             replaceable(<span class="jxr_string">"asciitable:tfields"</span>, AsciiTable.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"Number of fields in table"</span>) <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L520" href="#L520">520</a>     ),
+<a class="jxr_linenumber" name="L521" href="#L521">521</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L522" href="#L522">522</a> <em class="jxr_javadoccomment">     * The value field of this indexed keyword shall contain a character string</em>
+<a class="jxr_linenumber" name="L523" href="#L523">523</a> <em class="jxr_javadoccomment">     * describing the format in which field n is encoded in a 'TABLE' or</em>
+<a class="jxr_linenumber" name="L524" href="#L524">524</a> <em class="jxr_javadoccomment">     * 'BINTABLE' extension.</em>
+<a class="jxr_linenumber" name="L525" href="#L525">525</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L526" href="#L526">526</a>     TFORMn(SOURCE.MANDATORY, HDU.TABLE, VALUE.STRING, <span class="jxr_string">"column data format"</span>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L527" href="#L527">527</a>             replaceable(<span class="jxr_string">"asciitable:tformN"</span>, AsciiTable.<strong class="jxr_keyword">class</strong>), <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>             replaceable(<span class="jxr_string">"binarytable:tformN"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L529" href="#L529">529</a> 
+<a class="jxr_linenumber" name="L530" href="#L530">530</a>     ),
 <a class="jxr_linenumber" name="L531" href="#L531">531</a> 
-<a class="jxr_linenumber" name="L532" href="#L532">532</a>     ),
-<a class="jxr_linenumber" name="L533" href="#L533">533</a> 
-<a class="jxr_linenumber" name="L534" href="#L534">534</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L535" href="#L535">535</a> <em class="jxr_javadoccomment">     * The value field of this keyword shall contain an integer providing the</em>
-<a class="jxr_linenumber" name="L536" href="#L536">536</a> <em class="jxr_javadoccomment">     * separation, in bytes, between the start of the main data table and the</em>
-<a class="jxr_linenumber" name="L537" href="#L537">537</a> <em class="jxr_javadoccomment">     * start of a supplemental data area called the heap. The default value</em>
-<a class="jxr_linenumber" name="L538" href="#L538">538</a> <em class="jxr_javadoccomment">     * shall be the product of the values of NAXIS1 and NAXIS2. This keyword</em>
-<a class="jxr_linenumber" name="L539" href="#L539">539</a> <em class="jxr_javadoccomment">     * shall not be used if the value of PCOUNT is zero. A proposed application</em>
-<a class="jxr_linenumber" name="L540" href="#L540">540</a> <em class="jxr_javadoccomment">     * of this keyword is presented in Appendix B.1 of the FITS Standard.</em>
-<a class="jxr_linenumber" name="L541" href="#L541">541</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L542" href="#L542">542</a>     THEAP(SOURCE.RESERVED, HDU.BINTABLE, VALUE.INTEGER, <span class="jxr_string">"offset to starting data heap address"</span> <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L543" href="#L543">543</a>             , replaceable(<span class="jxr_string">"binarytablehdu:theap"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L544" href="#L544">544</a>     ),
-<a class="jxr_linenumber" name="L545" href="#L545">545</a> 
-<a class="jxr_linenumber" name="L546" href="#L546">546</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L547" href="#L547">547</a> <em class="jxr_javadoccomment">     * In ASCII 'TABLE' extensions, the value field for this indexed keyword</em>
-<a class="jxr_linenumber" name="L548" href="#L548">548</a> <em class="jxr_javadoccomment">     * shall contain the character string that represents an undefined value for</em>
-<a class="jxr_linenumber" name="L549" href="#L549">549</a> <em class="jxr_javadoccomment">     * field n. The string is implicitly blank filled to the width of the field.</em>
-<a class="jxr_linenumber" name="L550" href="#L550">550</a> <em class="jxr_javadoccomment">     * In binary 'BINTABLE' table extensions, the value field for this indexed</em>
-<a class="jxr_linenumber" name="L551" href="#L551">551</a> <em class="jxr_javadoccomment">     * keyword shall contain the integer that represents an undefined value for</em>
-<a class="jxr_linenumber" name="L552" href="#L552">552</a> <em class="jxr_javadoccomment">     * field n of data type B, I, or J. The keyword may not be used in</em>
-<a class="jxr_linenumber" name="L553" href="#L553">553</a> <em class="jxr_javadoccomment">     * 'BINTABLE' extensions if field n is of any other data type.</em>
-<a class="jxr_linenumber" name="L554" href="#L554">554</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L555" href="#L555">555</a>     TNULLn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, <span class="jxr_string">"value used to indicate undefined table element"</span>),
-<a class="jxr_linenumber" name="L556" href="#L556">556</a> 
-<a class="jxr_linenumber" name="L557" href="#L557">557</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L558" href="#L558">558</a> <em class="jxr_javadoccomment">     * This indexed keyword shall be used, along with the TZEROn keyword, when</em>
-<a class="jxr_linenumber" name="L559" href="#L559">559</a> <em class="jxr_javadoccomment">     * the quantity in field n does not represent a true physical quantity. The</em>
-<a class="jxr_linenumber" name="L560" href="#L560">560</a> <em class="jxr_javadoccomment">     * value field shall contain a floating point number representing the</em>
-<a class="jxr_linenumber" name="L561" href="#L561">561</a> <em class="jxr_javadoccomment">     * coefficient of the linear term in the equation, physical_value = TZEROn +</em>
-<a class="jxr_linenumber" name="L562" href="#L562">562</a> <em class="jxr_javadoccomment">     * TSCALn * field_value, which must be used to compute the true physical</em>
-<a class="jxr_linenumber" name="L563" href="#L563">563</a> <em class="jxr_javadoccomment">     * value of the field, or, in the case of the complex data types C and M, of</em>
-<a class="jxr_linenumber" name="L564" href="#L564">564</a> <em class="jxr_javadoccomment">     * the real part of the field with the imaginary part of the scaling factor</em>
-<a class="jxr_linenumber" name="L565" href="#L565">565</a> <em class="jxr_javadoccomment">     * set to zero. The default value for this keyword is 1.0. This keyword may</em>
-<a class="jxr_linenumber" name="L566" href="#L566">566</a> <em class="jxr_javadoccomment">     * not be used if the format of field n is A, L, or X.DEFAULT: 1.0</em>
-<a class="jxr_linenumber" name="L567" href="#L567">567</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L568" href="#L568">568</a>     TSCALn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, <span class="jxr_string">"linear data scaling factor"</span>),
-<a class="jxr_linenumber" name="L569" href="#L569">569</a> 
-<a class="jxr_linenumber" name="L570" href="#L570">570</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L571" href="#L571">571</a> <em class="jxr_javadoccomment">     * The value field for this indexed keyword shall contain a character</em>
-<a class="jxr_linenumber" name="L572" href="#L572">572</a> <em class="jxr_javadoccomment">     * string, giving the name of field n. It is recommended that only letters,</em>
-<a class="jxr_linenumber" name="L573" href="#L573">573</a> <em class="jxr_javadoccomment">     * digits, and underscore (hexadecimal code 5F, ('_') be used in the name.</em>
-<a class="jxr_linenumber" name="L574" href="#L574">574</a> <em class="jxr_javadoccomment">     * String comparisons with the values of TTYPEn keywords should not be case</em>
-<a class="jxr_linenumber" name="L575" href="#L575">575</a> <em class="jxr_javadoccomment">     * sensitive. The use of identical names for different fields should be</em>
-<a class="jxr_linenumber" name="L576" href="#L576">576</a> <em class="jxr_javadoccomment">     * avoided.</em>
-<a class="jxr_linenumber" name="L577" href="#L577">577</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L578" href="#L578">578</a>     TTYPEn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, <span class="jxr_string">"column name"</span>),
-<a class="jxr_linenumber" name="L579" href="#L579">579</a> 
-<a class="jxr_linenumber" name="L580" href="#L580">580</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L581" href="#L581">581</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string describing the physical</em>
-<a class="jxr_linenumber" name="L582" href="#L582">582</a> <em class="jxr_javadoccomment">     * units in which the quantity in field n, after any application of TSCALn</em>
-<a class="jxr_linenumber" name="L583" href="#L583">583</a> <em class="jxr_javadoccomment">     * and TZEROn, is expressed. The units of all FITS key keyword values, with</em>
-<a class="jxr_linenumber" name="L584" href="#L584">584</a> <em class="jxr_javadoccomment">     * the exception of measurements of angles, should conform with the</em>
-<a class="jxr_linenumber" name="L585" href="#L585">585</a> <em class="jxr_javadoccomment">     * recommendations in the IAU Style Manual. For angular measurements given</em>
-<a class="jxr_linenumber" name="L586" href="#L586">586</a> <em class="jxr_javadoccomment">     * as floating point values and specified with reserved keywords, degrees</em>
-<a class="jxr_linenumber" name="L587" href="#L587">587</a> <em class="jxr_javadoccomment">     * are the recommended units (with the units, if specified, given as 'deg').</em>
-<a class="jxr_linenumber" name="L588" href="#L588">588</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L589" href="#L589">589</a>     TUNITn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, <span class="jxr_string">"column units"</span>),
-<a class="jxr_linenumber" name="L590" href="#L590">590</a> 
-<a class="jxr_linenumber" name="L591" href="#L591">591</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L592" href="#L592">592</a> <em class="jxr_javadoccomment">     * This indexed keyword shall be used, along with the TSCALn keyword, when</em>
-<a class="jxr_linenumber" name="L593" href="#L593">593</a> <em class="jxr_javadoccomment">     * the quantity in field n does not represent a true physical quantity. The</em>
-<a class="jxr_linenumber" name="L594" href="#L594">594</a> <em class="jxr_javadoccomment">     * value field shall contain a floating point number representing the true</em>
-<a class="jxr_linenumber" name="L595" href="#L595">595</a> <em class="jxr_javadoccomment">     * physical value corresponding to a value of zero in field n of the FITS</em>
-<a class="jxr_linenumber" name="L596" href="#L596">596</a> <em class="jxr_javadoccomment">     * file, or, in the case of the complex data types C and M, in the real part</em>
-<a class="jxr_linenumber" name="L597" href="#L597">597</a> <em class="jxr_javadoccomment">     * of the field, with the imaginary part set to zero. The default value for</em>
-<a class="jxr_linenumber" name="L598" href="#L598">598</a> <em class="jxr_javadoccomment">     * this keyword is 0.0. This keyword may not be used if the format of field</em>
-<a class="jxr_linenumber" name="L599" href="#L599">599</a> <em class="jxr_javadoccomment">     * n is A, L, or X.DEFAULT: 0.0</em>
-<a class="jxr_linenumber" name="L600" href="#L600">600</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L601" href="#L601">601</a>     TZEROn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, <span class="jxr_string">"column scaling zero point"</span>),
-<a class="jxr_linenumber" name="L602" href="#L602">602</a> 
-<a class="jxr_linenumber" name="L603" href="#L603">603</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L604" href="#L604">604</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string giving the name of the</em>
-<a class="jxr_linenumber" name="L605" href="#L605">605</a> <em class="jxr_javadoccomment">     * extension type. This keyword is mandatory for an extension key and must</em>
-<a class="jxr_linenumber" name="L606" href="#L606">606</a> <em class="jxr_javadoccomment">     * not appear in the primary key. For an extension that is not a standard</em>
-<a class="jxr_linenumber" name="L607" href="#L607">607</a> <em class="jxr_javadoccomment">     * extension, the type name must not be the same as that of a standard</em>
-<a class="jxr_linenumber" name="L608" href="#L608">608</a> <em class="jxr_javadoccomment">     * extension.</em>
-<a class="jxr_linenumber" name="L609" href="#L609">609</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L610" href="#L610">610</a>     XTENSION(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.STRING, <span class="jxr_string">"marks beginning of new HDU"</span>);
+<a class="jxr_linenumber" name="L532" href="#L532">532</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">     * The value field of this keyword shall contain an integer providing the</em>
+<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">     * separation, in bytes, between the start of the main data table and the</em>
+<a class="jxr_linenumber" name="L535" href="#L535">535</a> <em class="jxr_javadoccomment">     * start of a supplemental data area called the heap. The default value</em>
+<a class="jxr_linenumber" name="L536" href="#L536">536</a> <em class="jxr_javadoccomment">     * shall be the product of the values of NAXIS1 and NAXIS2. This keyword</em>
+<a class="jxr_linenumber" name="L537" href="#L537">537</a> <em class="jxr_javadoccomment">     * shall not be used if the value of PCOUNT is zero. A proposed application</em>
+<a class="jxr_linenumber" name="L538" href="#L538">538</a> <em class="jxr_javadoccomment">     * of this keyword is presented in Appendix B.1 of the FITS Standard.</em>
+<a class="jxr_linenumber" name="L539" href="#L539">539</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L540" href="#L540">540</a>     THEAP(SOURCE.RESERVED, HDU.BINTABLE, VALUE.INTEGER, <span class="jxr_string">"offset to starting data heap address"</span>, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L541" href="#L541">541</a>             replaceable(<span class="jxr_string">"binarytablehdu:theap"</span>, BinaryTable.<strong class="jxr_keyword">class</strong>) <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L542" href="#L542">542</a>     ),
+<a class="jxr_linenumber" name="L543" href="#L543">543</a> 
+<a class="jxr_linenumber" name="L544" href="#L544">544</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L545" href="#L545">545</a> <em class="jxr_javadoccomment">     * In ASCII 'TABLE' extensions, the value field for this indexed keyword</em>
+<a class="jxr_linenumber" name="L546" href="#L546">546</a> <em class="jxr_javadoccomment">     * shall contain the character string that represents an undefined value for</em>
+<a class="jxr_linenumber" name="L547" href="#L547">547</a> <em class="jxr_javadoccomment">     * field n. The string is implicitly blank filled to the width of the field.</em>
+<a class="jxr_linenumber" name="L548" href="#L548">548</a> <em class="jxr_javadoccomment">     * In binary 'BINTABLE' table extensions, the value field for this indexed</em>
+<a class="jxr_linenumber" name="L549" href="#L549">549</a> <em class="jxr_javadoccomment">     * keyword shall contain the integer that represents an undefined value for</em>
+<a class="jxr_linenumber" name="L550" href="#L550">550</a> <em class="jxr_javadoccomment">     * field n of data type B, I, or J. The keyword may not be used in</em>
+<a class="jxr_linenumber" name="L551" href="#L551">551</a> <em class="jxr_javadoccomment">     * 'BINTABLE' extensions if field n is of any other data type.</em>
+<a class="jxr_linenumber" name="L552" href="#L552">552</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L553" href="#L553">553</a>     TNULLn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, <span class="jxr_string">"value used to indicate undefined table element"</span>),
+<a class="jxr_linenumber" name="L554" href="#L554">554</a> 
+<a class="jxr_linenumber" name="L555" href="#L555">555</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L556" href="#L556">556</a> <em class="jxr_javadoccomment">     * This indexed keyword shall be used, along with the TZEROn keyword, when</em>
+<a class="jxr_linenumber" name="L557" href="#L557">557</a> <em class="jxr_javadoccomment">     * the quantity in field n does not represent a true physical quantity. The</em>
+<a class="jxr_linenumber" name="L558" href="#L558">558</a> <em class="jxr_javadoccomment">     * value field shall contain a floating point number representing the</em>
+<a class="jxr_linenumber" name="L559" href="#L559">559</a> <em class="jxr_javadoccomment">     * coefficient of the linear term in the equation, physical_value = TZEROn +</em>
+<a class="jxr_linenumber" name="L560" href="#L560">560</a> <em class="jxr_javadoccomment">     * TSCALn * field_value, which must be used to compute the true physical</em>
+<a class="jxr_linenumber" name="L561" href="#L561">561</a> <em class="jxr_javadoccomment">     * value of the field, or, in the case of the complex data types C and M, of</em>
+<a class="jxr_linenumber" name="L562" href="#L562">562</a> <em class="jxr_javadoccomment">     * the real part of the field with the imaginary part of the scaling factor</em>
+<a class="jxr_linenumber" name="L563" href="#L563">563</a> <em class="jxr_javadoccomment">     * set to zero. The default value for this keyword is 1.0. This keyword may</em>
+<a class="jxr_linenumber" name="L564" href="#L564">564</a> <em class="jxr_javadoccomment">     * not be used if the format of field n is A, L, or X.DEFAULT: 1.0</em>
+<a class="jxr_linenumber" name="L565" href="#L565">565</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L566" href="#L566">566</a>     TSCALn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, <span class="jxr_string">"linear data scaling factor"</span>),
+<a class="jxr_linenumber" name="L567" href="#L567">567</a> 
+<a class="jxr_linenumber" name="L568" href="#L568">568</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L569" href="#L569">569</a> <em class="jxr_javadoccomment">     * The value field for this indexed keyword shall contain a character</em>
+<a class="jxr_linenumber" name="L570" href="#L570">570</a> <em class="jxr_javadoccomment">     * string, giving the name of field n. It is recommended that only letters,</em>
+<a class="jxr_linenumber" name="L571" href="#L571">571</a> <em class="jxr_javadoccomment">     * digits, and underscore (hexadecimal code 5F, ('_') be used in the name.</em>
+<a class="jxr_linenumber" name="L572" href="#L572">572</a> <em class="jxr_javadoccomment">     * String comparisons with the values of TTYPEn keywords should not be case</em>
+<a class="jxr_linenumber" name="L573" href="#L573">573</a> <em class="jxr_javadoccomment">     * sensitive. The use of identical names for different fields should be</em>
+<a class="jxr_linenumber" name="L574" href="#L574">574</a> <em class="jxr_javadoccomment">     * avoided.</em>
+<a class="jxr_linenumber" name="L575" href="#L575">575</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L576" href="#L576">576</a>     TTYPEn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, <span class="jxr_string">"column name"</span>),
+<a class="jxr_linenumber" name="L577" href="#L577">577</a> 
+<a class="jxr_linenumber" name="L578" href="#L578">578</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L579" href="#L579">579</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string describing the physical</em>
+<a class="jxr_linenumber" name="L580" href="#L580">580</a> <em class="jxr_javadoccomment">     * units in which the quantity in field n, after any application of TSCALn</em>
+<a class="jxr_linenumber" name="L581" href="#L581">581</a> <em class="jxr_javadoccomment">     * and TZEROn, is expressed. The units of all FITS key keyword values, with</em>
+<a class="jxr_linenumber" name="L582" href="#L582">582</a> <em class="jxr_javadoccomment">     * the exception of measurements of angles, should conform with the</em>
+<a class="jxr_linenumber" name="L583" href="#L583">583</a> <em class="jxr_javadoccomment">     * recommendations in the IAU Style Manual. For angular measurements given</em>
+<a class="jxr_linenumber" name="L584" href="#L584">584</a> <em class="jxr_javadoccomment">     * as floating point values and specified with reserved keywords, degrees</em>
+<a class="jxr_linenumber" name="L585" href="#L585">585</a> <em class="jxr_javadoccomment">     * are the recommended units (with the units, if specified, given as 'deg').</em>
+<a class="jxr_linenumber" name="L586" href="#L586">586</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L587" href="#L587">587</a>     TUNITn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, <span class="jxr_string">"column units"</span>),
+<a class="jxr_linenumber" name="L588" href="#L588">588</a> 
+<a class="jxr_linenumber" name="L589" href="#L589">589</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L590" href="#L590">590</a> <em class="jxr_javadoccomment">     * This indexed keyword shall be used, along with the TSCALn keyword, when</em>
+<a class="jxr_linenumber" name="L591" href="#L591">591</a> <em class="jxr_javadoccomment">     * the quantity in field n does not represent a true physical quantity. The</em>
+<a class="jxr_linenumber" name="L592" href="#L592">592</a> <em class="jxr_javadoccomment">     * value field shall contain a floating point number representing the true</em>
+<a class="jxr_linenumber" name="L593" href="#L593">593</a> <em class="jxr_javadoccomment">     * physical value corresponding to a value of zero in field n of the FITS</em>
+<a class="jxr_linenumber" name="L594" href="#L594">594</a> <em class="jxr_javadoccomment">     * file, or, in the case of the complex data types C and M, in the real part</em>
+<a class="jxr_linenumber" name="L595" href="#L595">595</a> <em class="jxr_javadoccomment">     * of the field, with the imaginary part set to zero. The default value for</em>
+<a class="jxr_linenumber" name="L596" href="#L596">596</a> <em class="jxr_javadoccomment">     * this keyword is 0.0. This keyword may not be used if the format of field</em>
+<a class="jxr_linenumber" name="L597" href="#L597">597</a> <em class="jxr_javadoccomment">     * n is A, L, or X.DEFAULT: 0.0</em>
+<a class="jxr_linenumber" name="L598" href="#L598">598</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L599" href="#L599">599</a>     TZEROn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, <span class="jxr_string">"column scaling zero point"</span>),
+<a class="jxr_linenumber" name="L600" href="#L600">600</a> 
+<a class="jxr_linenumber" name="L601" href="#L601">601</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L602" href="#L602">602</a> <em class="jxr_javadoccomment">     * The value field shall contain a character string giving the name of the</em>
+<a class="jxr_linenumber" name="L603" href="#L603">603</a> <em class="jxr_javadoccomment">     * extension type. This keyword is mandatory for an extension key and must</em>
+<a class="jxr_linenumber" name="L604" href="#L604">604</a> <em class="jxr_javadoccomment">     * not appear in the primary key. For an extension that is not a standard</em>
+<a class="jxr_linenumber" name="L605" href="#L605">605</a> <em class="jxr_javadoccomment">     * extension, the type name must not be the same as that of a standard</em>
+<a class="jxr_linenumber" name="L606" href="#L606">606</a> <em class="jxr_javadoccomment">     * extension.</em>
+<a class="jxr_linenumber" name="L607" href="#L607">607</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L608" href="#L608">608</a>     XTENSION(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.STRING, <span class="jxr_string">"marks beginning of new HDU"</span>);
+<a class="jxr_linenumber" name="L609" href="#L609">609</a> 
+<a class="jxr_linenumber" name="L610" href="#L610">610</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> NAXIS1 = NAXISn.n(1);
 <a class="jxr_linenumber" name="L611" href="#L611">611</a> 
-<a class="jxr_linenumber" name="L612" href="#L612">612</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> NAXIS1 = NAXISn.n(1);
+<a class="jxr_linenumber" name="L612" href="#L612">612</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> NAXIS2 = NAXISn.n(2);
 <a class="jxr_linenumber" name="L613" href="#L613">613</a> 
-<a class="jxr_linenumber" name="L614" href="#L614">614</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> NAXIS2 = NAXISn.n(2);
+<a class="jxr_linenumber" name="L614" href="#L614">614</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ThreadLocal&lt;Class&lt;?&gt;&gt; COMMENT_CONTEXT = <strong class="jxr_keyword">new</strong> ThreadLocal&lt;&gt;();
 <a class="jxr_linenumber" name="L615" href="#L615">615</a> 
-<a class="jxr_linenumber" name="L616" href="#L616">616</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ThreadLocal&lt;Class&lt;?&gt;&gt; COMMENT_CONTEXT = <strong class="jxr_keyword">new</strong> ThreadLocal&lt;&gt;();
+<a class="jxr_linenumber" name="L616" href="#L616">616</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../nom/tam/fits/header/StandardCommentReplacement.html">StandardCommentReplacement</a>[] commentReplacements;
 <a class="jxr_linenumber" name="L617" href="#L617">617</a> 
-<a class="jxr_linenumber" name="L618" href="#L618">618</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../nom/tam/fits/header/StandardCommentReplacement.html">StandardCommentReplacement</a>[] commentReplacements;
-<a class="jxr_linenumber" name="L619" href="#L619">619</a> 
-<a class="jxr_linenumber" name="L620" href="#L620">620</a>     @SuppressWarnings(<span class="jxr_string">"CPD-START"</span>)
-<a class="jxr_linenumber" name="L621" href="#L621">621</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key;
-<a class="jxr_linenumber" name="L622" href="#L622">622</a> 
-<a class="jxr_linenumber" name="L623" href="#L623">623</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/fits/header/Standard.html">Standard</a>(<a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment, StandardCommentReplacement... replacements) {
-<a class="jxr_linenumber" name="L624" href="#L624">624</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(name(), status, hdu, valueType, comment);
-<a class="jxr_linenumber" name="L625" href="#L625">625</a>         <strong class="jxr_keyword">this</strong>.commentReplacements = replacements;
-<a class="jxr_linenumber" name="L626" href="#L626">626</a>     }
-<a class="jxr_linenumber" name="L627" href="#L627">627</a> 
-<a class="jxr_linenumber" name="L628" href="#L628">628</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/fits/header/Standard.html">Standard</a>(String headerName, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment, StandardCommentReplacement... replacements) {
-<a class="jxr_linenumber" name="L629" href="#L629">629</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(headerName == <strong class="jxr_keyword">null</strong> ? name() : headerName, status, hdu, valueType, comment);
-<a class="jxr_linenumber" name="L630" href="#L630">630</a>         <strong class="jxr_keyword">this</strong>.commentReplacements = replacements;
-<a class="jxr_linenumber" name="L631" href="#L631">631</a>     }
-<a class="jxr_linenumber" name="L632" href="#L632">632</a> 
-<a class="jxr_linenumber" name="L633" href="#L633">633</a>     @Override
-<a class="jxr_linenumber" name="L634" href="#L634">634</a>     <strong class="jxr_keyword">public</strong> String comment() {
-<a class="jxr_linenumber" name="L635" href="#L635">635</a>         Class&lt;?&gt; contextClass = COMMENT_CONTEXT.get();
-<a class="jxr_linenumber" name="L636" href="#L636">636</a>         <strong class="jxr_keyword">if</strong> (contextClass == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L637" href="#L637">637</a>             contextClass = Object.<strong class="jxr_keyword">class</strong>;
-<a class="jxr_linenumber" name="L638" href="#L638">638</a>         }
-<a class="jxr_linenumber" name="L639" href="#L639">639</a>         <strong class="jxr_keyword">for</strong> (StandardCommentReplacement stdCommentReplacement : commentReplacements) {
-<a class="jxr_linenumber" name="L640" href="#L640">640</a>             <strong class="jxr_keyword">if</strong> (stdCommentReplacement.getContext().isAssignableFrom(contextClass)) {
-<a class="jxr_linenumber" name="L641" href="#L641">641</a>                 <strong class="jxr_keyword">if</strong> (stdCommentReplacement.getComment() != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L642" href="#L642">642</a>                     <strong class="jxr_keyword">return</strong> stdCommentReplacement.getComment();
-<a class="jxr_linenumber" name="L643" href="#L643">643</a>                 }
-<a class="jxr_linenumber" name="L644" href="#L644">644</a>             }
-<a class="jxr_linenumber" name="L645" href="#L645">645</a>         }
-<a class="jxr_linenumber" name="L646" href="#L646">646</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.comment();
-<a class="jxr_linenumber" name="L647" href="#L647">647</a>     }
-<a class="jxr_linenumber" name="L648" href="#L648">648</a> 
-<a class="jxr_linenumber" name="L649" href="#L649">649</a>     @Override
-<a class="jxr_linenumber" name="L650" href="#L650">650</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu() {
-<a class="jxr_linenumber" name="L651" href="#L651">651</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.hdu();
-<a class="jxr_linenumber" name="L652" href="#L652">652</a>     }
-<a class="jxr_linenumber" name="L653" href="#L653">653</a> 
-<a class="jxr_linenumber" name="L654" href="#L654">654</a>     @Override
-<a class="jxr_linenumber" name="L655" href="#L655">655</a>     <strong class="jxr_keyword">public</strong> String key() {
-<a class="jxr_linenumber" name="L656" href="#L656">656</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.key();
-<a class="jxr_linenumber" name="L657" href="#L657">657</a>     }
-<a class="jxr_linenumber" name="L658" href="#L658">658</a> 
-<a class="jxr_linenumber" name="L659" href="#L659">659</a>     @Override
-<a class="jxr_linenumber" name="L660" href="#L660">660</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> n(<strong class="jxr_keyword">int</strong>... number) {
-<a class="jxr_linenumber" name="L661" href="#L661">661</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.n(number);
-<a class="jxr_linenumber" name="L662" href="#L662">662</a>     }
-<a class="jxr_linenumber" name="L663" href="#L663">663</a> 
-<a class="jxr_linenumber" name="L664" href="#L664">664</a>     @Override
-<a class="jxr_linenumber" name="L665" href="#L665">665</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status() {
-<a class="jxr_linenumber" name="L666" href="#L666">666</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.status();
-<a class="jxr_linenumber" name="L667" href="#L667">667</a>     }
-<a class="jxr_linenumber" name="L668" href="#L668">668</a> 
-<a class="jxr_linenumber" name="L669" href="#L669">669</a>     @Override
-<a class="jxr_linenumber" name="L670" href="#L670">670</a>     @SuppressWarnings(<span class="jxr_string">"CPD-END"</span>)
-<a class="jxr_linenumber" name="L671" href="#L671">671</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType() {
-<a class="jxr_linenumber" name="L672" href="#L672">672</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.valueType();
-<a class="jxr_linenumber" name="L673" href="#L673">673</a>     }
-<a class="jxr_linenumber" name="L674" href="#L674">674</a> 
-<a class="jxr_linenumber" name="L675" href="#L675">675</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> context(Class&lt;?&gt; clazz) {
-<a class="jxr_linenumber" name="L676" href="#L676">676</a>         COMMENT_CONTEXT.set(clazz);
-<a class="jxr_linenumber" name="L677" href="#L677">677</a>     }
-<a class="jxr_linenumber" name="L678" href="#L678">678</a> 
-<a class="jxr_linenumber" name="L679" href="#L679">679</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L680" href="#L680">680</a> <em class="jxr_javadoccomment">     * scan for a comment with the specified reference key.</em>
-<a class="jxr_linenumber" name="L681" href="#L681">681</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L682" href="#L682">682</a> <em class="jxr_javadoccomment">     * @param commentKey</em>
-<a class="jxr_linenumber" name="L683" href="#L683">683</a> <em class="jxr_javadoccomment">     *            the reference key</em>
-<a class="jxr_linenumber" name="L684" href="#L684">684</a> <em class="jxr_javadoccomment">     * @return the comment for the reference key</em>
-<a class="jxr_linenumber" name="L685" href="#L685">685</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L686" href="#L686">686</a>     <strong class="jxr_keyword">public</strong> String getCommentByKey(String commentKey) {
-<a class="jxr_linenumber" name="L687" href="#L687">687</a>         <strong class="jxr_keyword">for</strong> (StandardCommentReplacement commentReplacement : commentReplacements) {
-<a class="jxr_linenumber" name="L688" href="#L688">688</a>             <strong class="jxr_keyword">if</strong> (commentReplacement.getRef().equals(commentKey)) {
-<a class="jxr_linenumber" name="L689" href="#L689">689</a>                 String foundcommentReplacement = commentReplacement.getComment();
-<a class="jxr_linenumber" name="L690" href="#L690">690</a>                 <strong class="jxr_keyword">if</strong> (foundcommentReplacement == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L691" href="#L691">691</a>                     <strong class="jxr_keyword">return</strong> comment();
-<a class="jxr_linenumber" name="L692" href="#L692">692</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L693" href="#L693">693</a>                     <strong class="jxr_keyword">return</strong> foundcommentReplacement;
-<a class="jxr_linenumber" name="L694" href="#L694">694</a>                 }
-<a class="jxr_linenumber" name="L695" href="#L695">695</a>             }
-<a class="jxr_linenumber" name="L696" href="#L696">696</a>         }
-<a class="jxr_linenumber" name="L697" href="#L697">697</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L698" href="#L698">698</a>     }
-<a class="jxr_linenumber" name="L699" href="#L699">699</a> 
-<a class="jxr_linenumber" name="L700" href="#L700">700</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L701" href="#L701">701</a> <em class="jxr_javadoccomment">     * set the comment for the specified reference key.</em>
-<a class="jxr_linenumber" name="L702" href="#L702">702</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L703" href="#L703">703</a> <em class="jxr_javadoccomment">     * @param commentKey</em>
-<a class="jxr_linenumber" name="L704" href="#L704">704</a> <em class="jxr_javadoccomment">     *            the reference key</em>
-<a class="jxr_linenumber" name="L705" href="#L705">705</a> <em class="jxr_javadoccomment">     * @param value</em>
-<a class="jxr_linenumber" name="L706" href="#L706">706</a> <em class="jxr_javadoccomment">     *            the comment to set when the fits key is used.</em>
-<a class="jxr_linenumber" name="L707" href="#L707">707</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L708" href="#L708">708</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCommentByKey(String commentKey, String value) {
-<a class="jxr_linenumber" name="L709" href="#L709">709</a>         <strong class="jxr_keyword">for</strong> (StandardCommentReplacement commentReplacement : commentReplacements) {
-<a class="jxr_linenumber" name="L710" href="#L710">710</a>             <strong class="jxr_keyword">if</strong> (commentReplacement.getRef().equals(commentKey)) {
-<a class="jxr_linenumber" name="L711" href="#L711">711</a>                 commentReplacement.setComment(value);
-<a class="jxr_linenumber" name="L712" href="#L712">712</a>                 <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L713" href="#L713">713</a>             }
-<a class="jxr_linenumber" name="L714" href="#L714">714</a>         }
-<a class="jxr_linenumber" name="L715" href="#L715">715</a>     }
-<a class="jxr_linenumber" name="L716" href="#L716">716</a> 
-<a class="jxr_linenumber" name="L717" href="#L717">717</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../nom/tam/fits/header/StandardCommentReplacement.html">StandardCommentReplacement</a> replaceable(String string, Class&lt;?&gt; clazz) {
-<a class="jxr_linenumber" name="L718" href="#L718">718</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/StandardCommentReplacement.html">StandardCommentReplacement</a>(string, clazz);
-<a class="jxr_linenumber" name="L719" href="#L719">719</a>     }
-<a class="jxr_linenumber" name="L720" href="#L720">720</a> 
-<a class="jxr_linenumber" name="L721" href="#L721">721</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../nom/tam/fits/header/StandardCommentReplacement.html">StandardCommentReplacement</a> replaceable(String string, Class&lt;?&gt; clazz, String comment) {
-<a class="jxr_linenumber" name="L722" href="#L722">722</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/StandardCommentReplacement.html">StandardCommentReplacement</a>(string, clazz, comment);
-<a class="jxr_linenumber" name="L723" href="#L723">723</a>     }
-<a class="jxr_linenumber" name="L724" href="#L724">724</a> 
-<a class="jxr_linenumber" name="L725" href="#L725">725</a> }
+<a class="jxr_linenumber" name="L618" href="#L618">618</a>     @SuppressWarnings(<span class="jxr_string">"CPD-START"</span>)
+<a class="jxr_linenumber" name="L619" href="#L619">619</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key;
+<a class="jxr_linenumber" name="L620" href="#L620">620</a> 
+<a class="jxr_linenumber" name="L621" href="#L621">621</a>     <a href="../../../../nom/tam/fits/header/Standard.html">Standard</a>(<a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment, StandardCommentReplacement... replacements) {
+<a class="jxr_linenumber" name="L622" href="#L622">622</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(name(), status, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L623" href="#L623">623</a>         <strong class="jxr_keyword">this</strong>.commentReplacements = replacements;
+<a class="jxr_linenumber" name="L624" href="#L624">624</a>     }
+<a class="jxr_linenumber" name="L625" href="#L625">625</a> 
+<a class="jxr_linenumber" name="L626" href="#L626">626</a>     <a href="../../../../nom/tam/fits/header/Standard.html">Standard</a>(String headerName, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment, StandardCommentReplacement... replacements) {
+<a class="jxr_linenumber" name="L627" href="#L627">627</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(headerName == <strong class="jxr_keyword">null</strong> ? name() : headerName, status, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L628" href="#L628">628</a>         <strong class="jxr_keyword">this</strong>.commentReplacements = replacements;
+<a class="jxr_linenumber" name="L629" href="#L629">629</a>     }
+<a class="jxr_linenumber" name="L630" href="#L630">630</a> 
+<a class="jxr_linenumber" name="L631" href="#L631">631</a>     @Override
+<a class="jxr_linenumber" name="L632" href="#L632">632</a>     <strong class="jxr_keyword">public</strong> String comment() {
+<a class="jxr_linenumber" name="L633" href="#L633">633</a>         Class&lt;?&gt; contextClass = COMMENT_CONTEXT.get();
+<a class="jxr_linenumber" name="L634" href="#L634">634</a>         <strong class="jxr_keyword">if</strong> (contextClass == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L635" href="#L635">635</a>             contextClass = Object.<strong class="jxr_keyword">class</strong>;
+<a class="jxr_linenumber" name="L636" href="#L636">636</a>         }
+<a class="jxr_linenumber" name="L637" href="#L637">637</a>         <strong class="jxr_keyword">for</strong> (StandardCommentReplacement stdCommentReplacement : commentReplacements) {
+<a class="jxr_linenumber" name="L638" href="#L638">638</a>             <strong class="jxr_keyword">if</strong> (stdCommentReplacement.getContext().isAssignableFrom(contextClass)) {
+<a class="jxr_linenumber" name="L639" href="#L639">639</a>                 <strong class="jxr_keyword">if</strong> (stdCommentReplacement.getComment() != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L640" href="#L640">640</a>                     <strong class="jxr_keyword">return</strong> stdCommentReplacement.getComment();
+<a class="jxr_linenumber" name="L641" href="#L641">641</a>                 }
+<a class="jxr_linenumber" name="L642" href="#L642">642</a>             }
+<a class="jxr_linenumber" name="L643" href="#L643">643</a>         }
+<a class="jxr_linenumber" name="L644" href="#L644">644</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.comment();
+<a class="jxr_linenumber" name="L645" href="#L645">645</a>     }
+<a class="jxr_linenumber" name="L646" href="#L646">646</a> 
+<a class="jxr_linenumber" name="L647" href="#L647">647</a>     @Override
+<a class="jxr_linenumber" name="L648" href="#L648">648</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu() {
+<a class="jxr_linenumber" name="L649" href="#L649">649</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.hdu();
+<a class="jxr_linenumber" name="L650" href="#L650">650</a>     }
+<a class="jxr_linenumber" name="L651" href="#L651">651</a> 
+<a class="jxr_linenumber" name="L652" href="#L652">652</a>     @Override
+<a class="jxr_linenumber" name="L653" href="#L653">653</a>     <strong class="jxr_keyword">public</strong> String key() {
+<a class="jxr_linenumber" name="L654" href="#L654">654</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.key();
+<a class="jxr_linenumber" name="L655" href="#L655">655</a>     }
+<a class="jxr_linenumber" name="L656" href="#L656">656</a> 
+<a class="jxr_linenumber" name="L657" href="#L657">657</a>     @Override
+<a class="jxr_linenumber" name="L658" href="#L658">658</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> n(<strong class="jxr_keyword">int</strong>... number) {
+<a class="jxr_linenumber" name="L659" href="#L659">659</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.n(number);
+<a class="jxr_linenumber" name="L660" href="#L660">660</a>     }
+<a class="jxr_linenumber" name="L661" href="#L661">661</a> 
+<a class="jxr_linenumber" name="L662" href="#L662">662</a>     @Override
+<a class="jxr_linenumber" name="L663" href="#L663">663</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status() {
+<a class="jxr_linenumber" name="L664" href="#L664">664</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.status();
+<a class="jxr_linenumber" name="L665" href="#L665">665</a>     }
+<a class="jxr_linenumber" name="L666" href="#L666">666</a> 
+<a class="jxr_linenumber" name="L667" href="#L667">667</a>     @Override
+<a class="jxr_linenumber" name="L668" href="#L668">668</a>     @SuppressWarnings(<span class="jxr_string">"CPD-END"</span>)
+<a class="jxr_linenumber" name="L669" href="#L669">669</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType() {
+<a class="jxr_linenumber" name="L670" href="#L670">670</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.valueType();
+<a class="jxr_linenumber" name="L671" href="#L671">671</a>     }
+<a class="jxr_linenumber" name="L672" href="#L672">672</a> 
+<a class="jxr_linenumber" name="L673" href="#L673">673</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> context(Class&lt;?&gt; clazz) {
+<a class="jxr_linenumber" name="L674" href="#L674">674</a>         COMMENT_CONTEXT.set(clazz);
+<a class="jxr_linenumber" name="L675" href="#L675">675</a>     }
+<a class="jxr_linenumber" name="L676" href="#L676">676</a> 
+<a class="jxr_linenumber" name="L677" href="#L677">677</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L678" href="#L678">678</a> <em class="jxr_javadoccomment">     * scan for a comment with the specified reference key.</em>
+<a class="jxr_linenumber" name="L679" href="#L679">679</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L680" href="#L680">680</a> <em class="jxr_javadoccomment">     * @param commentKey</em>
+<a class="jxr_linenumber" name="L681" href="#L681">681</a> <em class="jxr_javadoccomment">     *            the reference key</em>
+<a class="jxr_linenumber" name="L682" href="#L682">682</a> <em class="jxr_javadoccomment">     * @return the comment for the reference key</em>
+<a class="jxr_linenumber" name="L683" href="#L683">683</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L684" href="#L684">684</a>     <strong class="jxr_keyword">public</strong> String getCommentByKey(String commentKey) {
+<a class="jxr_linenumber" name="L685" href="#L685">685</a>         <strong class="jxr_keyword">for</strong> (StandardCommentReplacement commentReplacement : commentReplacements) {
+<a class="jxr_linenumber" name="L686" href="#L686">686</a>             <strong class="jxr_keyword">if</strong> (commentReplacement.getRef().equals(commentKey)) {
+<a class="jxr_linenumber" name="L687" href="#L687">687</a>                 String foundcommentReplacement = commentReplacement.getComment();
+<a class="jxr_linenumber" name="L688" href="#L688">688</a>                 <strong class="jxr_keyword">if</strong> (foundcommentReplacement == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L689" href="#L689">689</a>                     <strong class="jxr_keyword">return</strong> comment();
+<a class="jxr_linenumber" name="L690" href="#L690">690</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L691" href="#L691">691</a>                     <strong class="jxr_keyword">return</strong> foundcommentReplacement;
+<a class="jxr_linenumber" name="L692" href="#L692">692</a>                 }
+<a class="jxr_linenumber" name="L693" href="#L693">693</a>             }
+<a class="jxr_linenumber" name="L694" href="#L694">694</a>         }
+<a class="jxr_linenumber" name="L695" href="#L695">695</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L696" href="#L696">696</a>     }
+<a class="jxr_linenumber" name="L697" href="#L697">697</a> 
+<a class="jxr_linenumber" name="L698" href="#L698">698</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L699" href="#L699">699</a> <em class="jxr_javadoccomment">     * set the comment for the specified reference key.</em>
+<a class="jxr_linenumber" name="L700" href="#L700">700</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L701" href="#L701">701</a> <em class="jxr_javadoccomment">     * @param commentKey</em>
+<a class="jxr_linenumber" name="L702" href="#L702">702</a> <em class="jxr_javadoccomment">     *            the reference key</em>
+<a class="jxr_linenumber" name="L703" href="#L703">703</a> <em class="jxr_javadoccomment">     * @param value</em>
+<a class="jxr_linenumber" name="L704" href="#L704">704</a> <em class="jxr_javadoccomment">     *            the comment to set when the fits key is used.</em>
+<a class="jxr_linenumber" name="L705" href="#L705">705</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L706" href="#L706">706</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCommentByKey(String commentKey, String value) {
+<a class="jxr_linenumber" name="L707" href="#L707">707</a>         <strong class="jxr_keyword">for</strong> (StandardCommentReplacement commentReplacement : commentReplacements) {
+<a class="jxr_linenumber" name="L708" href="#L708">708</a>             <strong class="jxr_keyword">if</strong> (commentReplacement.getRef().equals(commentKey)) {
+<a class="jxr_linenumber" name="L709" href="#L709">709</a>                 commentReplacement.setComment(value);
+<a class="jxr_linenumber" name="L710" href="#L710">710</a>                 <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L711" href="#L711">711</a>             }
+<a class="jxr_linenumber" name="L712" href="#L712">712</a>         }
+<a class="jxr_linenumber" name="L713" href="#L713">713</a>     }
+<a class="jxr_linenumber" name="L714" href="#L714">714</a> 
+<a class="jxr_linenumber" name="L715" href="#L715">715</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../nom/tam/fits/header/StandardCommentReplacement.html">StandardCommentReplacement</a> replaceable(String string, Class&lt;?&gt; clazz) {
+<a class="jxr_linenumber" name="L716" href="#L716">716</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/StandardCommentReplacement.html">StandardCommentReplacement</a>(string, clazz);
+<a class="jxr_linenumber" name="L717" href="#L717">717</a>     }
+<a class="jxr_linenumber" name="L718" href="#L718">718</a> 
+<a class="jxr_linenumber" name="L719" href="#L719">719</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../nom/tam/fits/header/StandardCommentReplacement.html">StandardCommentReplacement</a> replaceable(String string, Class&lt;?&gt; clazz, String comment) {
+<a class="jxr_linenumber" name="L720" href="#L720">720</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/StandardCommentReplacement.html">StandardCommentReplacement</a>(string, clazz, comment);
+<a class="jxr_linenumber" name="L721" href="#L721">721</a>     }
+<a class="jxr_linenumber" name="L722" href="#L722">722</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2016 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

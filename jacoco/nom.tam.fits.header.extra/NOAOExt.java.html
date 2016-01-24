@@ -47,7 +47,7 @@ import nom.tam.fits.header.IFitsHeader;
  * 
  * @author Richard van Nieuwenhoven.
  */
-<span class="pc" id="L50">public enum NOAOExt implements IFitsHeader {</span>
+<span class="fc" id="L50">public enum NOAOExt implements IFitsHeader {</span>
     /**
      * &lt;p&gt;
      * default value = none
@@ -8147,11 +8147,11 @@ import nom.tam.fits.header.IFitsHeader;
     @SuppressWarnings(&quot;CPD-START&quot;)
     private final IFitsHeader key;
 
-<span class="fc" id="L8150">    private NOAOExt(HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L8150">    NOAOExt(HDU hdu, VALUE valueType, String comment) {</span>
 <span class="fc" id="L8151">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);</span>
 <span class="fc" id="L8152">    }</span>
 
-<span class="fc" id="L8154">    private NOAOExt(String key, HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L8154">    NOAOExt(String key, HDU hdu, VALUE valueType, String comment) {</span>
 <span class="fc" id="L8155">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);</span>
 <span class="fc" id="L8156">    }</span>
 

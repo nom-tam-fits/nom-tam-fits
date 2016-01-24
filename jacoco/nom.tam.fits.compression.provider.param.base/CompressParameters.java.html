@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CompressParameters.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compression.provider.param.base</a> &gt; <span class="el_source">CompressParameters.java</span></div><h1>CompressParameters.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compression.provider.param.base;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2016 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import static nom.tam.fits.header.Standard.TTYPEn;
+import nom.tam.fits.BinaryTable;
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressParameters;
+
+<span class="fc" id="L44">public abstract class CompressParameters implements ICompressParameters {</span>
+
+    @Override
+    public void addColumnsToTable(BinaryTableHDU hdu) throws FitsException {
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
+<span class="fc" id="L49">            Object column = parameter.column();</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            if (column != null) {</span>
+<span class="fc" id="L51">                hdu.setColumnName(hdu.addColumn(column) - 1, parameter.getName(), null);</span>
+            }
+        }
+<span class="fc" id="L54">    }</span>
+
+    protected ICompressColumnParameter[] columnParameters() {
+<span class="fc" id="L57">        return new ICompressColumnParameter[0];</span>
+    }
+
+    private Object getNullableColumn(Header header, BinaryTable binaryTable, String columnName) throws FitsException {
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (int i = 1; i &lt;= binaryTable.getNCols(); i++) {</span>
+<span class="fc" id="L62">            String val = header.getStringValue(TTYPEn.n(i));</span>
+<span class="pc bpc" id="L63" title="1 of 4 branches missed.">            if (val != null &amp;&amp; val.trim().equals(columnName)) {</span>
+<span class="fc" id="L64">                return binaryTable.getColumn(i - 1);</span>
+            }
+        }
+<span class="fc" id="L67">        return null;</span>
+    }
+
+    @Override
+    public void getValuesFromColumn(int index) {
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
+<span class="fc" id="L73">            parameter.getValueFromColumn(index);</span>
+        }
+<span class="fc" id="L75">    }</span>
+
+    @Override
+    public void getValuesFromHeader(Header header) {
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        for (ICompressHeaderParameter compressionParameter : headerParameters()) {</span>
+<span class="fc" id="L80">            compressionParameter.getValueFromHeader(header);</span>
+        }
+<span class="fc" id="L82">    }</span>
+
+    protected abstract ICompressHeaderParameter[] headerParameters();
+
+    @Override
+    public void initializeColumns(Header header, BinaryTable binaryTable, int size) throws FitsException {
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
+<span class="fc" id="L89">            parameter.column(getNullableColumn(header, binaryTable, parameter.getName()), size);</span>
+        }
+<span class="fc" id="L91">    }</span>
+
+    @Override
+    public void initializeColumns(int size) {
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
+<span class="fc" id="L96">            parameter.column(null, size);</span>
+        }
+<span class="fc" id="L98">    }</span>
+
+    @Override
+    public void setValueFromColumn(int index) {
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
+<span class="fc" id="L103">            parameter.setValueInColumn(index);</span>
+        }
+<span class="fc" id="L105">    }</span>
+
+    @Override
+    public void setValuesInHeader(Header header) throws HeaderCardException {
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        for (ICompressHeaderParameter parameter : headerParameters()) {</span>
+<span class="fc" id="L110">            parameter.setValueInHeader(header);</span>
+        }
+<span class="fc" id="L112">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

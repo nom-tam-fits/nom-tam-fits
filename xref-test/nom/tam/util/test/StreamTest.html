@@ -477,37 +477,39 @@
 <a class="jxr_linenumber" name="L469" href="#L469">469</a>     @Test
 <a class="jxr_linenumber" name="L470" href="#L470">470</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testReadWriteLine() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L471" href="#L471">471</a>         ByteArrayOutputStream o = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
-<a class="jxr_linenumber" name="L472" href="#L472">472</a>         BufferedDataOutputStream out = <strong class="jxr_keyword">new</strong> BufferedDataOutputStream(o);
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>         out.writeBytes(<span class="jxr_string">"bla bla\n"</span>);
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>         out.close();
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>         String line = <strong class="jxr_keyword">new</strong> BufferedDataInputStream(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(o.toByteArray())).readLine();
-<a class="jxr_linenumber" name="L476" href="#L476">476</a>         Assert.assertEquals(<span class="jxr_string">"bla bla"</span>, line);
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>     }
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> 
-<a class="jxr_linenumber" name="L479" href="#L479">479</a>     <strong class="jxr_keyword">private</strong> BufferedDataInputStream create8ByteInput() {
-<a class="jxr_linenumber" name="L480" href="#L480">480</a>         InputStream fileInput = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[1000]) {
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> 
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>             <strong class="jxr_keyword">int</strong> count = 0;
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>         <strong class="jxr_keyword">try</strong> (BufferedDataOutputStream out = <strong class="jxr_keyword">new</strong> BufferedDataOutputStream(o)) {
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>             out.writeBytes(<span class="jxr_string">"bla bla\n"</span>);
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>         }
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>         <strong class="jxr_keyword">try</strong> (BufferedDataInputStream input = <strong class="jxr_keyword">new</strong> BufferedDataInputStream(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(o.toByteArray()))){
+<a class="jxr_linenumber" name="L476" href="#L476">476</a>             String line = input.readLine();
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>             Assert.assertEquals(<span class="jxr_string">"bla bla"</span>, line);
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>         }
+<a class="jxr_linenumber" name="L479" href="#L479">479</a>     }
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> 
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>     <strong class="jxr_keyword">private</strong> BufferedDataInputStream create8ByteInput() {
+<a class="jxr_linenumber" name="L482" href="#L482">482</a>         InputStream fileInput = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[1000]) {
 <a class="jxr_linenumber" name="L483" href="#L483">483</a> 
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>             @Override
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> read(byte[] obuf, <strong class="jxr_keyword">int</strong> offset, <strong class="jxr_keyword">int</strong> len) {
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>                 <strong class="jxr_keyword">if</strong> (count == 0) {
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>                     <strong class="jxr_keyword">return</strong> count = 8;
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>                 }
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>                 StreamTest.&lt;RuntimeException&gt; throwAny(<strong class="jxr_keyword">new</strong> EOFException(<span class="jxr_string">"all is broken"</span>));
-<a class="jxr_linenumber" name="L490" href="#L490">490</a>                 <strong class="jxr_keyword">return</strong> 1;
-<a class="jxr_linenumber" name="L491" href="#L491">491</a>             }
-<a class="jxr_linenumber" name="L492" href="#L492">492</a>         };
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>         BufferedDataInputStream bi = <strong class="jxr_keyword">new</strong> BufferedDataInputStream(fileInput);
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>         <strong class="jxr_keyword">return</strong> bi;
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>     }
-<a class="jxr_linenumber" name="L496" href="#L496">496</a> 
-<a class="jxr_linenumber" name="L497" href="#L497">497</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> &lt;E <strong class="jxr_keyword">extends</strong> Throwable&gt; <strong class="jxr_keyword">void</strong> throwAny(Throwable e) <strong class="jxr_keyword">throws</strong> E {
-<a class="jxr_linenumber" name="L498" href="#L498">498</a>         <strong class="jxr_keyword">throw</strong> (E) e;
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>     }
-<a class="jxr_linenumber" name="L500" href="#L500">500</a> }
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>             <strong class="jxr_keyword">int</strong> count = 0;
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> 
+<a class="jxr_linenumber" name="L486" href="#L486">486</a>             @Override
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> read(byte[] obuf, <strong class="jxr_keyword">int</strong> offset, <strong class="jxr_keyword">int</strong> len) {
+<a class="jxr_linenumber" name="L488" href="#L488">488</a>                 <strong class="jxr_keyword">if</strong> (count == 0) {
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>                     <strong class="jxr_keyword">return</strong> count = 8;
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>                 }
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>                 StreamTest.&lt;RuntimeException&gt; throwAny(<strong class="jxr_keyword">new</strong> EOFException(<span class="jxr_string">"all is broken"</span>));
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>                 <strong class="jxr_keyword">return</strong> 1;
+<a class="jxr_linenumber" name="L493" href="#L493">493</a>             }
+<a class="jxr_linenumber" name="L494" href="#L494">494</a>         };
+<a class="jxr_linenumber" name="L495" href="#L495">495</a>         BufferedDataInputStream bi = <strong class="jxr_keyword">new</strong> BufferedDataInputStream(fileInput);
+<a class="jxr_linenumber" name="L496" href="#L496">496</a>         <strong class="jxr_keyword">return</strong> bi;
+<a class="jxr_linenumber" name="L497" href="#L497">497</a>     }
+<a class="jxr_linenumber" name="L498" href="#L498">498</a> 
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> &lt;E <strong class="jxr_keyword">extends</strong> Throwable&gt; <strong class="jxr_keyword">void</strong> throwAny(Throwable e) <strong class="jxr_keyword">throws</strong> E {
+<a class="jxr_linenumber" name="L500" href="#L500">500</a>         <strong class="jxr_keyword">throw</strong> (E) e;
+<a class="jxr_linenumber" name="L501" href="#L501">501</a>     }
+<a class="jxr_linenumber" name="L502" href="#L502">502</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2016 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

@@ -43,7 +43,7 @@
  * 
  * @author Richard van Nieuwenhoven
  */
-<span class="pc" id="L46">public enum InstrumentDescription implements IFitsHeader {</span>
+<span class="fc" id="L46">public enum InstrumentDescription implements IFitsHeader {</span>
     /**
      * The value field shall contain a character string which gives the name of
      * the instrumental aperture though which the observation was made. This
@@ -113,7 +113,7 @@
     @SuppressWarnings(&quot;CPD-START&quot;)
     private final IFitsHeader key;
 
-<span class="fc" id="L116">    private InstrumentDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L116">    InstrumentDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
 <span class="fc" id="L117">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
 <span class="fc" id="L118">    }</span>
 

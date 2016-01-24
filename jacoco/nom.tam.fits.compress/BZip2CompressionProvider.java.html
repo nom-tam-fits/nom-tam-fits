@@ -44,7 +44,7 @@ import java.io.InputStream;
 <span class="fc" id="L44">            return CompressionLibLoaderProtection.createBZip2Stream(in);</span>
 <span class="nc" id="L45">        } catch (IOException e) {</span>
 <span class="nc" id="L46">            throw e;</span>
-<span class="nc" id="L47">        } catch (Throwable e) {</span>
+<span class="nc" id="L47">        } catch (Exception e) {</span>
 <span class="nc" id="L48">            throw new IOException(e);</span>
         }
     }
@@ -58,6 +58,5 @@ import java.io.InputStream;
     public boolean provides(int mag1, int mag2) {
 <span class="pc bpc" id="L59" title="1 of 4 branches missed.">        return mag1 == 'B' &amp;&amp; mag2 == 'Z';</span>
     }
-
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

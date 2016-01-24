@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>QuantizeProcessor.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compression.algorithm.quant</a> &gt; <span class="el_source">QuantizeProcessor.java</span></div><h1>QuantizeProcessor.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compression.algorithm.quant;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
+import nom.tam.fits.compression.algorithm.api.ICompressor;
+
+public class QuantizeProcessor {
+
+    private class BaseFilter extends PixelFilter {
+
+<span class="fc" id="L45">        BaseFilter() {</span>
+<span class="fc" id="L46">            super(null);</span>
+<span class="fc" id="L47">        }</span>
+
+        @Override
+        protected void nextPixel() {
+<span class="fc" id="L51">        }</span>
+
+        @Override
+        protected double toDouble(int pixel) {
+<span class="fc" id="L55">            return (pixel + ROUNDING_HALF) * QuantizeProcessor.this.bScale + QuantizeProcessor.this.bZero;</span>
+        }
+
+        @Override
+        protected int toInt(double pixel) {
+<span class="fc" id="L60">            return nint((pixel - QuantizeProcessor.this.bZero) / QuantizeProcessor.this.bScale + ROUNDING_HALF);</span>
+        }
+    }
+
+    private class DitherFilter extends PixelFilter {
+
+        private static final int LAST_RANDOM_VALUE = 1043618065;
+
+        private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
+
+        /**
+         * DO NOT CHANGE THIS; used when quantizing real numbers
+         */
+        private static final int N_RANDOM = 10000;
+
+        private static final int RANDOM_MULTIPLICATOR = 500;
+
+        private static final double RANDOM_START_VALUE = 16807.0;
+
+<span class="fc" id="L79">        private int iseed = 0;</span>
+
+<span class="fc" id="L81">        private int nextRandom = 0;</span>
+
+        private final double[] randomValues;
+
+<span class="fc" id="L85">        DitherFilter(long seed) {</span>
+<span class="fc" id="L86">            super(null);</span>
+<span class="fc" id="L87">            this.randomValues = initRandoms();</span>
+<span class="fc" id="L88">            initialize(seed);</span>
+<span class="fc" id="L89">        }</span>
+
+        public void initialize(long ditherSeed) {
+<span class="fc" id="L92">            this.iseed = (int) ((ditherSeed - 1) % N_RANDOM);</span>
+<span class="fc" id="L93">            this.nextRandom = (int) (this.randomValues[this.iseed] * RANDOM_MULTIPLICATOR);</span>
+<span class="fc" id="L94">        }</span>
+
+        private double[] initRandoms() {
+
+            /* initialize an tiledImageOperation of random numbers */
+
+            int ii;
+<span class="fc" id="L101">            double a = RANDOM_START_VALUE;</span>
+<span class="fc" id="L102">            double m = MAX_INT_AS_DOUBLE;</span>
+            double temp;
+            double seed;
+
+            /* allocate tiledImageOperation for the random number sequence */
+<span class="fc" id="L107">            double[] randomValue = new double[N_RANDOM];</span>
+
+            /*
+             * We need a portable algorithm that anyone can use to generate this
+             * exact same sequence of random number. The C 'rand' function is
+             * not suitable because it is not available to Fortran or Java
+             * programmers. Instead, use a well known simple algorithm published
+             * here: &quot;Random number generators: good ones are hard to find&quot;,
+             * Communications of the ACM, Volume 31 , Issue 10 (October 1988)
+             * Pages: 1192 - 1201
+             */
+
+            /* initialize the random numbers */
+<span class="fc" id="L120">            seed = 1;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">            for (ii = 0; ii &lt; N_RANDOM; ii++) {</span>
+<span class="fc" id="L122">                temp = a * seed;</span>
+<span class="fc" id="L123">                seed = temp - m * (int) (temp / m);</span>
+<span class="fc" id="L124">                randomValue[ii] = seed / m;</span>
+            }
+
+            /*
+             * IMPORTANT NOTE: the 10000th seed value must have the value
+             * 1043618065 if the algorithm has been implemented correctly
+             */
+
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">            if ((int) seed != LAST_RANDOM_VALUE) {</span>
+<span class="nc" id="L133">                throw new IllegalArgumentException(&quot;randomValue generated incorrect random number sequence&quot;);</span>
+            }
+<span class="fc" id="L135">            return randomValue;</span>
+        }
+
+        @Override
+        protected void nextPixel() {
+<span class="fc" id="L140">            this.nextRandom++;</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">            if (this.nextRandom == N_RANDOM) {</span>
+<span class="fc" id="L142">                this.iseed++;</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">                if (this.iseed == N_RANDOM) {</span>
+<span class="nc" id="L144">                    this.iseed = 0;</span>
+                }
+<span class="fc" id="L146">                this.nextRandom = (int) (this.randomValues[this.iseed] * RANDOM_MULTIPLICATOR);</span>
+            }
+<span class="fc" id="L148">        }</span>
+
+        public double nextRandom() {
+<span class="fc" id="L151">            return this.randomValues[this.nextRandom];</span>
+        }
+
+        @Override
+        protected double toDouble(int pixel) {
+<span class="fc" id="L156">            return (pixel - nextRandom() + ROUNDING_HALF) * QuantizeProcessor.this.bScale + QuantizeProcessor.this.bZero;</span>
+        }
+
+        @Override
+        protected int toInt(double pixel) {
+<span class="fc" id="L161">            return nint((pixel - QuantizeProcessor.this.bZero) / QuantizeProcessor.this.bScale + nextRandom() - ROUNDING_HALF);</span>
+        }
+    }
+
+    public static class DoubleQuantCompressor extends QuantizeProcessor implements ICompressor&lt;DoubleBuffer&gt; {
+
+        private final ICompressor&lt;IntBuffer&gt; postCompressor;
+
+        public DoubleQuantCompressor(QuantizeOption quantizeOption, ICompressor&lt;IntBuffer&gt; postCompressor) {
+<span class="fc" id="L170">            super(quantizeOption);</span>
+<span class="fc" id="L171">            this.postCompressor = postCompressor;</span>
+<span class="fc" id="L172">        }</span>
+
+        @Override
+        public boolean compress(DoubleBuffer buffer, ByteBuffer compressed) {
+<span class="fc" id="L176">            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);</span>
+<span class="fc" id="L177">            double[] doubles = new double[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()];</span>
+<span class="fc" id="L178">            buffer.get(doubles);</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">            if (!this.quantize(doubles, intData)) {</span>
+<span class="fc" id="L180">                return false;</span>
+            }
+<span class="fc" id="L182">            intData.rewind();</span>
+<span class="fc" id="L183">            this.postCompressor.compress(intData, compressed);</span>
+<span class="fc" id="L184">            return true;</span>
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, DoubleBuffer buffer) {
+<span class="fc" id="L189">            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);</span>
+<span class="fc" id="L190">            this.postCompressor.decompress(compressed, intData);</span>
+<span class="fc" id="L191">            intData.rewind();</span>
+<span class="fc" id="L192">            unquantize(intData, buffer);</span>
+<span class="fc" id="L193">        }</span>
+    }
+
+    /**
+     * TODO this is done very inefficient and should be refactored!
+     */
+    public static class FloatQuantCompressor extends QuantizeProcessor implements ICompressor&lt;FloatBuffer&gt; {
+
+        private final ICompressor&lt;IntBuffer&gt; postCompressor;
+
+        public FloatQuantCompressor(QuantizeOption quantizeOption, ICompressor&lt;IntBuffer&gt; postCompressor) {
+<span class="fc" id="L204">            super(quantizeOption);</span>
+<span class="fc" id="L205">            this.postCompressor = postCompressor;</span>
+<span class="fc" id="L206">        }</span>
+
+        @Override
+        public boolean compress(FloatBuffer buffer, ByteBuffer compressed) {
+<span class="fc" id="L210">            float[] floats = new float[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()];</span>
+<span class="fc" id="L211">            double[] doubles = new double[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()];</span>
+<span class="fc" id="L212">            buffer.get(floats);</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">            for (int index = 0; index &lt; doubles.length; index++) {</span>
+<span class="fc" id="L214">                doubles[index] = floats[index];</span>
+            }
+<span class="fc" id="L216">            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);</span>
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">            if (!this.quantize(doubles, intData)) {</span>
+<span class="nc" id="L218">                return false;</span>
+            }
+<span class="fc" id="L220">            intData.rewind();</span>
+<span class="fc" id="L221">            this.postCompressor.compress(intData, compressed);</span>
+<span class="fc" id="L222">            return true;</span>
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, FloatBuffer buffer) {
+<span class="fc" id="L227">            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);</span>
+<span class="fc" id="L228">            this.postCompressor.decompress(compressed, intData);</span>
+<span class="fc" id="L229">            intData.rewind();</span>
+<span class="fc" id="L230">            double[] doubles = new double[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()];</span>
+<span class="fc" id="L231">            DoubleBuffer doubleBuffer = DoubleBuffer.wrap(doubles);</span>
+<span class="fc" id="L232">            unquantize(intData, doubleBuffer);</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">            for (double d : doubles) {</span>
+<span class="fc" id="L234">                buffer.put((float) d);</span>
+            }
+<span class="fc" id="L236">        }</span>
+    }
+
+    private class NullFilter extends PixelFilter {
+
+        private final double nullValue;
+
+        private final boolean isNaN;
+
+        private final int nullValueIndicator;
+
+<span class="fc" id="L247">        NullFilter(double nullValue, int nullValueIndicator, PixelFilter next) {</span>
+<span class="fc" id="L248">            super(next);</span>
+<span class="fc" id="L249">            this.nullValue = nullValue;</span>
+<span class="fc" id="L250">            this.isNaN = Double.isNaN(this.nullValue);</span>
+<span class="fc" id="L251">            this.nullValueIndicator = nullValueIndicator;</span>
+<span class="fc" id="L252">        }</span>
+
+        public final boolean isNull(double pixel) {
+<span class="fc bfc" id="L255" title="All 4 branches covered.">            return this.isNaN ? Double.isNaN(pixel) : this.nullValue == pixel;</span>
+        }
+
+        @Override
+        protected double toDouble(int pixel) {
+<span class="fc bfc" id="L260" title="All 2 branches covered.">            if (pixel == this.nullValueIndicator) {</span>
+<span class="fc" id="L261">                return this.nullValue;</span>
+            }
+<span class="fc" id="L263">            return super.toDouble(pixel);</span>
+        }
+
+        @Override
+        protected int toInt(double pixel) {
+<span class="fc bfc" id="L268" title="All 2 branches covered.">            if (isNull(pixel)) {</span>
+<span class="fc" id="L269">                return this.nullValueIndicator;</span>
+            }
+<span class="fc" id="L271">            return super.toInt(pixel);</span>
+        }
+    }
+
+    private class PixelFilter {
+
+        private final PixelFilter next;
+
+<span class="fc" id="L279">        protected PixelFilter(PixelFilter next) {</span>
+<span class="fc" id="L280">            this.next = next;</span>
+<span class="fc" id="L281">        }</span>
+
+        protected void nextPixel() {
+<span class="fc" id="L284">            this.next.nextPixel();</span>
+<span class="fc" id="L285">        }</span>
+
+        protected double toDouble(int pixel) {
+<span class="fc" id="L288">            return this.next.toDouble(pixel);</span>
+        }
+
+        protected int toInt(double pixel) {
+<span class="fc" id="L292">            return this.next.toInt(pixel);</span>
+        }
+    }
+
+    private class ZeroFilter extends PixelFilter {
+
+<span class="fc" id="L298">        ZeroFilter(PixelFilter next) {</span>
+<span class="fc" id="L299">            super(next);</span>
+<span class="fc" id="L300">        }</span>
+
+        @Override
+        protected double toDouble(int pixel) {
+<span class="fc bfc" id="L304" title="All 2 branches covered.">            if (pixel == ZERO_VALUE) {</span>
+<span class="fc" id="L305">                return 0.0;</span>
+            }
+<span class="fc" id="L307">            return super.toDouble(pixel);</span>
+        }
+
+        @Override
+        protected int toInt(double pixel) {
+<span class="fc bfc" id="L312" title="All 2 branches covered.">            if (pixel == 0.0) {</span>
+<span class="fc" id="L313">                return ZERO_VALUE;</span>
+            }
+<span class="fc" id="L315">            return super.toInt(pixel);</span>
+        }
+    }
+
+    private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
+
+    /**
+     * number of reserved values, starting with
+     */
+    private static final long N_RESERVED_VALUES = 10;
+
+    private static final double ROUNDING_HALF = 0.5;
+
+    /**
+     * value used to represent zero-valued pixels
+     */
+    private static final int ZERO_VALUE = Integer.MIN_VALUE + 2;
+
+    private final boolean centerOnZero;
+
+    private final PixelFilter pixelFilter;
+
+    private double bScale;
+
+    private double bZero;
+
+    private Quantize quantize;
+
+    protected final QuantizeOption quantizeOption;
+
+<span class="fc" id="L345">    public QuantizeProcessor(QuantizeOption quantizeOption) {</span>
+<span class="fc" id="L346">        this.quantizeOption = quantizeOption;</span>
+<span class="fc" id="L347">        this.bScale = quantizeOption.getBScale();</span>
+<span class="fc" id="L348">        this.bZero = quantizeOption.getBZero();</span>
+<span class="fc" id="L349">        PixelFilter filter = null;</span>
+<span class="fc" id="L350">        boolean localCenterOnZero = quantizeOption.isCenterOnZero();</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">        if (quantizeOption.isDither2()) {</span>
+<span class="fc" id="L352">            filter = new DitherFilter(quantizeOption.getSeed());</span>
+<span class="fc" id="L353">            localCenterOnZero = true;</span>
+<span class="fc" id="L354">            quantizeOption.setCheckZero(true);</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">        } else if (quantizeOption.isDither()) {</span>
+<span class="fc" id="L356">            filter = new DitherFilter(quantizeOption.getSeed());</span>
+        } else {
+<span class="fc" id="L358">            filter = new BaseFilter();</span>
+        }
+<span class="fc bfc" id="L360" title="All 2 branches covered.">        if (quantizeOption.isCheckZero()) {</span>
+<span class="fc" id="L361">            filter = new ZeroFilter(filter);</span>
+        }
+<span class="fc bfc" id="L363" title="All 2 branches covered.">        if (quantizeOption.isCheckNull()) {</span>
+<span class="fc" id="L364">            final NullFilter nullFilter = new NullFilter(quantizeOption.getNullValue(), quantizeOption.getNullValueIndicator(), filter);</span>
+<span class="fc" id="L365">            filter = nullFilter;</span>
+<span class="fc" id="L366">            this.quantize = new Quantize(quantizeOption) {</span>
+
+                @Override
+                protected int findNextValidPixelWithNullCheck(int nx, DoubleArrayPointer rowpix, int ii) {
+<span class="fc bfc" id="L370" title="All 4 branches covered.">                    while (ii &lt; nx &amp;&amp; nullFilter.isNull(rowpix.get(ii))) {</span>
+<span class="fc" id="L371">                        ii++;</span>
+                    }
+<span class="fc" id="L373">                    return ii;</span>
+                }
+
+                @Override
+                protected boolean isNull(double d) {
+<span class="fc" id="L378">                    return nullFilter.isNull(d);</span>
+                }
+            };
+<span class="fc" id="L381">        } else {</span>
+<span class="fc" id="L382">            this.quantize = new Quantize(quantizeOption);</span>
+        }
+<span class="fc" id="L384">        this.pixelFilter = filter;</span>
+<span class="fc" id="L385">        this.centerOnZero = localCenterOnZero;</span>
+<span class="fc" id="L386">    }</span>
+
+    private void calculateBZeroAndBscale() {
+<span class="fc" id="L389">        this.bScale = this.quantizeOption.getBScale();</span>
+<span class="pc bpc" id="L390" title="1 of 2 branches missed.">        if (Double.isNaN(this.quantizeOption.getBZero())) {</span>
+<span class="fc" id="L391">            this.bZero = zeroCenter();</span>
+<span class="fc" id="L392">            this.quantizeOption.setIntMinValue(nint((this.quantizeOption.getMinValue() - this.bZero) / this.bScale));</span>
+<span class="fc" id="L393">            this.quantizeOption.setIntMaxValue(nint((this.quantizeOption.getMaxValue() - this.bZero) / this.bScale));</span>
+<span class="fc" id="L394">            this.quantizeOption.setBZero(this.bZero);</span>
+        } else {
+<span class="nc" id="L396">            this.bZero = this.quantizeOption.getBZero();</span>
+        }
+<span class="fc" id="L398">    }</span>
+
+    public Quantize getQuantize() {
+<span class="fc" id="L401">        return this.quantize;</span>
+    }
+
+    private int nint(double x) {
+<span class="fc bfc" id="L405" title="All 2 branches covered.">        return x &gt;= 0. ? (int) (x + ROUNDING_HALF) : (int) (x - ROUNDING_HALF);</span>
+    }
+
+    public boolean quantize(double[] doubles, IntBuffer quants) {
+<span class="fc" id="L409">        boolean success = this.quantize.quantize(doubles, this.quantizeOption.getTileWidth(), this.quantizeOption.getTileHeight());</span>
+<span class="fc bfc" id="L410" title="All 2 branches covered.">        if (success) {</span>
+<span class="fc" id="L411">            calculateBZeroAndBscale();</span>
+<span class="fc" id="L412">            quantize(DoubleBuffer.wrap(doubles, 0, this.quantizeOption.getTileWidth() * this.quantizeOption.getTileHeight()), quants);</span>
+        }
+<span class="fc" id="L414">        return success;</span>
+    }
+
+    public void quantize(final DoubleBuffer fdata, final IntBuffer intData) {
+<span class="fc bfc" id="L418" title="All 2 branches covered.">        while (fdata.hasRemaining()) {</span>
+<span class="fc" id="L419">            intData.put(this.pixelFilter.toInt(fdata.get()));</span>
+<span class="fc" id="L420">            this.pixelFilter.nextPixel();</span>
+        }
+<span class="fc" id="L422">    }</span>
+
+    public void unquantize(final IntBuffer intData, final DoubleBuffer fdata) {
+<span class="fc bfc" id="L425" title="All 2 branches covered.">        while (fdata.hasRemaining()) {</span>
+<span class="fc" id="L426">            fdata.put(this.pixelFilter.toDouble(intData.get()));</span>
+<span class="fc" id="L427">            this.pixelFilter.nextPixel();</span>
+        }
+<span class="fc" id="L429">    }</span>
+
+    private double zeroCenter() {
+<span class="fc" id="L432">        final double minValue = this.quantizeOption.getMinValue();</span>
+<span class="fc" id="L433">        final double maxValue = this.quantizeOption.getMaxValue();</span>
+        double evaluatedBZero;
+<span class="fc bfc" id="L435" title="All 4 branches covered.">        if (!this.quantizeOption.isCheckNull() &amp;&amp; !this.centerOnZero) {</span>
+            // don't have to check for nulls
+            // return all positive values, if possible since some compression
+            // algorithms either only work for positive integers, or are more
+            // efficient.
+<span class="pc bpc" id="L440" title="1 of 2 branches missed.">            if ((maxValue - minValue) / this.bScale &lt; MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {</span>
+<span class="fc" id="L441">                evaluatedBZero = minValue;</span>
+                // fudge the zero point so it is an integer multiple of bScale
+                // This helps to ensure the same scaling will be performed if
+                // the file undergoes multiple fpack/funpack cycles
+<span class="fc" id="L445">                long iqfactor = (long) (evaluatedBZero / this.bScale + ROUNDING_HALF);</span>
+<span class="fc" id="L446">                evaluatedBZero = iqfactor * this.bScale;</span>
+<span class="fc" id="L447">            } else {</span>
+                /* center the quantized levels around zero */
+<span class="nc" id="L449">                evaluatedBZero = (minValue + maxValue) / 2.;</span>
+            }
+        } else {
+            // data contains null values or has be forced to center on zero
+            // shift the range to be close to the value used to represent null
+            // values
+<span class="fc" id="L455">            evaluatedBZero = minValue - this.bScale * (Integer.MIN_VALUE + N_RESERVED_VALUES + 1);</span>
+        }
+<span class="fc" id="L457">        return evaluatedBZero;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

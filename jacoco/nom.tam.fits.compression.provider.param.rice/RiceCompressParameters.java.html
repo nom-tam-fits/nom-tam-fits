@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>RiceCompressParameters.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compression.provider.param.rice</a> &gt; <span class="el_source">RiceCompressParameters.java</span></div><h1>RiceCompressParameters.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compression.provider.param.rice;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2016 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
+import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressParameters;
+import nom.tam.fits.compression.provider.param.base.CompressParameters;
+
+public class RiceCompressParameters extends CompressParameters {
+
+    private final RiceBlockSizeParameter blockSize;
+
+    private final RiceBytePixParameter bytePix;
+
+<span class="fc" id="L46">    public RiceCompressParameters(RiceCompressOption option) {</span>
+<span class="fc" id="L47">        this.blockSize = new RiceBlockSizeParameter(option);</span>
+<span class="fc" id="L48">        this.bytePix = new RiceBytePixParameter(option);</span>
+<span class="fc" id="L49">    }</span>
+
+    @Override
+    public ICompressParameters copy(ICompressOption option) {
+<span class="fc" id="L53">        return new RiceCompressParameters((RiceCompressOption) option);</span>
+    }
+
+    @Override
+    protected ICompressHeaderParameter[] headerParameters() {
+<span class="fc" id="L58">        return new ICompressHeaderParameter[]{</span>
+            this.blockSize,
+            this.bytePix
+        };
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

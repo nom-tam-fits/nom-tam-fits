@@ -48,7 +48,7 @@ import java.io.InputStream;
 <span class="nc" id="L48">            return CompressionLibLoaderProtection.createZStream(in);</span>
 <span class="nc" id="L49">        } catch (IOException e) {</span>
 <span class="nc" id="L50">            throw e;</span>
-<span class="nc" id="L51">        } catch (Throwable e) {</span>
+<span class="nc" id="L51">        } catch (Exception e) {</span>
 <span class="nc" id="L52">            throw new IOException(e);</span>
         }
     }
@@ -62,6 +62,5 @@ import java.io.InputStream;
     public boolean provides(int mag1, int mag2) {
 <span class="pc bpc" id="L63" title="3 of 4 branches missed.">        return mag1 == Z_COMPRESS_MAGIC_BYTE1 &amp;&amp; mag2 == Z_COMPRESS_MAGIC_BYTE2;</span>
     }
-
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

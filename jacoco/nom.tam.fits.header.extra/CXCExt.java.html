@@ -49,7 +49,7 @@ import nom.tam.fits.header.IFitsHeader;
  * 
  * @author Richard van Nieuwenhoven
  */
-<span class="pc" id="L52">public enum CXCExt implements IFitsHeader {</span>
+<span class="fc" id="L52">public enum CXCExt implements IFitsHeader {</span>
     /**
      * ASC-DS processing system revision (release)
      */
@@ -178,7 +178,7 @@ import nom.tam.fits.header.IFitsHeader;
     @SuppressWarnings(&quot;CPD-START&quot;)
     private final IFitsHeader key;
 
-<span class="fc" id="L181">    private CXCExt(String comment) {</span>
+<span class="fc" id="L181">    CXCExt(String comment) {</span>
 <span class="fc" id="L182">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);</span>
 <span class="fc" id="L183">    }</span>
 

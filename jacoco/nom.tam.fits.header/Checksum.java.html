@@ -42,7 +42,7 @@
  * 
  * @author Richard van Nieuwenhoven
  */
-<span class="pc" id="L45">public enum Checksum implements IFitsHeader {</span>
+<span class="fc" id="L45">public enum Checksum implements IFitsHeader {</span>
     /**
      * The value field of the CHECKSUM keyword shall contain a 16 character
      * string, left justified starting in column 12, containing the ASCII
@@ -79,7 +79,7 @@
     @SuppressWarnings(&quot;CPD-START&quot;)
     private final IFitsHeader key;
 
-<span class="fc" id="L82">    private Checksum(HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L82">    Checksum(HDU hdu, VALUE valueType, String comment) {</span>
 <span class="fc" id="L83">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CHECKSUM, hdu, valueType, comment);</span>
 <span class="fc" id="L84">    }</span>
 

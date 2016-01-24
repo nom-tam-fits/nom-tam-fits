@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>QuantizeOption.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compression.algorithm.quant</a> &gt; <span class="el_source">QuantizeOption.java</span></div><h1>QuantizeOption.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compression.algorithm.quant;
+
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.provider.param.api.ICompressParameters;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+<span class="fc" id="L37">public class QuantizeOption implements ICompressOption {</span>
+
+    /**
+     * and including NULL_VALUE. These values may not be used to represent the
+     * quantized and scaled floating point pixel values If lossy Hcompression is
+     * used, and the tiledImageOperation contains null values, then it is also
+     * possible for the compressed values to slightly exceed the range of the
+     * actual (lossless) values so we must reserve a little more space value
+     * used to represent undefined pixels
+     */
+    private static final int NULL_VALUE = Integer.MIN_VALUE + 1;
+
+    protected ICompressParameters parameters;
+
+<span class="fc" id="L51">    private double bScale = Double.NaN;</span>
+
+<span class="fc" id="L53">    private double bZero = Double.NaN;</span>
+
+    private boolean centerOnZero;
+
+    private boolean checkNull;
+
+    private boolean checkZero;
+
+    private boolean dither;
+
+    private boolean dither2;
+
+    private int intMaxValue;
+
+    private int intMinValue;
+
+    private double maxValue;
+
+    private double minValue;
+
+<span class="fc" id="L73">    private double nullValue = Double.NaN;</span>
+
+    private Integer nullValueIndicator;
+
+<span class="fc" id="L77">    private double qlevel = Double.NaN;</span>
+
+<span class="fc" id="L79">    private long seed = 1L;</span>
+
+    private int tileHeight;
+
+    private int tileWidth;
+
+    private QuantizeOption original;
+
+    @Override
+    public QuantizeOption copy() {
+        try {
+<span class="fc" id="L90">            return ((QuantizeOption) clone()).setOriginal(this);</span>
+<span class="fc" id="L91">        } catch (CloneNotSupportedException e) {</span>
+<span class="fc" id="L92">            throw new IllegalStateException(&quot;option could not be cloned&quot;, e);</span>
+        }
+    }
+
+    public Integer getBNull() {
+<span class="fc" id="L97">        return this.nullValueIndicator;</span>
+    }
+
+    public double getBScale() {
+<span class="fc" id="L101">        return this.bScale;</span>
+    }
+
+    public double getBZero() {
+<span class="fc" id="L105">        return this.bZero;</span>
+    }
+
+    @Override
+    public ICompressParameters getCompressionParameters() {
+<span class="fc" id="L110">        return this.parameters;</span>
+    }
+
+    public &lt;T&gt; T getCompressOption(Class&lt;T&gt; clazz) {
+<span class="fc" id="L114">        return unwrap(clazz);</span>
+    }
+
+    public int getIntMaxValue() {
+<span class="fc" id="L118">        return this.intMaxValue;</span>
+    }
+
+    public int getIntMinValue() {
+<span class="fc" id="L122">        return this.intMinValue;</span>
+    }
+
+    public double getMaxValue() {
+<span class="fc" id="L126">        return this.maxValue;</span>
+    }
+
+    public double getMinValue() {
+<span class="fc" id="L130">        return this.minValue;</span>
+    }
+
+    public double getNullValue() {
+<span class="fc" id="L134">        return this.nullValue;</span>
+    }
+
+    public Integer getNullValueIndicator() {
+<span class="fc" id="L138">        return this.nullValueIndicator;</span>
+    }
+
+    public QuantizeOption getOriginal() {
+<span class="fc" id="L142">        return this.original;</span>
+    }
+
+    public double getQLevel() {
+<span class="fc" id="L146">        return this.qlevel;</span>
+    }
+
+    public long getSeed() {
+<span class="fc" id="L150">        return this.seed;</span>
+    }
+
+    public int getTileHeight() {
+<span class="fc" id="L154">        return this.tileHeight;</span>
+    }
+
+    public int getTileWidth() {
+<span class="fc" id="L158">        return this.tileWidth;</span>
+    }
+
+    public boolean isCenterOnZero() {
+<span class="fc" id="L162">        return this.centerOnZero;</span>
+    }
+
+    public boolean isCheckNull() {
+<span class="fc" id="L166">        return this.checkNull;</span>
+    }
+
+    public boolean isCheckZero() {
+<span class="fc" id="L170">        return this.checkZero;</span>
+    }
+
+    public boolean isDither() {
+<span class="fc" id="L174">        return this.dither;</span>
+    }
+
+    public boolean isDither2() {
+<span class="fc" id="L178">        return this.dither2;</span>
+    }
+
+    @Override
+    public boolean isLossyCompression() {
+<span class="fc" id="L183">        return true;</span>
+    }
+
+    public ICompressOption setBNull(Integer blank) {
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">        if (blank != null) {</span>
+<span class="fc" id="L188">            this.checkNull = true;</span>
+<span class="fc" id="L189">            this.nullValueIndicator = blank;</span>
+        }
+<span class="fc" id="L191">        return this;</span>
+    }
+
+    public QuantizeOption setBScale(double value) {
+<span class="fc" id="L195">        this.bScale = value;</span>
+<span class="fc" id="L196">        return this;</span>
+    }
+
+    public QuantizeOption setBZero(double value) {
+<span class="fc" id="L200">        this.bZero = value;</span>
+<span class="fc" id="L201">        return this;</span>
+    }
+
+    public QuantizeOption setCenterOnZero(boolean value) {
+<span class="fc" id="L205">        this.centerOnZero = value;</span>
+<span class="fc" id="L206">        return this;</span>
+    }
+
+    public QuantizeOption setCheckNull(boolean value) {
+<span class="fc" id="L210">        this.checkNull = value;</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">        if (this.nullValueIndicator == null) {</span>
+<span class="fc" id="L212">            this.nullValueIndicator = NULL_VALUE;</span>
+        }
+<span class="fc" id="L214">        return this;</span>
+    }
+
+    public QuantizeOption setCheckZero(boolean value) {
+<span class="fc" id="L218">        this.checkZero = value;</span>
+<span class="fc" id="L219">        return this;</span>
+    }
+
+    public QuantizeOption setDither(boolean value) {
+<span class="fc" id="L223">        this.dither = value;</span>
+<span class="fc" id="L224">        return this;</span>
+    }
+
+    public QuantizeOption setDither2(boolean value) {
+<span class="fc" id="L228">        this.dither2 = value;</span>
+<span class="fc" id="L229">        return this;</span>
+    }
+
+    public QuantizeOption setIntMaxValue(int value) {
+<span class="fc" id="L233">        this.intMaxValue = value;</span>
+<span class="fc" id="L234">        return this;</span>
+    }
+
+    public QuantizeOption setIntMinValue(int value) {
+<span class="fc" id="L238">        this.intMinValue = value;</span>
+<span class="fc" id="L239">        return this;</span>
+    }
+
+    public QuantizeOption setMaxValue(double value) {
+<span class="fc" id="L243">        this.maxValue = value;</span>
+<span class="fc" id="L244">        return this;</span>
+    }
+
+    public QuantizeOption setMinValue(double value) {
+<span class="fc" id="L248">        this.minValue = value;</span>
+<span class="fc" id="L249">        return this;</span>
+    }
+
+    public QuantizeOption setNullValue(double value) {
+<span class="fc" id="L253">        this.nullValue = value;</span>
+<span class="fc" id="L254">        return this;</span>
+    }
+
+    @Override
+    public void setParameters(ICompressParameters parameters) {
+<span class="fc" id="L259">        this.parameters = parameters;</span>
+<span class="fc" id="L260">    }</span>
+
+    public QuantizeOption setQlevel(double value) {
+<span class="fc" id="L263">        this.qlevel = value;</span>
+<span class="fc" id="L264">        return this;</span>
+    }
+
+    public QuantizeOption setSeed(long value) {
+<span class="fc" id="L268">        this.seed = value;</span>
+<span class="fc" id="L269">        return this;</span>
+    }
+
+    @Override
+    public QuantizeOption setTileHeight(int value) {
+<span class="fc" id="L274">        this.tileHeight = value;</span>
+<span class="fc" id="L275">        return this;</span>
+    }
+
+    @Override
+    public QuantizeOption setTileWidth(int value) {
+<span class="fc" id="L280">        this.tileWidth = value;</span>
+<span class="fc" id="L281">        return this;</span>
+    }
+
+    @Override
+    public &lt;T&gt; T unwrap(Class&lt;T&gt; clazz) {
+<span class="fc bfc" id="L286" title="All 2 branches covered.">        if (clazz.isAssignableFrom(this.getClass())) {</span>
+<span class="fc" id="L287">            return clazz.cast(this);</span>
+        }
+<span class="fc" id="L289">        return null;</span>
+    }
+
+    private QuantizeOption setOriginal(QuantizeOption quantizeOption) {
+<span class="fc" id="L293">        this.original = quantizeOption;</span>
+<span class="fc" id="L294">        this.parameters = this.parameters.copy(this);</span>
+<span class="fc" id="L295">        return this;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TileCompressionOperation.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.compression.tile</a> &gt; <span class="el_source">TileCompressionOperation.java</span></div><h1>TileCompressionOperation.java</h1><pre class="source lang-java linenums">package nom.tam.image.compression.tile;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.lang.reflect.Array;
+import java.nio.ByteBuffer;
+
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
+import nom.tam.image.tile.operation.AbstractTileOperation;
+import nom.tam.image.tile.operation.TileArea;
+import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypeHandler;
+
+/**
+ * abstract information holder about the a tile that represents a rectangular
+ * part of the image. Will be sub classed for compression and decompression
+ * variants.
+ */
+abstract class TileCompressionOperation extends AbstractTileOperation&lt;TileCompressionOperation, TiledImageCompressionOperation&gt; {
+
+    protected ByteBuffer compressedData;
+
+    protected int compressedOffset;
+
+    protected TileCompressionType compressionType;
+
+    protected ICompressOption tileOptions;
+
+    protected TileCompressionOperation(TiledImageCompressionOperation operation, int tileIndex, TileArea area) {
+<span class="fc" id="L60">        super(operation, tileIndex, area);</span>
+<span class="fc" id="L61">    }</span>
+
+    @Override
+    public String toString() {
+<span class="fc" id="L65">        return getClass().getSimpleName() + &quot;(&quot; + getTileIndex() + &quot;,&quot; + this.compressionType + &quot;,&quot; + this.compressedOffset + &quot;)&quot;;</span>
+    }
+
+    private ByteBuffer convertToBuffer(Object data) {
+<span class="fc" id="L69">        return PrimitiveTypeHandler.valueOf(data.getClass().getComponentType()).convertToByteBuffer(data);</span>
+    }
+
+    /**
+     * should the data of this tile be forced to case no data loss. This
+     * information is not relevant in all cases that it is ignored by default.
+     *
+     * @param value
+     *            the value to set.
+     */
+    protected void forceNoLoss(boolean value) {
+<span class="nc" id="L80">    }</span>
+
+    protected byte[] getCompressedData() {
+<span class="fc" id="L83">        byte[] data = new byte[this.compressedData.limit()];</span>
+<span class="fc" id="L84">        this.compressedData.rewind();</span>
+<span class="fc" id="L85">        PrimitiveType.BYTE.getArray(this.compressedData, data);</span>
+<span class="fc" id="L86">        return data;</span>
+    }
+
+    protected ByteBuffer getCompressedWholeArea() {
+<span class="fc" id="L90">        return getTiledImageOperation().getCompressedWholeArea();</span>
+    }
+
+    protected TileCompressionType getCompressionType() {
+<span class="fc" id="L94">        return this.compressionType;</span>
+    }
+
+    protected ICompressorControl getCompressorControl() {
+<span class="fc" id="L98">        return getTiledImageOperation().getCompressorControl();</span>
+    }
+
+    protected ICompressorControl getGzipCompressorControl() {
+<span class="fc" id="L102">        return getTiledImageOperation().getGzipCompressorControl();</span>
+    }
+
+    protected ICompressOption getTileOptions() {
+<span class="nc" id="L106">        return this.tileOptions;</span>
+    }
+
+    protected TileCompressionOperation initTileOptions() {
+<span class="fc" id="L110">        ICompressOption compressOptions = getTiledImageOperation().compressOptions();</span>
+<span class="fc" id="L111">        this.tileOptions = compressOptions.copy() //</span>
+                .setTileWidth(getTileBuffer().getWidth()) //
+                .setTileHeight(getTileBuffer().getHeight());
+<span class="fc" id="L114">        return this;</span>
+    }
+
+    protected TileCompressionOperation setCompressed(Object data, TileCompressionType type) {
+<span class="fc bfc" id="L118" title="All 4 branches covered.">        if (data != null &amp;&amp; Array.getLength(data) &gt; 0) {</span>
+<span class="fc" id="L119">            this.compressionType = type;</span>
+<span class="fc" id="L120">            this.compressedData = convertToBuffer(data);</span>
+<span class="fc" id="L121">            this.compressedOffset = 0;</span>
+        }
+<span class="fc" id="L123">        return this;</span>
+    }
+
+    protected TileCompressionOperation setCompressedOffset(int value) {
+<span class="fc" id="L127">        this.compressedOffset = value;</span>
+<span class="fc" id="L128">        return this;</span>
+    }
+
+    @Override
+    protected TileCompressionOperation setDimensions(int dataOffset, int width, int height) {
+<span class="fc" id="L133">        super.setDimensions(dataOffset, width, height);</span>
+<span class="fc" id="L134">        return this;</span>
+    }
+
+    /**
+     * set the buffer that describes the whole compressed image and let the tile
+     * create a slice of it from the position where the tile starts in the whole
+     * image. Attention this method is not thread-safe because it changes the
+     * position of the buffer parameter. This buffer is just as big as the image
+     * buffer but will be reduced to the needed size as a last step of the
+     * Compression.
+     *
+     * @param compressed
+     *            the buffer that describes the whole image.
+     */
+    protected void setWholeImageCompressedBuffer(ByteBuffer compressed) {
+<span class="fc" id="L149">        compressed.position(this.compressedOffset * getBaseType().size());</span>
+<span class="fc" id="L150">        this.compressedData = compressed.slice();</span>
+<span class="fc" id="L151">        this.compressedOffset = 0;</span>
+        // we do not limit this buffer but is expected not to write more than
+        // the uncompressed size.
+<span class="fc" id="L154">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

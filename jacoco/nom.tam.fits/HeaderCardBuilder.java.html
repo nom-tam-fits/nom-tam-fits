@@ -71,6 +71,15 @@ public class HeaderCardBuilder {
 <span class="fc" id="L71">    }</span>
 
     /**
+     * get the current build card of the builder.
+     * 
+     * @return the current card
+     */
+    public HeaderCard card() {
+<span class="fc" id="L79">        return this.card;</span>
+    }
+
+    /**
      * switch focus to the card with the specified key. If the card does not
      * exist the card will be created when the value or the comment is set.
      * 
@@ -79,143 +88,9 @@ public class HeaderCardBuilder {
      * @return this
      */
     public HeaderCardBuilder card(IFitsHeader newKey) {
-<span class="fc" id="L82">        this.key = newKey;</span>
-<span class="fc" id="L83">        this.card = header.findCard(this.key);</span>
-<span class="fc" id="L84">        return this;</span>
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(String newValue) throws HeaderCardException {
-<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (this.card == null) {</span>
-<span class="fc" id="L99">            this.card = new HeaderCard(key.key(), newValue, null);</span>
-<span class="fc" id="L100">            header.addLine(this.card);</span>
-        } else {
-<span class="fc" id="L102">            this.card.setValue(newValue);</span>
-        }
-<span class="fc" id="L104">        return this;</span>
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(double newValue) throws HeaderCardException {
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">        if (this.card == null) {</span>
-<span class="nc" id="L119">            this.card = new HeaderCard(key.key(), newValue, null);</span>
-<span class="nc" id="L120">            header.addLine(this.card);</span>
-        } else {
-<span class="fc" id="L122">            this.card.setValue(newValue);</span>
-        }
-<span class="fc" id="L124">        return this;</span>
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(float newValue) throws HeaderCardException {
-<span class="fc bfc" id="L138" title="All 2 branches covered.">        if (this.card == null) {</span>
-<span class="fc" id="L139">            this.card = new HeaderCard(key.key(), newValue, null);</span>
-<span class="fc" id="L140">            header.addLine(this.card);</span>
-        } else {
-<span class="fc" id="L142">            this.card.setValue(newValue);</span>
-        }
-<span class="fc" id="L144">        return this;</span>
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(boolean newValue) throws HeaderCardException {
-<span class="fc bfc" id="L158" title="All 2 branches covered.">        if (this.card == null) {</span>
-<span class="fc" id="L159">            this.card = new HeaderCard(key.key(), newValue, null);</span>
-<span class="fc" id="L160">            header.addLine(this.card);</span>
-        } else {
-<span class="fc" id="L162">            this.card.setValue(newValue);</span>
-        }
-<span class="fc" id="L164">        return this;</span>
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(int newValue) throws HeaderCardException {
-<span class="fc bfc" id="L178" title="All 2 branches covered.">        if (this.card == null) {</span>
-<span class="fc" id="L179">            this.card = new HeaderCard(key.key(), newValue, null);</span>
-<span class="fc" id="L180">            header.addLine(this.card);</span>
-        } else {
-<span class="fc" id="L182">            this.card.setValue(newValue);</span>
-        }
-<span class="fc" id="L184">        return this;</span>
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(long newValue) throws HeaderCardException {
-<span class="nc bnc" id="L198" title="All 2 branches missed.">        if (this.card == null) {</span>
-<span class="nc" id="L199">            this.card = new HeaderCard(key.key(), newValue, null);</span>
-<span class="nc" id="L200">            header.addLine(this.card);</span>
-        } else {
-<span class="nc" id="L202">            this.card.setValue(newValue);</span>
-        }
-<span class="nc" id="L204">        return this;</span>
-    }
-
-    /**
-     * set the value of the current card. If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(Date newValue) throws HeaderCardException {
-<span class="fc" id="L218">        return value(FitsDate.getFitsDateString(newValue));</span>
+<span class="fc" id="L91">        this.key = newKey;</span>
+<span class="fc" id="L92">        this.card = this.header.findCard(this.key);</span>
+<span class="fc" id="L93">        return this;</span>
     }
 
     /**
@@ -230,13 +105,146 @@ public class HeaderCardBuilder {
      *             if the card creation failed.
      */
     public HeaderCardBuilder comment(String newComment) throws HeaderCardException {
-<span class="fc bfc" id="L233" title="All 2 branches covered.">        if (this.card == null) {</span>
-<span class="fc" id="L234">            this.card = new HeaderCard(key.key(), (String) null, null);</span>
-<span class="fc" id="L235">            header.addLine(this.card);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L109">            this.card = new HeaderCard(this.key.key(), (String) null, null);</span>
+<span class="fc" id="L110">            this.header.addLine(this.card);</span>
         }
-<span class="fc" id="L237">        card.setComment(newComment);</span>
-<span class="fc" id="L238">        return this;</span>
+<span class="fc" id="L112">        this.card.setComment(newComment);</span>
+<span class="fc" id="L113">        return this;</span>
     }
 
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(boolean newValue) throws HeaderCardException {
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L128">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
+<span class="fc" id="L129">            this.header.addLine(this.card);</span>
+        } else {
+<span class="fc" id="L131">            this.card.setValue(newValue);</span>
+        }
+<span class="fc" id="L133">        return this;</span>
+    }
+
+    /**
+     * set the value of the current card. If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(Date newValue) throws HeaderCardException {
+<span class="fc" id="L147">        return value(FitsDate.getFitsDateString(newValue));</span>
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(double newValue) throws HeaderCardException {
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        if (this.card == null) {</span>
+<span class="nc" id="L162">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
+<span class="nc" id="L163">            this.header.addLine(this.card);</span>
+        } else {
+<span class="fc" id="L165">            this.card.setValue(newValue);</span>
+        }
+<span class="fc" id="L167">        return this;</span>
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(float newValue) throws HeaderCardException {
+<span class="fc bfc" id="L181" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L182">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
+<span class="fc" id="L183">            this.header.addLine(this.card);</span>
+        } else {
+<span class="fc" id="L185">            this.card.setValue(newValue);</span>
+        }
+<span class="fc" id="L187">        return this;</span>
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(int newValue) throws HeaderCardException {
+<span class="fc bfc" id="L201" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L202">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
+<span class="fc" id="L203">            this.header.addLine(this.card);</span>
+        } else {
+<span class="fc" id="L205">            this.card.setValue(newValue);</span>
+        }
+<span class="fc" id="L207">        return this;</span>
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(long newValue) throws HeaderCardException {
+<span class="nc bnc" id="L221" title="All 2 branches missed.">        if (this.card == null) {</span>
+<span class="nc" id="L222">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
+<span class="nc" id="L223">            this.header.addLine(this.card);</span>
+        } else {
+<span class="nc" id="L225">            this.card.setValue(newValue);</span>
+        }
+<span class="nc" id="L227">        return this;</span>
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(String newValue) throws HeaderCardException {
+<span class="fc bfc" id="L241" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L242">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
+<span class="fc" id="L243">            this.header.addLine(this.card);</span>
+        } else {
+<span class="fc" id="L245">            this.card.setValue(newValue);</span>
+        }
+<span class="fc" id="L247">        return this;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

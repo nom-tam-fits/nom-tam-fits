@@ -33,7 +33,7 @@
 
 public interface IFitsHeader {
 
-<span class="pc" id="L36">    public enum HDU {</span>
+<span class="pc" id="L36">    enum HDU {</span>
 <span class="fc" id="L37">        ANY,</span>
 <span class="fc" id="L38">        ASCII_TABLE,</span>
 <span class="fc" id="L39">        BINTABLE,</span>
@@ -45,7 +45,7 @@ public interface IFitsHeader {
 <span class="fc" id="L45">        TABLE</span>
     }
 
-<span class="pc" id="L48">    public enum SOURCE {</span>
+<span class="pc" id="L48">    enum SOURCE {</span>
         /**
          * &lt;pre&gt;
          *  @see &lt;a href=&quot;http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html&quot;&gt;checksum doc&lt;/a&gt;
@@ -96,7 +96,7 @@ public interface IFitsHeader {
          */
 <span class="fc" id="L97">        RESERVED(&quot;http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html&quot;),</span>
         /**
-         * rosat no link availabe.
+         * rosat no link available.
          */
 <span class="fc" id="L101">        ROSAT(null),</span>
         /**
@@ -124,23 +124,22 @@ public interface IFitsHeader {
 
         private final String url;
 
-<span class="fc" id="L127">        private SOURCE(String url) {</span>
+<span class="fc" id="L127">        SOURCE(String url) {</span>
 <span class="fc" id="L128">            this.url = url;</span>
 <span class="fc" id="L129">        }</span>
 
         public String url() {
 <span class="fc" id="L132">            return this.url;</span>
         }
-
     }
 
-<span class="pc" id="L137">    public enum VALUE {</span>
-<span class="fc" id="L138">        INTEGER,</span>
-<span class="fc" id="L139">        LOGICAL,</span>
-<span class="fc" id="L140">        NONE,</span>
-<span class="fc" id="L141">        REAL,</span>
-<span class="fc" id="L142">        STRING,</span>
-<span class="fc" id="L143">        ANY</span>
+<span class="pc" id="L136">    enum VALUE {</span>
+<span class="fc" id="L137">        INTEGER,</span>
+<span class="fc" id="L138">        LOGICAL,</span>
+<span class="fc" id="L139">        NONE,</span>
+<span class="fc" id="L140">        REAL,</span>
+<span class="fc" id="L141">        STRING,</span>
+<span class="fc" id="L142">        ANY</span>
     }
 
     String comment();

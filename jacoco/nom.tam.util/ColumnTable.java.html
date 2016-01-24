@@ -38,6 +38,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypeHandler;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -74,199 +76,199 @@ public class ColumnTable&lt;T&gt; implements DataTable {
 
     }
 
-    private static final Map&lt;PrimitiveTypeEnum, PointerAccess&lt;?&gt;&gt; POINTER_ACCESSORS;
+    private static final Map&lt;PrimitiveType&lt;?&gt;, PointerAccess&lt;?&gt;&gt; POINTER_ACCESSORS;
 
-<span class="fc" id="L79">    private static final PointerAccess&lt;?&gt;[] POINTER_ACCESSORS_BY_TYPE = new PointerAccess&lt;?&gt;[MAX_TYPE_VALUE];</span>
+<span class="fc" id="L81">    private static final PointerAccess&lt;?&gt;[] POINTER_ACCESSORS_BY_TYPE = new PointerAccess&lt;?&gt;[MAX_TYPE_VALUE];</span>
     static {
-<span class="fc" id="L81">        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.BYTE.type()] = new PointerAccess&lt;byte[][]&gt;() {</span>
+<span class="fc" id="L83">        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.BYTE.type()] = new PointerAccess&lt;byte[][]&gt;() {</span>
 
             @Override
             public byte[][] get(ColumnTable&lt;?&gt; table) {
-<span class="fc" id="L85">                return table.bytePointers;</span>
+<span class="fc" id="L87">                return table.bytePointers;</span>
             }
 
             @Override
             public void set(ColumnTable&lt;?&gt; table, byte[][] array) {
-<span class="fc" id="L90">                table.bytePointers = array;</span>
-<span class="fc" id="L91">            }</span>
+<span class="fc" id="L92">                table.bytePointers = array;</span>
+<span class="fc" id="L93">            }</span>
 
             @Override
             public void write(ColumnTable&lt;?&gt; table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
-<span class="fc" id="L95">                os.write(table.bytePointers[index], arrOffset, size);</span>
-<span class="fc" id="L96">            }</span>
+<span class="fc" id="L97">                os.write(table.bytePointers[index], arrOffset, size);</span>
+<span class="fc" id="L98">            }</span>
 
             @Override
             @SuppressFBWarnings(value = &quot;RR_NOT_CHECKED&quot;, justification = &quot;this read will never return less than the requested length&quot;)
             public void read(ColumnTable&lt;?&gt; table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
-<span class="fc" id="L101">                is.read(table.bytePointers[index], arrOffset, size);</span>
-<span class="fc" id="L102">            }</span>
+<span class="fc" id="L103">                is.read(table.bytePointers[index], arrOffset, size);</span>
+<span class="fc" id="L104">            }</span>
         };
-<span class="fc" id="L104">        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.BOOLEAN.type()] = new PointerAccess&lt;boolean[][]&gt;() {</span>
+<span class="fc" id="L106">        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.BOOLEAN.type()] = new PointerAccess&lt;boolean[][]&gt;() {</span>
 
             @Override
             public boolean[][] get(ColumnTable&lt;?&gt; table) {
-<span class="nc" id="L108">                return table.booleanPointers;</span>
+<span class="nc" id="L110">                return table.booleanPointers;</span>
             }
 
             @Override
             public void set(ColumnTable&lt;?&gt; table, boolean[][] array) {
-<span class="nc" id="L113">                table.booleanPointers = array;</span>
-<span class="nc" id="L114">            }</span>
+<span class="nc" id="L115">                table.booleanPointers = array;</span>
+<span class="nc" id="L116">            }</span>
 
             @Override
             public void write(ColumnTable&lt;?&gt; table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
-<span class="nc" id="L118">                os.write(table.booleanPointers[index], arrOffset, size);</span>
-<span class="nc" id="L119">            }</span>
+<span class="nc" id="L120">                os.write(table.booleanPointers[index], arrOffset, size);</span>
+<span class="nc" id="L121">            }</span>
 
             @Override
             public void read(ColumnTable&lt;?&gt; table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
-<span class="nc" id="L123">                is.read(table.booleanPointers[index], arrOffset, size);</span>
-<span class="nc" id="L124">            }</span>
+<span class="nc" id="L125">                is.read(table.booleanPointers[index], arrOffset, size);</span>
+<span class="nc" id="L126">            }</span>
         };
-<span class="fc" id="L126">        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.SHORT.type()] = new PointerAccess&lt;short[][]&gt;() {</span>
+<span class="fc" id="L128">        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.SHORT.type()] = new PointerAccess&lt;short[][]&gt;() {</span>
 
             @Override
             public short[][] get(ColumnTable&lt;?&gt; table) {
-<span class="fc" id="L130">                return table.shortPointers;</span>
+<span class="fc" id="L132">                return table.shortPointers;</span>
             }
 
             @Override
             public void set(ColumnTable&lt;?&gt; table, short[][] array) {
-<span class="fc" id="L135">                table.shortPointers = array;</span>
-<span class="fc" id="L136">            }</span>
+<span class="fc" id="L137">                table.shortPointers = array;</span>
+<span class="fc" id="L138">            }</span>
 
             @Override
             public void write(ColumnTable&lt;?&gt; table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
-<span class="fc" id="L140">                os.write(table.shortPointers[index], arrOffset, size);</span>
-<span class="fc" id="L141">            }</span>
+<span class="fc" id="L142">                os.write(table.shortPointers[index], arrOffset, size);</span>
+<span class="fc" id="L143">            }</span>
 
             @Override
             public void read(ColumnTable&lt;?&gt; table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
-<span class="fc" id="L145">                is.read(table.shortPointers[index], arrOffset, size);</span>
-<span class="fc" id="L146">            }</span>
+<span class="fc" id="L147">                is.read(table.shortPointers[index], arrOffset, size);</span>
+<span class="fc" id="L148">            }</span>
         };
-<span class="fc" id="L148">        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.CHAR.type()] = new PointerAccess&lt;char[][]&gt;() {</span>
+<span class="fc" id="L150">        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.CHAR.type()] = new PointerAccess&lt;char[][]&gt;() {</span>
 
             @Override
             public char[][] get(ColumnTable&lt;?&gt; table) {
-<span class="nc" id="L152">                return table.charPointers;</span>
+<span class="nc" id="L154">                return table.charPointers;</span>
             }
 
             @Override
             public void set(ColumnTable&lt;?&gt; table, char[][] array) {
-<span class="nc" id="L157">                table.charPointers = array;</span>
-<span class="nc" id="L158">            }</span>
+<span class="nc" id="L159">                table.charPointers = array;</span>
+<span class="nc" id="L160">            }</span>
 
             @Override
             public void write(ColumnTable&lt;?&gt; table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
-<span class="nc" id="L162">                os.write(table.charPointers[index], arrOffset, size);</span>
-<span class="nc" id="L163">            }</span>
+<span class="nc" id="L164">                os.write(table.charPointers[index], arrOffset, size);</span>
+<span class="nc" id="L165">            }</span>
 
             @Override
             @SuppressFBWarnings(value = &quot;RR_NOT_CHECKED&quot;, justification = &quot;this read will never return less than the requested length&quot;)
             public void read(ColumnTable&lt;?&gt; table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
-<span class="nc" id="L168">                is.read(table.charPointers[index], arrOffset, size);</span>
-<span class="nc" id="L169">            }</span>
+<span class="nc" id="L170">                is.read(table.charPointers[index], arrOffset, size);</span>
+<span class="nc" id="L171">            }</span>
         };
-<span class="fc" id="L171">        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.INT.type()] = new PointerAccess&lt;int[][]&gt;() {</span>
+<span class="fc" id="L173">        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.INT.type()] = new PointerAccess&lt;int[][]&gt;() {</span>
 
             @Override
             public int[][] get(ColumnTable&lt;?&gt; table) {
-<span class="fc" id="L175">                return table.intPointers;</span>
+<span class="fc" id="L177">                return table.intPointers;</span>
             }
 
             @Override
             public void set(ColumnTable&lt;?&gt; table, int[][] array) {
-<span class="fc" id="L180">                table.intPointers = array;</span>
-<span class="fc" id="L181">            }</span>
+<span class="fc" id="L182">                table.intPointers = array;</span>
+<span class="fc" id="L183">            }</span>
 
             @Override
             public void write(ColumnTable&lt;?&gt; table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
-<span class="fc" id="L185">                os.write(table.intPointers[index], arrOffset, size);</span>
-<span class="fc" id="L186">            }</span>
+<span class="fc" id="L187">                os.write(table.intPointers[index], arrOffset, size);</span>
+<span class="fc" id="L188">            }</span>
 
             @Override
             public void read(ColumnTable&lt;?&gt; table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
-<span class="fc" id="L190">                is.read(table.intPointers[index], arrOffset, size);</span>
-<span class="fc" id="L191">            }</span>
+<span class="fc" id="L192">                is.read(table.intPointers[index], arrOffset, size);</span>
+<span class="fc" id="L193">            }</span>
         };
-<span class="fc" id="L193">        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.LONG.type()] = new PointerAccess&lt;long[][]&gt;() {</span>
+<span class="fc" id="L195">        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.LONG.type()] = new PointerAccess&lt;long[][]&gt;() {</span>
 
             @Override
             public long[][] get(ColumnTable&lt;?&gt; table) {
-<span class="fc" id="L197">                return table.longPointers;</span>
+<span class="fc" id="L199">                return table.longPointers;</span>
             }
 
             @Override
             public void set(ColumnTable&lt;?&gt; table, long[][] array) {
-<span class="nc" id="L202">                table.longPointers = array;</span>
-<span class="nc" id="L203">            }</span>
+<span class="fc" id="L204">                table.longPointers = array;</span>
+<span class="fc" id="L205">            }</span>
 
             @Override
             public void write(ColumnTable&lt;?&gt; table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
-<span class="fc" id="L207">                os.write(table.longPointers[index], arrOffset, size);</span>
-<span class="fc" id="L208">            }</span>
+<span class="fc" id="L209">                os.write(table.longPointers[index], arrOffset, size);</span>
+<span class="fc" id="L210">            }</span>
 
             @Override
             public void read(ColumnTable&lt;?&gt; table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
-<span class="fc" id="L212">                is.read(table.longPointers[index], arrOffset, size);</span>
-<span class="fc" id="L213">            }</span>
+<span class="fc" id="L214">                is.read(table.longPointers[index], arrOffset, size);</span>
+<span class="fc" id="L215">            }</span>
         };
-<span class="fc" id="L215">        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.FLOAT.type()] = new PointerAccess&lt;float[][]&gt;() {</span>
+<span class="fc" id="L217">        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.FLOAT.type()] = new PointerAccess&lt;float[][]&gt;() {</span>
 
             @Override
             public float[][] get(ColumnTable&lt;?&gt; table) {
-<span class="fc" id="L219">                return table.floatPointers;</span>
+<span class="fc" id="L221">                return table.floatPointers;</span>
             }
 
             @Override
             public void set(ColumnTable&lt;?&gt; table, float[][] array) {
-<span class="fc" id="L224">                table.floatPointers = array;</span>
-<span class="fc" id="L225">            }</span>
+<span class="fc" id="L226">                table.floatPointers = array;</span>
+<span class="fc" id="L227">            }</span>
 
             @Override
             public void write(ColumnTable&lt;?&gt; table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
-<span class="fc" id="L229">                os.write(table.floatPointers[index], arrOffset, size);</span>
-<span class="fc" id="L230">            }</span>
+<span class="fc" id="L231">                os.write(table.floatPointers[index], arrOffset, size);</span>
+<span class="fc" id="L232">            }</span>
 
             @Override
             public void read(ColumnTable&lt;?&gt; table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
-<span class="fc" id="L234">                is.read(table.floatPointers[index], arrOffset, size);</span>
-<span class="fc" id="L235">            }</span>
+<span class="fc" id="L236">                is.read(table.floatPointers[index], arrOffset, size);</span>
+<span class="fc" id="L237">            }</span>
         };
-<span class="fc" id="L237">        POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.DOUBLE.type()] = new PointerAccess&lt;double[][]&gt;() {</span>
+<span class="fc" id="L239">        POINTER_ACCESSORS_BY_TYPE[PrimitiveType.DOUBLE.type()] = new PointerAccess&lt;double[][]&gt;() {</span>
 
             @Override
             public double[][] get(ColumnTable&lt;?&gt; table) {
-<span class="fc" id="L241">                return table.doublePointers;</span>
+<span class="fc" id="L243">                return table.doublePointers;</span>
             }
 
             @Override
             public void set(ColumnTable&lt;?&gt; table, double[][] array) {
-<span class="fc" id="L246">                table.doublePointers = array;</span>
-<span class="fc" id="L247">            }</span>
+<span class="fc" id="L248">                table.doublePointers = array;</span>
+<span class="fc" id="L249">            }</span>
 
             @Override
             public void write(ColumnTable&lt;?&gt; table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
-<span class="fc" id="L251">                os.write(table.doublePointers[index], arrOffset, size);</span>
-<span class="fc" id="L252">            }</span>
+<span class="fc" id="L253">                os.write(table.doublePointers[index], arrOffset, size);</span>
+<span class="fc" id="L254">            }</span>
 
             @Override
             public void read(ColumnTable&lt;?&gt; table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
-<span class="fc" id="L256">                is.read(table.doublePointers[index], arrOffset, size);</span>
-<span class="fc" id="L257">            }</span>
+<span class="fc" id="L258">                is.read(table.doublePointers[index], arrOffset, size);</span>
+<span class="fc" id="L259">            }</span>
         };
-<span class="fc" id="L259">        Map&lt;PrimitiveTypeEnum, PointerAccess&lt;?&gt;&gt; pointerAccess = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L260">        pointerAccess.put(PrimitiveTypeEnum.BYTE, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.BYTE.type()]);</span>
-<span class="fc" id="L261">        pointerAccess.put(PrimitiveTypeEnum.BOOLEAN, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.BOOLEAN.type()]);</span>
-<span class="fc" id="L262">        pointerAccess.put(PrimitiveTypeEnum.CHAR, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.CHAR.type()]);</span>
-<span class="fc" id="L263">        pointerAccess.put(PrimitiveTypeEnum.SHORT, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.SHORT.type()]);</span>
-<span class="fc" id="L264">        pointerAccess.put(PrimitiveTypeEnum.INT, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.INT.type()]);</span>
-<span class="fc" id="L265">        pointerAccess.put(PrimitiveTypeEnum.LONG, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.LONG.type()]);</span>
-<span class="fc" id="L266">        pointerAccess.put(PrimitiveTypeEnum.FLOAT, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.FLOAT.type()]);</span>
-<span class="fc" id="L267">        pointerAccess.put(PrimitiveTypeEnum.DOUBLE, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypeEnum.DOUBLE.type()]);</span>
-<span class="fc" id="L268">        POINTER_ACCESSORS = Collections.unmodifiableMap(pointerAccess);</span>
-<span class="fc" id="L269">    }</span>
+<span class="fc" id="L261">        Map&lt;PrimitiveType&lt;?&gt;, PointerAccess&lt;?&gt;&gt; pointerAccess = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L262">        pointerAccess.put(PrimitiveType.BYTE, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.BYTE.type()]);</span>
+<span class="fc" id="L263">        pointerAccess.put(PrimitiveType.BOOLEAN, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.BOOLEAN.type()]);</span>
+<span class="fc" id="L264">        pointerAccess.put(PrimitiveType.CHAR, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.CHAR.type()]);</span>
+<span class="fc" id="L265">        pointerAccess.put(PrimitiveType.SHORT, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.SHORT.type()]);</span>
+<span class="fc" id="L266">        pointerAccess.put(PrimitiveType.INT, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.INT.type()]);</span>
+<span class="fc" id="L267">        pointerAccess.put(PrimitiveType.LONG, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.LONG.type()]);</span>
+<span class="fc" id="L268">        pointerAccess.put(PrimitiveType.FLOAT, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.FLOAT.type()]);</span>
+<span class="fc" id="L269">        pointerAccess.put(PrimitiveType.DOUBLE, POINTER_ACCESSORS_BY_TYPE[PrimitiveType.DOUBLE.type()]);</span>
+<span class="fc" id="L270">        POINTER_ACCESSORS = Collections.unmodifiableMap(pointerAccess);</span>
+<span class="fc" id="L271">    }</span>
 
     /** The columns to be read/written */
     private Object[] arrays;
@@ -323,9 +325,9 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      * @throws TableException
      *             if the structure of the columns is not consistent
      */
-<span class="fc" id="L326">    public ColumnTable(Object[] arrays, int[] sizes) throws TableException {</span>
-<span class="fc" id="L327">        setup(arrays, sizes);</span>
-<span class="fc" id="L328">    }</span>
+<span class="fc" id="L328">    public ColumnTable(Object[] arrays, int[] sizes) throws TableException {</span>
+<span class="fc" id="L329">        setup(arrays, sizes);</span>
+<span class="fc" id="L330">    }</span>
 
     /**
      * Add a column .
@@ -340,34 +342,34 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      */
     public void addColumn(Object newColumn, int size) throws TableException {
 
-<span class="fc" id="L343">        String classname = newColumn.getClass().getName();</span>
-<span class="fc" id="L344">        this.nrow = checkColumnConsistency(newColumn, classname, this.nrow, size);</span>
+<span class="fc" id="L345">        String classname = newColumn.getClass().getName();</span>
+<span class="fc" id="L346">        this.nrow = checkColumnConsistency(newColumn, classname, this.nrow, size);</span>
 
-<span class="fc" id="L346">        this.rowSize += this.nrow * ArrayFuncs.getBaseLength(newColumn);</span>
+<span class="fc" id="L348">        this.rowSize += this.nrow * ArrayFuncs.getBaseLength(newColumn);</span>
 
-<span class="fc" id="L348">        int ncol = this.arrays.length;</span>
+<span class="fc" id="L350">        int ncol = this.arrays.length;</span>
 
-<span class="fc" id="L350">        Object[] newArrays = new Object[ncol + 1];</span>
-<span class="fc" id="L351">        int[] newSizes = new int[ncol + 1];</span>
-<span class="fc" id="L352">        Class&lt;?&gt;[] newBases = new Class[ncol + 1];</span>
-<span class="fc" id="L353">        char[] newTypes = new char[ncol + 1];</span>
+<span class="fc" id="L352">        Object[] newArrays = new Object[ncol + 1];</span>
+<span class="fc" id="L353">        int[] newSizes = new int[ncol + 1];</span>
+<span class="fc" id="L354">        Class&lt;?&gt;[] newBases = new Class[ncol + 1];</span>
+<span class="fc" id="L355">        char[] newTypes = new char[ncol + 1];</span>
 
-<span class="fc" id="L355">        System.arraycopy(this.arrays, 0, newArrays, 0, ncol);</span>
-<span class="fc" id="L356">        System.arraycopy(this.sizes, 0, newSizes, 0, ncol);</span>
-<span class="fc" id="L357">        System.arraycopy(this.bases, 0, newBases, 0, ncol);</span>
-<span class="fc" id="L358">        System.arraycopy(this.types, 0, newTypes, 0, ncol);</span>
+<span class="fc" id="L357">        System.arraycopy(this.arrays, 0, newArrays, 0, ncol);</span>
+<span class="fc" id="L358">        System.arraycopy(this.sizes, 0, newSizes, 0, ncol);</span>
+<span class="fc" id="L359">        System.arraycopy(this.bases, 0, newBases, 0, ncol);</span>
+<span class="fc" id="L360">        System.arraycopy(this.types, 0, newTypes, 0, ncol);</span>
 
-<span class="fc" id="L360">        this.arrays = newArrays;</span>
-<span class="fc" id="L361">        this.sizes = newSizes;</span>
-<span class="fc" id="L362">        this.bases = newBases;</span>
-<span class="fc" id="L363">        this.types = newTypes;</span>
+<span class="fc" id="L362">        this.arrays = newArrays;</span>
+<span class="fc" id="L363">        this.sizes = newSizes;</span>
+<span class="fc" id="L364">        this.bases = newBases;</span>
+<span class="fc" id="L365">        this.types = newTypes;</span>
 
-<span class="fc" id="L365">        this.arrays[ncol] = newColumn;</span>
-<span class="fc" id="L366">        this.sizes[ncol] = size;</span>
-<span class="fc" id="L367">        this.bases[ncol] = ArrayFuncs.getBaseClass(newColumn);</span>
-<span class="fc" id="L368">        this.types[ncol] = classname.charAt(1);</span>
-<span class="fc" id="L369">        addPointer(newColumn);</span>
-<span class="fc" id="L370">    }</span>
+<span class="fc" id="L367">        this.arrays[ncol] = newColumn;</span>
+<span class="fc" id="L368">        this.sizes[ncol] = size;</span>
+<span class="fc" id="L369">        this.bases[ncol] = ArrayFuncs.getBaseClass(newColumn);</span>
+<span class="fc" id="L370">        this.types[ncol] = classname.charAt(1);</span>
+<span class="fc" id="L371">        addPointer(newColumn);</span>
+<span class="fc" id="L372">    }</span>
 
     /**
      * Add a pointer in the pointer lists.
@@ -379,26 +381,26 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      *             structure of the rows/columns
      */
     protected void addPointer(Object data) throws TableException {
-<span class="fc" id="L382">        PointerAccess&lt;Object&gt; accessor = selectPointerAccessor(data);</span>
-<span class="pc bpc" id="L383" title="1 of 2 branches missed.">        if (accessor == null) {</span>
-<span class="nc" id="L384">            throw new TableException(&quot;Invalid type for added column:&quot; + data.getClass().getComponentType());</span>
+<span class="fc" id="L384">        PointerAccess&lt;Object&gt; accessor = selectPointerAccessor(data);</span>
+<span class="pc bpc" id="L385" title="1 of 2 branches missed.">        if (accessor == null) {</span>
+<span class="nc" id="L386">            throw new TableException(&quot;Invalid type for added column:&quot; + data.getClass().getComponentType());</span>
         } else {
-<span class="fc" id="L386">            accessor.set(this, extendArray(accessor.get(this), data));</span>
+<span class="fc" id="L388">            accessor.set(this, extendArray(accessor.get(this), data));</span>
         }
-<span class="fc" id="L388">    }</span>
+<span class="fc" id="L390">    }</span>
 
     @SuppressWarnings(&quot;unchecked&quot;)
     private PointerAccess&lt;Object&gt; selectPointerAccessor(Object data) {
-<span class="fc" id="L392">        return (PointerAccess&lt;Object&gt;) POINTER_ACCESSORS.get(PrimitiveTypeEnum.valueOf(data.getClass().getComponentType()));</span>
+<span class="fc" id="L394">        return (PointerAccess&lt;Object&gt;) POINTER_ACCESSORS.get(PrimitiveTypeHandler.valueOf(data.getClass().getComponentType()));</span>
     }
 
     @SuppressWarnings(&quot;unchecked&quot;)
     private &lt;ArrayType&gt; ArrayType extendArray(ArrayType originalArray, Object data) {
-<span class="fc" id="L397">        int length = Array.getLength(originalArray);</span>
-<span class="fc" id="L398">        Object xb = Array.newInstance(originalArray.getClass().getComponentType(), length + 1);</span>
-<span class="fc" id="L399">        System.arraycopy(originalArray, 0, xb, 0, length);</span>
-<span class="fc" id="L400">        Array.set(xb, length, data);</span>
-<span class="fc" id="L401">        return (ArrayType) xb;</span>
+<span class="fc" id="L399">        int length = Array.getLength(originalArray);</span>
+<span class="fc" id="L400">        Object xb = Array.newInstance(originalArray.getClass().getComponentType(), length + 1);</span>
+<span class="fc" id="L401">        System.arraycopy(originalArray, 0, xb, 0, length);</span>
+<span class="fc" id="L402">        Array.set(xb, length, data);</span>
+<span class="fc" id="L403">        return (ArrayType) xb;</span>
     }
 
     /**
@@ -412,27 +414,27 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      *             structure of the rows/columns
      */
     public void addRow(Object[] row) throws TableException {
-<span class="pc bpc" id="L415" title="1 of 2 branches missed.">        if (this.arrays.length == 0) {</span>
-<span class="nc bnc" id="L416" title="All 2 branches missed.">            for (Object element : row) {</span>
-<span class="nc" id="L417">                addColumn(element, Array.getLength(element));</span>
+<span class="fc bfc" id="L417" title="All 2 branches covered.">        if (this.arrays.length == 0) {</span>
+<span class="fc bfc" id="L418" title="All 2 branches covered.">            for (Object element : row) {</span>
+<span class="fc" id="L419">                addColumn(element, Array.getLength(element));</span>
             }
         } else {
-<span class="pc bpc" id="L420" title="1 of 2 branches missed.">            if (row.length != this.arrays.length) {</span>
-<span class="nc" id="L421">                throw new TableException(&quot;Row length mismatch&quot;);</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">            if (row.length != this.arrays.length) {</span>
+<span class="fc" id="L423">                throw new TableException(&quot;Row length mismatch&quot;);</span>
             }
-<span class="fc bfc" id="L423" title="All 2 branches covered.">            for (int i = 0; i &lt; row.length; i += 1) {</span>
-<span class="pc bpc" id="L424" title="2 of 4 branches missed.">                if (row[i].getClass() != this.arrays[i].getClass() || Array.getLength(row[i]) != this.sizes[i]) {</span>
-<span class="nc" id="L425">                    throw new TableException(&quot;Row column mismatch at column:&quot; + i);</span>
+<span class="fc bfc" id="L425" title="All 2 branches covered.">            for (int i = 0; i &lt; row.length; i += 1) {</span>
+<span class="pc bpc" id="L426" title="1 of 4 branches missed.">                if (row[i].getClass() != this.arrays[i].getClass() || Array.getLength(row[i]) != this.sizes[i]) {</span>
+<span class="fc" id="L427">                    throw new TableException(&quot;Row column mismatch at column:&quot; + i);</span>
                 }
-<span class="fc" id="L427">                Object xarray = ArrayFuncs.newInstance(this.bases[i], (this.nrow + 1) * this.sizes[i]);</span>
-<span class="fc" id="L428">                System.arraycopy(this.arrays[i], 0, xarray, 0, this.nrow * this.sizes[i]);</span>
-<span class="fc" id="L429">                System.arraycopy(row[i], 0, xarray, this.nrow * this.sizes[i], this.sizes[i]);</span>
-<span class="fc" id="L430">                this.arrays[i] = xarray;</span>
+<span class="fc" id="L429">                Object xarray = ArrayFuncs.newInstance(this.bases[i], (this.nrow + 1) * this.sizes[i]);</span>
+<span class="fc" id="L430">                System.arraycopy(this.arrays[i], 0, xarray, 0, this.nrow * this.sizes[i]);</span>
+<span class="fc" id="L431">                System.arraycopy(row[i], 0, xarray, this.nrow * this.sizes[i], this.sizes[i]);</span>
+<span class="fc" id="L432">                this.arrays[i] = xarray;</span>
             }
-<span class="fc" id="L432">            initializePointers();</span>
-<span class="fc" id="L433">            this.nrow += 1;</span>
+<span class="fc" id="L434">            initializePointers();</span>
+<span class="fc" id="L435">            this.nrow += 1;</span>
         }
-<span class="fc" id="L435">    }</span>
+<span class="fc" id="L437">    }</span>
 
     /**
      * Check that the columns and sizes are consistent. Inconsistencies include:
@@ -456,70 +458,70 @@ public class ColumnTable&lt;T&gt; implements DataTable {
         // between the arrays being read in.
 
         // First check that the lengths of the two arrays are the same.
-<span class="pc bpc" id="L459" title="1 of 2 branches missed.">        if (newArrays.length != newSizes.length) {</span>
-<span class="nc" id="L460">            throw new TableException(&quot;readArraysAsColumns: Incompatible arrays and sizes.&quot;);</span>
+<span class="pc bpc" id="L461" title="1 of 2 branches missed.">        if (newArrays.length != newSizes.length) {</span>
+<span class="nc" id="L462">            throw new TableException(&quot;readArraysAsColumns: Incompatible arrays and sizes.&quot;);</span>
         }
 
         // Now check that that we fill up all of the arrays exactly.
-<span class="fc" id="L464">        int ratio = 0;</span>
-<span class="fc" id="L465">        int newRowSize = 0;</span>
+<span class="fc" id="L466">        int ratio = 0;</span>
+<span class="fc" id="L467">        int newRowSize = 0;</span>
 
-<span class="fc" id="L467">        this.types = new char[newArrays.length];</span>
-<span class="fc" id="L468">        this.bases = new Class[newArrays.length];</span>
+<span class="fc" id="L469">        this.types = new char[newArrays.length];</span>
+<span class="fc" id="L470">        this.bases = new Class[newArrays.length];</span>
 
-<span class="fc bfc" id="L470" title="All 2 branches covered.">        for (int i = 0; i &lt; newArrays.length; i += 1) {</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">        for (int i = 0; i &lt; newArrays.length; i += 1) {</span>
 
-<span class="fc" id="L472">            String classname = newArrays[i].getClass().getName();</span>
+<span class="fc" id="L474">            String classname = newArrays[i].getClass().getName();</span>
 
-<span class="fc" id="L474">            ratio = checkColumnConsistency(newArrays[i], classname, ratio, newSizes[i]);</span>
+<span class="fc" id="L476">            ratio = checkColumnConsistency(newArrays[i], classname, ratio, newSizes[i]);</span>
 
-<span class="fc" id="L476">            newRowSize += newSizes[i] * ArrayFuncs.getBaseLength(newArrays[i]);</span>
-<span class="fc" id="L477">            this.types[i] = classname.charAt(1);</span>
-<span class="fc" id="L478">            this.bases[i] = ArrayFuncs.getBaseClass(newArrays[i]);</span>
+<span class="fc" id="L478">            newRowSize += newSizes[i] * ArrayFuncs.getBaseLength(newArrays[i]);</span>
+<span class="fc" id="L479">            this.types[i] = classname.charAt(1);</span>
+<span class="fc" id="L480">            this.bases[i] = ArrayFuncs.getBaseClass(newArrays[i]);</span>
         }
 
-<span class="fc" id="L481">        this.nrow = ratio;</span>
-<span class="fc" id="L482">        this.rowSize = newRowSize;</span>
-<span class="fc" id="L483">        this.arrays = newArrays;</span>
-<span class="fc" id="L484">        this.sizes = newSizes;</span>
-<span class="fc" id="L485">    }</span>
+<span class="fc" id="L483">        this.nrow = ratio;</span>
+<span class="fc" id="L484">        this.rowSize = newRowSize;</span>
+<span class="fc" id="L485">        this.arrays = newArrays;</span>
+<span class="fc" id="L486">        this.sizes = newSizes;</span>
+<span class="fc" id="L487">    }</span>
 
     private int checkColumnConsistency(Object data, String classname, int ratio, int size) throws TableException {
 
-<span class="pc bpc" id="L489" title="2 of 4 branches missed.">        if (classname.charAt(0) != '[' || classname.length() != 2) {</span>
-<span class="nc" id="L490">            throw new TableException(&quot;Non-primitive array for column&quot;);</span>
+<span class="pc bpc" id="L491" title="2 of 4 branches missed.">        if (classname.charAt(0) != '[' || classname.length() != 2) {</span>
+<span class="nc" id="L492">            throw new TableException(&quot;Non-primitive array for column&quot;);</span>
         }
 
-<span class="fc" id="L493">        int thisSize = Array.getLength(data);</span>
-<span class="pc bpc" id="L494" title="4 of 10 branches missed.">        if (thisSize == 0 &amp;&amp; size != 0 &amp;&amp; ratio != 0 || thisSize != 0 &amp;&amp; size == 0) {</span>
-<span class="nc" id="L495">            throw new TableException(&quot;Size mismatch in column: &quot; + thisSize + &quot; != &quot; + size);</span>
+<span class="fc" id="L495">        int thisSize = Array.getLength(data);</span>
+<span class="pc bpc" id="L496" title="4 of 10 branches missed.">        if (thisSize == 0 &amp;&amp; size != 0 &amp;&amp; ratio != 0 || thisSize != 0 &amp;&amp; size == 0) {</span>
+<span class="nc" id="L497">            throw new TableException(&quot;Size mismatch in column: &quot; + thisSize + &quot; != &quot; + size);</span>
         }
 
         // The row size must evenly divide the size of the array.
-<span class="pc bpc" id="L499" title="1 of 4 branches missed.">        if (size != 0 &amp;&amp; thisSize % size != 0) {</span>
-<span class="nc" id="L500">            throw new TableException(&quot;Row size does not divide array for column&quot;);</span>
+<span class="pc bpc" id="L501" title="1 of 4 branches missed.">        if (size != 0 &amp;&amp; thisSize % size != 0) {</span>
+<span class="nc" id="L502">            throw new TableException(&quot;Row size does not divide array for column&quot;);</span>
         }
 
         // Finally the ratio of sizes must be the same for all columns -- this
         // is the number of rows in the table.
-<span class="fc" id="L505">        int thisRatio = 0;</span>
-<span class="fc bfc" id="L506" title="All 2 branches covered.">        if (size &gt; 0) {</span>
-<span class="fc" id="L507">            thisRatio = thisSize / size;</span>
+<span class="fc" id="L507">        int thisRatio = 0;</span>
+<span class="fc bfc" id="L508" title="All 2 branches covered.">        if (size &gt; 0) {</span>
+<span class="fc" id="L509">            thisRatio = thisSize / size;</span>
 
-<span class="pc bpc" id="L509" title="1 of 4 branches missed.">            if (ratio != 0 &amp;&amp; thisRatio != ratio) {</span>
-<span class="nc" id="L510">                throw new TableException(&quot;Different number of rows in different columns&quot;);</span>
+<span class="pc bpc" id="L511" title="1 of 4 branches missed.">            if (ratio != 0 &amp;&amp; thisRatio != ratio) {</span>
+<span class="nc" id="L512">                throw new TableException(&quot;Different number of rows in different columns&quot;);</span>
             }
         }
-<span class="fc bfc" id="L513" title="All 2 branches covered.">        if (thisRatio &gt; 0) {</span>
-<span class="fc" id="L514">            return thisRatio;</span>
+<span class="fc bfc" id="L515" title="All 2 branches covered.">        if (thisRatio &gt; 0) {</span>
+<span class="fc" id="L516">            return thisRatio;</span>
         } else {
-<span class="fc" id="L516">            return ratio;</span>
+<span class="fc" id="L518">            return ratio;</span>
         }
 
     }
 
     public ColumnTable&lt;T&gt; copy() throws TableException {
-<span class="fc" id="L522">        return new ColumnTable&lt;T&gt;((Object[]) ArrayFuncs.deepClone(this.arrays), this.sizes.clone());</span>
+<span class="fc" id="L524">        return new ColumnTable&lt;T&gt;((Object[]) ArrayFuncs.deepClone(this.arrays), this.sizes.clone());</span>
     }
 
     /**
@@ -535,43 +537,43 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      *             the length is negative.
      */
     public int deleteColumns(int start, int len) throws TableException {
-<span class="fc" id="L538">        int ncol = this.arrays.length;</span>
-<span class="pc bpc" id="L539" title="2 of 6 branches missed.">        if (start &lt; 0 || len &lt; 0 || start + len &gt; ncol) {</span>
-<span class="fc" id="L540">            throw new TableException(&quot;Invalid request to delete columns start: &quot; + start + &quot; length:&quot; + len + &quot; for table with &quot; + ncol + &quot; columns.&quot;);</span>
+<span class="fc" id="L540">        int ncol = this.arrays.length;</span>
+<span class="pc bpc" id="L541" title="2 of 6 branches missed.">        if (start &lt; 0 || len &lt; 0 || start + len &gt; ncol) {</span>
+<span class="fc" id="L542">            throw new TableException(&quot;Invalid request to delete columns start: &quot; + start + &quot; length:&quot; + len + &quot; for table with &quot; + ncol + &quot; columns.&quot;);</span>
         }
-<span class="pc bpc" id="L542" title="1 of 2 branches missed.">        if (len == 0) {</span>
-<span class="nc" id="L543">            return this.rowSize;</span>
+<span class="pc bpc" id="L544" title="1 of 2 branches missed.">        if (len == 0) {</span>
+<span class="nc" id="L545">            return this.rowSize;</span>
         }
-<span class="fc bfc" id="L545" title="All 2 branches covered.">        for (int i = start; i &lt; start + len; i += 1) {</span>
-<span class="fc" id="L546">            this.rowSize -= this.sizes[i] * ArrayFuncs.getBaseLength(this.arrays[i]);</span>
+<span class="fc bfc" id="L547" title="All 2 branches covered.">        for (int i = start; i &lt; start + len; i += 1) {</span>
+<span class="fc" id="L548">            this.rowSize -= this.sizes[i] * ArrayFuncs.getBaseLength(this.arrays[i]);</span>
         }
-<span class="fc" id="L548">        int ocol = ncol;</span>
-<span class="fc" id="L549">        ncol -= len;</span>
+<span class="fc" id="L550">        int ocol = ncol;</span>
+<span class="fc" id="L551">        ncol -= len;</span>
 
-<span class="fc" id="L551">        Object[] newArrays = new Object[ncol];</span>
-<span class="fc" id="L552">        int[] newSizes = new int[ncol];</span>
-<span class="fc" id="L553">        Class&lt;?&gt;[] newBases = new Class&lt;?&gt;[ncol];</span>
-<span class="fc" id="L554">        char[] newTypes = new char[ncol];</span>
+<span class="fc" id="L553">        Object[] newArrays = new Object[ncol];</span>
+<span class="fc" id="L554">        int[] newSizes = new int[ncol];</span>
+<span class="fc" id="L555">        Class&lt;?&gt;[] newBases = new Class&lt;?&gt;[ncol];</span>
+<span class="fc" id="L556">        char[] newTypes = new char[ncol];</span>
 
-<span class="fc" id="L556">        System.arraycopy(this.arrays, 0, newArrays, 0, start);</span>
-<span class="fc" id="L557">        System.arraycopy(this.sizes, 0, newSizes, 0, start);</span>
-<span class="fc" id="L558">        System.arraycopy(this.bases, 0, newBases, 0, start);</span>
-<span class="fc" id="L559">        System.arraycopy(this.types, 0, newTypes, 0, start);</span>
+<span class="fc" id="L558">        System.arraycopy(this.arrays, 0, newArrays, 0, start);</span>
+<span class="fc" id="L559">        System.arraycopy(this.sizes, 0, newSizes, 0, start);</span>
+<span class="fc" id="L560">        System.arraycopy(this.bases, 0, newBases, 0, start);</span>
+<span class="fc" id="L561">        System.arraycopy(this.types, 0, newTypes, 0, start);</span>
 
-<span class="fc" id="L561">        int rem = ocol - (start + len);</span>
+<span class="fc" id="L563">        int rem = ocol - (start + len);</span>
 
-<span class="fc" id="L563">        System.arraycopy(this.arrays, start + len, newArrays, start, rem);</span>
-<span class="fc" id="L564">        System.arraycopy(this.sizes, start + len, newSizes, start, rem);</span>
-<span class="fc" id="L565">        System.arraycopy(this.bases, start + len, newBases, start, rem);</span>
-<span class="fc" id="L566">        System.arraycopy(this.types, start + len, newTypes, start, rem);</span>
+<span class="fc" id="L565">        System.arraycopy(this.arrays, start + len, newArrays, start, rem);</span>
+<span class="fc" id="L566">        System.arraycopy(this.sizes, start + len, newSizes, start, rem);</span>
+<span class="fc" id="L567">        System.arraycopy(this.bases, start + len, newBases, start, rem);</span>
+<span class="fc" id="L568">        System.arraycopy(this.types, start + len, newTypes, start, rem);</span>
 
-<span class="fc" id="L568">        this.arrays = newArrays;</span>
-<span class="fc" id="L569">        this.sizes = newSizes;</span>
-<span class="fc" id="L570">        this.bases = newBases;</span>
-<span class="fc" id="L571">        this.types = newTypes;</span>
+<span class="fc" id="L570">        this.arrays = newArrays;</span>
+<span class="fc" id="L571">        this.sizes = newSizes;</span>
+<span class="fc" id="L572">        this.bases = newBases;</span>
+<span class="fc" id="L573">        this.types = newTypes;</span>
 
-<span class="fc" id="L573">        initializePointers();</span>
-<span class="fc" id="L574">        return this.rowSize;</span>
+<span class="fc" id="L575">        initializePointers();</span>
+<span class="fc" id="L576">        return this.rowSize;</span>
     }
 
     /**
@@ -584,8 +586,8 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      *             the length is negative.
      */
     public void deleteRow(int row) throws TableException {
-<span class="nc" id="L587">        deleteRows(row, 1);</span>
-<span class="nc" id="L588">    }</span>
+<span class="fc" id="L589">        deleteRows(row, 1);</span>
+<span class="fc" id="L590">    }</span>
 
     /**
      * Delete a contiguous set of rows from the table.
@@ -600,30 +602,30 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      */
     public void deleteRows(int row, int length) throws TableException {
 
-<span class="pc bpc" id="L603" title="3 of 6 branches missed.">        if (row &lt; 0 || length &lt; 0 || row + length &gt; this.nrow) {</span>
-<span class="nc" id="L604">            throw new TableException(&quot;Invalid request to delete rows start: &quot; + row + &quot; length:&quot; + length + &quot; for table with &quot; + this.nrow + &quot; rows.&quot;);</span>
+<span class="pc bpc" id="L605" title="2 of 6 branches missed.">        if (row &lt; 0 || length &lt; 0 || row + length &gt; this.nrow) {</span>
+<span class="fc" id="L606">            throw new TableException(&quot;Invalid request to delete rows start: &quot; + row + &quot; length:&quot; + length + &quot; for table with &quot; + this.nrow + &quot; rows.&quot;);</span>
         }
 
-<span class="pc bpc" id="L607" title="1 of 2 branches missed.">        if (length == 0) {</span>
-<span class="nc" id="L608">            return;</span>
+<span class="fc bfc" id="L609" title="All 2 branches covered.">        if (length == 0) {</span>
+<span class="fc" id="L610">            return;</span>
         }
 
-<span class="fc bfc" id="L611" title="All 2 branches covered.">        for (int col = 0; col &lt; this.arrays.length; col += 1) {</span>
+<span class="fc bfc" id="L613" title="All 2 branches covered.">        for (int col = 0; col &lt; this.arrays.length; col += 1) {</span>
 
-<span class="fc" id="L613">            int sz = this.sizes[col];</span>
-<span class="fc" id="L614">            int newSize = sz * (this.nrow - length);</span>
-<span class="fc" id="L615">            Object newArr = ArrayFuncs.newInstance(this.bases[col], newSize);</span>
+<span class="fc" id="L615">            int sz = this.sizes[col];</span>
+<span class="fc" id="L616">            int newSize = sz * (this.nrow - length);</span>
+<span class="fc" id="L617">            Object newArr = ArrayFuncs.newInstance(this.bases[col], newSize);</span>
 
             // Copy whatever comes before the deletion
-<span class="fc" id="L618">            System.arraycopy(this.arrays[col], 0, newArr, 0, row * sz);</span>
+<span class="fc" id="L620">            System.arraycopy(this.arrays[col], 0, newArr, 0, row * sz);</span>
 
             // Copy whatever comes after the deletion
-<span class="fc" id="L621">            System.arraycopy(this.arrays[col], (row + length) * sz, newArr, row * sz, (this.nrow - row - length) * sz);</span>
-<span class="fc" id="L622">            this.arrays[col] = newArr;</span>
+<span class="fc" id="L623">            System.arraycopy(this.arrays[col], (row + length) * sz, newArr, row * sz, (this.nrow - row - length) * sz);</span>
+<span class="fc" id="L624">            this.arrays[col] = newArr;</span>
         }
-<span class="fc" id="L624">        this.nrow -= length;</span>
-<span class="fc" id="L625">        initializePointers();</span>
-<span class="fc" id="L626">    }</span>
+<span class="fc" id="L626">        this.nrow -= length;</span>
+<span class="fc" id="L627">        initializePointers();</span>
+<span class="fc" id="L628">    }</span>
 
     /**
      * Get the base classes of the columns.
@@ -632,7 +634,7 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      */
     @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;intended exposure of mutable data&quot;)
     public Class&lt;?&gt;[] getBases() {
-<span class="nc" id="L635">        return this.bases;</span>
+<span class="fc" id="L637">        return this.bases;</span>
     }
 
     /**
@@ -645,7 +647,7 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      */
     @Override
     public Object getColumn(int col) {
-<span class="fc" id="L648">        return this.arrays[col];</span>
+<span class="fc" id="L650">        return this.arrays[col];</span>
     }
 
     /**
@@ -653,7 +655,7 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      */
     @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;intended exposure of mutable data&quot;)
     public Object[] getColumns() {
-<span class="fc" id="L656">        return this.arrays;</span>
+<span class="fc" id="L658">        return this.arrays;</span>
     }
 
     /**
@@ -669,16 +671,16 @@ public class ColumnTable&lt;T&gt; implements DataTable {
     @Override
     public Object getElement(int row, int col) {
 
-<span class="fc" id="L672">        Object x = ArrayFuncs.newInstance(this.bases[col], this.sizes[col]);</span>
-<span class="fc" id="L673">        System.arraycopy(this.arrays[col], this.sizes[col] * row, x, 0, this.sizes[col]);</span>
-<span class="fc" id="L674">        return x;</span>
+<span class="fc" id="L674">        Object x = ArrayFuncs.newInstance(this.bases[col], this.sizes[col]);</span>
+<span class="fc" id="L675">        System.arraycopy(this.arrays[col], this.sizes[col] * row, x, 0, this.sizes[col]);</span>
+<span class="fc" id="L676">        return x;</span>
     }
 
     /**
      * @return the pointer state
      */
     public T getExtraState() {
-<span class="fc" id="L681">        return this.extraState;</span>
+<span class="fc" id="L683">        return this.extraState;</span>
     }
 
     /**
@@ -686,7 +688,7 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      */
     @Override
     public int getNCols() {
-<span class="nc" id="L689">        return this.arrays.length;</span>
+<span class="fc" id="L691">        return this.arrays.length;</span>
     }
 
     /**
@@ -694,7 +696,7 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      */
     @Override
     public int getNRows() {
-<span class="fc" id="L697">        return this.nrow;</span>
+<span class="fc" id="L699">        return this.nrow;</span>
     }
 
     /**
@@ -707,16 +709,16 @@ public class ColumnTable&lt;T&gt; implements DataTable {
     @Override
     public Object getRow(int row) {
 
-<span class="fc" id="L710">        Object[] x = new Object[this.arrays.length];</span>
-<span class="fc bfc" id="L711" title="All 2 branches covered.">        for (int col = 0; col &lt; this.arrays.length; col += 1) {</span>
-<span class="fc" id="L712">            x[col] = getElement(row, col);</span>
+<span class="fc" id="L712">        Object[] x = new Object[this.arrays.length];</span>
+<span class="fc bfc" id="L713" title="All 2 branches covered.">        for (int col = 0; col &lt; this.arrays.length; col += 1) {</span>
+<span class="fc" id="L714">            x[col] = getElement(row, col);</span>
         }
-<span class="fc" id="L714">        return x;</span>
+<span class="fc" id="L716">        return x;</span>
     }
 
     @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;intended exposure of mutable data&quot;)
     public int[] getSizes() {
-<span class="fc" id="L719">        return this.sizes;</span>
+<span class="fc" id="L721">        return this.sizes;</span>
     }
 
     /**
@@ -726,7 +728,7 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      */
     @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;intended exposure of mutable data&quot;)
     public char[] getTypes() {
-<span class="fc" id="L729">        return this.types;</span>
+<span class="fc" id="L731">        return this.types;</span>
     }
 
     /**
@@ -734,29 +736,29 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      * appropriate elements of arrays.
      */
     protected void initializePointers() {
-<span class="fc" id="L737">        int[] columnIndex = new int[MAX_COLUMN_INDEXES];</span>
-<span class="fc bfc" id="L738" title="All 2 branches covered.">        for (int col = 0; col &lt; this.arrays.length; col += 1) {</span>
-<span class="fc" id="L739">            columnIndex[this.types[col]]++;</span>
+<span class="fc" id="L739">        int[] columnIndex = new int[MAX_COLUMN_INDEXES];</span>
+<span class="fc bfc" id="L740" title="All 2 branches covered.">        for (int col = 0; col &lt; this.arrays.length; col += 1) {</span>
+<span class="fc" id="L741">            columnIndex[this.types[col]]++;</span>
         }
         // Allocate the pointer arrays. Note that many will be
         // zero-length.
-<span class="fc" id="L743">        this.bytePointers = new byte[columnIndex[PrimitiveTypeEnum.BYTE.type()]][];</span>
-<span class="fc" id="L744">        this.shortPointers = new short[columnIndex[PrimitiveTypeEnum.SHORT.type()]][];</span>
-<span class="fc" id="L745">        this.intPointers = new int[columnIndex[PrimitiveTypeEnum.INT.type()]][];</span>
-<span class="fc" id="L746">        this.longPointers = new long[columnIndex[PrimitiveTypeEnum.LONG.type()]][];</span>
-<span class="fc" id="L747">        this.floatPointers = new float[columnIndex[PrimitiveTypeEnum.FLOAT.type()]][];</span>
-<span class="fc" id="L748">        this.doublePointers = new double[columnIndex[PrimitiveTypeEnum.DOUBLE.type()]][];</span>
-<span class="fc" id="L749">        this.charPointers = new char[columnIndex[PrimitiveTypeEnum.CHAR.type()]][];</span>
-<span class="fc" id="L750">        this.booleanPointers = new boolean[columnIndex[PrimitiveTypeEnum.BOOLEAN.type()]][];</span>
+<span class="fc" id="L745">        this.bytePointers = new byte[columnIndex[PrimitiveType.BYTE.type()]][];</span>
+<span class="fc" id="L746">        this.shortPointers = new short[columnIndex[PrimitiveType.SHORT.type()]][];</span>
+<span class="fc" id="L747">        this.intPointers = new int[columnIndex[PrimitiveType.INT.type()]][];</span>
+<span class="fc" id="L748">        this.longPointers = new long[columnIndex[PrimitiveType.LONG.type()]][];</span>
+<span class="fc" id="L749">        this.floatPointers = new float[columnIndex[PrimitiveType.FLOAT.type()]][];</span>
+<span class="fc" id="L750">        this.doublePointers = new double[columnIndex[PrimitiveType.DOUBLE.type()]][];</span>
+<span class="fc" id="L751">        this.charPointers = new char[columnIndex[PrimitiveType.CHAR.type()]][];</span>
+<span class="fc" id="L752">        this.booleanPointers = new boolean[columnIndex[PrimitiveType.BOOLEAN.type()]][];</span>
         // Now set the pointers.
-<span class="fc" id="L752">        Arrays.fill(columnIndex, 0);</span>
-<span class="fc bfc" id="L753" title="All 2 branches covered.">        for (int col = 0; col &lt; this.arrays.length; col += 1) {</span>
-<span class="fc" id="L754">            char colType = this.types[col];</span>
-<span class="fc" id="L755">            PointerAccess&lt;?&gt; accessor = POINTER_ACCESSORS_BY_TYPE[colType];</span>
-<span class="fc" id="L756">            Array.set(accessor.get(this), columnIndex[colType], this.arrays[col]);</span>
-<span class="fc" id="L757">            columnIndex[colType]++;</span>
+<span class="fc" id="L754">        Arrays.fill(columnIndex, 0);</span>
+<span class="fc bfc" id="L755" title="All 2 branches covered.">        for (int col = 0; col &lt; this.arrays.length; col += 1) {</span>
+<span class="fc" id="L756">            char colType = this.types[col];</span>
+<span class="fc" id="L757">            PointerAccess&lt;?&gt; accessor = POINTER_ACCESSORS_BY_TYPE[colType];</span>
+<span class="fc" id="L758">            Array.set(accessor.get(this), columnIndex[colType], this.arrays[col]);</span>
+<span class="fc" id="L759">            columnIndex[colType]++;</span>
         }
-<span class="fc" id="L759">    }</span>
+<span class="fc" id="L761">    }</span>
 
     /**
      * Read a table.
@@ -767,21 +769,21 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      *             if the reading failed
      */
     public void read(ArrayDataInput is) throws IOException {
-<span class="fc" id="L770">        int[] columnIndex = new int[MAX_COLUMN_INDEXES];</span>
+<span class="fc" id="L772">        int[] columnIndex = new int[MAX_COLUMN_INDEXES];</span>
         // While we have not finished reading the table..
-<span class="fc bfc" id="L772" title="All 2 branches covered.">        for (int row = 0; row &lt; this.nrow; row += 1) {</span>
-<span class="fc" id="L773">            Arrays.fill(columnIndex, 0);</span>
+<span class="fc bfc" id="L774" title="All 2 branches covered.">        for (int row = 0; row &lt; this.nrow; row += 1) {</span>
+<span class="fc" id="L775">            Arrays.fill(columnIndex, 0);</span>
             // Loop over the columns within the row.
-<span class="fc bfc" id="L775" title="All 2 branches covered.">            for (int col = 0; col &lt; this.arrays.length; col += 1) {</span>
-<span class="fc" id="L776">                int arrOffset = this.sizes[col] * row;</span>
-<span class="fc" id="L777">                int size = this.sizes[col];</span>
-<span class="fc" id="L778">                char colType = this.types[col];</span>
-<span class="fc" id="L779">                PointerAccess&lt;?&gt; accessor = POINTER_ACCESSORS_BY_TYPE[colType];</span>
-<span class="fc" id="L780">                accessor.read(this, is, columnIndex[colType], arrOffset, size);</span>
-<span class="fc" id="L781">                columnIndex[colType] += 1;</span>
+<span class="fc bfc" id="L777" title="All 2 branches covered.">            for (int col = 0; col &lt; this.arrays.length; col += 1) {</span>
+<span class="fc" id="L778">                int arrOffset = this.sizes[col] * row;</span>
+<span class="fc" id="L779">                int size = this.sizes[col];</span>
+<span class="fc" id="L780">                char colType = this.types[col];</span>
+<span class="fc" id="L781">                PointerAccess&lt;?&gt; accessor = POINTER_ACCESSORS_BY_TYPE[colType];</span>
+<span class="fc" id="L782">                accessor.read(this, is, columnIndex[colType], arrOffset, size);</span>
+<span class="fc" id="L783">                columnIndex[colType] += 1;</span>
             }
         }
-<span class="fc" id="L784">    }</span>
+<span class="fc" id="L786">    }</span>
 
     /**
      * Set the values in a particular column. The new values must match the old
@@ -798,18 +800,18 @@ public class ColumnTable&lt;T&gt; implements DataTable {
     @Override
     public void setColumn(int col, Object newColumn) throws TableException {
 
-<span class="pc bpc" id="L801" title="2 of 4 branches missed.">        boolean reset = newColumn.getClass() != this.arrays[col].getClass() || Array.getLength(newColumn) != Array.getLength(this.arrays[col]);</span>
-<span class="fc" id="L802">        this.arrays[col] = newColumn;</span>
-<span class="pc bpc" id="L803" title="1 of 2 branches missed.">        if (reset) {</span>
-<span class="nc" id="L804">            setup(this.arrays, this.sizes);</span>
+<span class="pc bpc" id="L803" title="2 of 4 branches missed.">        boolean reset = newColumn.getClass() != this.arrays[col].getClass() || Array.getLength(newColumn) != Array.getLength(this.arrays[col]);</span>
+<span class="fc" id="L804">        this.arrays[col] = newColumn;</span>
+<span class="pc bpc" id="L805" title="1 of 2 branches missed.">        if (reset) {</span>
+<span class="nc" id="L806">            setup(this.arrays, this.sizes);</span>
         } else {
             // This is required, because otherwise the typed pointer may point
             // to the old
             // array, which has been replaced by newColumn. Added by Jeroen de
             // Jong, 1 Aug 2006
-<span class="fc" id="L810">            initializePointers();</span>
+<span class="fc" id="L812">            initializePointers();</span>
         }
-<span class="fc" id="L812">    }</span>
+<span class="fc" id="L814">    }</span>
 
     /**
      * Modify an element of the table.
@@ -827,18 +829,18 @@ public class ColumnTable&lt;T&gt; implements DataTable {
     @Override
     public void setElement(int row, int col, Object x) throws TableException {
 
-<span class="fc" id="L830">        String classname = x.getClass().getName();</span>
+<span class="fc" id="L832">        String classname = x.getClass().getName();</span>
 
-<span class="pc bpc" id="L832" title="1 of 2 branches missed.">        if (!classname.equals(&quot;[&quot; + this.types[col])) {</span>
-<span class="nc" id="L833">            throw new TableException(&quot;setElement: Incompatible element type&quot;);</span>
+<span class="fc bfc" id="L834" title="All 2 branches covered.">        if (!classname.equals(&quot;[&quot; + this.types[col])) {</span>
+<span class="fc" id="L835">            throw new TableException(&quot;setElement: Incompatible element type&quot;);</span>
         }
 
-<span class="pc bpc" id="L836" title="1 of 2 branches missed.">        if (Array.getLength(x) != this.sizes[col]) {</span>
-<span class="nc" id="L837">            throw new TableException(&quot;setElement: Incompatible element size&quot;);</span>
+<span class="fc bfc" id="L838" title="All 2 branches covered.">        if (Array.getLength(x) != this.sizes[col]) {</span>
+<span class="fc" id="L839">            throw new TableException(&quot;setElement: Incompatible element size&quot;);</span>
         }
 
-<span class="fc" id="L840">        System.arraycopy(x, 0, this.arrays[col], this.sizes[col] * row, this.sizes[col]);</span>
-<span class="fc" id="L841">    }</span>
+<span class="fc" id="L842">        System.arraycopy(x, 0, this.arrays[col], this.sizes[col] * row, this.sizes[col]);</span>
+<span class="fc" id="L843">    }</span>
 
     /**
      * Store additional information that may be needed by the client to
@@ -848,8 +850,8 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      *            the extra state to set.
      */
     public void setExtraState(T opaque) {
-<span class="fc" id="L851">        this.extraState = opaque;</span>
-<span class="fc" id="L852">    }</span>
+<span class="fc" id="L853">        this.extraState = opaque;</span>
+<span class="fc" id="L854">    }</span>
 
     /**
      * Modify a row of data.
@@ -865,14 +867,14 @@ public class ColumnTable&lt;T&gt; implements DataTable {
     @Override
     public void setRow(int row, Object x) throws TableException {
 
-<span class="pc bpc" id="L868" title="1 of 2 branches missed.">        if (!(x instanceof Object[])) {</span>
-<span class="nc" id="L869">            throw new TableException(&quot;setRow: Incompatible row&quot;);</span>
+<span class="fc bfc" id="L870" title="All 2 branches covered.">        if (!(x instanceof Object[])) {</span>
+<span class="fc" id="L871">            throw new TableException(&quot;setRow: Incompatible row&quot;);</span>
         }
 
-<span class="fc bfc" id="L872" title="All 2 branches covered.">        for (int col = 0; col &lt; this.arrays.length; col += 1) {</span>
-<span class="fc" id="L873">            setElement(row, col, ((Object[]) x)[col]);</span>
+<span class="fc bfc" id="L874" title="All 2 branches covered.">        for (int col = 0; col &lt; this.arrays.length; col += 1) {</span>
+<span class="fc" id="L875">            setElement(row, col, ((Object[]) x)[col]);</span>
         }
-<span class="fc" id="L875">    }</span>
+<span class="fc" id="L877">    }</span>
 
     /**
      * Actually perform the initialization.
@@ -886,9 +888,9 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      *             if the structure of the columns is not consistent
      */
     private void setup(Object[] newArrays, int[] newSizes) throws TableException {
-<span class="fc" id="L889">        checkArrayConsistency(newArrays, newSizes);</span>
-<span class="fc" id="L890">        initializePointers();</span>
-<span class="fc" id="L891">    }</span>
+<span class="fc" id="L891">        checkArrayConsistency(newArrays, newSizes);</span>
+<span class="fc" id="L892">        initializePointers();</span>
+<span class="fc" id="L893">    }</span>
 
     /**
      * Write a table.
@@ -899,24 +901,24 @@ public class ColumnTable&lt;T&gt; implements DataTable {
      *             if the write operation failed
      */
     public void write(ArrayDataOutput os) throws IOException {
-<span class="fc bfc" id="L902" title="All 2 branches covered.">        if (this.rowSize == 0) {</span>
-<span class="fc" id="L903">            return;</span>
+<span class="fc bfc" id="L904" title="All 2 branches covered.">        if (this.rowSize == 0) {</span>
+<span class="fc" id="L905">            return;</span>
         }
-<span class="fc" id="L905">        int[] columnIndex = new int[MAX_COLUMN_INDEXES];</span>
-<span class="fc bfc" id="L906" title="All 2 branches covered.">        for (int row = 0; row &lt; this.nrow; row += 1) {</span>
-<span class="fc" id="L907">            Arrays.fill(columnIndex, 0);</span>
+<span class="fc" id="L907">        int[] columnIndex = new int[MAX_COLUMN_INDEXES];</span>
+<span class="fc bfc" id="L908" title="All 2 branches covered.">        for (int row = 0; row &lt; this.nrow; row += 1) {</span>
+<span class="fc" id="L909">            Arrays.fill(columnIndex, 0);</span>
             // Loop over the columns within the row.
-<span class="fc bfc" id="L909" title="All 2 branches covered.">            for (int col = 0; col &lt; this.arrays.length; col += 1) {</span>
+<span class="fc bfc" id="L911" title="All 2 branches covered.">            for (int col = 0; col &lt; this.arrays.length; col += 1) {</span>
 
-<span class="fc" id="L911">                int arrOffset = this.sizes[col] * row;</span>
-<span class="fc" id="L912">                int size = this.sizes[col];</span>
+<span class="fc" id="L913">                int arrOffset = this.sizes[col] * row;</span>
+<span class="fc" id="L914">                int size = this.sizes[col];</span>
 
-<span class="fc" id="L914">                char colType = this.types[col];</span>
-<span class="fc" id="L915">                PointerAccess&lt;?&gt; accessor = POINTER_ACCESSORS_BY_TYPE[colType];</span>
-<span class="fc" id="L916">                accessor.write(this, os, columnIndex[colType], arrOffset, size);</span>
-<span class="fc" id="L917">                columnIndex[colType] += 1;</span>
+<span class="fc" id="L916">                char colType = this.types[col];</span>
+<span class="fc" id="L917">                PointerAccess&lt;?&gt; accessor = POINTER_ACCESSORS_BY_TYPE[colType];</span>
+<span class="fc" id="L918">                accessor.write(this, os, columnIndex[colType], arrOffset, size);</span>
+<span class="fc" id="L919">                columnIndex[colType] += 1;</span>
             }
         }
-<span class="fc" id="L920">    }</span>
+<span class="fc" id="L922">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

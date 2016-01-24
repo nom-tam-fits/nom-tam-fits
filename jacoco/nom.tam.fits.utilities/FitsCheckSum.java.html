@@ -113,8 +113,8 @@ public final class FitsCheckSum {
 <span class="fc" id="L113">        long hicarry = hi &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
 <span class="fc" id="L114">        long locarry = lo &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
 <span class="pc bpc" id="L115" title="1 of 4 branches missed.">        while (hicarry != 0 || locarry != 0) {</span>
-<span class="fc" id="L116">            hi = (hi &amp; FitsIO.SHORT_OF_LONG_MASK) | locarry;</span>
-<span class="fc" id="L117">            lo = (lo &amp; FitsIO.SHORT_OF_LONG_MASK) | hicarry;</span>
+<span class="fc" id="L116">            hi = (hi &amp; FitsIO.SHORT_OF_LONG_MASK) + locarry;</span>
+<span class="fc" id="L117">            lo = (lo &amp; FitsIO.SHORT_OF_LONG_MASK) + hicarry;</span>
 <span class="fc" id="L118">            hicarry = hi &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
 <span class="fc" id="L119">            locarry = lo &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
         }
@@ -223,7 +223,7 @@ public final class FitsCheckSum {
 
         /*
          * Convert the entire sequence of 2880 byte header cards into a byte
-         * array. The main benefit compared to the C implementations is that we
+         * tiledImageOperation. The main benefit compared to the C implementations is that we
          * do not need to worry about the particular byte order on machines
          * (Linux/VAX/MIPS vs Hp-UX, Sparc...) supposed that the correct
          * implementation is in the write() interface.

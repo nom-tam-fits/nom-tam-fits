@@ -181,9 +181,10 @@ public class Fits implements Closeable {
 <span class="fc" id="L181">            props.load(versionProperties);</span>
 <span class="fc" id="L182">            return props.getProperty(&quot;version&quot;);</span>
 <span class="nc" id="L183">        } catch (IOException e) {</span>
-<span class="nc" id="L184">            return &quot;unknown&quot;;</span>
+<span class="nc" id="L184">            LOG.log(Level.INFO, &quot;reading version failed, ignoring&quot;, e);</span>
+<span class="nc" id="L185">            return &quot;unknown&quot;;</span>
         } finally {
-<span class="pc" id="L186">            saveClose(versionProperties);</span>
+<span class="pc" id="L187">            saveClose(versionProperties);</span>
         }
     }
 
@@ -194,14 +195,14 @@ public class Fits implements Closeable {
      *            the input stream to close.
      */
     public static void saveClose(InputStream in) {
-<span class="pc bpc" id="L197" title="1 of 2 branches missed.">        if (in != null) {</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">        if (in != null) {</span>
             try {
-<span class="fc" id="L199">                in.close();</span>
-<span class="nc" id="L200">            } catch (IOException e) {</span>
-<span class="nc" id="L201">                LOG.log(Level.INFO, &quot;close failed, ignoring&quot;, e);</span>
-<span class="fc" id="L202">            }</span>
+<span class="fc" id="L200">                in.close();</span>
+<span class="nc" id="L201">            } catch (IOException e) {</span>
+<span class="nc" id="L202">                LOG.log(Level.INFO, &quot;close failed, ignoring&quot;, e);</span>
+<span class="fc" id="L203">            }</span>
         }
-<span class="fc" id="L204">    }</span>
+<span class="fc" id="L205">    }</span>
 
     /**
      * The input stream associated with this Fits object.
@@ -211,7 +212,7 @@ public class Fits implements Closeable {
     /**
      * A vector of HDUs that have been added to this Fits object.
      */
-<span class="fc" id="L214">    private final List&lt;BasicHDU&lt;?&gt;&gt; hduList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L215">    private final List&lt;BasicHDU&lt;?&gt;&gt; hduList = new ArrayList&lt;&gt;();</span>
 
     /**
      * Has the input stream reached the EOF?
@@ -222,13 +223,13 @@ public class Fits implements Closeable {
      * The last offset we reached. A -1 is used to indicate that we cannot use
      * the offset.
      */
-<span class="fc" id="L225">    private long lastFileOffset = -1;</span>
+<span class="fc" id="L226">    private long lastFileOffset = -1;</span>
 
     /**
      * Create an empty Fits object which is not associated with an input stream.
      */
-<span class="fc" id="L230">    public Fits() {</span>
-<span class="fc" id="L231">    }</span>
+<span class="fc" id="L231">    public Fits() {</span>
+<span class="fc" id="L232">    }</span>
 
     /**
      * Associate FITS object with a File. If the file is compressed a stream
@@ -242,8 +243,8 @@ public class Fits implements Closeable {
      *             if the operation failed
      */
     public Fits(File myFile) throws FitsException {
-<span class="fc" id="L245">        this(myFile, CompressionManager.isCompressed(myFile));</span>
-<span class="fc" id="L246">    }</span>
+<span class="fc" id="L246">        this(myFile, CompressionManager.isCompressed(myFile));</span>
+<span class="fc" id="L247">    }</span>
 
     /**
      * Associate the Fits object with a File
@@ -257,9 +258,9 @@ public class Fits implements Closeable {
      * @throws FitsException
      *             if the operation failed
      */
-<span class="fc" id="L260">    public Fits(File myFile, boolean compressed) throws FitsException {</span>
-<span class="fc" id="L261">        fileInit(myFile, compressed);</span>
-<span class="fc" id="L262">    }</span>
+<span class="fc" id="L261">    public Fits(File myFile, boolean compressed) throws FitsException {</span>
+<span class="fc" id="L262">        fileInit(myFile, compressed);</span>
+<span class="fc" id="L263">    }</span>
 
     /**
      * Create a Fits object associated with the given data stream. Compression
@@ -272,9 +273,9 @@ public class Fits implements Closeable {
      * @throws FitsException
      *             if the operation failed
      */
-<span class="fc" id="L275">    public Fits(InputStream str) throws FitsException {</span>
-<span class="fc" id="L276">        streamInit(str);</span>
-<span class="fc" id="L277">    }</span>
+<span class="fc" id="L276">    public Fits(InputStream str) throws FitsException {</span>
+<span class="fc" id="L277">        streamInit(str);</span>
+<span class="fc" id="L278">    }</span>
 
     /**
      * Create a Fits object associated with a data stream.
@@ -293,9 +294,9 @@ public class Fits implements Closeable {
      */
     @Deprecated
     public Fits(InputStream str, boolean compressed) throws FitsException {
-<span class="fc" id="L296">        this(str);</span>
-<span class="fc" id="L297">        LOG.log(Level.INFO, &quot;compression ignored, will be autodetected. was set to &quot; + compressed);</span>
-<span class="fc" id="L298">    }</span>
+<span class="fc" id="L297">        this(str);</span>
+<span class="fc" id="L298">        LOG.log(Level.INFO, &quot;compression ignored, will be autodetected. was set to &quot; + compressed);</span>
+<span class="fc" id="L299">    }</span>
 
     /**
      * Associate the FITS object with a file or URL. The string is assumed to be
@@ -312,8 +313,8 @@ public class Fits implements Closeable {
      *             string given.
      **/
     public Fits(String filename) throws FitsException {
-<span class="fc" id="L315">        this(filename, CompressionManager.isCompressed(filename));</span>
-<span class="fc" id="L316">    }</span>
+<span class="fc" id="L316">        this(filename, CompressionManager.isCompressed(filename));</span>
+<span class="fc" id="L317">    }</span>
 
     /**
      * Associate the FITS object with a file or URL. The string is assumed to be
@@ -331,36 +332,36 @@ public class Fits implements Closeable {
      *             Thrown if unable to find or open a file or URL from the
      *             string given.
      **/
-<span class="fc" id="L334">    public Fits(String filename, boolean compressed) throws FitsException {</span>
-<span class="fc bfc" id="L335" title="All 2 branches covered.">        if (filename == null) {</span>
-<span class="fc" id="L336">            throw new FitsException(&quot;Null FITS Identifier String&quot;);</span>
+<span class="fc" id="L335">    public Fits(String filename, boolean compressed) throws FitsException {</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">        if (filename == null) {</span>
+<span class="fc" id="L337">            throw new FitsException(&quot;Null FITS Identifier String&quot;);</span>
         }
         try {
-<span class="fc" id="L339">            File fil = new File(filename);</span>
-<span class="fc bfc" id="L340" title="All 2 branches covered.">            if (fil.exists()) {</span>
-<span class="fc" id="L341">                fileInit(fil, compressed);</span>
-<span class="fc" id="L342">                return;</span>
+<span class="fc" id="L340">            File fil = new File(filename);</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">            if (fil.exists()) {</span>
+<span class="fc" id="L342">                fileInit(fil, compressed);</span>
+<span class="fc" id="L343">                return;</span>
             }
-<span class="nc" id="L344">        } catch (Exception e) {</span>
-<span class="nc" id="L345">            LOG.log(Level.FINE, &quot;not a file &quot; + filename, e);</span>
-<span class="fc" id="L346">        }</span>
+<span class="nc" id="L345">        } catch (Exception e) {</span>
+<span class="nc" id="L346">            LOG.log(Level.FINE, &quot;not a file &quot; + filename, e);</span>
+<span class="fc" id="L347">        }</span>
         try {
-<span class="fc" id="L348">            InputStream str = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);</span>
-<span class="fc bfc" id="L349" title="All 2 branches covered.">            if (str != null) {</span>
-<span class="fc" id="L350">                streamInit(str);</span>
-<span class="fc" id="L351">                return;</span>
+<span class="fc" id="L349">            InputStream str = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">            if (str != null) {</span>
+<span class="fc" id="L351">                streamInit(str);</span>
+<span class="fc" id="L352">                return;</span>
             }
-<span class="nc" id="L353">        } catch (Exception e) {</span>
-<span class="nc" id="L354">            LOG.log(Level.FINE, &quot;not a resource &quot; + filename, e);</span>
-<span class="fc" id="L355">        }</span>
+<span class="nc" id="L354">        } catch (Exception e) {</span>
+<span class="nc" id="L355">            LOG.log(Level.FINE, &quot;not a resource &quot; + filename, e);</span>
+<span class="fc" id="L356">        }</span>
         try {
-<span class="fc" id="L357">            InputStream is = FitsUtil.getURLStream(new URL(filename), 0);</span>
-<span class="fc" id="L358">            streamInit(is);</span>
-<span class="fc" id="L359">            return;</span>
-<span class="fc" id="L360">        } catch (Exception e) {</span>
-<span class="fc" id="L361">            LOG.log(Level.FINE, &quot;not a url &quot; + filename, e);</span>
+<span class="fc" id="L358">            InputStream is = FitsUtil.getURLStream(new URL(filename), 0);</span>
+<span class="fc" id="L359">            streamInit(is);</span>
+<span class="fc" id="L360">            return;</span>
+<span class="fc" id="L361">        } catch (Exception e) {</span>
+<span class="fc" id="L362">            LOG.log(Level.FINE, &quot;not a url &quot; + filename, e);</span>
         }
-<span class="fc" id="L363">        throw new FitsException(&quot;could not detect type of &quot; + filename);</span>
+<span class="fc" id="L364">        throw new FitsException(&quot;could not detect type of &quot; + filename);</span>
     }
 
     /**
@@ -374,13 +375,13 @@ public class Fits implements Closeable {
      *             Thrown if unable to find or open a file or URL from the
      *             string given.
      */
-<span class="fc" id="L377">    public Fits(URL myURL) throws FitsException {</span>
+<span class="fc" id="L378">    public Fits(URL myURL) throws FitsException {</span>
         try {
-<span class="fc" id="L379">            streamInit(FitsUtil.getURLStream(myURL, 0));</span>
-<span class="fc" id="L380">        } catch (IOException e) {</span>
-<span class="fc" id="L381">            throw new FitsException(&quot;Unable to open input from URL:&quot; + myURL);</span>
-<span class="fc" id="L382">        }</span>
-<span class="fc" id="L383">    }</span>
+<span class="fc" id="L380">            streamInit(FitsUtil.getURLStream(myURL, 0));</span>
+<span class="fc" id="L381">        } catch (IOException e) {</span>
+<span class="fc" id="L382">            throw new FitsException(&quot;Unable to open input from URL:&quot; + myURL, e);</span>
+<span class="fc" id="L383">        }</span>
+<span class="fc" id="L384">    }</span>
 
     /**
      * Associate the FITS object with a given uncompressed URL
@@ -397,9 +398,9 @@ public class Fits implements Closeable {
      */
     @Deprecated
     public Fits(URL myURL, boolean compressed) throws FitsException {
-<span class="fc" id="L400">        this(myURL);</span>
-<span class="fc" id="L401">        LOG.log(Level.INFO, &quot;compression ignored, will be autodetected. was set to &quot; + compressed);</span>
-<span class="fc" id="L402">    }</span>
+<span class="fc" id="L401">        this(myURL);</span>
+<span class="fc" id="L402">        LOG.log(Level.INFO, &quot;compression ignored, will be autodetected. was set to &quot; + compressed);</span>
+<span class="fc" id="L403">    }</span>
 
     /**
      * Add an HDU to the Fits object. Users may intermix calls to functions
@@ -412,8 +413,8 @@ public class Fits implements Closeable {
      *             if the HDU could not be inserted.
      */
     public void addHDU(BasicHDU&lt;?&gt; myHDU) throws FitsException {
-<span class="fc" id="L415">        insertHDU(myHDU, getNumberOfHDUs());</span>
-<span class="fc" id="L416">    }</span>
+<span class="fc" id="L416">        insertHDU(myHDU, getNumberOfHDUs());</span>
+<span class="fc" id="L417">    }</span>
 
     /**
      * Get the current number of HDUs in the Fits object.
@@ -423,7 +424,7 @@ public class Fits implements Closeable {
      */
     @Deprecated
     public int currentSize() {
-<span class="fc" id="L426">        return getNumberOfHDUs();</span>
+<span class="fc" id="L427">        return getNumberOfHDUs();</span>
     }
 
     /**
@@ -438,20 +439,20 @@ public class Fits implements Closeable {
      *             if the HDU could not be deleted.
      */
     public void deleteHDU(int n) throws FitsException {
-<span class="fc" id="L441">        int size = getNumberOfHDUs();</span>
-<span class="pc bpc" id="L442" title="1 of 4 branches missed.">        if (n &lt; 0 || n &gt;= size) {</span>
-<span class="fc" id="L443">            throw new FitsException(&quot;Attempt to delete non-existent HDU:&quot; + n);</span>
+<span class="fc" id="L442">        int size = getNumberOfHDUs();</span>
+<span class="pc bpc" id="L443" title="1 of 4 branches missed.">        if (n &lt; 0 || n &gt;= size) {</span>
+<span class="fc" id="L444">            throw new FitsException(&quot;Attempt to delete non-existent HDU:&quot; + n);</span>
         }
-<span class="fc" id="L445">        this.hduList.remove(n);</span>
-<span class="pc bpc" id="L446" title="1 of 4 branches missed.">        if (n == 0 &amp;&amp; size &gt; 1) {</span>
-<span class="fc" id="L447">            BasicHDU&lt;?&gt; newFirst = this.hduList.get(0);</span>
-<span class="fc bfc" id="L448" title="All 2 branches covered.">            if (newFirst.canBePrimary()) {</span>
-<span class="fc" id="L449">                newFirst.setPrimaryHDU(true);</span>
+<span class="fc" id="L446">        this.hduList.remove(n);</span>
+<span class="fc bfc" id="L447" title="All 4 branches covered.">        if (n == 0 &amp;&amp; size &gt; 1) {</span>
+<span class="fc" id="L448">            BasicHDU&lt;?&gt; newFirst = this.hduList.get(0);</span>
+<span class="fc bfc" id="L449" title="All 2 branches covered.">            if (newFirst.canBePrimary()) {</span>
+<span class="fc" id="L450">                newFirst.setPrimaryHDU(true);</span>
             } else {
-<span class="fc" id="L451">                insertHDU(BasicHDU.getDummyHDU(), 0);</span>
+<span class="fc" id="L452">                insertHDU(BasicHDU.getDummyHDU(), 0);</span>
             }
         }
-<span class="fc" id="L454">    }</span>
+<span class="fc" id="L455">    }</span>
 
     /**
      * Get a stream from the file and then use the stream initialization.
@@ -466,15 +467,15 @@ public class Fits implements Closeable {
     @SuppressFBWarnings(value = &quot;OBL_UNSATISFIED_OBLIGATION&quot;, justification = &quot;stream stays open, and will be read when nessesary.&quot;)
     protected void fileInit(File myFile, boolean compressed) throws FitsException {
         try {
-<span class="fc bfc" id="L469" title="All 2 branches covered.">            if (compressed) {</span>
-<span class="fc" id="L470">                streamInit(new FileInputStream(myFile));</span>
+<span class="fc bfc" id="L470" title="All 2 branches covered.">            if (compressed) {</span>
+<span class="fc" id="L471">                streamInit(new FileInputStream(myFile));</span>
             } else {
-<span class="fc" id="L472">                randomInit(myFile);</span>
+<span class="fc" id="L473">                randomInit(myFile);</span>
             }
-<span class="nc" id="L474">        } catch (IOException e) {</span>
-<span class="nc" id="L475">            throw new FitsException(&quot;Unable to create Input Stream from File: &quot; + myFile);</span>
-<span class="fc" id="L476">        }</span>
-<span class="fc" id="L477">    }</span>
+<span class="nc" id="L475">        } catch (IOException e) {</span>
+<span class="nc" id="L476">            throw new FitsException(&quot;Unable to create Input Stream from File: &quot; + myFile, e);</span>
+<span class="fc" id="L477">        }</span>
+<span class="fc" id="L478">    }</span>
 
     /**
      * @return the n'th HDU. If the HDU is already read simply return a pointer
@@ -489,14 +490,14 @@ public class Fits implements Closeable {
      *             if the underlying buffer threw an error
      */
     public BasicHDU&lt;?&gt; getHDU(int n) throws FitsException, IOException {
-<span class="fc" id="L492">        int size = getNumberOfHDUs();</span>
-<span class="fc bfc" id="L493" title="All 2 branches covered.">        for (int i = size; i &lt;= n; i += 1) {</span>
-<span class="fc" id="L494">            BasicHDU&lt;?&gt; hdu = readHDU();</span>
-<span class="fc bfc" id="L495" title="All 2 branches covered.">            if (hdu == null) {</span>
-<span class="fc" id="L496">                return null;</span>
+<span class="fc" id="L493">        int size = getNumberOfHDUs();</span>
+<span class="fc bfc" id="L494" title="All 2 branches covered.">        for (int i = size; i &lt;= n; i += 1) {</span>
+<span class="fc" id="L495">            BasicHDU&lt;?&gt; hdu = readHDU();</span>
+<span class="fc bfc" id="L496" title="All 2 branches covered.">            if (hdu == null) {</span>
+<span class="fc" id="L497">                return null;</span>
             }
         }
-<span class="fc" id="L499">        return this.hduList.get(n);</span>
+<span class="fc" id="L500">        return this.hduList.get(n);</span>
     }
 
     /**
@@ -505,7 +506,7 @@ public class Fits implements Closeable {
      * @return The number of HDU's in the object.
      */
     public int getNumberOfHDUs() {
-<span class="fc" id="L508">        return this.hduList.size();</span>
+<span class="fc" id="L509">        return this.hduList.size();</span>
     }
 
     /**
@@ -516,7 +517,7 @@ public class Fits implements Closeable {
      *         writing some part of the FITS file.
      */
     public ArrayDataInput getStream() {
-<span class="fc" id="L519">        return this.dataStr;</span>
+<span class="nc" id="L520">        return this.dataStr;</span>
     }
 
     /**
@@ -530,37 +531,37 @@ public class Fits implements Closeable {
      *             if the HDU could not be inserted.
      */
     public void insertHDU(BasicHDU&lt;?&gt; myHDU, int position) throws FitsException {
-<span class="fc bfc" id="L533" title="All 2 branches covered.">        if (myHDU == null) {</span>
-<span class="fc" id="L534">            return;</span>
+<span class="fc bfc" id="L534" title="All 2 branches covered.">        if (myHDU == null) {</span>
+<span class="fc" id="L535">            return;</span>
         }
-<span class="pc bpc" id="L536" title="1 of 4 branches missed.">        if (position &lt; 0 || position &gt; getNumberOfHDUs()) {</span>
-<span class="fc" id="L537">            throw new FitsException(&quot;Attempt to insert HDU at invalid location: &quot; + position);</span>
+<span class="pc bpc" id="L537" title="1 of 4 branches missed.">        if (position &lt; 0 || position &gt; getNumberOfHDUs()) {</span>
+<span class="fc" id="L538">            throw new FitsException(&quot;Attempt to insert HDU at invalid location: &quot; + position);</span>
         }
         try {
-<span class="fc bfc" id="L540" title="All 2 branches covered.">            if (position == 0) {</span>
+<span class="fc bfc" id="L541" title="All 2 branches covered.">            if (position == 0) {</span>
                 // Note that the previous initial HDU is no longer the first.
                 // If we were to insert tables backwards from last to first,
                 // we could get a lot of extraneous DummyHDUs but we currently
                 // do not worry about that.
-<span class="fc bfc" id="L545" title="All 2 branches covered.">                if (getNumberOfHDUs() &gt; 0) {</span>
-<span class="fc" id="L546">                    this.hduList.get(0).setPrimaryHDU(false);</span>
+<span class="fc bfc" id="L546" title="All 2 branches covered.">                if (getNumberOfHDUs() &gt; 0) {</span>
+<span class="fc" id="L547">                    this.hduList.get(0).setPrimaryHDU(false);</span>
                 }
-<span class="fc bfc" id="L548" title="All 2 branches covered.">                if (myHDU.canBePrimary()) {</span>
-<span class="fc" id="L549">                    myHDU.setPrimaryHDU(true);</span>
-<span class="fc" id="L550">                    this.hduList.add(0, myHDU);</span>
+<span class="fc bfc" id="L549" title="All 2 branches covered.">                if (myHDU.canBePrimary()) {</span>
+<span class="fc" id="L550">                    myHDU.setPrimaryHDU(true);</span>
+<span class="fc" id="L551">                    this.hduList.add(0, myHDU);</span>
                 } else {
-<span class="fc" id="L552">                    insertHDU(BasicHDU.getDummyHDU(), 0);</span>
-<span class="fc" id="L553">                    myHDU.setPrimaryHDU(false);</span>
-<span class="fc" id="L554">                    this.hduList.add(1, myHDU);</span>
+<span class="fc" id="L553">                    insertHDU(BasicHDU.getDummyHDU(), 0);</span>
+<span class="fc" id="L554">                    myHDU.setPrimaryHDU(false);</span>
+<span class="fc" id="L555">                    this.hduList.add(1, myHDU);</span>
                 }
             } else {
-<span class="fc" id="L557">                myHDU.setPrimaryHDU(false);</span>
-<span class="fc" id="L558">                this.hduList.add(position, myHDU);</span>
+<span class="fc" id="L558">                myHDU.setPrimaryHDU(false);</span>
+<span class="fc" id="L559">                this.hduList.add(position, myHDU);</span>
             }
-<span class="nc" id="L560">        } catch (NoSuchElementException e) {</span>
-<span class="nc" id="L561">            throw new FitsException(&quot;hduList inconsistency in insertHDU&quot;);</span>
-<span class="fc" id="L562">        }</span>
-<span class="fc" id="L563">    }</span>
+<span class="nc" id="L561">        } catch (NoSuchElementException e) {</span>
+<span class="nc" id="L562">            throw new FitsException(&quot;hduList inconsistency in insertHDU&quot;, e);</span>
+<span class="fc" id="L563">        }</span>
+<span class="fc" id="L564">    }</span>
 
     /**
      * Initialize using buffered random access. This implies that the data is
@@ -573,20 +574,20 @@ public class Fits implements Closeable {
      */
     protected void randomInit(File file) throws FitsException {
 
-<span class="fc" id="L576">        String permissions = &quot;r&quot;;</span>
-<span class="pc bpc" id="L577" title="2 of 4 branches missed.">        if (!file.exists() || !file.canRead()) {</span>
-<span class="nc" id="L578">            throw new FitsException(&quot;Non-existent or unreadable file&quot;);</span>
+<span class="fc" id="L577">        String permissions = &quot;r&quot;;</span>
+<span class="pc bpc" id="L578" title="2 of 4 branches missed.">        if (!file.exists() || !file.canRead()) {</span>
+<span class="nc" id="L579">            throw new FitsException(&quot;Non-existent or unreadable file&quot;);</span>
         }
-<span class="pc bpc" id="L580" title="1 of 2 branches missed.">        if (file.canWrite()) {</span>
-<span class="fc" id="L581">            permissions += &quot;w&quot;;</span>
+<span class="pc bpc" id="L581" title="1 of 2 branches missed.">        if (file.canWrite()) {</span>
+<span class="fc" id="L582">            permissions += &quot;w&quot;;</span>
         }
         try {
-<span class="fc" id="L584">            this.dataStr = new BufferedFile(file, permissions);</span>
-<span class="fc" id="L585">            ((BufferedFile) this.dataStr).seek(0);</span>
-<span class="nc" id="L586">        } catch (IOException e) {</span>
-<span class="nc" id="L587">            throw new FitsException(&quot;Unable to open file &quot; + file.getPath());</span>
-<span class="fc" id="L588">        }</span>
-<span class="fc" id="L589">    }</span>
+<span class="fc" id="L585">            this.dataStr = new BufferedFile(file, permissions);</span>
+<span class="fc" id="L586">            ((BufferedFile) this.dataStr).seek(0);</span>
+<span class="nc" id="L587">        } catch (IOException e) {</span>
+<span class="nc" id="L588">            throw new FitsException(&quot;Unable to open file &quot; + file.getPath(), e);</span>
+<span class="fc" id="L589">        }</span>
+<span class="fc" id="L590">    }</span>
 
     /**
      * Return all HDUs for the Fits object. If the FITS file is associated with
@@ -598,12 +599,12 @@ public class Fits implements Closeable {
      *             if the reading failed.
      */
     public BasicHDU&lt;?&gt;[] read() throws FitsException {
-<span class="fc" id="L601">        readToEnd();</span>
-<span class="fc" id="L602">        int size = getNumberOfHDUs();</span>
-<span class="pc bpc" id="L603" title="1 of 2 branches missed.">        if (size == 0) {</span>
-<span class="nc" id="L604">            return null;</span>
+<span class="fc" id="L602">        readToEnd();</span>
+<span class="fc" id="L603">        int size = getNumberOfHDUs();</span>
+<span class="pc bpc" id="L604" title="1 of 2 branches missed.">        if (size == 0) {</span>
+<span class="nc" id="L605">            return new BasicHDU&lt;?&gt;[0];</span>
         }
-<span class="fc" id="L606">        return this.hduList.toArray(new BasicHDU&lt;?&gt;[size]);</span>
+<span class="fc" id="L607">        return this.hduList.toArray(new BasicHDU&lt;?&gt;[size]);</span>
     }
 
     /**
@@ -613,17 +614,15 @@ public class Fits implements Closeable {
      *            The InputStream stream whence the FITS information is found.
      * @throws FitsException
      *             if the data read could not be interpreted
-     * @throws IOException
-     *             if the underlying stream failed.
      */
-    public void read(InputStream is) throws FitsException, IOException {
-<span class="pc bpc" id="L620" title="1 of 2 branches missed.">        if (is instanceof ArrayDataInput) {</span>
-<span class="nc" id="L621">            this.dataStr = (ArrayDataInput) is;</span>
+    public void read(InputStream is) throws FitsException {
+<span class="pc bpc" id="L619" title="1 of 2 branches missed.">        if (is instanceof ArrayDataInput) {</span>
+<span class="nc" id="L620">            this.dataStr = (ArrayDataInput) is;</span>
         } else {
-<span class="fc" id="L623">            this.dataStr = new BufferedDataInputStream(is);</span>
+<span class="fc" id="L622">            this.dataStr = new BufferedDataInputStream(is);</span>
         }
-<span class="fc" id="L625">        read();</span>
-<span class="fc" id="L626">    }</span>
+<span class="fc" id="L624">        read();</span>
+<span class="fc" id="L625">    }</span>
 
     /**
      * Read the next HDU on the default input stream.
@@ -637,28 +636,28 @@ public class Fits implements Closeable {
      *             if the underlying buffer threw an error
      */
     public BasicHDU&lt;?&gt; readHDU() throws FitsException, IOException {
-<span class="pc bpc" id="L640" title="1 of 4 branches missed.">        if (this.dataStr == null || this.atEOF) {</span>
-<span class="fc" id="L641">            return null;</span>
+<span class="pc bpc" id="L639" title="1 of 4 branches missed.">        if (this.dataStr == null || this.atEOF) {</span>
+<span class="fc" id="L640">            return null;</span>
         }
-<span class="fc bfc" id="L643" title="All 4 branches covered.">        if (this.dataStr instanceof RandomAccess &amp;&amp; this.lastFileOffset &gt; 0) {</span>
-<span class="fc" id="L644">            FitsUtil.reposition(this.dataStr, this.lastFileOffset);</span>
+<span class="fc bfc" id="L642" title="All 4 branches covered.">        if (this.dataStr instanceof RandomAccess &amp;&amp; this.lastFileOffset &gt; 0) {</span>
+<span class="fc" id="L643">            FitsUtil.reposition(this.dataStr, this.lastFileOffset);</span>
         }
-<span class="fc" id="L646">        Header hdr = Header.readHeader(this.dataStr);</span>
-<span class="fc bfc" id="L647" title="All 2 branches covered.">        if (hdr == null) {</span>
-<span class="fc" id="L648">            this.atEOF = true;</span>
-<span class="fc" id="L649">            return null;</span>
+<span class="fc" id="L645">        Header hdr = Header.readHeader(this.dataStr);</span>
+<span class="fc bfc" id="L646" title="All 2 branches covered.">        if (hdr == null) {</span>
+<span class="fc" id="L647">            this.atEOF = true;</span>
+<span class="fc" id="L648">            return null;</span>
         }
-<span class="fc" id="L651">        Data data = hdr.makeData();</span>
+<span class="fc" id="L650">        Data data = hdr.makeData();</span>
         try {
-<span class="fc" id="L653">            data.read(this.dataStr);</span>
-<span class="fc" id="L654">        } catch (PaddingException e) {</span>
-<span class="fc" id="L655">            e.updateHeader(hdr);</span>
-<span class="fc" id="L656">            throw e;</span>
-<span class="fc" id="L657">        }</span>
-<span class="fc" id="L658">        this.lastFileOffset = FitsUtil.findOffset(this.dataStr);</span>
-<span class="fc" id="L659">        BasicHDU&lt;Data&gt; nextHDU = FitsFactory.hduFactory(hdr, data);</span>
-<span class="fc" id="L660">        this.hduList.add(nextHDU);</span>
-<span class="fc" id="L661">        return nextHDU;</span>
+<span class="fc" id="L652">            data.read(this.dataStr);</span>
+<span class="fc" id="L653">        } catch (PaddingException e) {</span>
+<span class="fc" id="L654">            e.updateHeader(hdr);</span>
+<span class="fc" id="L655">            throw e;</span>
+<span class="fc" id="L656">        }</span>
+<span class="fc" id="L657">        this.lastFileOffset = FitsUtil.findOffset(this.dataStr);</span>
+<span class="fc" id="L658">        BasicHDU&lt;Data&gt; nextHDU = FitsFactory.hduFactory(hdr, data);</span>
+<span class="fc" id="L659">        this.hduList.add(nextHDU);</span>
+<span class="fc" id="L660">        return nextHDU;</span>
     }
 
     /**
@@ -669,24 +668,24 @@ public class Fits implements Closeable {
      */
     private void readToEnd() throws FitsException {
 
-<span class="pc bpc" id="L672" title="2 of 4 branches missed.">        while (this.dataStr != null &amp;&amp; !this.atEOF) {</span>
+<span class="pc bpc" id="L671" title="2 of 4 branches missed.">        while (this.dataStr != null &amp;&amp; !this.atEOF) {</span>
             try {
-<span class="fc bfc" id="L674" title="All 2 branches covered.">                if (readHDU() == null) {</span>
-<span class="fc" id="L675">                    break;</span>
+<span class="fc bfc" id="L673" title="All 2 branches covered.">                if (readHDU() == null) {</span>
+<span class="fc" id="L674">                    break;</span>
                 }
-<span class="fc" id="L677">            } catch (EOFException e) {</span>
-<span class="pc bpc" id="L678" title="2 of 6 branches missed.">                if (FitsFactory.getAllowTerminalJunk() &amp;&amp; //</span>
+<span class="fc" id="L676">            } catch (EOFException e) {</span>
+<span class="pc bpc" id="L677" title="2 of 6 branches missed.">                if (FitsFactory.getAllowTerminalJunk() &amp;&amp; //</span>
                         e.getCause() instanceof TruncatedFileException &amp;&amp; //
                         getNumberOfHDUs() &gt; 0) {
-<span class="fc" id="L681">                    this.atEOF = true;</span>
-<span class="fc" id="L682">                    return;</span>
+<span class="fc" id="L680">                    this.atEOF = true;</span>
+<span class="fc" id="L681">                    return;</span>
                 }
-<span class="fc" id="L684">                throw new FitsException(&quot;IO error: &quot; + e);</span>
-<span class="fc" id="L685">            } catch (IOException e) {</span>
-<span class="fc" id="L686">                throw new FitsException(&quot;IO error: &quot; + e);</span>
-<span class="fc" id="L687">            }</span>
+<span class="fc" id="L683">                throw new FitsException(&quot;IO error: &quot; + e);</span>
+<span class="fc" id="L684">            } catch (IOException e) {</span>
+<span class="fc" id="L685">                throw new FitsException(&quot;IO error: &quot; + e);</span>
+<span class="fc" id="L686">            }</span>
         }
-<span class="fc" id="L689">    }</span>
+<span class="fc" id="L688">    }</span>
 
     /**
      * Add or Modify the CHECKSUM keyword in all headers. by R J Mathar
@@ -697,10 +696,10 @@ public class Fits implements Closeable {
      *             if the underlying stream failed
      */
     public void setChecksum() throws FitsException, IOException {
-<span class="fc bfc" id="L700" title="All 2 branches covered.">        for (int i = 0; i &lt; getNumberOfHDUs(); i += 1) {</span>
-<span class="fc" id="L701">            setChecksum(getHDU(i));</span>
+<span class="fc bfc" id="L699" title="All 2 branches covered.">        for (int i = 0; i &lt; getNumberOfHDUs(); i += 1) {</span>
+<span class="fc" id="L700">            setChecksum(getHDU(i));</span>
         }
-<span class="fc" id="L703">    }</span>
+<span class="fc" id="L702">    }</span>
 
     /**
      * Set the data stream to be used for future input.
@@ -709,10 +708,10 @@ public class Fits implements Closeable {
      *            The data stream to be used.
      */
     public void setStream(ArrayDataInput stream) {
-<span class="fc" id="L712">        this.dataStr = stream;</span>
-<span class="fc" id="L713">        this.atEOF = false;</span>
-<span class="fc" id="L714">        this.lastFileOffset = -1;</span>
-<span class="fc" id="L715">    }</span>
+<span class="fc" id="L711">        this.dataStr = stream;</span>
+<span class="fc" id="L712">        this.atEOF = false;</span>
+<span class="fc" id="L713">        this.lastFileOffset = -1;</span>
+<span class="fc" id="L714">    }</span>
 
     /**
      * Return the number of HDUs in the Fits object. If the FITS file is
@@ -735,8 +734,8 @@ public class Fits implements Closeable {
      */
     @Deprecated
     public int size() throws FitsException {
-<span class="nc" id="L738">        readToEnd();</span>
-<span class="nc" id="L739">        return getNumberOfHDUs();</span>
+<span class="nc" id="L737">        readToEnd();</span>
+<span class="nc" id="L738">        return getNumberOfHDUs();</span>
     }
 
     /**
@@ -748,17 +747,17 @@ public class Fits implements Closeable {
      *             if the underlying stream failed
      */
     public void skipHDU() throws FitsException, IOException {
-<span class="pc bpc" id="L751" title="1 of 2 branches missed.">        if (this.atEOF) {</span>
-<span class="nc" id="L752">            return;</span>
+<span class="pc bpc" id="L750" title="1 of 2 branches missed.">        if (this.atEOF) {</span>
+<span class="nc" id="L751">            return;</span>
         } else {
-<span class="fc" id="L754">            Header hdr = new Header(this.dataStr);</span>
-<span class="fc" id="L755">            int dataSize = (int) hdr.getDataSize();</span>
-<span class="fc" id="L756">            this.dataStr.skipAllBytes(dataSize);</span>
-<span class="pc bpc" id="L757" title="1 of 2 branches missed.">            if (this.dataStr instanceof RandomAccess) {</span>
-<span class="fc" id="L758">                this.lastFileOffset = ((RandomAccess) this.dataStr).getFilePointer();</span>
+<span class="fc" id="L753">            Header hdr = new Header(this.dataStr);</span>
+<span class="fc" id="L754">            int dataSize = (int) hdr.getDataSize();</span>
+<span class="fc" id="L755">            this.dataStr.skipAllBytes(dataSize);</span>
+<span class="pc bpc" id="L756" title="1 of 2 branches missed.">            if (this.dataStr instanceof RandomAccess) {</span>
+<span class="fc" id="L757">                this.lastFileOffset = ((RandomAccess) this.dataStr).getFilePointer();</span>
             }
         }
-<span class="fc" id="L761">    }</span>
+<span class="fc" id="L760">    }</span>
 
     /**
      * Skip HDUs on the associate input stream.
@@ -771,10 +770,10 @@ public class Fits implements Closeable {
      *             if the underlying stream failed
      */
     public void skipHDU(int n) throws FitsException, IOException {
-<span class="fc bfc" id="L774" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i += 1) {</span>
-<span class="fc" id="L775">            skipHDU();</span>
+<span class="fc bfc" id="L773" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i += 1) {</span>
+<span class="fc" id="L774">            skipHDU();</span>
         }
-<span class="fc" id="L777">    }</span>
+<span class="fc" id="L776">    }</span>
 
     /**
      * Initialize the input stream. Mostly this checks to see if the stream is
@@ -789,14 +788,14 @@ public class Fits implements Closeable {
      *             if the initialization failed
      */
     protected void streamInit(InputStream inputStream) throws FitsException {
-<span class="fc" id="L792">        inputStream = CompressionManager.decompress(inputStream);</span>
-<span class="pc bpc" id="L793" title="1 of 2 branches missed.">        if (inputStream instanceof ArrayDataInput) {</span>
-<span class="nc" id="L794">            this.dataStr = (ArrayDataInput) inputStream;</span>
+<span class="fc" id="L791">        inputStream = CompressionManager.decompress(inputStream);</span>
+<span class="pc bpc" id="L792" title="1 of 2 branches missed.">        if (inputStream instanceof ArrayDataInput) {</span>
+<span class="nc" id="L793">            this.dataStr = (ArrayDataInput) inputStream;</span>
         } else {
             // Use efficient blocking for input.
-<span class="fc" id="L797">            this.dataStr = new BufferedDataInputStream(inputStream);</span>
+<span class="fc" id="L796">            this.dataStr = new BufferedDataInputStream(inputStream);</span>
         }
-<span class="fc" id="L799">    }</span>
+<span class="fc" id="L798">    }</span>
 
     /**
      * Initialize the stream.
@@ -809,8 +808,8 @@ public class Fits implements Closeable {
      *             if the operation failed
      */
     protected void streamInit(InputStream str, boolean seekable) throws FitsException {
-<span class="nc" id="L812">        streamInit(str);</span>
-<span class="nc" id="L813">    }</span>
+<span class="nc" id="L811">        streamInit(str);</span>
+<span class="nc" id="L812">    }</span>
 
     /**
      * Write a Fits Object to an external Stream.
@@ -823,49 +822,49 @@ public class Fits implements Closeable {
     public void write(DataOutput os) throws FitsException {
 
         ArrayDataOutput obs;
-<span class="fc" id="L826">        boolean newOS = false;</span>
+<span class="fc" id="L825">        boolean newOS = false;</span>
 
-<span class="fc bfc" id="L828" title="All 2 branches covered.">        if (os instanceof ArrayDataOutput) {</span>
-<span class="fc" id="L829">            obs = (ArrayDataOutput) os;</span>
-<span class="pc bpc" id="L830" title="1 of 2 branches missed.">        } else if (os instanceof DataOutputStream) {</span>
-<span class="fc" id="L831">            newOS = true;</span>
-<span class="fc" id="L832">            obs = new BufferedDataOutputStream((DataOutputStream) os);</span>
+<span class="fc bfc" id="L827" title="All 2 branches covered.">        if (os instanceof ArrayDataOutput) {</span>
+<span class="fc" id="L828">            obs = (ArrayDataOutput) os;</span>
+<span class="pc bpc" id="L829" title="1 of 2 branches missed.">        } else if (os instanceof DataOutputStream) {</span>
+<span class="fc" id="L830">            newOS = true;</span>
+<span class="fc" id="L831">            obs = new BufferedDataOutputStream((DataOutputStream) os);</span>
         } else {
-<span class="nc" id="L834">            throw new FitsException(&quot;Cannot create ArrayDataOutput from class &quot; + os.getClass().getName());</span>
+<span class="nc" id="L833">            throw new FitsException(&quot;Cannot create ArrayDataOutput from class &quot; + os.getClass().getName());</span>
         }
 
         BasicHDU&lt;?&gt; hh;
-<span class="fc bfc" id="L838" title="All 2 branches covered.">        for (int i = 0; i &lt; getNumberOfHDUs(); i += 1) {</span>
+<span class="fc bfc" id="L837" title="All 2 branches covered.">        for (int i = 0; i &lt; getNumberOfHDUs(); i += 1) {</span>
             try {
-<span class="fc" id="L840">                hh = this.hduList.get(i);</span>
-<span class="fc" id="L841">                hh.write(obs);</span>
-<span class="nc" id="L842">            } catch (ArrayIndexOutOfBoundsException e) {</span>
-<span class="nc" id="L843">                throw new FitsException(&quot;Internal Error: Vector Inconsistency&quot; + e, e);</span>
-<span class="fc" id="L844">            }</span>
+<span class="fc" id="L839">                hh = this.hduList.get(i);</span>
+<span class="fc" id="L840">                hh.write(obs);</span>
+<span class="nc" id="L841">            } catch (ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L842">                throw new FitsException(&quot;Internal Error: Vector Inconsistency&quot; + e, e);</span>
+<span class="fc" id="L843">            }</span>
         }
-<span class="fc bfc" id="L846" title="All 2 branches covered.">        if (newOS) {</span>
+<span class="fc bfc" id="L845" title="All 2 branches covered.">        if (newOS) {</span>
             try {
-<span class="fc" id="L848">                obs.flush();</span>
-<span class="fc" id="L849">                obs.close();</span>
-<span class="nc" id="L850">            } catch (IOException e) {</span>
-<span class="nc" id="L851">                LOG.log(Level.WARNING, &quot;Warning: error flushing/closing FITS output stream&quot;, e);</span>
-<span class="fc" id="L852">            }</span>
+<span class="fc" id="L847">                obs.flush();</span>
+<span class="fc" id="L848">                obs.close();</span>
+<span class="nc" id="L849">            } catch (IOException e) {</span>
+<span class="nc" id="L850">                throw new FitsException(&quot;Error flushing/closing the FITS output stream: &quot; + e, e);</span>
+<span class="fc" id="L851">            }</span>
         }
-<span class="fc bfc" id="L854" title="All 2 branches covered.">        if (obs instanceof BufferedFile) {</span>
+<span class="fc bfc" id="L853" title="All 2 branches covered.">        if (obs instanceof BufferedFile) {</span>
             try {
-<span class="fc" id="L856">                ((BufferedFile) obs).setLength(((BufferedFile) obs).getFilePointer());</span>
-<span class="nc" id="L857">            } catch (IOException e) {</span>
-<span class="nc" id="L858">                LOG.log(Level.SEVERE, &quot;Warning: error changing fits file size&quot;, e);</span>
-<span class="fc" id="L859">            }</span>
+<span class="fc" id="L855">                ((BufferedFile) obs).setLength(((BufferedFile) obs).getFilePointer());</span>
+<span class="nc" id="L856">            } catch (IOException e) {</span>
+<span class="nc" id="L857">                throw new FitsException(&quot;Error resizing the FITS output stream: &quot; + e, e);</span>
+<span class="fc" id="L858">            }</span>
         }
-<span class="fc" id="L861">    }</span>
+<span class="fc" id="L860">    }</span>
 
     @Override
     public void close() throws IOException {
-<span class="fc bfc" id="L865" title="All 2 branches covered.">        if (dataStr != null) {</span>
-<span class="fc" id="L866">            this.dataStr.close();</span>
+<span class="fc bfc" id="L864" title="All 2 branches covered.">        if (dataStr != null) {</span>
+<span class="fc" id="L865">            this.dataStr.close();</span>
         }
-<span class="fc" id="L868">    }</span>
+<span class="fc" id="L867">    }</span>
 
     /**
      * set the checksum of a HDU.
@@ -878,8 +877,8 @@ public class Fits implements Closeable {
      */
     @Deprecated
     public static void setChecksum(BasicHDU&lt;?&gt; hdu) throws FitsException {
-<span class="fc" id="L881">        FitsCheckSum.setChecksum(hdu);</span>
-<span class="fc" id="L882">    }</span>
+<span class="fc" id="L880">        FitsCheckSum.setChecksum(hdu);</span>
+<span class="fc" id="L881">    }</span>
 
     /**
      * calculate the checksum for the block of data
@@ -891,7 +890,7 @@ public class Fits implements Closeable {
      */
     @Deprecated
     public static long checksum(final byte[] data) {
-<span class="fc" id="L894">        return FitsCheckSum.checksum(data);</span>
+<span class="fc" id="L893">        return FitsCheckSum.checksum(data);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

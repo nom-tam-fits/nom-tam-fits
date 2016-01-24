@@ -49,7 +49,7 @@ import nom.tam.fits.header.IFitsHeader;
  * 
  * @author Richard van Nieuwenhoven.
  */
-<span class="pc" id="L52">public enum SBFitsExt implements IFitsHeader {</span>
+<span class="fc" id="L52">public enum SBFitsExt implements IFitsHeader {</span>
     /**
      * Aperture Area of the Telescope used in square millimeters. Note that we
      * are specifying the area as well as the diameter because we want to be
@@ -216,11 +216,11 @@ import nom.tam.fits.header.IFitsHeader;
     @SuppressWarnings(&quot;CPD-START&quot;)
     private final IFitsHeader key;
 
-<span class="fc" id="L219">    private SBFitsExt(String key, VALUE valueType, String comment) {</span>
+<span class="fc" id="L219">    SBFitsExt(String key, VALUE valueType, String comment) {</span>
 <span class="fc" id="L220">        this.key = new FitsHeaderImpl(key, IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);</span>
 <span class="fc" id="L221">    }</span>
 
-<span class="fc" id="L223">    private SBFitsExt(VALUE valueType, String comment) {</span>
+<span class="fc" id="L223">    SBFitsExt(VALUE valueType, String comment) {</span>
 <span class="fc" id="L224">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);</span>
 <span class="fc" id="L225">    }</span>
 

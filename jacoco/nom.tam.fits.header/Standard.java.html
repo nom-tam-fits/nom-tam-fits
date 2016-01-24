@@ -49,7 +49,7 @@ import nom.tam.fits.UndefinedData;
  * 
  * @author Richard van Nieuwenhoven
  */
-<span class="pc" id="L52">public enum Standard implements IFitsHeader {</span>
+<span class="fc" id="L52">public enum Standard implements IFitsHeader {</span>
     /**
      * The value field shall contain a character string identifying who compiled
      * the information in the data associated with the key. This keyword is
@@ -62,8 +62,8 @@ import nom.tam.fits.UndefinedData;
      * computing the sizes of data structures. It shall specify the number of
      * bits that represent a data value. RANGE: -64,-32,8,16,32
      */
-<span class="fc" id="L65">    BITPIX(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, &quot;bits per data value&quot; //</span>
-            , replaceable(&quot;header:bitpix&quot;, Object.class) //
+<span class="fc" id="L65">    BITPIX(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, &quot;bits per data value&quot;, //</span>
+            replaceable(&quot;header:bitpix&quot;, Object.class) //
     ),
     /**
      * This keyword shall be used only in primary array headers or IMAGE
@@ -245,11 +245,11 @@ import nom.tam.fits.UndefinedData;
      * NAXIS=0, the NAXIS card image. The presence of this keyword with the
      * value T in the primary key does not require that extensions be present.
      */
-<span class="fc" id="L248">    EXTEND(SOURCE.RESERVED, HDU.PRIMARY, VALUE.LOGICAL, &quot;may the FITS file contain extensions?&quot; //</span>
-            , replaceable(&quot;basichdu:extend&quot;, BasicHDU.class, &quot;Allow extensions&quot;) //
-            , replaceable(&quot;header:extend&quot;, Object.class, &quot;Extensions are permitted&quot;) //
-            , replaceable(&quot;imagedata:extend&quot;, ImageData.class, &quot;Extension permitted&quot;) //
-            , replaceable(&quot;undefineddata:extend&quot;, UndefinedData.class, &quot;Extensions are permitted&quot;)
+<span class="fc" id="L248">    EXTEND(SOURCE.RESERVED, HDU.PRIMARY, VALUE.LOGICAL, &quot;may the FITS file contain extensions?&quot;, //</span>
+            replaceable(&quot;basichdu:extend&quot;, BasicHDU.class, &quot;Allow extensions&quot;), //
+            replaceable(&quot;header:extend&quot;, Object.class, &quot;Extensions are permitted&quot;), //
+            replaceable(&quot;imagedata:extend&quot;, ImageData.class, &quot;Extension permitted&quot;), //
+            replaceable(&quot;undefineddata:extend&quot;, UndefinedData.class, &quot;Extensions are permitted&quot;)
 
     ),
 
@@ -291,13 +291,13 @@ import nom.tam.fits.UndefinedData;
      * where it specifies the number of random groups present. In most other
      * cases this keyword will have the value 1.
      */
-<span class="fc" id="L294">    GCOUNT(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.INTEGER, &quot;group count&quot; //</span>
-            , replaceable(&quot;randomgroupsdata:gcount&quot;, RandomGroupsData.class) //
-            , replaceable(&quot;asciitable:gcount&quot;, AsciiTable.class) //
-            , replaceable(&quot;basichdu:gcount&quot;, Object.class, &quot;Required value&quot;) //
-            , replaceable(&quot;binarytable:gcount&quot;, BinaryTable.class) //
-            , replaceable(&quot;imagedata:gcount&quot;, ImageData.class, &quot;No extra parameters&quot;) //
-            , replaceable(&quot;undefineddata:gcount&quot;, UndefinedData.class)
+<span class="fc" id="L294">    GCOUNT(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.INTEGER, &quot;group count&quot;, //</span>
+            replaceable(&quot;randomgroupsdata:gcount&quot;, RandomGroupsData.class), //
+            replaceable(&quot;asciitable:gcount&quot;, AsciiTable.class), //
+            replaceable(&quot;basichdu:gcount&quot;, Object.class, &quot;Required value&quot;), //
+            replaceable(&quot;binarytable:gcount&quot;, BinaryTable.class), //
+            replaceable(&quot;imagedata:gcount&quot;, ImageData.class, &quot;No extra parameters&quot;), //
+            replaceable(&quot;undefineddata:gcount&quot;, UndefinedData.class)
 
     ),
 
@@ -306,8 +306,8 @@ import nom.tam.fits.UndefinedData;
      * associated with this keyword implies that random groups records are
      * present.
      */
-<span class="fc" id="L309">    GROUPS(SOURCE.MANDATORY, HDU.GROUPS, VALUE.LOGICAL, &quot;indicates random groups structure&quot; //</span>
-            , replaceable(&quot;randomgroupsdata:groups&quot;, RandomGroupsData.class) //
+<span class="fc" id="L309">    GROUPS(SOURCE.MANDATORY, HDU.GROUPS, VALUE.LOGICAL, &quot;indicates random groups structure&quot;, //</span>
+            replaceable(&quot;randomgroupsdata:groups&quot;, RandomGroupsData.class) //
     ),
 
     /**
@@ -331,8 +331,8 @@ import nom.tam.fits.UndefinedData;
      * FITS 'TABLE' or 'BINTABLE' extensions, the value of NAXIS is always
      * 2.RANGE: [0:999]
      */
-<span class="fc" id="L334">    NAXIS(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, &quot;number of axes&quot; //</span>
-            , replaceable(&quot;header:naxis&quot;, Object.class) //
+<span class="fc" id="L334">    NAXIS(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, &quot;number of axes&quot;, //</span>
+            replaceable(&quot;header:naxis&quot;, Object.class) //
     ),
 
     /**
@@ -343,35 +343,33 @@ import nom.tam.fits.UndefinedData;
      * that no data follow the key in the HDU. If NAXIS is equal to 0, there
      * should not be any NAXISn keywords.RANGE: [0:]
      */
-<span class="fc" id="L346">    NAXISn(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, &quot;size of the n'th axis&quot; //</span>
-            , replaceable(&quot;asciitable:naxis1&quot;, AsciiTable.class, &quot;Size of row in bytes&quot;) //
-            , replaceable(&quot;binarytable:naxis1&quot;, BinaryTable.class, &quot;Bytes per row&quot;) //
-            , replaceable(&quot;randomgroupsdata:naxis1&quot;, RandomGroupsData.class) //
-            , replaceable(&quot;randomgroupsdata:naxisN&quot;, RandomGroupsData.class) //
-            , replaceable(&quot;tablehdu:naxis2&quot;, TableData.class) //
-            , replaceable(&quot;header:naxisN&quot;, Object.class) //
-            , replaceable(&quot;undefineddata:naxis1&quot;, UndefinedData.class, &quot;Number of Bytes&quot;) //
-    )
-
-    ,
+<span class="fc" id="L346">    NAXISn(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, &quot;size of the n'th axis&quot;, //</span>
+            replaceable(&quot;asciitable:naxis1&quot;, AsciiTable.class, &quot;Size of row in bytes&quot;), //
+            replaceable(&quot;binarytable:naxis1&quot;, BinaryTable.class, &quot;Bytes per row&quot;), //
+            replaceable(&quot;randomgroupsdata:naxis1&quot;, RandomGroupsData.class), //
+            replaceable(&quot;randomgroupsdata:naxisN&quot;, RandomGroupsData.class), //
+            replaceable(&quot;tablehdu:naxis2&quot;, TableData.class), //
+            replaceable(&quot;header:naxisN&quot;, Object.class), //
+            replaceable(&quot;undefineddata:naxis1&quot;, UndefinedData.class, &quot;Number of Bytes&quot;) //
+    ),
 
     /**
      * The value field shall contain a character string giving a name for the
      * object observed.
      */
-<span class="fc" id="L362">    OBJECT(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, &quot;name of observed object&quot;),</span>
+<span class="fc" id="L360">    OBJECT(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, &quot;name of observed object&quot;),</span>
 
     /**
      * The value field shall contain a character string identifying who acquired
      * the data associated with the key.
      */
-<span class="fc" id="L368">    OBSERVER(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, &quot;observer who acquired the data&quot;),</span>
+<span class="fc" id="L366">    OBSERVER(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, &quot;observer who acquired the data&quot;),</span>
 
     /**
      * The value field shall contain a character string identifying the
      * organization or institution responsible for creating the FITS file.
      */
-<span class="fc" id="L374">    ORIGIN(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, &quot;organization responsible for the data&quot;),</span>
+<span class="fc" id="L372">    ORIGIN(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, &quot;organization responsible for the data&quot;),</span>
 
     /**
      * The value field shall contain an integer that shall be used in any way
@@ -382,14 +380,14 @@ import nom.tam.fits.UndefinedData;
      * data heap following the main data table. In most other cases its value
      * will be zero.
      */
-<span class="fc" id="L385">    PCOUNT(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.INTEGER, &quot;parameter count&quot; //</span>
-            , replaceable(&quot;asciitable:pcount&quot;, AsciiTable.class, &quot;No group data&quot;) //
-            , replaceable(&quot;basichdu:pcount&quot;, Object.class, &quot;Required value&quot;) //
-            , replaceable(&quot;binarytablehdu:pcount&quot;, BinaryTable.class, &quot;Includes heap&quot;) //
-            , replaceable(&quot;binarytable:pcount&quot;, BinaryTable.class) //
-            , replaceable(&quot;imagedata:pcount&quot;, ImageData.class, &quot;One group&quot;) //
-            , replaceable(&quot;randomgroupsdata:pcount&quot;, RandomGroupsData.class) //
-            , replaceable(&quot;undefineddata:pcount&quot;, UndefinedData.class) //
+<span class="fc" id="L383">    PCOUNT(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.INTEGER, &quot;parameter count&quot;, //</span>
+            replaceable(&quot;asciitable:pcount&quot;, AsciiTable.class, &quot;No group data&quot;), //
+            replaceable(&quot;basichdu:pcount&quot;, Object.class, &quot;Required value&quot;), //
+            replaceable(&quot;binarytablehdu:pcount&quot;, BinaryTable.class, &quot;Includes heap&quot;), //
+            replaceable(&quot;binarytable:pcount&quot;, BinaryTable.class), //
+            replaceable(&quot;imagedata:pcount&quot;, ImageData.class, &quot;One group&quot;), //
+            replaceable(&quot;randomgroupsdata:pcount&quot;, RandomGroupsData.class), //
+            replaceable(&quot;undefineddata:pcount&quot;, UndefinedData.class) //
 
     ),
 
@@ -404,7 +402,7 @@ import nom.tam.fits.UndefinedData;
      * factor between true values and group parameter values at zero offset. The
      * default value for this keyword is 1.0.
      */
-<span class="fc" id="L407">    PSCALn(SOURCE.RESERVED, HDU.GROUPS, VALUE.REAL, &quot;parameter scaling factor&quot;),</span>
+<span class="fc" id="L405">    PSCALn(SOURCE.RESERVED, HDU.GROUPS, VALUE.REAL, &quot;parameter scaling factor&quot;),</span>
 
     /**
      * This keyword is reserved for use within the FITS Random Groups structure.
@@ -418,7 +416,7 @@ import nom.tam.fits.UndefinedData;
      * first scaled relative to the other such that the sum forms a number of up
      * to 32-bit precision.
      */
-<span class="fc" id="L421">    PTYPEn(SOURCE.RESERVED, HDU.GROUPS, VALUE.STRING, &quot;name of random groups parameter&quot;),</span>
+<span class="fc" id="L419">    PTYPEn(SOURCE.RESERVED, HDU.GROUPS, VALUE.STRING, &quot;name of random groups parameter&quot;),</span>
 
     /**
      * This keyword is reserved for use within the FITS Random Groups structure.
@@ -430,26 +428,26 @@ import nom.tam.fits.UndefinedData;
      * this keyword is 0.0. The transformation equation is as follows:
      * physical_value = PZEROn + PSCALn * group_parameter_value.DEFAULT: 0.0
      */
-<span class="fc" id="L433">    PZEROn(SOURCE.RESERVED, HDU.GROUPS, VALUE.REAL, &quot;parameter scaling zero point&quot;),</span>
+<span class="fc" id="L431">    PZEROn(SOURCE.RESERVED, HDU.GROUPS, VALUE.REAL, &quot;parameter scaling zero point&quot;),</span>
 
     /**
      * Coordinate reference frame of major/minor axes.If absent the default
      * value is 'FK5'.
      */
-<span class="fc" id="L439">    RADESYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, &quot;Coordinate reference frame of major/minor axes.&quot;),</span>
+<span class="fc" id="L437">    RADESYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, &quot;Coordinate reference frame of major/minor axes.&quot;),</span>
     /**
      * Coordinate reference frame of major/minor axes. use RADESYS instead.
      * 
      * @deprecated use {@link #RADESYS} instead.
      */
-<span class="fc" id="L445">    @Deprecated</span>
+<span class="fc" id="L443">    @Deprecated</span>
     RADECSYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, &quot;Coordinate reference frame of major/minor axes.&quot;),
 
     /**
      * The value field shall contain a character string citing a reference where
      * the data associated with the key are published.
      */
-<span class="fc" id="L452">    REFERENC(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, &quot;bibliographic reference&quot;),</span>
+<span class="fc" id="L450">    REFERENC(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, &quot;bibliographic reference&quot;),</span>
 
     /**
      * The SIMPLE keyword is required to be the first keyword in the primary key
@@ -458,8 +456,8 @@ import nom.tam.fits.UndefinedData;
      * mandatory for the primary key and is not permitted in extension headers.
      * A value of F signifies that the file does not conform to this standard.
      */
-<span class="fc" id="L461">    SIMPLE(SOURCE.MANDATORY, HDU.PRIMARY, VALUE.LOGICAL, &quot;does file conform to the Standard?&quot; //</span>
-            , replaceable(&quot;header:simple&quot;, Object.class, &quot;Java FITS: &quot; + new java.util.Date()) //
+<span class="fc" id="L459">    SIMPLE(SOURCE.MANDATORY, HDU.PRIMARY, VALUE.LOGICAL, &quot;does file conform to the Standard?&quot;, //</span>
+            replaceable(&quot;header:simple&quot;, Object.class, &quot;Java FITS: &quot; + new java.util.Date()) //
     ),
 
     /**
@@ -467,8 +465,8 @@ import nom.tam.fits.UndefinedData;
      * specifying the column in which field n starts in an ASCII TABLE
      * extension. The first column of a row is numbered 1.RANGE: [1:]
      */
-<span class="fc" id="L470">    TBCOLn(SOURCE.MANDATORY, HDU.ASCII_TABLE, VALUE.INTEGER, &quot;begining column number&quot; //</span>
-            , replaceable(&quot;asciitable:tbcolN&quot;, AsciiTable.class, &quot;Column offset&quot;) //
+<span class="fc" id="L468">    TBCOLn(SOURCE.MANDATORY, HDU.ASCII_TABLE, VALUE.INTEGER, &quot;begining column number&quot;, //</span>
+            replaceable(&quot;asciitable:tbcolN&quot;, AsciiTable.class, &quot;Column offset&quot;) //
     ),
 
     /**
@@ -480,9 +478,9 @@ import nom.tam.fits.UndefinedData;
      * which the value string has the format '(l,m,n...)' where l, m, n,... are
      * the dimensions of the array.
      */
-<span class="fc" id="L483">    TDIMn(SOURCE.RESERVED, HDU.BINTABLE, VALUE.STRING, &quot;dimensionality of the array &quot; //</span>
-            , replaceable(&quot;binarytablehdu:tdimN&quot;, BinaryTable.class) //
-            , replaceable(&quot;headercard:tdimN&quot;, Object.class) //
+<span class="fc" id="L481">    TDIMn(SOURCE.RESERVED, HDU.BINTABLE, VALUE.STRING, &quot;dimensionality of the array &quot;, //</span>
+            replaceable(&quot;binarytablehdu:tdimN&quot;, BinaryTable.class), //
+            replaceable(&quot;headercard:tdimN&quot;, Object.class) //
     ),
 
     /**
@@ -501,33 +499,33 @@ import nom.tam.fits.UndefinedData;
      * defined for fields of type P in the Standard but may be defined in
      * conventions using such fields.
      */
-<span class="fc" id="L504">    TDISPn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, &quot;display format&quot;),</span>
+<span class="fc" id="L502">    TDISPn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, &quot;display format&quot;),</span>
 
     /**
      * The value field shall contain a character string identifying the
      * telescope used to acquire the data associated with the key.
      */
-<span class="fc" id="L510">    TELESCOP(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, &quot;name of telescope&quot;),</span>
+<span class="fc" id="L508">    TELESCOP(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, &quot;name of telescope&quot;),</span>
 
     /**
      * The value field shall contain a non-negative integer representing the
      * number of fields in each row of a 'TABLE' or 'BINTABLE' extension. The
      * maximum permissible value is 999. RANGE: [0:999]
      */
-<span class="fc" id="L517">    TFIELDS(SOURCE.MANDATORY, HDU.TABLE, VALUE.INTEGER, &quot;number of columns in the table&quot; //</span>
-            , replaceable(&quot;asciitablehdu:tfields&quot;, AsciiTable.class) //
-            , replaceable(&quot;binarytable:tfields&quot;, BinaryTable.class) //
-            , replaceable(&quot;tablehdu:tfields&quot;, TableData.class, &quot;Number of table fields&quot;) //
-            , replaceable(&quot;asciitable:tfields&quot;, AsciiTable.class, &quot;Number of fields in table&quot;) //
+<span class="fc" id="L515">    TFIELDS(SOURCE.MANDATORY, HDU.TABLE, VALUE.INTEGER, &quot;number of columns in the table&quot;, //</span>
+            replaceable(&quot;asciitablehdu:tfields&quot;, AsciiTable.class), //
+            replaceable(&quot;binarytable:tfields&quot;, BinaryTable.class), //
+            replaceable(&quot;tablehdu:tfields&quot;, TableData.class, &quot;Number of table fields&quot;), //
+            replaceable(&quot;asciitable:tfields&quot;, AsciiTable.class, &quot;Number of fields in table&quot;) //
     ),
     /**
      * The value field of this indexed keyword shall contain a character string
      * describing the format in which field n is encoded in a 'TABLE' or
      * 'BINTABLE' extension.
      */
-<span class="fc" id="L528">    TFORMn(SOURCE.MANDATORY, HDU.TABLE, VALUE.STRING, &quot;column data format&quot; //</span>
-            , replaceable(&quot;asciitable:tformN&quot;, AsciiTable.class) //
-            , replaceable(&quot;binarytable:tformN&quot;, BinaryTable.class) //
+<span class="fc" id="L526">    TFORMn(SOURCE.MANDATORY, HDU.TABLE, VALUE.STRING, &quot;column data format&quot;, //</span>
+            replaceable(&quot;asciitable:tformN&quot;, AsciiTable.class), //
+            replaceable(&quot;binarytable:tformN&quot;, BinaryTable.class) //
 
     ),
 
@@ -539,8 +537,8 @@ import nom.tam.fits.UndefinedData;
      * shall not be used if the value of PCOUNT is zero. A proposed application
      * of this keyword is presented in Appendix B.1 of the FITS Standard.
      */
-<span class="fc" id="L542">    THEAP(SOURCE.RESERVED, HDU.BINTABLE, VALUE.INTEGER, &quot;offset to starting data heap address&quot; //</span>
-            , replaceable(&quot;binarytablehdu:theap&quot;, BinaryTable.class) //
+<span class="fc" id="L540">    THEAP(SOURCE.RESERVED, HDU.BINTABLE, VALUE.INTEGER, &quot;offset to starting data heap address&quot;, //</span>
+            replaceable(&quot;binarytablehdu:theap&quot;, BinaryTable.class) //
     ),
 
     /**
@@ -552,7 +550,7 @@ import nom.tam.fits.UndefinedData;
      * field n of data type B, I, or J. The keyword may not be used in
      * 'BINTABLE' extensions if field n is of any other data type.
      */
-<span class="fc" id="L555">    TNULLn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, &quot;value used to indicate undefined table element&quot;),</span>
+<span class="fc" id="L553">    TNULLn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, &quot;value used to indicate undefined table element&quot;),</span>
 
     /**
      * This indexed keyword shall be used, along with the TZEROn keyword, when
@@ -565,7 +563,7 @@ import nom.tam.fits.UndefinedData;
      * set to zero. The default value for this keyword is 1.0. This keyword may
      * not be used if the format of field n is A, L, or X.DEFAULT: 1.0
      */
-<span class="fc" id="L568">    TSCALn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, &quot;linear data scaling factor&quot;),</span>
+<span class="fc" id="L566">    TSCALn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, &quot;linear data scaling factor&quot;),</span>
 
     /**
      * The value field for this indexed keyword shall contain a character
@@ -575,7 +573,7 @@ import nom.tam.fits.UndefinedData;
      * sensitive. The use of identical names for different fields should be
      * avoided.
      */
-<span class="fc" id="L578">    TTYPEn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, &quot;column name&quot;),</span>
+<span class="fc" id="L576">    TTYPEn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, &quot;column name&quot;),</span>
 
     /**
      * The value field shall contain a character string describing the physical
@@ -586,7 +584,7 @@ import nom.tam.fits.UndefinedData;
      * as floating point values and specified with reserved keywords, degrees
      * are the recommended units (with the units, if specified, given as 'deg').
      */
-<span class="fc" id="L589">    TUNITn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, &quot;column units&quot;),</span>
+<span class="fc" id="L587">    TUNITn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, &quot;column units&quot;),</span>
 
     /**
      * This indexed keyword shall be used, along with the TSCALn keyword, when
@@ -598,7 +596,7 @@ import nom.tam.fits.UndefinedData;
      * this keyword is 0.0. This keyword may not be used if the format of field
      * n is A, L, or X.DEFAULT: 0.0
      */
-<span class="fc" id="L601">    TZEROn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, &quot;column scaling zero point&quot;),</span>
+<span class="fc" id="L599">    TZEROn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, &quot;column scaling zero point&quot;),</span>
 
     /**
      * The value field shall contain a character string giving the name of the
@@ -607,74 +605,74 @@ import nom.tam.fits.UndefinedData;
      * extension, the type name must not be the same as that of a standard
      * extension.
      */
-<span class="fc" id="L610">    XTENSION(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.STRING, &quot;marks beginning of new HDU&quot;);</span>
+<span class="fc" id="L608">    XTENSION(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.STRING, &quot;marks beginning of new HDU&quot;);</span>
 
-<span class="fc" id="L612">    public static final IFitsHeader NAXIS1 = NAXISn.n(1);</span>
+<span class="fc" id="L610">    public static final IFitsHeader NAXIS1 = NAXISn.n(1);</span>
 
-<span class="fc" id="L614">    public static final IFitsHeader NAXIS2 = NAXISn.n(2);</span>
+<span class="fc" id="L612">    public static final IFitsHeader NAXIS2 = NAXISn.n(2);</span>
 
-<span class="fc" id="L616">    private static final ThreadLocal&lt;Class&lt;?&gt;&gt; COMMENT_CONTEXT = new ThreadLocal&lt;&gt;();</span>
+<span class="fc" id="L614">    private static final ThreadLocal&lt;Class&lt;?&gt;&gt; COMMENT_CONTEXT = new ThreadLocal&lt;&gt;();</span>
 
     private final StandardCommentReplacement[] commentReplacements;
 
     @SuppressWarnings(&quot;CPD-START&quot;)
     private final IFitsHeader key;
 
-<span class="fc" id="L623">    private Standard(SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {</span>
-<span class="fc" id="L624">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
-<span class="fc" id="L625">        this.commentReplacements = replacements;</span>
-<span class="fc" id="L626">    }</span>
+<span class="fc" id="L621">    Standard(SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {</span>
+<span class="fc" id="L622">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
+<span class="fc" id="L623">        this.commentReplacements = replacements;</span>
+<span class="fc" id="L624">    }</span>
 
-<span class="fc" id="L628">    private Standard(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {</span>
-<span class="pc bpc" id="L629" title="1 of 2 branches missed.">        this.key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);</span>
-<span class="fc" id="L630">        this.commentReplacements = replacements;</span>
-<span class="fc" id="L631">    }</span>
+<span class="fc" id="L626">    Standard(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {</span>
+<span class="pc bpc" id="L627" title="1 of 2 branches missed.">        this.key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);</span>
+<span class="fc" id="L628">        this.commentReplacements = replacements;</span>
+<span class="fc" id="L629">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L635">        Class&lt;?&gt; contextClass = COMMENT_CONTEXT.get();</span>
-<span class="fc bfc" id="L636" title="All 2 branches covered.">        if (contextClass == null) {</span>
-<span class="fc" id="L637">            contextClass = Object.class;</span>
+<span class="fc" id="L633">        Class&lt;?&gt; contextClass = COMMENT_CONTEXT.get();</span>
+<span class="fc bfc" id="L634" title="All 2 branches covered.">        if (contextClass == null) {</span>
+<span class="fc" id="L635">            contextClass = Object.class;</span>
         }
-<span class="fc bfc" id="L639" title="All 2 branches covered.">        for (StandardCommentReplacement stdCommentReplacement : commentReplacements) {</span>
-<span class="fc bfc" id="L640" title="All 2 branches covered.">            if (stdCommentReplacement.getContext().isAssignableFrom(contextClass)) {</span>
-<span class="fc bfc" id="L641" title="All 2 branches covered.">                if (stdCommentReplacement.getComment() != null) {</span>
-<span class="fc" id="L642">                    return stdCommentReplacement.getComment();</span>
+<span class="fc bfc" id="L637" title="All 2 branches covered.">        for (StandardCommentReplacement stdCommentReplacement : commentReplacements) {</span>
+<span class="fc bfc" id="L638" title="All 2 branches covered.">            if (stdCommentReplacement.getContext().isAssignableFrom(contextClass)) {</span>
+<span class="fc bfc" id="L639" title="All 2 branches covered.">                if (stdCommentReplacement.getComment() != null) {</span>
+<span class="fc" id="L640">                    return stdCommentReplacement.getComment();</span>
                 }
             }
         }
-<span class="fc" id="L646">        return this.key.comment();</span>
+<span class="fc" id="L644">        return this.key.comment();</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L651">        return this.key.hdu();</span>
+<span class="fc" id="L649">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L656">        return this.key.key();</span>
+<span class="fc" id="L654">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L661">        return this.key.n(number);</span>
+<span class="fc" id="L659">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L666">        return this.key.status();</span>
+<span class="fc" id="L664">        return this.key.status();</span>
     }
 
     @Override
     @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L672">        return this.key.valueType();</span>
+<span class="fc" id="L670">        return this.key.valueType();</span>
     }
 
     public static void context(Class&lt;?&gt; clazz) {
-<span class="fc" id="L676">        COMMENT_CONTEXT.set(clazz);</span>
-<span class="fc" id="L677">    }</span>
+<span class="fc" id="L674">        COMMENT_CONTEXT.set(clazz);</span>
+<span class="fc" id="L675">    }</span>
 
     /**
      * scan for a comment with the specified reference key.
@@ -684,17 +682,17 @@ import nom.tam.fits.UndefinedData;
      * @return the comment for the reference key
      */
     public String getCommentByKey(String commentKey) {
-<span class="fc bfc" id="L687" title="All 2 branches covered.">        for (StandardCommentReplacement commentReplacement : commentReplacements) {</span>
-<span class="fc bfc" id="L688" title="All 2 branches covered.">            if (commentReplacement.getRef().equals(commentKey)) {</span>
-<span class="fc" id="L689">                String foundcommentReplacement = commentReplacement.getComment();</span>
-<span class="fc bfc" id="L690" title="All 2 branches covered.">                if (foundcommentReplacement == null) {</span>
-<span class="fc" id="L691">                    return comment();</span>
+<span class="fc bfc" id="L685" title="All 2 branches covered.">        for (StandardCommentReplacement commentReplacement : commentReplacements) {</span>
+<span class="fc bfc" id="L686" title="All 2 branches covered.">            if (commentReplacement.getRef().equals(commentKey)) {</span>
+<span class="fc" id="L687">                String foundcommentReplacement = commentReplacement.getComment();</span>
+<span class="fc bfc" id="L688" title="All 2 branches covered.">                if (foundcommentReplacement == null) {</span>
+<span class="fc" id="L689">                    return comment();</span>
                 } else {
-<span class="fc" id="L693">                    return foundcommentReplacement;</span>
+<span class="fc" id="L691">                    return foundcommentReplacement;</span>
                 }
             }
         }
-<span class="fc" id="L697">        return null;</span>
+<span class="fc" id="L695">        return null;</span>
     }
 
     /**
@@ -706,21 +704,20 @@ import nom.tam.fits.UndefinedData;
      *            the comment to set when the fits key is used.
      */
     public void setCommentByKey(String commentKey, String value) {
-<span class="fc bfc" id="L709" title="All 2 branches covered.">        for (StandardCommentReplacement commentReplacement : commentReplacements) {</span>
-<span class="fc bfc" id="L710" title="All 2 branches covered.">            if (commentReplacement.getRef().equals(commentKey)) {</span>
-<span class="fc" id="L711">                commentReplacement.setComment(value);</span>
-<span class="fc" id="L712">                return;</span>
+<span class="fc bfc" id="L707" title="All 2 branches covered.">        for (StandardCommentReplacement commentReplacement : commentReplacements) {</span>
+<span class="fc bfc" id="L708" title="All 2 branches covered.">            if (commentReplacement.getRef().equals(commentKey)) {</span>
+<span class="fc" id="L709">                commentReplacement.setComment(value);</span>
+<span class="fc" id="L710">                return;</span>
             }
         }
-<span class="fc" id="L715">    }</span>
+<span class="fc" id="L713">    }</span>
 
     private static StandardCommentReplacement replaceable(String string, Class&lt;?&gt; clazz) {
-<span class="fc" id="L718">        return new StandardCommentReplacement(string, clazz);</span>
+<span class="fc" id="L716">        return new StandardCommentReplacement(string, clazz);</span>
     }
 
     private static StandardCommentReplacement replaceable(String string, Class&lt;?&gt; clazz, String comment) {
-<span class="fc" id="L722">        return new StandardCommentReplacement(string, clazz, comment);</span>
+<span class="fc" id="L720">        return new StandardCommentReplacement(string, clazz, comment);</span>
     }
-
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

@@ -99,7 +99,7 @@ public class BinaryTableHDU extends TableHDU&lt;BinaryTable&gt; {
 
     /**
      * Check that this is a valid binary table header.
-     * 
+     *
      * @param header
      *            to validate.
      * @return &lt;CODE&gt;true&lt;/CODE&gt; if this is a binary table header.
@@ -142,28 +142,11 @@ public class BinaryTableHDU extends TableHDU&lt;BinaryTable&gt; {
 <span class="fc" id="L142">        super(hdr, datum);</span>
 <span class="fc" id="L143">    }</span>
 
-    /**
-     * Add a column without any associated header information.
-     * 
-     * @param data
-     *            The column data to be added. Data should be an Object[] where
-     *            type of all of the constituents is identical. The length of
-     *            data should match the other columns. &lt;b&gt; Note:&lt;/b&gt; It is valid
-     *            for data to be a 2 or higher dimensionality primitive array.
-     *            In this case the column index is the first (in Java speak)
-     *            index of the array. E.g., if called with int[30][20][10], the
-     *            number of rows in the table should be 30 and this column will
-     *            have elements which are 2-d integer arrays with TDIM =
-     *            (10,20).
-     * @throws FitsException
-     *             the column could not be added.
-     */
     @Override
     public int addColumn(Object data) throws FitsException {
-
-<span class="nc" id="L164">        int col = this.myData.addColumn(data);</span>
-<span class="nc" id="L165">        this.myData.pointToColumn(getNCols() - 1, this.myHeader);</span>
-<span class="nc" id="L166">        return col;</span>
+<span class="fc" id="L147">        this.myData.addColumn(data);</span>
+<span class="fc" id="L148">        this.myData.pointToColumn(getNCols() - 1, this.myHeader);</span>
+<span class="fc" id="L149">        return super.addColumn(data);</span>
     }
 
     /**
@@ -171,7 +154,7 @@ public class BinaryTableHDU extends TableHDU&lt;BinaryTable&gt; {
      */
     @Override
     protected IFitsHeader[] columnKeyStems() {
-<span class="fc" id="L174">        return BinaryTableHDU.KEY_STEMS;</span>
+<span class="fc" id="L157">        return BinaryTableHDU.KEY_STEMS;</span>
     }
 
     /**
@@ -180,67 +163,67 @@ public class BinaryTableHDU extends TableHDU&lt;BinaryTable&gt; {
     @Override
     public void info(PrintStream stream) {
 
-<span class="fc" id="L183">        BinaryTable myData = this.myData;</span>
+<span class="fc" id="L166">        BinaryTable myData = this.myData;</span>
 
-<span class="fc" id="L185">        stream.println(&quot;  Binary Table&quot;);</span>
-<span class="fc" id="L186">        stream.println(&quot;      Header Information:&quot;);</span>
+<span class="fc" id="L168">        stream.println(&quot;  Binary Table&quot;);</span>
+<span class="fc" id="L169">        stream.println(&quot;      Header Information:&quot;);</span>
 
-<span class="fc" id="L188">        int nhcol = this.myHeader.getIntValue(TFIELDS, -1);</span>
-<span class="fc" id="L189">        int nrow = this.myHeader.getIntValue(NAXIS2, -1);</span>
-<span class="fc" id="L190">        int rowsize = this.myHeader.getIntValue(NAXIS1, -1);</span>
+<span class="fc" id="L171">        int nhcol = this.myHeader.getIntValue(TFIELDS, -1);</span>
+<span class="fc" id="L172">        int nrow = this.myHeader.getIntValue(NAXIS2, -1);</span>
+<span class="fc" id="L173">        int rowsize = this.myHeader.getIntValue(NAXIS1, -1);</span>
 
-<span class="fc" id="L192">        stream.print(&quot;          &quot; + nhcol + &quot; fields&quot;);</span>
-<span class="fc" id="L193">        stream.println(&quot;, &quot; + nrow + &quot; rows of length &quot; + rowsize);</span>
+<span class="fc" id="L175">        stream.print(&quot;          &quot; + nhcol + &quot; fields&quot;);</span>
+<span class="fc" id="L176">        stream.println(&quot;, &quot; + nrow + &quot; rows of length &quot; + rowsize);</span>
 
-<span class="fc bfc" id="L195" title="All 2 branches covered.">        for (int i = 1; i &lt;= nhcol; i += 1) {</span>
-<span class="fc" id="L196">            stream.print(&quot;           &quot; + i + &quot;:&quot;);</span>
-<span class="fc" id="L197">            prtField(stream, &quot;Name&quot;, TTYPEn.n(i).key());</span>
-<span class="fc" id="L198">            prtField(stream, &quot;Format&quot;, TFORMn.n(i).key());</span>
-<span class="fc" id="L199">            prtField(stream, &quot;Dimens&quot;, TDIMn.n(i).key());</span>
-<span class="fc" id="L200">            stream.println(&quot;&quot;);</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        for (int i = 1; i &lt;= nhcol; i += 1) {</span>
+<span class="fc" id="L179">            stream.print(&quot;           &quot; + i + &quot;:&quot;);</span>
+<span class="fc" id="L180">            prtField(stream, &quot;Name&quot;, TTYPEn.n(i).key());</span>
+<span class="fc" id="L181">            prtField(stream, &quot;Format&quot;, TFORMn.n(i).key());</span>
+<span class="fc" id="L182">            prtField(stream, &quot;Dimens&quot;, TDIMn.n(i).key());</span>
+<span class="fc" id="L183">            stream.println(&quot;&quot;);</span>
         }
 
-<span class="fc" id="L203">        stream.println(&quot;      Data Information:&quot;);</span>
-<span class="pc bpc" id="L204" title="3 of 6 branches missed.">        if (myData == null || this.myData.getNRows() == 0 || this.myData.getNCols() == 0) {</span>
-<span class="nc" id="L205">            stream.println(&quot;         No data present&quot;);</span>
-<span class="nc bnc" id="L206" title="All 2 branches missed.">            if (this.myData.getHeapSize() &gt; 0) {</span>
-<span class="nc" id="L207">                stream.println(&quot;         Heap size is: &quot; + this.myData.getHeapSize() + &quot; bytes&quot;);</span>
+<span class="fc" id="L186">        stream.println(&quot;      Data Information:&quot;);</span>
+<span class="pc bpc" id="L187" title="3 of 6 branches missed.">        if (myData == null || this.myData.getNRows() == 0 || this.myData.getNCols() == 0) {</span>
+<span class="nc" id="L188">            stream.println(&quot;         No data present&quot;);</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">            if (this.myData.getHeapSize() &gt; 0) {</span>
+<span class="nc" id="L190">                stream.println(&quot;         Heap size is: &quot; + this.myData.getHeapSize() + &quot; bytes&quot;);</span>
             }
         } else {
 
-<span class="fc" id="L211">            stream.println(&quot;          Number of rows=&quot; + this.myData.getNRows());</span>
-<span class="fc" id="L212">            stream.println(&quot;          Number of columns=&quot; + this.myData.getNCols());</span>
-<span class="pc bpc" id="L213" title="1 of 2 branches missed.">            if (this.myData.getHeapSize() &gt; 0) {</span>
-<span class="nc" id="L214">                stream.println(&quot;          Heap size is: &quot; + this.myData.getHeapSize() + &quot; bytes&quot;);</span>
+<span class="fc" id="L194">            stream.println(&quot;          Number of rows=&quot; + this.myData.getNRows());</span>
+<span class="fc" id="L195">            stream.println(&quot;          Number of columns=&quot; + this.myData.getNCols());</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">            if (this.myData.getHeapSize() &gt; 0) {</span>
+<span class="nc" id="L197">                stream.println(&quot;          Heap size is: &quot; + this.myData.getHeapSize() + &quot; bytes&quot;);</span>
             }
-<span class="fc" id="L216">            Object[] cols = this.myData.getFlatColumns();</span>
-<span class="fc bfc" id="L217" title="All 2 branches covered.">            for (int i = 0; i &lt; cols.length; i += 1) {</span>
-<span class="fc" id="L218">                stream.println(&quot;           &quot; + i + &quot;:&quot; + ArrayFuncs.arrayDescription(cols[i]));</span>
+<span class="fc" id="L199">            Object[] cols = this.myData.getFlatColumns();</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">            for (int i = 0; i &lt; cols.length; i += 1) {</span>
+<span class="fc" id="L201">                stream.println(&quot;           &quot; + i + &quot;:&quot; + ArrayFuncs.arrayDescription(cols[i]));</span>
             }
         }
-<span class="fc" id="L221">    }</span>
+<span class="fc" id="L204">    }</span>
 
     /**
      * Check that this HDU has a valid header.
-     * 
+     *
      * @return &lt;CODE&gt;true&lt;/CODE&gt; if this HDU has a valid header.
      */
     public boolean isHeader() {
-<span class="nc" id="L229">        return isHeader(this.myHeader);</span>
+<span class="nc" id="L212">        return isHeader(this.myHeader);</span>
     }
 
     private void prtField(PrintStream stream, String type, String field) {
-<span class="fc" id="L233">        String val = this.myHeader.getStringValue(field);</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">        if (val != null) {</span>
-<span class="fc" id="L235">            stream.print(type + '=' + val + &quot;; &quot;);</span>
+<span class="fc" id="L216">        String val = this.myHeader.getStringValue(field);</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">        if (val != null) {</span>
+<span class="fc" id="L218">            stream.print(type + '=' + val + &quot;; &quot;);</span>
         }
-<span class="fc" id="L237">    }</span>
+<span class="fc" id="L220">    }</span>
 
     /**
      * Convert a column in the table to complex. Only tables with appropriate
      * types and dimensionalities can be converted. It is legal to call this on
      * a column that is already complex.
-     * 
+     *
      * @param index
      *            The 0-based index of the column to be converted.
      * @return Whether the column can be converted
@@ -248,77 +231,77 @@ public class BinaryTableHDU extends TableHDU&lt;BinaryTable&gt; {
      *             if the header could not be adapted
      */
     public boolean setComplexColumn(int index) throws FitsException {
-<span class="fc" id="L251">        Standard.context(BinaryTable.class);</span>
-<span class="fc" id="L252">        boolean status = false;</span>
-<span class="pc bpc" id="L253" title="1 of 2 branches missed.">        if (this.myData.setComplexColumn(index)) {</span>
+<span class="fc" id="L234">        Standard.context(BinaryTable.class);</span>
+<span class="fc" id="L235">        boolean status = false;</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">        if (this.myData.setComplexColumn(index)) {</span>
             // No problem with the data. Make sure the header
             // is right.
-<span class="fc" id="L256">            BinaryTable.ColumnDesc colDesc = this.myData.getDescriptor(index);</span>
-<span class="fc" id="L257">            int dim = 1;</span>
-<span class="fc" id="L258">            String tdim = &quot;&quot;;</span>
-<span class="fc" id="L259">            String sep = &quot;&quot;;</span>
+<span class="fc" id="L239">            BinaryTable.ColumnDesc colDesc = this.myData.getDescriptor(index);</span>
+<span class="fc" id="L240">            int dim = 1;</span>
+<span class="fc" id="L241">            String tdim = &quot;&quot;;</span>
+<span class="fc" id="L242">            String sep = &quot;&quot;;</span>
             // Don't loop over all values.
             // The last is the [2] for the complex data.
-<span class="fc" id="L262">            int[] dimens = colDesc.getDimens();</span>
-<span class="fc bfc" id="L263" title="All 2 branches covered.">            for (int i = 0; i &lt; dimens.length - 1; i += 1) {</span>
-<span class="fc" id="L264">                dim *= dimens[i];</span>
-<span class="fc" id="L265">                tdim = dimens[i] + sep + tdim;</span>
-<span class="fc" id="L266">                sep = &quot;,&quot;;</span>
+<span class="fc" id="L245">            int[] dimens = colDesc.getDimens();</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">            for (int i = 0; i &lt; dimens.length - 1; i += 1) {</span>
+<span class="fc" id="L247">                dim *= dimens[i];</span>
+<span class="fc" id="L248">                tdim = dimens[i] + sep + tdim;</span>
+<span class="fc" id="L249">                sep = &quot;,&quot;;</span>
             }
-<span class="fc" id="L268">            String suffix = &quot;C&quot;; // For complex</span>
+<span class="fc" id="L251">            String suffix = &quot;C&quot;; // For complex</span>
             // Update the TFORMn keyword.
 
-<span class="fc bfc" id="L271" title="All 2 branches covered.">            if (colDesc.getBase() == double.class) {</span>
-<span class="fc" id="L272">                suffix = &quot;M&quot;;</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">            if (colDesc.getBase() == double.class) {</span>
+<span class="fc" id="L255">                suffix = &quot;M&quot;;</span>
             }
             // Worry about variable length columns.
-<span class="fc" id="L275">            String prefix = &quot;&quot;;</span>
-<span class="fc bfc" id="L276" title="All 2 branches covered.">            if (this.myData.getDescriptor(index).isVarying()) {</span>
-<span class="fc" id="L277">                prefix = &quot;P&quot;;</span>
-<span class="fc" id="L278">                dim = 1;</span>
-<span class="pc bpc" id="L279" title="1 of 2 branches missed.">                if (this.myData.getDescriptor(index).isLongVary()) {</span>
-<span class="nc" id="L280">                    prefix = &quot;Q&quot;;</span>
+<span class="fc" id="L258">            String prefix = &quot;&quot;;</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">            if (this.myData.getDescriptor(index).isVarying()) {</span>
+<span class="fc" id="L260">                prefix = &quot;P&quot;;</span>
+<span class="fc" id="L261">                dim = 1;</span>
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">                if (this.myData.getDescriptor(index).isLongVary()) {</span>
+<span class="nc" id="L263">                    prefix = &quot;Q&quot;;</span>
                 }
             }
             // Now update the header.
-<span class="fc" id="L284">            this.myHeader.findCard(TFORMn.n(index + 1));</span>
-<span class="fc" id="L285">            HeaderCard hc = this.myHeader.nextCard();</span>
-<span class="fc" id="L286">            String oldComment = hc.getComment();</span>
-<span class="pc bpc" id="L287" title="1 of 2 branches missed.">            if (oldComment == null) {</span>
-<span class="nc" id="L288">                oldComment = &quot;Column converted to complex&quot;;</span>
+<span class="fc" id="L267">            this.myHeader.findCard(TFORMn.n(index + 1));</span>
+<span class="fc" id="L268">            HeaderCard hc = this.myHeader.nextCard();</span>
+<span class="fc" id="L269">            String oldComment = hc.getComment();</span>
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">            if (oldComment == null) {</span>
+<span class="nc" id="L271">                oldComment = &quot;Column converted to complex&quot;;</span>
             }
-<span class="fc" id="L290">            this.myHeader.card(TFORMn.n(index + 1)).value(dim + prefix + suffix).comment(oldComment);</span>
-<span class="fc bfc" id="L291" title="All 2 branches covered.">            if (tdim.length() &gt; 0) {</span>
-<span class="fc" id="L292">                this.myHeader.addValue(TDIMn.n(index + 1), &quot;(&quot; + tdim + &quot;)&quot;);</span>
+<span class="fc" id="L273">            this.myHeader.card(TFORMn.n(index + 1)).value(dim + prefix + suffix).comment(oldComment);</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">            if (tdim.length() &gt; 0) {</span>
+<span class="fc" id="L275">                this.myHeader.addValue(TDIMn.n(index + 1), &quot;(&quot; + tdim + &quot;)&quot;);</span>
             } else {
                 // Just in case there used to be a TDIM card that's no longer
                 // needed.
-<span class="fc" id="L296">                this.myHeader.deleteKey(TDIMn.n(index + 1));</span>
+<span class="fc" id="L279">                this.myHeader.deleteKey(TDIMn.n(index + 1));</span>
             }
-<span class="fc" id="L298">            status = true;</span>
+<span class="fc" id="L281">            status = true;</span>
         }
-<span class="fc" id="L300">        Standard.context(null);</span>
-<span class="fc" id="L301">        return status;</span>
+<span class="fc" id="L283">        Standard.context(null);</span>
+<span class="fc" id="L284">        return status;</span>
     }
 
     // Need to tell header about the Heap before writing.
     @Override
     public void write(ArrayDataOutput ado) throws FitsException {
 
-<span class="fc" id="L308">        int oldSize = this.myHeader.getIntValue(PCOUNT);</span>
-<span class="fc bfc" id="L309" title="All 2 branches covered.">        if (oldSize != this.myData.getHeapSize()) {</span>
-<span class="fc" id="L310">            this.myHeader.addValue(PCOUNT, this.myData.getHeapSize());</span>
+<span class="fc" id="L291">        int oldSize = this.myHeader.getIntValue(PCOUNT);</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">        if (oldSize != this.myData.getHeapSize()) {</span>
+<span class="fc" id="L293">            this.myHeader.addValue(PCOUNT, this.myData.getHeapSize());</span>
         }
 
-<span class="fc bfc" id="L313" title="All 2 branches covered.">        if (this.myHeader.getIntValue(PCOUNT) == 0) {</span>
-<span class="fc" id="L314">            this.myHeader.deleteKey(THEAP);</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">        if (this.myHeader.getIntValue(PCOUNT) == 0) {</span>
+<span class="fc" id="L297">            this.myHeader.deleteKey(THEAP);</span>
         } else {
-<span class="fc" id="L316">            this.myHeader.getIntValue(TFIELDS);</span>
-<span class="fc" id="L317">            int offset = this.myHeader.getIntValue(NAXIS1) * this.myHeader.getIntValue(NAXIS2) + this.myData.getHeapOffset();</span>
-<span class="fc" id="L318">            this.myHeader.addValue(THEAP, offset);</span>
+<span class="fc" id="L299">            this.myHeader.getIntValue(TFIELDS);</span>
+<span class="fc" id="L300">            int offset = this.myHeader.getIntValue(NAXIS1) * this.myHeader.getIntValue(NAXIS2) + this.myData.getHeapOffset();</span>
+<span class="fc" id="L301">            this.myHeader.addValue(THEAP, offset);</span>
         }
 
-<span class="fc" id="L321">        super.write(ado);</span>
-<span class="fc" id="L322">    }</span>
+<span class="fc" id="L304">        super.write(ado);</span>
+<span class="fc" id="L305">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

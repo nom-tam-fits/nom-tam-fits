@@ -42,7 +42,7 @@
  * 
  * @author Richard van Nieuwenhoven
  */
-<span class="pc" id="L45">public enum ObservationDescription implements IFitsHeader {</span>
+<span class="fc" id="L45">public enum ObservationDescription implements IFitsHeader {</span>
     /**
      * The value field shall contain a floating point number giving the air mass
      * during the observation by a ground based telescope. The value of the
@@ -226,7 +226,7 @@
     @SuppressWarnings(&quot;CPD-START&quot;)
     private final IFitsHeader key;
 
-<span class="fc" id="L229">    private ObservationDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L229">    ObservationDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
 <span class="fc" id="L230">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
 <span class="fc" id="L231">    }</span>
 

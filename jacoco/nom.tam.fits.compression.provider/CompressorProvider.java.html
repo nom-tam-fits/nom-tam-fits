@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CompressorProvider.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compression.provider</a> &gt; <span class="el_source">CompressorProvider.java</span></div><h1>CompressorProvider.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compression.provider;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.util.ServiceLoader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import nom.tam.fits.BinaryTable;
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.Header;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.api.ICompressor;
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
+import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.ByteGZipCompressor;
+import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.DoubleGZipCompressor;
+import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.FloatGZipCompressor;
+import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.IntGZipCompressor;
+import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.LongGZipCompressor;
+import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.ShortGZipCompressor;
+import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.IntGZip2Compressor;
+import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
+import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ShortGZip2Compressor;
+import nom.tam.fits.compression.algorithm.hcompress.HCompressor.ByteHCompressor;
+import nom.tam.fits.compression.algorithm.hcompress.HCompressor.DoubleHCompressor;
+import nom.tam.fits.compression.algorithm.hcompress.HCompressor.FloatHCompressor;
+import nom.tam.fits.compression.algorithm.hcompress.HCompressor.IntHCompressor;
+import nom.tam.fits.compression.algorithm.hcompress.HCompressor.ShortHCompressor;
+import nom.tam.fits.compression.algorithm.plio.PLIOCompress.BytePLIOCompressor;
+import nom.tam.fits.compression.algorithm.plio.PLIOCompress.IntPLIOCompressor;
+import nom.tam.fits.compression.algorithm.plio.PLIOCompress.ShortPLIOCompressor;
+import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ByteRiceCompressor;
+import nom.tam.fits.compression.algorithm.rice.RiceCompressor.DoubleRiceCompressor;
+import nom.tam.fits.compression.algorithm.rice.RiceCompressor.FloatRiceCompressor;
+import nom.tam.fits.compression.algorithm.rice.RiceCompressor.IntRiceCompressor;
+import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompressor;
+import nom.tam.fits.compression.provider.api.ICompressorProvider;
+import nom.tam.fits.compression.provider.param.api.ICompressParameters;
+import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
+import nom.tam.fits.compression.provider.param.hcompress.HCompressQuantizeParameters;
+import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
+import nom.tam.fits.compression.provider.param.rice.RiceQuantizeCompressParameters;
+
+/**
+ * Standard implementation of the {@code ICompressorProvider} interface.
+ */
+<span class="fc" id="L81">public class CompressorProvider implements ICompressorProvider {</span>
+
+    /**
+     * private implementation of the tile compression provider, all is based on
+     * the option based constructor of the compressors.
+     */
+<span class="fc" id="L87">    protected static class TileCompressorControl implements ICompressorControl {</span>
+
+        private final Constructor&lt;ICompressor&lt;Buffer&gt;&gt; constructor;
+
+        private final Class&lt;? extends ICompressOption&gt; optionClass;
+
+        private final Constructor&lt;ICompressParameters&gt; parametersConstructor;
+
+        protected TileCompressorControl(Class&lt;?&gt; compressorClass) {
+<span class="fc" id="L96">            this(compressorClass, null);</span>
+<span class="fc" id="L97">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L100">        protected TileCompressorControl(Class&lt;?&gt; compressorClass, Class&lt;?&gt; parametersClass) {</span>
+<span class="fc" id="L101">            this.constructor = (Constructor&lt;ICompressor&lt;Buffer&gt;&gt;) compressorClass.getConstructors()[0];</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">            this.optionClass = (Class&lt;? extends ICompressOption&gt;) (this.constructor.getParameterTypes().length == 0 ? null : this.constructor.getParameterTypes()[0]);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            if (parametersClass != null) {</span>
+<span class="fc" id="L104">                this.parametersConstructor = (Constructor&lt;ICompressParameters&gt;) parametersClass.getConstructors()[0];</span>
+            } else {
+<span class="fc" id="L106">                this.parametersConstructor = null;</span>
+            }
+<span class="fc" id="L108">        }</span>
+
+        @Override
+        public boolean compress(Buffer in, ByteBuffer out, ICompressOption option) {
+            try {
+<span class="fc" id="L113">                return newCompressor(option).compress(in, out);</span>
+<span class="fc" id="L114">            } catch (Exception e) {</span>
+<span class="fc" id="L115">                LOG.log(Level.FINE, &quot;could not compress using &quot; + this.constructor + &quot; must fallback to other compression method&quot;, e);</span>
+<span class="fc" id="L116">                return false;</span>
+            }
+        }
+
+        @Override
+        public void decompress(ByteBuffer in, Buffer out, ICompressOption option) {
+            try {
+<span class="fc" id="L123">                newCompressor(option).decompress(in, out);</span>
+<span class="fc" id="L124">            } catch (Exception e) {</span>
+<span class="fc" id="L125">                throw new IllegalStateException(&quot;could not decompress &quot; + this.constructor, e);</span>
+<span class="fc" id="L126">            }</span>
+<span class="fc" id="L127">        }</span>
+
+        @Override
+        public ICompressOption option() {
+<span class="fc bfc" id="L131" title="All 2 branches covered.">            if (this.optionClass != null) {</span>
+                try {
+<span class="fc" id="L133">                    ICompressOption option = this.optionClass.newInstance();</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">                    if (this.parametersConstructor != null) {</span>
+<span class="fc" id="L135">                        option.setParameters(this.parametersConstructor.newInstance(option));</span>
+                    } else {
+<span class="fc" id="L137">                        option.setParameters(NULL_PARAMETERS);</span>
+                    }
+<span class="fc" id="L139">                    return option;</span>
+<span class="fc" id="L140">                } catch (Exception e) {</span>
+<span class="fc" id="L141">                    throw new IllegalStateException(&quot;could not instantiate option class for &quot; + this.constructor, e);</span>
+                }
+            }
+<span class="fc" id="L144">            return NULL_OPTION;</span>
+        }
+
+        private ICompressor&lt;Buffer&gt; newCompressor(ICompressOption option) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+<span class="fc bfc" id="L148" title="All 2 branches covered.">            return this.constructor.getParameterTypes().length == 0 ? this.constructor.newInstance() : this.constructor.newInstance(option);</span>
+        }
+    }
+
+<span class="fc" id="L152">    private static final ICompressOption NULL_OPTION = new ICompressOption() {</span>
+
+        @Override
+        public ICompressOption copy() {
+<span class="fc" id="L156">            return this;</span>
+        }
+
+        @Override
+        public ICompressParameters getCompressionParameters() {
+<span class="fc" id="L161">            return NULL_PARAMETERS;</span>
+        }
+
+        @Override
+        public boolean isLossyCompression() {
+<span class="nc" id="L166">            return false;</span>
+        }
+
+        @Override
+        public void setParameters(ICompressParameters parameters) {
+<span class="nc" id="L171">        }</span>
+
+        @Override
+        public ICompressOption setTileHeight(int value) {
+<span class="fc" id="L175">            return this;</span>
+        }
+
+        @Override
+        public ICompressOption setTileWidth(int value) {
+<span class="fc" id="L180">            return this;</span>
+        }
+
+        @Override
+        public &lt;T&gt; T unwrap(Class&lt;T&gt; clazz) {
+<span class="nc bnc" id="L185" title="All 2 branches missed.">            return clazz.isAssignableFrom(this.getClass()) ? clazz.cast(this) : null;</span>
+        }
+    };
+
+<span class="fc" id="L189">    private static final ICompressParameters NULL_PARAMETERS = new ICompressParameters() {</span>
+
+        @Override
+        public void addColumnsToTable(BinaryTableHDU hdu) {
+<span class="nc" id="L193">        }</span>
+
+        @Override
+        public ICompressParameters copy(ICompressOption clone) {
+<span class="nc" id="L197">            return this;</span>
+        }
+
+        @Override
+        public void getValuesFromColumn(int index) {
+<span class="fc" id="L202">        }</span>
+
+        @Override
+        public void getValuesFromHeader(Header header) {
+<span class="fc" id="L206">        }</span>
+
+        @Override
+        public void initializeColumns(Header header, BinaryTable binaryTable, int size) throws FitsException {
+<span class="fc" id="L210">        }</span>
+
+        @Override
+        public void initializeColumns(int length) {
+<span class="fc" id="L214">        }</span>
+
+        @Override
+        public void setValueFromColumn(int index) {
+<span class="nc" id="L218">        }</span>
+
+        @Override
+        public void setValuesInHeader(Header header) {
+<span class="nc" id="L222">        }</span>
+    };
+
+    // @formatter:off
+<span class="fc" id="L226">    private static final Class&lt;?&gt;[][] AVAILABLE_COMPRESSORS = {</span>
+        {ByteRiceCompressor.class, RiceCompressParameters.class},
+        {ShortRiceCompressor.class, RiceCompressParameters.class},
+        {IntRiceCompressor.class, RiceCompressParameters.class},
+        {FloatRiceCompressor.class, RiceQuantizeCompressParameters.class},
+        {DoubleRiceCompressor.class, RiceQuantizeCompressParameters.class},
+        {BytePLIOCompressor.class},
+        {ShortPLIOCompressor.class},
+        {IntPLIOCompressor.class},
+        {ByteHCompressor.class, HCompressParameters.class},
+        {ShortHCompressor.class, HCompressParameters.class},
+        {IntHCompressor.class, HCompressParameters.class},
+        {FloatHCompressor.class, HCompressQuantizeParameters.class},
+        {DoubleHCompressor.class, HCompressQuantizeParameters.class},
+        {DoubleHCompressor.class},
+        {ShortGZip2Compressor.class},
+        {IntGZip2Compressor.class},
+        {LongGZip2Compressor.class},
+        {ByteGZipCompressor.class},
+        {ShortGZipCompressor.class},
+        {IntGZipCompressor.class},
+        {LongGZipCompressor.class},
+        {FloatGZipCompressor.class},
+        {DoubleGZipCompressor.class},
+    };
+    // @formatter:on
+
+<span class="fc" id="L253">    private static final CompressorControlNameComputer NAME_COMPUTER = new CompressorControlNameComputer();</span>
+
+    /**
+     * logger to log to.
+     */
+<span class="fc" id="L258">    private static final Logger LOG = Logger.getLogger(CompressorProvider.class.getName());</span>
+
+    public static ICompressorControl findCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class&lt;?&gt; baseType) {
+<span class="fc" id="L261">        ICompressorProvider defaultProvider = null;</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">        for (ICompressorProvider iTileCompressorProvider : ServiceLoader.load(ICompressorProvider.class, Thread.currentThread().getContextClassLoader())) {</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">            if (iTileCompressorProvider instanceof CompressorProvider) {</span>
+<span class="fc" id="L264">                defaultProvider = iTileCompressorProvider;</span>
+            } else {
+<span class="fc" id="L266">                ICompressorControl result = iTileCompressorProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">                if (result != null) {</span>
+<span class="fc" id="L268">                    return result;</span>
+                }
+            }
+<span class="fc" id="L271">        }</span>
+<span class="fc" id="L272">        return defaultProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);</span>
+    }
+
+    @Override
+    public ICompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class&lt;?&gt; baseType) {
+
+<span class="fc" id="L278">        String className = NAME_COMPUTER.createCompressorClassName(quantAlgorithm, compressionAlgorithm, baseType);</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">        for (Class&lt;?&gt;[] clazz : AVAILABLE_COMPRESSORS) {</span>
+<span class="fc" id="L280">            Class&lt;?&gt; compressorClass = clazz[0];</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">            if (compressorClass.getSimpleName().equals(className)) {</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">                if (clazz.length &gt; 1) {</span>
+<span class="fc" id="L283">                    Class&lt;?&gt; parametersClass = clazz[1];</span>
+<span class="fc" id="L284">                    return new TileCompressorControl(compressorClass, parametersClass);</span>
+                } else {
+<span class="fc" id="L286">                    return new TileCompressorControl(compressorClass);</span>
+                }
+            }
+        }
+<span class="fc" id="L290">        return null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

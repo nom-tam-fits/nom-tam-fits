@@ -43,7 +43,7 @@
  * 
  * @author Richard van Nieuwenhoven
  */
-<span class="pc" id="L46">public enum DataDescription implements IFitsHeader {</span>
+<span class="fc" id="L46">public enum DataDescription implements IFitsHeader {</span>
     /**
      * The value field shall contain a character string that uniquely defines
      * the configuration state, or version, of the the software processing
@@ -222,7 +222,7 @@
     @SuppressWarnings(&quot;CPD-START&quot;)
     private final IFitsHeader key;
 
-<span class="fc" id="L225">    private DataDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L225">    DataDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
 <span class="fc" id="L226">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
 <span class="fc" id="L227">    }</span>
 

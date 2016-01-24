@@ -41,10 +41,12 @@ import nom.tam.fits.header.IFitsHeader.VALUE;
 
 /**
  * generic key interface, create an IFitsHeader from a key.
- * 
+ *
  * @author ritchie
  */
 public final class GenericKey {
+
+    private static final int NUMBER_BASE = 10;
 
     /**
      * cache of all standard keys, for reusing the standards.
@@ -52,62 +54,101 @@ public final class GenericKey {
     private static final Map&lt;String, IFitsHeader&gt; STANDARD_KEYS;
 
     static {
-<span class="fc" id="L55">        Map&lt;String, IFitsHeader&gt; headers = new HashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (IFitsHeader key : Standard.values()) {</span>
-<span class="fc" id="L57">            headers.put(key.key(), key);</span>
+<span class="fc" id="L57">        Map&lt;String, IFitsHeader&gt; headers = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        for (IFitsHeader key : Standard.values()) {</span>
+<span class="fc" id="L59">            headers.put(key.key(), key);</span>
         }
-<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (IFitsHeader key : Checksum.values()) {</span>
-<span class="fc" id="L60">            headers.put(key.key(), key);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (IFitsHeader key : Checksum.values()) {</span>
+<span class="fc" id="L62">            headers.put(key.key(), key);</span>
         }
-<span class="fc bfc" id="L62" title="All 2 branches covered.">        for (IFitsHeader key : DataDescription.values()) {</span>
-<span class="fc" id="L63">            headers.put(key.key(), key);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        for (IFitsHeader key : Compression.values()) {</span>
+<span class="fc" id="L65">            headers.put(key.key(), key);</span>
         }
-<span class="fc bfc" id="L65" title="All 2 branches covered.">        for (IFitsHeader key : InstrumentDescription.values()) {</span>
-<span class="fc" id="L66">            headers.put(key.key(), key);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (IFitsHeader key : DataDescription.values()) {</span>
+<span class="fc" id="L68">            headers.put(key.key(), key);</span>
         }
-<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (IFitsHeader key : NonStandard.values()) {</span>
-<span class="fc" id="L69">            headers.put(key.key(), key);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        for (IFitsHeader key : InstrumentDescription.values()) {</span>
+<span class="fc" id="L71">            headers.put(key.key(), key);</span>
         }
-<span class="fc bfc" id="L71" title="All 2 branches covered.">        for (IFitsHeader key : ObservationDescription.values()) {</span>
-<span class="fc" id="L72">            headers.put(key.key(), key);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        for (IFitsHeader key : NonStandard.values()) {</span>
+<span class="fc" id="L74">            headers.put(key.key(), key);</span>
         }
-<span class="fc" id="L74">        STANDARD_KEYS = Collections.unmodifiableMap(headers);</span>
-<span class="fc" id="L75">    }</span>
-
-    /**
-     * utility class do not instanciate it.
-     */
-<span class="fc" id="L80">    private GenericKey() {</span>
-<span class="fc" id="L81">    }</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        for (IFitsHeader key : ObservationDescription.values()) {</span>
+<span class="fc" id="L77">            headers.put(key.key(), key);</span>
+        }
+<span class="fc" id="L79">        STANDARD_KEYS = Collections.unmodifiableMap(headers);</span>
+<span class="fc" id="L80">    }</span>
 
     /**
      * create a fits header key from a free string
-     * 
+     *
      * @param key
      *            the string to create the key for
      * @return the IFitsHeader implementation for the key.
      */
     public static IFitsHeader create(String key) {
-<span class="fc" id="L91">        IFitsHeader result = STANDARD_KEYS.get(key);</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (result == null) {</span>
-<span class="fc" id="L93">            result = new FitsHeaderImpl(key, SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, &quot;&quot;);</span>
+<span class="fc" id="L90">        IFitsHeader result = STANDARD_KEYS.get(key);</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (result == null) {</span>
+<span class="fc" id="L92">            result = new FitsHeaderImpl(key, SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, &quot;&quot;);</span>
         }
-<span class="fc" id="L95">        return result;</span>
+<span class="fc" id="L94">        return result;</span>
     }
 
     /**
      * create a array of generic fits header keys from a array of string keys.
-     * 
+     *
      * @param keys
      *            the array of string keys
      * @return the array of IFitsHeaderKeys.
      */
     public static IFitsHeader[] create(String[] keys) {
-<span class="fc" id="L106">        IFitsHeader[] result = new IFitsHeader[keys.length];</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">        for (int index = 0; index &lt; result.length; index++) {</span>
-<span class="fc" id="L108">            result[index] = create(keys[index]);</span>
+<span class="fc" id="L105">        IFitsHeader[] result = new IFitsHeader[keys.length];</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        for (int index = 0; index &lt; result.length; index++) {</span>
+<span class="fc" id="L107">            result[index] = create(keys[index]);</span>
         }
-<span class="fc" id="L110">        return result;</span>
+<span class="fc" id="L109">        return result;</span>
     }
+
+    public static int getN(String card) {
+<span class="fc" id="L113">        int index = card.length() - 1;</span>
+<span class="fc" id="L114">        int n = 0;</span>
+<span class="pc bpc" id="L115" title="1 of 4 branches missed.">        while (index &gt;= 0 &amp;&amp; Character.isDigit(card.charAt(index))) {</span>
+<span class="fc" id="L116">            n = n * NUMBER_BASE + card.charAt(index) - '0';</span>
+<span class="fc" id="L117">            index--;</span>
+        }
+<span class="fc" id="L119">        return n;</span>
+    }
+
+    /**
+     * lookup a string key in the standard key sets.
+     *
+     * @param key
+     *            the fits key to search.
+     * @return the found fits key or null
+     */
+    public static IFitsHeader lookup(String key) {
+<span class="fc" id="L130">        int keyLength = key.length();</span>
+<span class="fc bfc" id="L131" title="All 4 branches covered.">        if (keyLength &gt; 0 &amp;&amp; Character.isDigit(key.charAt(keyLength - 1))) {</span>
+<span class="fc" id="L132">            StringBuilder builder = new StringBuilder();</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">            for (int index = 0; index &lt; keyLength; index++) {</span>
+<span class="fc" id="L134">                char character = key.charAt(index);</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">                if (Character.isDigit(character)) {</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">                    if (builder.charAt(builder.length() - 1) != 'n') {</span>
+<span class="fc" id="L137">                        builder.append('n');</span>
+                    }
+                } else {
+<span class="fc" id="L140">                    builder.append(character);</span>
+                }
+            }
+<span class="fc" id="L143">            return STANDARD_KEYS.get(builder.toString());</span>
+        }
+<span class="fc" id="L145">        return STANDARD_KEYS.get(key);</span>
+    }
+
+    /**
+     * utility class do not instanciate it.
+     */
+<span class="fc" id="L151">    private GenericKey() {</span>
+<span class="fc" id="L152">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

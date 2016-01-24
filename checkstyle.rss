@@ -23,9 +23,9 @@ under the License.
     <link>http://nom-tam-fits.github.io/nom-tam-fits</link>
     <description>nom.tam FITS library - Checkstyle report</description>
     <language>en-us</language>
-    <copyright>&#169;1996 - 2015 nom-tam-fits</copyright>
+    <copyright>&#169;1996 - 2016 nom-tam-fits</copyright>
     <item>
-      <title>File: 100,
+      <title>File: 173,
              Errors: 0,
              Warnings: 0,
              Infos: 0
@@ -47,6 +47,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ByteFormatter.java">nom/tam/util/ByteFormatter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.type.UnknownType.java">nom/tam/util/type/UnknownType.java</a>
                 </td>
                 <td>
                   0
@@ -116,7 +130,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.AsciiFuncs.java">nom/tam/util/AsciiFuncs.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.hcompress.HCompress.java">nom/tam/fits/compression/algorithm/hcompress/HCompress.java</a>
                 </td>
                 <td>
                   0
@@ -130,7 +144,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compress.ExternalBZip2CompressionProvider.java">nom/tam/fits/compress/ExternalBZip2CompressionProvider.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.AsciiFuncs.java">nom/tam/util/AsciiFuncs.java</a>
                 </td>
                 <td>
                   0
@@ -158,6 +172,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compress.ExternalBZip2CompressionProvider.java">nom/tam/fits/compress/ExternalBZip2CompressionProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compress.CloseIS.java">nom/tam/fits/compress/CloseIS.java</a>
                 </td>
                 <td>
@@ -172,7 +200,35 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.base.CompressColumnParameter.java">nom/tam/fits/compression/provider/param/base/CompressColumnParameter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ByteParser.java">nom/tam/util/ByteParser.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.type.IntType.java">nom/tam/util/type/IntType.java</a>
                 </td>
                 <td>
                   0
@@ -214,7 +270,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.UndefinedData.java">nom/tam/fits/UndefinedData.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.base.CompressParameter.java">nom/tam/fits/compression/provider/param/base/CompressParameter.java</a>
                 </td>
                 <td>
                   0
@@ -228,7 +284,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.utilities.Main.java">nom/tam/fits/utilities/Main.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.UndefinedData.java">nom/tam/fits/UndefinedData.java</a>
                 </td>
                 <td>
                   0
@@ -256,7 +312,133 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.hcompress.HCompress.java">nom/tam/image/comp/hcompress/HCompress.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.utilities.Main.java">nom/tam/fits/utilities/Main.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.quant.ZBlankParameter.java">nom/tam/fits/compression/provider/param/quant/ZBlankParameter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.tile.operation.ITileOperationInitialisation.java">nom/tam/image/tile/operation/ITileOperationInitialisation.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter.java">nom/tam/fits/compression/provider/param/api/ICompressHeaderParameter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.java">nom/tam/fits/compression/algorithm/quant/QuantizeProcessor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.type.StringType.java">nom/tam/util/type/StringType.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.hcompress.HCompressQuantizeParameters.java">nom/tam/fits/compression/provider/param/hcompress/HCompressQuantizeParameters.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.hcompress.HCompressorQuantizeOption.java">nom/tam/fits/compression/algorithm/hcompress/HCompressorQuantizeOption.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.quant.ZScaleColumnParameter.java">nom/tam/fits/compression/provider/param/quant/ZScaleColumnParameter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ArrayDataOutput.java">nom/tam/util/ArrayDataOutput.java</a>
                 </td>
                 <td>
                   0
@@ -284,7 +466,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ArrayDataOutput.java">nom/tam/util/ArrayDataOutput.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.rice.RiceCompressOption.java">nom/tam/fits/compression/algorithm/rice/RiceCompressOption.java</a>
                 </td>
                 <td>
                   0
@@ -326,6 +508,34 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.rice.BitBuffer.java">nom/tam/fits/compression/algorithm/rice/BitBuffer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.CompressorProvider.java">nom/tam/fits/compression/provider/CompressorProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.utilities.FitsLineAppender.java">nom/tam/fits/utilities/FitsLineAppender.java</a>
                 </td>
                 <td>
@@ -341,6 +551,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.InstrumentDescription.java">nom/tam/fits/header/InstrumentDescription.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.api.ICompressParameters.java">nom/tam/fits/compression/provider/param/api/ICompressParameters.java</a>
                 </td>
                 <td>
                   0
@@ -396,7 +620,63 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.tile.operation.AbstractTileOperation.java">nom/tam/image/tile/operation/AbstractTileOperation.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.compression.tile.TiledImageCompressionOperation.java">nom/tam/image/compression/tile/TiledImageCompressionOperation.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.FitsException.java">nom/tam/fits/FitsException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.rice.RiceBlockSizeParameter.java">nom/tam/fits/compression/provider/param/rice/RiceBlockSizeParameter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.FitsFactory.java">nom/tam/fits/FitsFactory.java</a>
                 </td>
                 <td>
                   0
@@ -424,7 +704,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.FitsFactory.java">nom/tam/fits/FitsFactory.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.type.FloatType.java">nom/tam/util/type/FloatType.java</a>
                 </td>
                 <td>
                   0
@@ -494,7 +774,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.hcompress.HDecompress.java">nom/tam/image/comp/hcompress/HDecompress.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.gzip.GZipCompressor.java">nom/tam/fits/compression/algorithm/gzip/GZipCompressor.java</a>
                 </td>
                 <td>
                   0
@@ -522,7 +802,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.array.MultyArrayCopier.java">nom/tam/util/array/MultyArrayCopier.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.RandomGroupsHDU.java">nom/tam/fits/RandomGroupsHDU.java</a>
                 </td>
                 <td>
                   0
@@ -536,7 +816,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.RandomGroupsHDU.java">nom/tam/fits/RandomGroupsHDU.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.quant.QuantizeParameters.java">nom/tam/fits/compression/provider/param/quant/QuantizeParameters.java</a>
                 </td>
                 <td>
                   0
@@ -564,7 +844,21 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.Data.java">nom/tam/fits/Data.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.base.CompressHeaderParameter.java">nom/tam/fits/compression/provider/param/base/CompressHeaderParameter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter.java">nom/tam/fits/header/hierarch/StandardIHierarchKeyFormatter.java</a>
                 </td>
                 <td>
                   0
@@ -592,7 +886,105 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.Data.java">nom/tam/fits/Data.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.base.CompressParameters.java">nom/tam/fits/compression/provider/param/base/CompressParameters.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.compression.tile.TileCompressor.java">nom/tam/image/compression/tile/TileCompressor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.CompressorControlNameComputer.java">nom/tam/fits/compression/provider/CompressorControlNameComputer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.rice.RiceCompressParameters.java">nom/tam/fits/compression/provider/param/rice/RiceCompressParameters.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.rice.RiceBytePixParameter.java">nom/tam/fits/compression/provider/param/rice/RiceBytePixParameter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ArrayFuncs.java">nom/tam/util/ArrayFuncs.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.type.ByteType.java">nom/tam/util/type/ByteType.java</a>
                 </td>
                 <td>
                   0
@@ -620,6 +1012,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.StandardImageTiler.java">nom/tam/image/StandardImageTiler.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.BufferedDataOutputStream.java">nom/tam/util/BufferedDataOutputStream.java</a>
                 </td>
                 <td>
@@ -634,7 +1040,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.StandardImageTiler.java">nom/tam/image/StandardImageTiler.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.type.CharType.java">nom/tam/util/type/CharType.java</a>
                 </td>
                 <td>
                   0
@@ -676,7 +1082,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.array.MultyArrayPointer.java">nom/tam/util/array/MultyArrayPointer.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.compression.tile.TileCompressorInitialisation.java">nom/tam/image/compression/tile/TileCompressorInitialisation.java</a>
                 </td>
                 <td>
                   0
@@ -704,7 +1110,49 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.api.ICompressOption.java">nom/tam/fits/compression/algorithm/api/ICompressOption.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.HeaderCardException.java">nom/tam/fits/HeaderCardException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ByteBufferOutputStream.java">nom/tam/util/ByteBufferOutputStream.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.plio.PLIOCompress.java">nom/tam/fits/compression/algorithm/plio/PLIOCompress.java</a>
                 </td>
                 <td>
                   0
@@ -732,7 +1180,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.AsciiTableHDU.java">nom/tam/fits/AsciiTableHDU.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.type.LongType.java">nom/tam/util/type/LongType.java</a>
                 </td>
                 <td>
                   0
@@ -746,7 +1194,21 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.rise.BitBuffer.java">nom/tam/image/comp/rise/BitBuffer.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.api.ICompressParameter.java">nom/tam/fits/compression/provider/param/api/ICompressParameter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.AsciiTableHDU.java">nom/tam/fits/AsciiTableHDU.java</a>
                 </td>
                 <td>
                   0
@@ -774,7 +1236,21 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.rise.RiseCompress.java">nom/tam/image/comp/rise/RiseCompress.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.type.BooleanType.java">nom/tam/util/type/BooleanType.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.hierarch.IHierarchKeyFormatter.java">nom/tam/fits/header/hierarch/IHierarchKeyFormatter.java</a>
                 </td>
                 <td>
                   0
@@ -802,7 +1278,35 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.compression.tile.TileDecompressorInitialisation.java">nom/tam/image/compression/tile/TileDecompressorInitialisation.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.ImageData.java">nom/tam/fits/ImageData.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.hcompress.HCompressScaleParameter.java">nom/tam/fits/compression/provider/param/hcompress/HCompressScaleParameter.java</a>
                 </td>
                 <td>
                   0
@@ -844,7 +1348,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.comp.plio.PLIOCompress.java">nom/tam/image/comp/plio/PLIOCompress.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.BufferDecoder.java">nom/tam/util/BufferDecoder.java</a>
                 </td>
                 <td>
                   0
@@ -858,7 +1362,63 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.BufferDecoder.java">nom/tam/util/BufferDecoder.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.compression.hdu.BackupRestoreUnCompressedHeaderCard.java">nom/tam/image/compression/hdu/BackupRestoreUnCompressedHeaderCard.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.quant.ZBlankColumnParameter.java">nom/tam/fits/compression/provider/param/quant/ZBlankColumnParameter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.type.PrimitiveTypeHandler.java">nom/tam/util/type/PrimitiveTypeHandler.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.tile.operation.TileArea.java">nom/tam/image/tile/operation/TileArea.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.api.ICompressorControl.java">nom/tam/fits/compression/algorithm/api/ICompressorControl.java</a>
                 </td>
                 <td>
                   0
@@ -914,7 +1474,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.array.MultyArrayIterator.java">nom/tam/util/array/MultyArrayIterator.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.tile.operation.AbstractTiledImageOperation.java">nom/tam/image/tile/operation/AbstractTiledImageOperation.java</a>
                 </td>
                 <td>
                   0
@@ -956,7 +1516,35 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.Compression.java">nom/tam/fits/header/Compression.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.StandardCommentReplacement.java">nom/tam/fits/header/StandardCommentReplacement.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.hcompress.HCompressor.java">nom/tam/fits/compression/algorithm/hcompress/HCompressor.java</a>
                 </td>
                 <td>
                   0
@@ -984,21 +1572,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.PrimitiveTypeEnum.java">nom/tam/util/PrimitiveTypeEnum.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compress.CompressionLibLoaderProtection.java">nom/tam/fits/compress/CompressionLibLoaderProtection.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.CursorValue.java">nom/tam/util/CursorValue.java</a>
                 </td>
                 <td>
                   0
@@ -1026,7 +1600,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.CursorValue.java">nom/tam/util/CursorValue.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compress.CompressionLibLoaderProtection.java">nom/tam/fits/compress/CompressionLibLoaderProtection.java</a>
                 </td>
                 <td>
                   0
@@ -1041,6 +1615,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.extra.MaxImDLExt.java">nom/tam/fits/header/extra/MaxImDLExt.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.api.ICompressColumnParameter.java">nom/tam/fits/compression/provider/param/api/ICompressColumnParameter.java</a>
                 </td>
                 <td>
                   0
@@ -1096,20 +1684,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compress.BZip2CompressionProvider.java">nom/tam/fits/compress/BZip2CompressionProvider.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.FormatException.java">nom/tam/util/FormatException.java</a>
                 </td>
                 <td>
@@ -1124,7 +1698,105 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compress.BZip2CompressionProvider.java">nom/tam/fits/compress/BZip2CompressionProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.rice.RiceCompressor.java">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.array.MultiArrayCopier.java">nom/tam/util/array/MultiArrayCopier.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.api.ICompressor.java">nom/tam/fits/compression/algorithm/api/ICompressor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.tile.operation.buffer.TileBufferRowBased.java">nom/tam/image/tile/operation/buffer/TileBufferRowBased.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.ByteBufferInputStream.java">nom/tam/util/ByteBufferInputStream.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.HeaderCardCountingArrayDataInput.java">nom/tam/fits/HeaderCardCountingArrayDataInput.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.type.DoubleType.java">nom/tam/util/type/DoubleType.java</a>
                 </td>
                 <td>
                   0
@@ -1180,6 +1852,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.utilities.FitsSubString.java">nom/tam/fits/utilities/FitsSubString.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.package-info.java">nom/tam/fits/header/package-info.java</a>
                 </td>
                 <td>
@@ -1194,7 +1880,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.utilities.FitsSubString.java">nom/tam/fits/utilities/FitsSubString.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.ImageTiler.java">nom/tam/image/ImageTiler.java</a>
                 </td>
                 <td>
                   0
@@ -1222,7 +1908,77 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.ImageTiler.java">nom/tam/image/ImageTiler.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.hcompress.HDecompress.java">nom/tam/fits/compression/algorithm/hcompress/HDecompress.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.compression.tile.TileDecompressor.java">nom/tam/image/compression/tile/TileDecompressor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter.java">nom/tam/fits/header/hierarch/BlanksDotHierarchKeyFormatter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.tile.operation.buffer.TileBufferColumnBased.java">nom/tam/image/tile/operation/buffer/TileBufferColumnBased.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.hcompress.HCompressParameters.java">nom/tam/fits/compression/provider/param/hcompress/HCompressParameters.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.type.ShortType.java">nom/tam/util/type/ShortType.java</a>
                 </td>
                 <td>
                   0
@@ -1278,7 +2034,35 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.array.MultyArrayCopyFactory.java">nom/tam/util/array/MultyArrayCopyFactory.java</a>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.compression.tile.TileCompressionType.java">nom/tam/image/compression/tile/TileCompressionType.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.rice.RiceQuantizeCompressParameters.java">nom/tam/fits/compression/provider/param/rice/RiceQuantizeCompressParameters.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.array.MultiArrayCopyFactory.java">nom/tam/util/array/MultiArrayCopyFactory.java</a>
                 </td>
                 <td>
                   0
@@ -1293,6 +2077,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.AsciiTable.java">nom/tam/fits/AsciiTable.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.array.MultiArrayIterator.java">nom/tam/util/array/MultiArrayIterator.java</a>
                 </td>
                 <td>
                   0
@@ -1334,7 +2132,119 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.array.MultiArrayPointer.java">nom/tam/util/array/MultiArrayPointer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.compression.hdu.CompressedImageHDU.java">nom/tam/image/compression/hdu/CompressedImageHDU.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.type.PrimitiveType.java">nom/tam/util/type/PrimitiveType.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.quant.ZQuantizeParameter.java">nom/tam/fits/compression/provider/param/quant/ZQuantizeParameter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.HashedList.java">nom/tam/util/HashedList.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.java">nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.api.ICompressorProvider.java">nom/tam/fits/compression/provider/api/ICompressorProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.hcompress.HCompressSmoothParameter.java">nom/tam/fits/compression/provider/param/hcompress/HCompressSmoothParameter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.hcompress.HCompressorOption.java">nom/tam/fits/compression/algorithm/hcompress/HCompressorOption.java</a>
                 </td>
                 <td>
                   0
@@ -1376,6 +2286,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.quant.Quantize.java">nom/tam/fits/compression/algorithm/quant/Quantize.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.GenericKey.java">nom/tam/fits/header/GenericKey.java</a>
                 </td>
                 <td>
@@ -1390,7 +2314,63 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.type.PrimitiveTypeBase.java">nom/tam/util/type/PrimitiveTypeBase.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.compression.tile.TileCompressionOperation.java">nom/tam/image/compression/tile/TileCompressionOperation.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.TableHDU.java">nom/tam/fits/TableHDU.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.rice.RiceQuantizeCompressOption.java">nom/tam/fits/compression/algorithm/rice/RiceQuantizeCompressOption.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.compression.hdu.CompressedImageData.java">nom/tam/image/compression/hdu/CompressedImageData.java</a>
                 </td>
                 <td>
                   0
@@ -1419,6 +2399,48 @@ under the License.
                           <tr>
                 <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.header.ObservationDurationDescription.java">nom/tam/fits/header/ObservationDurationDescription.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.algorithm.quant.QuantizeOption.java">nom/tam/fits/compression/algorithm/quant/QuantizeOption.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.fits.compression.provider.param.quant.ZZeroColumnParameter.java">nom/tam/fits/compression/provider/param/quant/ZZeroColumnParameter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.tile.operation.buffer.TileBuffer.java">nom/tam/image/tile/operation/buffer/TileBuffer.java</a>
                 </td>
                 <td>
                   0

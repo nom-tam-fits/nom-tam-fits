@@ -132,11 +132,11 @@
 <a class="jxr_linenumber" name="L124" href="#L124">124</a>     @SuppressWarnings(<span class="jxr_string">"CPD-START"</span>)
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key;
 <a class="jxr_linenumber" name="L126" href="#L126">126</a> 
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/fits/header/ObservationDurationDescription.html">ObservationDurationDescription</a>(<a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment) {
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>     <a href="../../../../nom/tam/fits/header/ObservationDurationDescription.html">ObservationDurationDescription</a>(<a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment) {
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(name(), status, hdu, valueType, comment);
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>     }
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> 
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/fits/header/ObservationDurationDescription.html">ObservationDurationDescription</a>(String key, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment) {
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>     <a href="../../../../nom/tam/fits/header/ObservationDurationDescription.html">ObservationDurationDescription</a>(String key, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment) {
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(key == <strong class="jxr_keyword">null</strong> ? name() : key, status, hdu, valueType, comment);
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>     }
 <a class="jxr_linenumber" name="L134" href="#L134">134</a> 
@@ -174,6 +174,6 @@
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2016 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

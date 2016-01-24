@@ -46,12 +46,12 @@ public class FitsLineAppender {
     /**
      * A String of 80 spaces to fill up fits card space.
      */
-    private static final String FULL_CARD_AS_SPACES = &quot;                                                                                &quot;;
+<span class="fc" id="L49">    private static final String FULL_CARD_AS_SPACES = String.format(&quot;%80s&quot;, &quot;&quot;);</span>
 
     /**
-     * the underlying StringBuffer to which the writing of fits lines happens.
+     * the underlying StringBuilder to which the writing of fits lines happens.
      */
-    private final StringBuffer buffer;
+    private final StringBuilder buffer;
 
     /**
      * the char current position in the line.
@@ -63,7 +63,7 @@ public class FitsLineAppender {
      * line.
      */
 <span class="fc" id="L65">    public FitsLineAppender() {</span>
-<span class="fc" id="L66">        this.buffer = new StringBuffer(HeaderCard.FITS_HEADER_CARD_SIZE);</span>
+<span class="fc" id="L66">        this.buffer = new StringBuilder(HeaderCard.FITS_HEADER_CARD_SIZE);</span>
 <span class="fc" id="L67">    }</span>
 
     /**
@@ -78,7 +78,7 @@ public class FitsLineAppender {
 <span class="fc" id="L78">    }</span>
 
     /**
-     * Append a sub-sting to this line.
+     * Append a sub-string to this line.
      * 
      * @param stringValue
      *            the sub string to append.
@@ -108,7 +108,7 @@ public class FitsLineAppender {
 <span class="fc" id="L108">    }</span>
 
     /**
-     * append a string to the buffer but replace all occurrences of a character
+     * append a string to the buffer, replacing all occurrences of a character
      * with an other.
      * 
      * @param key
@@ -118,7 +118,7 @@ public class FitsLineAppender {
      * @param with
      *            the character to replace the toReplace character with.
      */
-    public void appendRepacing(String key, char toReplace, char with) {
+    public void appendReplacing(String key, char toReplace, char with) {
 <span class="fc" id="L122">        int size = key.length();</span>
 <span class="fc bfc" id="L123" title="All 2 branches covered.">        for (int index = 0; index &lt; size; index++) {</span>
 <span class="fc" id="L124">            char character = key.charAt(index);</span>
@@ -181,5 +181,10 @@ public class FitsLineAppender {
     public String toString() {
 <span class="fc" id="L182">        return this.buffer.toString();</span>
     }
+
+    public void append(String key, int start, int end) {
+<span class="fc" id="L186">        this.buffer.append(key, start, end);</span>
+<span class="fc" id="L187">        this.charCount += end - start;</span>
+<span class="fc" id="L188">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

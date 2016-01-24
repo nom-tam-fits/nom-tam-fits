@@ -115,7 +115,7 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
 
     /**
      * Check that this is a valid ascii table header.
-     * 
+     *
      * @param header
      *            to validate.
      * @return &lt;CODE&gt;true&lt;/CODE&gt; if this is an ascii table header.
@@ -126,7 +126,7 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
 
     /**
      * Create a Data object to correspond to the header description.
-     * 
+     *
      * @param hdr
      *            the header to create the data for
      * @return An unfilled Data object which can be used to read in the data for
@@ -155,7 +155,7 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
 
     /**
      * Create an ASCII table header/data unit.
-     * 
+     *
      * @param h
      *            the template specifying the ASCII table.
      * @param d
@@ -178,34 +178,29 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
 <span class="fc" id="L178">        int oldRowlen = this.myHeader.getIntValue(NAXIS1);</span>
 <span class="fc" id="L179">        this.myHeader.setNaxis(1, rowlen + oldRowlen);</span>
 
-<span class="fc" id="L181">        int oldTfields = this.myHeader.getIntValue(TFIELDS);</span>
-        try {
-<span class="fc" id="L183">            this.myHeader.addValue(TFIELDS, oldTfields + 1);</span>
-<span class="nc" id="L184">        } catch (Exception e) {</span>
-<span class="nc" id="L185">            LOG.log(Level.SEVERE, &quot;Impossible exception at addColumn&quot;, e);</span>
-<span class="fc" id="L186">        }</span>
-<span class="fc" id="L187">        Standard.context(null);</span>
-<span class="fc" id="L188">        return getNCols();</span>
+<span class="fc" id="L181">        super.addColumn(newCol);</span>
+<span class="fc" id="L182">        Standard.context(null);</span>
+<span class="fc" id="L183">        return getNCols();</span>
     }
 
     @Override
     protected IFitsHeader[] columnKeyStems() {
-<span class="fc" id="L193">        return KEY_STEMS;</span>
+<span class="fc" id="L188">        return KEY_STEMS;</span>
     }
 
     @Override
     public void info(PrintStream stream) {
-<span class="fc" id="L198">        stream.println(&quot;ASCII Table:&quot;);</span>
-<span class="fc" id="L199">        stream.println(&quot;  Header:&quot;);</span>
-<span class="fc" id="L200">        stream.println(&quot;    Number of fields:&quot; + this.myHeader.getIntValue(TFIELDS));</span>
-<span class="fc" id="L201">        stream.println(&quot;    Number of rows:  &quot; + this.myHeader.getIntValue(NAXIS2));</span>
-<span class="fc" id="L202">        stream.println(&quot;    Length of row:   &quot; + this.myHeader.getIntValue(NAXIS1));</span>
-<span class="fc" id="L203">        stream.println(&quot;  Data:&quot;);</span>
-<span class="fc" id="L204">        Object[] data = (Object[]) getKernel();</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">        for (int i = 0; i &lt; getNCols(); i += 1) {</span>
-<span class="fc" id="L206">            stream.println(&quot;      &quot; + i + &quot;:&quot; + ArrayFuncs.arrayDescription(data[i]));</span>
+<span class="fc" id="L193">        stream.println(&quot;ASCII Table:&quot;);</span>
+<span class="fc" id="L194">        stream.println(&quot;  Header:&quot;);</span>
+<span class="fc" id="L195">        stream.println(&quot;    Number of fields:&quot; + this.myHeader.getIntValue(TFIELDS));</span>
+<span class="fc" id="L196">        stream.println(&quot;    Number of rows:  &quot; + this.myHeader.getIntValue(NAXIS2));</span>
+<span class="fc" id="L197">        stream.println(&quot;    Length of row:   &quot; + this.myHeader.getIntValue(NAXIS1));</span>
+<span class="fc" id="L198">        stream.println(&quot;  Data:&quot;);</span>
+<span class="fc" id="L199">        Object[] data = (Object[]) getKernel();</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        for (int i = 0; i &lt; getNCols(); i += 1) {</span>
+<span class="fc" id="L201">            stream.println(&quot;      &quot; + i + &quot;:&quot; + ArrayFuncs.arrayDescription(data[i]));</span>
         }
-<span class="fc" id="L208">    }</span>
+<span class="fc" id="L203">    }</span>
 
     /**
      * @param row
@@ -215,12 +210,12 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
      * @return &lt;code&gt;true&lt;/code&gt; if an element is null
      */
     public boolean isNull(int row, int col) {
-<span class="fc" id="L218">        return this.myData.isNull(row, col);</span>
+<span class="fc" id="L213">        return this.myData.isNull(row, col);</span>
     }
 
     /**
      * Mark an entry as null.
-     * 
+     *
      * @param row
      *            row index of the element
      * @param col
@@ -230,31 +225,31 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
      */
     public void setNull(int row, int col, boolean flag) {
 
-<span class="pc bpc" id="L233" title="1 of 2 branches missed.">        if (flag) {</span>
-<span class="fc" id="L234">            String nullStr = this.myHeader.getStringValue(TNULLn.n(col + 1));</span>
-<span class="fc bfc" id="L235" title="All 2 branches covered.">            if (nullStr == null) {</span>
-<span class="fc" id="L236">                setNullString(col, &quot;NULL&quot;);</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">        if (flag) {</span>
+<span class="fc" id="L229">            String nullStr = this.myHeader.getStringValue(TNULLn.n(col + 1));</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">            if (nullStr == null) {</span>
+<span class="fc" id="L231">                setNullString(col, &quot;NULL&quot;);</span>
             }
         }
-<span class="fc" id="L239">        this.myData.setNull(row, col, flag);</span>
-<span class="fc" id="L240">    }</span>
+<span class="fc" id="L234">        this.myData.setNull(row, col, flag);</span>
+<span class="fc" id="L235">    }</span>
 
     /**
      * Set the null string for a column.
-     * 
+     *
      * @param col
      *            the column index
      * @param newNull
      *            the String representing null
      */
     public void setNullString(int col, String newNull) {
-<span class="fc" id="L251">        this.myHeader.positionAfterIndex(TBCOLn, col + 1);</span>
+<span class="fc" id="L246">        this.myHeader.positionAfterIndex(TBCOLn, col + 1);</span>
         try {
-<span class="fc" id="L253">            this.myHeader.addValue(TNULLn.n(col + 1), newNull);</span>
-<span class="nc" id="L254">        } catch (HeaderCardException e) {</span>
-<span class="nc" id="L255">            LOG.log(Level.SEVERE, &quot;Impossible exception in setNullString&quot; + e);</span>
-<span class="fc" id="L256">        }</span>
-<span class="fc" id="L257">        this.myData.setNullString(col, newNull);</span>
-<span class="fc" id="L258">    }</span>
+<span class="fc" id="L248">            this.myHeader.addValue(TNULLn.n(col + 1), newNull);</span>
+<span class="nc" id="L249">        } catch (HeaderCardException e) {</span>
+<span class="nc" id="L250">            LOG.log(Level.SEVERE, &quot;Impossible exception in setNullString&quot; + e);</span>
+<span class="fc" id="L251">        }</span>
+<span class="fc" id="L252">        this.myData.setNullString(col, newNull);</span>
+<span class="fc" id="L253">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

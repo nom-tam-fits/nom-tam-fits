@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>AbstractTileOperation.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.tile.operation</a> &gt; <span class="el_source">AbstractTileOperation.java</span></div><h1>AbstractTileOperation.java</h1><pre class="source lang-java linenums">package nom.tam.image.tile.operation;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2016 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.nio.Buffer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
+import nom.tam.image.tile.operation.buffer.TileBuffer;
+import nom.tam.util.type.PrimitiveType;
+
+public abstract class AbstractTileOperation&lt;OPERATION extends AbstractTileOperation, IMAGE_OPERATION extends AbstractTiledImageOperation&lt;OPERATION&gt;&gt; implements Runnable {
+
+    private final IMAGE_OPERATION tiledImageOperation;
+
+    private Future&lt;?&gt; future;
+
+    private TileBuffer tileBuffer;
+
+    private final int tileIndex;
+
+    private final TileArea area;
+
+<span class="fc" id="L53">    public AbstractTileOperation(IMAGE_OPERATION operation, int tileIndex, TileArea area) {</span>
+<span class="fc" id="L54">        this.tiledImageOperation = operation;</span>
+<span class="fc" id="L55">        this.tileIndex = tileIndex;</span>
+<span class="fc" id="L56">        this.area = area;</span>
+<span class="fc" id="L57">    }</span>
+
+    public void execute(ExecutorService threadPool) {
+<span class="fc" id="L60">        this.future = threadPool.submit(this);</span>
+<span class="fc" id="L61">    }</span>
+
+    public TileArea getArea() {
+<span class="fc" id="L64">        return this.area;</span>
+    }
+
+    /**
+     * @return the number of pixels in this tile.
+     */
+    public int getPixelSize() {
+<span class="fc" id="L71">        return this.tileBuffer.getPixelSize();</span>
+    }
+
+    public int getTileIndex() {
+<span class="fc" id="L75">        return this.tileIndex;</span>
+    }
+
+    /**
+     * set the buffer that describes the whole image and let the tile create a
+     * slice of it from the position where the tile starts in the whole image.
+     * Attention this method is not thread-safe because it changes the position
+     * of the buffer parameter.
+     *
+     * @param buffer
+     *            the buffer that describes the whole image.
+     */
+    public void setWholeImageBuffer(Buffer buffer) {
+<span class="fc" id="L88">        this.tileBuffer.setData(buffer);</span>
+<span class="fc" id="L89">    }</span>
+
+    /**
+     * Wait for the result of the tile processing.
+     */
+    public void waitForResult() {
+        try {
+<span class="fc" id="L96">            this.future.get();</span>
+<span class="fc" id="L97">        } catch (Exception e) {</span>
+<span class="fc" id="L98">            throw new IllegalStateException(&quot;could not process tile&quot;, e);</span>
+<span class="fc" id="L99">        }</span>
+<span class="fc" id="L100">    }</span>
+
+    protected PrimitiveType&lt;Buffer&gt; getBaseType() {
+<span class="fc" id="L103">        return this.tiledImageOperation.getBaseType();</span>
+    }
+
+    protected OPERATION getPreviousTile() {
+<span class="fc" id="L107">        return this.tiledImageOperation.getTile(getTileIndex() - 1);</span>
+    }
+
+    protected TileBuffer getTileBuffer() {
+<span class="fc" id="L111">        return this.tileBuffer;</span>
+    }
+
+    protected IMAGE_OPERATION getTiledImageOperation() {
+<span class="fc" id="L115">        return this.tiledImageOperation;</span>
+    }
+
+    protected OPERATION setDimensions(int dataOffset, int width, int height) {
+<span class="fc" id="L119">        setTileBuffer(TileBuffer.createTileBuffer(getBaseType(), //</span>
+                dataOffset, //
+                this.tiledImageOperation.getImageWidth(), //
+                width, height));
+<span class="fc" id="L123">        this.area.size(width, height);</span>
+<span class="fc" id="L124">        return (OPERATION) this;</span>
+    }
+
+    protected void setTileBuffer(TileBuffer tileBuffer) {
+<span class="fc" id="L128">        this.tileBuffer = tileBuffer;</span>
+<span class="fc" id="L129">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

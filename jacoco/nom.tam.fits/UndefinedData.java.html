@@ -139,9 +139,9 @@ public class UndefinedData extends Data {
         try {
 <span class="fc" id="L140">            i.skipAllBytes(pad);</span>
 <span class="nc" id="L141">        } catch (EOFException e) {</span>
-<span class="nc" id="L142">            throw new PaddingException(&quot;EOF skipping padding in undefined data&quot;, this);</span>
+<span class="nc" id="L142">            throw new PaddingException(&quot;EOF skipping padding in undefined data&quot;, this, e);</span>
 <span class="nc" id="L143">        } catch (IOException e) {</span>
-<span class="nc" id="L144">            throw new FitsException(&quot;Error skipping padding in undefined data&quot;);</span>
+<span class="nc" id="L144">            throw new FitsException(&quot;Error skipping padding in undefined data&quot;, e);</span>
 <span class="fc" id="L145">        }</span>
 <span class="fc" id="L146">    }</span>
 

@@ -551,26 +551,9 @@
 <a class="jxr_linenumber" name="L543" href="#L543">543</a> 
 <a class="jxr_linenumber" name="L544" href="#L544">544</a>     }
 <a class="jxr_linenumber" name="L545" href="#L545">545</a> 
-<a class="jxr_linenumber" name="L546" href="#L546">546</a>     @Test
-<a class="jxr_linenumber" name="L547" href="#L547">547</a>     @Ignore
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> randomTestManyValues() {
-<a class="jxr_linenumber" name="L549" href="#L549">549</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> y = 1; y &lt; 40; y++) {
-<a class="jxr_linenumber" name="L550" href="#L550">550</a>             byte[] array = <strong class="jxr_keyword">new</strong> byte[y];
-<a class="jxr_linenumber" name="L551" href="#L551">551</a>             Random random = <strong class="jxr_keyword">new</strong> Random(System.currentTimeMillis());
-<a class="jxr_linenumber" name="L552" href="#L552">552</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; 1000000; i++) {
-<a class="jxr_linenumber" name="L553" href="#L553">553</a>                 <strong class="jxr_keyword">long</strong> longValue = ((<strong class="jxr_keyword">long</strong>) random.nextInt()) &lt;&lt; 32 | ((<strong class="jxr_keyword">long</strong>) random.nextInt());
-<a class="jxr_linenumber" name="L554" href="#L554">554</a>                 bf.format(longValue, array);
-<a class="jxr_linenumber" name="L555" href="#L555">555</a>                 <strong class="jxr_keyword">double</strong> value = Double.longBitsToDouble(longValue);
-<a class="jxr_linenumber" name="L556" href="#L556">556</a>                 bf.format(value, array);
-<a class="jxr_linenumber" name="L557" href="#L557">557</a>                 <strong class="jxr_keyword">float</strong> value2 = Float.intBitsToFloat(random.nextInt());
-<a class="jxr_linenumber" name="L558" href="#L558">558</a>                 bf.format(value2, array);
-<a class="jxr_linenumber" name="L559" href="#L559">559</a>             }
-<a class="jxr_linenumber" name="L560" href="#L560">560</a>         }
-<a class="jxr_linenumber" name="L561" href="#L561">561</a> 
-<a class="jxr_linenumber" name="L562" href="#L562">562</a>     }
-<a class="jxr_linenumber" name="L563" href="#L563">563</a> }
+<a class="jxr_linenumber" name="L546" href="#L546">546</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2016 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

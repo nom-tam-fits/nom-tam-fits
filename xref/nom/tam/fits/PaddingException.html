@@ -66,40 +66,22 @@
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">private</strong> BasicHDU&lt;?&gt; truncatedHDU;
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment">     * When the error is thrown, the data object being read must be supplied. We</em>
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment">     * initially create a dummy header for this. If someone is reading the</em>
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">     * entire HDU, then they can trap the exception and set the header to the</em>
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">     * appropriate value.</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">     * @param data</em>
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">     *            the data that was not padded.</em>
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment">     * @throws FitsException</em>
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">     *             if the data could not be used to create a hdu.</em>
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>      <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/PaddingException.html">PaddingException</a>(<a href="../../../nom/tam/fits/Data.html">Data</a> data) <strong class="jxr_keyword">throws</strong> FitsException {
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          <strong class="jxr_keyword">super</strong>(<span class="jxr_string">"data not padded"</span>);
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          <strong class="jxr_keyword">this</strong>.truncatedHDU = FitsFactory.hduFactory(data.getKernel());
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          <em class="jxr_comment">// We want to use the original Data object... so</em>
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">this</strong>.truncatedHDU = FitsFactory.hduFactory(<strong class="jxr_keyword">this</strong>.truncatedHDU.getHeader(), data);
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>      }
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>      <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/PaddingException.html">PaddingException</a>(String msg, <a href="../../../nom/tam/fits/Data.html">Data</a> data) <strong class="jxr_keyword">throws</strong> FitsException {
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>          <strong class="jxr_keyword">super</strong>(msg);
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          <strong class="jxr_keyword">this</strong>.truncatedHDU = FitsFactory.hduFactory(data.getKernel());
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>          <strong class="jxr_keyword">this</strong>.truncatedHDU = FitsFactory.hduFactory(<strong class="jxr_keyword">this</strong>.truncatedHDU.getHeader(), data);
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>      }
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>      <strong class="jxr_keyword">public</strong> BasicHDU&lt;?&gt; getTruncatedHDU() {
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.truncatedHDU;
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>      }
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>      <strong class="jxr_keyword">void</strong> updateHeader(<a href="../../../nom/tam/fits/Header.html">Header</a> hdr) <strong class="jxr_keyword">throws</strong> FitsException {
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>          <strong class="jxr_keyword">this</strong>.truncatedHDU = FitsFactory.hduFactory(hdr, <strong class="jxr_keyword">this</strong>.truncatedHDU.getData());
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>      }
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  }
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>      <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/PaddingException.html">PaddingException</a>(String msg, <a href="../../../nom/tam/fits/Data.html">Data</a> data, Exception cause) <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          <strong class="jxr_keyword">super</strong>(msg, cause);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          <strong class="jxr_keyword">this</strong>.truncatedHDU = FitsFactory.hduFactory(data.getKernel());
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          <strong class="jxr_keyword">this</strong>.truncatedHDU = FitsFactory.hduFactory(<strong class="jxr_keyword">this</strong>.truncatedHDU.getHeader(), data);
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>      }
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">public</strong> BasicHDU&lt;?&gt; getTruncatedHDU() {
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.truncatedHDU;
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>      }
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>      <strong class="jxr_keyword">void</strong> updateHeader(<a href="../../../nom/tam/fits/Header.html">Header</a> hdr) <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          <strong class="jxr_keyword">this</strong>.truncatedHDU = FitsFactory.hduFactory(hdr, <strong class="jxr_keyword">this</strong>.truncatedHDU.getData());
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>      }
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2016 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

@@ -58,36 +58,18 @@ public class PaddingException extends FitsException {
      */
     private BasicHDU&lt;?&gt; truncatedHDU;
 
-    /**
-     * When the error is thrown, the data object being read must be supplied. We
-     * initially create a dummy header for this. If someone is reading the
-     * entire HDU, then they can trap the exception and set the header to the
-     * appropriate value.
-     * 
-     * @param data
-     *            the data that was not padded.
-     * @throws FitsException
-     *             if the data could not be used to create a hdu.
-     */
-    public PaddingException(Data data) throws FitsException {
-<span class="nc" id="L73">        super(&quot;data not padded&quot;);</span>
-<span class="nc" id="L74">        this.truncatedHDU = FitsFactory.hduFactory(data.getKernel());</span>
-        // We want to use the original Data object... so
-<span class="nc" id="L76">        this.truncatedHDU = FitsFactory.hduFactory(this.truncatedHDU.getHeader(), data);</span>
-<span class="nc" id="L77">    }</span>
-
-    public PaddingException(String msg, Data data) throws FitsException {
-<span class="fc" id="L80">        super(msg);</span>
-<span class="fc" id="L81">        this.truncatedHDU = FitsFactory.hduFactory(data.getKernel());</span>
-<span class="fc" id="L82">        this.truncatedHDU = FitsFactory.hduFactory(this.truncatedHDU.getHeader(), data);</span>
-<span class="fc" id="L83">    }</span>
+    public PaddingException(String msg, Data data, Exception cause) throws FitsException {
+<span class="fc" id="L62">        super(msg, cause);</span>
+<span class="fc" id="L63">        this.truncatedHDU = FitsFactory.hduFactory(data.getKernel());</span>
+<span class="fc" id="L64">        this.truncatedHDU = FitsFactory.hduFactory(this.truncatedHDU.getHeader(), data);</span>
+<span class="fc" id="L65">    }</span>
 
     public BasicHDU&lt;?&gt; getTruncatedHDU() {
-<span class="fc" id="L86">        return this.truncatedHDU;</span>
+<span class="fc" id="L68">        return this.truncatedHDU;</span>
     }
 
     void updateHeader(Header hdr) throws FitsException {
-<span class="fc" id="L90">        this.truncatedHDU = FitsFactory.hduFactory(hdr, this.truncatedHDU.getData());</span>
-<span class="fc" id="L91">    }</span>
+<span class="fc" id="L72">        this.truncatedHDU = FitsFactory.hduFactory(hdr, this.truncatedHDU.getData());</span>
+<span class="fc" id="L73">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

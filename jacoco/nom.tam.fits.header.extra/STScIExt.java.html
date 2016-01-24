@@ -43,7 +43,7 @@ import nom.tam.fits.header.IFitsHeader;
  * 
  * @author Richard van Nieuwenhoven.
  */
-<span class="pc" id="L46">public enum STScIExt implements IFitsHeader {</span>
+<span class="fc" id="L46">public enum STScIExt implements IFitsHeader {</span>
     /**
      * approach vectors
      */
@@ -216,11 +216,11 @@ import nom.tam.fits.header.IFitsHeader;
     @SuppressWarnings(&quot;CPD-START&quot;)
     private final IFitsHeader key;
 
-<span class="fc" id="L219">    private STScIExt(String comment) {</span>
+<span class="fc" id="L219">    STScIExt(String comment) {</span>
 <span class="fc" id="L220">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);</span>
 <span class="fc" id="L221">    }</span>
 
-<span class="fc" id="L223">    private STScIExt(String key, String comment) {</span>
+<span class="fc" id="L223">    STScIExt(String key, String comment) {</span>
 <span class="fc" id="L224">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);</span>
 <span class="fc" id="L225">    }</span>
 

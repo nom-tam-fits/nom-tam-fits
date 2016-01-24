@@ -31,6 +31,8 @@
  * #L%
  */
 
+import java.io.IOException;
+
 import nom.tam.util.ArrayDataInput;
 
 /**
@@ -51,30 +53,54 @@ public class HeaderCardCountingArrayDataInput {
      */
     private int physicalCardsRead;
 
-<span class="fc" id="L54">    protected HeaderCardCountingArrayDataInput(ArrayDataInput input) {</span>
-<span class="fc" id="L55">        this.input = input;</span>
-<span class="fc" id="L56">    }</span>
+    private int markedPhysicalCardsRead;
+
+<span class="fc" id="L58">    protected HeaderCardCountingArrayDataInput(ArrayDataInput input) {</span>
+<span class="fc" id="L59">        this.input = input;</span>
+<span class="fc" id="L60">    }</span>
 
     /**
      * @return the number of cards realy read form the stream
      */
     protected int getPhysicalCardsRead() {
-<span class="fc" id="L62">        return physicalCardsRead;</span>
+<span class="fc" id="L66">        return physicalCardsRead;</span>
     }
 
     /**
      * @return the stream to read the cards from
      */
     protected ArrayDataInput in() {
-<span class="fc" id="L69">        return input;</span>
+<span class="fc" id="L73">        return input;</span>
     }
 
     /**
      * report a readed card.
      */
     public void cardRead() {
-<span class="fc" id="L76">        physicalCardsRead++;</span>
-<span class="fc" id="L77">    }</span>
+<span class="fc" id="L80">        physicalCardsRead++;</span>
+<span class="fc" id="L81">    }</span>
+
+    /**
+     * mark the current position in the stream.
+     * 
+     * @throws IOException
+     *             if the underlaying stream does not allow the mark.
+     */
+    public void mark() throws IOException {
+<span class="fc" id="L90">        input.mark(HeaderCard.FITS_HEADER_CARD_SIZE);</span>
+<span class="fc" id="L91">        markedPhysicalCardsRead = physicalCardsRead;</span>
+<span class="fc" id="L92">    }</span>
+
+    /**
+     * reset the stream th the last marked prosition.
+     * 
+     * @throws IOException
+     *             if the underlaying stream does not allow the mark.
+     */
+    public void reset() throws IOException {
+<span class="fc" id="L101">        input.reset();</span>
+<span class="fc" id="L102">        physicalCardsRead = markedPhysicalCardsRead;</span>
+<span class="fc" id="L103">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

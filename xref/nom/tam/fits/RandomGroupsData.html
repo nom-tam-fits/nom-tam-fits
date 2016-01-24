@@ -171,9 +171,9 @@
 <a class="jxr_linenumber" name="L163" href="#L163">163</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>             str.skipAllBytes(pad);
 <a class="jxr_linenumber" name="L165" href="#L165">165</a>         } <strong class="jxr_keyword">catch</strong> (EOFException e) {
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/PaddingException.html">PaddingException</a>(<span class="jxr_string">"EOF reading padding after random groups"</span>, <strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/PaddingException.html">PaddingException</a>(<span class="jxr_string">"EOF reading padding after random groups"</span>, <strong class="jxr_keyword">this</strong>, e);
 <a class="jxr_linenumber" name="L167" href="#L167">167</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"IO error reading padding after random groups"</span>);
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"IO error reading padding after random groups"</span>, e);
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>         }
 <a class="jxr_linenumber" name="L170" href="#L170">170</a>     }
 <a class="jxr_linenumber" name="L171" href="#L171">171</a> 
@@ -191,6 +191,6 @@
 <a class="jxr_linenumber" name="L183" href="#L183">183</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2016 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

@@ -42,7 +42,7 @@
  * 
  * @author Richard van Nieuwenhoven
  */
-<span class="pc" id="L45">public enum HierarchicalGrouping implements IFitsHeader {</span>
+<span class="fc" id="L45">public enum HierarchicalGrouping implements IFitsHeader {</span>
     /**
      * TODO: find description?
      */
@@ -59,7 +59,7 @@
     @SuppressWarnings(&quot;CPD-START&quot;)
     private final IFitsHeader key;
 
-<span class="fc" id="L62">    private HierarchicalGrouping(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
+<span class="fc" id="L62">    HierarchicalGrouping(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {</span>
 <span class="fc" id="L63">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
 <span class="fc" id="L64">    }</span>
 

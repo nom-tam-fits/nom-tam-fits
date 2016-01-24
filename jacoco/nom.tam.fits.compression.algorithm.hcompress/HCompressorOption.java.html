@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HCompressorOption.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compression.algorithm.hcompress</a> &gt; <span class="el_source">HCompressorOption.java</span></div><h1>HCompressorOption.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compression.algorithm.hcompress;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.provider.param.api.ICompressParameters;
+
+<span class="fc" id="L37">public class HCompressorOption implements ICompressOption {</span>
+
+    /**
+     * circular dependency, has to be cut.
+     */
+    private ICompressParameters parameters;
+
+    private int scale;
+
+    private boolean smooth;
+
+    private int tileHeight;
+
+    private int tileWidth;
+
+    @Override
+    public HCompressorOption copy() {
+        try {
+<span class="fc" id="L55">            return (HCompressorOption) clone();</span>
+<span class="fc" id="L56">        } catch (CloneNotSupportedException e) {</span>
+<span class="fc" id="L57">            throw new IllegalStateException(&quot;option could not be cloned&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public ICompressParameters getCompressionParameters() {
+<span class="fc" id="L63">        return this.parameters;</span>
+    }
+
+    public int getScale() {
+<span class="fc" id="L67">        return this.scale;</span>
+    }
+
+    public int getTileHeight() {
+<span class="fc" id="L71">        return this.tileHeight;</span>
+    }
+
+    public int getTileWidth() {
+<span class="fc" id="L75">        return this.tileWidth;</span>
+    }
+
+    @Override
+    public boolean isLossyCompression() {
+<span class="pc bpc" id="L80" title="1 of 4 branches missed.">        return this.scale &gt; 1 || this.smooth;</span>
+    }
+
+    public boolean isSmooth() {
+<span class="fc" id="L84">        return this.smooth;</span>
+    }
+
+    @Override
+    public void setParameters(ICompressParameters parameters) {
+<span class="fc" id="L89">        this.parameters = parameters;</span>
+<span class="fc" id="L90">    }</span>
+
+    public HCompressorOption setScale(int value) {
+<span class="fc" id="L93">        this.scale = value;</span>
+<span class="fc" id="L94">        return this;</span>
+    }
+
+    public HCompressorOption setSmooth(boolean value) {
+<span class="fc" id="L98">        this.smooth = value;</span>
+<span class="fc" id="L99">        return this;</span>
+    }
+
+    @Override
+    public HCompressorOption setTileHeight(int value) {
+<span class="fc" id="L104">        this.tileHeight = value;</span>
+<span class="fc" id="L105">        return this;</span>
+    }
+
+    @Override
+    public HCompressorOption setTileWidth(int value) {
+<span class="fc" id="L110">        this.tileWidth = value;</span>
+<span class="fc" id="L111">        return this;</span>
+    }
+
+    @Override
+    public &lt;T&gt; T unwrap(Class&lt;T&gt; clazz) {
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">        if (clazz.isAssignableFrom(this.getClass())) {</span>
+<span class="fc" id="L117">            return clazz.cast(this);</span>
+        }
+<span class="nc" id="L119">        return null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

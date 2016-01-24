@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CompressorControlNameComputer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compression.provider</a> &gt; <span class="el_source">CompressorControlNameComputer.java</span></div><h1>CompressorControlNameComputer.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compression.provider;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2016 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import nom.tam.fits.header.Compression;
+
+/**
+ * &lt;p&gt;
+ * Computes the name of the tile compressor class name given the algorithm used
+ * to quantize and compress the tile and the type of data the tile contains.
+ * &lt;/p&gt;
+ * The name of the class is built of four parts:
+ * &lt;ul&gt;
+ * &lt;li&gt;the capitalized simple name of the base type of the elements in the tile
+ * (like Int, Long etc.);&lt;/li&gt;
+ * &lt;li&gt;if a known quantize algorithm is used, the word &quot;Quant&quot;, the word
+ * &quot;Unknown&quot; if the quantize algorithm is not recognized, nothing (i.e. the
+ * empty string) if it is null;&lt;/li&gt;
+ * &lt;li&gt;the short name of the compression algorithm to use (Rice, PLIO, Gzip
+ * etc.) or the word &quot;Unknown&quot; if the algorithm is not supported;&lt;/li&gt;
+ * &lt;li&gt;the suffix &quot;Compressor&quot;&lt;/li&gt;
+ * &lt;/ul&gt;
+ * &lt;p&gt;
+ * Following exception to above rules exist:
+ * &lt;/p&gt;
+ * &lt;ul&gt;
+ * &lt;li&gt;If the primitive type is double or float, the quantize algorithm is
+ * ignored (as if it were specified as null)&lt;/li&gt;
+ * &lt;/ul&gt;
+ * See the associated unit tests for concrete examples.
+ */
+public class CompressorControlNameComputer {
+
+    private static final String COMPRESSOR_CLASS_SUFFIX = &quot;Compressor&quot;;
+
+    private static String standardizeBaseType(String simpleName) {
+<span class="fc" id="L66">        return Character.toUpperCase(simpleName.charAt(0)) + simpleName.substring(1).toLowerCase();</span>
+    }
+
+    private static String standardizeCompressionAlgorithm(String compressionAlgorithm) {
+<span class="pc bpc" id="L70" title="1 of 4 branches missed.">        if (Compression.ZCMPTYPE_RICE_1.equalsIgnoreCase(compressionAlgorithm) || //</span>
+                Compression.ZCMPTYPE_RICE_ONE.equalsIgnoreCase(compressionAlgorithm)) {
+<span class="fc" id="L72">            return &quot;Rice&quot;;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        } else if (Compression.ZCMPTYPE_PLIO_1.equalsIgnoreCase(compressionAlgorithm)) {</span>
+<span class="fc" id="L74">            return &quot;PLIO&quot;;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        } else if (Compression.ZCMPTYPE_HCOMPRESS_1.equalsIgnoreCase(compressionAlgorithm)) {</span>
+<span class="fc" id="L76">            return &quot;H&quot;;</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        } else if (Compression.ZCMPTYPE_GZIP_2.equalsIgnoreCase(compressionAlgorithm)) {</span>
+<span class="fc" id="L78">            return &quot;GZip2&quot;;</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        } else if (Compression.ZCMPTYPE_GZIP_1.equalsIgnoreCase(compressionAlgorithm)) {</span>
+<span class="fc" id="L80">            return &quot;GZip&quot;;</span>
+        }
+<span class="fc" id="L82">        return &quot;Unknown&quot;;</span>
+    }
+
+    private static String standardizeQuantAlgorithm(String quantAlgorithm) {
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (quantAlgorithm != null) {</span>
+<span class="pc bpc" id="L87" title="1 of 6 branches missed.">            if (Compression.ZQUANTIZ_NO_DITHER.equalsIgnoreCase(quantAlgorithm) || //</span>
+                    Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equalsIgnoreCase(quantAlgorithm) || //
+                    Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equalsIgnoreCase(quantAlgorithm)) {
+<span class="fc" id="L90">                return &quot;Quant&quot;;</span>
+            } else {
+<span class="fc" id="L92">                return &quot;Unknown&quot;;</span>
+            }
+        }
+<span class="fc" id="L95">        return &quot;&quot;;</span>
+    }
+
+    public CompressorControlNameComputer() {
+<span class="fc" id="L99">        super();</span>
+<span class="fc" id="L100">    }</span>
+
+    public String createCompressorClassName(String quantAlgorithm, String compressionAlgorithm, Class&lt;?&gt; baseType) {
+<span class="fc" id="L103">        StringBuilder className = new StringBuilder();</span>
+<span class="fc" id="L104">        className.append(standardizeBaseType(baseType.getSimpleName()));</span>
+<span class="fc bfc" id="L105" title="All 4 branches covered.">        if (className.indexOf(Float.class.getSimpleName()) == 0 || className.indexOf(Double.class.getSimpleName()) == 0) {</span>
+<span class="fc" id="L106">            quantAlgorithm = null; // default so not in the className</span>
+        }
+<span class="fc" id="L108">        className.append(standardizeQuantAlgorithm(quantAlgorithm));</span>
+<span class="fc" id="L109">        className.append(standardizeCompressionAlgorithm(compressionAlgorithm));</span>
+<span class="fc" id="L110">        className.append(COMPRESSOR_CLASS_SUFFIX);</span>
+<span class="fc" id="L111">        return className.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

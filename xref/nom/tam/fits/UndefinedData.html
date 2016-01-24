@@ -147,9 +147,9 @@
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>             i.skipAllBytes(pad);
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>         } <strong class="jxr_keyword">catch</strong> (EOFException e) {
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/PaddingException.html">PaddingException</a>(<span class="jxr_string">"EOF skipping padding in undefined data"</span>, <strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/PaddingException.html">PaddingException</a>(<span class="jxr_string">"EOF skipping padding in undefined data"</span>, <strong class="jxr_keyword">this</strong>, e);
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Error skipping padding in undefined data"</span>);
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Error skipping padding in undefined data"</span>, e);
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>         }
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>     }
 <a class="jxr_linenumber" name="L147" href="#L147">147</a> 
@@ -165,6 +165,6 @@
 <a class="jxr_linenumber" name="L157" href="#L157">157</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2015 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2016 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>
