@@ -39,8 +39,7 @@ public class Access {
         return tileOperation.getTileBuffer();
     }
 
-    public static ITileOperation getTile(AbstractTiledImageOperation operationsOfImage, int index) {
+    public static <T extends ITileOperation> T getTile(AbstractTiledImageOperation<T> operationsOfImage, int index) {
         return operationsOfImage.getTileOperation(index);
     }
-
 }

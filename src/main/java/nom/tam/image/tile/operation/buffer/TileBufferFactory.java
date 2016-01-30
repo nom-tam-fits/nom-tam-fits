@@ -1,4 +1,4 @@
-package nom.tam.image.tile.operation;
+package nom.tam.image.tile.operation.buffer;
 
 /*
  * #%L
@@ -32,24 +32,20 @@ package nom.tam.image.tile.operation;
  */
 
 import java.nio.Buffer;
-import java.nio.ByteBuffer;
 
-import nom.tam.fits.compression.algorithm.api.ICompressOption;
-import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.util.type.PrimitiveType;
 
-public interface ITiledImageOperation {
-    ICompressOption compressOptions();
-    
-    PrimitiveType<Buffer> getBaseType();
-    
-    ByteBuffer getCompressedWholeArea();
+public final class TileBufferFactory {
 
-    ICompressorControl getCompressorControl();
+    private TileBufferFactory() {
+        // unused
+    }
 
-    ICompressorControl getGzipCompressorControl();
-
-    int getImageWidth();
-
-    ITileOperation getTileOperation(int i);
+    public static TileBuffer createTileBuffer(PrimitiveType<Buffer> baseType, int dataOffset, int imageWidth, int width, int height) {
+        if (imageWidth > width) {
+            return new TileBufferColumnBased(baseType, dataOffset, imageWidth, width, height);
+        } else {
+            return new TileBufferRowBased(baseType, dataOffset, width, height);
+        }
+    }
 }

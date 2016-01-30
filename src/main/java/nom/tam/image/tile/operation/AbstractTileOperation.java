@@ -36,11 +36,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import nom.tam.image.tile.operation.buffer.TileBuffer;
+import nom.tam.image.tile.operation.buffer.TileBufferFactory;
 import nom.tam.util.type.PrimitiveType;
 
-public abstract class AbstractTileOperation<IMAGE_OPERATION extends ITiledImageOperation> implements Runnable, ITileOperation {
+public abstract class AbstractTileOperation implements Runnable, ITileOperation {
 
-    private final IMAGE_OPERATION tiledImageOperation;
+    private final ITiledImageOperation tiledImageOperation;
 
     private Future<?> future;
 
@@ -50,7 +51,7 @@ public abstract class AbstractTileOperation<IMAGE_OPERATION extends ITiledImageO
 
     private final TileArea area;
 
-    public AbstractTileOperation(IMAGE_OPERATION operation, int tileIndex, TileArea area) {
+    public AbstractTileOperation(ITiledImageOperation operation, int tileIndex, TileArea area) {
         this.tiledImageOperation = operation;
         this.tileIndex = tileIndex;
         this.area = area;
@@ -112,13 +113,13 @@ public abstract class AbstractTileOperation<IMAGE_OPERATION extends ITiledImageO
         return this.tileBuffer;
     }
 
-    protected IMAGE_OPERATION getTiledImageOperation() {
+    protected ITiledImageOperation getTiledImageOperation() {
         return this.tiledImageOperation;
     }
 
     @Override
     public ITileOperation setDimensions(int dataOffset, int width, int height) {
-        setTileBuffer(TileBuffer.createTileBuffer(getBaseType(), //
+        setTileBuffer(TileBufferFactory.createTileBuffer(getBaseType(), //
                 dataOffset, //
                 this.tiledImageOperation.getImageWidth(), //
                 width, height));

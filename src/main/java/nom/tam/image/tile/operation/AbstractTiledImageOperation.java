@@ -39,7 +39,7 @@ import java.util.Arrays;
 
 import nom.tam.util.type.PrimitiveType;
 
-public class AbstractTiledImageOperation<OPERATION extends ITileOperation> implements ITiledImageOperation {
+public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperation> implements ITiledImageOperation {
 
     private int[] axes;
 
@@ -98,7 +98,9 @@ public class AbstractTiledImageOperation<OPERATION extends ITileOperation> imple
         int lastTileWidth = imageWidth - (nrOfTilesOnXAxis - 1) * tileWidth;
         int lastTileHeight = imageHeight - (nrOfTilesOnYAxis - 1) * tileHeight;
         int tileIndex = 0;
-        this.tileOperations = (OPERATION[]) Array.newInstance(this.operationClass, nrOfTilesOnXAxis * nrOfTilesOnYAxis);
+        @SuppressWarnings("unchecked")
+        OPERATION[] operations = (OPERATION[]) Array.newInstance(this.operationClass, nrOfTilesOnXAxis * nrOfTilesOnYAxis);
+        this.tileOperations = operations;
         init.tileCount(this.tileOperations.length);
         for (int y = 0; y < imageHeight; y += tileHeight) {
             boolean lastY = y + tileHeight >= imageHeight;
@@ -147,5 +149,4 @@ public class AbstractTiledImageOperation<OPERATION extends ITileOperation> imple
     protected void setBaseType(PrimitiveType<Buffer> baseType) {
         this.baseType = baseType;
     }
-
 }

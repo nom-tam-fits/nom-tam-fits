@@ -54,14 +54,6 @@ public abstract class TileBuffer {
 
     private final int width;
 
-    public static TileBuffer createTileBuffer(PrimitiveType<Buffer> baseType, int dataOffset, int imageWidth, int width, int height) {
-        if (imageWidth > width) {
-            return new TileBufferColumnBased(baseType, dataOffset, imageWidth, width, height);
-        } else {
-            return new TileBufferRowBased(baseType, dataOffset, width, height);
-        }
-    }
-
     protected TileBuffer(PrimitiveType<Buffer> baseType, int dataOffset, int width, int height) {
         this.baseType = baseType;
         this.offset = dataOffset;

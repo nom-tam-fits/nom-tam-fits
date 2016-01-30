@@ -257,7 +257,7 @@ public class TileCompressorProviderTest {
 
         operationsOfImage.readPrimaryHeaders(header);
         operationsOfImage.prepareUncompressedData(buffer);
-        List<TileCompressionOperation> tiles = getTiles(operationsOfImage);
+        List<TileCompressionOperation> tiles = getTileCompressionOperations(operationsOfImage);
         int heigth = 0;
         int width = 0;
         int pixels = 0;
@@ -278,7 +278,7 @@ public class TileCompressorProviderTest {
         }
     }
 
-    private List<TileCompressionOperation> getTiles(TiledImageCompressionOperation operationsOfImage) {
+    private static List<TileCompressionOperation> getTileCompressionOperations(TiledImageCompressionOperation operationsOfImage) {
         List<TileCompressionOperation> tiles = new ArrayList<>();
         try {
             for (int index = 0; index < 10000; index++) {

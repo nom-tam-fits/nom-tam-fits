@@ -319,16 +319,19 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         return this.binaryTable;
     }
 
-    protected ByteBuffer getCompressedWholeArea() {
+    @Override
+    public ByteBuffer getCompressedWholeArea() {
         return this.compressedWholeArea;
     }
 
-    protected ICompressorControl getCompressorControl() {
+    @Override
+    public ICompressorControl getCompressorControl() {
         initializeCompressionControl();
         return this.compressorControl;
     }
 
-    protected ICompressorControl getGzipCompressorControl() {
+    @Override
+    public ICompressorControl getGzipCompressorControl() {
         if (this.gzipCompressorControl == null) {
             this.gzipCompressorControl = CompressorProvider.findCompressorControl(null, ZCMPTYPE_GZIP_1, getBaseType().primitiveClass());
         }
