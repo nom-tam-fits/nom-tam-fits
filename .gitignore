@@ -16,3 +16,4 @@ release.properties
 /.apt_generated/
 /.factorypath
 /target/
+/nom-tam-fits.sonargraph/

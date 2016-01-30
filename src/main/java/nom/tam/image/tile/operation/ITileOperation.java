@@ -35,4 +35,5 @@ public interface ITileOperation {
 
     ITileOperation setDimensions(int dataOffset, int width, int height);
 
+    void waitForResult();
 }

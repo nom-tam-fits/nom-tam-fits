@@ -40,7 +40,7 @@ public class Access {
     }
 
     public static ITileOperation getTile(AbstractTiledImageOperation operationsOfImage, int index) {
-        return operationsOfImage.getTile(index);
+        return operationsOfImage.getTileOperation(index);
     }
 
 }

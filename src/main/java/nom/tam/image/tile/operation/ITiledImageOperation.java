@@ -35,10 +35,10 @@ import java.nio.Buffer;
 
 import nom.tam.util.type.PrimitiveType;
 
-public interface ITiledImageOperation<T> {
+public interface ITiledImageOperation {
     PrimitiveType<Buffer> getBaseType();
     
     int getImageWidth();
     
-    T getTile(int i);
+    ITileOperation getTileOperation(int i);
 }

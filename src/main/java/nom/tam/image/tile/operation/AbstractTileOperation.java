@@ -38,7 +38,7 @@ import java.util.concurrent.Future;
 import nom.tam.image.tile.operation.buffer.TileBuffer;
 import nom.tam.util.type.PrimitiveType;
 
-public abstract class AbstractTileOperation<OPERATION extends ITileOperation, IMAGE_OPERATION extends ITiledImageOperation<OPERATION>> implements Runnable {
+public abstract class AbstractTileOperation<IMAGE_OPERATION extends ITiledImageOperation> implements Runnable, ITileOperation {
 
     private final IMAGE_OPERATION tiledImageOperation;
 
@@ -91,6 +91,7 @@ public abstract class AbstractTileOperation<OPERATION extends ITileOperation, IM
     /**
      * Wait for the result of the tile processing.
      */
+    @Override
     public void waitForResult() {
         try {
             this.future.get();
@@ -103,8 +104,8 @@ public abstract class AbstractTileOperation<OPERATION extends ITileOperation, IM
         return this.tiledImageOperation.getBaseType();
     }
 
-    protected OPERATION getPreviousTile() {
-        return this.tiledImageOperation.getTile(getTileIndex() - 1);
+    protected ITileOperation getPreviousTileOperation() {
+        return this.tiledImageOperation.getTileOperation(getTileIndex() - 1);
     }
 
     protected TileBuffer getTileBuffer() {
@@ -115,17 +116,17 @@ public abstract class AbstractTileOperation<OPERATION extends ITileOperation, IM
         return this.tiledImageOperation;
     }
 
-    protected OPERATION setDimensions(int dataOffset, int width, int height) {
+    @Override
+    public ITileOperation setDimensions(int dataOffset, int width, int height) {
         setTileBuffer(TileBuffer.createTileBuffer(getBaseType(), //
                 dataOffset, //
                 this.tiledImageOperation.getImageWidth(), //
                 width, height));
         this.area.size(width, height);
-        return (OPERATION) this;
+        return this;
     }
 
     protected void setTileBuffer(TileBuffer tileBuffer) {
         this.tileBuffer = tileBuffer;
     }
-
 }

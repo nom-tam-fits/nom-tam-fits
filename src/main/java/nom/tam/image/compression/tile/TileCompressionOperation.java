@@ -47,7 +47,7 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  * part of the image. Will be sub classed for compression and decompression
  * variants.
  */
-abstract class TileCompressionOperation extends AbstractTileOperation<TileCompressionOperation, TiledImageCompressionOperation> implements ITileOperation {
+abstract class TileCompressionOperation extends AbstractTileOperation<TiledImageCompressionOperation> implements ITileOperation {
 
     protected ByteBuffer compressedData;
 

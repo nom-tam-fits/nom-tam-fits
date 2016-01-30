@@ -58,7 +58,7 @@ public class TileCompressor extends TileCompressionOperation {
         if (getTileIndex() > 0) {
             try {
                 // wait for the previous tile to finish.
-                getPreviousTile().waitForResult();
+                getPreviousTileOperation().waitForResult();
                 ByteBuffer compressedWholeArea = getCompressedWholeArea();
                 this.compressedOffset = compressedWholeArea.position();
                 PrimitiveType.BYTE.appendBuffer(compressedWholeArea, this.compressedData);
