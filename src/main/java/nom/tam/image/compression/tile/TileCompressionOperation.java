@@ -37,6 +37,7 @@ import java.nio.ByteBuffer;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.image.tile.operation.AbstractTileOperation;
+import nom.tam.image.tile.operation.ITileOperation;
 import nom.tam.image.tile.operation.TileArea;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
@@ -46,7 +47,7 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  * part of the image. Will be sub classed for compression and decompression
  * variants.
  */
-abstract class TileCompressionOperation extends AbstractTileOperation<TileCompressionOperation, TiledImageCompressionOperation> {
+abstract class TileCompressionOperation extends AbstractTileOperation<TileCompressionOperation, TiledImageCompressionOperation> implements ITileOperation {
 
     protected ByteBuffer compressedData;
 
@@ -129,7 +130,7 @@ abstract class TileCompressionOperation extends AbstractTileOperation<TileCompre
     }
 
     @Override
-    protected TileCompressionOperation setDimensions(int dataOffset, int width, int height) {
+    public TileCompressionOperation setDimensions(int dataOffset, int width, int height) {
         super.setDimensions(dataOffset, width, height);
         return this;
     }

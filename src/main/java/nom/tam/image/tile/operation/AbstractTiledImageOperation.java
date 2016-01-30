@@ -39,7 +39,7 @@ import java.util.Arrays;
 
 import nom.tam.util.type.PrimitiveType;
 
-public class AbstractTiledImageOperation<OPERATION extends AbstractTileOperation> {
+public class AbstractTiledImageOperation<OPERATION extends ITileOperation> implements ITiledImageOperation<OPERATION> {
 
     private int[] axes;
 
@@ -113,7 +113,8 @@ public class AbstractTiledImageOperation<OPERATION extends AbstractTileOperation
         }
     }
 
-    protected int getImageWidth() {
+    @Override
+    public int getImageWidth() {
         return this.axes[0];
     }
 
@@ -125,7 +126,8 @@ public class AbstractTiledImageOperation<OPERATION extends AbstractTileOperation
         return this.tileOperations.length;
     }
 
-    protected OPERATION getTile(int i) {
+    @Override
+    public OPERATION getTile(int i) {
         return this.tileOperations[i];
     }
 

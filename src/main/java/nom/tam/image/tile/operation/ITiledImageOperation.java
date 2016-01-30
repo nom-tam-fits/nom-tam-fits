@@ -4,7 +4,7 @@ package nom.tam.image.tile.operation;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2016 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,11 +31,14 @@ package nom.tam.image.tile.operation;
  * #L%
  */
 
-public interface ITileOperationInitialisation<OPERATION extends ITileOperation> {
+import java.nio.Buffer;
 
-    OPERATION createTileOperation(int tileIndex, TileArea area);
+import nom.tam.util.type.PrimitiveType;
 
-    void init(OPERATION tileOperation);
-
-    void tileCount(int tileCount);
+public interface ITiledImageOperation<T> {
+    PrimitiveType<Buffer> getBaseType();
+    
+    int getImageWidth();
+    
+    T getTile(int i);
 }

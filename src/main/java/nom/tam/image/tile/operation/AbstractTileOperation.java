@@ -38,7 +38,7 @@ import java.util.concurrent.Future;
 import nom.tam.image.tile.operation.buffer.TileBuffer;
 import nom.tam.util.type.PrimitiveType;
 
-public abstract class AbstractTileOperation<OPERATION extends AbstractTileOperation, IMAGE_OPERATION extends AbstractTiledImageOperation<OPERATION>> implements Runnable {
+public abstract class AbstractTileOperation<OPERATION extends ITileOperation, IMAGE_OPERATION extends ITiledImageOperation<OPERATION>> implements Runnable {
 
     private final IMAGE_OPERATION tiledImageOperation;
 
