@@ -127,7 +127,7 @@ public class BinaryTable extends AbstractTableData {
                 // Model should not be changed...
                 return copy;
             } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException("ColumnDesc is not clonable, but it must be!");
+                throw new IllegalStateException("ColumnDesc is not clonable, but it must be!", e);
             }
         }
 
@@ -1174,7 +1174,7 @@ public class BinaryTable extends AbstractTableData {
             FitsUtil.reposition(this.currInput, this.fileOffset + (long) row * (long) this.rowLen);
             this.currInput.readLArray(data);
         } catch (IOException e) {
-            throw new FitsException("Error in deferred row read");
+            throw new FitsException("Error in deferred row read", e);
         }
 
         for (int col = 0; col < data.length; col++) {

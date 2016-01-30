@@ -304,7 +304,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
             }
             long psum = (long) dpsum >> 1;
             int fs;
-            for (fs = 0; psum > 0; fs++) {
+            for (fs = 0; psum > 0; fs++) { // NOSONAR
                 psum >>= 1;
             }
 
@@ -320,7 +320,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
                 for (int j = 0; j < thisblock; j++) {
                     buffer.putLong(diff[j], this.bBits);
                 }
-            } else if (fs == 0 && pixelsum == 0) {
+            } else if (fs == 0 && pixelsum == 0) { // NOSONAR
                 /*
                  * special low entropy case when FS = 0 and pixelsum=0 (all
                  * pixels in block are zero.) Output a 0 and return

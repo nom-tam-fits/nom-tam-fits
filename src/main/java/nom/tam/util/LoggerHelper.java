@@ -1,10 +1,10 @@
-package nom.tam.fits.utilities;
+package nom.tam.util;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2016 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,26 +31,21 @@ package nom.tam.fits.utilities;
  * #L%
  */
 
-public final class Main {
+import java.util.logging.Logger;
 
-    private Main() {
+/**
+ * Utility class offering simplifying methods related to {@code Logger}.
+ */
+public final class LoggerHelper {
+
+    private LoggerHelper() {
+        // Not needed
     }
-
-    public static void main(String[] args) throws Exception {
-        if (args.length > 0 && "copy".equalsIgnoreCase(args[0])) {
-            FitsCopy.main(copyArgs(args));
-        } else if (args.length > 0 && "read".equalsIgnoreCase(args[0])) {
-            FitsReader.main(copyArgs(args));
-        } else {
-            System.out.println("do not know what to do, available are copy and read!"); // NOSONAR
-        }
-    }
-
-    private static String[] copyArgs(String[] args) {
-        String[] newArgs = new String[args.length - 1];
-        for (int index = 0; index < newArgs.length; index++) {
-            newArgs[index] = args[index + 1];
-        }
-        return newArgs;
+    
+    /**
+     * @return a Java {@code Logger} for the specified class.
+     */
+    public static Logger getLogger(Class<?> aClass) {
+        return Logger.getLogger(aClass.getName());
     }
 }

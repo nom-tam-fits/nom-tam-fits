@@ -37,9 +37,12 @@ import static nom.tam.fits.header.Standard.GCOUNT;
 import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.PCOUNT;
+import static nom.tam.util.LoggerHelper.getLogger;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
@@ -52,6 +55,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * classes.
  */
 public class UndefinedData extends Data {
+
+    private static final Logger LOG = getLogger(UndefinedData.class);
 
     private static final int BITS_PER_BYTE = 8;
 
@@ -108,7 +113,7 @@ public class UndefinedData extends Data {
             // Just in case!
             head.addValue(EXTEND, true);
         } catch (HeaderCardException e) {
-            System.err.println("Unable to create unknown header:" + e);
+            LOG.log(Level.SEVERE, "Unable to create unknown header", e);
         } finally {
             Standard.context(null);
         }

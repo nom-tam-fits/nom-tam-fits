@@ -1,5 +1,7 @@
 package nom.tam.fits;
 
+import static nom.tam.util.LoggerHelper.getLogger;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -32,6 +34,8 @@ package nom.tam.fits;
  */
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -54,6 +58,8 @@ import nom.tam.util.RandomAccess;
  * </ul>
  */
 public abstract class Data implements FitsElement {
+
+    private static final Logger LOG = getLogger(Data.class);
 
     private static final int FITS_BLOCK_SIZE_MINUS_ONE = FitsFactory.FITS_BLOCK_SIZE - 1;
 
@@ -127,6 +133,7 @@ public abstract class Data implements FitsElement {
             FitsUtil.reposition(this.input, this.fileOffset);
             return true;
         } catch (Exception e) {
+            LOG.log(Level.SEVERE, "UINable to reset", e);
             return false;
         }
     }

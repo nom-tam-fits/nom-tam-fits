@@ -1,5 +1,7 @@
 package nom.tam.util;
 
+import static nom.tam.util.LoggerHelper.getLogger;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -37,6 +39,8 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class is intended for high performance I/O in scientific applications.
@@ -69,6 +73,8 @@ import java.io.InputStream;
  * Additional work is required to handle very large arrays generally.
  */
 public class BufferedDataInputStream extends BufferedInputStream implements ArrayDataInput {
+
+    private static final Logger LOG = getLogger(BufferedDataInputStream.class);
 
     /**
      * size of the skip buffer (if it exists) {@link #skipBuf}.
@@ -167,9 +173,11 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     @Override
     public int read(byte[] obuf, int offset, int length) throws IOException {
         int total = 0;
-        while (length > 0) {
+        int remainingToRead = length;
+        int currentOffset = offset;
+        while (remainingToRead > 0) {
             // Use just the buffered I/O to get needed info.
-            int xlen = super.read(obuf, offset, length);
+            int xlen = super.read(obuf, currentOffset, remainingToRead);
             if (xlen <= 0) {
                 if (total == 0) {
                     throw new EOFException();
@@ -177,9 +185,9 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
                     return total;
                 }
             } else {
-                length -= xlen;
+                remainingToRead -= xlen;
                 total += xlen;
-                offset += xlen;
+                currentOffset += xlen;
             }
         }
         return total;
@@ -393,34 +401,40 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
                     break;
                 }
             } catch (IOException e) {
-                // Some input streams (process outputs) don't allow
-                // skipping. The kludgy solution here is to
-                // try to do a read when we get an error in the skip....
-                // Real IO errors will presumably casue an error
-                // in these reads too.
-                if (this.skipBuf == null) {
-                    this.skipBuf = new byte[BufferedDataInputStream.SKIP_BUFFER_SIZE];
-                }
-                while (need > BufferedDataInputStream.SKIP_BUFFER_SIZE) {
-                    int got = read(this.skipBuf, 0, BufferedDataInputStream.SKIP_BUFFER_SIZE);
-                    if (got <= 0) {
-                        break;
-                    }
-                    need -= got;
-                }
-                while (need > 0) {
-                    int got = read(this.skipBuf, 0, (int) need);
-                    if (got <= 0) {
-                        break;
-                    }
-                    need -= got;
-                }
+                need = handleExceptionInSkip(need, e);
             }
-
         }
         if (need > 0) {
             throw new EOFException();
         }
+    }
+
+    private long handleExceptionInSkip(long skip, IOException e) throws IOException {
+        LOG.log(Level.WARNING, "Error while skipping bytes", e);
+        // Some input streams (process outputs) don't allow
+        // skipping. The kludgy solution here is to
+        // try to do a read when we get an error in the skip....
+        // Real IO errors will presumably cause an error
+        // in these reads too.
+        if (this.skipBuf == null) {
+            this.skipBuf = new byte[BufferedDataInputStream.SKIP_BUFFER_SIZE];
+        }
+        long remainingToSkip = skip;
+        while (remainingToSkip > BufferedDataInputStream.SKIP_BUFFER_SIZE) {
+            int got = read(this.skipBuf, 0, BufferedDataInputStream.SKIP_BUFFER_SIZE);
+            if (got <= 0) {
+                break;
+            }
+            remainingToSkip -= got;
+        }
+        while (remainingToSkip > 0) {
+            int got = read(this.skipBuf, 0, (int) remainingToSkip);
+            if (got <= 0) {
+                break;
+            }
+            remainingToSkip -= got;
+        }
+        return remainingToSkip;
     }
 
     @Override
@@ -433,5 +447,4 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     public String toString() {
         return super.toString() + "[count=" + this.count + ",pos=" + this.pos + "]";
     }
-
 }

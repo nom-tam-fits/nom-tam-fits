@@ -31,8 +31,11 @@ package nom.tam.fits.compress;
  * #L%
  */
 
+import static nom.tam.util.LoggerHelper.getLogger;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.FitsException;
@@ -45,7 +48,7 @@ public class BasicCompressProvider implements ICompressProvider {
 
     private static final int COMPRESS_MAGIC_BYTE2 = 0x9d;
 
-    private static final Logger LOG = Logger.getLogger(BasicCompressProvider.class.getName());
+    private static final Logger LOG = getLogger(BasicCompressProvider.class);
 
     private InputStream compressInputStream(final InputStream compressed) throws IOException, FitsException {
         try {
@@ -54,10 +57,10 @@ public class BasicCompressProvider implements ICompressProvider {
         } catch (Exception e) {
             ICompressProvider next = CompressionManager.nextCompressionProvider(COMPRESS_MAGIC_BYTE1, COMPRESS_MAGIC_BYTE2, this);
             if (next != null) {
-                LOG.warning("Error initiating .Z decompression: " + e.getMessage() + " trieing alternative decompressor");
+                LOG.log(Level.WARNING, "Error initiating .Z decompression: " + e.getMessage() + " trying alternative decompressor", e);
                 return next.decompress(compressed);
             }
-            throw new FitsException("Unable to read .Z compressed stream.\nIs `uncompress' in the path?\n:" + e);
+            throw new FitsException("Unable to read .Z compressed stream.\nIs 'uncompress' in the path?", e);
         }
     }
 

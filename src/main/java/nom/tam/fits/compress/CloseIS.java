@@ -31,6 +31,8 @@ package nom.tam.fits.compress;
  * #L%
  */
 
+import static nom.tam.util.LoggerHelper.getLogger;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterInputStream;
@@ -43,7 +45,7 @@ import java.util.logging.Logger;
 
 public class CloseIS extends FilterInputStream {
 
-    private static final Logger LOG = Logger.getLogger(CloseIS.class.getName());
+    private static final Logger LOG = getLogger(CloseIS.class);
 
     private static final int COPY_BUFFER_SIZE = 64 * 1024;
 

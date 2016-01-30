@@ -37,10 +37,13 @@ import static nom.tam.fits.header.Standard.GCOUNT;
 import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.PCOUNT;
+import static nom.tam.util.LoggerHelper.getLogger;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.Buffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.fits.header.Standard;
 import nom.tam.image.StandardImageTiler;
@@ -96,6 +99,8 @@ public class ImageData extends Data {
             return ImageData.this.dataArray;
         }
     }
+
+    private static final Logger LOG = getLogger(ImageData.class);
 
     /** The size of the data */
     private long byteSize;
@@ -233,6 +238,7 @@ public class ImageData extends Data {
             try {
                 this.dataArray = this.tiler.getCompleteImage();
             } catch (Exception e) {
+                LOG.log(Level.SEVERE, "Unable to get complete image", e);
                 return null;
             }
         }
@@ -350,7 +356,7 @@ public class ImageData extends Data {
                 try {
                     this.dataArray = this.tiler.getCompleteImage();
                 } catch (IOException e) {
-                    throw new FitsException("Error attempting to fill image");
+                    throw new FitsException("Error attempting to fill image", e);
                 }
 
             } else if (this.dataArray == null && this.dataDescription != null) {

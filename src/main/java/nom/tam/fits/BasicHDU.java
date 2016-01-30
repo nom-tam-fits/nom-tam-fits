@@ -54,6 +54,7 @@ import static nom.tam.fits.header.Standard.ORIGIN;
 import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.fits.header.Standard.REFERENC;
 import static nom.tam.fits.header.Standard.TELESCOP;
+import static nom.tam.util.LoggerHelper.getLogger;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -73,7 +74,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     private static final int MAX_NAXIS_ALLOWED = 999;
 
-    private static final Logger LOG = Logger.getLogger(BasicHDU.class.getName());
+    private static final Logger LOG = getLogger(BasicHDU.class);
 
     public static final int BITPIX_BYTE = 8;
 
@@ -290,6 +291,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         try {
             return new FitsDate(this.myHeader.getStringValue(DATE)).toDate();
         } catch (FitsException e) {
+            LOG.log(Level.SEVERE, "Unable to convert string to FITS date", e);
             return null;
         }
     }
@@ -368,6 +370,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         try {
             return this.myData.getKernel();
         } catch (FitsException e) {
+            LOG.log(Level.SEVERE, "Unable to get kernel data", e);
             return null;
         }
     }
@@ -408,6 +411,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         try {
             return new FitsDate(this.myHeader.getStringValue(DATE_OBS)).toDate();
         } catch (FitsException e) {
+            LOG.log(Level.SEVERE, "Unable to convert string to FITS observation date", e);
             return null;
         }
     }
@@ -604,7 +608,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         try {
             stream.flush();
         } catch (IOException e) {
-            throw new FitsException("Error flushing at end of HDU: " + e.getMessage());
+            throw new FitsException("Error flushing at end of HDU", e);
         }
     }
 }

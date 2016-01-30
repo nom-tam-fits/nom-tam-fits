@@ -741,7 +741,7 @@ public class AsciiTable extends AbstractTableData {
             getBuffer(this.lengths[col], this.fileOffset + (long) row * (long) this.rowLen + this.offsets[col]);
         } catch (IOException e) {
             this.buffer = null;
-            throw new FitsException("Unable to read element");
+            throw new FitsException("Unable to read element", e);
         }
         res[0] = ArrayFuncs.newInstance(this.types[col], 1);
 
@@ -770,7 +770,7 @@ public class AsciiTable extends AbstractTableData {
         try {
             getBuffer(this.rowLen, this.fileOffset + (long) row * (long) this.rowLen);
         } catch (IOException e) {
-            throw new FitsException("Unable to read row");
+            throw new FitsException("Unable to read row", e);
         }
 
         for (int i = 0; i < this.nFields; i += 1) {
@@ -859,7 +859,7 @@ public class AsciiTable extends AbstractTableData {
         try {
             System.arraycopy(newData, 0, this.data[col], row, 1);
         } catch (Exception e) {
-            throw new FitsException("Incompatible element:" + row + "," + col);
+            throw new FitsException("Incompatible element:" + row + "," + col, e);
         }
         setNull(row, col, false);
 
@@ -928,7 +928,7 @@ public class AsciiTable extends AbstractTableData {
             try {
                 System.arraycopy(newData[i], 0, this.data[i], row, 1);
             } catch (Exception e) {
-                throw new FitsException("Unable to modify row: incompatible data:" + row);
+                throw new FitsException("Unable to modify row: incompatible data:" + row, e);
             }
             setNull(row, i, false);
         }
@@ -1067,7 +1067,7 @@ public class AsciiTable extends AbstractTableData {
             str.write(this.buffer);
             FitsUtil.pad(str, this.buffer.length, (byte) ' ');
         } catch (IOException e) {
-            throw new FitsException("Error writing ASCII Table data");
+            throw new FitsException("Error writing ASCII Table data", e);
         }
     }
 }

@@ -37,8 +37,11 @@ import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.XTENSION;
+import static nom.tam.util.LoggerHelper.getLogger;
 
 import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
@@ -49,6 +52,8 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  * FITS image header/data unit
  */
 public class ImageHDU extends BasicHDU<ImageData> {
+
+    private static final Logger LOG = getLogger(ImageHDU.class);
 
     /**
      * @return Encapsulate an object as an ImageHDU.
@@ -75,7 +80,6 @@ public class ImageHDU extends BasicHDU<ImageData> {
 
         }
         return false;
-
     }
 
     /**
@@ -90,7 +94,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
         if (!found) {
             String s = hdr.getStringValue(XTENSION);
             if (s != null && //
-                    (s.trim().equals("IMAGE") || s.trim().equals("IUEIMAGE"))) {
+                    ("IMAGE".equals(s.trim()) || "IUEIMAGE".equals(s.trim()))) {
                 found = true;
             }
         }
@@ -112,7 +116,6 @@ public class ImageHDU extends BasicHDU<ImageData> {
      *             if the object does not contain valid image data.
      */
     public static Header manufactureHeader(Data d) throws FitsException {
-
         if (d == null) {
             return null;
         }
@@ -135,7 +138,6 @@ public class ImageHDU extends BasicHDU<ImageData> {
      */
     public ImageHDU(Header h, ImageData d) throws FitsException {
         super(h, d);
-
     }
 
     /** Indicate that Images can appear at the beginning of a FITS dataset */
@@ -145,7 +147,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
     }
 
     public StandardImageTiler getTiler() {
-        return ((ImageData) this.myData).getTiler();
+        return this.myData.getTiler();
     }
 
     /**
@@ -175,6 +177,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
                 stream.println("         " + ArrayFuncs.arrayDescription(this.myData.getData()));
             }
         } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unable to get image data", e);
             stream.println("      Unable to get data");
         }
     }
@@ -186,7 +189,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
         try {
             super.setPrimaryHDU(status);
         } catch (FitsException e) {
-            System.err.println("Impossible exception in ImageData");
+            LOG.log(Level.SEVERE, "Impossible exception in ImageData", e);
         }
 
         if (status) {

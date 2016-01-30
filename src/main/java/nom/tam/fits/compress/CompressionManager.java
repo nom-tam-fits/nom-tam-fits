@@ -31,6 +31,8 @@ package nom.tam.fits.compress;
  * #L%
  */
 
+import static nom.tam.util.LoggerHelper.getLogger;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,7 +57,7 @@ public final class CompressionManager {
     /**
      * logger to log to.
      */
-    private static final Logger LOG = Logger.getLogger(CompressionManager.class.getName());
+    private static final Logger LOG = getLogger(CompressionManager.class);
 
     private CompressionManager() {
     }
@@ -65,7 +67,7 @@ public final class CompressionManager {
      * method is selected automatically based upon the first two bytes read.
      * 
      * @param compressed
-     *            The compressed input stram
+     *            The compressed input stream
      * @return A stream which wraps the input stream and decompresses it. If the
      *         input stream is not compressed, a pushback input stream wrapping
      *         the original stream is returned.
