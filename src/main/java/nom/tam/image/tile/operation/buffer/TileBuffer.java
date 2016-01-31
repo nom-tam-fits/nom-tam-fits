@@ -70,6 +70,8 @@ public abstract class TileBuffer {
 
     public abstract Buffer getBuffer();
 
+    public abstract TileBuffer asType(PrimitiveType<Buffer> otherBaseType);
+
     public int getHeight() {
         return this.height;
     }
@@ -89,6 +91,10 @@ public abstract class TileBuffer {
         value.position(this.offset);
         this.imageBuffer = this.baseType.sliceBuffer(value);
         return this;
+    }
+
+    public int getOffset() {
+        return offset;
     }
 
     protected Buffer getImageBuffer() {

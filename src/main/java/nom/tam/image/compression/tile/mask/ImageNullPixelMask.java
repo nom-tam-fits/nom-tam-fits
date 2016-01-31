@@ -1,10 +1,12 @@
-package nom.tam.image.tile.operation.buffer;
+package nom.tam.image.compression.tile.mask;
+
+import java.nio.ByteBuffer;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2016 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,30 +33,23 @@ package nom.tam.image.tile.operation.buffer;
  * #L%
  */
 
-import java.nio.Buffer;
+public class ImageNullPixelMask {
 
-import nom.tam.util.type.PrimitiveType;
+    private final AbstractNullPixelMask[] nullPixelMasks;
 
-public class TileBufferRowBased extends TileBuffer {
+    private final ByteBuffer nullBuffer;
 
-    public TileBufferRowBased(PrimitiveType<Buffer> baseType, int dataOffset, int width, int height) {
-        super(baseType, dataOffset, width, height);
+    public ImageNullPixelMask(int tileCount, int pixelSize) {
+        this.nullPixelMasks = new AbstractNullPixelMask[tileCount];
+        this.nullBuffer = ByteBuffer.allocate(pixelSize);
     }
 
-    @Override
-    public Buffer getBuffer() {
-        return getImageBuffer();
+    public <T extends AbstractNullPixelMask> T add(T nullPixelMask) {
+        this.nullPixelMasks[nullPixelMask.getTileIndex()] = nullPixelMask;
+        return nullPixelMask;
     }
 
-    @Override
-    public TileBufferRowBased setData(Buffer value) {
-        super.setData(value);
-        getImageBuffer().limit(getPixelSize());
-        return this;
-    }
-
-    @Override
-    public TileBuffer asType(PrimitiveType<Buffer> otherBaseType) {
-        return new TileBufferRowBased(otherBaseType, getOffset(), getWidth(), getHeight());
+    public ByteBuffer getNullBuffer() {
+        return this.nullBuffer;
     }
 }

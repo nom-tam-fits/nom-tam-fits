@@ -36,6 +36,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -601,33 +602,7 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void testSomeBlanksInCompressedFloatImage() throws Exception {
-        try {
-            new File("target/testSomeBlanksInCompressedFloatImage.fits").delete();
-            new File("target/testSomeBlanksInCompressedFloatImage.fits.fz").delete();
-        } catch (Exception e) {
-            // ignore
-        }
-        double[][] data = new double[100][100];
-        double value = -1000.0d;
-        int blanks = 0;
-        Random random = new Random();
-        for (int index1 = 0; index1 < 100; index1++) {
-            for (int index2 = 0; index2 < 100; index2++) {
-                data[index1][index2] = value;
-                if (blanks++ % 20 == 0) {
-                    data[index1][index2] = Double.NaN;
-                } else {
-                    data[index1][index2] = value;
-                    value += 0.12345d + random.nextDouble() / 1000d;
-                }
-            }
-        }
-        try (Fits f = new Fits(); BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/testSomeBlanksInCompressedFloatImage.fits"))) {
-            ImageData imageData = new ImageData(data);
-            ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
-            f.addHDU(hdu);
-            f.write(bdos);
-        }
+        double[][] data = newTestImageWithSomeBlanks("");
         try (Fits f = new Fits(); BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/testSomeBlanksInCompressedFloatImage.fits.fz"))) {
             ImageData imageData = new ImageData(data);
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
@@ -850,8 +825,8 @@ public class ReadWriteProvidedCompressedImageTest {
                     .forceNoLoss(140, 140, 20, 20)//
                     .getCompressOption(QuantizeOption.class)//
                     /**/.setQlevel(1.0)//
-                    /**/.getCompressOption(RiceCompressOption.class)//
-                    /*  */.setBlockSize(32);
+                    .getCompressOption(RiceCompressOption.class)//
+                    /**/.setBlockSize(32);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13real_own_noloss.fits.fz"))) {
@@ -871,5 +846,67 @@ public class ReadWriteProvidedCompressedImageTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void writeRiceFloatWithNullPixelMask() throws Exception {
+        double[][] data = newTestImageWithSomeBlanks("ForNull");
+        try (Fits f = new Fits(); BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/testSomeBlanksInCompressedFloatImage.fits.fz"))) {
+            ImageData imageData = new ImageData(data);
+            ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
+            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);
+            compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
+                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+                    .preserveNulls()//
+                    .getCompressOption(QuantizeOption.class)//
+                    /**/.setQlevel(1.0)
+                    /**/.setCheckNull(true)//
+                    .getCompressOption(HCompressorOption.class)//
+                    /**/.setScale(4);
+            compressedHdu.compress();
+            f.addHDU(compressedHdu);
+            f.write(bdos);
+            Assert.assertEquals(Compression.COMPRESSED_DATA_COLUMN, compressedHdu.getHeader().findCard(Standard.TTYPEn.n(1)).getValue());
+        }
+        try (Fits f = new Fits("target/testSomeBlanksInCompressedFloatImage.fits.fz")) {
+            f.readHDU();
+            CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
+            double[][] actual = (double[][]) hdu.asImageHDU().getData().getData();
+            for (int index = 0; index < actual.length; index++) {
+                assertArrayEquals(data[index], actual[index], 1d);
+            }
+        }
+    }
+
+    protected double[][] newTestImageWithSomeBlanks(String suffix) throws FitsException, IOException, FileNotFoundException {
+        try {
+            new File("target/testSomeBlanksInCompressedFloatImage" + suffix + ".fits").delete();
+            new File("target/testSomeBlanksInCompressedFloatImage" + suffix + ".fits.fz").delete();
+        } catch (Exception e) {
+            // ignore
+        }
+        double[][] data = new double[100][100];
+        double value = -1000.0d;
+        int blanks = 0;
+        Random random = new Random();
+        for (int index1 = 0; index1 < 100; index1++) {
+            for (int index2 = 0; index2 < 100; index2++) {
+                data[index1][index2] = value;
+                if (blanks++ % 20 == 0) {
+                    data[index1][index2] = Double.NaN;
+                } else {
+                    data[index1][index2] = value;
+                    value += 0.12345d + random.nextDouble() / 1000d;
+                }
+            }
+        }
+        try (Fits f = new Fits();
+                BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/testSomeBlanksInCompressedFloatImage" + suffix + ".fits"))) {
+            ImageData imageData = new ImageData(data);
+            ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
+            f.addHDU(hdu);
+            f.write(bdos);
+        }
+        return data;
     }
 }

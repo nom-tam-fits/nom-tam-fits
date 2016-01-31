@@ -62,6 +62,10 @@ public class CompressedImageData extends BinaryTable {
         tiledImageOperation().compress(hdu);
     }
 
+    public void preserveNulls() {
+        tiledImageOperation().preserveNulls();
+    }
+
     @Override
     public void fillHeader(Header h) throws FitsException {
         super.fillHeader(h);

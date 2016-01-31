@@ -34,6 +34,8 @@ package nom.tam.image.compression.tile;
 import java.nio.Buffer;
 import java.util.logging.Logger;
 
+import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
+import nom.tam.image.compression.tile.mask.NullPixelMaskReader;
 import nom.tam.image.tile.operation.TileArea;
 
 public class TileDecompressor extends TileCompressionOperation {
@@ -42,6 +44,8 @@ public class TileDecompressor extends TileCompressionOperation {
      * logger to log to.
      */
     private static final Logger LOG = Logger.getLogger(TileDecompressor.class.getName());
+
+    private NullPixelMaskReader nullPixelMaskReader;
 
     protected TileDecompressor(TiledImageCompressionOperation array, int tileIndex, TileArea area) {
         super(array, tileIndex, area);
@@ -67,5 +71,13 @@ public class TileDecompressor extends TileCompressionOperation {
             LOG.severe("Unknown compression column");
             throw new IllegalStateException("Unknown compression column");
         }
+    }
+
+    @Override
+    protected NullPixelMaskReader createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
+        if (imageNullPixelMask != null) {
+            this.nullPixelMaskReader = imageNullPixelMask.add(new NullPixelMaskReader(getTileBuffer(), getTileIndex()));
+        }
+        return this.nullPixelMaskReader;
     }
 }

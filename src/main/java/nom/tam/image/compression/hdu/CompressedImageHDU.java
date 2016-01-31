@@ -155,6 +155,11 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return this;
     }
 
+    public CompressedImageHDU preserveNulls() {
+        getData().preserveNulls();
+        return this;
+    }
+
     /**
      * Specify an areaWithin the image that will not undergo a lossy
      * compression. This will only have affect it the selected compression

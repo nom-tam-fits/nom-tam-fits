@@ -63,6 +63,7 @@ import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.provider.CompressorProvider;
+import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
 import nom.tam.image.tile.operation.AbstractTiledImageOperation;
 import nom.tam.image.tile.operation.TileArea;
 import nom.tam.util.type.PrimitiveTypeHandler;
@@ -96,6 +97,8 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     private String quantAlgorithm;
 
     private ICompressOption imageOptions;
+
+    private ImageNullPixelMask imageNullPixelMask;
 
     private static void addColumnToTable(BinaryTableHDU hdu, Object column, String columnName) throws FitsException {
         if (column != null) {
@@ -192,6 +195,13 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
             this.quantAlgorithm = null;
         }
         return this;
+    }
+
+    public void preserveNulls() {
+        this.imageNullPixelMask = new ImageNullPixelMask(getTileOperations().length, getBufferSize());
+        for (TileCompressionOperation tileOperation : getTileOperations()) {
+            tileOperation.createImageNullPixelMask(getImageNullPixelMask());
+        }
     }
 
     private <T> T getNullableColumn(Header header, Class<T> class1, String columnName) throws FitsException {
@@ -352,5 +362,9 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
                 throw new IllegalStateException("this should not happen", e);
             }
         }
+    }
+
+    protected ImageNullPixelMask getImageNullPixelMask() {
+        return imageNullPixelMask;
     }
 }

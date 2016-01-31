@@ -103,4 +103,6 @@ public interface PrimitiveType<B extends Buffer> {
     B wrap(Object array);
 
     Class<?> wrapperClass();
+
+    PrimitiveType<Buffer> generic();
 }

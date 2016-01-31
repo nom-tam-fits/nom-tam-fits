@@ -36,6 +36,8 @@ import java.nio.ByteBuffer;
 
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
+import nom.tam.image.compression.tile.mask.AbstractNullPixelMask;
+import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
 import nom.tam.image.tile.operation.AbstractTileOperation;
 import nom.tam.image.tile.operation.ITileOperation;
 import nom.tam.image.tile.operation.TileArea;
@@ -153,4 +155,6 @@ abstract class TileCompressionOperation extends AbstractTileOperation implements
         // we do not limit this buffer but is expected not to write more than
         // the uncompressed size.
     }
+
+    protected abstract AbstractNullPixelMask createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask);
 }

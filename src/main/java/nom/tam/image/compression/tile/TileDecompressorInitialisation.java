@@ -73,6 +73,7 @@ final class TileDecompressorInitialisation implements ITileOperationInitialisati
                 .setCompressed(this.compressed != null ? this.compressed[tileOperation.getTileIndex()] : null, COMPRESSED)//
                 .setCompressed(this.uncompressed != null ? this.uncompressed[tileOperation.getTileIndex()] : null, UNCOMPRESSED)//
                 .setCompressed(this.gzipCompressed != null ? this.gzipCompressed[tileOperation.getTileIndex()] : null, GZIP_COMPRESSED);
+        tileOperation.createImageNullPixelMask(this.imageTilesOperation.getImageNullPixelMask());
         this.compressedOffset += tileOperation.getPixelSize();
     }
 

@@ -189,4 +189,9 @@ abstract class PrimitiveTypeBase<B extends Buffer> implements PrimitiveType<B> {
     public Class<?> wrapperClass() {
         return this.wrapperClass;
     }
+
+    @Override
+    public final PrimitiveType<Buffer> generic() {
+        return (PrimitiveType<Buffer>) this;
+    }
 }
