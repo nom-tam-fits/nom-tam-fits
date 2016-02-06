@@ -40,7 +40,7 @@ import java.nio.ShortBuffer;
 
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.image.tile.operation.buffer.TileBuffer;
-import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypes;
 
 /**
  * restore the null pixel values of an image.
@@ -58,17 +58,17 @@ public class NullPixelMaskRestorer extends AbstractNullPixelMask {
         ByteBuffer decompressed = ByteBuffer.allocate(getTileBuffer().getPixelSize());
         getCompressorControl().decompress(getMask(), decompressed, getCompressorControl().option());
         setMask(decompressed);
-        if (getTileBuffer().getBaseType().is(PrimitiveType.DOUBLE)) {
+        if (getTileBuffer().getBaseType().is(PrimitiveTypes.DOUBLE)) {
             restoreNullDoubles();
-        } else if (getTileBuffer().getBaseType().is(PrimitiveType.FLOAT)) {
+        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.FLOAT)) {
             restoreNullFloats();
-        } else if (getTileBuffer().getBaseType().is(PrimitiveType.LONG)) {
+        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.LONG)) {
             restoreNullLongs();
-        } else if (getTileBuffer().getBaseType().is(PrimitiveType.INT)) {
+        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.INT)) {
             restoreNullInts();
-        } else if (getTileBuffer().getBaseType().is(PrimitiveType.SHORT)) {
+        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.SHORT)) {
             restoreNullShorts();
-        } else if (getTileBuffer().getBaseType().is(PrimitiveType.BYTE)) {
+        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.BYTE)) {
             restoreNullBytes();
         }
     }
