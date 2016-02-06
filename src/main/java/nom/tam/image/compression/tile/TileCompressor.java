@@ -34,7 +34,7 @@ package nom.tam.image.compression.tile;
 import java.nio.ByteBuffer;
 
 import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
-import nom.tam.image.compression.tile.mask.NullPixelMaskWriter;
+import nom.tam.image.compression.tile.mask.NullPixelMaskPerserver;
 import nom.tam.image.tile.operation.TileArea;
 import nom.tam.util.type.PrimitiveType;
 
@@ -42,7 +42,7 @@ public class TileCompressor extends TileCompressionOperation {
 
     private boolean forceNoLoss = false;
 
-    private NullPixelMaskWriter nullPixelMaskWriter;
+    private NullPixelMaskPerserver nullPixelMaskPerserver;
 
     protected TileCompressor(TiledImageCompressionOperation array, int tileIndex, TileArea area) {
         super(array, tileIndex, area);
@@ -84,6 +84,9 @@ public class TileCompressor extends TileCompressionOperation {
         boolean tryNormalCompression = !(this.tileOptions.isLossyCompression() && this.forceNoLoss);
         if (tryNormalCompression) {
             compressSuccess = getCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData, this.tileOptions);
+            if (compressSuccess && this.nullPixelMaskPerserver != null) {
+                this.nullPixelMaskPerserver.preserveNull();
+            }
         }
         if (!compressSuccess) {
             this.compressionType = TileCompressionType.GZIP_COMPRESSED;
@@ -113,15 +116,15 @@ public class TileCompressor extends TileCompressionOperation {
     }
 
     @Override
-    protected void forceNoLoss(boolean value) {
-        this.forceNoLoss = value;
+    protected NullPixelMaskPerserver createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
+        if (imageNullPixelMask != null) {
+            this.nullPixelMaskPerserver = imageNullPixelMask.createTilePreserver(getTileBuffer(), getTileIndex());
+        }
+        return this.nullPixelMaskPerserver;
     }
 
     @Override
-    protected NullPixelMaskWriter createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
-        if (imageNullPixelMask != null) {
-            this.nullPixelMaskWriter = imageNullPixelMask.add(new NullPixelMaskWriter(getTileBuffer(), getTileIndex(), imageNullPixelMask.getNullBuffer()));
-        }
-        return this.nullPixelMaskWriter;
+    protected void forceNoLoss(boolean value) {
+        this.forceNoLoss = value;
     }
 }

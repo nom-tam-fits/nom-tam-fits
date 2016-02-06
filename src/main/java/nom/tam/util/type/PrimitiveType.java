@@ -104,5 +104,5 @@ public interface PrimitiveType<B extends Buffer> {
 
     Class<?> wrapperClass();
 
-    PrimitiveType<Buffer> generic();
+    boolean is(PrimitiveType<? extends Buffer> d);
 }

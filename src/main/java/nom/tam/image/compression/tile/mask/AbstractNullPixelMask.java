@@ -31,25 +31,59 @@ package nom.tam.image.compression.tile.mask;
  * #L%
  */
 
+import java.nio.ByteBuffer;
+
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.image.tile.operation.buffer.TileBuffer;
-import nom.tam.util.type.PrimitiveType;
 
 public class AbstractNullPixelMask {
+
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
+    protected static final byte NULL_INDICATOR = (byte) 1;
 
     private final TileBuffer tileBuffer;
 
     private final int tileIndex;
 
-    private final TileBuffer nullPixelBuffer;
+    private final long nullValue;
 
-    protected AbstractNullPixelMask(TileBuffer tileBuffer, int tileIndex) {
+    private ByteBuffer mask;
+
+    private final ICompressorControl compressorControl;
+
+    protected AbstractNullPixelMask(TileBuffer tileBuffer, int tileIndex, long nullValue, ICompressorControl compressorControl) {
         this.tileBuffer = tileBuffer;
         this.tileIndex = tileIndex;
-        this.nullPixelBuffer = tileBuffer.asType(PrimitiveType.BYTE.generic());
+        this.nullValue = nullValue;
+        this.compressorControl = compressorControl;
     }
 
-    protected final TileBuffer getNullPixelBuffer() {
-        return this.nullPixelBuffer;
+    public byte[] getMaskBytes() {
+        if (this.mask == null) {
+            return EMPTY_BYTE_ARRAY;
+        }
+        int size = this.mask.position();
+        byte[] result = new byte[size];
+        this.mask.rewind();
+        this.mask.get(result);
+        return result;
+    }
+
+    public void setMask(ByteBuffer mask) {
+        this.mask = mask;
+    }
+
+    protected ICompressorControl getCompressorControl() {
+        return this.compressorControl;
+    }
+
+    protected ByteBuffer getMask() {
+        return this.mask;
+    }
+
+    protected long getNullValue() {
+        return this.nullValue;
     }
 
     protected TileBuffer getTileBuffer() {
@@ -60,4 +94,10 @@ public class AbstractNullPixelMask {
         return this.tileIndex;
     }
 
+    protected ByteBuffer initializedMask(int remaining) {
+        if (this.mask == null) {
+            this.mask = ByteBuffer.allocate(remaining);
+        }
+        return this.mask;
+    }
 }

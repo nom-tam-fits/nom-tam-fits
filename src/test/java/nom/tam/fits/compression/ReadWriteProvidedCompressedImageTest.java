@@ -109,12 +109,15 @@ public class ReadWriteProvidedCompressedImageTest {
      * used and a quantification with null checks. The will result in wrong null
      * values, because some of the values representing blank will be lost.
      */
-    private void assertArrayEquals(double[] expected, double[] actual, double delta) {
+    private void assertArrayEquals(double[] expected, double[] actual, double delta, boolean checkNaN) {
         Assert.assertEquals(expected.length, actual.length);
         for (int index = 0; index < actual.length; index++) {
             double d1 = expected[index];
             double d2 = actual[index];
             if (Double.isNaN(d1) || Double.isNaN(d2)) {
+                if (checkNaN) {
+                    Assert.assertTrue(Double.isNaN(d1) == Double.isNaN(d2)); //
+                }
                 Assert.assertTrue(true); // ;-)
             } else {
                 Assert.assertEquals(d1, d2, delta);
@@ -625,7 +628,7 @@ public class ReadWriteProvidedCompressedImageTest {
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             double[][] actual = (double[][]) hdu.asImageHDU().getData().getData();
             for (int index = 0; index < actual.length; index++) {
-                assertArrayEquals(data[index], actual[index], 1d);
+                assertArrayEquals(data[index], actual[index], 1d, false);
             }
         }
     }
@@ -857,7 +860,7 @@ public class ReadWriteProvidedCompressedImageTest {
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
                     .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
-                    .preserveNulls()//
+                    .preserveNulls(Compression.ZCMPTYPE_RICE_1)//
                     .getCompressOption(QuantizeOption.class)//
                     /**/.setQlevel(1.0)
                     /**/.setCheckNull(true)//
@@ -873,7 +876,7 @@ public class ReadWriteProvidedCompressedImageTest {
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             double[][] actual = (double[][]) hdu.asImageHDU().getData().getData();
             for (int index = 0; index < actual.length; index++) {
-                assertArrayEquals(data[index], actual[index], 1d);
+                assertArrayEquals(data[index], actual[index], 1d, false); //TODO set to true
             }
         }
     }

@@ -62,10 +62,6 @@ public class CompressedImageData extends BinaryTable {
         tiledImageOperation().compress(hdu);
     }
 
-    public void preserveNulls() {
-        tiledImageOperation().preserveNulls();
-    }
-
     @Override
     public void fillHeader(Header h) throws FitsException {
         super.fillHeader(h);
@@ -74,10 +70,6 @@ public class CompressedImageData extends BinaryTable {
 
     public <T extends ICompressOption> T getCompressOption(Class<T> clazz) {
         return tiledImageOperation().compressOptions().unwrap(clazz);
-    }
-
-    protected void forceNoLoss(int x, int y, int width, int heigth) {
-        this.tiledImageOperation.forceNoLoss(x, y, width, heigth);
     }
 
     public Buffer getUncompressedData(Header hdr) throws FitsException {
@@ -100,11 +92,29 @@ public class CompressedImageData extends BinaryTable {
         }
     }
 
+    /**
+     * preserve the null values in the image even if the compression algorithm
+     * is lossy.
+     * 
+     * @param nullValue
+     *            the value representing null for byte/short and integer pixel
+     *            values
+     * @param compressionAlgorithm
+     *            compression algorithm to use for the null pixel mask
+     */
+    public void preserveNulls(long nullValue, String compressionAlgorithm) {
+        tiledImageOperation().preserveNulls(nullValue, compressionAlgorithm);
+    }
+
     private TiledImageCompressionOperation tiledImageOperation() {
         if (this.tiledImageOperation == null) {
             this.tiledImageOperation = new TiledImageCompressionOperation(this);
         }
         return this.tiledImageOperation;
+    }
+
+    protected void forceNoLoss(int x, int y, int width, int heigth) {
+        this.tiledImageOperation.forceNoLoss(x, y, width, heigth);
     }
 
     protected void setCompressAlgorithm(HeaderCard compressAlgorithmCard) {

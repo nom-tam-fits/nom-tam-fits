@@ -263,11 +263,11 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         return bitpix;
     }
 
-    public int getBlankValue() throws FitsException {
+    public long getBlankValue() throws FitsException {
         if (!this.myHeader.containsKey(BLANK.key())) {
             throw new FitsException("BLANK undefined");
         }
-        return this.myHeader.getIntValue(BLANK);
+        return this.myHeader.getLongValue(BLANK);
     }
 
     public double getBScale() {

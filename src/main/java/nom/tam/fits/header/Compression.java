@@ -407,6 +407,37 @@ public enum Compression implements IFitsHeader {
     public static final String ZSCALE_COLUMN = "ZSCALE";
 
     /**
+     * <p>
+     * The null pixels in integer images are flagged by a reserved BLANK value
+     * and will be preserved if a lossless compression algorithm is used. If the
+     * image is compressed with a lossy algorithm, however (e.g., H-Compress
+     * with a scale factor greater than 1), then some other technique must be
+     * used to identify the null pixels in the image.
+     * </p>
+     * <p>
+     * The recommended method of recording the null pixels when a lossy
+     * compression algorithm is used is to create an integer data mask with the
+     * same dimensions as the image tile. Set the null pixels to 1 and all the
+     * other pixels to 0, then compress the mask array using a lossless
+     * algorithm such as PLIO or GZIP. Store the compressed byte stream in a
+     * variable-length array column called ’NULL PIXEL MASK’ in the row
+     * corresponding to that image tile. The ZMASKCMP keyword should be used to
+     * record the name of the algorithm used to compress the data mask (e.g.,
+     * RICE 1). The data mask array pixels will be assumed to have the shortest
+     * integer datatype that is supported by the compression algorithm (i.e.,
+     * usually 8-bit bytes).
+     * </p>
+     * <p>
+     * When uncompressing the image tile, the software must check if the
+     * corresponding compressed data mask exists with a length greater than 0,
+     * and if so, then uncompress the mask and set the corresponding undefined
+     * pixels in the image array to the appropriate value (as given by the BLANK
+     * keyword).
+     * </p>
+     */
+    public static final String NULL_PIXEL_MASK = "NULL_PIXEL_MASK";
+
+    /**
      * The number of 8-bit bytes in each original integer pixel value.
      */
     public static final String BYTEPIX = "BYTEPIX";

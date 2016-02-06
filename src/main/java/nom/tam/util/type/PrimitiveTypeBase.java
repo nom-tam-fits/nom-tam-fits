@@ -191,7 +191,7 @@ abstract class PrimitiveTypeBase<B extends Buffer> implements PrimitiveType<B> {
     }
 
     @Override
-    public final PrimitiveType<Buffer> generic() {
-        return (PrimitiveType<Buffer>) this;
+    public boolean is(PrimitiveType<? extends Buffer> other) {
+        return this.bitPix == other.bitPix();
     }
 }

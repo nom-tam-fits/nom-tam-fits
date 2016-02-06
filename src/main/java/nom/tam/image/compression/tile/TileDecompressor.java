@@ -35,7 +35,7 @@ import java.nio.Buffer;
 import java.util.logging.Logger;
 
 import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
-import nom.tam.image.compression.tile.mask.NullPixelMaskReader;
+import nom.tam.image.compression.tile.mask.NullPixelMaskRestorer;
 import nom.tam.image.tile.operation.TileArea;
 
 public class TileDecompressor extends TileCompressionOperation {
@@ -45,7 +45,7 @@ public class TileDecompressor extends TileCompressionOperation {
      */
     private static final Logger LOG = Logger.getLogger(TileDecompressor.class.getName());
 
-    private NullPixelMaskReader nullPixelMaskReader;
+    private NullPixelMaskRestorer nullPixelMaskRestorer;
 
     protected TileDecompressor(TiledImageCompressionOperation array, int tileIndex, TileArea area) {
         super(array, tileIndex, area);
@@ -62,6 +62,9 @@ public class TileDecompressor extends TileCompressionOperation {
         this.tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());
         if (this.compressionType == TileCompressionType.COMPRESSED) {
             getCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), this.tileOptions);
+            if (this.nullPixelMaskRestorer != null) {
+                this.nullPixelMaskRestorer.restoreNulls();
+            }
         } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
             getGzipCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), null);
         } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {
@@ -74,10 +77,10 @@ public class TileDecompressor extends TileCompressionOperation {
     }
 
     @Override
-    protected NullPixelMaskReader createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
+    protected NullPixelMaskRestorer createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
         if (imageNullPixelMask != null) {
-            this.nullPixelMaskReader = imageNullPixelMask.add(new NullPixelMaskReader(getTileBuffer(), getTileIndex()));
+            this.nullPixelMaskRestorer = imageNullPixelMask.createTileRestorer(getTileBuffer(), getTileIndex());
         }
-        return this.nullPixelMaskReader;
+        return this.nullPixelMaskRestorer;
     }
 }

@@ -32,6 +32,7 @@ package nom.tam.image.compression.hdu;
  */
 
 import static nom.tam.fits.header.Compression.ZIMAGE;
+import static nom.tam.fits.header.Standard.BLANK;
 
 import java.nio.Buffer;
 import java.util.HashMap;
@@ -116,6 +117,28 @@ public class CompressedImageHDU extends BinaryTableHDU {
         getData().compress(this);
     }
 
+    /**
+     * Specify an areaWithin the image that will not undergo a lossy
+     * compression. This will only have affect it the selected compression
+     * (including the options) is a lossy compression. All tiles touched by this
+     * region will be handled so that there is no loss of any data, the
+     * reconstruction will be exact.
+     *
+     * @param x
+     *            the x position in the image
+     * @param y
+     *            the y position in the image
+     * @param width
+     *            the width of the area
+     * @param heigth
+     *            the height of the area
+     * @return this
+     */
+    public CompressedImageHDU forceNoLoss(int x, int y, int width, int heigth) {
+        getData().forceNoLoss(x, y, width, heigth);
+        return this;
+    }
+
     public <T extends ICompressOption> T getCompressOption(Class<T> clazz) {
         return getData().getCompressOption(clazz);
     }
@@ -139,6 +162,20 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return super.isHeader() && isHeader(this.myHeader);
     }
 
+    /**
+     * preserve the null values in the image even if the compression algorithm
+     * is lossy. I the image that will be compressed a BLANK header should be
+     * available if the pixel value is one of the integer types.
+     * 
+     * @param compressionAlgorithm
+     *            compression algorithm to use for the null pixel mask
+     */
+    public CompressedImageHDU preserveNulls(String compressionAlgorithm) {
+        long nullValue = getHeader().getLongValue(BLANK, Long.MIN_VALUE);
+        getData().preserveNulls(nullValue, compressionAlgorithm);
+        return this;
+    }
+
     public CompressedImageHDU setCompressAlgorithm(String compressAlgorithm) throws FitsException {
         HeaderCard compressAlgorithmCard = getHeader().card(Compression.ZCMPTYPE).value(compressAlgorithm).card();
         getData().setCompressAlgorithm(compressAlgorithmCard);
@@ -152,33 +189,6 @@ public class CompressedImageHDU extends BinaryTableHDU {
         } else {
             getData().setQuantAlgorithm(null);
         }
-        return this;
-    }
-
-    public CompressedImageHDU preserveNulls() {
-        getData().preserveNulls();
-        return this;
-    }
-
-    /**
-     * Specify an areaWithin the image that will not undergo a lossy
-     * compression. This will only have affect it the selected compression
-     * (including the options) is a lossy compression. All tiles touched by this
-     * region will be handled so that there is no loss of any data, the
-     * reconstruction will be exact.
-     * 
-     * @param x
-     *            the x position in the image
-     * @param y
-     *            the y position in the image
-     * @param width
-     *            the width of the area
-     * @param heigth
-     *            the height of the area
-     * @return this
-     */
-    public CompressedImageHDU forceNoLoss(int x, int y, int width, int heigth) {
-        getData().forceNoLoss(x, y, width, heigth);
         return this;
     }
 }
