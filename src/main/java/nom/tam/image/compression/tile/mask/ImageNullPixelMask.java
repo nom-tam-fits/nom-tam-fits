@@ -54,8 +54,8 @@ public class ImageNullPixelMask {
         this.compressorControl = CompressorProvider.findCompressorControl(null, this.compressAlgorithm, byte.class);
     }
 
-    public NullPixelMaskPerserver createTilePreserver(TileBuffer tileBuffer, int tileIndex) {
-        return add(new NullPixelMaskPerserver(tileBuffer, tileIndex, this.nullValue, this.compressorControl));
+    public NullPixelMaskPreserver createTilePreserver(TileBuffer tileBuffer, int tileIndex) {
+        return add(new NullPixelMaskPreserver(tileBuffer, tileIndex, this.nullValue, this.compressorControl));
     }
 
     public NullPixelMaskRestorer createTileRestorer(TileBuffer tileBuffer, int tileIndex) {

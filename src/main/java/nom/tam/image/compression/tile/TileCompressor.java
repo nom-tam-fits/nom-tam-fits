@@ -34,7 +34,7 @@ package nom.tam.image.compression.tile;
 import java.nio.ByteBuffer;
 
 import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
-import nom.tam.image.compression.tile.mask.NullPixelMaskPerserver;
+import nom.tam.image.compression.tile.mask.NullPixelMaskPreserver;
 import nom.tam.image.tile.operation.TileArea;
 import nom.tam.util.type.PrimitiveTypes;
 
@@ -42,7 +42,7 @@ public class TileCompressor extends TileCompressionOperation {
 
     private boolean forceNoLoss = false;
 
-    private NullPixelMaskPerserver nullPixelMaskPerserver;
+    private NullPixelMaskPreserver nullPixelMaskPerserver;
 
     protected TileCompressor(TiledImageCompressionOperation array, int tileIndex, TileArea area) {
         super(array, tileIndex, area);
@@ -116,7 +116,7 @@ public class TileCompressor extends TileCompressionOperation {
     }
 
     @Override
-    protected NullPixelMaskPerserver createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
+    protected NullPixelMaskPreserver createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
         if (imageNullPixelMask != null) {
             this.nullPixelMaskPerserver = imageNullPixelMask.createTilePreserver(getTileBuffer(), getTileIndex());
         }

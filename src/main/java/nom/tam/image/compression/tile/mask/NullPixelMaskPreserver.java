@@ -46,9 +46,9 @@ import nom.tam.util.type.PrimitiveTypes;
  * This class overwrites the pixels specified in the mask with null values.
  * Where the null value can be defined separately.
  */
-public class NullPixelMaskPerserver extends AbstractNullPixelMask {
+public class NullPixelMaskPreserver extends AbstractNullPixelMask {
 
-    public NullPixelMaskPerserver(TileBuffer tileBuffer, int tileIndex, long nullValue, ICompressorControl compressorControl) {
+    public NullPixelMaskPreserver(TileBuffer tileBuffer, int tileIndex, long nullValue, ICompressorControl compressorControl) {
         super(tileBuffer, tileIndex, nullValue, compressorControl);
     }
 

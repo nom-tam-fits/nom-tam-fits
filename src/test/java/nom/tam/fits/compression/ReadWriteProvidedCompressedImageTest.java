@@ -133,7 +133,7 @@ public class ReadWriteProvidedCompressedImageTest {
     }
 
     /**
-     * Assert two files files (one compessed and one uncompressed and use as few
+     * Assert two files files (one compressed and one uncompressed and use as few
      * memory as possible.
      */
     private <T> void assertCompressedToUncompressedImage(String fileName, String unCompfileName, Class<T> clazz, IHDUAsserter<T> reader) throws Exception {
