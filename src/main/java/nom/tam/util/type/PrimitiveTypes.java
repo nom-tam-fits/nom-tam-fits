@@ -1,10 +1,10 @@
-package nom.tam.fits.compress;
+package nom.tam.util.type;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2016 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,16 +31,39 @@ package nom.tam.fits.compress;
  * #L%
  */
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
 
-import nom.tam.fits.common.FitsException;
+public final class PrimitiveTypes {
 
-public interface ICompressProvider {
+    public static final PrimitiveType<Buffer> BOOLEAN = new BooleanType();
 
-    InputStream decompress(InputStream in) throws IOException, FitsException;
+    public static final PrimitiveType<ByteBuffer> BYTE = new ByteType();
 
-    int priority();
+    public static final PrimitiveType<CharBuffer> CHAR = new CharType();
 
-    boolean provides(int byte1, int byte2);
+    public static final PrimitiveType<DoubleBuffer> DOUBLE = new DoubleType();
+
+    public static final PrimitiveType<FloatBuffer> FLOAT = new FloatType();
+
+    public static final PrimitiveType<IntBuffer> INT = new IntType();
+
+    public static final PrimitiveType<LongBuffer> LONG = new LongType();
+
+    public static final PrimitiveType<ShortBuffer> SHORT = new ShortType();
+
+    public static final PrimitiveType<Buffer> STRING = new StringType();
+
+    public static final PrimitiveType<Buffer> UNKNOWN = new UnknownType();
+
+    private PrimitiveTypes() {
+        // TODO Auto-generated constructor stub
+    }
+
 }

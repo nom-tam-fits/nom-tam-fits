@@ -48,6 +48,7 @@ import static nom.tam.fits.header.Standard.XTENSION;
 
 import java.io.PrintStream;
 
+import nom.tam.fits.common.FitsException;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataOutput;

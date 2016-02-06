@@ -14,9 +14,9 @@ import java.util.List;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.common.FitsException;
 import nom.tam.util.BufferedFile;
 
 /*

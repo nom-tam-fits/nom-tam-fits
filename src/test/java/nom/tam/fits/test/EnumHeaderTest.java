@@ -47,8 +47,8 @@ import java.util.Arrays;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
+import nom.tam.fits.common.FitsException;
 import nom.tam.fits.header.Checksum;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.DataDescription;

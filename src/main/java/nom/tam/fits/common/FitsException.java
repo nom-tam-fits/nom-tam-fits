@@ -1,4 +1,4 @@
-package nom.tam.fits;
+package nom.tam.fits.common;
 
 /*
  * #%L

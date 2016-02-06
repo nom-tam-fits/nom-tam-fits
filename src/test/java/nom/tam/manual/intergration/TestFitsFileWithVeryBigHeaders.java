@@ -35,7 +35,7 @@ import java.io.IOException;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
+import nom.tam.fits.common.FitsException;
 import nom.tam.fits.util.BlackBoxImages;
 
 import org.junit.Ignore;

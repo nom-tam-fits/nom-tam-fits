@@ -39,6 +39,7 @@ import static nom.tam.fits.header.Standard.PCOUNT;
 import java.io.EOFException;
 import java.io.IOException;
 
+import nom.tam.fits.common.FitsException;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;

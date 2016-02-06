@@ -45,6 +45,7 @@ import java.nio.Buffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import nom.tam.fits.common.FitsException;
 import nom.tam.fits.header.Standard;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;

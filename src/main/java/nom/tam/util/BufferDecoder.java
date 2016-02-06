@@ -37,6 +37,7 @@ import java.lang.reflect.Array;
 
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
+import nom.tam.util.type.PrimitiveTypes;
 
 public abstract class BufferDecoder {
 
@@ -64,27 +65,27 @@ public abstract class BufferDecoder {
                 // This is a one-d array. Process it using our special
                 // functions.
                 PrimitiveType<?> type = PrimitiveTypeHandler.valueOf(o.getClass().getComponentType());
-                if (type == PrimitiveType.BOOLEAN) {
+                if (type == PrimitiveTypes.BOOLEAN) {
                     this.primitiveArrayCount += read((boolean[]) o, 0, length);
-                } else if (type == PrimitiveType.BYTE) {
+                } else if (type == PrimitiveTypes.BYTE) {
                     int len = read((byte[]) o, 0, length);
                     this.primitiveArrayCount += len;
                     if (len < length) {
                         throw new EOFException();
                     }
-                } else if (type == PrimitiveType.CHAR) {
+                } else if (type == PrimitiveTypes.CHAR) {
                     this.primitiveArrayCount += read((char[]) o, 0, length);
-                } else if (type == PrimitiveType.SHORT) {
+                } else if (type == PrimitiveTypes.SHORT) {
                     this.primitiveArrayCount += read((short[]) o, 0, length);
-                } else if (type == PrimitiveType.INT) {
+                } else if (type == PrimitiveTypes.INT) {
                     this.primitiveArrayCount += read((int[]) o, 0, length);
-                } else if (type == PrimitiveType.LONG) {
+                } else if (type == PrimitiveTypes.LONG) {
                     this.primitiveArrayCount += read((long[]) o, 0, length);
-                } else if (type == PrimitiveType.FLOAT) {
+                } else if (type == PrimitiveTypes.FLOAT) {
                     this.primitiveArrayCount += read((float[]) o, 0, length);
-                } else if (type == PrimitiveType.DOUBLE) {
+                } else if (type == PrimitiveTypes.DOUBLE) {
                     this.primitiveArrayCount += read((double[]) o, 0, length);
-                } else if (type == PrimitiveType.STRING || type == PrimitiveType.UNKNOWN) {
+                } else if (type == PrimitiveTypes.STRING || type == PrimitiveTypes.UNKNOWN) {
                     for (int i = 0; i < length; i++) {
                         primitiveArrayRecurse(Array.get(o, i));
                     }

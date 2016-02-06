@@ -33,6 +33,7 @@ package nom.tam.fits;
 
 import java.io.IOException;
 
+import nom.tam.fits.common.FitsException;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 

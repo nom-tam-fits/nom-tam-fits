@@ -45,6 +45,7 @@ import java.nio.ShortBuffer;
 
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
+import nom.tam.util.type.PrimitiveTypes;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,20 +60,20 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testByte() throws Exception {
-        assertSame(PrimitiveType.BYTE, PrimitiveTypeHandler.valueOf(8));
-        assertEquals(byte.class, ((byte[]) PrimitiveType.BYTE.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveType.BYTE.newBuffer(5) instanceof ByteBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveType.BYTE, 6, 3).capacity());
+        assertSame(PrimitiveTypes.BYTE, PrimitiveTypeHandler.valueOf(8));
+        assertEquals(byte.class, ((byte[]) PrimitiveTypes.BYTE.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveTypes.BYTE.newBuffer(5) instanceof ByteBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveTypes.BYTE, 6, 3).capacity());
 
         byte expectedValue = 1;
-        ByteBuffer buffer = PrimitiveType.BYTE.convertToByteBuffer(new byte[]{
+        ByteBuffer buffer = PrimitiveTypes.BYTE.convertToByteBuffer(new byte[]{
             1
         });
         assertEquals(expectedValue, buffer.get());
 
-        testGetPutArray(PrimitiveType.BYTE, Byte.valueOf((byte) 1), Byte.valueOf((byte) 2));
+        testGetPutArray(PrimitiveTypes.BYTE, Byte.valueOf((byte) 1), Byte.valueOf((byte) 2));
 
-        testAppedBuffer(PrimitiveType.BYTE, expectedValue);
+        testAppedBuffer(PrimitiveTypes.BYTE, expectedValue);
     }
 
     private <T extends Buffer> void testGetPutArray(PrimitiveType<T> type, Object value, Object other) {
@@ -88,97 +89,97 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testDouble() throws Exception {
-        assertSame(PrimitiveType.DOUBLE, PrimitiveTypeHandler.valueOf(-64));
-        assertEquals(double.class, ((double[]) PrimitiveType.DOUBLE.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveType.DOUBLE.newBuffer(5) instanceof DoubleBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveType.DOUBLE, 6, 3).capacity());
+        assertSame(PrimitiveTypes.DOUBLE, PrimitiveTypeHandler.valueOf(-64));
+        assertEquals(double.class, ((double[]) PrimitiveTypes.DOUBLE.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveTypes.DOUBLE.newBuffer(5) instanceof DoubleBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveTypes.DOUBLE, 6, 3).capacity());
 
         double testValue = 567.7686876876725638752364576543d;
         long value = Double.doubleToLongBits(testValue) >> 7 * 8;
 
-        ByteBuffer buffer = PrimitiveType.DOUBLE.convertToByteBuffer(new double[]{
+        ByteBuffer buffer = PrimitiveTypes.DOUBLE.convertToByteBuffer(new double[]{
             testValue
         });
         assertEquals((byte) value, buffer.get());
 
-        testGetPutArray(PrimitiveType.DOUBLE, Double.valueOf(1), Double.valueOf(2));
+        testGetPutArray(PrimitiveTypes.DOUBLE, Double.valueOf(1), Double.valueOf(2));
 
-        testAppedBuffer(PrimitiveType.DOUBLE, testValue);
+        testAppedBuffer(PrimitiveTypes.DOUBLE, testValue);
     }
 
     @Test
     public void testFloat() throws Exception {
-        assertSame(PrimitiveType.FLOAT, PrimitiveTypeHandler.valueOf(-32));
-        assertEquals(float.class, ((float[]) PrimitiveType.FLOAT.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveType.FLOAT.newBuffer(5) instanceof FloatBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveType.FLOAT, 6, 3).capacity());
+        assertSame(PrimitiveTypes.FLOAT, PrimitiveTypeHandler.valueOf(-32));
+        assertEquals(float.class, ((float[]) PrimitiveTypes.FLOAT.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveTypes.FLOAT.newBuffer(5) instanceof FloatBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveTypes.FLOAT, 6, 3).capacity());
 
         float testValue = 567.7686876876f;
         int value = Float.floatToIntBits(testValue) >> 3 * 8;
 
-        ByteBuffer buffer = PrimitiveType.FLOAT.convertToByteBuffer(new float[]{
+        ByteBuffer buffer = PrimitiveTypes.FLOAT.convertToByteBuffer(new float[]{
             testValue
         });
         assertEquals((byte) value, buffer.get());
-        testGetPutArray(PrimitiveType.FLOAT, Float.valueOf(1), Float.valueOf(2));
+        testGetPutArray(PrimitiveTypes.FLOAT, Float.valueOf(1), Float.valueOf(2));
 
-        testAppedBuffer(PrimitiveType.FLOAT, testValue);
+        testAppedBuffer(PrimitiveTypes.FLOAT, testValue);
     }
 
     @Test
     public void testInt() throws Exception {
-        assertSame(PrimitiveType.INT, PrimitiveTypeHandler.valueOf(32));
-        assertEquals(int.class, ((int[]) PrimitiveType.INT.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveType.INT.newBuffer(5) instanceof IntBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveType.INT, 6, 3).capacity());
+        assertSame(PrimitiveTypes.INT, PrimitiveTypeHandler.valueOf(32));
+        assertEquals(int.class, ((int[]) PrimitiveTypes.INT.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveTypes.INT.newBuffer(5) instanceof IntBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveTypes.INT, 6, 3).capacity());
 
         int expectedValue = 256 * 256 * 256;
-        ByteBuffer buffer = PrimitiveType.INT.convertToByteBuffer(new int[]{
+        ByteBuffer buffer = PrimitiveTypes.INT.convertToByteBuffer(new int[]{
             expectedValue
         });
         assertEquals((byte) 1, buffer.get());
-        testGetPutArray(PrimitiveType.INT, Integer.valueOf(1), Integer.valueOf(2));
+        testGetPutArray(PrimitiveTypes.INT, Integer.valueOf(1), Integer.valueOf(2));
 
-        testAppedBuffer(PrimitiveType.INT, expectedValue);
+        testAppedBuffer(PrimitiveTypes.INT, expectedValue);
     }
 
     @Test
     public void testLong() throws Exception {
-        assertSame(PrimitiveType.LONG, PrimitiveTypeHandler.valueOf(64));
-        assertEquals(long.class, ((long[]) PrimitiveType.LONG.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveType.LONG.newBuffer(5) instanceof LongBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveType.LONG, 6, 3).capacity());
+        assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.valueOf(64));
+        assertEquals(long.class, ((long[]) PrimitiveTypes.LONG.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveTypes.LONG.newBuffer(5) instanceof LongBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveTypes.LONG, 6, 3).capacity());
 
         long expectedValue = 256L * 256L * 256L * 256L * 256L * 256L * 256L;
-        assertEquals((byte) 1, PrimitiveType.LONG.convertToByteBuffer(new long[]{
+        assertEquals((byte) 1, PrimitiveTypes.LONG.convertToByteBuffer(new long[]{
             expectedValue
         }).get());
-        testGetPutArray(PrimitiveType.LONG, Long.valueOf(1), Long.valueOf(2));
+        testGetPutArray(PrimitiveTypes.LONG, Long.valueOf(1), Long.valueOf(2));
     }
 
     @Test
     public void testOther() throws Exception {
-        Assert.assertNull(PrimitiveTypeHandler.valueOf(PrimitiveType.STRING.bitPix()));
-        Assert.assertNull(PrimitiveType.STRING.newArray(5));
-        Assert.assertNull(PrimitiveType.STRING.newBuffer(5));
-        Assert.assertNull(PrimitiveType.STRING.sliceBuffer(null));
+        Assert.assertNull(PrimitiveTypeHandler.valueOf(PrimitiveTypes.STRING.bitPix()));
+        Assert.assertNull(PrimitiveTypes.STRING.newArray(5));
+        Assert.assertNull(PrimitiveTypes.STRING.newBuffer(5));
+        Assert.assertNull(PrimitiveTypes.STRING.sliceBuffer(null));
     }
 
     @Test
     public void testShort() throws Exception {
-        assertSame(PrimitiveType.SHORT, PrimitiveTypeHandler.valueOf(16));
-        assertEquals(short.class, ((short[]) PrimitiveType.SHORT.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveType.SHORT.newBuffer(5) instanceof ShortBuffer);
-        assertEquals(3, bufferAtPosition(PrimitiveType.SHORT, 6, 3).capacity());
+        assertSame(PrimitiveTypes.SHORT, PrimitiveTypeHandler.valueOf(16));
+        assertEquals(short.class, ((short[]) PrimitiveTypes.SHORT.newArray(5)).getClass().getComponentType());
+        Assert.assertTrue(PrimitiveTypes.SHORT.newBuffer(5) instanceof ShortBuffer);
+        assertEquals(3, bufferAtPosition(PrimitiveTypes.SHORT, 6, 3).capacity());
 
         short expectedValue = 256;
-        ByteBuffer buffer = PrimitiveType.SHORT.convertToByteBuffer(new short[]{
+        ByteBuffer buffer = PrimitiveTypes.SHORT.convertToByteBuffer(new short[]{
             expectedValue
         });
         assertEquals((byte) 1, buffer.get());
-        testGetPutArray(PrimitiveType.SHORT, Short.valueOf((short) 1), Short.valueOf((short) 2));
+        testGetPutArray(PrimitiveTypes.SHORT, Short.valueOf((short) 1), Short.valueOf((short) 2));
 
-        testAppedBuffer(PrimitiveType.SHORT, expectedValue);
+        testAppedBuffer(PrimitiveTypes.SHORT, expectedValue);
     }
 
     private <T extends Buffer> void testAppedBuffer(PrimitiveType<T> type, Object expectedValue) {
@@ -201,26 +202,26 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testUnknown() throws Exception {
-        assertSame(PrimitiveType.UNKNOWN, PrimitiveTypeHandler.valueOf(PrimitiveTypeTest.class));
+        assertSame(PrimitiveTypes.UNKNOWN, PrimitiveTypeHandler.valueOf(PrimitiveTypeTest.class));
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testUnknownAsTYpe() throws Exception {
-        PrimitiveType.UNKNOWN.asTypedBuffer(null);
+        PrimitiveTypes.UNKNOWN.asTypedBuffer(null);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testUnknownPutArray() throws Exception {
-        PrimitiveType.UNKNOWN.putArray(null, null, 0);
+        PrimitiveTypes.UNKNOWN.putArray(null, null, 0);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testUnknownGetArray() throws Exception {
-        PrimitiveType.UNKNOWN.getArray(null, null, 0);
+        PrimitiveTypes.UNKNOWN.getArray(null, null, 0);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testUnknownAppendBuffer() throws Exception {
-        PrimitiveType.UNKNOWN.appendBuffer(null, null);
+        PrimitiveTypes.UNKNOWN.appendBuffer(null, null);
     }
 }

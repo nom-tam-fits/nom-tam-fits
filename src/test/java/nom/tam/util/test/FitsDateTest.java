@@ -37,7 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.FitsDate;
-import nom.tam.fits.FitsException;
+import nom.tam.fits.common.FitsException;
 
 import org.junit.Before;
 import org.junit.Test;

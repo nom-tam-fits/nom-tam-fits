@@ -1,5 +1,7 @@
 package nom.tam.fits;
 
+import nom.tam.fits.common.FitsException;
+
 /*
  * #%L
  * nom.tam FITS library

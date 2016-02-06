@@ -33,34 +33,8 @@ package nom.tam.util.type;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.LongBuffer;
-import java.nio.ShortBuffer;
 
 public interface PrimitiveType<B extends Buffer> {
-
-    PrimitiveType<Buffer> BOOLEAN = new BooleanType();
-
-    PrimitiveType<ByteBuffer> BYTE = new ByteType();
-
-    PrimitiveType<CharBuffer> CHAR = new CharType();
-
-    PrimitiveType<DoubleBuffer> DOUBLE = new DoubleType();
-
-    PrimitiveType<FloatBuffer> FLOAT = new FloatType();
-
-    PrimitiveType<IntBuffer> INT = new IntType();
-
-    PrimitiveType<LongBuffer> LONG = new LongType();
-
-    PrimitiveType<ShortBuffer> SHORT = new ShortType();
-
-    PrimitiveType<Buffer> STRING = new StringType();
-
-    PrimitiveType<Buffer> UNKNOWN = new UnknownType();
 
     void appendBuffer(B buffer, B dataToAppend);
 

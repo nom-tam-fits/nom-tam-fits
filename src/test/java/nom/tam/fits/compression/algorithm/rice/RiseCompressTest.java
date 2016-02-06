@@ -44,7 +44,7 @@ import nom.tam.fits.compression.algorithm.rice.RiceCompressor.IntRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompressor;
 import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
 import nom.tam.fits.header.Compression;
-import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypes;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -94,7 +94,7 @@ public class RiseCompressTest {
             expected.read(expectedBytes);
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
-            ByteRiceCompressor compressor = new ByteRiceCompressor(option.setBytePix(PrimitiveType.BYTE.size()));
+            ByteRiceCompressor compressor = new ByteRiceCompressor(option.setBytePix(PrimitiveTypes.BYTE.size()));
             compressor.compress(ByteBuffer.wrap(bytes), compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -124,7 +124,7 @@ public class RiseCompressTest {
             int[] intArray = new int[bytes.length / 4];
             ByteBuffer.wrap(bytes).asIntBuffer().get(intArray);
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
-            IntRiceCompressor compressor = new IntRiceCompressor(option.setBytePix(PrimitiveType.INT.size()));
+            IntRiceCompressor compressor = new IntRiceCompressor(option.setBytePix(PrimitiveTypes.INT.size()));
             compressor.compress(IntBuffer.wrap(intArray), compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
@@ -153,7 +153,7 @@ public class RiseCompressTest {
             short[] shortArray = new short[bytes.length / 2];
             ByteBuffer.wrap(bytes).asShortBuffer().get(shortArray);
             ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
-            ShortRiceCompressor compressor = new ShortRiceCompressor(option.setBytePix(PrimitiveType.SHORT.size()));
+            ShortRiceCompressor compressor = new ShortRiceCompressor(option.setBytePix(PrimitiveTypes.SHORT.size()));
             compressor.compress(ShortBuffer.wrap(shortArray), compressed);
 
             byte[] compressedArray = new byte[compressed.position()];

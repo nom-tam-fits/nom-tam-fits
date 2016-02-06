@@ -19,6 +19,7 @@ import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.FitsIO;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
+import nom.tam.util.type.PrimitiveTypes;
 
 /*
  * #%L
@@ -216,7 +217,7 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
     protected T nioBuffer;
 
-    private final byte[] sizeArray = new byte[PrimitiveType.INT.size()];
+    private final byte[] sizeArray = new byte[PrimitiveTypes.INT.size()];
 
     private final IntBuffer sizeBuffer = ByteBuffer.wrap(this.sizeArray).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 

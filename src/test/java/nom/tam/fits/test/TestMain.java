@@ -41,8 +41,8 @@ import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
+import nom.tam.fits.common.FitsException;
 import nom.tam.fits.utilities.FitsCopy;
 import nom.tam.fits.utilities.FitsReader;
 import nom.tam.fits.utilities.Main;

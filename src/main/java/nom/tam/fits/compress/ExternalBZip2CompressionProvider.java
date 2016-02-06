@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Logger;
 
-import nom.tam.fits.FitsException;
+import nom.tam.fits.common.FitsException;
 
 public class ExternalBZip2CompressionProvider implements ICompressProvider {
 

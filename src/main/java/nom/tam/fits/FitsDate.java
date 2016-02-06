@@ -41,6 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import nom.tam.fits.common.FitsException;
 
 /**
  * Fits date object parsed from the different type of date combinations

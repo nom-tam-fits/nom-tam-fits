@@ -81,16 +81,16 @@ public final class PrimitiveTypeHandler {
 
     private static PrimitiveType<?>[] values() {
         return new PrimitiveType[]{
-                PrimitiveType.BOOLEAN,
-                PrimitiveType.BYTE,
-                PrimitiveType.CHAR,
-                PrimitiveType.DOUBLE,
-                PrimitiveType.FLOAT,
-                PrimitiveType.INT,
-                PrimitiveType.LONG,
-                PrimitiveType.SHORT,
-                PrimitiveType.STRING,
-                PrimitiveType.UNKNOWN
+                PrimitiveTypes.BOOLEAN,
+                PrimitiveTypes.BYTE,
+                PrimitiveTypes.CHAR,
+                PrimitiveTypes.DOUBLE,
+                PrimitiveTypes.FLOAT,
+                PrimitiveTypes.INT,
+                PrimitiveTypes.LONG,
+                PrimitiveTypes.SHORT,
+                PrimitiveTypes.STRING,
+                PrimitiveTypes.UNKNOWN
         };
     }
 

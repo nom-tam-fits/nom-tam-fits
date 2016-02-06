@@ -38,11 +38,11 @@ import java.io.PrintStream;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
 import nom.tam.fits.RandomGroupsData;
 import nom.tam.fits.RandomGroupsHDU;
+import nom.tam.fits.common.FitsException;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 

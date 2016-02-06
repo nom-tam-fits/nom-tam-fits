@@ -44,8 +44,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.BasicHDU;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
+import nom.tam.fits.common.FitsException;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.FitsIO;

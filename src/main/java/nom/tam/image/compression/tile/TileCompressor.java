@@ -36,7 +36,7 @@ import java.nio.ByteBuffer;
 import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
 import nom.tam.image.compression.tile.mask.NullPixelMaskPerserver;
 import nom.tam.image.tile.operation.TileArea;
-import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypes;
 
 public class TileCompressor extends TileCompressionOperation {
 
@@ -65,7 +65,7 @@ public class TileCompressor extends TileCompressionOperation {
                 getPreviousTileOperation().waitForResult();
                 ByteBuffer compressedWholeArea = getCompressedWholeArea();
                 this.compressedOffset = compressedWholeArea.position();
-                PrimitiveType.BYTE.appendBuffer(compressedWholeArea, this.compressedData);
+                PrimitiveTypes.BYTE.appendBuffer(compressedWholeArea, this.compressedData);
                 replaceCompressedBufferWithTargetArea(compressedWholeArea);
             } catch (Exception e) {
                 throw new IllegalStateException("could not compact compressed data", e);

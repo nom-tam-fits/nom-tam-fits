@@ -42,7 +42,7 @@ import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import nom.tam.fits.FitsException;
+import nom.tam.fits.common.FitsException;
 
 public final class CompressionManager {
 

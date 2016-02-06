@@ -41,8 +41,8 @@ import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
 import nom.tam.image.tile.operation.AbstractTileOperation;
 import nom.tam.image.tile.operation.ITileOperation;
 import nom.tam.image.tile.operation.TileArea;
-import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
+import nom.tam.util.type.PrimitiveTypes;
 
 /**
  * abstract information holder about the a tile that represents a rectangular
@@ -85,7 +85,7 @@ abstract class TileCompressionOperation extends AbstractTileOperation implements
     protected byte[] getCompressedData() {
         byte[] data = new byte[this.compressedData.limit()];
         this.compressedData.rewind();
-        PrimitiveType.BYTE.getArray(this.compressedData, data);
+        PrimitiveTypes.BYTE.getArray(this.compressedData, data);
         return data;
     }
 
