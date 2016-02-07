@@ -876,7 +876,7 @@ public class ReadWriteProvidedCompressedImageTest {
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             double[][] actual = (double[][]) hdu.asImageHDU().getData().getData();
             for (int index = 0; index < actual.length; index++) {
-                assertArrayEquals(data[index], actual[index], 1d, false); //TODO set to true
+                assertArrayEquals(data[index], actual[index], 1d, true); //TODO set to true
             }
         }
     }

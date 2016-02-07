@@ -7,12 +7,12 @@ package nom.tam.image.compression.tile;
  * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.compression.tile;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -33,7 +33,7 @@ package nom.tam.image.compression.tile;
 
 import static nom.tam.fits.header.Compression.COMPRESSED_DATA_COLUMN;
 import static nom.tam.fits.header.Compression.GZIP_COMPRESSED_DATA_COLUMN;
-import static nom.tam.fits.header.Compression.NULL_PIXEL_MASK;
+import static nom.tam.fits.header.Compression.NULL_PIXEL_MASK_COLUMN;
 import static nom.tam.fits.header.Compression.UNCOMPRESSED_DATA_COLUMN;
 import static nom.tam.fits.header.Compression.ZBITPIX;
 import static nom.tam.fits.header.Compression.ZCMPTYPE;
@@ -215,7 +215,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
                 getNullableColumn(header, Object[].class, COMPRESSED_DATA_COLUMN), //
                 getNullableColumn(header, Object[].class, GZIP_COMPRESSED_DATA_COLUMN), //
                 header));
-        byte[][] nullPixels = getNullableColumn(header, byte[][].class, NULL_PIXEL_MASK);
+        byte[][] nullPixels = getNullableColumn(header, byte[][].class, NULL_PIXEL_MASK_COLUMN);
         if (nullPixels != null) {
             preserveNulls(0L, header.getStringValue(ZMASKCMP)).setColumn(nullPixels);
         }
@@ -348,8 +348,8 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         addColumnToTable(hdu, compressedColumn, COMPRESSED_DATA_COLUMN);
         addColumnToTable(hdu, gzipColumn, GZIP_COMPRESSED_DATA_COLUMN);
         addColumnToTable(hdu, uncompressedColumn, UNCOMPRESSED_DATA_COLUMN);
-        if (imageNullPixelMask != null) {
-            addColumnToTable(hdu, imageNullPixelMask.getColumn(), COMPRESSED_DATA_COLUMN);
+        if (this.imageNullPixelMask != null) {
+            addColumnToTable(hdu, this.imageNullPixelMask.getColumn(), NULL_PIXEL_MASK_COLUMN);
         }
         this.imageOptions.getCompressionParameters().addColumnsToTable(hdu);
         hdu.getData().fillHeader(hdu.getHeader());
@@ -364,6 +364,9 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
             cardBuilder.card(ZTILEn.n(i)).value(tileAxes[i - 1]);
         }
         compressOptions().getCompressionParameters().setValuesInHeader(header);
+        if (this.imageNullPixelMask != null) {
+            cardBuilder.card(ZMASKCMP).value(this.imageNullPixelMask.getCompressAlgorithm());
+        }
     }
 
     protected BinaryTable getBinaryTable() {

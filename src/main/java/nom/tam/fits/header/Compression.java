@@ -435,7 +435,7 @@ public enum Compression implements IFitsHeader {
      * keyword).
      * </p>
      */
-    public static final String NULL_PIXEL_MASK = "NULL_PIXEL_MASK";
+    public static final String NULL_PIXEL_MASK_COLUMN = "NULL_PIXEL_MASK_COLUMN";
 
     /**
      * The number of 8-bit bytes in each original integer pixel value.
