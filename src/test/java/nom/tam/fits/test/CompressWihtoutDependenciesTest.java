@@ -78,7 +78,6 @@ public class CompressWihtoutDependenciesTest {
         assertEquals(assertions.get(0), "ok");
         assertTrue(assertions.get(1) instanceof InvocationTargetException);
         assertTrue(((InvocationTargetException) assertions.get(1)).getCause() instanceof NoClassDefFoundError);
-        assertEquals("org/apache/commons/compress/compressors/z/ZCompressorInputStream", ((InvocationTargetException) assertions.get(1)).getCause().getMessage());
     }
 
 }
