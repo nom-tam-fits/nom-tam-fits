@@ -169,6 +169,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
      * 
      * @param compressionAlgorithm
      *            compression algorithm to use for the null pixel mask
+     * @return this
      */
     public CompressedImageHDU preserveNulls(String compressionAlgorithm) {
         long nullValue = getHeader().getLongValue(BLANK, Long.MIN_VALUE);

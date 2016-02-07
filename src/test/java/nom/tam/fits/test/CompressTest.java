@@ -283,65 +283,6 @@ public class CompressTest {
     }
 
     @Test
-    public void testWthoutApacheCompression() throws Exception {
-        final List<Object> assertions = new ArrayList<>();
-        Thread thread = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                Class<?> clazz;
-                Method method;
-                FileInputStream in1;
-                FileInputStream in2;
-                try {
-                    clazz = Thread.currentThread().getContextClassLoader().loadClass(CompressionManager.class.getName());
-                    method = clazz.getMethod("decompress", InputStream.class);
-                    in1 = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits");
-                    in2 = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits.bz2");
-                } catch (Exception e) {
-                    assertions.add(e);
-                    return;
-                }
-                try {
-                    // first do a normal fits file without compression
-                    method.invoke(clazz, in1);
-                    assertions.add("ok");
-                    // now use the not available compression lib
-                    method.invoke(clazz, in2);
-                } catch (Exception e) {
-                    assertions.add(e);
-                }
-            }
-        });
-        List<URL> classpath = new ArrayList<>();
-        for (URL url : ((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs()) {
-            if (url.toString().indexOf("jacoco") >= 0) {
-                // stop the test, not possible with jacoco active.
-                return;
-            }
-            if (url.toString().indexOf("compress") < 0) {
-                System.out.println("adding:" + url);
-                classpath.add(url);
-            } else {
-                System.out.println("removing:" + url);
-                url.toString();// ignored compression lib
-            }
-        }
-        for (URL url : ((URLClassLoader) ClassLoader.getSystemClassLoader()).getURLs()) {
-            System.out.println("system:" + url);
-        }
-        URLClassLoader cl = new URLClassLoader(classpath.toArray(new URL[classpath.size()]), ClassLoader.getSystemClassLoader());
-        thread.setContextClassLoader(cl);
-        thread.start();
-        thread.join();
-        System.out.println(assertions);
-        assertEquals(assertions.get(0), "ok");
-        assertTrue(assertions.get(1) instanceof InvocationTargetException);
-        assertEquals(((InvocationTargetException) assertions.get(1)).getCause().getMessage(), "Unable to analyze input stream");
-
-    }
-
-    @Test
     public void testCompressionLibLoaderProtection() throws Exception {
         Constructor<?>[] constrs = CompressionLibLoaderProtection.class.getDeclaredConstructors();
         assertEquals(constrs.length, 1);

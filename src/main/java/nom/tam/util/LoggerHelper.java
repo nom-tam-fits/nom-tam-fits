@@ -41,8 +41,10 @@ public final class LoggerHelper {
     private LoggerHelper() {
         // Not needed
     }
-    
+
     /**
+     * @param aClass
+     *            the class to get the logger for.
      * @return a Java {@code Logger} for the specified class.
      */
     public static Logger getLogger(Class<?> aClass) {
