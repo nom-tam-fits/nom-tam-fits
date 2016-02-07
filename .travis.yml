@@ -25,6 +25,7 @@ notifications:
     - erik.koerber@gmail.com
     
 env:
+  - MAVEN_OPTS="-Xmx=2G"
  global:
   - TERM=dumb
   - secure: "bKh2my2DsryV1AgANX4DvhgttoTIeGs/QlEdRg5zAGQ8+4s7v4qw90iONMa/HSWuZCha8zzZdiplyXevY/CqICVOp8YtJ6SwfUSZpwNnKBVjwWKWI4uIRpDONYiMuVwSMgusREphiJY2A1raohXl48cP2JexEY+ftCSY11P2rLg="
