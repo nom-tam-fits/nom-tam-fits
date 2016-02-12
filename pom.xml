@@ -352,6 +352,7 @@
 				<version>0.7.4.201502262128</version>
 				<executions>
 					<execution>
+						<id>default-prepare-agent</id>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
@@ -470,6 +471,7 @@
 				<version>2.19.1</version>
 				<configuration>
 					<forkCount>1</forkCount>
+					<argLine>-Xmx2G @{argLine}</argLine>
 					<systemPropertyVariables>
 						<java.util.logging.config.file>
 							src/test/resources/logging.properties
