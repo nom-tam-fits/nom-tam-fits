@@ -8,12 +8,12 @@ branches:
 
 install:
   - git clone --depth=50 --branch=master https://github.com/nom-tam-fits/blackbox-images.git ../blackbox-images
-  - mvn install -DskipTests=true
+  - mvn install -Dmaven.test.skip=true
 
 script:
     - mvn test ; export MAVEN_RESULT=$?
     - if [ "$MAVEN_RESULT" -ne 0 ]; then exit 1; fi
-    - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then mvn clean deploy --quiet --settings settings.xml -DskipTests=true; fi
+    - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then mvn clean deploy --quiet --settings settings.xml -Dmaven.test.skip=true; fi
 
 after_success:
   - mvn clean test jacoco:report coveralls:report
