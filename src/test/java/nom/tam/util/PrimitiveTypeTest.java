@@ -32,9 +32,11 @@ package nom.tam.util;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
@@ -224,4 +226,14 @@ public class PrimitiveTypeTest {
     public void testUnknownAppendBuffer() throws Exception {
         PrimitiveTypes.UNKNOWN.appendBuffer(null, null);
     }
+
+    @Test
+    public void testPrimitiveTypeHandlerPrivate() throws Exception {
+        Constructor<?>[] constrs = PrimitiveTypeHandler.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+
 }

@@ -33,12 +33,10 @@ package nom.tam.util.test;
 
 import java.util.Arrays;
 
-import nom.tam.util.ArrayFuncs;
 import nom.tam.util.array.MultiArrayCopier;
 import nom.tam.util.array.MultiArrayIterator;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ArrayManipulationTests {

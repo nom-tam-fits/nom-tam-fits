@@ -63,6 +63,7 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
+import nom.tam.util.LoggerHelper;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -71,6 +72,7 @@ import org.junit.Test;
 public class BaseFitsTest {
 
     private static final String TARGET_BASIC_FITS_TEST_FITS = "target/basicFitsTest.fits";
+
     public static final String FILE = "file:" + File.separator + File.separator + File.separator;
 
     @Before
@@ -457,6 +459,15 @@ public class BaseFitsTest {
         constrs[0].newInstance();
     }
 
+    @Test
+    public void testLoggerHelperPrivate() throws Exception {
+        Constructor<?>[] constrs = LoggerHelper.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+    
     @Test
     public void testFitsCheckSumPrivate() throws Exception {
         Constructor<?>[] constrs = FitsCheckSum.class.getDeclaredConstructors();

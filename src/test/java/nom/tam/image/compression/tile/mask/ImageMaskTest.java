@@ -31,6 +31,10 @@ package nom.tam.image.compression.tile.mask;
  * #L%
  */
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
+import java.lang.reflect.Constructor;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
@@ -299,6 +303,15 @@ public class ImageMaskTest {
         for (int index = 0; index < orgPixels.length; index++) {
             Assert.assertEquals(expectedPixels[index], actualPixelBuffer.get());
         }
+    }
+
+    @Test
+    public void testTileBufferFactoryPrivate() throws Exception {
+        Constructor<?>[] constrs = TileBufferFactory.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
     }
 
     protected TileBuffer createTileBuffer(Buffer buffer, PrimitiveType type) {

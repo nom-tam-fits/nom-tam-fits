@@ -41,7 +41,6 @@ import java.util.List;
 import nom.tam.fits.Fits;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.util.BufferedFile;
 
 import org.junit.Test;
 

@@ -50,14 +50,11 @@ import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressor;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
-import nom.tam.fits.compression.provider.TileCompressorAlternativProvider;
 import nom.tam.fits.compression.provider.CompressorProvider;
+import nom.tam.fits.compression.provider.TileCompressorAlternativProvider;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.Standard;
 import nom.tam.image.compression.hdu.CompressedImageData;
-import nom.tam.image.compression.tile.TileDecompressor;
-import nom.tam.image.compression.tile.TileCompressionOperation;
-import nom.tam.image.compression.tile.TiledImageCompressionOperation;
 import nom.tam.image.tile.operation.Access;
 import nom.tam.image.tile.operation.TileArea;
 

@@ -39,9 +39,6 @@ import java.util.Arrays;
 
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
-import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor;
-import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.compression.provider.param.quant.QuantizeParameters;
 import nom.tam.fits.header.Compression;
 import nom.tam.util.ArrayFuncs;

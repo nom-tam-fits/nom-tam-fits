@@ -179,7 +179,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         return this.gzipCompressorControl;
     }
 
-    public TiledImageCompressionOperation prepareUncompressedData(final Buffer buffer) {
+    public TiledImageCompressionOperation prepareUncompressedData(final Buffer buffer) throws FitsException {
         this.compressedWholeArea = ByteBuffer.wrap(new byte[getBaseType().size() * getBufferSize()]);
         createTiles(new TileCompressorInitialisation(this, buffer));
         this.compressedWholeArea.rewind();

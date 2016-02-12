@@ -48,8 +48,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.junit.Assert;
-
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.ImageData;
@@ -59,6 +57,7 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.TestArrayFuncs;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**

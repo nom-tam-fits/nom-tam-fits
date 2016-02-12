@@ -37,6 +37,7 @@ import java.math.RoundingMode;
 import java.nio.Buffer;
 import java.util.Arrays;
 
+import nom.tam.fits.common.FitsException;
 import nom.tam.util.type.PrimitiveType;
 
 public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperation> implements ITiledImageOperation {
@@ -71,6 +72,16 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
         return bufferSize;
     }
 
+    @Override
+    public int getImageWidth() {
+        return this.axes[0];
+    }
+
+    @Override
+    public OPERATION getTileOperation(int i) {
+        return this.tileOperations[i];
+    }
+
     public void setTileAxes(int[] value) {
         this.tileAxes = Arrays.copyOf(value, value.length);
         for (int index = 0; index < this.tileAxes.length; index++) {
@@ -88,7 +99,7 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
         return this.tileAxes == null || this.tileAxes.length == 0;
     }
 
-    protected void createTiles(ITileOperationInitialisation<OPERATION> init) {
+    protected void createTiles(ITileOperationInitialisation<OPERATION> init) throws FitsException {
         final int imageWidth = this.axes[0];
         final int imageHeight = this.axes[1];
         final int tileWidth = this.tileAxes[0];
@@ -116,22 +127,12 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
         }
     }
 
-    @Override
-    public int getImageWidth() {
-        return this.axes[0];
-    }
-
     protected int getNAxes() {
         return this.axes.length;
     }
 
     protected int getNumberOfTileOperations() {
         return this.tileOperations.length;
-    }
-
-    @Override
-    public OPERATION getTileOperation(int i) {
-        return this.tileOperations[i];
     }
 
     protected int[] getTileAxes() {

@@ -52,9 +52,4 @@ public class TileBufferRowBased extends TileBuffer {
         getImageBuffer().limit(getPixelSize());
         return this;
     }
-
-    @Override
-    public TileBuffer asType(PrimitiveType<Buffer> otherBaseType) {
-        return new TileBufferRowBased(otherBaseType, getOffset(), getWidth(), getHeight());
-    }
 }

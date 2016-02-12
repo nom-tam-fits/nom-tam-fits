@@ -35,9 +35,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
-import java.util.Random;
 
-import org.junit.Assert;
 import nom.tam.util.AsciiFuncs;
 /** This class tests the ByteFormatter and ByteParser classes.
  */
@@ -45,7 +43,7 @@ import nom.tam.util.ByteFormatter;
 import nom.tam.util.ByteParser;
 import nom.tam.util.FormatException;
 
-import org.junit.Ignore;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class ByteFormatParseTest {

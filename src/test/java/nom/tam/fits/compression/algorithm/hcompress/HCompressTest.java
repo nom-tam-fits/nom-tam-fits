@@ -40,9 +40,6 @@ import java.nio.ShortBuffer;
 
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.compression.algorithm.hcompress.HCompressorOption;
-import nom.tam.fits.compression.algorithm.hcompress.HCompressorQuantizeOption;
-import nom.tam.fits.compression.algorithm.hcompress.HDecompress;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.ByteHCompressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.DoubleHCompressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.FloatHCompressor;

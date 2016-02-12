@@ -61,8 +61,6 @@ public abstract class TileBuffer {
         this.height = height;
     }
 
-    public abstract TileBuffer asType(PrimitiveType<Buffer> otherBaseType);
-
     /**
      * nothing to do in the normal case, overwrite this method if post
      * processing is necessary.
@@ -78,10 +76,6 @@ public abstract class TileBuffer {
 
     public int getHeight() {
         return this.height;
-    }
-
-    public int getOffset() {
-        return this.offset;
     }
 
     /**

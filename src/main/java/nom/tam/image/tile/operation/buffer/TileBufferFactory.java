@@ -37,15 +37,15 @@ import nom.tam.util.type.PrimitiveType;
 
 public final class TileBufferFactory {
 
-    private TileBufferFactory() {
-        // unused
-    }
-
     public static TileBuffer createTileBuffer(PrimitiveType<Buffer> baseType, int dataOffset, int imageWidth, int width, int height) {
         if (imageWidth > width) {
             return new TileBufferColumnBased(baseType, dataOffset, imageWidth, width, height);
         } else {
             return new TileBufferRowBased(baseType, dataOffset, width, height);
         }
+    }
+
+    private TileBufferFactory() {
+        // unused
     }
 }

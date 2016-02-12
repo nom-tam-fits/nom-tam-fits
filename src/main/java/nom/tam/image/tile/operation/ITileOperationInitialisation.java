@@ -1,5 +1,7 @@
 package nom.tam.image.tile.operation;
 
+import nom.tam.fits.common.FitsException;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -37,5 +39,5 @@ public interface ITileOperationInitialisation<OPERATION extends ITileOperation> 
 
     void init(OPERATION tileOperation);
 
-    void tileCount(int tileCount);
+    void tileCount(int tileCount) throws FitsException;
 }

@@ -42,7 +42,6 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**

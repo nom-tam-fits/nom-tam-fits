@@ -4,7 +4,7 @@ package nom.tam.fits.compression.provider;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2016 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,44 +31,35 @@ package nom.tam.fits.compression.provider;
  * #L%
  */
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.LongBuffer;
-
+import nom.tam.fits.common.FitsException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
-import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
-import nom.tam.fits.compression.provider.api.ICompressorProvider;
+import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 
-public class TileCompressorAlternativProvider implements ICompressorProvider {
+import org.junit.Assert;
+import org.junit.Test;
 
-    public static ICompressorControl createControl(Class<?> clazz) {
-        return new CompressorProvider.TileCompressorControl(clazz);
+public class CompressionProviderTest {
+
+    @Test
+    public void testNullOptions() {
+        ICompressorControl compressor = CompressorProvider.findCompressorControl(null, "GZIP_1", byte.class);
+        ICompressOption option = compressor.option();
+        Assert.assertFalse(option.isLossyCompression());
+        option.setParameters(null); // nothinh should happen ;-)
+        Assert.assertNull(option.unwrap(String.class));
+        Assert.assertSame(option, option.unwrap(ICompressOption.class));
     }
 
-    @Override
-    public ICompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
-        if ("X".equalsIgnoreCase(compressionAlgorithm) && quantAlgorithm == null && baseType.equals(long.class)) {
-            return new ICompressorControl() {
+    @Test
+    public void testNullParameters() throws FitsException {
+        ICompressorControl compressor = CompressorProvider.findCompressorControl(null, "GZIP_1", byte.class);
+        ICompressOption option = compressor.option();
+        ICompressParameters parameters = option.getCompressionParameters();
 
-                @Override
-                public boolean compress(Buffer in, ByteBuffer out, ICompressOption options) {
-                    new LongGZip2Compressor().compress((LongBuffer) in, out);
-                    return true;
-                }
-
-                @Override
-                public void decompress(ByteBuffer in, Buffer out, ICompressOption options) {
-                    new LongGZip2Compressor().decompress(in, (LongBuffer) out);
-                }
-
-                @Override
-                public ICompressOption option() {
-                    return null;
-                }
-
-            };
-        }
-        return null;
+        parameters.addColumnsToTable(null);// nothinh should happen ;-)
+        Assert.assertSame(parameters, parameters.copy(option));
+        parameters.setValueFromColumn(10000);// nothinh should happen ;-)
+        parameters.setValuesInHeader(null);// nothinh should happen ;-)
     }
 }

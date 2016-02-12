@@ -34,7 +34,6 @@ package nom.tam.image.compression.tile;
 import static nom.tam.image.compression.tile.TileCompressionType.COMPRESSED;
 import static nom.tam.image.compression.tile.TileCompressionType.GZIP_COMPRESSED;
 import static nom.tam.image.compression.tile.TileCompressionType.UNCOMPRESSED;
-
 import nom.tam.fits.Header;
 import nom.tam.fits.common.FitsException;
 import nom.tam.image.tile.operation.ITileOperationInitialisation;
@@ -79,11 +78,7 @@ final class TileDecompressorInitialisation implements ITileOperationInitialisati
     }
 
     @Override
-    public void tileCount(int tileCount) {
-        try {
-            this.imageTilesOperation.compressOptions().getCompressionParameters().initializeColumns(this.header, this.imageTilesOperation.getBinaryTable(), tileCount);
-        } catch (FitsException e) {
-            throw new IllegalStateException("Columns of table inconsistent", e);
-        }
+    public void tileCount(int tileCount) throws FitsException {
+        this.imageTilesOperation.compressOptions().getCompressionParameters().initializeColumns(this.header, this.imageTilesOperation.getBinaryTable(), tileCount);
     }
 }

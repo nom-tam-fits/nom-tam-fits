@@ -76,11 +76,6 @@ class TileBufferColumnBased extends TileBuffer {
         return this.gapLessBuffer;
     }
 
-    @Override
-    public TileBuffer asType(PrimitiveType<Buffer> otherBaseType) {
-        return new TileBufferColumnBased(otherBaseType, getOffset(), imageWidth, getWidth(), getHeight());
-    }
-
     /**
      * create the temporary buffer that contains no data gaps.
      */

@@ -44,7 +44,12 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.util.zip.GZIPOutputStream;
 
-import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.*;
+import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.ByteGZipCompressor;
+import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.DoubleGZipCompressor;
+import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.FloatGZipCompressor;
+import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.IntGZipCompressor;
+import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.LongGZipCompressor;
+import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.ShortGZipCompressor;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ByteBufferInputStream;
 import nom.tam.util.ByteBufferOutputStream;
