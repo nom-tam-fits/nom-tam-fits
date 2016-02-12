@@ -54,6 +54,7 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.math.BigDecimal;
@@ -68,6 +69,7 @@ import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.TruncatedFileException;
 import nom.tam.fits.common.FitsException;
 import nom.tam.fits.utilities.FitsHeaderCardParser;
 import nom.tam.fits.utilities.FitsHeaderCardParser.ParsedValue;
@@ -90,9 +92,16 @@ public class HeaderTest {
     private boolean useHierarch;
 
     @Before
-    public void before() {
+    public void before()  throws Exception{
         longStringsEnabled = FitsFactory.isLongStringsEnabled();
         useHierarch = FitsFactory.getUseHierarch();
+        
+        float[][] img = new float[300][300];
+        try (Fits f = new Fits(); BufferedFile bf = new BufferedFile("target/ht1.fits", "rw")) {
+            ImageHDU hdu = (ImageHDU) Fits.makeHDU(img);
+            f.addHDU(hdu);
+            f.write(bf);
+        }
     }
 
     @After
@@ -186,7 +195,6 @@ public class HeaderTest {
     /** Confirm initial location versus EXTEND keyword (V. Forchi). */
     @Test
     public void extendTest() throws Exception {
-        simpleImages();
         try (Fits f = new Fits("target/ht1.fits")) {
             Header h = f.getHDU(0).getHeader();
             h.addValue("TESTKEY", "TESTVAL", "TESTCOMM");
@@ -365,19 +373,14 @@ public class HeaderTest {
         }
     }
 
+
+
+
     /**
      * Check out header manipulation.
      */
     @Test
-    public void simpleImages() throws Exception {
-        float[][] img = new float[300][300];
-
-        try (Fits f = new Fits(); BufferedFile bf = new BufferedFile("target/ht1.fits", "rw")) {
-            ImageHDU hdu = (ImageHDU) Fits.makeHDU(img);
-            f.addHDU(hdu);
-            f.write(bf);
-        }
-
+    public void simpleImagesTest() throws Exception {
         try (Fits f = new Fits("target/ht1.fits")) {
             ImageHDU hdu = (ImageHDU) f.getHDU(0);
             Header hdr = hdu.getHeader();
@@ -864,6 +867,21 @@ public class HeaderTest {
         Assert.assertEquals(END.key(), header.iterator(3).next().getKey());
         header.write(dos);
         Assert.assertEquals(THEAP.key(), header.iterator(3).next().getKey());
+    }
+
+    /** Truncate header test. */
+    @Test(expected = TruncatedFileException.class)
+    public void truncatedFileExceptionTest() throws Exception {
+        try (FileInputStream f = new FileInputStream("target/ht1.fits");//
+                FileOutputStream out = new FileOutputStream("target/ht1_truncated.fits");) {
+            byte[] buffer = new byte[1024];
+            int count = f.read(buffer);
+            out.write(buffer, 0, count);
+        }
+        try (Fits f = new Fits("target/ht1_truncated.fits")) {
+            ImageHDU hdu = (ImageHDU) f.getHDU(0);
+            Header hdr = hdu.getHeader();
+        }
     }
 
     private static <E extends Throwable> void throwAny(Throwable e) throws E {
