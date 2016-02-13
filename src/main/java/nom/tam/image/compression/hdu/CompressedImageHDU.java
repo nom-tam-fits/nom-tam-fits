@@ -62,9 +62,25 @@ public class CompressedImageHDU extends BinaryTableHDU {
 
     static final Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> UNCOMPRESSED_HEADER_MAPPING = new HashMap<>();
 
+    /**
+     * Prepare a compressed image hdu for the specified image. the tile axis
+     * that are specified with -1 are set to the corresponding axis of the
+     * image. The image will be compressed in "sqaures" that ar defined by the
+     * tile size. Next step would be to set the compression options into the hdu
+     * and then compress it.
+     *
+     * @param imageHDU
+     *            the image to compress
+     * @param tileAxis
+     *            the axis of the tiles in the image
+     * @return the prepared compressed image hdu.
+     * @throws FitsException
+     *             if the image could not be used to create a compressed image.
+     */
     public static CompressedImageHDU fromImageHDU(ImageHDU imageHDU, int... tileAxis) throws FitsException {
         Header header = new Header();
         CompressedImageData compressedData = new CompressedImageData();
+        compressedData.setAxis(imageHDU.getAxes());
         if (tileAxis.length > 0) {
             compressedData.setTileSize(tileAxis);
         }
@@ -166,7 +182,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
      * preserve the null values in the image even if the compression algorithm
      * is lossy. I the image that will be compressed a BLANK header should be
      * available if the pixel value is one of the integer types.
-     * 
+     *
      * @param compressionAlgorithm
      *            compression algorithm to use for the null pixel mask
      * @return this

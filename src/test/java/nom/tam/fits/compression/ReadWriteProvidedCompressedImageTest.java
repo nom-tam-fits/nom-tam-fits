@@ -133,8 +133,8 @@ public class ReadWriteProvidedCompressedImageTest {
     }
 
     /**
-     * Assert two files files (one compressed and one uncompressed and use as few
-     * memory as possible.
+     * Assert two files files (one compressed and one uncompressed and use as
+     * few memory as possible.
      */
     private <T> void assertCompressedToUncompressedImage(String fileName, String unCompfileName, Class<T> clazz, IHDUAsserter<T> reader) throws Exception {
         try (Fits f = new Fits(fileName); Fits unFits = new Fits(unCompfileName)) {
@@ -634,6 +634,29 @@ public class ReadWriteProvidedCompressedImageTest {
     }
 
     @Test
+    public void testMissingTileSize() throws Exception {
+        try (Fits f = new Fits()) {
+            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(this.m13, -1, 15);
+            compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
+                    .setQuantAlgorithm((String) null)//
+                    .getCompressOption(HCompressorOption.class)//
+                    /**/.setScale(1);
+            compressedHdu.compress();
+            f.addHDU(compressedHdu);
+            compressedHdu.getHeader().deleteKey(Compression.ZTILEn.n(1));
+            try (BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_own_h.fits.fz"))) {
+                f.write(bdos);
+            }
+        }
+        try (Fits f = new Fits("target/write_m13_own_h.fits.fz")) {
+            f.readHDU();// the primary
+            CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
+            short[][] actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
+            Assert.assertArrayEquals(this.m13_data, actualShortArray);
+        }
+    }
+
+    @Test
     public void writeHcompress() throws Exception {
         try (Fits f = new Fits()) {
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(this.m13, 300, 15);
@@ -876,7 +899,10 @@ public class ReadWriteProvidedCompressedImageTest {
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             double[][] actual = (double[][]) hdu.asImageHDU().getData().getData();
             for (int index = 0; index < actual.length; index++) {
-                assertArrayEquals(data[index], actual[index], 1d, true); //TODO set to true
+                assertArrayEquals(data[index], actual[index], 1d, true); // TODO
+                                                                         // set
+                                                                         // to
+                                                                         // true
             }
         }
     }

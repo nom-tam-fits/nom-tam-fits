@@ -49,8 +49,4 @@ public class CompressParameter<OPTION> {
     protected final OPTION getOption() {
         return this.option;
     }
-
-    public boolean isActive() {
-        return true;
-    }
 }

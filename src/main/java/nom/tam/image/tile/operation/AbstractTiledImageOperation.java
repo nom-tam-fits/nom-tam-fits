@@ -82,20 +82,28 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
         return this.tileOperations[i];
     }
 
-    public void setTileAxes(int[] value) {
+    public void setAxes(int[] axes) {
+        this.axes = Arrays.copyOf(axes, axes.length);
+    }
+
+    public void setTileAxes(int[] value) throws FitsException {
         this.tileAxes = Arrays.copyOf(value, value.length);
         for (int index = 0; index < this.tileAxes.length; index++) {
             if (this.tileAxes[index] <= 0) {
-                this.tileAxes[index] = this.axes[index];
+                if (!areAxesUndefined()) {
+                    this.tileAxes[index] = this.axes[index];
+                } else {
+                    throw new FitsException("Illegal tile size specified " + Arrays.toString(value));
+                }
             }
         }
     }
 
-    protected boolean areAxesDefined() {
+    protected boolean areAxesUndefined() {
         return this.axes == null || this.axes.length == 0;
     }
 
-    protected boolean areTileAxesDefined() {
+    protected boolean areTileAxesUndefined() {
         return this.tileAxes == null || this.tileAxes.length == 0;
     }
 
@@ -141,10 +149,6 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
 
     protected OPERATION[] getTileOperations() {
         return this.tileOperations;
-    }
-
-    protected void setAxes(int[] axes) {
-        this.axes = axes;
     }
 
     protected void setBaseType(PrimitiveType<Buffer> baseType) {

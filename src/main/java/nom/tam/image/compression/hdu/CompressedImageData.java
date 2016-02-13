@@ -95,7 +95,7 @@ public class CompressedImageData extends BinaryTable {
     /**
      * preserve the null values in the image even if the compression algorithm
      * is lossy.
-     * 
+     *
      * @param nullValue
      *            the value representing null for byte/short and integer pixel
      *            values
@@ -104,6 +104,11 @@ public class CompressedImageData extends BinaryTable {
      */
     public void preserveNulls(long nullValue, String compressionAlgorithm) {
         tiledImageOperation().preserveNulls(nullValue, compressionAlgorithm);
+    }
+
+    public CompressedImageData setAxis(int[] axes) {
+        tiledImageOperation().setAxes(axes);
+        return this;
     }
 
     private TiledImageCompressionOperation tiledImageOperation() {
@@ -125,7 +130,7 @@ public class CompressedImageData extends BinaryTable {
         tiledImageOperation().setQuantAlgorithm(quantAlgorithmCard);
     }
 
-    protected CompressedImageData setTileSize(int... axes) {
+    protected CompressedImageData setTileSize(int... axes) throws FitsException {
         tiledImageOperation().setTileAxes(axes);
         return this;
     }

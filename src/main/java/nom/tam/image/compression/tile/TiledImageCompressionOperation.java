@@ -281,7 +281,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     }
 
     private void readAxis(Header header) throws FitsException {
-        if (areAxesDefined()) {
+        if (areAxesUndefined()) {
             int naxis = header.getIntValue(ZNAXIS);
             int[] axes = new int[naxis];
             for (int i = 1; i <= naxis; i++) {
@@ -305,8 +305,8 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         compressOptions().getCompressionParameters().getValuesFromHeader(header);
     }
 
-    private void readTileAxis(Header header) {
-        if (areTileAxesDefined()) {
+    private void readTileAxis(Header header) throws FitsException {
+        if (areTileAxesUndefined()) {
             int[] tileAxes = new int[getNAxes()];
             Arrays.fill(tileAxes, 1);
             tileAxes[0] = -1;
@@ -392,4 +392,5 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
             }
         }
     }
+
 }

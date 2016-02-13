@@ -52,7 +52,7 @@ public class HCompressorOption implements ICompressOption {
     @Override
     public HCompressorOption copy() {
         try {
-            return (HCompressorOption) clone();
+            return ((HCompressorOption) clone()).setOriginal(this);
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException("option could not be cloned", e);
         }
@@ -117,5 +117,10 @@ public class HCompressorOption implements ICompressOption {
             return clazz.cast(this);
         }
         return null;
+    }
+
+    private HCompressorOption setOriginal(HCompressorOption hCompressorOption) {
+        this.parameters = this.parameters.copy(this);
+        return this;
     }
 }
