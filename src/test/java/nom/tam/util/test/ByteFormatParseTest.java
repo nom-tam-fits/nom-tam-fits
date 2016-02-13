@@ -87,6 +87,17 @@ public class ByteFormatParseTest {
     }
 
     @Test
+    public void testToShortDouble() throws Exception {
+        byte[] input = {
+            '5',
+            '0'
+        };
+        ByteParser parser = new ByteParser(input);
+        double value = parser.getDouble(2);
+        Assert.assertEquals(50.0, value, 0.00000000001d);
+    }
+
+    @Test
     public void testDouble() throws Exception {
 
         for (int i = 0; i < 10; i += 1) {

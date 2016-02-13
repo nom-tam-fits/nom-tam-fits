@@ -33,12 +33,14 @@ package nom.tam.util.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.FitsDate;
 import nom.tam.fits.common.FitsException;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -90,6 +92,19 @@ public class FitsDateTest {
         assertEquals("1997-07-25", testArg("1997-07-25"));
         assertEquals("1987-06-05T04:03:02.010", testArg("1987-06-05T04:03:02.01"));
         assertEquals("1998-03-10T16:58:34", testArg("1998-03-10T16:58:34"));
+    }
+
+    @Test
+    public void testNow() {
+        String now = FitsDate.getFitsDateString();
+        String now2 = FitsDate.getFitsDateString(new Date());
+        int tryCount = 100;
+        while (tryCount > 0 && !now.regionMatches(0, now2, 0, now.length() - 3)) {
+            now = FitsDate.getFitsDateString();
+            now2 = FitsDate.getFitsDateString(new Date());
+            tryCount--;
+        }
+        Assert.assertTrue(tryCount > 0);
     }
 
     @Test

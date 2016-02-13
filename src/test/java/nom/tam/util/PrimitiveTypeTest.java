@@ -149,7 +149,7 @@ public class PrimitiveTypeTest {
     public void testLong() throws Exception {
         assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.valueOf(64));
         assertEquals(long.class, ((long[]) PrimitiveTypes.LONG.newArray(5)).getClass().getComponentType());
-        Assert.assertTrue(PrimitiveTypes.LONG.newBuffer(5) instanceof LongBuffer);
+        Assert.assertTrue(PrimitiveTypes.LONG.newBuffer(5L) instanceof LongBuffer);
         assertEquals(3, bufferAtPosition(PrimitiveTypes.LONG, 6, 3).capacity());
 
         long expectedValue = 256L * 256L * 256L * 256L * 256L * 256L * 256L;
