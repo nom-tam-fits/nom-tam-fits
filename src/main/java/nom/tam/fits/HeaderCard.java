@@ -603,14 +603,16 @@ public class HeaderCard implements CursorValue<String> {
     private void longStringCard(HeaderCardCountingArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException {
         // ok this is a longString now read over all continues.
         StringBuilder longValue = new StringBuilder();
-        StringBuilder longComment = new StringBuilder();
+        StringBuilder longComment = null;
         ParsedValue continueCard = parsedValue;
         do {
             if (continueCard.getValue() != null) {
                 longValue.append(continueCard.getValue());
             }
             if (continueCard.getComment() != null) {
-                if (longComment.length() != 0) {
+                if (longComment == null) {
+                    longComment = new StringBuilder();
+                } else {
                     longComment.append(' ');
                 }
                 longComment.append(continueCard.getComment());
@@ -631,7 +633,7 @@ public class HeaderCard implements CursorValue<String> {
                 }
             }
         } while (continueCard != null);
-        this.comment = longComment.toString();
+        this.comment = longComment == null ? null : longComment.toString();
         this.value = longValue.toString();
         this.isString = true;
     }
@@ -770,8 +772,8 @@ public class HeaderCard implements CursorValue<String> {
         if (this.key != null) {
             if (this.key.length() > HIERARCH_WITH_BLANK_LENGTH && this.key.startsWith(HIERARCH_WITH_DOT)) {
                 FitsFactory.getHierarchFormater().append(this.key, buf);
-                alignSmallString  = buf.length();
-                alignPosition =  buf.length();
+                alignSmallString = buf.length();
+                alignPosition = buf.length();
             } else {
                 buf.append(this.key);
                 buf.appendSpacesTo(MAX_KEYWORD_LENGTH);

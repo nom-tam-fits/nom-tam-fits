@@ -92,10 +92,10 @@ public class HeaderTest {
     private boolean useHierarch;
 
     @Before
-    public void before()  throws Exception{
+    public void before() throws Exception {
         longStringsEnabled = FitsFactory.isLongStringsEnabled();
         useHierarch = FitsFactory.getUseHierarch();
-        
+
         float[][] img = new float[300][300];
         try (Fits f = new Fits(); BufferedFile bf = new BufferedFile("target/ht1.fits", "rw")) {
             ImageHDU hdu = (ImageHDU) Fits.makeHDU(img);
@@ -235,6 +235,7 @@ public class HeaderTest {
             assertEquals("Set state:", true, FitsFactory.isLongStringsEnabled());
             hdr.addValue("LONG1", lng, "Here is a comment that is also very long and will be truncated at least a little");
             hdr.addValue("LONG2", "xx'yy'zz" + lng, "Another comment");
+            hdr.addValue("LONG3", "xx'yy'zz" + lng, null);
             hdr.addValue("SHORT", "A STRING ENDING IN A &", null);
             hdr.addValue("LONGISH", lng + "&", null);
             hdr.addValue("LONGSTRN", "OGIP 1.0", "Uses long strings");
@@ -252,6 +253,9 @@ public class HeaderTest {
             assertEquals("LongT2", val, "xx'yy'zz" + lng);
             assertEquals("APOS1", hdr.getStringValue("APOS1").length(), 70);
             assertEquals("APOS2", hdr.getStringValue("APOS2").length(), 71);
+
+            // long3 should not have a comment!
+            assertNull(hdr.findCard("LONG3").getComment());
 
             String string = hdr.findCard("LONG1").toString();
             val = FitsHeaderCardParser.parseCardValue(string).getValue();
@@ -310,7 +314,6 @@ public class HeaderTest {
 
         card =
                 new HeaderCard(
-
                         "LONGSTR",
                         "This is very very very very very very very very very very very very very very very very very very very very very very very very very very very long string value of FITS card",
                         "long longer longest comment");
@@ -319,6 +322,18 @@ public class HeaderTest {
                 "CONTINUE  'ery very long string value of FITS &' / long longer longest comment  " + //
                 "CONTINUE  'card'                                                                ", card.toString());
 
+        FitsFactory.setLongStringsEnabled(false);
+    }
+
+    @Test
+    public void longStringNullComment() throws Exception {
+        FitsFactory.setLongStringsEnabled(true);
+        HeaderCard card = HeaderCard.create("STRKEY  = 'This is a very long string keyword&'                                 " + //
+                "CONTINUE  ' value that is continued over 3 keywords in the &  '                 " + //
+                "CONTINUE  'FITS header.'                                                        ");
+
+        assertEquals("This is a very long string keyword value that is continued over 3 keywords in the FITS header.", card.getValue());
+        assertNull(card.getComment());
         FitsFactory.setLongStringsEnabled(false);
     }
 
@@ -372,9 +387,6 @@ public class HeaderTest {
             assertTrue(!FitsFactory.isLongStringsEnabled() && cardValue.length() > 68);
         }
     }
-
-
-
 
     /**
      * Check out header manipulation.
