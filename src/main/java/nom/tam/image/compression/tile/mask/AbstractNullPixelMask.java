@@ -38,8 +38,6 @@ import nom.tam.image.tile.operation.buffer.TileBuffer;
 
 public class AbstractNullPixelMask {
 
-    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
-
     protected static final byte NULL_INDICATOR = (byte) 1;
 
     private final TileBuffer tileBuffer;
@@ -60,9 +58,6 @@ public class AbstractNullPixelMask {
     }
 
     public byte[] getMaskBytes() {
-        if (this.mask == null) {
-            return EMPTY_BYTE_ARRAY;
-        }
         int size = this.mask.position();
         byte[] result = new byte[size];
         this.mask.rewind();

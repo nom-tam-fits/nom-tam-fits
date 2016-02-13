@@ -90,11 +90,7 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
         this.tileAxes = Arrays.copyOf(value, value.length);
         for (int index = 0; index < this.tileAxes.length; index++) {
             if (this.tileAxes[index] <= 0) {
-                if (!areAxesUndefined()) {
-                    this.tileAxes[index] = this.axes[index];
-                } else {
-                    throw new FitsException("Illegal tile size specified " + Arrays.toString(value));
-                }
+                this.tileAxes[index] = this.axes[index];
             }
         }
     }

@@ -56,6 +56,15 @@ public class ImageMaskTest {
 
     @Test
     public void testByteMask() {
+        testByteMask(2, 7);
+    }
+
+    @Test
+    public void testNoByteMask() {
+        testByteMask();
+    }
+
+    private void testByteMask(int... nullIndexes) {
         byte[] orgPixels = {
             0,
             1,
@@ -69,8 +78,9 @@ public class ImageMaskTest {
             9
         };
         byte[] expectedPixels = Arrays.copyOf(orgPixels, orgPixels.length);
-        expectedPixels[2] = -1;
-        expectedPixels[7] = -1;
+        for (int index : nullIndexes) {
+            expectedPixels[index] = -1;
+        }
         ByteBuffer expectedPixelBuffer = ByteBuffer.wrap(expectedPixels);
 
         ImageNullPixelMask mask = new ImageNullPixelMask(2, -1L, "RICE_1");

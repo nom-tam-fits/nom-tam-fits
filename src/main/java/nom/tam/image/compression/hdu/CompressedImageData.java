@@ -50,16 +50,12 @@ public class CompressedImageData extends BinaryTable {
      */
     private TiledImageCompressionOperation tiledImageOperation;
 
-    public CompressedImageData() {
+    protected CompressedImageData() {
         super();
     }
 
-    public CompressedImageData(Header hdr) throws FitsException {
+    protected CompressedImageData(Header hdr) throws FitsException {
         super(hdr);
-    }
-
-    public void compress(CompressedImageHDU hdu) throws FitsException {
-        tiledImageOperation().compress(hdu);
     }
 
     @Override
@@ -68,11 +64,26 @@ public class CompressedImageData extends BinaryTable {
         h.addValue(ZIMAGE, true);
     }
 
-    public <T extends ICompressOption> T getCompressOption(Class<T> clazz) {
+    private TiledImageCompressionOperation tiledImageOperation() {
+        if (this.tiledImageOperation == null) {
+            this.tiledImageOperation = new TiledImageCompressionOperation(this);
+        }
+        return this.tiledImageOperation;
+    }
+
+    protected void compress(CompressedImageHDU hdu) throws FitsException {
+        tiledImageOperation().compress(hdu);
+    }
+
+    protected void forceNoLoss(int x, int y, int width, int heigth) {
+        this.tiledImageOperation.forceNoLoss(x, y, width, heigth);
+    }
+
+    protected <T extends ICompressOption> T getCompressOption(Class<T> clazz) {
         return tiledImageOperation().compressOptions().unwrap(clazz);
     }
 
-    public Buffer getUncompressedData(Header hdr) throws FitsException {
+    protected Buffer getUncompressedData(Header hdr) throws FitsException {
         try {
             this.tiledImageOperation = new TiledImageCompressionOperation(this).read(hdr);
             return this.tiledImageOperation.decompress();
@@ -81,15 +92,11 @@ public class CompressedImageData extends BinaryTable {
         }
     }
 
-    public void prepareUncompressedData(Object data, Header header) throws FitsException {
+    protected void prepareUncompressedData(Object data, Header header) throws FitsException {
         tiledImageOperation().readPrimaryHeaders(header);
-        if (data instanceof Buffer) {
-            tiledImageOperation().prepareUncompressedData((Buffer) data);
-        } else {
-            Buffer source = tiledImageOperation().getBaseType().newBuffer(this.tiledImageOperation.getBufferSize());
-            ArrayFuncs.copyInto(data, source.array());
-            tiledImageOperation().prepareUncompressedData(source);
-        }
+        Buffer source = tiledImageOperation().getBaseType().newBuffer(this.tiledImageOperation.getBufferSize());
+        ArrayFuncs.copyInto(data, source.array());
+        tiledImageOperation().prepareUncompressedData(source);
     }
 
     /**
@@ -102,24 +109,13 @@ public class CompressedImageData extends BinaryTable {
      * @param compressionAlgorithm
      *            compression algorithm to use for the null pixel mask
      */
-    public void preserveNulls(long nullValue, String compressionAlgorithm) {
+    protected void preserveNulls(long nullValue, String compressionAlgorithm) {
         tiledImageOperation().preserveNulls(nullValue, compressionAlgorithm);
     }
 
-    public CompressedImageData setAxis(int[] axes) {
+    protected CompressedImageData setAxis(int[] axes) {
         tiledImageOperation().setAxes(axes);
         return this;
-    }
-
-    private TiledImageCompressionOperation tiledImageOperation() {
-        if (this.tiledImageOperation == null) {
-            this.tiledImageOperation = new TiledImageCompressionOperation(this);
-        }
-        return this.tiledImageOperation;
-    }
-
-    protected void forceNoLoss(int x, int y, int width, int heigth) {
-        this.tiledImageOperation.forceNoLoss(x, y, width, heigth);
     }
 
     protected void setCompressAlgorithm(HeaderCard compressAlgorithmCard) {

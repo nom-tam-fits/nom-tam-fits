@@ -52,9 +52,6 @@ public class NullPixelMaskRestorer extends AbstractNullPixelMask {
     }
 
     public void restoreNulls() {
-        if (getMask() == null) {
-            return;
-        }
         ByteBuffer decompressed = ByteBuffer.allocate(getTileBuffer().getPixelSize());
         getCompressorControl().decompress(getMask(), decompressed, getCompressorControl().option());
         setMask(decompressed);
