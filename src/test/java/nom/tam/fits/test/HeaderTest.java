@@ -334,6 +334,9 @@ public class HeaderTest {
 
         assertEquals("This is a very long string keyword value that is continued over 3 keywords in the FITS header.", card.getValue());
         assertNull(card.getComment());
+        assertFalse(new HeaderCard("STRKEY",
+                "This is a very long string keyword value that is continued over at least three keywords in the FITS header even if it has no comment.", null).toString()
+                .contains("/"));
         FitsFactory.setLongStringsEnabled(false);
     }
 
