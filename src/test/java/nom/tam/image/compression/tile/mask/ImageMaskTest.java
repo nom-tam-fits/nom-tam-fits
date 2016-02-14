@@ -61,7 +61,10 @@ public class ImageMaskTest {
 
     @Test
     public void testNoByteMask() {
-        doTestByteMask("RICE_1");
+        byte[][] result = doTestByteMask("RICE_1");
+        assertEquals(2, result.length);
+        assertEquals(0, result[0].length);
+        assertEquals(0, result[1].length);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -74,7 +77,7 @@ public class ImageMaskTest {
         doTestByteMask("FAIL", 2, 7);
     }
 
-    private void doTestByteMask(String compression, int... nullIndexes) {
+    private byte[][] doTestByteMask(String compression, int... nullIndexes) {
         byte[] orgPixels = {
             0,
             1,
@@ -114,6 +117,7 @@ public class ImageMaskTest {
         for (int index = 0; index < orgPixels.length; index++) {
             Assert.assertEquals(expectedPixels[index], actualPixelBuffer.get());
         }
+        return preservedNulls;
     }
 
     @Test
