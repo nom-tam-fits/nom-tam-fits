@@ -542,6 +542,11 @@ public class HeaderTest {
     }
 
     @Test
+    public void testHeaderComments() throws Exception {
+        Assert.assertNull(HeaderCommentsMap.getComment("NOT_PRESENT"));
+    }
+
+    @Test
     public void testUpdateHeaderComments() throws Exception {
         byte[][] z = new byte[4][4];
         try (Fits f = new Fits(); BufferedFile bf = new BufferedFile("target/hx1.fits", "rw")) {

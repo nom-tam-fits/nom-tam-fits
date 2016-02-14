@@ -43,7 +43,6 @@ import static nom.tam.fits.header.Standard.TZEROn;
 import static nom.tam.fits.header.Standard.XTENSION;
 
 import java.io.PrintStream;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.common.FitsException;
@@ -245,11 +244,8 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      */
     public void setNullString(int col, String newNull) {
         this.myHeader.positionAfterIndex(TBCOLn, col + 1);
-        try {
-            this.myHeader.addValue(TNULLn.n(col + 1), newNull);
-        } catch (HeaderCardException e) {
-            LOG.log(Level.SEVERE, "Impossible exception in setNullString" + e);
-        }
+        saveReplaceCard(TNULLn.n(col + 1).key(), true, newNull);
         this.myData.setNullString(col, newNull);
     }
+
 }

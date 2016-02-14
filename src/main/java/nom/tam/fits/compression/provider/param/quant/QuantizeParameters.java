@@ -31,14 +31,13 @@ package nom.tam.fits.compression.provider.param.quant;
  * #L%
  */
 
-import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
 import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.base.CompressParameters;
 
-public class QuantizeParameters extends CompressParameters {
+public abstract class QuantizeParameters extends CompressParameters {
 
     private final ZQuantizeParameter quantz;
 
@@ -65,11 +64,6 @@ public class QuantizeParameters extends CompressParameters {
             this.zero,
             this.scale
         };
-    }
-
-    @Override
-    public ICompressParameters copy(ICompressOption original) {
-        return copyColumnDetails(new QuantizeParameters((QuantizeOption) original));
     }
 
     protected ICompressParameters copyColumnDetails(QuantizeParameters quantizeParameters) {

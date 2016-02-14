@@ -79,6 +79,8 @@ public class RiseCompressTest {
 
         Assert.assertEquals(32, option.getBlockSize());
         Assert.assertEquals(16, option.getBytePix());
+        
+        Assert.assertNull(option.unwrap(String.class));
     }
 
     @Test

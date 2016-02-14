@@ -105,10 +105,6 @@ abstract class TileCompressionOperation extends AbstractTileOperation implements
         return getTiledImageOperation().getGzipCompressorControl();
     }
 
-    protected ICompressOption getTileOptions() {
-        return this.tileOptions;
-    }
-
     protected TileCompressionOperation initTileOptions() {
         ICompressOption compressOptions = getTiledImageOperation().compressOptions();
         this.tileOptions = compressOptions.copy() //

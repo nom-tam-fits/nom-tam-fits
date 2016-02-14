@@ -236,4 +236,13 @@ public class PrimitiveTypeTest {
         constrs[0].newInstance();
     }
 
+    @Test
+    public void testPrimitiveTypesPrivate() throws Exception {
+        Constructor<?>[] constrs = PrimitiveTypes.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+
 }

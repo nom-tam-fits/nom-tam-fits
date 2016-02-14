@@ -68,6 +68,25 @@ public class TileCompressorAlternativProvider implements ICompressorProvider {
                 }
 
             };
+        } else if ("FAIL".equalsIgnoreCase(compressionAlgorithm) && quantAlgorithm == null) {
+            return new ICompressorControl() {
+
+                @Override
+                public boolean compress(Buffer in, ByteBuffer out, ICompressOption options) {
+                    return false;
+                }
+
+                @Override
+                public void decompress(ByteBuffer in, Buffer out, ICompressOption options) {
+                    throw new IllegalAccessError();
+                }
+
+                @Override
+                public ICompressOption option() {
+                    return null;
+                }
+
+            };
         }
         return null;
     }

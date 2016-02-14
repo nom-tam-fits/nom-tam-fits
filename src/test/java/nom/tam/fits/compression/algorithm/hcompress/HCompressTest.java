@@ -447,6 +447,8 @@ public class HCompressTest {
 
         Assert.assertTrue(option.isSmooth());
         Assert.assertEquals(1, option.getScale());
+
+        Assert.assertNull(option.unwrap(String.class));
     }
 
 }

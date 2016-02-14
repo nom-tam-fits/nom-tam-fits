@@ -378,6 +378,9 @@ public class BaseFitsTest {
         for (int index = 0; index < undefinedData.length; index++) {
             undefinedData[index] = (byte) index;
         }
+        Assert.assertFalse(UndefinedHDU.isHeader(new Header()));
+        Assert.assertTrue(UndefinedHDU.isData(undefinedData));
+        
         UndefinedData data = UndefinedHDU.encapsulate(undefinedData);
         Header header = new Header();
         header.pointToData(data);

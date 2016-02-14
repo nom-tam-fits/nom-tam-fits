@@ -39,6 +39,8 @@ import java.util.Arrays;
 
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.quant.QuantizeParameters;
 import nom.tam.fits.header.Compression;
 import nom.tam.util.ArrayFuncs;
@@ -47,6 +49,19 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class QuantizeTest {
+
+    static class QuantizeTestParameters extends QuantizeParameters {
+
+        public QuantizeTestParameters(QuantizeOption option) {
+            super(option);
+        }
+
+        @Override
+        public ICompressParameters copy(ICompressOption option) {
+            return this;
+        }
+
+    }
 
     private static final double NULL_VALUE = -9.1191291391491004e-36;
 
@@ -587,7 +602,7 @@ public class QuantizeTest {
                 throw new CloneNotSupportedException("this can not be cloned");
             }
         };
-        option.setParameters(new QuantizeParameters(option));
+        option.setParameters(new QuantizeTestParameters(option));
         IllegalStateException expected = null;
         try {
             option.copy();
@@ -607,7 +622,7 @@ public class QuantizeTest {
         Assert.assertFalse(option.isDither());
 
         option = new QuantizeOption();
-        option.setParameters(new QuantizeParameters(option));
+        option.setParameters(new QuantizeTestParameters(option));
         header = new Header();
         header.addValue(Compression.ZQUANTIZ, Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1);
         option.getCompressionParameters().getValuesFromHeader(header);

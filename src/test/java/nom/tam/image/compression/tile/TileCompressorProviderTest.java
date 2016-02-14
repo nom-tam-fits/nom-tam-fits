@@ -31,9 +31,14 @@ package nom.tam.image.compression.tile;
  * #L%
  */
 
+import static nom.tam.fits.header.Compression.COMPRESSED_DATA_COLUMN;
+import static nom.tam.fits.header.Compression.GZIP_COMPRESSED_DATA_COLUMN;
+import static nom.tam.fits.header.Compression.UNCOMPRESSED_DATA_COLUMN;
 import static nom.tam.fits.header.Compression.ZBITPIX;
+import static nom.tam.fits.header.Compression.ZCMPTYPE;
 import static nom.tam.fits.header.Compression.ZNAXIS;
 import static nom.tam.fits.header.Compression.ZNAXISn;
+import static nom.tam.fits.header.Compression.ZQUANTIZ;
 import static nom.tam.fits.header.Compression.ZTILEn;
 
 import java.nio.Buffer;
@@ -42,8 +47,11 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardBuilder;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.common.FitsException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
@@ -56,6 +64,7 @@ import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.Standard;
 import nom.tam.image.compression.hdu.CompressedImageData;
 import nom.tam.image.tile.operation.Access;
+import nom.tam.image.tile.operation.ITileOperationInitialisation;
 import nom.tam.image.tile.operation.TileArea;
 
 import org.junit.Assert;
@@ -63,6 +72,18 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TileCompressorProviderTest {
+
+    private final class TileImageCompressionOperationWithPublicMethods extends TiledImageCompressionOperation {
+
+        private TileImageCompressionOperationWithPublicMethods(BinaryTable binaryTable) {
+            super(binaryTable);
+        }
+
+        @Override
+        public void createTiles(ITileOperationInitialisation<TileCompressionOperation> init) throws FitsException {
+            super.createTiles(init);
+        }
+    }
 
     static class Access2 extends CompressedImageData {
 
@@ -220,6 +241,31 @@ public class TileCompressorProviderTest {
         header.addValue(ZTILEn.n(1), 15);
         header.addValue(ZTILEn.n(2), 15);
         operationsOfImage.readPrimaryHeaders(header);
+    }
+
+    @Test
+    public void testForceNoLossWithoutFunczion() throws Exception {
+        TileImageCompressionOperationWithPublicMethods operationsOfImage = new TileImageCompressionOperationWithPublicMethods(null);
+        Header header = new Header();
+        header.card(ZBITPIX).value(8);
+        operationsOfImage.setTileAxes(new int[]{
+            100,
+            100
+        });
+        operationsOfImage.setAxes(new int[]{
+            100,
+            100
+        });
+        operationsOfImage.readPrimaryHeaders(header);
+        operationsOfImage.setCompressAlgorithm(header.card(ZCMPTYPE).value("RICE_1").card());
+        operationsOfImage.createTiles(new TileDecompressorInitialisation(operationsOfImage, //
+                null, //
+                null, //
+                null, //
+                header));
+        // lets see if we can call the no loss function with no errors even if
+        // it has no effect.
+        operationsOfImage.forceNoLoss(1, 1, 10, 10);
     }
 
     @Test

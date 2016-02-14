@@ -202,6 +202,8 @@ public class HashedListTest {
         for (int index = 0; index < Math.max(array2.length, array1.length); index++) {
             Assert.assertSame(array1[index], array2[index]);
         }
+
+        Assert.assertTrue(h1.toString().contains(array1[0].toString()));
     }
 
     @Test

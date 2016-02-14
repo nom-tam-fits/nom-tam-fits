@@ -56,15 +56,25 @@ public class ImageMaskTest {
 
     @Test
     public void testByteMask() {
-        doTestByteMask(2, 7);
+        doTestByteMask("RICE_1", 2, 7);
     }
 
     @Test
     public void testNoByteMask() {
-        doTestByteMask();
+        doTestByteMask("RICE_1");
     }
 
-    private void doTestByteMask(int... nullIndexes) {
+    @Test(expected = IllegalStateException.class)
+    public void testWrongCompression() {
+        doTestByteMask("UNKNOWN1", 2, 7);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testCompressionFailed() {
+        doTestByteMask("FAIL", 2, 7);
+    }
+
+    private void doTestByteMask(String compression, int... nullIndexes) {
         byte[] orgPixels = {
             0,
             1,
@@ -83,7 +93,7 @@ public class ImageMaskTest {
         }
         ByteBuffer expectedPixelBuffer = ByteBuffer.wrap(expectedPixels);
 
-        ImageNullPixelMask mask = new ImageNullPixelMask(2, -1L, "RICE_1");
+        ImageNullPixelMask mask = new ImageNullPixelMask(2, -1L, compression);
         createTilePreserver(expectedPixelBuffer, mask, PrimitiveTypes.BYTE, 0);
         createTilePreserver(expectedPixelBuffer, mask, PrimitiveTypes.BYTE, 1);
         byte[][] preservedNulls = mask.getColumn();
