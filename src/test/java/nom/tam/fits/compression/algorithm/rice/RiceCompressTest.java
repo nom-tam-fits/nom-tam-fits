@@ -48,7 +48,7 @@ import nom.tam.util.type.PrimitiveTypes;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class RiseCompressTest {
+public class RiceCompressTest {
 
     private static final RiceCompressOption option = new RiceCompressOption().setBlockSize(32);
 
@@ -84,7 +84,7 @@ public class RiseCompressTest {
     }
 
     @Test
-    public void testRiseByte() throws Exception {
+    public void testRiceByte() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
                 RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data8.rise", "r");//
 
@@ -108,11 +108,10 @@ public class RiseCompressTest {
             compressor.decompress(compressed, ByteBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(bytes, decompressedArray);
         }
-
     }
 
     @Test
-    public void testRiseInt() throws Exception {
+    public void testRiceInt() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
                 RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data32.rise", "r");//
 
@@ -141,7 +140,7 @@ public class RiseCompressTest {
     }
 
     @Test
-    public void testRiseShort() throws Exception {
+    public void testRiceShort() throws Exception {
         try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
                 RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data16.rise", "r");//
 
@@ -167,6 +166,5 @@ public class RiseCompressTest {
             compressor.decompress(compressed, ShortBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(shortArray, decompressedArray);
         }
-
     }
 }
