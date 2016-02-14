@@ -56,15 +56,15 @@ public class ImageMaskTest {
 
     @Test
     public void testByteMask() {
-        testByteMask(2, 7);
+        doTestByteMask(2, 7);
     }
 
     @Test
     public void testNoByteMask() {
-        testByteMask();
+        doTestByteMask();
     }
 
-    private void testByteMask(int... nullIndexes) {
+    private void doTestByteMask(int... nullIndexes) {
         byte[] orgPixels = {
             0,
             1,
