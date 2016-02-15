@@ -38,7 +38,7 @@ import java.lang.reflect.Array;
 
 import nom.tam.fits.Fits;
 import nom.tam.fits.ImageHDU;
-import nom.tam.fits.common.FitsException;
+import nom.tam.fits.FitsException;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;

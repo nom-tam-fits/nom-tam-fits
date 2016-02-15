@@ -7,7 +7,6 @@ import static nom.tam.fits.header.Standard.TTYPEn;
 
 import java.util.logging.Logger;
 
-import nom.tam.fits.common.FitsException;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
 

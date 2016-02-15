@@ -31,14 +31,10 @@ package nom.tam.image.compression.tile;
  * #L%
  */
 
-import static nom.tam.fits.header.Compression.COMPRESSED_DATA_COLUMN;
-import static nom.tam.fits.header.Compression.GZIP_COMPRESSED_DATA_COLUMN;
-import static nom.tam.fits.header.Compression.UNCOMPRESSED_DATA_COLUMN;
 import static nom.tam.fits.header.Compression.ZBITPIX;
 import static nom.tam.fits.header.Compression.ZCMPTYPE;
 import static nom.tam.fits.header.Compression.ZNAXIS;
 import static nom.tam.fits.header.Compression.ZNAXISn;
-import static nom.tam.fits.header.Compression.ZQUANTIZ;
 import static nom.tam.fits.header.Compression.ZTILEn;
 
 import java.nio.Buffer;
@@ -50,10 +46,8 @@ import java.util.List;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardBuilder;
 import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.common.FitsException;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressor;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;

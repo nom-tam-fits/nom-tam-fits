@@ -44,7 +44,6 @@ import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import nom.tam.fits.common.FitsException;
 import nom.tam.util.ArrayFuncs;
 
 /**
@@ -199,7 +198,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
     /**
      * @return Make a header point to the given object.
-     * @param odata
+     * @param d
      *            The random groups data the header should describe.
      * @throws FitsException
      *             if the operation failed

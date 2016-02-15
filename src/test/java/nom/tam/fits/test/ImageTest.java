@@ -51,7 +51,7 @@ import java.util.TimeZone;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.ImageData;
-import nom.tam.fits.common.FitsException;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;

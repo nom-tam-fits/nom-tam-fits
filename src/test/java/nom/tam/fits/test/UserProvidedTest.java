@@ -40,7 +40,7 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.common.FitsException;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.BufferedFile;

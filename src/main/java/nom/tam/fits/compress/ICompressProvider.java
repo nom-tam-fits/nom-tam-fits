@@ -34,7 +34,7 @@ package nom.tam.fits.compress;
 import java.io.IOException;
 import java.io.InputStream;
 
-import nom.tam.fits.common.FitsException;
+import nom.tam.fits.FitsException;
 
 public interface ICompressProvider {
 

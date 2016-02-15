@@ -38,7 +38,7 @@ import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import nom.tam.fits.common.FitsException;
+import nom.tam.fits.FitsException;
 
 public class BasicCompressProvider implements ICompressProvider {
 

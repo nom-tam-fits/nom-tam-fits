@@ -1,6 +1,6 @@
 package nom.tam.util;
 
-import nom.tam.fits.common.FitsException;
+import nom.tam.fits.FitsException;
 
 /*
  * #%L

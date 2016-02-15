@@ -37,7 +37,7 @@ import java.math.RoundingMode;
 import java.nio.Buffer;
 import java.util.Arrays;
 
-import nom.tam.fits.common.FitsException;
+import nom.tam.fits.FitsException;
 import nom.tam.util.type.PrimitiveType;
 
 public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperation> implements ITiledImageOperation {

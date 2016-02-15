@@ -45,7 +45,7 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsDate;
 import nom.tam.fits.Header;
-import nom.tam.fits.common.FitsException;
+import nom.tam.fits.FitsException;
 
 import org.junit.Assert;
 import org.junit.Test;
