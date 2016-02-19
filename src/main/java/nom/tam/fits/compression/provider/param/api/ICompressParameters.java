@@ -2,9 +2,8 @@ package nom.tam.fits.compression.provider.param.api;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 
 /*
@@ -79,7 +78,7 @@ public interface ICompressParameters {
      * @param header
      *            the header to extract the option values.
      */
-    void getValuesFromHeader(Header header);
+    void getValuesFromHeader(IHeaderAccess header);
 
     /**
      * initialize the column based options of the compression algorithm from the
@@ -94,7 +93,7 @@ public interface ICompressParameters {
      * @throws FitsException
      *             if the column could not be initialized
      */
-    void initializeColumns(Header header, BinaryTable binaryTable, int size) throws FitsException;
+    void initializeColumns(IHeaderAccess header, BinaryTable binaryTable, int size) throws FitsException;
 
     /**
      * initialize the column based parameter to the specified column length.
@@ -121,6 +120,6 @@ public interface ICompressParameters {
      * @throws HeaderCardException
      *             if the header could not be set.
      */
-    void setValuesInHeader(Header header) throws HeaderCardException;
+    void setValuesInHeader(IHeaderAccess header) throws HeaderCardException;
 
 }

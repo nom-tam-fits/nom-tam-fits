@@ -31,9 +31,9 @@ package nom.tam.fits.compression.provider.param.quant;
  * #L%
  */
 
-import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.HeaderCard;
 import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
@@ -47,8 +47,9 @@ final class ZQuantizeParameter extends CompressHeaderParameter<QuantizeOption> {
     }
 
     @Override
-    public void getValueFromHeader(Header header) {
-        String value = header.getStringValue(getName());
+    public void getValueFromHeader(IHeaderAccess header) {
+        HeaderCard card = header.findCard(getName());
+        String value = card != null ? card.getValue() : null;
         if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(value)) {
             getOption().setDither(true);
             getOption().setDither2(true);
@@ -62,7 +63,7 @@ final class ZQuantizeParameter extends CompressHeaderParameter<QuantizeOption> {
     }
 
     @Override
-    public void setValueInHeader(Header header) throws HeaderCardException {
+    public void setValueInHeader(IHeaderAccess header) {
         String value;
         if (getOption().isDither2()) {
             value = Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2;
@@ -71,6 +72,6 @@ final class ZQuantizeParameter extends CompressHeaderParameter<QuantizeOption> {
         } else {
             value = Compression.ZQUANTIZ_NO_DITHER;
         }
-        header.card(Compression.ZQUANTIZ).value(value);
+        header.addValue(Compression.ZQUANTIZ, value);
     }
 }

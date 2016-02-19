@@ -41,7 +41,6 @@ import java.util.logging.Logger;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.Header;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressor;
@@ -70,6 +69,7 @@ import nom.tam.fits.compression.algorithm.rice.RiceCompressor.IntRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompressor;
 import nom.tam.fits.compression.provider.api.ICompressorProvider;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressQuantizeParameters;
 import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
@@ -202,11 +202,11 @@ public class CompressorProvider implements ICompressorProvider {
         }
 
         @Override
-        public void getValuesFromHeader(Header header) {
+        public void getValuesFromHeader(IHeaderAccess header) {
         }
 
         @Override
-        public void initializeColumns(Header header, BinaryTable binaryTable, int size) throws FitsException {
+        public void initializeColumns(IHeaderAccess header, BinaryTable binaryTable, int size) throws FitsException {
         }
 
         @Override
@@ -218,7 +218,7 @@ public class CompressorProvider implements ICompressorProvider {
         }
 
         @Override
-        public void setValuesInHeader(Header header) {
+        public void setValuesInHeader(IHeaderAccess header) {
         }
     };
 

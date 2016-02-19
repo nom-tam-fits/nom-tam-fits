@@ -44,22 +44,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nom.tam.fits.BinaryTable;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressor;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
 import nom.tam.fits.compression.provider.CompressorProvider;
 import nom.tam.fits.compression.provider.TileCompressorAlternativProvider;
+import nom.tam.fits.compression.provider.param.api.HeaderAccess;
+import nom.tam.fits.compression.provider.param.api.HeaderCardAccess;
 import nom.tam.fits.header.Compression;
+import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
+import nom.tam.fits.header.IFitsHeader.HDU;
+import nom.tam.fits.header.IFitsHeader.SOURCE;
+import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.image.compression.hdu.CompressedImageData;
 import nom.tam.image.tile.operation.Access;
 import nom.tam.image.tile.operation.ITileOperationInitialisation;
 import nom.tam.image.tile.operation.TileArea;
+import nom.tam.image.tile.operation.buffer.TileBuffer;
+import nom.tam.image.tile.operation.buffer.TileBufferFactory;
+import nom.tam.util.test.BufferedFileTest;
+import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypes;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -256,7 +268,7 @@ public class TileCompressorProviderTest {
                 null, //
                 null, //
                 null, //
-                header));
+                new HeaderAccess(header)));
         // lets see if we can call the no loss function with no errors even if
         // it has no effect.
         operationsOfImage.forceNoLoss(1, 1, 10, 10);
@@ -278,6 +290,108 @@ public class TileCompressorProviderTest {
                 testTileSizes(tileWidth, tileHeigth);
             }
         }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testFailedDecompression() throws Exception {
+        final ICompressorControl control = CompressorProvider.findCompressorControl(null, "GZIP_1", byte.class);
+        TiledImageCompressionOperation image = new TiledImageCompressionOperation(null) {
+
+            @Override
+            public ICompressOption compressOptions() {
+                return control.option();
+            }
+        };
+        final TileBuffer tileBuffer = TileBufferFactory.createTileBuffer((PrimitiveType) PrimitiveTypes.BYTE, 0, 10, 10, 10);
+        TileDecompressor tileDecompressor = new TileDecompressor(image, 1, new TileArea()) {
+
+            @Override
+            protected TileBuffer getTileBuffer() {
+                return tileBuffer;
+            }
+        };
+        tileDecompressor.setCompressed(new byte[10], null);
+        tileDecompressor.run();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void headerAccessExceptionIntTest() throws Exception {
+        HeaderAccess headerAccess = new HeaderAccess(new Header() {
+
+            @Override
+            public void addLine(HeaderCard fcard) {
+                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+            }
+        });
+        headerAccess.addValue(ZBITPIX, 32);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void headerAccessExceptionStringTest() throws Exception {
+        HeaderAccess headerAccess = new HeaderAccess(new Header() {
+
+            @Override
+            public void addLine(HeaderCard fcard) {
+                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+            }
+        });
+        headerAccess.addValue(ZCMPTYPE, "XXX");
+    }
+
+    @Test
+    public void headerCardAccessStringTest() {
+        HeaderCardAccess cardAccess = new HeaderCardAccess(ZCMPTYPE, "XXX");
+        cardAccess.addValue(ZCMPTYPE, "YYY");
+        Assert.assertEquals("YYY", cardAccess.findCard(ZCMPTYPE).getValue());
+        cardAccess = new HeaderCardAccess(ZCMPTYPE, "XXX");
+        cardAccess.addValue(ZCMPTYPE, 1);
+        Assert.assertEquals("1", cardAccess.findCard(ZCMPTYPE).getValue());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void headerCardAccessStringExceptionTest() {
+        new HeaderCardAccess(new IFitsHeader() {
+
+            @Override
+            public VALUE valueType() {
+                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+                return null;
+            }
+
+            @Override
+            public SOURCE status() {
+                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+                return null;
+            }
+
+            @Override
+            public IFitsHeader n(int... number) {
+                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+                return null;
+            }
+
+            @Override
+            public String key() {
+                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+                return null;
+            }
+
+            @Override
+            public HDU hdu() {
+                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+                return null;
+            }
+
+            @Override
+            public String comment() {
+                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+                return null;
+            }
+        }, "XXX");
+    }
+
+    private static <E extends Throwable> void throwAny(Throwable e) throws E {
+        throw (E) e;
     }
 
     private void testTileSizes(int tileWidth, int tileHeigth) throws HeaderCardException, FitsException {

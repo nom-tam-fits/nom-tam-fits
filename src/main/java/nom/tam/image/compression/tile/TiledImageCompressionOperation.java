@@ -56,15 +56,16 @@ import java.util.concurrent.ExecutorService;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardBuilder;
-import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.provider.CompressorProvider;
+import nom.tam.fits.compression.provider.param.api.HeaderAccess;
+import nom.tam.fits.compression.provider.param.api.HeaderCardAccess;
 import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
 import nom.tam.image.tile.operation.AbstractTiledImageOperation;
 import nom.tam.image.tile.operation.TileArea;
@@ -214,7 +215,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
                 getNullableColumn(header, Object[].class, UNCOMPRESSED_DATA_COLUMN), //
                 getNullableColumn(header, Object[].class, COMPRESSED_DATA_COLUMN), //
                 getNullableColumn(header, Object[].class, GZIP_COMPRESSED_DATA_COLUMN), //
-                header));
+                new HeaderAccess(header)));
         byte[][] nullPixels = getNullableColumn(header, byte[][].class, NULL_PIXEL_MASK_COLUMN);
         if (nullPixels != null) {
             preserveNulls(0L, header.getStringValue(ZMASKCMP)).setColumn(nullPixels);
@@ -302,7 +303,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     }
 
     private void readCompressionHeaders(Header header) {
-        compressOptions().getCompressionParameters().getValuesFromHeader(header);
+        compressOptions().getCompressionParameters().getValuesFromHeader(new HeaderAccess(header));
     }
 
     private void readTileAxis(Header header) throws FitsException {
@@ -363,7 +364,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         for (int i = 1; i <= tileAxes.length; i++) {
             cardBuilder.card(ZTILEn.n(i)).value(tileAxes[i - 1]);
         }
-        compressOptions().getCompressionParameters().setValuesInHeader(header);
+        compressOptions().getCompressionParameters().setValuesInHeader(new HeaderAccess(header));
         if (this.imageNullPixelMask != null) {
             cardBuilder.card(ZMASKCMP).value(this.imageNullPixelMask.getCompressAlgorithm());
         }
@@ -377,19 +378,9 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         return this.imageNullPixelMask;
     }
 
-    /**
-     * very bad design but necessary for now. we need deep access to an
-     * parameter.
-     */
     protected void initializeQuantAlgorithm() {
         if (this.quantAlgorithm != null) {
-            try {
-                Header header = new Header();
-                header.addValue(ZQUANTIZ, this.quantAlgorithm);
-                this.imageOptions.getCompressionParameters().getValuesFromHeader(header);
-            } catch (HeaderCardException e) {
-                throw new IllegalStateException("this should not happen", e);
-            }
+            this.imageOptions.getCompressionParameters().getValuesFromHeader(new HeaderCardAccess(ZQUANTIZ, this.quantAlgorithm));
         }
     }
 

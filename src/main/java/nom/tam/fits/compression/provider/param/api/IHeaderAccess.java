@@ -1,4 +1,4 @@
-package nom.tam.fits.compression.provider.param.quant;
+package nom.tam.fits.compression.provider.param.api;
 
 /*
  * #%L
@@ -32,37 +32,16 @@ package nom.tam.fits.compression.provider.param.quant;
  */
 
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
-import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
-import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
-import nom.tam.fits.header.Compression;
+import nom.tam.fits.header.IFitsHeader;
 
-final class ZBlankParameter extends CompressHeaderParameter<QuantizeOption> {
+public interface IHeaderAccess {
 
-    /**
-     * @param quantizeOption
-     */
-    ZBlankParameter(QuantizeOption quantizeOption) {
-        super(Compression.ZBLANK.name(), quantizeOption);
-    }
+    void addValue(IFitsHeader key, int value);
 
-    @Override
-    public void getValueFromHeader(IHeaderAccess header) {
-        HeaderCard value = header.findCard(getName());
-        if (value != null) {
-            getOption().setBNull(value.getValue(Integer.class, getOption().getBNull()));
-        }
-    }
+    void addValue(IFitsHeader key, String value);
 
-    @Override
-    public void setValueInHeader(IHeaderAccess header) {
-        Integer bNull = getOption().getBNull();
-        if (bNull != null) {
-            header.addValue(Compression.ZBLANK, bNull);
-        }
-    }
+    HeaderCard findCard(IFitsHeader key);
 
-    protected boolean isActive() {
-        return getOption().getOriginal() == null;
-    }
+    HeaderCard findCard(String key);
+
 }

@@ -34,8 +34,8 @@ package nom.tam.image.compression.tile;
 import static nom.tam.image.compression.tile.TileCompressionType.COMPRESSED;
 import static nom.tam.image.compression.tile.TileCompressionType.GZIP_COMPRESSED;
 import static nom.tam.image.compression.tile.TileCompressionType.UNCOMPRESSED;
-import nom.tam.fits.Header;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.image.tile.operation.ITileOperationInitialisation;
 import nom.tam.image.tile.operation.TileArea;
 
@@ -47,14 +47,14 @@ final class TileDecompressorInitialisation implements ITileOperationInitialisati
 
     private final Object[] gzipCompressed;
 
-    private final Header header;
+    private final IHeaderAccess header;
 
     private final TiledImageCompressionOperation imageTilesOperation;
 
     private int compressedOffset = 0;
 
     protected TileDecompressorInitialisation(TiledImageCompressionOperation imageTilesOperation, Object[] uncompressed, Object[] compressed, Object[] gzipCompressed,
-            Header header) {
+            IHeaderAccess header) {
         this.imageTilesOperation = imageTilesOperation;
         this.uncompressed = uncompressed;
         this.compressed = compressed;

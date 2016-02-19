@@ -60,16 +60,12 @@ public class TileCompressor extends TileCompressionOperation {
      */
     private void compactCompressedData() {
         if (getTileIndex() > 0) {
-            try {
-                // wait for the previous tile to finish.
-                getPreviousTileOperation().waitForResult();
-                ByteBuffer compressedWholeArea = getCompressedWholeArea();
-                this.compressedOffset = compressedWholeArea.position();
-                PrimitiveTypes.BYTE.appendBuffer(compressedWholeArea, this.compressedData);
-                replaceCompressedBufferWithTargetArea(compressedWholeArea);
-            } catch (Exception e) {
-                throw new IllegalStateException("could not compact compressed data", e);
-            }
+            // wait for the previous tile to finish.
+            getPreviousTileOperation().waitForResult();
+            ByteBuffer compressedWholeArea = getCompressedWholeArea();
+            this.compressedOffset = compressedWholeArea.position();
+            PrimitiveTypes.BYTE.appendBuffer(compressedWholeArea, this.compressedData);
+            replaceCompressedBufferWithTargetArea(compressedWholeArea);
         } else {
             this.compressedOffset = 0;
             getCompressedWholeArea().position(this.compressedData.limit());

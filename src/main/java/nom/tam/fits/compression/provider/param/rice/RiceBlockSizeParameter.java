@@ -31,10 +31,9 @@ package nom.tam.fits.compression.provider.param.rice;
  * #L%
  */
 
-import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
@@ -45,7 +44,7 @@ public final class RiceBlockSizeParameter extends CompressHeaderParameter<RiceCo
     }
 
     @Override
-    public void getValueFromHeader(Header header) {
+    public void getValueFromHeader(IHeaderAccess header) {
         HeaderCard value = super.findZVal(header);
         if (value != null) {
             getOption().setBlockSize(value.getValue(Integer.class, RiceCompressOption.DEFAULT_RICE_BLOCKSIZE));
@@ -55,7 +54,7 @@ public final class RiceBlockSizeParameter extends CompressHeaderParameter<RiceCo
     }
 
     @Override
-    public void setValueInHeader(Header header) throws HeaderCardException {
+    public void setValueInHeader(IHeaderAccess header) {
         int zvalIndex = nextFreeZVal(header);
         header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
         header.addValue(Compression.ZVALn.n(zvalIndex), getOption().getBlockSize());

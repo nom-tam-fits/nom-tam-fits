@@ -33,9 +33,9 @@ package nom.tam.fits.compression.provider.param.base;
 
 import static nom.tam.fits.header.Compression.ZNAMEn;
 import static nom.tam.fits.header.Compression.ZVALn;
-import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 
 public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<OPTION> implements ICompressHeaderParameter {
 
@@ -43,7 +43,7 @@ public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<
         super(name, option);
     }
 
-    public HeaderCard findZVal(Header header) {
+    public HeaderCard findZVal(IHeaderAccess header) {
         int nval = 1;
         HeaderCard card = header.findCard(ZNAMEn.n(nval));
         while (card != null) {
@@ -55,7 +55,7 @@ public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<
         return null;
     }
 
-    public int nextFreeZVal(Header header) {
+    public int nextFreeZVal(IHeaderAccess header) {
         int nval = 1;
         HeaderCard card = header.findCard(ZNAMEn.n(nval));
         while (card != null) {

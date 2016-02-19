@@ -45,6 +45,7 @@ import nom.tam.fits.compression.algorithm.hcompress.HCompressor.DoubleHCompresso
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.FloatHCompressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.IntHCompressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.ShortHCompressor;
+import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.header.Compression;
 import nom.tam.util.ArrayFuncs;
@@ -443,7 +444,7 @@ public class HCompressTest {
         header.addValue(Compression.ZVALn.n(1).key(), 1, null);
         header.addValue(Compression.ZNAMEn.n(2).key(), Compression.SMOOTH, null);
         header.addValue(Compression.ZVALn.n(2).key(), 1, null);
-        option.getCompressionParameters().getValuesFromHeader(header);
+        option.getCompressionParameters().getValuesFromHeader(new HeaderAccess(header));
 
         Assert.assertTrue(option.isSmooth());
         Assert.assertEquals(1, option.getScale());

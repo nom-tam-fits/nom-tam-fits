@@ -34,12 +34,13 @@ package nom.tam.fits.compression.provider.param.base;
 import static nom.tam.fits.header.Standard.TTYPEn;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 
 public abstract class CompressParameters implements ICompressParameters {
 
@@ -53,20 +54,6 @@ public abstract class CompressParameters implements ICompressParameters {
         }
     }
 
-    protected ICompressColumnParameter[] columnParameters() {
-        return new ICompressColumnParameter[0];
-    }
-
-    private Object getNullableColumn(Header header, BinaryTable binaryTable, String columnName) throws FitsException {
-        for (int i = 1; i <= binaryTable.getNCols(); i++) {
-            String val = header.getStringValue(TTYPEn.n(i));
-            if (val != null && val.trim().equals(columnName)) {
-                return binaryTable.getColumn(i - 1);
-            }
-        }
-        return null;
-    }
-
     @Override
     public void getValuesFromColumn(int index) {
         for (ICompressColumnParameter parameter : columnParameters()) {
@@ -75,16 +62,14 @@ public abstract class CompressParameters implements ICompressParameters {
     }
 
     @Override
-    public void getValuesFromHeader(Header header) {
+    public void getValuesFromHeader(IHeaderAccess header) {
         for (ICompressHeaderParameter compressionParameter : headerParameters()) {
             compressionParameter.getValueFromHeader(header);
         }
     }
 
-    protected abstract ICompressHeaderParameter[] headerParameters();
-
     @Override
-    public void initializeColumns(Header header, BinaryTable binaryTable, int size) throws FitsException {
+    public void initializeColumns(IHeaderAccess header, BinaryTable binaryTable, int size) throws FitsException {
         for (ICompressColumnParameter parameter : columnParameters()) {
             parameter.column(getNullableColumn(header, binaryTable, parameter.getName()), size);
         }
@@ -105,9 +90,25 @@ public abstract class CompressParameters implements ICompressParameters {
     }
 
     @Override
-    public void setValuesInHeader(Header header) throws HeaderCardException {
+    public void setValuesInHeader(IHeaderAccess header) throws HeaderCardException {
         for (ICompressHeaderParameter parameter : headerParameters()) {
             parameter.setValueInHeader(header);
         }
     }
+
+    private Object getNullableColumn(IHeaderAccess header, BinaryTable binaryTable, String columnName) throws FitsException {
+        for (int i = 1; i <= binaryTable.getNCols(); i++) {
+            HeaderCard card = header.findCard(TTYPEn.n(i));
+            if (card != null && card.getValue().trim().equals(columnName)) {
+                return binaryTable.getColumn(i - 1);
+            }
+        }
+        return null;
+    }
+
+    protected ICompressColumnParameter[] columnParameters() {
+        return new ICompressColumnParameter[0];
+    }
+
+    protected abstract ICompressHeaderParameter[] headerParameters();
 }

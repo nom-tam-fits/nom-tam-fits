@@ -1,4 +1,4 @@
-package nom.tam.fits.compression.provider.param.quant;
+package nom.tam.fits.compression.provider.param.api;
 
 /*
  * #%L
@@ -32,37 +32,45 @@ package nom.tam.fits.compression.provider.param.quant;
  */
 
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
-import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
-import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
-import nom.tam.fits.header.Compression;
+import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.header.IFitsHeader;
 
-final class ZBlankParameter extends CompressHeaderParameter<QuantizeOption> {
+public class HeaderCardAccess implements IHeaderAccess {
 
-    /**
-     * @param quantizeOption
-     */
-    ZBlankParameter(QuantizeOption quantizeOption) {
-        super(Compression.ZBLANK.name(), quantizeOption);
-    }
+    private final HeaderCard headerCard;
 
-    @Override
-    public void getValueFromHeader(IHeaderAccess header) {
-        HeaderCard value = header.findCard(getName());
-        if (value != null) {
-            getOption().setBNull(value.getValue(Integer.class, getOption().getBNull()));
+    public HeaderCardAccess(IFitsHeader headerCard, String value) {
+        try {
+            this.headerCard = new HeaderCard(headerCard.key(), value, null);
+        } catch (HeaderCardException e) {
+            throw new IllegalArgumentException("header card could not be created");
         }
     }
 
     @Override
-    public void setValueInHeader(IHeaderAccess header) {
-        Integer bNull = getOption().getBNull();
-        if (bNull != null) {
-            header.addValue(Compression.ZBLANK, bNull);
+    public void addValue(IFitsHeader key, int value) {
+        if (this.headerCard.getKey().equals(key.key())) {
+            this.headerCard.setValue(value);
         }
     }
 
-    protected boolean isActive() {
-        return getOption().getOriginal() == null;
+    @Override
+    public void addValue(IFitsHeader key, String value) {
+        if (this.headerCard.getKey().equals(key.key())) {
+            this.headerCard.setValue(value);
+        }
+    }
+
+    @Override
+    public HeaderCard findCard(IFitsHeader key) {
+        return findCard(key.key());
+    }
+
+    @Override
+    public HeaderCard findCard(String key) {
+        if (this.headerCard.getKey().equals(key)) {
+            return this.headerCard;
+        }
+        return null;
     }
 }

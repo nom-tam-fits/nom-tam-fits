@@ -41,6 +41,7 @@ import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ByteRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.IntRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompressor;
+import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
 import nom.tam.fits.header.Compression;
 import nom.tam.util.type.PrimitiveTypes;
@@ -75,7 +76,7 @@ public class RiceCompressTest {
         header.addValue(Compression.ZVALn.n(1).key(), 32, null);
         header.addValue(Compression.ZNAMEn.n(2).key(), Compression.BYTEPIX, null);
         header.addValue(Compression.ZVALn.n(2).key(), 16, null);
-        option.getCompressionParameters().getValuesFromHeader(header);
+        option.getCompressionParameters().getValuesFromHeader(new HeaderAccess(header));
 
         Assert.assertEquals(32, option.getBlockSize());
         Assert.assertEquals(16, option.getBytePix());

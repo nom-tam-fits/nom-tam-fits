@@ -40,128 +40,6 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
 
 public class QuantizeProcessor {
 
-    private class BaseFilter extends PixelFilter {
-
-        BaseFilter() {
-            super(null);
-        }
-
-        @Override
-        protected void nextPixel() {
-        }
-
-        @Override
-        protected double toDouble(int pixel) {
-            return (pixel + ROUNDING_HALF) * QuantizeProcessor.this.bScale + QuantizeProcessor.this.bZero;
-        }
-
-        @Override
-        protected int toInt(double pixel) {
-            return nint((pixel - QuantizeProcessor.this.bZero) / QuantizeProcessor.this.bScale + ROUNDING_HALF);
-        }
-    }
-
-    private class DitherFilter extends PixelFilter {
-
-        private static final int LAST_RANDOM_VALUE = 1043618065;
-
-        private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
-
-        /**
-         * DO NOT CHANGE THIS; used when quantizing real numbers
-         */
-        private static final int N_RANDOM = 10000;
-
-        private static final int RANDOM_MULTIPLICATOR = 500;
-
-        private static final double RANDOM_START_VALUE = 16807.0;
-
-        private int iseed = 0;
-
-        private int nextRandom = 0;
-
-        private final double[] randomValues;
-
-        DitherFilter(long seed) {
-            super(null);
-            this.randomValues = initRandoms();
-            initialize(seed);
-        }
-
-        public void initialize(long ditherSeed) {
-            this.iseed = (int) ((ditherSeed - 1) % N_RANDOM);
-            this.nextRandom = (int) (this.randomValues[this.iseed] * RANDOM_MULTIPLICATOR);
-        }
-
-        private double[] initRandoms() {
-
-            /* initialize an tiledImageOperation of random numbers */
-
-            int ii;
-            double a = RANDOM_START_VALUE;
-            double m = MAX_INT_AS_DOUBLE;
-            double temp;
-            double seed;
-
-            /* allocate tiledImageOperation for the random number sequence */
-            double[] randomValue = new double[N_RANDOM];
-
-            /*
-             * We need a portable algorithm that anyone can use to generate this
-             * exact same sequence of random number. The C 'rand' function is
-             * not suitable because it is not available to Fortran or Java
-             * programmers. Instead, use a well known simple algorithm published
-             * here: "Random number generators: good ones are hard to find",
-             * Communications of the ACM, Volume 31 , Issue 10 (October 1988)
-             * Pages: 1192 - 1201
-             */
-
-            /* initialize the random numbers */
-            seed = 1;
-            for (ii = 0; ii < N_RANDOM; ii++) {
-                temp = a * seed;
-                seed = temp - m * (int) (temp / m);
-                randomValue[ii] = seed / m;
-            }
-
-            /*
-             * IMPORTANT NOTE: the 10000th seed value must have the value
-             * 1043618065 if the algorithm has been implemented correctly
-             */
-
-            if ((int) seed != LAST_RANDOM_VALUE) {
-                throw new IllegalArgumentException("randomValue generated incorrect random number sequence");
-            }
-            return randomValue;
-        }
-
-        @Override
-        protected void nextPixel() {
-            this.nextRandom++;
-            if (this.nextRandom == N_RANDOM) {
-                this.iseed++;
-                if (this.iseed == N_RANDOM) {
-                    this.iseed = 0;
-                }
-                this.nextRandom = (int) (this.randomValues[this.iseed] * RANDOM_MULTIPLICATOR);
-            }
-        }
-
-        public double nextRandom() {
-            return this.randomValues[this.nextRandom];
-        }
-
-        @Override
-        protected double toDouble(int pixel) {
-            return (pixel - nextRandom() + ROUNDING_HALF) * QuantizeProcessor.this.bScale + QuantizeProcessor.this.bZero;
-        }
-
-        @Override
-        protected int toInt(double pixel) {
-            return nint((pixel - QuantizeProcessor.this.bZero) / QuantizeProcessor.this.bScale + nextRandom() - ROUNDING_HALF);
-        }
-    }
-
     public static class DoubleQuantCompressor extends QuantizeProcessor implements ICompressor<DoubleBuffer> {
 
         private final ICompressor<IntBuffer> postCompressor;
@@ -233,6 +111,128 @@ public class QuantizeProcessor {
             for (double d : doubles) {
                 buffer.put((float) d);
             }
+        }
+    }
+
+    private class BaseFilter extends PixelFilter {
+
+        BaseFilter() {
+            super(null);
+        }
+
+        @Override
+        protected void nextPixel() {
+        }
+
+        @Override
+        protected double toDouble(int pixel) {
+            return (pixel + ROUNDING_HALF) * QuantizeProcessor.this.bScale + QuantizeProcessor.this.bZero;
+        }
+
+        @Override
+        protected int toInt(double pixel) {
+            return nint((pixel - QuantizeProcessor.this.bZero) / QuantizeProcessor.this.bScale + ROUNDING_HALF);
+        }
+    }
+
+    private class DitherFilter extends PixelFilter {
+
+        private static final int LAST_RANDOM_VALUE = 1043618065;
+
+        private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
+
+        /**
+         * DO NOT CHANGE THIS; used when quantizing real numbers
+         */
+        private static final int N_RANDOM = 10000;
+
+        private static final int RANDOM_MULTIPLICATOR = 500;
+
+        private static final double RANDOM_START_VALUE = 16807.0;
+
+        private int iseed = 0;
+
+        private int nextRandom = 0;
+
+        private final double[] randomValues;
+
+        DitherFilter(long seed) {
+            super(null);
+            this.randomValues = initRandoms();
+            initialize(seed);
+        }
+
+        public void initialize(long ditherSeed) {
+            this.iseed = (int) ((ditherSeed - 1) % N_RANDOM);
+            this.nextRandom = (int) (this.randomValues[this.iseed] * RANDOM_MULTIPLICATOR);
+        }
+
+        public double nextRandom() {
+            return this.randomValues[this.nextRandom];
+        }
+
+        private double[] initRandoms() {
+
+            /* initialize an tiledImageOperation of random numbers */
+
+            int ii;
+            double a = RANDOM_START_VALUE;
+            double m = MAX_INT_AS_DOUBLE;
+            double temp;
+            double seed;
+
+            /* allocate tiledImageOperation for the random number sequence */
+            double[] randomValue = new double[N_RANDOM];
+
+            /*
+             * We need a portable algorithm that anyone can use to generate this
+             * exact same sequence of random number. The C 'rand' function is
+             * not suitable because it is not available to Fortran or Java
+             * programmers. Instead, use a well known simple algorithm published
+             * here: "Random number generators: good ones are hard to find",
+             * Communications of the ACM, Volume 31 , Issue 10 (October 1988)
+             * Pages: 1192 - 1201
+             */
+
+            /* initialize the random numbers */
+            seed = 1;
+            for (ii = 0; ii < N_RANDOM; ii++) {
+                temp = a * seed;
+                seed = temp - m * (int) (temp / m);
+                randomValue[ii] = seed / m;
+            }
+
+            /*
+             * IMPORTANT NOTE: the 10000th seed value must have the value
+             * 1043618065 if the algorithm has been implemented correctly
+             */
+
+            if ((int) seed != LAST_RANDOM_VALUE) {
+                throw new IllegalArgumentException("randomValue generated incorrect random number sequence");
+            }
+            return randomValue;
+        }
+
+        @Override
+        protected void nextPixel() {
+            this.nextRandom++;
+            if (this.nextRandom >= N_RANDOM) {
+                this.iseed++;
+                if (this.iseed >= N_RANDOM) {
+                    this.iseed = 0;
+                }
+                this.nextRandom = (int) (this.randomValues[this.iseed] * RANDOM_MULTIPLICATOR);
+            }
+        }
+
+        @Override
+        protected double toDouble(int pixel) {
+            return (pixel - nextRandom() + ROUNDING_HALF) * QuantizeProcessor.this.bScale + QuantizeProcessor.this.bZero;
+        }
+
+        @Override
+        protected int toInt(double pixel) {
+            return nint((pixel - QuantizeProcessor.this.bZero) / QuantizeProcessor.this.bScale + nextRandom() - ROUNDING_HALF);
         }
     }
 
@@ -385,24 +385,8 @@ public class QuantizeProcessor {
         this.centerOnZero = localCenterOnZero;
     }
 
-    private void calculateBZeroAndBscale() {
-        this.bScale = this.quantizeOption.getBScale();
-        if (Double.isNaN(this.quantizeOption.getBZero())) {
-            this.bZero = zeroCenter();
-            this.quantizeOption.setIntMinValue(nint((this.quantizeOption.getMinValue() - this.bZero) / this.bScale));
-            this.quantizeOption.setIntMaxValue(nint((this.quantizeOption.getMaxValue() - this.bZero) / this.bScale));
-            this.quantizeOption.setBZero(this.bZero);
-        } else {
-            this.bZero = this.quantizeOption.getBZero();
-        }
-    }
-
     public Quantize getQuantize() {
         return this.quantize;
-    }
-
-    private int nint(double x) {
-        return x >= 0. ? (int) (x + ROUNDING_HALF) : (int) (x - ROUNDING_HALF);
     }
 
     public boolean quantize(double[] doubles, IntBuffer quants) {
@@ -426,6 +410,22 @@ public class QuantizeProcessor {
             fdata.put(this.pixelFilter.toDouble(intData.get()));
             this.pixelFilter.nextPixel();
         }
+    }
+
+    private void calculateBZeroAndBscale() {
+        this.bScale = this.quantizeOption.getBScale();
+        if (Double.isNaN(this.quantizeOption.getBZero())) {
+            this.bZero = zeroCenter();
+            this.quantizeOption.setIntMinValue(nint((this.quantizeOption.getMinValue() - this.bZero) / this.bScale));
+            this.quantizeOption.setIntMaxValue(nint((this.quantizeOption.getMaxValue() - this.bZero) / this.bScale));
+            this.quantizeOption.setBZero(this.bZero);
+        } else {
+            this.bZero = this.quantizeOption.getBZero();
+        }
+    }
+
+    private int nint(double x) {
+        return x >= 0. ? (int) (x + ROUNDING_HALF) : (int) (x - ROUNDING_HALF);
     }
 
     private double zeroCenter() {

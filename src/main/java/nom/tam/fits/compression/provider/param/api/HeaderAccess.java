@@ -1,4 +1,4 @@
-package nom.tam.fits.compression.provider.param.quant;
+package nom.tam.fits.compression.provider.param.api;
 
 /*
  * #%L
@@ -31,38 +31,57 @@ package nom.tam.fits.compression.provider.param.quant;
  * #L%
  */
 
+import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
-import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
-import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
-import nom.tam.fits.header.Compression;
+import nom.tam.fits.HeaderCardBuilder;
+import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.header.IFitsHeader;
 
-final class ZBlankParameter extends CompressHeaderParameter<QuantizeOption> {
+public class HeaderAccess implements IHeaderAccess {
 
-    /**
-     * @param quantizeOption
-     */
-    ZBlankParameter(QuantizeOption quantizeOption) {
-        super(Compression.ZBLANK.name(), quantizeOption);
+    private final Header header;
+
+    private HeaderCardBuilder builder;
+
+    public HeaderAccess(Header header) {
+        this.header = header;
     }
 
     @Override
-    public void getValueFromHeader(IHeaderAccess header) {
-        HeaderCard value = header.findCard(getName());
-        if (value != null) {
-            getOption().setBNull(value.getValue(Integer.class, getOption().getBNull()));
+    public void addValue(IFitsHeader key, int value) {
+        try {
+            card(key).value(value);
+        } catch (HeaderCardException e) {
+            throw new IllegalArgumentException("header card could not be created");
         }
     }
 
     @Override
-    public void setValueInHeader(IHeaderAccess header) {
-        Integer bNull = getOption().getBNull();
-        if (bNull != null) {
-            header.addValue(Compression.ZBLANK, bNull);
+    public void addValue(IFitsHeader key, String value) {
+        try {
+            card(key).value(value);
+        } catch (HeaderCardException e) {
+            throw new IllegalArgumentException("header card could not be created");
         }
     }
 
-    protected boolean isActive() {
-        return getOption().getOriginal() == null;
+    @Override
+    public HeaderCard findCard(IFitsHeader key) {
+        return this.header.findCard(key);
     }
+
+    @Override
+    public HeaderCard findCard(String key) {
+        return this.header.findCard(key);
+    }
+
+    private HeaderCardBuilder card(IFitsHeader key) {
+        if (this.builder == null) {
+            this.builder = this.header.card(key);
+            return this.builder;
+        } else {
+            return this.builder.card(key);
+        }
+    }
+
 }

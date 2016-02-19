@@ -32,14 +32,23 @@ package nom.tam.fits.compression.algorithm.quant;
  */
 
 import java.io.RandomAccessFile;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.FloatQuantCompressor;
+import nom.tam.fits.compression.provider.param.api.HeaderAccess;
+import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.quant.QuantizeParameters;
 import nom.tam.fits.header.Compression;
@@ -52,15 +61,27 @@ public class QuantizeTest {
 
     static class QuantizeTestParameters extends QuantizeParameters {
 
+        boolean allowCopy = false;
+
         public QuantizeTestParameters(QuantizeOption option) {
             super(option);
         }
 
         @Override
         public ICompressParameters copy(ICompressOption option) {
-            return this;
+            return copyColumnDetails(new QuantizeTestParameters((QuantizeOption) option));
         }
 
+        @Override
+        public ICompressHeaderParameter[] headerParameters() {
+            return super.headerParameters();
+        }
+
+        protected void initializeTestColumn() {
+            for (ICompressColumnParameter columnParameter : columnParameters()) {
+                columnParameter.setValueInColumn(0);
+            }
+        }
     }
 
     private static final double NULL_VALUE = -9.1191291391491004e-36;
@@ -613,7 +634,7 @@ public class QuantizeTest {
 
         Header header = new Header();
         header.addValue(Compression.ZQUANTIZ, Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2);
-        option.getCompressionParameters().getValuesFromHeader(header);
+        option.getCompressionParameters().getValuesFromHeader(new HeaderAccess(header));
         Assert.assertTrue(option.isDither2());
         Assert.assertTrue(option.isDither());
         option = new QuantizeOption();
@@ -625,7 +646,7 @@ public class QuantizeTest {
         option.setParameters(new QuantizeTestParameters(option));
         header = new Header();
         header.addValue(Compression.ZQUANTIZ, Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1);
-        option.getCompressionParameters().getValuesFromHeader(header);
+        option.getCompressionParameters().getValuesFromHeader(new HeaderAccess(header));
 
         Assert.assertFalse(option.isDither2());
         Assert.assertTrue(option.isDither());
@@ -705,4 +726,82 @@ public class QuantizeTest {
 
         }
     }
+
+    @Test
+    public void testQuant1FloatFail() throws Exception {
+        QuantizeOption quantizeOption = new QuantizeOption();
+        FloatQuantCompressor floatQuantCompressor = new FloatQuantCompressor(quantizeOption, null);
+        Assert.assertFalse(floatQuantCompressor.compress(FloatBuffer.wrap(new float[4]), ByteBuffer.wrap(new byte[100])));
+    }
+
+    @Test
+    public void testQuantParameters() throws Exception {
+        QuantizeOption baseOption = new QuantizeOption();
+        QuantizeTestParameters base = new QuantizeTestParameters(baseOption);
+        baseOption.setParameters(base);
+        Assert.assertEquals(2, base.headerParameters().length);
+
+        QuantizeOption optionCopy = baseOption.copy();
+        QuantizeTestParameters parameters = (QuantizeTestParameters) optionCopy.getCompressionParameters();
+        Assert.assertEquals(1, parameters.headerParameters().length);
+
+        optionCopy.setBNull(99);
+
+        base.initializeColumns(2);
+        parameters.initializeTestColumn();
+        parameters.getValuesFromColumn(0);
+        base.getValuesFromColumn(0);
+
+        FitsFactory.setUseAsciiTables(false);
+
+        BinaryTableHDU hdu = (BinaryTableHDU) FitsFactory.hduFactory(new String[2][3][3]);
+        base.addColumnsToTable(hdu);
+        int[] column = (int[]) hdu.getColumn(Compression.ZBLANK_COLUMN);
+        Assert.assertArrayEquals(new int[]{
+            99,
+            0
+        }, column);
+
+        baseOption.setDither(false);
+        base.setValuesInHeader(new HeaderAccess(hdu.getHeader()));
+        Assert.assertEquals(Compression.ZQUANTIZ_NO_DITHER, hdu.getHeader().getStringValue(Compression.ZQUANTIZ));
+
+        baseOption.setDither(true);
+        baseOption.setDither2(false);
+        base.setValuesInHeader(new HeaderAccess(hdu.getHeader()));
+        Assert.assertEquals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1, hdu.getHeader().getStringValue(Compression.ZQUANTIZ));
+    }
+
+    @Test
+    public void testQuantProcessor() throws Exception {
+        QuantizeOption baseOption = new QuantizeOption();
+        baseOption.setDither(true);
+        baseOption.setDither2(false);
+
+        QuantizeProcessor processor = new QuantizeProcessor(baseOption);
+        Field declaredField = QuantizeProcessor.class.getDeclaredField("pixelFilter");
+        declaredField.setAccessible(true);
+        Object filter = declaredField.get(processor);
+        Method nextPixel = filter.getClass().getDeclaredMethod("nextPixel");
+
+        declaredField = filter.getClass().getDeclaredField("iseed");
+        declaredField.setAccessible(true);
+        declaredField.set(filter, 10000);
+
+        declaredField = filter.getClass().getDeclaredField("nextRandom");
+        declaredField.setAccessible(true);
+        declaredField.set(filter, 10000);
+
+        nextPixel.invoke(filter);
+
+        declaredField = filter.getClass().getDeclaredField("iseed");
+        declaredField.setAccessible(true);
+        Assert.assertEquals(Integer.valueOf(0), declaredField.get(filter));
+
+        declaredField = filter.getClass().getDeclaredField("nextRandom");
+        declaredField.setAccessible(true);
+        Assert.assertEquals(Integer.valueOf(0), declaredField.get(filter));
+
+    }
+
 }
