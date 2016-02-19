@@ -33,14 +33,15 @@ package nom.tam.fits.test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.BufferedFile;
@@ -159,6 +160,80 @@ public class UserProvidedTest {
                 }
             }
             Assert.assertEquals(10, hierarchKeys);
+        }
+    }
+
+    @Test
+    public void testMultidimentionalStringArray() throws FitsException, IOException {
+        try (Fits fits = new Fits(BlackBoxImages.getBlackBoxImage("map_one_source_a_level_1_cal.fits"))) {
+            BasicHDU<?> hdu = fits.getHDU(1);
+            nom.tam.fits.TableData data = (nom.tam.fits.TableData) hdu.getData();
+
+            StringBuilder builder = new StringBuilder("StringColumns:\n");
+            for (int i = 0; i < data.getNCols(); i++) {
+                printArray(data.getColumn(i), 0, builder);
+            }
+            Assert.assertEquals(
+                    "StringColumns:\n"//
+                            + "[2]\n"//
+                            + "[2]\n"//
+                            + "[S2]\n"//
+                            + "[S2]\n"//
+                            + "[2]\n"//
+                            + "[2]\n"//
+                            + "[2]\n"//
+                            + "[2]\n"//
+                            + "[2]\n"//
+                            + "[2]\n"//
+                            + "[2]\n"//
+                            + "[2]\n"//
+                            + "[\n"//
+                            + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
+                            + "]\n"//
+                            + "[\n"//
+                            + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
+                            + "]\n"//
+                            + "[\n"//
+                            + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
+                            + "]\n"//
+                            + "[\n"//
+                            + "[S3, S3, S3, S3]\n"//
+                            + "]\n"//
+                            + "[\n"//
+                            + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
+                            + "]\n"//
+                            + "[\n"//
+                            + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
+                            + "]\n"//
+                            + "[\n"//
+                            + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
+                            + "]\n"//
+                            + "[S2]\n"//
+                            + "[S2]\n", builder.toString());
+
+        }
+    }
+
+    private void printArray(Object array, int indent, StringBuilder builder) {
+        indent++;
+        if (array.getClass().isArray()) {
+            if (builder.charAt(builder.length() - 1) == '[') {
+                builder.append("\n");
+            }
+            builder.append("[");
+            int length = Array.getLength(array);
+            for (int index = 0; index < length; index++) {
+                if (index > 0) {
+                    builder.append(", ");
+                }
+                printArray(Array.get(array, index), indent, builder);
+            }
+            builder.append("]\n");
+        } else if (array instanceof String) {
+            builder.append("S");
+            builder.append(indent);
+        } else {
+            builder.append(indent);
         }
     }
 }
