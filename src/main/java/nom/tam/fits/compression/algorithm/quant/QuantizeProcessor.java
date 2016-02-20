@@ -414,14 +414,10 @@ public class QuantizeProcessor {
 
     private void calculateBZeroAndBscale() {
         this.bScale = this.quantizeOption.getBScale();
-        if (Double.isNaN(this.quantizeOption.getBZero())) {
-            this.bZero = zeroCenter();
-            this.quantizeOption.setIntMinValue(nint((this.quantizeOption.getMinValue() - this.bZero) / this.bScale));
-            this.quantizeOption.setIntMaxValue(nint((this.quantizeOption.getMaxValue() - this.bZero) / this.bScale));
-            this.quantizeOption.setBZero(this.bZero);
-        } else {
-            this.bZero = this.quantizeOption.getBZero();
-        }
+        this.bZero = zeroCenter();
+        this.quantizeOption.setIntMinValue(nint((this.quantizeOption.getMinValue() - this.bZero) / this.bScale));
+        this.quantizeOption.setIntMaxValue(nint((this.quantizeOption.getMaxValue() - this.bZero) / this.bScale));
+        this.quantizeOption.setBZero(this.bZero);
     }
 
     private int nint(double x) {

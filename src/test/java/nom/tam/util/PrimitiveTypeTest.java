@@ -157,6 +157,8 @@ public class PrimitiveTypeTest {
             expectedValue
         }).get());
         testGetPutArray(PrimitiveTypes.LONG, Long.valueOf(1), Long.valueOf(2));
+        
+        testAppedBuffer(PrimitiveTypes.LONG, expectedValue);
     }
 
     @Test

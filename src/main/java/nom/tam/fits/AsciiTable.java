@@ -335,7 +335,7 @@ public class AsciiTable extends AbstractTableData {
         } catch (FitsException e) {
             throw e;
         } catch (Exception e) {
-            throw new FitsException("Error deleting row:" + e.getMessage(), e);
+            throw new FitsException("Error addnig row:" + e.getMessage(), e);
         }
     }
 

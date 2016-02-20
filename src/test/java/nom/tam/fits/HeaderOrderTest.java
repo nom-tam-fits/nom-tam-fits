@@ -30,10 +30,21 @@ package nom.tam.fits;
  * OTHER DEALINGS IN THE SOFTWARE.
  * #L%
  */
+import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.BLOCKED;
+import static nom.tam.fits.header.Standard.END;
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.SIMPLE;
+import static nom.tam.fits.header.Standard.THEAP;
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import java.io.ByteArrayOutputStream;
 
+import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.BufferedDataOutputStream;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 public class HeaderOrderTest {
 
@@ -54,5 +65,34 @@ public class HeaderOrderTest {
     @Test
     public void compareWrongNaxisn() {
         assertEquals(-1, headerOrder.compare("NAXIS1", "NAXISn"));
+    }
+
+    /**
+     * test if the header order is corrected during the write, the THEAP keyword
+     * must be the last before the end.
+     */
+    @Test
+    public void headerOrder() throws Exception {
+        ArrayDataOutput dos = new BufferedDataOutputStream(new ByteArrayOutputStream(), 80);
+        Header header = new Header();
+        header.addValue(SIMPLE, true);
+        header.addValue(THEAP, 1);
+        header.addValue(BITPIX, 1);
+        header.addValue(NAXIS, 0);
+        header.addValue(END, true);
+        Assert.assertEquals(NAXIS.key(), header.iterator(3).next().getKey());
+        header.write(dos);
+        Assert.assertEquals(THEAP.key(), header.iterator(3).next().getKey());
+        header = new Header();
+        header.addValue(SIMPLE, true);
+        header.addValue(BITPIX, 1);
+        header.addValue(NAXIS, 0);
+        header.addValue(END, true);
+        header.addValue(THEAP, 1);
+        header.addValue(BLOCKED, 1);
+        Assert.assertEquals(END.key(), header.iterator(3).next().getKey());
+        header.write(dos);
+        Assert.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
+        Assert.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
     }
 }

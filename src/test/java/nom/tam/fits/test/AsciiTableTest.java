@@ -47,12 +47,12 @@ import nom.tam.fits.AsciiTable;
 import nom.tam.fits.AsciiTableHDU;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.TableHDU;
-import nom.tam.fits.FitsException;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
@@ -674,5 +674,38 @@ public class AsciiTableTest {
         hdu.deleteColumnsIndexOne(1, 0, new String[]{});
         assertEquals(5, hdu.getNCols());
         assertEquals(18, hdu.getHeader().size());
+    }
+
+    @Test
+    public void testAddRow() throws Exception {
+        AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
+        assertEquals(50, hdu.getNRows());
+        hdu.addRow(new Object[]{
+            new float[]{
+                1.5f
+            },
+            new int[]{
+                5
+            },
+            new long[]{
+                5L
+            },
+            new double[]{
+                5.6d
+            },
+            new String[]{
+                "EXTRA"
+            }
+        });
+        float[] floatColumn = ((float[]) hdu.getColumn(0));
+        assertEquals(1.5f, floatColumn[floatColumn.length - 1], 0.000000000000f);
+        String[] stringColumn = ((String[]) hdu.getColumn(4));
+        assertEquals("EXTRA", stringColumn[stringColumn.length - 1]);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testGetWrongColumnFormat() throws Exception {
+        AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
+        hdu.getColumnFormat(5);
     }
 }

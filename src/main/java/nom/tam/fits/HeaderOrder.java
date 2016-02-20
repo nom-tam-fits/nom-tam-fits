@@ -157,17 +157,6 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
         return 0;
     }
 
-    /**
-     * @return Can two cards be exchanged when being written out?
-     * @param a
-     *            first card
-     * @param b
-     *            second card
-     */
-    public boolean equals(String a, String b) {
-        return compare(a, b) == 0;
-    }
-
     /** Find the index for NAXISn keywords */
     private static int naxisN(String key) {
         int startOfNumber = NAXIS.key().length();
