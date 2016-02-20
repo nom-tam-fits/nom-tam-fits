@@ -40,12 +40,11 @@ import static nom.tam.util.FitsIO.BYTE_4_OF_LONG_MASK;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Header;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.Header;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.FitsIO;
@@ -63,9 +62,6 @@ public final class FitsCheckSum {
 
     private static final int CHECKSUM_HALF_BLOCK_SIZE = 2;
 
-    private FitsCheckSum() {
-    }
-
     /**
      * Calculate the Seaman-Pence 32-bit 1's complement checksum over the byte
      * stream. The option to start from an intermediate checksum accumulated
@@ -79,7 +75,7 @@ public final class FitsCheckSum {
      * assume for now that this routine here is never called to swallow FITS
      * files of that size or larger. by R J Mathar
      * {@link nom.tam.fits.header.Checksum#CHECKSUM}
-     * 
+     *
      * @param data
      *            the byte sequence
      * @return the 32bit checksum in the range from 0 to 2^32-1
@@ -118,12 +114,12 @@ public final class FitsCheckSum {
             hicarry = hi >>> FitsIO.BITS_OF_2_BYTES;
             locarry = lo >>> FitsIO.BITS_OF_2_BYTES;
         }
-        return (hi << FitsIO.BITS_OF_2_BYTES) | lo;
+        return hi << FitsIO.BITS_OF_2_BYTES | lo;
     }
 
     /**
      * Encode a 32bit integer according to the Seaman-Pence proposal.
-     * 
+     *
      * @see <a
      *      href="http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/node14.html#SECTION00035000000000000000">heasarc
      *      checksum doc</a>
@@ -196,7 +192,7 @@ public final class FitsCheckSum {
 
     /**
      * Add or update the CHECKSUM keyword. by R J Mathar
-     * 
+     *
      * @param hdu
      *            the HDU to be updated.
      * @throws FitsException
@@ -204,72 +200,72 @@ public final class FitsCheckSum {
      * @since 2005-10-05
      */
     public static void setChecksum(BasicHDU<?> hdu) throws FitsException {
-        /*
-         * the next line with the delete is needed to avoid some unexpected
-         * problems with non.tam.fits.Header.checkCard() which otherwise says it
-         * expected PCOUNT and found DATE.
-         */
-        Header hdr = hdu.getHeader();
-        hdr.deleteKey(CHECKSUM);
-        /*
-         * jThis would need org.nevec.utils.DateUtils compiled before
-         * org.nevec.prima.fits .... final String doneAt =
-         * DateUtils.dateToISOstring(0) ; We need to save the value of the
-         * comment string because this is becoming part of the checksum
-         * calculated and needs to be re-inserted again - with the same string -
-         * when the second/final call to addValue() is made below.
-         */
-        hdr.addValue(CHECKSUM, "0000000000000000");
-
-        /*
-         * Convert the entire sequence of 2880 byte header cards into a byte
-         * tiledImageOperation. The main benefit compared to the C implementations is that we
-         * do not need to worry about the particular byte order on machines
-         * (Linux/VAX/MIPS vs Hp-UX, Sparc...) supposed that the correct
-         * implementation is in the write() interface.
-         */
-        ByteArrayOutputStream hduByteImage = new ByteArrayOutputStream();
-        BufferedDataOutputStream bdos = new BufferedDataOutputStream(hduByteImage);
-
-        // DATASUM keyword.
-        hdu.getData().write(bdos);
         try {
+            /*
+             * the next line with the delete is needed to avoid some unexpected
+             * problems with non.tam.fits.Header.checkCard() which otherwise
+             * says it expected PCOUNT and found DATE.
+             */
+            Header hdr = hdu.getHeader();
+            hdr.deleteKey(CHECKSUM);
+            /*
+             * jThis would need org.nevec.utils.DateUtils compiled before
+             * org.nevec.prima.fits .... final String doneAt =
+             * DateUtils.dateToISOstring(0) ; We need to save the value of the
+             * comment string because this is becoming part of the checksum
+             * calculated and needs to be re-inserted again - with the same
+             * string - when the second/final call to addValue() is made below.
+             */
+            hdr.addValue(CHECKSUM, "0000000000000000");
+
+            /*
+             * Convert the entire sequence of 2880 byte header cards into a byte
+             * tiledImageOperation. The main benefit compared to the C
+             * implementations is that we do not need to worry about the
+             * particular byte order on machines (Linux/VAX/MIPS vs Hp-UX,
+             * Sparc...) supposed that the correct implementation is in the
+             * write() interface.
+             */
+            ByteArrayOutputStream hduByteImage = new ByteArrayOutputStream();
+            BufferedDataOutputStream bdos = new BufferedDataOutputStream(hduByteImage);
+            hdu.getData().write(bdos);
+
             bdos.flush();
-        } catch (IOException e) {
-            LOG.log(Level.SEVERE, "should not happen", e);
-        }
-        byte[] data = hduByteImage.toByteArray();
-        checksum(data);
-        hdu.write(new BufferedDataOutputStream(hduByteImage));
-        long csd = checksum(data);
-        hdu.getHeader().addValue(DATASUM, Long.toString(csd));
+            byte[] data = hduByteImage.toByteArray();
+            checksum(data);
+            hdu.write(new BufferedDataOutputStream(hduByteImage));
+            long csd = checksum(data);
+            hdu.getHeader().addValue(DATASUM, Long.toString(csd));
 
-        // We already have the checsum of the data. Lets compute it for
-        // the header.
-        hduByteImage.reset();
-        hdu.getHeader().write(bdos);
-        try {
+            // We already have the checksum of the data. Lets compute it for
+            // the header.
+            hduByteImage.reset();
+            hdu.getHeader().write(bdos);
+
             bdos.flush();
+            data = hduByteImage.toByteArray();
+
+            long csh = checksum(data);
+
+            long cshdu = csh + csd;
+            // If we had a carry it should go into the
+            // beginning.
+            while ((cshdu & FitsIO.HIGH_INTEGER_MASK) != 0) {
+                long cshduIntPart = cshdu & FitsIO.INTEGER_MASK;
+                cshdu = cshduIntPart + 1;
+            }
+            /*
+             * This time we do not use a deleteKey() to ensure that the keyword
+             * is replaced "in place". Note that the value of the checksum is
+             * actually independent to a permutation of the 80-byte records
+             * within the header.
+             */
+            hdr.addValue(CHECKSUM, checksumEnc(cshdu, true));
         } catch (IOException e) {
-            LOG.log(Level.SEVERE, "should not happen", e);
+            throw new FitsException("Could not calculate the checksum!", e);
         }
-        data = hduByteImage.toByteArray();
+    }
 
-        long csh = checksum(data);
-
-        long cshdu = csh + csd;
-        // If we had a carry it should go into the
-        // beginning.
-        while ((cshdu & FitsIO.HIGH_INTEGER_MASK) != 0) {
-            long cshduIntPart = cshdu & FitsIO.INTEGER_MASK;
-            cshdu = cshduIntPart + 1;
-        }
-        /*
-         * This time we do not use a deleteKey() to ensure that the keyword is
-         * replaced "in place". Note that the value of the checksum is actually
-         * independent to a permutation of the 80-byte records within the
-         * header.
-         */
-        hdr.addValue(CHECKSUM, checksumEnc(cshdu, true));
+    private FitsCheckSum() {
     }
 }

@@ -60,16 +60,12 @@ import nom.tam.fits.compression.provider.param.api.HeaderCardAccess;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
-import nom.tam.fits.header.IFitsHeader.HDU;
-import nom.tam.fits.header.IFitsHeader.SOURCE;
-import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.image.compression.hdu.CompressedImageData;
 import nom.tam.image.tile.operation.Access;
 import nom.tam.image.tile.operation.ITileOperationInitialisation;
 import nom.tam.image.tile.operation.TileArea;
 import nom.tam.image.tile.operation.buffer.TileBuffer;
 import nom.tam.image.tile.operation.buffer.TileBufferFactory;
-import nom.tam.util.test.BufferedFileTest;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypes;
 
@@ -388,6 +384,14 @@ public class TileCompressorProviderTest {
                 return null;
             }
         }, "XXX");
+    }
+
+    @Test
+    public void compressionTypeTest() {
+        Assert.assertEquals(3, TileCompressionType.values().length);
+        for (TileCompressionType type : TileCompressionType.values()) {
+            Assert.assertSame(type, TileCompressionType.valueOf(type.name()));
+        }
     }
 
     private static <E extends Throwable> void throwAny(Throwable e) throws E {

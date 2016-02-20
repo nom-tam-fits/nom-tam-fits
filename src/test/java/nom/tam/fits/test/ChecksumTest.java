@@ -35,10 +35,16 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
+import nom.tam.fits.Header;
+import nom.tam.fits.ImageData;
+import nom.tam.fits.ImageHDU;
+import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 
@@ -49,9 +55,13 @@ import org.junit.Test;
  */
 public class ChecksumTest {
 
-    @Test
-    public void testChecksum() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void testChecksumDataFail() throws Exception {
+        FitsCheckSum.checksum(new byte[999]);
+    }
 
+    @Test(expected = FitsException.class)
+    public void testChecksumDataFailException() throws Exception {
         int[][] data = new int[][]{
             {
                 1,
@@ -66,8 +76,40 @@ public class ChecksumTest {
                 6
             }
         };
+        ImageData d = ImageHDU.encapsulate(data);
+        Header h = ImageHDU.manufactureHeader(d);
+        BasicHDU<?> bhdu = new ImageHDU(h, d) {
+
+            @Override
+            public ImageData getData() {
+                BinaryTableTest.throwException(new IOException("fake"));
+                return null;
+            }
+        };
+        Fits.setChecksum(bhdu);
+
+    }
+
+    @Test
+    public void testChecksum() throws Exception {
         Fits f = new Fits();
-        BasicHDU<?> bhdu = FitsFactory.hduFactory(data);
+        int[][] data = new int[][]{
+            {
+                1,
+                2
+            },
+            {
+                3,
+                4
+            },
+            {
+                5,
+                6
+            }
+        };
+        BasicHDU<?> bhdu1 = FitsFactory.hduFactory(data);
+
+        BasicHDU<?> bhdu = bhdu1;
         f.addHDU(bhdu);
 
         Fits.setChecksum(bhdu);
