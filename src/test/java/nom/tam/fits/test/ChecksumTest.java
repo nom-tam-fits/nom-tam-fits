@@ -44,12 +44,14 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.Cursor;
 
 import org.junit.Test;
 
@@ -150,16 +152,21 @@ public class ChecksumTest {
 
     @Test
     public void testIntegerOverflowChecksum() throws Exception {
-        byte[][] data = new byte[2][2880];
+        byte[][] data = new byte[2][1440];
         Arrays.fill(data[0], (byte) 17); // this generates a high checksum.
         Arrays.fill(data[1], (byte) 17); // this generates a high checksum.
         ImageData imageData = ImageHDU.encapsulate(data);
         ImageHDU imageHdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
-        //now force no now date in the header (will change the checksum)
+        // now force no now date in the header (will change the checksum)
         imageHdu.card(Standard.SIMPLE).comment("XXX").value(true);
 
         FitsCheckSum.setChecksum(imageHdu);
-        //TODO: activate this
-     //   assertEquals("BUfWESeVBSeVBSeV", imageHdu.getHeader().card(CHECKSUM).card().getValue());
+        Cursor<String, HeaderCard> iter = imageHdu.getHeader().iterator();
+        while (iter.hasNext()) {
+            HeaderCard headerCard = iter.next();
+            System.out.println(headerCard);
+        }
+        // TODO: activate this
+      //  assertEquals("CVfXFTeVCTeVCTeV", imageHdu.getHeader().card(CHECKSUM).card().getValue());
     }
 }

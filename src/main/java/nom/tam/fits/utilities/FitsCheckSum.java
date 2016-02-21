@@ -242,7 +242,7 @@ public final class FitsCheckSum {
             hduByteImage.reset();
             hdu.getHeader().write(bdos);
             bdos.flush();
-
+            
             long csh = checksum(hduByteImage.toByteArray());
             
             long cshdu = csh + csd;
