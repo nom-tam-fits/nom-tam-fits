@@ -208,15 +208,19 @@ public final class FitsCheckSum {
              */
             Header hdr = hdu.getHeader();
             hdr.deleteKey(CHECKSUM);
+            hdr.deleteKey(DATASUM);
             /*
-             * jThis would need org.nevec.utils.DateUtils compiled before
-             * org.nevec.prima.fits .... final String doneAt =
-             * DateUtils.dateToISOstring(0) ; We need to save the value of the
-             * comment string because this is becoming part of the checksum
-             * calculated and needs to be re-inserted again - with the same
-             * string - when the second/final call to addValue() is made below.
+             * delete the keys to force rewriting of the ckecksum and update of
+             * the checksum comment
              */
             hdr.addValue(CHECKSUM, "0000000000000000");
+            hdr.addValue(DATASUM, "0");
+
+            // write the header to stream to get the cards sorted. no need to
+            // flush because we will ignore the data.
+            ByteArrayOutputStream hduByteImage = new ByteArrayOutputStream();
+            hdu.getHeader().write(new BufferedDataOutputStream(hduByteImage));
+            hduByteImage.reset();
 
             /*
              * Convert the entire sequence of 2880 byte header cards into a byte
@@ -226,27 +230,21 @@ public final class FitsCheckSum {
              * Sparc...) supposed that the correct implementation is in the
              * write() interface.
              */
-            ByteArrayOutputStream hduByteImage = new ByteArrayOutputStream();
             BufferedDataOutputStream bdos = new BufferedDataOutputStream(hduByteImage);
             hdu.getData().write(bdos);
-
             bdos.flush();
-            byte[] data = hduByteImage.toByteArray();
-            checksum(data);
-            hdu.write(new BufferedDataOutputStream(hduByteImage));
-            long csd = checksum(data);
-            hdu.getHeader().addValue(DATASUM, Long.toString(csd));
+            
+            long csd = checksum(hduByteImage.toByteArray());
+            hdu.getHeader().card(DATASUM).value(Long.toString(csd));
 
             // We already have the checksum of the data. Lets compute it for
             // the header.
             hduByteImage.reset();
             hdu.getHeader().write(bdos);
-
             bdos.flush();
-            data = hduByteImage.toByteArray();
 
-            long csh = checksum(data);
-
+            long csh = checksum(hduByteImage.toByteArray());
+            
             long cshdu = csh + csd;
             // If we had a carry it should go into the
             // beginning.
@@ -260,7 +258,7 @@ public final class FitsCheckSum {
              * actually independent to a permutation of the 80-byte records
              * within the header.
              */
-            hdr.addValue(CHECKSUM, checksumEnc(cshdu, true));
+            hdr.card(CHECKSUM).value(checksumEnc(cshdu, true));
         } catch (IOException e) {
             throw new FitsException("Could not calculate the checksum!", e);
         }

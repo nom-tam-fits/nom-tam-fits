@@ -332,8 +332,6 @@ public class AsciiTable extends AbstractTableData {
             // Invalidate the buffer
             this.buffer = null;
             return this.nRows;
-        } catch (FitsException e) {
-            throw e;
         } catch (Exception e) {
             throw new FitsException("Error addnig row:" + e.getMessage(), e);
         }

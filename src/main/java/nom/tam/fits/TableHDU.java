@@ -87,16 +87,17 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
 
     /**
      * Add a row to the end of the table. If this is the first row, then this
-     * will add appropriate columns for each of the entries.
+     * will add appropriate columns for each of the entries. The rows to add
+     * must be supplied as column based array of arrays.
      *
      * @return the number of rows in the adapted table
-     * @param newRow
-     *            row to add to the table
+     * @param newRows
+     *            rows to add to the table
      * @throws FitsException
      *             if the operation failed
      */
-    public int addRow(Object[] newRow) throws FitsException {
-        int row = this.myData.addRow(newRow);
+    public int addRow(Object[] newRows) throws FitsException {
+        int row = this.myData.addRow(newRows);
         this.myHeader.addValue(NAXISn.n(2), getNRows());
         return row;
     }
