@@ -1,5 +1,22 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
+		<release version="1.14.1" date="2016-02-24" description="Maintenance release with minor bug fixes and enhancements.">
+			<action type="update">
+				Maintenance release with minor bug fixes and enhancements.
+			</action>
+			<action type="update" dev="ritchieGitHub" issue="79">
+				Important note for all users, since 1.13.0 a bug is fixed in the table behavior. This can cause problems for users expecting the "buggy" result. See the issue on github for more details.
+			</action>
+			<action type="update" dev="ritchieGitHub" issue="77">
+				Since a approximately 1.12.0 nom-tam-fits uses java.util.logging for all logs, the details what and where to log to can therefore be configured freely.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="76">
+				In case of long strings the difference between a null comment and an empty string was not detected correctly.
+			</action>
+			<action type="add" dev="ritchieGitHub" issue="60">
+				Image compression support for the null pixel mask, this allows correct NaN with the use of lossy compression's.
+			</action>
+		</release>
 		<release version="1.14.0" date="2016-01-10" description="full Image compression support">
 			<action type="update">
 				Image compression and tiling are now fully supported by nom-tam-fits. A 100% Java implementation of the compression libraries available in cfitsio
@@ -15,7 +32,8 @@
 				for supporting efficient access to subsets of very large images. A user can easily access
 				only the tiles that overlap the region of interest and can skip data not of interest.
 				While some skipping might be possible with uncompressed FITS files (i.e., read only the rows
-				overlapping the desired subset), internal tiles can be much more efficient when the image is
+				overlapping the desired
+				subset), internal tiles can be much more efficient when the image is
 				substantially larger than the subset. Most compression algorithms interfere with the ability to
 				skip uninteresting data, but tiles are compressed independently, so users can benefit both from
 				the compression and the selection of only a subset of the image.
