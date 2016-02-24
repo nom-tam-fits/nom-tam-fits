@@ -42,7 +42,6 @@ import java.util.logging.Logger;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
-import nom.tam.fits.Header;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressor;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
@@ -70,6 +69,7 @@ import nom.tam.fits.compression.algorithm.rice.RiceCompressor.IntRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompressor;
 import nom.tam.fits.compression.provider.api.ICompressorProvider;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressQuantizeParameters;
 import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
@@ -163,12 +163,12 @@ import nom.tam.fits.compression.provider.param.rice.RiceQuantizeCompressParamete
 
         @Override
         public boolean isLossyCompression() {
-<span class="nc" id="L166">            return false;</span>
+<span class="fc" id="L166">            return false;</span>
         }
 
         @Override
         public void setParameters(ICompressParameters parameters) {
-<span class="nc" id="L171">        }</span>
+<span class="fc" id="L171">        }</span>
 
         @Override
         public ICompressOption setTileHeight(int value) {
@@ -182,7 +182,7 @@ import nom.tam.fits.compression.provider.param.rice.RiceQuantizeCompressParamete
 
         @Override
         public &lt;T&gt; T unwrap(Class&lt;T&gt; clazz) {
-<span class="nc bnc" id="L185" title="All 2 branches missed.">            return clazz.isAssignableFrom(this.getClass()) ? clazz.cast(this) : null;</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">            return clazz.isAssignableFrom(this.getClass()) ? clazz.cast(this) : null;</span>
         }
     };
 
@@ -190,11 +190,11 @@ import nom.tam.fits.compression.provider.param.rice.RiceQuantizeCompressParamete
 
         @Override
         public void addColumnsToTable(BinaryTableHDU hdu) {
-<span class="nc" id="L193">        }</span>
+<span class="fc" id="L193">        }</span>
 
         @Override
         public ICompressParameters copy(ICompressOption clone) {
-<span class="nc" id="L197">            return this;</span>
+<span class="fc" id="L197">            return this;</span>
         }
 
         @Override
@@ -202,11 +202,11 @@ import nom.tam.fits.compression.provider.param.rice.RiceQuantizeCompressParamete
 <span class="fc" id="L202">        }</span>
 
         @Override
-        public void getValuesFromHeader(Header header) {
+        public void getValuesFromHeader(IHeaderAccess header) {
 <span class="fc" id="L206">        }</span>
 
         @Override
-        public void initializeColumns(Header header, BinaryTable binaryTable, int size) throws FitsException {
+        public void initializeColumns(IHeaderAccess header, BinaryTable binaryTable, int size) throws FitsException {
 <span class="fc" id="L210">        }</span>
 
         @Override
@@ -215,11 +215,11 @@ import nom.tam.fits.compression.provider.param.rice.RiceQuantizeCompressParamete
 
         @Override
         public void setValueFromColumn(int index) {
-<span class="nc" id="L218">        }</span>
+<span class="fc" id="L218">        }</span>
 
         @Override
-        public void setValuesInHeader(Header header) {
-<span class="nc" id="L222">        }</span>
+        public void setValuesInHeader(IHeaderAccess header) {
+<span class="fc" id="L222">        }</span>
     };
 
     // @formatter:off

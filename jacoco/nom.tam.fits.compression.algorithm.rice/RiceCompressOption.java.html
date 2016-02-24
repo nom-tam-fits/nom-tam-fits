@@ -33,13 +33,13 @@
 
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
-import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypes;
 
 <span class="fc" id="L38">public class RiceCompressOption implements ICompressOption {</span>
 
     public static final int DEFAULT_RICE_BLOCKSIZE = 32;
 
-<span class="fc" id="L42">    public static final int DEFAULT_RICE_BYTEPIX = PrimitiveType.INT.size();</span>
+<span class="fc" id="L42">    public static final int DEFAULT_RICE_BYTEPIX = PrimitiveTypes.INT.size();</span>
 
     /**
      * this is a circular dependency that still has to be cut.
@@ -106,10 +106,10 @@ import nom.tam.util.type.PrimitiveType;
 
     @Override
     public &lt;T&gt; T unwrap(Class&lt;T&gt; clazz) {
-<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (clazz.isAssignableFrom(this.getClass())) {</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        if (clazz.isAssignableFrom(this.getClass())) {</span>
 <span class="fc" id="L110">            return clazz.cast(this);</span>
         }
-<span class="nc" id="L112">        return null;</span>
+<span class="fc" id="L112">        return null;</span>
     }
 
     private RiceCompressOption setOriginal(RiceCompressOption riceCompressOption) {

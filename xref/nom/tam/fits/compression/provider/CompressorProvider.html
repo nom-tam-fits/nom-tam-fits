@@ -50,34 +50,34 @@
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.BinaryTable;
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.BinaryTableHDU;
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.FitsException;
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.Header;
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.api.ICompressOption;
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.api.ICompressor;
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.api.ICompressorControl;
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip.GZipCompressor.ByteGZipCompressor;
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip.GZipCompressor.DoubleGZipCompressor;
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip.GZipCompressor.FloatGZipCompressor;
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip.GZipCompressor.IntGZipCompressor;
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip.GZipCompressor.LongGZipCompressor;
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip.GZipCompressor.ShortGZipCompressor;
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.IntGZip2Compressor;
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ShortGZip2Compressor;
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.hcompress.HCompressor.ByteHCompressor;
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.hcompress.HCompressor.DoubleHCompressor;
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.hcompress.HCompressor.FloatHCompressor;
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.hcompress.HCompressor.IntHCompressor;
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.hcompress.HCompressor.ShortHCompressor;
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.plio.PLIOCompress.BytePLIOCompressor;
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.plio.PLIOCompress.IntPLIOCompressor;
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.plio.PLIOCompress.ShortPLIOCompressor;
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.rice.RiceCompressor.ByteRiceCompressor;
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.rice.RiceCompressor.DoubleRiceCompressor;
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.rice.RiceCompressor.FloatRiceCompressor;
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.rice.RiceCompressor.IntRiceCompressor;
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompressor;
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.api.ICompressorProvider;
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.api.ICompressParameters;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.api.ICompressOption;
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.api.ICompressor;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.api.ICompressorControl;
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip.GZipCompressor.ByteGZipCompressor;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip.GZipCompressor.DoubleGZipCompressor;
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip.GZipCompressor.FloatGZipCompressor;
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip.GZipCompressor.IntGZipCompressor;
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip.GZipCompressor.LongGZipCompressor;
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip.GZipCompressor.ShortGZipCompressor;
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.IntGZip2Compressor;
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ShortGZip2Compressor;
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.hcompress.HCompressor.ByteHCompressor;
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.hcompress.HCompressor.DoubleHCompressor;
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.hcompress.HCompressor.FloatHCompressor;
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.hcompress.HCompressor.IntHCompressor;
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.hcompress.HCompressor.ShortHCompressor;
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.plio.PLIOCompress.BytePLIOCompressor;
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.plio.PLIOCompress.IntPLIOCompressor;
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.plio.PLIOCompress.ShortPLIOCompressor;
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.rice.RiceCompressor.ByteRiceCompressor;
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.rice.RiceCompressor.DoubleRiceCompressor;
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.rice.RiceCompressor.FloatRiceCompressor;
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.rice.RiceCompressor.IntRiceCompressor;
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompressor;
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.api.ICompressorProvider;
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.api.ICompressParameters;
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.hcompress.HCompressQuantizeParameters;
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
@@ -210,11 +210,11 @@
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>         }
 <a class="jxr_linenumber" name="L203" href="#L203">203</a> 
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>         @Override
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> getValuesFromHeader(<a href="../../../../../nom/tam/fits/Header.html">Header</a> header) {
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> getValuesFromHeader(<a href="../../../../../nom/tam/fits/compression/provider/param/api/IHeaderAccess.html">IHeaderAccess</a> header) {
 <a class="jxr_linenumber" name="L206" href="#L206">206</a>         }
 <a class="jxr_linenumber" name="L207" href="#L207">207</a> 
 <a class="jxr_linenumber" name="L208" href="#L208">208</a>         @Override
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> initializeColumns(<a href="../../../../../nom/tam/fits/Header.html">Header</a> header, <a href="../../../../../nom/tam/fits/BinaryTable.html">BinaryTable</a> binaryTable, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> initializeColumns(<a href="../../../../../nom/tam/fits/compression/provider/param/api/IHeaderAccess.html">IHeaderAccess</a> header, <a href="../../../../../nom/tam/fits/BinaryTable.html">BinaryTable</a> binaryTable, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> FitsException {
 <a class="jxr_linenumber" name="L210" href="#L210">210</a>         }
 <a class="jxr_linenumber" name="L211" href="#L211">211</a> 
 <a class="jxr_linenumber" name="L212" href="#L212">212</a>         @Override
@@ -226,7 +226,7 @@
 <a class="jxr_linenumber" name="L218" href="#L218">218</a>         }
 <a class="jxr_linenumber" name="L219" href="#L219">219</a> 
 <a class="jxr_linenumber" name="L220" href="#L220">220</a>         @Override
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setValuesInHeader(<a href="../../../../../nom/tam/fits/Header.html">Header</a> header) {
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setValuesInHeader(<a href="../../../../../nom/tam/fits/compression/provider/param/api/IHeaderAccess.html">IHeaderAccess</a> header) {
 <a class="jxr_linenumber" name="L222" href="#L222">222</a>         }
 <a class="jxr_linenumber" name="L223" href="#L223">223</a>     };
 <a class="jxr_linenumber" name="L224" href="#L224">224</a> 

@@ -135,7 +135,7 @@
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>                 <em class="jxr_comment">// Model should not be changed...</em>
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>                 <strong class="jxr_keyword">return</strong> copy;
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>             } <strong class="jxr_keyword">catch</strong> (CloneNotSupportedException e) {
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"ColumnDesc is not clonable, but it must be!"</span>);
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"ColumnDesc is not clonable, but it must be!"</span>, e);
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>             }
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>         }
 <a class="jxr_linenumber" name="L133" href="#L133">133</a> 
@@ -1182,7 +1182,7 @@
 <a class="jxr_linenumber" name="L1174" href="#L1174">1174</a>             FitsUtil.reposition(<strong class="jxr_keyword">this</strong>.currInput, <strong class="jxr_keyword">this</strong>.fileOffset + (<strong class="jxr_keyword">long</strong>) row * (<strong class="jxr_keyword">long</strong>) <strong class="jxr_keyword">this</strong>.rowLen);
 <a class="jxr_linenumber" name="L1175" href="#L1175">1175</a>             <strong class="jxr_keyword">this</strong>.currInput.readLArray(data);
 <a class="jxr_linenumber" name="L1176" href="#L1176">1176</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L1177" href="#L1177">1177</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Error in deferred row read"</span>);
+<a class="jxr_linenumber" name="L1177" href="#L1177">1177</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Error in deferred row read"</span>, e);
 <a class="jxr_linenumber" name="L1178" href="#L1178">1178</a>         }
 <a class="jxr_linenumber" name="L1179" href="#L1179">1179</a> 
 <a class="jxr_linenumber" name="L1180" href="#L1180">1180</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> col = 0; col &lt; data.length; col++) {

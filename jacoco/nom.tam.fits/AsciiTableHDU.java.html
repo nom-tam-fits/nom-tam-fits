@@ -43,7 +43,6 @@ import static nom.tam.fits.header.Standard.TZEROn;
 import static nom.tam.fits.header.Standard.XTENSION;
 
 import java.io.PrintStream;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.header.IFitsHeader;
@@ -56,14 +55,14 @@ import nom.tam.util.Cursor;
  */
 public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
 
-<span class="fc" id="L59">    private static final Logger LOG = Logger.getLogger(AsciiTableHDU.class.getName());</span>
+<span class="fc" id="L58">    private static final Logger LOG = Logger.getLogger(AsciiTableHDU.class.getName());</span>
 
     /**
      * The standard column stems for an ASCII table. Note that TBCOL is not
      * included here -- it needs to be handled specially since it does not
      * simply shift.
      */
-<span class="fc" id="L66">    private static final IFitsHeader[] KEY_STEMS = {</span>
+<span class="fc" id="L65">    private static final IFitsHeader[] KEY_STEMS = {</span>
         TFORMn,
         TZEROn,
         TNULLn,
@@ -81,12 +80,12 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
      */
     public static AsciiTable encapsulate(Object o) throws FitsException {
 
-<span class="fc" id="L84">        Object[] oo = (Object[]) o;</span>
-<span class="fc" id="L85">        AsciiTable d = new AsciiTable();</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">        for (Object element : oo) {</span>
-<span class="fc" id="L87">            d.addColumn(element);</span>
+<span class="fc" id="L83">        Object[] oo = (Object[]) o;</span>
+<span class="fc" id="L84">        AsciiTable d = new AsciiTable();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (Object element : oo) {</span>
+<span class="fc" id="L86">            d.addColumn(element);</span>
         }
-<span class="fc" id="L89">        return d;</span>
+<span class="fc" id="L88">        return d;</span>
     }
 
     /**
@@ -96,20 +95,20 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
      */
     public static boolean isData(Object o) {
 
-<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (o instanceof Object[]) {</span>
-<span class="fc" id="L100">            Object[] oo = (Object[]) o;</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">            for (Object element : oo) {</span>
-<span class="fc bfc" id="L102" title="All 10 branches covered.">                if (!(element instanceof String[]) &amp;&amp; //</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (o instanceof Object[]) {</span>
+<span class="fc" id="L99">            Object[] oo = (Object[]) o;</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">            for (Object element : oo) {</span>
+<span class="fc bfc" id="L101" title="All 10 branches covered.">                if (!(element instanceof String[]) &amp;&amp; //</span>
                         !(element instanceof int[]) &amp;&amp; //
                         !(element instanceof long[]) &amp;&amp; //
                         !(element instanceof float[]) &amp;&amp; //
                         !(element instanceof double[])) {
-<span class="fc" id="L107">                    return false;</span>
+<span class="fc" id="L106">                    return false;</span>
                 }
             }
-<span class="fc" id="L110">            return true;</span>
+<span class="fc" id="L109">            return true;</span>
         } else {
-<span class="fc" id="L112">            return false;</span>
+<span class="fc" id="L111">            return false;</span>
         }
     }
 
@@ -121,7 +120,7 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
      * @return &lt;CODE&gt;true&lt;/CODE&gt; if this is an ascii table header.
      */
     public static boolean isHeader(Header header) {
-<span class="fc" id="L124">        return header.getStringValue(XTENSION).trim().equals(&quot;TABLE&quot;);</span>
+<span class="fc" id="L123">        return header.getStringValue(XTENSION).trim().equals(&quot;TABLE&quot;);</span>
     }
 
     /**
@@ -136,7 +135,7 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
      *             Header
      */
     public static Data manufactureData(Header hdr) throws FitsException {
-<span class="fc" id="L139">        return new AsciiTable(hdr);</span>
+<span class="fc" id="L138">        return new AsciiTable(hdr);</span>
     }
 
     /**
@@ -147,10 +146,10 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
      *             if the header could not b e created
      */
     public static Header manufactureHeader(Data d) throws FitsException {
-<span class="fc" id="L150">        Header hdr = new Header();</span>
-<span class="fc" id="L151">        d.fillHeader(hdr);</span>
-<span class="fc" id="L152">        hdr.iterator();</span>
-<span class="fc" id="L153">        return hdr;</span>
+<span class="fc" id="L149">        Header hdr = new Header();</span>
+<span class="fc" id="L150">        d.fillHeader(hdr);</span>
+<span class="fc" id="L151">        hdr.iterator();</span>
+<span class="fc" id="L152">        return hdr;</span>
     }
 
     /**
@@ -162,45 +161,45 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
      *            the FITS data structure containing the table data.
      */
     public AsciiTableHDU(Header h, AsciiTable d) {
-<span class="fc" id="L165">        super(h, d);</span>
-<span class="fc" id="L166">    }</span>
+<span class="fc" id="L164">        super(h, d);</span>
+<span class="fc" id="L165">    }</span>
 
     @Override
     public int addColumn(Object newCol) throws FitsException {
-<span class="fc" id="L170">        Standard.context(AsciiTable.class);</span>
-<span class="fc" id="L171">        this.myData.addColumn(newCol);</span>
+<span class="fc" id="L169">        Standard.context(AsciiTable.class);</span>
+<span class="fc" id="L170">        this.myData.addColumn(newCol);</span>
         // Move the iterator to point after all the data describing
         // the previous column.
 
-<span class="fc" id="L175">        Cursor&lt;String, HeaderCard&gt; iter = this.myHeader.positionAfterIndex(TBCOLn, this.myData.getNCols());</span>
+<span class="fc" id="L174">        Cursor&lt;String, HeaderCard&gt; iter = this.myHeader.positionAfterIndex(TBCOLn, this.myData.getNCols());</span>
 
-<span class="fc" id="L177">        int rowlen = this.myData.addColInfo(getNCols() - 1, iter);</span>
-<span class="fc" id="L178">        int oldRowlen = this.myHeader.getIntValue(NAXIS1);</span>
-<span class="fc" id="L179">        this.myHeader.setNaxis(1, rowlen + oldRowlen);</span>
+<span class="fc" id="L176">        int rowlen = this.myData.addColInfo(getNCols() - 1, iter);</span>
+<span class="fc" id="L177">        int oldRowlen = this.myHeader.getIntValue(NAXIS1);</span>
+<span class="fc" id="L178">        this.myHeader.setNaxis(1, rowlen + oldRowlen);</span>
 
-<span class="fc" id="L181">        super.addColumn(newCol);</span>
-<span class="fc" id="L182">        Standard.context(null);</span>
-<span class="fc" id="L183">        return getNCols();</span>
+<span class="fc" id="L180">        super.addColumn(newCol);</span>
+<span class="fc" id="L181">        Standard.context(null);</span>
+<span class="fc" id="L182">        return getNCols();</span>
     }
 
     @Override
     protected IFitsHeader[] columnKeyStems() {
-<span class="fc" id="L188">        return KEY_STEMS;</span>
+<span class="fc" id="L187">        return KEY_STEMS;</span>
     }
 
     @Override
     public void info(PrintStream stream) {
-<span class="fc" id="L193">        stream.println(&quot;ASCII Table:&quot;);</span>
-<span class="fc" id="L194">        stream.println(&quot;  Header:&quot;);</span>
-<span class="fc" id="L195">        stream.println(&quot;    Number of fields:&quot; + this.myHeader.getIntValue(TFIELDS));</span>
-<span class="fc" id="L196">        stream.println(&quot;    Number of rows:  &quot; + this.myHeader.getIntValue(NAXIS2));</span>
-<span class="fc" id="L197">        stream.println(&quot;    Length of row:   &quot; + this.myHeader.getIntValue(NAXIS1));</span>
-<span class="fc" id="L198">        stream.println(&quot;  Data:&quot;);</span>
-<span class="fc" id="L199">        Object[] data = (Object[]) getKernel();</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">        for (int i = 0; i &lt; getNCols(); i += 1) {</span>
-<span class="fc" id="L201">            stream.println(&quot;      &quot; + i + &quot;:&quot; + ArrayFuncs.arrayDescription(data[i]));</span>
+<span class="fc" id="L192">        stream.println(&quot;ASCII Table:&quot;);</span>
+<span class="fc" id="L193">        stream.println(&quot;  Header:&quot;);</span>
+<span class="fc" id="L194">        stream.println(&quot;    Number of fields:&quot; + this.myHeader.getIntValue(TFIELDS));</span>
+<span class="fc" id="L195">        stream.println(&quot;    Number of rows:  &quot; + this.myHeader.getIntValue(NAXIS2));</span>
+<span class="fc" id="L196">        stream.println(&quot;    Length of row:   &quot; + this.myHeader.getIntValue(NAXIS1));</span>
+<span class="fc" id="L197">        stream.println(&quot;  Data:&quot;);</span>
+<span class="fc" id="L198">        Object[] data = (Object[]) getKernel();</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">        for (int i = 0; i &lt; getNCols(); i += 1) {</span>
+<span class="fc" id="L200">            stream.println(&quot;      &quot; + i + &quot;:&quot; + ArrayFuncs.arrayDescription(data[i]));</span>
         }
-<span class="fc" id="L203">    }</span>
+<span class="fc" id="L202">    }</span>
 
     /**
      * @param row
@@ -210,7 +209,7 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
      * @return &lt;code&gt;true&lt;/code&gt; if an element is null
      */
     public boolean isNull(int row, int col) {
-<span class="fc" id="L213">        return this.myData.isNull(row, col);</span>
+<span class="fc" id="L212">        return this.myData.isNull(row, col);</span>
     }
 
     /**
@@ -225,14 +224,14 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
      */
     public void setNull(int row, int col, boolean flag) {
 
-<span class="pc bpc" id="L228" title="1 of 2 branches missed.">        if (flag) {</span>
-<span class="fc" id="L229">            String nullStr = this.myHeader.getStringValue(TNULLn.n(col + 1));</span>
-<span class="fc bfc" id="L230" title="All 2 branches covered.">            if (nullStr == null) {</span>
-<span class="fc" id="L231">                setNullString(col, &quot;NULL&quot;);</span>
+<span class="pc bpc" id="L227" title="1 of 2 branches missed.">        if (flag) {</span>
+<span class="fc" id="L228">            String nullStr = this.myHeader.getStringValue(TNULLn.n(col + 1));</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">            if (nullStr == null) {</span>
+<span class="fc" id="L230">                setNullString(col, &quot;NULL&quot;);</span>
             }
         }
-<span class="fc" id="L234">        this.myData.setNull(row, col, flag);</span>
-<span class="fc" id="L235">    }</span>
+<span class="fc" id="L233">        this.myData.setNull(row, col, flag);</span>
+<span class="fc" id="L234">    }</span>
 
     /**
      * Set the null string for a column.
@@ -243,13 +242,10 @@ public class AsciiTableHDU extends TableHDU&lt;AsciiTable&gt; {
      *            the String representing null
      */
     public void setNullString(int col, String newNull) {
-<span class="fc" id="L246">        this.myHeader.positionAfterIndex(TBCOLn, col + 1);</span>
-        try {
-<span class="fc" id="L248">            this.myHeader.addValue(TNULLn.n(col + 1), newNull);</span>
-<span class="nc" id="L249">        } catch (HeaderCardException e) {</span>
-<span class="nc" id="L250">            LOG.log(Level.SEVERE, &quot;Impossible exception in setNullString&quot; + e);</span>
-<span class="fc" id="L251">        }</span>
-<span class="fc" id="L252">        this.myData.setNullString(col, newNull);</span>
-<span class="fc" id="L253">    }</span>
+<span class="fc" id="L245">        this.myHeader.positionAfterIndex(TBCOLn, col + 1);</span>
+<span class="fc" id="L246">        saveReplaceCard(TNULLn.n(col + 1).key(), true, newNull);</span>
+<span class="fc" id="L247">        this.myData.setNullString(col, newNull);</span>
+<span class="fc" id="L248">    }</span>
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

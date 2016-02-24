@@ -31,10 +31,9 @@
  * #L%
  */
 
-import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
@@ -44,28 +43,27 @@ final class ZBlankParameter extends CompressHeaderParameter&lt;QuantizeOption&gt
      * @param quantizeOption
      */
     ZBlankParameter(QuantizeOption quantizeOption) {
-<span class="fc" id="L47">        super(Compression.ZBLANK.name(), quantizeOption);</span>
-<span class="fc" id="L48">    }</span>
+<span class="fc" id="L46">        super(Compression.ZBLANK.name(), quantizeOption);</span>
+<span class="fc" id="L47">    }</span>
 
     @Override
-    public void getValueFromHeader(Header header) {
-<span class="fc" id="L52">        HeaderCard value = header.findCard(getName());</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (value != null) {</span>
-<span class="fc" id="L54">            getOption().setBNull(value.getValue(Integer.class, getOption().getBNull()));</span>
+    public void getValueFromHeader(IHeaderAccess header) {
+<span class="fc" id="L51">        HeaderCard value = header.findCard(getName());</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (value != null) {</span>
+<span class="fc" id="L53">            getOption().setBNull(value.getValue(Integer.class, getOption().getBNull()));</span>
         }
-<span class="fc" id="L56">    }</span>
+<span class="fc" id="L55">    }</span>
 
     @Override
-    public boolean isActive() {
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        return getOption().getOriginal() == null;</span>
+    public void setValueInHeader(IHeaderAccess header) {
+<span class="fc" id="L59">        Integer bNull = getOption().getBNull();</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        if (bNull != null) {</span>
+<span class="fc" id="L61">            header.addValue(Compression.ZBLANK, bNull);</span>
+        }
+<span class="fc" id="L63">    }</span>
+
+    protected boolean isActive() {
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        return getOption().getOriginal() == null;</span>
     }
-
-    @Override
-    public void setValueInHeader(Header header) throws HeaderCardException {
-<span class="fc" id="L65">        Integer bNull = getOption().getBNull();</span>
-<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (bNull != null) {</span>
-<span class="fc" id="L67">            header.card(Compression.ZBLANK).value(bNull);</span>
-        }
-<span class="fc" id="L69">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

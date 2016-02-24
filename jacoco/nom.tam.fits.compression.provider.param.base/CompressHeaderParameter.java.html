@@ -33,9 +33,9 @@
 
 import static nom.tam.fits.header.Compression.ZNAMEn;
 import static nom.tam.fits.header.Compression.ZVALn;
-import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 
 public abstract class CompressHeaderParameter&lt;OPTION&gt; extends CompressParameter&lt;OPTION&gt; implements ICompressHeaderParameter {
 
@@ -43,7 +43,7 @@ public abstract class CompressHeaderParameter&lt;OPTION&gt; extends CompressPara
 <span class="fc" id="L43">        super(name, option);</span>
 <span class="fc" id="L44">    }</span>
 
-    public HeaderCard findZVal(Header header) {
+    public HeaderCard findZVal(IHeaderAccess header) {
 <span class="fc" id="L47">        int nval = 1;</span>
 <span class="fc" id="L48">        HeaderCard card = header.findCard(ZNAMEn.n(nval));</span>
 <span class="fc bfc" id="L49" title="All 2 branches covered.">        while (card != null) {</span>
@@ -55,7 +55,7 @@ public abstract class CompressHeaderParameter&lt;OPTION&gt; extends CompressPara
 <span class="fc" id="L55">        return null;</span>
     }
 
-    public int nextFreeZVal(Header header) {
+    public int nextFreeZVal(IHeaderAccess header) {
 <span class="fc" id="L59">        int nval = 1;</span>
 <span class="fc" id="L60">        HeaderCard card = header.findCard(ZNAMEn.n(nval));</span>
 <span class="fc bfc" id="L61" title="All 2 branches covered.">        while (card != null) {</span>

@@ -1347,8 +1347,8 @@ public class Header implements FitsElement {
         //
         try {
 <span class="fc" id="L1349">            dis.skipAllBytes(FitsUtil.padding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE));</span>
-<span class="nc" id="L1350">        } catch (IOException e) {</span>
-<span class="nc" id="L1351">            throw new TruncatedFileException(&quot;Failed to skip &quot; + FitsUtil.padding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE) + &quot; bytes&quot;, e);</span>
+<span class="fc" id="L1350">        } catch (IOException e) {</span>
+<span class="fc" id="L1351">            throw new TruncatedFileException(&quot;Failed to skip &quot; + FitsUtil.padding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE) + &quot; bytes&quot;, e);</span>
 <span class="fc" id="L1352">        }</span>
 <span class="fc" id="L1353">    }</span>
 

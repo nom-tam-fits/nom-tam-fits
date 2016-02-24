@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NullPixelMaskPreserver.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.compression.tile.mask</a> &gt; <span class="el_source">NullPixelMaskPreserver.java</span></div><h1>NullPixelMaskPreserver.java</h1><pre class="source lang-java linenums">package nom.tam.image.compression.tile.mask;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2016 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
+
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
+import nom.tam.image.tile.operation.buffer.TileBuffer;
+import nom.tam.util.type.PrimitiveTypes;
+
+/**
+ * This class overwrites the pixels specified in the mask with null values.
+ * Where the null value can be defined separately.
+ */
+public class NullPixelMaskPreserver extends AbstractNullPixelMask {
+
+    public NullPixelMaskPreserver(TileBuffer tileBuffer, int tileIndex, long nullValue, ICompressorControl compressorControl) {
+<span class="fc" id="L52">        super(tileBuffer, tileIndex, nullValue, compressorControl);</span>
+<span class="fc" id="L53">    }</span>
+
+    public void preserveNull() {
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if (getTileBuffer().getBaseType().is(PrimitiveTypes.DOUBLE)) {</span>
+<span class="fc" id="L57">            preserveNullDoubles();</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.FLOAT)) {</span>
+<span class="fc" id="L59">            preserveNullFloats();</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.LONG)) {</span>
+<span class="fc" id="L61">            preserveNullLongs();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.INT)) {</span>
+<span class="fc" id="L63">            preserveNullInts();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.SHORT)) {</span>
+<span class="fc" id="L65">            preserveNullShorts();</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.BYTE)) {</span>
+<span class="fc" id="L67">            preserveNullBytes();</span>
+        }
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        if (getMask() != null) {</span>
+<span class="fc" id="L70">            ByteBuffer compressed = ByteBuffer.allocate(getTileBuffer().getPixelSize());</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">            if (!getCompressorControl().compress(getMask(), compressed, getCompressorControl().option())) {</span>
+<span class="fc" id="L72">                throw new IllegalStateException(&quot;could not compress the null pixel mask&quot;);</span>
+            }
+<span class="fc" id="L74">            setMask(compressed);</span>
+        }
+<span class="fc" id="L76">    }</span>
+
+    private void preserveNullBytes() {
+<span class="fc" id="L79">        ByteBuffer buffer = (ByteBuffer) getTileBuffer().getBuffer();</span>
+<span class="fc" id="L80">        byte nullValue = (byte) getNullValue();</span>
+<span class="fc" id="L81">        int size = buffer.remaining();</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        for (int index = 0; index &lt; size; index++) {</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">            if (nullValue == buffer.get(index)) {</span>
+<span class="fc" id="L84">                initializedMask(size).put(index, NULL_INDICATOR);</span>
+            }
+        }
+<span class="fc" id="L87">    }</span>
+
+    private void preserveNullDoubles() {
+<span class="fc" id="L90">        DoubleBuffer buffer = (DoubleBuffer) getTileBuffer().getBuffer();</span>
+<span class="fc" id="L91">        int size = getTileBuffer().getPixelSize();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        for (int index = 0; index &lt; size; index++) {</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">            if (Double.isNaN(buffer.get(index))) {</span>
+<span class="fc" id="L94">                initializedMask(size).put(index, NULL_INDICATOR);</span>
+            }
+        }
+<span class="fc" id="L97">    }</span>
+
+    private void preserveNullFloats() {
+<span class="fc" id="L100">        FloatBuffer buffer = (FloatBuffer) getTileBuffer().getBuffer();</span>
+<span class="fc" id="L101">        int size = getTileBuffer().getPixelSize();</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (int index = 0; index &lt; size; index++) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            if (Float.isNaN(buffer.get(index))) {</span>
+<span class="fc" id="L104">                initializedMask(size).put(index, NULL_INDICATOR);</span>
+            }
+        }
+<span class="fc" id="L107">    }</span>
+
+    private void preserveNullInts() {
+<span class="fc" id="L110">        IntBuffer buffer = (IntBuffer) getTileBuffer().getBuffer();</span>
+<span class="fc" id="L111">        int nullValue = (int) getNullValue();</span>
+<span class="fc" id="L112">        int size = getTileBuffer().getPixelSize();</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        for (int index = 0; index &lt; size; index++) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            if (nullValue == buffer.get(index)) {</span>
+<span class="fc" id="L115">                initializedMask(size).put(index, NULL_INDICATOR);</span>
+            }
+        }
+<span class="fc" id="L118">    }</span>
+
+    private void preserveNullLongs() {
+<span class="fc" id="L121">        LongBuffer buffer = (LongBuffer) getTileBuffer().getBuffer();</span>
+<span class="fc" id="L122">        long nullValue = getNullValue();</span>
+<span class="fc" id="L123">        int size = getTileBuffer().getPixelSize();</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        for (int index = 0; index &lt; size; index++) {</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">            if (nullValue == buffer.get(index)) {</span>
+<span class="fc" id="L126">                initializedMask(size).put(index, NULL_INDICATOR);</span>
+            }
+        }
+<span class="fc" id="L129">    }</span>
+
+    private void preserveNullShorts() {
+<span class="fc" id="L132">        ShortBuffer buffer = (ShortBuffer) getTileBuffer().getBuffer();</span>
+<span class="fc" id="L133">        short nullValue = (short) getNullValue();</span>
+<span class="fc" id="L134">        int size = getTileBuffer().getPixelSize();</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        for (int index = 0; index &lt; size; index++) {</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">            if (nullValue == buffer.get(index)) {</span>
+<span class="fc" id="L137">                initializedMask(size).put(index, NULL_INDICATOR);</span>
+            }
+        }
+<span class="fc" id="L140">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

@@ -35,80 +35,81 @@ import static nom.tam.fits.header.Standard.TTYPEn;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
-import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 
-<span class="fc" id="L44">public abstract class CompressParameters implements ICompressParameters {</span>
+<span class="fc" id="L45">public abstract class CompressParameters implements ICompressParameters {</span>
 
     @Override
     public void addColumnsToTable(BinaryTableHDU hdu) throws FitsException {
-<span class="fc bfc" id="L48" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
-<span class="fc" id="L49">            Object column = parameter.column();</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">            if (column != null) {</span>
-<span class="fc" id="L51">                hdu.setColumnName(hdu.addColumn(column) - 1, parameter.getName(), null);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
+<span class="fc" id="L50">            Object column = parameter.column();</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">            if (column != null) {</span>
+<span class="fc" id="L52">                hdu.setColumnName(hdu.addColumn(column) - 1, parameter.getName(), null);</span>
             }
         }
-<span class="fc" id="L54">    }</span>
-
-    protected ICompressColumnParameter[] columnParameters() {
-<span class="fc" id="L57">        return new ICompressColumnParameter[0];</span>
-    }
-
-    private Object getNullableColumn(Header header, BinaryTable binaryTable, String columnName) throws FitsException {
-<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (int i = 1; i &lt;= binaryTable.getNCols(); i++) {</span>
-<span class="fc" id="L62">            String val = header.getStringValue(TTYPEn.n(i));</span>
-<span class="pc bpc" id="L63" title="1 of 4 branches missed.">            if (val != null &amp;&amp; val.trim().equals(columnName)) {</span>
-<span class="fc" id="L64">                return binaryTable.getColumn(i - 1);</span>
-            }
-        }
-<span class="fc" id="L67">        return null;</span>
-    }
+<span class="fc" id="L55">    }</span>
 
     @Override
     public void getValuesFromColumn(int index) {
-<span class="fc bfc" id="L72" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
-<span class="fc" id="L73">            parameter.getValueFromColumn(index);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
+<span class="fc" id="L60">            parameter.getValueFromColumn(index);</span>
         }
-<span class="fc" id="L75">    }</span>
+<span class="fc" id="L62">    }</span>
 
     @Override
-    public void getValuesFromHeader(Header header) {
-<span class="fc bfc" id="L79" title="All 2 branches covered.">        for (ICompressHeaderParameter compressionParameter : headerParameters()) {</span>
-<span class="fc" id="L80">            compressionParameter.getValueFromHeader(header);</span>
+    public void getValuesFromHeader(IHeaderAccess header) {
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        for (ICompressHeaderParameter compressionParameter : headerParameters()) {</span>
+<span class="fc" id="L67">            compressionParameter.getValueFromHeader(header);</span>
         }
-<span class="fc" id="L82">    }</span>
-
-    protected abstract ICompressHeaderParameter[] headerParameters();
+<span class="fc" id="L69">    }</span>
 
     @Override
-    public void initializeColumns(Header header, BinaryTable binaryTable, int size) throws FitsException {
-<span class="fc bfc" id="L88" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
-<span class="fc" id="L89">            parameter.column(getNullableColumn(header, binaryTable, parameter.getName()), size);</span>
+    public void initializeColumns(IHeaderAccess header, BinaryTable binaryTable, int size) throws FitsException {
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
+<span class="fc" id="L74">            parameter.column(getNullableColumn(header, binaryTable, parameter.getName()), size);</span>
         }
-<span class="fc" id="L91">    }</span>
+<span class="fc" id="L76">    }</span>
 
     @Override
     public void initializeColumns(int size) {
-<span class="fc bfc" id="L95" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
-<span class="fc" id="L96">            parameter.column(null, size);</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
+<span class="fc" id="L81">            parameter.column(null, size);</span>
         }
-<span class="fc" id="L98">    }</span>
+<span class="fc" id="L83">    }</span>
 
     @Override
     public void setValueFromColumn(int index) {
-<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
-<span class="fc" id="L103">            parameter.setValueInColumn(index);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        for (ICompressColumnParameter parameter : columnParameters()) {</span>
+<span class="fc" id="L88">            parameter.setValueInColumn(index);</span>
         }
-<span class="fc" id="L105">    }</span>
+<span class="fc" id="L90">    }</span>
 
     @Override
-    public void setValuesInHeader(Header header) throws HeaderCardException {
-<span class="fc bfc" id="L109" title="All 2 branches covered.">        for (ICompressHeaderParameter parameter : headerParameters()) {</span>
-<span class="fc" id="L110">            parameter.setValueInHeader(header);</span>
+    public void setValuesInHeader(IHeaderAccess header) throws HeaderCardException {
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        for (ICompressHeaderParameter parameter : headerParameters()) {</span>
+<span class="fc" id="L95">            parameter.setValueInHeader(header);</span>
         }
-<span class="fc" id="L112">    }</span>
+<span class="fc" id="L97">    }</span>
+
+    private Object getNullableColumn(IHeaderAccess header, BinaryTable binaryTable, String columnName) throws FitsException {
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        for (int i = 1; i &lt;= binaryTable.getNCols(); i++) {</span>
+<span class="fc" id="L101">            HeaderCard card = header.findCard(TTYPEn.n(i));</span>
+<span class="pc bpc" id="L102" title="1 of 4 branches missed.">            if (card != null &amp;&amp; card.getValue().trim().equals(columnName)) {</span>
+<span class="fc" id="L103">                return binaryTable.getColumn(i - 1);</span>
+            }
+        }
+<span class="fc" id="L106">        return null;</span>
+    }
+
+    protected ICompressColumnParameter[] columnParameters() {
+<span class="fc" id="L110">        return new ICompressColumnParameter[0];</span>
+    }
+
+    protected abstract ICompressHeaderParameter[] headerParameters();
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

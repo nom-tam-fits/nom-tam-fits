@@ -43,7 +43,7 @@
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> nom.tam.image.compression.tile.TileCompressionType.GZIP_COMPRESSED;
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> nom.tam.image.compression.tile.TileCompressionType.UNCOMPRESSED;
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.FitsException;
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.Header;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.tile.operation.ITileOperationInitialisation;
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.tile.operation.TileArea;
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  
@@ -55,14 +55,14 @@
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Object[] gzipCompressed;
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../../nom/tam/fits/Header.html">Header</a> header;
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../../nom/tam/fits/compression/provider/param/api/IHeaderAccess.html">IHeaderAccess</a> header;
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../../nom/tam/image/compression/tile/TiledImageCompressionOperation.html">TiledImageCompressionOperation</a> imageTilesOperation;
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> compressedOffset = 0;
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>      <strong class="jxr_keyword">protected</strong> <a href="../../../../../nom/tam/image/compression/tile/TileDecompressorInitialisation.html">TileDecompressorInitialisation</a>(<a href="../../../../../nom/tam/image/compression/tile/TiledImageCompressionOperation.html">TiledImageCompressionOperation</a> imageTilesOperation, Object[] uncompressed, Object[] compressed, Object[] gzipCompressed,
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>              <a href="../../../../../nom/tam/fits/Header.html">Header</a> header) {
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>              <a href="../../../../../nom/tam/fits/compression/provider/param/api/IHeaderAccess.html">IHeaderAccess</a> header) {
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>          <strong class="jxr_keyword">this</strong>.imageTilesOperation = imageTilesOperation;
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>          <strong class="jxr_keyword">this</strong>.uncompressed = uncompressed;
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>          <strong class="jxr_keyword">this</strong>.compressed = compressed;
@@ -81,18 +81,15 @@
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>                  .setCompressed(<strong class="jxr_keyword">this</strong>.compressed != <strong class="jxr_keyword">null</strong> ? <strong class="jxr_keyword">this</strong>.compressed[tileOperation.getTileIndex()] : <strong class="jxr_keyword">null</strong>, COMPRESSED)<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>                  .setCompressed(<strong class="jxr_keyword">this</strong>.uncompressed != <strong class="jxr_keyword">null</strong> ? <strong class="jxr_keyword">this</strong>.uncompressed[tileOperation.getTileIndex()] : <strong class="jxr_keyword">null</strong>, UNCOMPRESSED)<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>                  .setCompressed(<strong class="jxr_keyword">this</strong>.gzipCompressed != <strong class="jxr_keyword">null</strong> ? <strong class="jxr_keyword">this</strong>.gzipCompressed[tileOperation.getTileIndex()] : <strong class="jxr_keyword">null</strong>, GZIP_COMPRESSED);
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">this</strong>.compressedOffset += tileOperation.getPixelSize();
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>      }
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>      @Override
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> tileCount(<strong class="jxr_keyword">int</strong> tileCount) {
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>              <strong class="jxr_keyword">this</strong>.imageTilesOperation.compressOptions().getCompressionParameters().initializeColumns(<strong class="jxr_keyword">this</strong>.header, <strong class="jxr_keyword">this</strong>.imageTilesOperation.getBinaryTable(), tileCount);
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>          } <strong class="jxr_keyword">catch</strong> (FitsException e) {
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"Columns of table inconsistent"</span>, e);
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>          }
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>      }
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  }
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          tileOperation.createImageNullPixelMask(<strong class="jxr_keyword">this</strong>.imageTilesOperation.getImageNullPixelMask());
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">this</strong>.compressedOffset += tileOperation.getPixelSize();
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>      }
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>      @Override
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> tileCount(<strong class="jxr_keyword">int</strong> tileCount) <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>          <strong class="jxr_keyword">this</strong>.imageTilesOperation.compressOptions().getCompressionParameters().initializeColumns(<strong class="jxr_keyword">this</strong>.header, <strong class="jxr_keyword">this</strong>.imageTilesOperation.getBinaryTable(), tileCount);
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>      }
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2016 nom-tam-fits. All rights reserved.</div>

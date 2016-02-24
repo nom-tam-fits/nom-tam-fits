@@ -15,6 +15,157 @@ nom.tam FITS library,nom.tam.fits.header,IFitsHeader.SOURCE,9,169,0,0,0,19,2,3,2
 nom.tam FITS library,nom.tam.fits.header,Checksum,0,93,0,0,0,13,0,10,0,10
 nom.tam FITS library,nom.tam.fits.header,ObservationDescription,0,348,0,0,0,31,0,10,0,10
 nom.tam FITS library,nom.tam.fits.header,IFitsHeader.HDU,9,99,0,0,0,10,2,2,2,2
+nom.tam FITS library,nom.tam.fits.compression.provider.param.rice,RiceBlockSizeParameter,0,62,0,2,0,11,0,4,0,3
+nom.tam FITS library,nom.tam.fits.compression.provider.param.rice,RiceCompressParameters,0,34,0,0,0,6,0,3,0,3
+nom.tam FITS library,nom.tam.fits.compression.provider.param.rice,RiceQuantizeCompressParameters,0,53,0,0,0,10,0,3,0,3
+nom.tam FITS library,nom.tam.fits.compression.provider.param.rice,RiceBytePixParameter,0,62,0,2,0,11,0,4,0,3
+nom.tam FITS library,nom.tam.image.compression.hdu,BackupRestoreUnCompressedHeaderCard,9,508,1,15,0,69,3,17,2,10
+nom.tam FITS library,nom.tam.image.compression.hdu,BackupRestoreUnCompressedHeaderCard.new BackupRestoreUnCompressedHeaderCard() {...},0,17,0,0,0,5,0,3,0,3
+nom.tam FITS library,nom.tam.image.compression.hdu,BackupRestoreUnCompressedHeaderCard.new BackupRestoreUnCompressedHeaderCard() {...},0,65,0,0,0,7,0,3,0,3
+nom.tam FITS library,nom.tam.image.compression.hdu,BackupRestoreUnCompressedHeaderCard.new BackupRestoreUnCompressedHeaderCard() {...},0,17,0,2,0,4,0,3,0,2
+nom.tam FITS library,nom.tam.image.compression.hdu,CompressedImageHDU,1,208,4,10,0,52,4,18,0,15
+nom.tam FITS library,nom.tam.image.compression.hdu,CompressedImageData,6,117,0,2,0,33,0,15,0,14
+nom.tam FITS library,nom.tam.fits.compress,ZCompressionProvider,17,10,3,1,5,3,3,3,1,3
+nom.tam FITS library,nom.tam.fits.compress,BasicCompressProvider,33,44,2,4,6,7,1,8,0,6
+nom.tam FITS library,nom.tam.fits.compress,CloseIS.new Runnable() {...},6,47,0,2,2,9,0,3,0,2
+nom.tam FITS library,nom.tam.fits.compress,CloseIS.new Runnable() {...},10,46,2,2,3,11,1,3,0,2
+nom.tam FITS library,nom.tam.fits.compress,CloseIS,51,122,4,8,9,36,4,9,0,7
+nom.tam FITS library,nom.tam.fits.compress,BZip2CompressionProvider,9,18,1,3,4,4,1,5,0,4
+nom.tam FITS library,nom.tam.fits.compress,GZipCompressionProvider,0,20,1,3,0,4,1,5,0,4
+nom.tam FITS library,nom.tam.fits.compress,CompressionLibLoaderProtection,5,8,0,0,1,3,1,2,1,2
+nom.tam FITS library,nom.tam.fits.compress,ExternalBZip2CompressionProvider,12,89,3,7,1,17,3,9,0,7
+nom.tam FITS library,nom.tam.fits.compress,CompressionManager,67,186,8,30,7,45,6,20,0,7
+nom.tam FITS library,nom.tam.image.tile.operation.buffer,TileBufferColumnBased,0,170,1,5,0,38,1,9,0,7
+nom.tam FITS library,nom.tam.image.tile.operation.buffer,TileBufferFactory,0,23,0,2,0,5,0,3,0,2
+nom.tam FITS library,nom.tam.image.tile.operation.buffer,TileBuffer,0,47,0,0,0,15,0,8,0,8
+nom.tam FITS library,nom.tam.image.tile.operation.buffer,TileBufferRowBased,0,22,0,0,0,6,0,3,0,3
+nom.tam FITS library,nom.tam.fits.compression.provider,CompressorControlNameComputer,0,113,2,22,0,27,2,15,0,5
+nom.tam FITS library,nom.tam.fits.compression.provider,CompressorProvider.TileCompressorControl,0,157,0,10,0,28,0,11,0,6
+nom.tam FITS library,nom.tam.fits.compression.provider,CompressorProvider.new ICompressParameters() {...},0,12,0,0,0,9,0,9,0,9
+nom.tam FITS library,nom.tam.fits.compression.provider,CompressorProvider.new ICompressOption() {...},0,25,0,2,0,8,0,9,0,8
+nom.tam FITS library,nom.tam.fits.compression.provider,CompressorProvider,0,360,0,12,0,25,0,10,0,4
+nom.tam FITS library,nom.tam.image.compression.tile,TileCompressionOperation,0,137,0,4,0,29,0,16,0,14
+nom.tam FITS library,nom.tam.image.compression.tile,TileCompressor,0,205,1,17,0,51,1,15,0,7
+nom.tam FITS library,nom.tam.image.compression.tile,TileDecompressor,0,101,0,10,0,24,0,10,0,5
+nom.tam FITS library,nom.tam.image.compression.tile,TileCompressorInitialisation,0,43,0,0,0,12,0,4,0,4
+nom.tam FITS library,nom.tam.image.compression.tile,TiledImageCompressionOperation,0,792,2,68,0,145,2,63,0,30
+nom.tam FITS library,nom.tam.image.compression.tile,TileDecompressorInitialisation,0,96,0,6,0,15,0,7,0,4
+nom.tam FITS library,nom.tam.image.compression.tile,TileCompressionType,0,48,0,0,0,4,0,4,0,4
+nom.tam FITS library,nom.tam.image.compression.tile.mask,ImageNullPixelMask,0,119,1,7,0,20,1,10,0,7
+nom.tam FITS library,nom.tam.image.compression.tile.mask,NullPixelMaskPreserver,0,278,1,39,0,60,1,27,0,8
+nom.tam FITS library,nom.tam.image.compression.tile.mask,AbstractNullPixelMask,0,79,0,6,0,26,0,13,0,10
+nom.tam FITS library,nom.tam.image.compression.tile.mask,NullPixelMaskRestorer,0,272,1,37,0,59,1,26,0,8
+nom.tam FITS library,nom.tam.util,BufferedDataOutputStream.new DataOutputStream() {...},0,10,0,0,0,3,0,2,0,2
+nom.tam FITS library,nom.tam.util,BufferedDataOutputStream.new BufferEncoder() {...},0,38,0,0,0,8,0,3,0,3
+nom.tam FITS library,nom.tam.util,ByteFormatter,48,1106,24,148,15,245,22,81,0,17
+nom.tam FITS library,nom.tam.util,HashedList.EntryComparator,0,14,0,0,0,4,0,2,0,2
+nom.tam FITS library,nom.tam.util,AsciiFuncs,0,37,3,5,0,6,3,6,0,5
+nom.tam FITS library,nom.tam.util,ColumnTable,64,1301,19,75,8,220,18,60,0,31
+nom.tam FITS library,nom.tam.util,ByteBufferOutputStream,0,21,0,0,0,7,0,3,0,3
+nom.tam FITS library,nom.tam.util,BufferDecoder.PrimitiveArrayRecurse,21,210,5,27,3,30,5,13,0,2
+nom.tam FITS library,nom.tam.util,HashedList,3,471,3,53,0,96,2,54,0,28
+nom.tam FITS library,nom.tam.util,BufferDecoder,9,489,4,32,2,91,4,34,0,20
+nom.tam FITS library,nom.tam.util,FormatException,0,4,0,0,0,2,0,1,0,1
+nom.tam FITS library,nom.tam.util,BufferedDataOutputStream,32,227,2,2,7,64,4,30,3,29
+nom.tam FITS library,nom.tam.util,BufferEncoder,32,609,2,44,5,93,3,40,1,19
+nom.tam FITS library,nom.tam.util,ByteParser,0,799,10,90,0,164,10,62,0,22
+nom.tam FITS library,nom.tam.util,HashedList.HashedListIterator,0,169,4,16,0,30,4,17,0,11
+nom.tam FITS library,nom.tam.util,ByteBufferInputStream,0,39,0,4,0,11,0,5,0,3
+nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},0,30,0,0,0,8,0,5,0,5
+nom.tam FITS library,nom.tam.util,BufferedDataInputStream,53,373,11,21,13,88,11,47,1,41
+nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},0,30,0,0,0,8,0,5,0,5
+nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},0,30,0,0,0,8,0,5,0,5
+nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},27,3,0,0,7,1,4,1,4,1
+nom.tam FITS library,nom.tam.util,BufferedDataInputStream.new BufferDecoder() {...},0,29,1,1,0,6,1,4,0,4
+nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},0,30,0,0,0,8,0,5,0,5
+nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},27,3,0,0,7,1,4,1,4,1
+nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},0,30,0,0,0,8,0,5,0,5
+nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},0,30,0,0,0,8,0,5,0,5
+nom.tam FITS library,nom.tam.util,TableException,0,4,0,0,0,2,0,1,0,1
+nom.tam FITS library,nom.tam.util,LoggerHelper,0,7,0,0,0,3,0,2,0,2
+nom.tam FITS library,nom.tam.util,ArrayFuncs,78,617,18,82,19,156,18,55,0,23
+nom.tam FITS library,nom.tam.util,BufferedFile,51,970,5,39,15,213,8,102,3,85
+nom.tam FITS library,nom.tam.util,BufferedFile.new BufferEncoder() {...},0,19,0,0,0,5,0,3,0,3
+nom.tam FITS library,nom.tam.util,BufferedFile.new BufferDecoder() {...},11,12,2,0,3,3,2,2,1,2
+nom.tam FITS library,nom.tam.util,BufferPointer,0,28,0,0,0,12,0,4,0,4
+nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressor.ShortHCompressor,0,56,0,2,0,13,0,4,0,3
+nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressor,0,52,2,2,0,13,2,5,0,5
+nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressor.DoubleHCompressor,0,9,0,0,0,2,0,1,0,1
+nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressor.ByteHCompressor,0,70,0,4,0,14,0,5,0,3
+nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressorOption,0,85,1,5,0,25,1,17,0,15
+nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HDecompress,38,2328,9,205,8,392,9,123,0,21
+nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompress,29,2071,3,167,5,312,3,103,0,21
+nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressor.IntHCompressor,0,55,0,2,0,13,0,4,0,3
+nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressor.FloatHCompressor,0,9,0,0,0,2,0,1,0,1
+nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressorQuantizeOption,0,63,0,2,0,18,0,7,0,6
+nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HDecompress.LongArrayPointer,0,65,0,0,0,15,0,7,0,7
+nom.tam FITS library,nom.tam.util.type,BooleanType,0,10,0,0,0,2,0,1,0,1
+nom.tam FITS library,nom.tam.util.type,UnknownType,0,12,0,0,0,3,0,2,0,2
+nom.tam FITS library,nom.tam.util.type,ByteType,0,70,0,2,0,17,0,9,0,8
+nom.tam FITS library,nom.tam.util.type,DoubleType,0,71,0,2,0,17,0,9,0,8
+nom.tam FITS library,nom.tam.util.type,LongType,0,71,0,2,0,17,0,9,0,8
+nom.tam FITS library,nom.tam.util.type,CharType,0,10,0,0,0,2,0,1,0,1
+nom.tam FITS library,nom.tam.util.type,PrimitiveTypeBase,0,186,0,6,0,47,0,26,0,23
+nom.tam FITS library,nom.tam.util.type,StringType,0,18,0,2,0,5,0,3,0,2
+nom.tam FITS library,nom.tam.util.type,ShortType,0,71,0,2,0,17,0,9,0,8
+nom.tam FITS library,nom.tam.util.type,FloatType,0,71,0,2,0,17,0,9,0,8
+nom.tam FITS library,nom.tam.util.type,PrimitiveTypeHandler,0,154,0,12,0,24,0,12,0,6
+nom.tam FITS library,nom.tam.util.type,IntType,0,71,0,2,0,17,0,9,0,8
+nom.tam FITS library,nom.tam.util.type,PrimitiveTypes,0,44,0,0,0,12,0,2,0,2
+nom.tam FITS library,nom.tam.fits.compression.provider.param.api,HeaderAccess,0,61,0,2,0,19,0,7,0,6
+nom.tam FITS library,nom.tam.fits.compression.provider.param.api,HeaderCardAccess,0,61,2,4,0,16,2,6,0,5
+nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip2,GZip2Compressor.ShortGZip2Compressor,0,20,0,0,0,7,0,3,0,3
+nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip2,GZip2Compressor.LongGZip2Compressor,0,20,0,0,0,7,0,3,0,3
+nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip2,GZip2Compressor,35,263,10,22,0,48,9,13,0,6
+nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip2,GZip2Compressor.IntGZip2Compressor,0,20,0,0,0,7,0,3,0,3
+nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip2,GZip2Compressor.ByteGZip2Compress,0,3,0,0,0,1,0,1,0,1
+nom.tam FITS library,nom.tam.fits,FitsException,0,9,0,0,0,4,0,2,0,2
+nom.tam FITS library,nom.tam.fits,BinaryTable,257,3302,61,356,45,686,54,225,0,67
+nom.tam FITS library,nom.tam.fits,FitsUtil,93,390,9,63,12,87,7,45,0,16
+nom.tam FITS library,nom.tam.fits,UndefinedData,56,156,1,5,10,40,1,10,0,8
+nom.tam FITS library,nom.tam.fits,HeaderCommentsMap,0,102,1,11,0,22,1,10,0,5
+nom.tam FITS library,nom.tam.fits,Header,63,1817,28,168,14,408,26,178,0,106
+nom.tam FITS library,nom.tam.fits,TableHDU,0,606,4,38,0,99,4,51,0,34
+nom.tam FITS library,nom.tam.fits,ImageData,135,375,12,35,23,102,11,28,1,12
+nom.tam FITS library,nom.tam.fits,HeaderCardBuilder,42,169,3,11,7,37,3,15,1,10
+nom.tam FITS library,nom.tam.fits,TruncatedFileException,0,9,0,0,0,4,0,2,0,2
+nom.tam FITS library,nom.tam.fits,ImageHDU,24,209,6,24,8,42,6,20,0,11
+nom.tam FITS library,nom.tam.fits,BinaryTable.SaveState,0,9,0,0,0,4,0,1,0,1
+nom.tam FITS library,nom.tam.fits,ImageData.ImageDataTiler,0,16,0,0,0,4,0,2,0,2
+nom.tam FITS library,nom.tam.fits,AbstractTableData,0,3,0,0,0,1,0,1,0,1
+nom.tam FITS library,nom.tam.fits,RandomGroupsData,56,240,5,21,11,54,5,15,0,7
+nom.tam FITS library,nom.tam.fits,BasicHDU,108,522,14,34,21,128,15,59,1,49
+nom.tam FITS library,nom.tam.fits,FitsDate,0,596,5,39,0,124,5,28,0,11
+nom.tam FITS library,nom.tam.fits,FitsHeap,69,231,2,16,11,62,3,20,1,13
+nom.tam FITS library,nom.tam.fits,Fits,172,730,17,73,32,195,20,64,3,36
+nom.tam FITS library,nom.tam.fits,AsciiTableHDU,0,327,1,21,0,53,1,23,0,13
+nom.tam FITS library,nom.tam.fits,FitsFactory.new ThreadFactory() {...},0,25,0,0,0,3,0,2,0,2
+nom.tam FITS library,nom.tam.fits,HeaderCardCountingArrayDataInput,0,36,0,0,0,13,0,6,0,6
+nom.tam FITS library,nom.tam.fits,ImageData.ArrayDesc,0,9,0,0,0,4,0,1,0,1
+nom.tam FITS library,nom.tam.fits,HeaderOrder,0,209,0,60,0,58,0,33,0,3
+nom.tam FITS library,nom.tam.fits,PaddingException,0,28,0,0,0,7,0,3,0,3
+nom.tam FITS library,nom.tam.fits,UndefinedHDU,1,76,2,4,0,15,2,8,0,7
+nom.tam FITS library,nom.tam.fits,FitsFactory,35,267,7,43,9,79,8,40,2,21
+nom.tam FITS library,nom.tam.fits,RandomGroupsHDU,67,454,21,40,13,78,22,23,1,11
+nom.tam FITS library,nom.tam.fits,AsciiTable,224,2183,37,174,34,370,34,107,0,34
+nom.tam FITS library,nom.tam.fits,Data,27,87,4,6,6,20,4,10,0,9
+nom.tam FITS library,nom.tam.fits,BinaryTableHDU,62,595,12,40,8,91,11,29,0,14
+nom.tam FITS library,nom.tam.fits,HeaderCardException,0,4,0,0,0,2,0,1,0,1
+nom.tam FITS library,nom.tam.fits,FitsFactory.FitsSettings,0,53,0,0,0,15,0,2,0,2
+nom.tam FITS library,nom.tam.fits,BinaryTable.ColumnDesc,0,37,1,1,0,11,1,6,0,6
+nom.tam FITS library,nom.tam.fits,HeaderCard,89,1255,23,169,21,301,25,117,3,43
+nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.DoubleQuantCompressor,0,71,0,2,0,16,0,4,0,3
+nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.new Quantize() {...},0,29,0,4,0,5,0,5,0,3
+nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.BaseFilter,0,37,0,0,0,6,0,4,0,4
+nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.NullFilter,0,56,0,8,0,13,0,8,0,4
+nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,Quantize,2,962,3,113,1,220,3,70,0,15
+nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,Quantize.DoubleArrayPointer,0,31,0,0,0,7,0,3,0,3
+nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.FloatQuantCompressor,0,128,0,6,0,23,0,6,0,3
+nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.DitherFilter,5,156,1,7,1,30,1,10,0,7
+nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.ZeroFilter,0,27,0,4,0,9,0,5,0,3
+nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.PixelFilter,0,23,0,0,0,7,0,4,0,4
+nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeOption,0,220,1,5,0,77,1,46,0,44
+nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor,7,273,1,21,1,55,1,18,0,8
 nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip,GZipCompressor.ShortGZipCompressor,0,24,0,0,0,7,0,3,0,3
 nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip,GZipCompressor,42,286,9,21,0,52,8,14,0,7
 nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip,GZipCompressor.IntGZipCompressor,0,24,0,0,0,7,0,3,0,3
@@ -23,50 +174,15 @@ nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip,GZipCompressor.Type
 nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip,GZipCompressor.FloatGZipCompressor,0,24,0,0,0,7,0,3,0,3
 nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip,GZipCompressor.DoubleGZipCompressor,0,24,0,0,0,7,0,3,0,3
 nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip,GZipCompressor.LongGZipCompressor,0,24,0,0,0,7,0,3,0,3
-nom.tam FITS library,nom.tam.fits.compression.provider.param.rice,RiceBlockSizeParameter,0,62,0,2,0,11,0,4,0,3
-nom.tam FITS library,nom.tam.fits.compression.provider.param.rice,RiceCompressParameters,0,34,0,0,0,6,0,3,0,3
-nom.tam FITS library,nom.tam.fits.compression.provider.param.rice,RiceQuantizeCompressParameters,0,53,0,0,0,10,0,3,0,3
-nom.tam FITS library,nom.tam.fits.compression.provider.param.rice,RiceBytePixParameter,0,62,0,2,0,11,0,4,0,3
-nom.tam FITS library,nom.tam.fits.compress,ZCompressionProvider,17,10,3,1,5,3,3,3,1,3
-nom.tam FITS library,nom.tam.fits.compress,BasicCompressProvider,37,45,2,4,6,7,1,8,0,6
-nom.tam FITS library,nom.tam.fits.compress,CloseIS.new Runnable() {...},6,47,0,2,2,9,0,3,0,2
-nom.tam FITS library,nom.tam.fits.compress,CloseIS.new Runnable() {...},10,46,2,2,3,11,1,3,0,2
-nom.tam FITS library,nom.tam.fits.compress,CloseIS,51,123,4,8,9,36,4,9,0,7
-nom.tam FITS library,nom.tam.fits.compress,BZip2CompressionProvider,9,18,1,3,4,4,1,5,0,4
-nom.tam FITS library,nom.tam.fits.compress,GZipCompressionProvider,0,20,1,3,0,4,1,5,0,4
-nom.tam FITS library,nom.tam.fits.compress,CompressionLibLoaderProtection,5,8,0,0,1,3,1,2,1,2
-nom.tam FITS library,nom.tam.fits.compress,ExternalBZip2CompressionProvider,12,89,3,7,1,17,3,9,0,7
-nom.tam FITS library,nom.tam.fits.compress,CompressionManager,67,187,8,30,7,45,6,20,0,7
-nom.tam FITS library,nom.tam.image.compression.hdu,BackupRestoreUnCompressedHeaderCard,9,508,1,15,0,69,3,17,2,10
-nom.tam FITS library,nom.tam.image.compression.hdu,BackupRestoreUnCompressedHeaderCard.new BackupRestoreUnCompressedHeaderCard() {...},0,17,0,0,0,5,0,3,0,3
-nom.tam FITS library,nom.tam.image.compression.hdu,BackupRestoreUnCompressedHeaderCard.new BackupRestoreUnCompressedHeaderCard() {...},0,65,0,0,0,7,0,3,0,3
-nom.tam FITS library,nom.tam.image.compression.hdu,BackupRestoreUnCompressedHeaderCard.new BackupRestoreUnCompressedHeaderCard() {...},0,17,0,2,0,4,0,3,0,2
-nom.tam FITS library,nom.tam.image.compression.hdu,CompressedImageHDU,11,180,6,8,1,47,5,16,1,13
-nom.tam FITS library,nom.tam.image.compression.hdu,CompressedImageData,13,107,1,3,1,30,1,13,0,12
-nom.tam FITS library,nom.tam.fits.compression.provider.param.base,CompressParameter,2,15,0,0,1,6,1,3,1,3
+nom.tam FITS library,nom.tam.fits.compression.provider.param.base,CompressParameter,0,15,0,0,0,6,0,3,0,3
 nom.tam FITS library,nom.tam.fits.compression.provider.param.base,CompressColumnParameter,5,69,0,6,0,21,0,9,0,6
-nom.tam FITS library,nom.tam.fits.compression.provider.param.base,CompressParameters,0,206,1,21,0,30,1,20,0,10
+nom.tam FITS library,nom.tam.fits.compression.provider.param.base,CompressParameters,0,207,1,21,0,30,1,20,0,10
 nom.tam FITS library,nom.tam.fits.compression.provider.param.base,CompressHeaderParameter,0,82,0,6,0,14,0,6,0,3
-nom.tam FITS library,nom.tam.image.tile.operation.buffer,TileBufferColumnBased,0,170,1,5,0,38,1,9,0,7
-nom.tam FITS library,nom.tam.image.tile.operation.buffer,TileBuffer,0,64,0,2,0,17,0,9,0,8
-nom.tam FITS library,nom.tam.image.tile.operation.buffer,TileBufferRowBased,0,22,0,0,0,6,0,3,0,3
 nom.tam FITS library,nom.tam.image,StandardImageTiler,110,473,20,54,17,92,20,26,0,9
-nom.tam FITS library,nom.tam.fits.compression.provider,CompressorControlNameComputer,0,113,2,22,0,27,2,15,0,5
-nom.tam FITS library,nom.tam.fits.compression.provider,CompressorProvider.TileCompressorControl,0,157,0,10,0,28,0,11,0,6
-nom.tam FITS library,nom.tam.fits.compression.provider,CompressorProvider.new ICompressParameters() {...},5,7,0,0,4,5,4,5,4,5
-nom.tam FITS library,nom.tam.fits.compression.provider,CompressorProvider.new ICompressOption() {...},14,11,2,0,3,5,4,5,3,5
-nom.tam FITS library,nom.tam.fits.compression.provider,CompressorProvider,0,360,0,12,0,25,0,10,0,4
-nom.tam FITS library,nom.tam.image.compression.tile,TileCompressionOperation,4,140,0,4,2,28,2,15,2,13
-nom.tam FITS library,nom.tam.image.compression.tile,TileCompressor,7,185,0,12,2,46,0,12,0,6
-nom.tam FITS library,nom.tam.image.compression.tile,TileDecompressor,8,74,1,5,2,17,1,6,0,4
-nom.tam FITS library,nom.tam.image.compression.tile,TileCompressorInitialisation,0,43,0,0,0,12,0,4,0,4
-nom.tam FITS library,nom.tam.image.compression.tile,TiledImageCompressionOperation,33,685,5,57,3,135,5,54,0,28
-nom.tam FITS library,nom.tam.image.compression.tile,TileDecompressorInitialisation,7,91,0,6,2,15,0,7,0,4
-nom.tam FITS library,nom.tam.image.compression.tile,TileCompressionType,9,39,0,0,0,4,2,2,2,2
-nom.tam FITS library,nom.tam.fits.compression.algorithm.rice,RiceCompressor.DoubleRiceCompressor,9,0,0,0,2,0,1,0,1,0
+nom.tam FITS library,nom.tam.fits.compression.algorithm.rice,RiceCompressor.DoubleRiceCompressor,0,9,0,0,0,2,0,1,0,1
 nom.tam FITS library,nom.tam.fits.compression.algorithm.rice,RiceCompressor.ShortRiceCompressor,0,47,0,0,0,11,0,5,0,5
 nom.tam FITS library,nom.tam.fits.compression.algorithm.rice,RiceCompressor.IntRiceCompressor,0,46,0,0,0,11,0,5,0,5
-nom.tam FITS library,nom.tam.fits.compression.algorithm.rice,RiceCompressOption,2,101,1,5,1,30,1,17,0,15
+nom.tam FITS library,nom.tam.fits.compression.algorithm.rice,RiceCompressOption,0,103,0,6,0,31,0,18,0,15
 nom.tam FITS library,nom.tam.fits.compression.algorithm.rice,RiceCompressor,29,1665,3,71,3,134,3,38,0,4
 nom.tam FITS library,nom.tam.fits.compression.algorithm.rice,BitBuffer,25,294,4,14,7,48,6,15,2,10
 nom.tam FITS library,nom.tam.fits.compression.algorithm.rice,RiceCompressor.ByteRiceCompressor,0,47,0,0,0,11,0,5,0,5
@@ -77,69 +193,13 @@ nom.tam FITS library,nom.tam.fits.utilities,FitsCopy,0,59,0,6,0,18,0,5,0,2
 nom.tam FITS library,nom.tam.fits.utilities,FitsLineAppender,0,207,0,12,0,46,0,18,0,12
 nom.tam FITS library,nom.tam.fits.utilities,FitsReader,0,46,0,6,0,15,0,5,0,2
 nom.tam FITS library,nom.tam.fits.utilities,FitsSubString,0,127,0,8,0,26,0,13,0,9
-nom.tam FITS library,nom.tam.fits.utilities,FitsCheckSum,27,426,4,24,8,69,4,15,0,5
+nom.tam FITS library,nom.tam.fits.utilities,FitsCheckSum,1,453,2,26,0,74,2,17,0,5
 nom.tam FITS library,nom.tam.fits.utilities,FitsHeaderCardParser,0,239,4,32,0,55,4,21,0,7
 nom.tam FITS library,nom.tam.fits.utilities,Main,0,57,0,10,0,12,0,8,0,3
-nom.tam FITS library,nom.tam.util,BufferedDataOutputStream.new DataOutputStream() {...},0,10,0,0,0,3,0,2,0,2
-nom.tam FITS library,nom.tam.util,BufferedDataOutputStream.new BufferEncoder() {...},0,38,0,0,0,8,0,3,0,3
-nom.tam FITS library,nom.tam.util,ByteFormatter,48,1106,24,148,15,245,22,81,0,17
-nom.tam FITS library,nom.tam.util,HashedList.EntryComparator,0,14,0,0,0,4,0,2,0,2
-nom.tam FITS library,nom.tam.util,AsciiFuncs,0,37,3,5,0,6,3,6,0,5
-nom.tam FITS library,nom.tam.util,ColumnTable,64,1301,19,75,8,220,18,60,0,31
-nom.tam FITS library,nom.tam.util,ByteBufferOutputStream,0,21,0,0,0,7,0,3,0,3
-nom.tam FITS library,nom.tam.util,BufferDecoder.PrimitiveArrayRecurse,21,210,5,27,3,30,5,13,0,2
-nom.tam FITS library,nom.tam.util,HashedList,12,462,3,53,2,94,4,52,2,26
-nom.tam FITS library,nom.tam.util,BufferDecoder,9,489,4,32,2,91,4,34,0,20
-nom.tam FITS library,nom.tam.util,FormatException,0,4,0,0,0,2,0,1,0,1
-nom.tam FITS library,nom.tam.util,BufferedDataOutputStream,32,227,2,2,7,64,4,30,3,29
-nom.tam FITS library,nom.tam.util,BufferEncoder,32,609,2,44,5,93,3,40,1,19
-nom.tam FITS library,nom.tam.util,ByteParser,2,797,14,86,1,163,14,58,0,22
-nom.tam FITS library,nom.tam.util,HashedList.HashedListIterator,0,169,4,16,0,30,4,17,0,11
-nom.tam FITS library,nom.tam.util,ByteBufferInputStream,0,39,0,4,0,11,0,5,0,3
-nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},0,30,0,0,0,8,0,5,0,5
-nom.tam FITS library,nom.tam.util,BufferedDataInputStream,53,351,11,21,13,81,11,45,1,39
-nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},0,30,0,0,0,8,0,5,0,5
-nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},0,30,0,0,0,8,0,5,0,5
-nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},27,3,0,0,7,1,4,1,4,1
-nom.tam FITS library,nom.tam.util,BufferedDataInputStream.new BufferDecoder() {...},0,29,1,1,0,6,1,4,0,4
-nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},0,30,0,0,0,8,0,5,0,5
-nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},27,3,0,0,7,1,4,1,4,1
-nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},0,30,0,0,0,8,0,5,0,5
-nom.tam FITS library,nom.tam.util,ColumnTable.new ColumnTable.PointerAccess() {...},0,30,0,0,0,8,0,5,0,5
-nom.tam FITS library,nom.tam.util,TableException,0,4,0,0,0,2,0,1,0,1
-nom.tam FITS library,nom.tam.util,ArrayFuncs,78,617,18,82,19,156,18,55,0,23
-nom.tam FITS library,nom.tam.util,BufferedFile,51,970,5,39,15,213,8,102,3,85
-nom.tam FITS library,nom.tam.util,BufferedFile.new BufferEncoder() {...},0,19,0,0,0,5,0,3,0,3
-nom.tam FITS library,nom.tam.util,BufferedFile.new BufferDecoder() {...},11,12,2,0,3,3,2,2,1,2
-nom.tam FITS library,nom.tam.util,BufferPointer,0,28,0,0,0,12,0,4,0,4
-nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressor.ShortHCompressor,0,56,0,2,0,13,0,4,0,3
-nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressor,0,52,2,2,0,13,2,5,0,5
-nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressor.DoubleHCompressor,0,9,0,0,0,2,0,1,0,1
-nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressor.ByteHCompressor,0,70,0,4,0,14,0,5,0,3
-nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressorOption,2,73,2,4,1,22,2,15,0,14
-nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HDecompress,38,2328,9,205,8,392,9,123,0,21
-nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompress,29,2071,3,167,5,312,3,103,0,21
-nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressor.IntHCompressor,0,55,0,2,0,13,0,4,0,3
-nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressor.FloatHCompressor,0,9,0,0,0,2,0,1,0,1
-nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HCompressorQuantizeOption,0,63,0,2,0,18,0,7,0,6
-nom.tam FITS library,nom.tam.fits.compression.algorithm.hcompress,HDecompress.LongArrayPointer,0,65,0,0,0,15,0,7,0,7
 nom.tam FITS library,nom.tam.fits.compression.provider.param.hcompress,HCompressSmoothParameter,0,63,0,6,0,10,0,6,0,3
-nom.tam FITS library,nom.tam.fits.compression.provider.param.hcompress,HCompressParameters,6,28,0,0,1,5,1,2,1,2
+nom.tam FITS library,nom.tam.fits.compression.provider.param.hcompress,HCompressParameters,0,34,0,0,0,6,0,3,0,3
 nom.tam FITS library,nom.tam.fits.compression.provider.param.hcompress,HCompressQuantizeParameters,0,53,0,0,0,10,0,3,0,3
 nom.tam FITS library,nom.tam.fits.compression.provider.param.hcompress,HCompressScaleParameter,0,55,0,2,0,10,0,4,0,3
-nom.tam FITS library,nom.tam.util.type,BooleanType,0,10,0,0,0,2,0,1,0,1
-nom.tam FITS library,nom.tam.util.type,UnknownType,0,12,0,0,0,3,0,2,0,2
-nom.tam FITS library,nom.tam.util.type,PrimitiveType,0,41,0,0,0,10,0,1,0,1
-nom.tam FITS library,nom.tam.util.type,ByteType,0,70,0,2,0,17,0,9,0,8
-nom.tam FITS library,nom.tam.util.type,DoubleType,0,71,0,2,0,17,0,9,0,8
-nom.tam FITS library,nom.tam.util.type,LongType,29,42,2,0,7,10,2,7,1,7
-nom.tam FITS library,nom.tam.util.type,CharType,0,10,0,0,0,2,0,1,0,1
-nom.tam FITS library,nom.tam.util.type,PrimitiveTypeBase,7,170,0,4,1,45,1,23,1,21
-nom.tam FITS library,nom.tam.util.type,StringType,0,18,0,2,0,5,0,3,0,2
-nom.tam FITS library,nom.tam.util.type,ShortType,0,71,0,2,0,17,0,9,0,8
-nom.tam FITS library,nom.tam.util.type,FloatType,0,71,0,2,0,17,0,9,0,8
-nom.tam FITS library,nom.tam.util.type,PrimitiveTypeHandler,3,151,0,12,2,22,1,11,1,5
-nom.tam FITS library,nom.tam.util.type,IntType,0,71,0,2,0,17,0,9,0,8
 nom.tam FITS library,nom.tam.util.array,MultiArrayCopyFactory.ShortToLong,0,30,0,2,0,6,0,3,0,2
 nom.tam FITS library,nom.tam.util.array,MultiArrayCopyFactory.LongToByte,0,31,0,2,0,6,0,3,0,2
 nom.tam FITS library,nom.tam.util.array,MultiArrayCopyFactory.CharToByte,0,30,0,2,0,6,0,3,0,2
@@ -187,76 +247,24 @@ nom.tam FITS library,nom.tam.util.array,MultiArrayCopyFactory.DoubleToByte,28,3,
 nom.tam FITS library,nom.tam.util.array,MultiArrayCopyFactory.ShortToFloat,0,30,0,2,0,6,0,3,0,2
 nom.tam FITS library,nom.tam.util.array,MultiArrayCopyFactory,0,496,1,3,0,77,1,5,0,4
 nom.tam FITS library,nom.tam.util.array,MultiArrayCopyFactory.ByteToChar,0,30,0,2,0,6,0,3,0,2
-nom.tam FITS library,nom.tam.fits.compression.algorithm.plio,PLIOCompress,39,450,13,67,7,108,13,31,0,4
-nom.tam FITS library,nom.tam.fits.compression.algorithm.plio,PLIOCompress.IntPLIOCompressor,16,23,0,0,4,6,2,3,2,3
-nom.tam FITS library,nom.tam.fits.compression.algorithm.plio,PLIOCompress.BytePLIOCompressor,0,39,0,0,0,10,0,5,0,5
-nom.tam FITS library,nom.tam.fits.compression.algorithm.plio,PLIOCompress.ShortPLIOCompressor,0,39,0,0,0,10,0,5,0,5
 nom.tam FITS library,nom.tam.fits.header.extra,NOAOExt,0,8874,0,0,0,690,0,11,0,11
 nom.tam FITS library,nom.tam.fits.header.extra,CXCStclSharedExt,0,164,0,0,0,20,0,10,0,10
 nom.tam FITS library,nom.tam.fits.header.extra,MaxImDLExt,0,574,0,0,0,55,0,11,0,11
 nom.tam FITS library,nom.tam.fits.header.extra,CXCExt,0,384,0,0,0,40,0,10,0,10
 nom.tam FITS library,nom.tam.fits.header.extra,STScIExt,0,507,0,0,0,52,0,11,0,11
 nom.tam FITS library,nom.tam.fits.header.extra,SBFitsExt,0,407,0,0,0,41,0,11,0,11
-nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip2,GZip2Compressor.ShortGZip2Compressor,0,20,0,0,0,7,0,3,0,3
-nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip2,GZip2Compressor.LongGZip2Compressor,0,20,0,0,0,7,0,3,0,3
-nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip2,GZip2Compressor,35,263,10,22,0,48,9,13,0,6
-nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip2,GZip2Compressor.IntGZip2Compressor,0,20,0,0,0,7,0,3,0,3
-nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip2,GZip2Compressor.ByteGZip2Compress,0,3,0,0,0,1,0,1,0,1
-nom.tam FITS library,nom.tam.fits,FitsException,0,9,0,0,0,4,0,2,0,2
-nom.tam FITS library,nom.tam.fits,BinaryTable,256,3302,62,355,45,686,55,224,0,67
-nom.tam FITS library,nom.tam.fits,FitsUtil,93,390,9,63,12,87,7,45,0,16
-nom.tam FITS library,nom.tam.fits,UndefinedData,61,152,1,5,10,39,1,9,0,7
-nom.tam FITS library,nom.tam.fits,HeaderCommentsMap,4,98,3,9,2,20,3,8,0,5
-nom.tam FITS library,nom.tam.fits,Header,83,1797,28,168,16,406,26,178,0,106
-nom.tam FITS library,nom.tam.fits,TableHDU,39,567,5,37,4,95,6,49,1,33
-nom.tam FITS library,nom.tam.fits,ImageData,129,371,12,35,22,101,11,27,1,11
-nom.tam FITS library,nom.tam.fits,HeaderCardBuilder,42,169,3,11,7,37,3,15,1,10
-nom.tam FITS library,nom.tam.fits,TruncatedFileException,5,4,0,0,2,2,1,1,1,1
-nom.tam FITS library,nom.tam.fits,ImageHDU,17,205,7,23,7,41,7,18,0,10
-nom.tam FITS library,nom.tam.fits,BinaryTable.SaveState,0,9,0,0,0,4,0,1,0,1
-nom.tam FITS library,nom.tam.fits,ImageData.ImageDataTiler,0,16,0,0,0,4,0,2,0,2
-nom.tam FITS library,nom.tam.fits,AbstractTableData,0,3,0,0,0,1,0,1,0,1
-nom.tam FITS library,nom.tam.fits,RandomGroupsData,56,240,5,21,11,54,5,15,0,7
-nom.tam FITS library,nom.tam.fits,BasicHDU,100,504,14,34,18,123,15,58,1,48
-nom.tam FITS library,nom.tam.fits,FitsDate,6,590,5,39,1,123,6,27,1,10
-nom.tam FITS library,nom.tam.fits,FitsHeap,68,231,2,16,11,62,3,20,1,13
-nom.tam FITS library,nom.tam.fits,Fits,172,730,17,73,32,195,20,64,3,36
-nom.tam FITS library,nom.tam.fits,AsciiTableHDU,12,327,1,21,2,54,1,23,0,13
-nom.tam FITS library,nom.tam.fits,FitsFactory.new ThreadFactory() {...},0,25,0,0,0,3,0,2,0,2
-nom.tam FITS library,nom.tam.fits,HeaderCardCountingArrayDataInput,0,36,0,0,0,13,0,6,0,6
-nom.tam FITS library,nom.tam.fits,ImageData.ArrayDesc,0,9,0,0,0,4,0,1,0,1
-nom.tam FITS library,nom.tam.fits,HeaderOrder,13,205,5,57,3,56,5,30,1,3
-nom.tam FITS library,nom.tam.fits,PaddingException,0,28,0,0,0,7,0,3,0,3
-nom.tam FITS library,nom.tam.fits,UndefinedHDU,11,66,4,2,2,13,4,6,1,6
-nom.tam FITS library,nom.tam.fits,FitsFactory,35,267,7,43,9,79,8,40,2,21
-nom.tam FITS library,nom.tam.fits,RandomGroupsHDU,67,454,21,40,13,78,22,23,1,11
-nom.tam FITS library,nom.tam.fits,AsciiTable,222,2183,37,174,36,370,34,107,0,34
-nom.tam FITS library,nom.tam.fits,Data,22,83,4,6,5,19,4,9,0,8
-nom.tam FITS library,nom.tam.fits,BinaryTableHDU,66,591,12,40,9,90,12,28,1,13
-nom.tam FITS library,nom.tam.fits,HeaderCardException,0,4,0,0,0,2,0,1,0,1
-nom.tam FITS library,nom.tam.fits,FitsFactory.FitsSettings,0,53,0,0,0,15,0,2,0,2
-nom.tam FITS library,nom.tam.fits,BinaryTable.ColumnDesc,0,36,1,1,0,11,1,6,0,6
-nom.tam FITS library,nom.tam.fits,HeaderCard,89,1249,23,167,21,300,25,116,3,43
+nom.tam FITS library,nom.tam.fits.compression.algorithm.plio,PLIOCompress,39,450,13,67,7,108,13,31,0,4
+nom.tam FITS library,nom.tam.fits.compression.algorithm.plio,PLIOCompress.IntPLIOCompressor,16,23,0,0,4,6,2,3,2,3
+nom.tam FITS library,nom.tam.fits.compression.algorithm.plio,PLIOCompress.BytePLIOCompressor,0,39,0,0,0,10,0,5,0,5
+nom.tam FITS library,nom.tam.fits.compression.algorithm.plio,PLIOCompress.ShortPLIOCompressor,0,39,0,0,0,10,0,5,0,5
 nom.tam FITS library,nom.tam.fits.compression.provider.param.quant,ZScaleColumnParameter,0,33,0,2,0,7,0,4,0,3
 nom.tam FITS library,nom.tam.fits.compression.provider.param.quant,ZZeroColumnParameter,0,33,0,2,0,7,0,4,0,3
-nom.tam FITS library,nom.tam.fits.compression.provider.param.quant,ZQuantizeParameter,10,73,3,5,3,16,2,5,0,3
-nom.tam FITS library,nom.tam.fits.compression.provider.param.quant,QuantizeParameters,16,85,1,1,2,14,2,4,1,4
-nom.tam FITS library,nom.tam.fits.compression.provider.param.quant,ZBlankColumnParameter,6,74,3,13,1,17,3,9,0,4
-nom.tam FITS library,nom.tam.fits.compression.provider.param.quant,ZBlankParameter,1,50,1,5,0,11,1,6,0,4
+nom.tam FITS library,nom.tam.fits.compression.provider.param.quant,ZQuantizeParameter,0,88,0,10,0,20,0,8,0,3
+nom.tam FITS library,nom.tam.fits.compression.provider.param.quant,QuantizeParameters,0,93,0,2,0,15,0,5,0,4
+nom.tam FITS library,nom.tam.fits.compression.provider.param.quant,ZBlankColumnParameter,1,79,2,14,0,18,2,10,0,4
+nom.tam FITS library,nom.tam.fits.compression.provider.param.quant,ZBlankParameter,0,49,0,6,0,11,0,7,0,4
 nom.tam FITS library,nom.tam.fits.header.hierarch,BlanksDotHierarchKeyFormatter,0,45,0,2,0,12,0,4,0,3
 nom.tam FITS library,nom.tam.fits.header.hierarch,StandardIHierarchKeyFormatter,0,9,0,0,0,3,0,2,0,2
-nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.DoubleQuantCompressor,0,71,0,2,0,16,0,4,0,3
-nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.new Quantize() {...},0,29,0,4,0,5,0,5,0,3
-nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.BaseFilter,0,37,0,0,0,6,0,4,0,4
-nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.NullFilter,0,56,0,8,0,13,0,8,0,4
-nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,Quantize,2,962,3,113,1,220,3,70,0,15
-nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,Quantize.DoubleArrayPointer,0,31,0,0,0,7,0,3,0,3
-nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.FloatQuantCompressor,2,126,1,5,1,22,1,5,0,3
-nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.DitherFilter,8,153,2,6,2,29,2,9,0,7
-nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.ZeroFilter,0,27,0,4,0,9,0,5,0,3
-nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor.PixelFilter,0,23,0,0,0,7,0,4,0,4
-nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeOption,0,220,1,5,0,77,1,46,0,44
-nom.tam FITS library,nom.tam.fits.compression.algorithm.quant,QuantizeProcessor,12,279,2,22,2,56,2,18,0,8
 nom.tam FITS library,nom.tam.image.tile.operation,TileArea,0,97,0,10,0,12,0,10,0,5
 nom.tam FITS library,nom.tam.image.tile.operation,AbstractTileOperation,0,95,0,0,0,26,0,13,0,13
-nom.tam FITS library,nom.tam.image.tile.operation,AbstractTiledImageOperation,13,265,5,21,1,46,4,24,0,15
+nom.tam FITS library,nom.tam.image.tile.operation,AbstractTiledImageOperation,0,283,2,24,0,48,2,26,0,15

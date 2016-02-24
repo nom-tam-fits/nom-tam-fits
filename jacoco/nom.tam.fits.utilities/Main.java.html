@@ -42,7 +42,7 @@ public final class Main {
 <span class="fc bfc" id="L42" title="All 4 branches covered.">        } else if (args.length &gt; 0 &amp;&amp; &quot;read&quot;.equalsIgnoreCase(args[0])) {</span>
 <span class="fc" id="L43">            FitsReader.main(copyArgs(args));</span>
         } else {
-<span class="fc" id="L45">            System.out.println(&quot;do not know what to do, available are copy and read!&quot;);</span>
+<span class="fc" id="L45">            System.out.println(&quot;do not know what to do, available are copy and read!&quot;); // NOSONAR</span>
         }
 <span class="fc" id="L47">    }</span>
 
@@ -53,6 +53,5 @@ public final class Main {
         }
 <span class="fc" id="L54">        return newArgs;</span>
     }
-
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

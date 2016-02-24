@@ -36,11 +36,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import nom.tam.image.tile.operation.buffer.TileBuffer;
+import nom.tam.image.tile.operation.buffer.TileBufferFactory;
 import nom.tam.util.type.PrimitiveType;
 
-public abstract class AbstractTileOperation&lt;OPERATION extends AbstractTileOperation, IMAGE_OPERATION extends AbstractTiledImageOperation&lt;OPERATION&gt;&gt; implements Runnable {
+public abstract class AbstractTileOperation implements Runnable, ITileOperation {
 
-    private final IMAGE_OPERATION tiledImageOperation;
+    private final ITiledImageOperation tiledImageOperation;
 
     private Future&lt;?&gt; future;
 
@@ -50,29 +51,29 @@ public abstract class AbstractTileOperation&lt;OPERATION extends AbstractTileOpe
 
     private final TileArea area;
 
-<span class="fc" id="L53">    public AbstractTileOperation(IMAGE_OPERATION operation, int tileIndex, TileArea area) {</span>
-<span class="fc" id="L54">        this.tiledImageOperation = operation;</span>
-<span class="fc" id="L55">        this.tileIndex = tileIndex;</span>
-<span class="fc" id="L56">        this.area = area;</span>
-<span class="fc" id="L57">    }</span>
+<span class="fc" id="L54">    public AbstractTileOperation(ITiledImageOperation operation, int tileIndex, TileArea area) {</span>
+<span class="fc" id="L55">        this.tiledImageOperation = operation;</span>
+<span class="fc" id="L56">        this.tileIndex = tileIndex;</span>
+<span class="fc" id="L57">        this.area = area;</span>
+<span class="fc" id="L58">    }</span>
 
     public void execute(ExecutorService threadPool) {
-<span class="fc" id="L60">        this.future = threadPool.submit(this);</span>
-<span class="fc" id="L61">    }</span>
+<span class="fc" id="L61">        this.future = threadPool.submit(this);</span>
+<span class="fc" id="L62">    }</span>
 
     public TileArea getArea() {
-<span class="fc" id="L64">        return this.area;</span>
+<span class="fc" id="L65">        return this.area;</span>
     }
 
     /**
      * @return the number of pixels in this tile.
      */
     public int getPixelSize() {
-<span class="fc" id="L71">        return this.tileBuffer.getPixelSize();</span>
+<span class="fc" id="L72">        return this.tileBuffer.getPixelSize();</span>
     }
 
     public int getTileIndex() {
-<span class="fc" id="L75">        return this.tileIndex;</span>
+<span class="fc" id="L76">        return this.tileIndex;</span>
     }
 
     /**
@@ -85,48 +86,49 @@ public abstract class AbstractTileOperation&lt;OPERATION extends AbstractTileOpe
      *            the buffer that describes the whole image.
      */
     public void setWholeImageBuffer(Buffer buffer) {
-<span class="fc" id="L88">        this.tileBuffer.setData(buffer);</span>
-<span class="fc" id="L89">    }</span>
+<span class="fc" id="L89">        this.tileBuffer.setData(buffer);</span>
+<span class="fc" id="L90">    }</span>
 
     /**
      * Wait for the result of the tile processing.
      */
+    @Override
     public void waitForResult() {
         try {
-<span class="fc" id="L96">            this.future.get();</span>
-<span class="fc" id="L97">        } catch (Exception e) {</span>
-<span class="fc" id="L98">            throw new IllegalStateException(&quot;could not process tile&quot;, e);</span>
-<span class="fc" id="L99">        }</span>
-<span class="fc" id="L100">    }</span>
+<span class="fc" id="L98">            this.future.get();</span>
+<span class="fc" id="L99">        } catch (Exception e) {</span>
+<span class="fc" id="L100">            throw new IllegalStateException(&quot;could not process tile&quot;, e);</span>
+<span class="fc" id="L101">        }</span>
+<span class="fc" id="L102">    }</span>
 
     protected PrimitiveType&lt;Buffer&gt; getBaseType() {
-<span class="fc" id="L103">        return this.tiledImageOperation.getBaseType();</span>
+<span class="fc" id="L105">        return this.tiledImageOperation.getBaseType();</span>
     }
 
-    protected OPERATION getPreviousTile() {
-<span class="fc" id="L107">        return this.tiledImageOperation.getTile(getTileIndex() - 1);</span>
+    protected ITileOperation getPreviousTileOperation() {
+<span class="fc" id="L109">        return this.tiledImageOperation.getTileOperation(getTileIndex() - 1);</span>
     }
 
     protected TileBuffer getTileBuffer() {
-<span class="fc" id="L111">        return this.tileBuffer;</span>
+<span class="fc" id="L113">        return this.tileBuffer;</span>
     }
 
-    protected IMAGE_OPERATION getTiledImageOperation() {
-<span class="fc" id="L115">        return this.tiledImageOperation;</span>
+    protected ITiledImageOperation getTiledImageOperation() {
+<span class="fc" id="L117">        return this.tiledImageOperation;</span>
     }
 
-    protected OPERATION setDimensions(int dataOffset, int width, int height) {
-<span class="fc" id="L119">        setTileBuffer(TileBuffer.createTileBuffer(getBaseType(), //</span>
+    @Override
+    public ITileOperation setDimensions(int dataOffset, int width, int height) {
+<span class="fc" id="L122">        setTileBuffer(TileBufferFactory.createTileBuffer(getBaseType(), //</span>
                 dataOffset, //
                 this.tiledImageOperation.getImageWidth(), //
                 width, height));
-<span class="fc" id="L123">        this.area.size(width, height);</span>
-<span class="fc" id="L124">        return (OPERATION) this;</span>
+<span class="fc" id="L126">        this.area.size(width, height);</span>
+<span class="fc" id="L127">        return this;</span>
     }
 
     protected void setTileBuffer(TileBuffer tileBuffer) {
-<span class="fc" id="L128">        this.tileBuffer = tileBuffer;</span>
-<span class="fc" id="L129">    }</span>
-
+<span class="fc" id="L131">        this.tileBuffer = tileBuffer;</span>
+<span class="fc" id="L132">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

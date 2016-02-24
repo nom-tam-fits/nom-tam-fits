@@ -31,34 +31,33 @@
  * #L%
  */
 
-import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
 public final class RiceBytePixParameter extends CompressHeaderParameter&lt;RiceCompressOption&gt; {
 
     public RiceBytePixParameter(RiceCompressOption riceCompressOption) {
-<span class="fc" id="L44">        super(Compression.BYTEPIX, riceCompressOption);</span>
-<span class="fc" id="L45">    }</span>
+<span class="fc" id="L43">        super(Compression.BYTEPIX, riceCompressOption);</span>
+<span class="fc" id="L44">    }</span>
 
     @Override
-    public void getValueFromHeader(Header header) {
-<span class="fc" id="L49">        HeaderCard value = findZVal(header);</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (value != null) {</span>
-<span class="fc" id="L51">            getOption().setBytePix(value.getValue(Integer.class, RiceCompressOption.DEFAULT_RICE_BYTEPIX));</span>
+    public void getValueFromHeader(IHeaderAccess header) {
+<span class="fc" id="L48">        HeaderCard value = findZVal(header);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (value != null) {</span>
+<span class="fc" id="L50">            getOption().setBytePix(value.getValue(Integer.class, RiceCompressOption.DEFAULT_RICE_BYTEPIX));</span>
         } else {
-<span class="fc" id="L53">            getOption().setBytePix(RiceCompressOption.DEFAULT_RICE_BYTEPIX);</span>
+<span class="fc" id="L52">            getOption().setBytePix(RiceCompressOption.DEFAULT_RICE_BYTEPIX);</span>
         }
-<span class="fc" id="L55">    }</span>
+<span class="fc" id="L54">    }</span>
 
     @Override
-    public void setValueInHeader(Header header) throws HeaderCardException {
-<span class="fc" id="L59">        int zvalIndex = nextFreeZVal(header);</span>
-<span class="fc" id="L60">        header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());</span>
-<span class="fc" id="L61">        header.addValue(Compression.ZVALn.n(zvalIndex), getOption().getBytePix());</span>
-<span class="fc" id="L62">    }</span>
+    public void setValueInHeader(IHeaderAccess header) {
+<span class="fc" id="L58">        int zvalIndex = nextFreeZVal(header);</span>
+<span class="fc" id="L59">        header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());</span>
+<span class="fc" id="L60">        header.addValue(Compression.ZVALn.n(zvalIndex), getOption().getBytePix());</span>
+<span class="fc" id="L61">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

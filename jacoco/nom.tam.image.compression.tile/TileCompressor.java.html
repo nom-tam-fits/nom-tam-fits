@@ -33,21 +33,25 @@
 
 import java.nio.ByteBuffer;
 
+import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
+import nom.tam.image.compression.tile.mask.NullPixelMaskPreserver;
 import nom.tam.image.tile.operation.TileArea;
-import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypes;
 
 public class TileCompressor extends TileCompressionOperation {
 
-<span class="fc" id="L41">    private boolean forceNoLoss = false;</span>
+<span class="fc" id="L43">    private boolean forceNoLoss = false;</span>
+
+    private NullPixelMaskPreserver nullPixelMaskPerserver;
 
     protected TileCompressor(TiledImageCompressionOperation array, int tileIndex, TileArea area) {
-<span class="fc" id="L44">        super(array, tileIndex, area);</span>
-<span class="fc" id="L45">    }</span>
+<span class="fc" id="L48">        super(array, tileIndex, area);</span>
+<span class="fc" id="L49">    }</span>
 
     @Override
     public void run() {
-<span class="fc" id="L49">        compress();</span>
-<span class="fc" id="L50">    }</span>
+<span class="fc" id="L53">        compress();</span>
+<span class="fc" id="L54">    }</span>
 
     /**
      * lets close the gaps in the data as soon as the previous tiles are also
@@ -55,18 +59,14 @@ public class TileCompressor extends TileCompressionOperation {
      * complete block.
      */
     private void compactCompressedData() {
-<span class="fc bfc" id="L58" title="All 2 branches covered.">        if (getTileIndex() &gt; 0) {</span>
-            try {
-                // wait for the previous tile to finish.
-<span class="fc" id="L61">                getPreviousTile().waitForResult();</span>
-<span class="fc" id="L62">                ByteBuffer compressedWholeArea = getCompressedWholeArea();</span>
-<span class="fc" id="L63">                this.compressedOffset = compressedWholeArea.position();</span>
-<span class="fc" id="L64">                PrimitiveType.BYTE.appendBuffer(compressedWholeArea, this.compressedData);</span>
-<span class="fc" id="L65">                replaceCompressedBufferWithTargetArea(compressedWholeArea);</span>
-<span class="nc" id="L66">            } catch (Exception e) {</span>
-<span class="nc" id="L67">                throw new IllegalStateException(&quot;could not compact compressed data&quot;, e);</span>
-<span class="fc" id="L68">            }</span>
-        } else {
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if (getTileIndex() &gt; 0) {</span>
+            // wait for the previous tile to finish.
+<span class="fc" id="L64">            getPreviousTileOperation().waitForResult();</span>
+<span class="fc" id="L65">            ByteBuffer compressedWholeArea = getCompressedWholeArea();</span>
+<span class="fc" id="L66">            this.compressedOffset = compressedWholeArea.position();</span>
+<span class="fc" id="L67">            PrimitiveTypes.BYTE.appendBuffer(compressedWholeArea, this.compressedData);</span>
+<span class="fc" id="L68">            replaceCompressedBufferWithTargetArea(compressedWholeArea);</span>
+<span class="fc" id="L69">        } else {</span>
 <span class="fc" id="L70">            this.compressedOffset = 0;</span>
 <span class="fc" id="L71">            getCompressedWholeArea().position(this.compressedData.limit());</span>
         }
@@ -80,37 +80,48 @@ public class TileCompressor extends TileCompressionOperation {
 <span class="fc bfc" id="L80" title="All 4 branches covered.">        boolean tryNormalCompression = !(this.tileOptions.isLossyCompression() &amp;&amp; this.forceNoLoss);</span>
 <span class="fc bfc" id="L81" title="All 2 branches covered.">        if (tryNormalCompression) {</span>
 <span class="fc" id="L82">            compressSuccess = getCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData, this.tileOptions);</span>
+<span class="fc bfc" id="L83" title="All 4 branches covered.">            if (compressSuccess &amp;&amp; this.nullPixelMaskPerserver != null) {</span>
+<span class="fc" id="L84">                this.nullPixelMaskPerserver.preserveNull();</span>
+            }
         }
-<span class="fc bfc" id="L84" title="All 2 branches covered.">        if (!compressSuccess) {</span>
-<span class="fc" id="L85">            this.compressionType = TileCompressionType.GZIP_COMPRESSED;</span>
-<span class="fc" id="L86">            this.compressedData.rewind();</span>
-<span class="fc" id="L87">            getTileBuffer().getBuffer().rewind();</span>
-<span class="fc" id="L88">            compressSuccess = getGzipCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData, null);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (!compressSuccess) {</span>
+<span class="fc" id="L88">            this.compressionType = TileCompressionType.GZIP_COMPRESSED;</span>
+<span class="fc" id="L89">            this.compressedData.rewind();</span>
+<span class="fc" id="L90">            getTileBuffer().getBuffer().rewind();</span>
+<span class="fc" id="L91">            compressSuccess = getGzipCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData, null);</span>
         }
-<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (!compressSuccess) {</span>
-<span class="fc" id="L91">            this.compressionType = TileCompressionType.UNCOMPRESSED;</span>
-<span class="fc" id="L92">            this.compressedData.rewind();</span>
-<span class="fc" id="L93">            getTileBuffer().getBuffer().rewind();</span>
-<span class="fc" id="L94">            getBaseType().appendToByteBuffer(this.compressedData, getTileBuffer().getBuffer());</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (!compressSuccess) {</span>
+<span class="fc" id="L94">            this.compressionType = TileCompressionType.UNCOMPRESSED;</span>
+<span class="fc" id="L95">            this.compressedData.rewind();</span>
+<span class="fc" id="L96">            getTileBuffer().getBuffer().rewind();</span>
+<span class="fc" id="L97">            getBaseType().appendToByteBuffer(this.compressedData, getTileBuffer().getBuffer());</span>
         }
-<span class="fc" id="L96">        this.compressedData.limit(this.compressedData.position());</span>
-<span class="fc" id="L97">        this.compressedData.rewind();</span>
-<span class="fc" id="L98">        this.tileOptions.getCompressionParameters().setValueFromColumn(getTileIndex());</span>
-<span class="fc" id="L99">        compactCompressedData();</span>
-<span class="fc" id="L100">    }</span>
+<span class="fc" id="L99">        this.compressedData.limit(this.compressedData.position());</span>
+<span class="fc" id="L100">        this.compressedData.rewind();</span>
+<span class="fc" id="L101">        this.tileOptions.getCompressionParameters().setValueFromColumn(getTileIndex());</span>
+<span class="fc" id="L102">        compactCompressedData();</span>
+<span class="fc" id="L103">    }</span>
 
     private void replaceCompressedBufferWithTargetArea(ByteBuffer compressedWholeArea) {
-<span class="fc" id="L103">        int compressedSize = this.compressedData.limit();</span>
-<span class="fc" id="L104">        int latest = compressedWholeArea.position();</span>
-<span class="fc" id="L105">        compressedWholeArea.position(this.compressedOffset);</span>
-<span class="fc" id="L106">        this.compressedData = compressedWholeArea.slice();</span>
-<span class="fc" id="L107">        this.compressedData.limit(compressedSize);</span>
-<span class="fc" id="L108">        compressedWholeArea.position(latest);</span>
-<span class="fc" id="L109">    }</span>
+<span class="fc" id="L106">        int compressedSize = this.compressedData.limit();</span>
+<span class="fc" id="L107">        int latest = compressedWholeArea.position();</span>
+<span class="fc" id="L108">        compressedWholeArea.position(this.compressedOffset);</span>
+<span class="fc" id="L109">        this.compressedData = compressedWholeArea.slice();</span>
+<span class="fc" id="L110">        this.compressedData.limit(compressedSize);</span>
+<span class="fc" id="L111">        compressedWholeArea.position(latest);</span>
+<span class="fc" id="L112">    }</span>
+
+    @Override
+    protected NullPixelMaskPreserver createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">        if (imageNullPixelMask != null) {</span>
+<span class="fc" id="L117">            this.nullPixelMaskPerserver = imageNullPixelMask.createTilePreserver(getTileBuffer(), getTileIndex());</span>
+        }
+<span class="fc" id="L119">        return this.nullPixelMaskPerserver;</span>
+    }
 
     @Override
     protected void forceNoLoss(boolean value) {
-<span class="fc" id="L113">        this.forceNoLoss = value;</span>
-<span class="fc" id="L114">    }</span>
+<span class="fc" id="L124">        this.forceNoLoss = value;</span>
+<span class="fc" id="L125">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

@@ -64,7 +64,7 @@ public class UndefinedHDU extends BasicHDU&lt;UndefinedData&gt; {
      * @return true if o can be an Undefined FITS block.
      */
     public static boolean isData(Object o) {
-<span class="nc bnc" id="L67" title="All 2 branches missed.">        return ArrayFuncs.computeLSize(o) &gt; 0;</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        return ArrayFuncs.computeLSize(o) &gt; 0;</span>
     }
 
     /**
@@ -75,10 +75,10 @@ public class UndefinedHDU extends BasicHDU&lt;UndefinedData&gt; {
      * @return &lt;CODE&gt;true&lt;/CODE&gt; if this HDU has a valid header.
      */
     public static boolean isHeader(Header hdr) {
-<span class="pc bpc" id="L78" title="2 of 4 branches missed.">        if (hdr.getStringValue(XTENSION) != null &amp;&amp; hdr.getIntValue(NAXIS, -1) &gt;= 0) {</span>
+<span class="pc bpc" id="L78" title="1 of 4 branches missed.">        if (hdr.getStringValue(XTENSION) != null &amp;&amp; hdr.getIntValue(NAXIS, -1) &gt;= 0) {</span>
 <span class="fc" id="L79">            return true;</span>
         }
-<span class="nc" id="L81">        return false;</span>
+<span class="fc" id="L81">        return false;</span>
     }
 
     public static Data manufactureData(Header hdr) throws FitsException {

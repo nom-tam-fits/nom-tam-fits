@@ -196,7 +196,7 @@
 <a class="jxr_linenumber" name="L188" href="#L188">188</a>             o.flush();
 <a class="jxr_linenumber" name="L189" href="#L189">189</a>             o.close();
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Unable to write variable column length data"</span>);
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Unable to write variable column length data"</span>, e);
 <a class="jxr_linenumber" name="L192" href="#L192">192</a>         }
 <a class="jxr_linenumber" name="L193" href="#L193">193</a> 
 <a class="jxr_linenumber" name="L194" href="#L194">194</a>         System.arraycopy(bo.toByteArray(), 0, <strong class="jxr_keyword">this</strong>.heap, <strong class="jxr_keyword">this</strong>.heapSize, size);

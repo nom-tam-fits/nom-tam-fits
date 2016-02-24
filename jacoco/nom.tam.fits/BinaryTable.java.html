@@ -127,7 +127,7 @@ public class BinaryTable extends AbstractTableData {
                 // Model should not be changed...
 <span class="fc" id="L128">                return copy;</span>
 <span class="fc" id="L129">            } catch (CloneNotSupportedException e) {</span>
-<span class="fc" id="L130">                throw new IllegalStateException(&quot;ColumnDesc is not clonable, but it must be!&quot;);</span>
+<span class="fc" id="L130">                throw new IllegalStateException(&quot;ColumnDesc is not clonable, but it must be!&quot;, e);</span>
             }
         }
 
@@ -196,7 +196,7 @@ public class BinaryTable extends AbstractTableData {
 <span class="fc" id="L196">                Class&lt;?&gt; base = ArrayFuncs.getBaseClass(row[col]);</span>
 <span class="fc" id="L197">                int[] dims = ArrayFuncs.getDimensions(row[col]);</span>
 
-<span class="pc bpc" id="L199" title="1 of 4 branches missed.">                if (dims.length &gt; 1 || dims[0] &gt; 1) {</span>
+<span class="fc bfc" id="L199" title="All 4 branches covered.">                if (dims.length &gt; 1 || dims[0] &gt; 1) {</span>
 <span class="fc" id="L200">                    int[] xdims = new int[dims.length + 1];</span>
 <span class="fc" id="L201">                    xdims[0] = nrow;</span>
 
@@ -1174,7 +1174,7 @@ public class BinaryTable extends AbstractTableData {
 <span class="fc" id="L1174">            FitsUtil.reposition(this.currInput, this.fileOffset + (long) row * (long) this.rowLen);</span>
 <span class="fc" id="L1175">            this.currInput.readLArray(data);</span>
 <span class="nc" id="L1176">        } catch (IOException e) {</span>
-<span class="nc" id="L1177">            throw new FitsException(&quot;Error in deferred row read&quot;);</span>
+<span class="nc" id="L1177">            throw new FitsException(&quot;Error in deferred row read&quot;, e);</span>
 <span class="fc" id="L1178">        }</span>
 
 <span class="fc bfc" id="L1180" title="All 2 branches covered.">        for (int col = 0; col &lt; data.length; col++) {</span>

@@ -156,7 +156,7 @@ public class ByteParser {
 <span class="fc" id="L156">        int startOffset = this.offset;</span>
 <span class="fc" id="L157">        double number = 0;</span>
 
-<span class="pc bpc" id="L159" title="1 of 6 branches missed.">        while (length &gt; 0 &amp;&amp; this.input[this.offset] &gt;= '0' &amp;&amp; this.input[this.offset] &lt;= '9') {</span>
+<span class="fc bfc" id="L159" title="All 6 branches covered.">        while (length &gt; 0 &amp;&amp; this.input[this.offset] &gt;= '0' &amp;&amp; this.input[this.offset] &lt;= '9') {</span>
 
 <span class="fc" id="L161">            number *= ByteParser.NUMBER_BASE;</span>
 <span class="fc" id="L162">            number += this.input[this.offset] - '0';</span>
@@ -265,7 +265,7 @@ public class ByteParser {
 <span class="fc" id="L265">                error = false;</span>
             }
             // Check for fractional values after decimal
-<span class="pc bpc" id="L268" title="1 of 4 branches missed.">            if (length &gt; 0 &amp;&amp; this.input[this.offset] == '.') {</span>
+<span class="fc bfc" id="L268" title="All 4 branches covered.">            if (length &gt; 0 &amp;&amp; this.input[this.offset] == '.') {</span>
 <span class="fc" id="L269">                this.offset++;</span>
 <span class="fc" id="L270">                length--;</span>
 <span class="fc" id="L271">                double numerator = getBareInteger(length);</span>
@@ -287,7 +287,7 @@ public class ByteParser {
             // Look for an exponent ,Our Fortran heritage means that we allow
             // 'D' for the exponent
             // indicator.
-<span class="pc bpc" id="L290" title="4 of 10 branches missed.">            if (length &gt; 0 &amp;&amp; (this.input[this.offset] == 'e' || this.input[this.offset] == 'E' || this.input[this.offset] == 'd' || this.input[this.offset] == 'D')) {</span>
+<span class="pc bpc" id="L290" title="3 of 10 branches missed.">            if (length &gt; 0 &amp;&amp; (this.input[this.offset] == 'e' || this.input[this.offset] == 'E' || this.input[this.offset] == 'd' || this.input[this.offset] == 'D')) {</span>
 <span class="fc" id="L291">                this.offset++;</span>
 <span class="fc" id="L292">                length--;</span>
 <span class="pc bpc" id="L293" title="1 of 2 branches missed.">                if (length &gt; 0) {</span>
@@ -457,8 +457,8 @@ public class ByteParser {
     }
 
     private boolean isCaseInsensitiv(int length, int constantLength, byte[] lowerConstant, byte[] upperConstant) {
-<span class="pc bpc" id="L460" title="1 of 2 branches missed.">        if (length &lt; constantLength) {</span>
-<span class="nc" id="L461">            return false;</span>
+<span class="fc bfc" id="L460" title="All 2 branches covered.">        if (length &lt; constantLength) {</span>
+<span class="fc" id="L461">            return false;</span>
         }
 <span class="fc bfc" id="L463" title="All 2 branches covered.">        for (int i = 0; i &lt; constantLength; i++) {</span>
 <span class="fc bfc" id="L464" title="All 4 branches covered.">            if (this.input[this.offset + i] != lowerConstant[i] &amp;&amp; this.input[this.offset + i] != upperConstant[i]) {</span>

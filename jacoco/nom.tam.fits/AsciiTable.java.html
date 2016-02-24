@@ -332,10 +332,8 @@ public class AsciiTable extends AbstractTableData {
             // Invalidate the buffer
 <span class="fc" id="L333">            this.buffer = null;</span>
 <span class="fc" id="L334">            return this.nRows;</span>
-<span class="nc" id="L335">        } catch (FitsException e) {</span>
-<span class="nc" id="L336">            throw e;</span>
-<span class="fc" id="L337">        } catch (Exception e) {</span>
-<span class="fc" id="L338">            throw new FitsException(&quot;Error deleting row:&quot; + e.getMessage(), e);</span>
+<span class="fc" id="L335">        } catch (Exception e) {</span>
+<span class="fc" id="L336">            throw new FitsException(&quot;Error addnig row:&quot; + e.getMessage(), e);</span>
         }
     }
 
@@ -352,66 +350,66 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public void deleteColumns(int start, int len) throws FitsException {
-<span class="fc" id="L355">        ensureData();</span>
+<span class="fc" id="L353">        ensureData();</span>
 
-<span class="fc" id="L357">        Object[] newData = new Object[this.nFields - len];</span>
-<span class="fc" id="L358">        int[] newOffsets = new int[this.nFields - len];</span>
-<span class="fc" id="L359">        int[] newLengths = new int[this.nFields - len];</span>
-<span class="fc" id="L360">        Class&lt;?&gt;[] newTypes = new Class[this.nFields - len];</span>
-<span class="fc" id="L361">        String[] newNulls = new String[this.nFields - len];</span>
+<span class="fc" id="L355">        Object[] newData = new Object[this.nFields - len];</span>
+<span class="fc" id="L356">        int[] newOffsets = new int[this.nFields - len];</span>
+<span class="fc" id="L357">        int[] newLengths = new int[this.nFields - len];</span>
+<span class="fc" id="L358">        Class&lt;?&gt;[] newTypes = new Class[this.nFields - len];</span>
+<span class="fc" id="L359">        String[] newNulls = new String[this.nFields - len];</span>
 
         // Copy in the initial stuff...
-<span class="fc" id="L364">        System.arraycopy(this.data, 0, newData, 0, start);</span>
+<span class="fc" id="L362">        System.arraycopy(this.data, 0, newData, 0, start);</span>
         // Don't do the offsets here.
-<span class="fc" id="L366">        System.arraycopy(this.lengths, 0, newLengths, 0, start);</span>
-<span class="fc" id="L367">        System.arraycopy(this.types, 0, newTypes, 0, start);</span>
-<span class="fc" id="L368">        System.arraycopy(this.nulls, 0, newNulls, 0, start);</span>
+<span class="fc" id="L364">        System.arraycopy(this.lengths, 0, newLengths, 0, start);</span>
+<span class="fc" id="L365">        System.arraycopy(this.types, 0, newTypes, 0, start);</span>
+<span class="fc" id="L366">        System.arraycopy(this.nulls, 0, newNulls, 0, start);</span>
 
         // Copy in the final
-<span class="fc" id="L371">        System.arraycopy(this.data, start + len, newData, start, this.nFields - start - len);</span>
+<span class="fc" id="L369">        System.arraycopy(this.data, start + len, newData, start, this.nFields - start - len);</span>
         // Don't do the offsets here.
-<span class="fc" id="L373">        System.arraycopy(this.lengths, start + len, newLengths, start, this.nFields - start - len);</span>
-<span class="fc" id="L374">        System.arraycopy(this.types, start + len, newTypes, start, this.nFields - start - len);</span>
-<span class="fc" id="L375">        System.arraycopy(this.nulls, start + len, newNulls, start, this.nFields - start - len);</span>
+<span class="fc" id="L371">        System.arraycopy(this.lengths, start + len, newLengths, start, this.nFields - start - len);</span>
+<span class="fc" id="L372">        System.arraycopy(this.types, start + len, newTypes, start, this.nFields - start - len);</span>
+<span class="fc" id="L373">        System.arraycopy(this.nulls, start + len, newNulls, start, this.nFields - start - len);</span>
 
-<span class="fc bfc" id="L377" title="All 2 branches covered.">        for (int i = start; i &lt; start + len; i += 1) {</span>
-<span class="fc" id="L378">            this.rowLen -= this.lengths[i] + 1;</span>
+<span class="fc bfc" id="L375" title="All 2 branches covered.">        for (int i = start; i &lt; start + len; i += 1) {</span>
+<span class="fc" id="L376">            this.rowLen -= this.lengths[i] + 1;</span>
         }
 
-<span class="fc" id="L381">        this.data = newData;</span>
-<span class="fc" id="L382">        this.offsets = newOffsets;</span>
-<span class="fc" id="L383">        this.lengths = newLengths;</span>
-<span class="fc" id="L384">        this.types = newTypes;</span>
-<span class="fc" id="L385">        this.nulls = newNulls;</span>
+<span class="fc" id="L379">        this.data = newData;</span>
+<span class="fc" id="L380">        this.offsets = newOffsets;</span>
+<span class="fc" id="L381">        this.lengths = newLengths;</span>
+<span class="fc" id="L382">        this.types = newTypes;</span>
+<span class="fc" id="L383">        this.nulls = newNulls;</span>
 
-<span class="fc bfc" id="L387" title="All 2 branches covered.">        if (this.isNull != null) {</span>
-<span class="fc" id="L388">            boolean found = false;</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">        if (this.isNull != null) {</span>
+<span class="fc" id="L386">            boolean found = false;</span>
 
-<span class="fc" id="L390">            boolean[] newIsNull = new boolean[this.nRows * (this.nFields - len)];</span>
-<span class="fc bfc" id="L391" title="All 2 branches covered.">            for (int i = 0; i &lt; this.nRows; i += 1) {</span>
-<span class="fc" id="L392">                int oldOff = this.nFields * i;</span>
-<span class="fc" id="L393">                int newOff = (this.nFields - len) * i;</span>
-<span class="fc bfc" id="L394" title="All 2 branches covered.">                for (int col = 0; col &lt; start; col += 1) {</span>
-<span class="fc" id="L395">                    newIsNull[newOff + col] = this.isNull[oldOff + col];</span>
-<span class="fc bfc" id="L396" title="All 4 branches covered.">                    found = found || this.isNull[oldOff + col];</span>
+<span class="fc" id="L388">            boolean[] newIsNull = new boolean[this.nRows * (this.nFields - len)];</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">            for (int i = 0; i &lt; this.nRows; i += 1) {</span>
+<span class="fc" id="L390">                int oldOff = this.nFields * i;</span>
+<span class="fc" id="L391">                int newOff = (this.nFields - len) * i;</span>
+<span class="fc bfc" id="L392" title="All 2 branches covered.">                for (int col = 0; col &lt; start; col += 1) {</span>
+<span class="fc" id="L393">                    newIsNull[newOff + col] = this.isNull[oldOff + col];</span>
+<span class="fc bfc" id="L394" title="All 4 branches covered.">                    found = found || this.isNull[oldOff + col];</span>
                 }
-<span class="pc bpc" id="L398" title="1 of 2 branches missed.">                for (int col = start + len; col &lt; this.nFields; col += 1) {</span>
-<span class="nc" id="L399">                    newIsNull[newOff + col - len] = this.isNull[oldOff + col];</span>
-<span class="nc bnc" id="L400" title="All 4 branches missed.">                    found = found || this.isNull[oldOff + col];</span>
+<span class="pc bpc" id="L396" title="1 of 2 branches missed.">                for (int col = start + len; col &lt; this.nFields; col += 1) {</span>
+<span class="nc" id="L397">                    newIsNull[newOff + col - len] = this.isNull[oldOff + col];</span>
+<span class="nc bnc" id="L398" title="All 4 branches missed.">                    found = found || this.isNull[oldOff + col];</span>
                 }
             }
-<span class="pc bpc" id="L403" title="1 of 2 branches missed.">            if (found) {</span>
-<span class="fc" id="L404">                this.isNull = newIsNull;</span>
+<span class="pc bpc" id="L401" title="1 of 2 branches missed.">            if (found) {</span>
+<span class="fc" id="L402">                this.isNull = newIsNull;</span>
             } else {
-<span class="nc" id="L406">                this.isNull = null;</span>
+<span class="nc" id="L404">                this.isNull = null;</span>
             }
         }
 
         // Invalidate the buffer
-<span class="fc" id="L411">        this.buffer = null;</span>
+<span class="fc" id="L409">        this.buffer = null;</span>
 
-<span class="fc" id="L413">        this.nFields -= len;</span>
-<span class="fc" id="L414">    }</span>
+<span class="fc" id="L411">        this.nFields -= len;</span>
+<span class="fc" id="L412">    }</span>
 
     /**
      * Delete rows from a FITS table
@@ -427,26 +425,26 @@ public class AsciiTable extends AbstractTableData {
     @Override
     public void deleteRows(int start, int len) throws FitsException {
         try {
-<span class="pc bpc" id="L430" title="3 of 8 branches missed.">            if (this.nRows == 0 || start &lt; 0 || start &gt;= this.nRows || len &lt;= 0) {</span>
-<span class="fc" id="L431">                return;</span>
+<span class="pc bpc" id="L428" title="3 of 8 branches missed.">            if (this.nRows == 0 || start &lt; 0 || start &gt;= this.nRows || len &lt;= 0) {</span>
+<span class="fc" id="L429">                return;</span>
             }
-<span class="pc bpc" id="L433" title="1 of 2 branches missed.">            if (start + len &gt; this.nRows) {</span>
-<span class="nc" id="L434">                len = this.nRows - start;</span>
+<span class="pc bpc" id="L431" title="1 of 2 branches missed.">            if (start + len &gt; this.nRows) {</span>
+<span class="nc" id="L432">                len = this.nRows - start;</span>
             }
-<span class="fc" id="L436">            ensureData();</span>
-<span class="fc bfc" id="L437" title="All 2 branches covered.">            for (int i = 0; i &lt; this.nFields; i += 1) {</span>
-<span class="fc" id="L438">                Object o = ArrayFuncs.newInstance(this.types[i], this.nRows - len);</span>
-<span class="fc" id="L439">                System.arraycopy(this.data[i], 0, o, 0, start);</span>
-<span class="fc" id="L440">                System.arraycopy(this.data[i], start + len, o, start, this.nRows - len - start);</span>
-<span class="fc" id="L441">                this.data[i] = o;</span>
+<span class="fc" id="L434">            ensureData();</span>
+<span class="fc bfc" id="L435" title="All 2 branches covered.">            for (int i = 0; i &lt; this.nFields; i += 1) {</span>
+<span class="fc" id="L436">                Object o = ArrayFuncs.newInstance(this.types[i], this.nRows - len);</span>
+<span class="fc" id="L437">                System.arraycopy(this.data[i], 0, o, 0, start);</span>
+<span class="fc" id="L438">                System.arraycopy(this.data[i], start + len, o, start, this.nRows - len - start);</span>
+<span class="fc" id="L439">                this.data[i] = o;</span>
             }
-<span class="fc" id="L443">            this.nRows -= len;</span>
-<span class="fc" id="L444">        } catch (FitsException e) {</span>
-<span class="fc" id="L445">            throw e;</span>
-<span class="fc" id="L446">        } catch (Exception e) {</span>
-<span class="fc" id="L447">            throw new FitsException(&quot;Error deleting row:&quot; + e.getMessage(), e);</span>
-<span class="fc" id="L448">        }</span>
-<span class="fc" id="L449">    }</span>
+<span class="fc" id="L441">            this.nRows -= len;</span>
+<span class="fc" id="L442">        } catch (FitsException e) {</span>
+<span class="fc" id="L443">            throw e;</span>
+<span class="fc" id="L444">        } catch (Exception e) {</span>
+<span class="fc" id="L445">            throw new FitsException(&quot;Error deleting row:&quot; + e.getMessage(), e);</span>
+<span class="fc" id="L446">        }</span>
+<span class="fc" id="L447">    }</span>
 
     /**
      * be sure that the data is filled. because the getData already tests null
@@ -456,8 +454,8 @@ public class AsciiTable extends AbstractTableData {
      *             if the operation failed
      */
     private void ensureData() throws FitsException {
-<span class="fc" id="L459">        getData();</span>
-<span class="fc" id="L460">    }</span>
+<span class="fc" id="L457">        getData();</span>
+<span class="fc" id="L458">    }</span>
 
     /**
      * Move an element from the buffer into a data array.
@@ -479,33 +477,33 @@ public class AsciiTable extends AbstractTableData {
      */
     private boolean extractElement(int offset, int length, Object[] array, int col, int row, String nullFld) throws FitsException {
 
-<span class="fc" id="L482">        this.bp.setOffset(offset);</span>
+<span class="fc" id="L480">        this.bp.setOffset(offset);</span>
 
-<span class="fc bfc" id="L484" title="All 2 branches covered.">        if (nullFld != null) {</span>
-<span class="fc" id="L485">            String s = this.bp.getString(length);</span>
-<span class="fc bfc" id="L486" title="All 2 branches covered.">            if (s.trim().equals(nullFld)) {</span>
-<span class="fc" id="L487">                return false;</span>
+<span class="fc bfc" id="L482" title="All 2 branches covered.">        if (nullFld != null) {</span>
+<span class="fc" id="L483">            String s = this.bp.getString(length);</span>
+<span class="fc bfc" id="L484" title="All 2 branches covered.">            if (s.trim().equals(nullFld)) {</span>
+<span class="fc" id="L485">                return false;</span>
             }
-<span class="fc" id="L489">            this.bp.skip(-length);</span>
+<span class="fc" id="L487">            this.bp.skip(-length);</span>
         }
         try {
-<span class="fc bfc" id="L492" title="All 2 branches covered.">            if (array[col] instanceof String[]) {</span>
-<span class="fc" id="L493">                ((String[]) array[col])[row] = this.bp.getString(length);</span>
-<span class="fc bfc" id="L494" title="All 2 branches covered.">            } else if (array[col] instanceof int[]) {</span>
-<span class="fc" id="L495">                ((int[]) array[col])[row] = this.bp.getInt(length);</span>
-<span class="fc bfc" id="L496" title="All 2 branches covered.">            } else if (array[col] instanceof float[]) {</span>
-<span class="fc" id="L497">                ((float[]) array[col])[row] = this.bp.getFloat(length);</span>
-<span class="fc bfc" id="L498" title="All 2 branches covered.">            } else if (array[col] instanceof double[]) {</span>
-<span class="fc" id="L499">                ((double[]) array[col])[row] = this.bp.getDouble(length);</span>
-<span class="pc bpc" id="L500" title="1 of 2 branches missed.">            } else if (array[col] instanceof long[]) {</span>
-<span class="fc" id="L501">                ((long[]) array[col])[row] = this.bp.getLong(length);</span>
+<span class="fc bfc" id="L490" title="All 2 branches covered.">            if (array[col] instanceof String[]) {</span>
+<span class="fc" id="L491">                ((String[]) array[col])[row] = this.bp.getString(length);</span>
+<span class="fc bfc" id="L492" title="All 2 branches covered.">            } else if (array[col] instanceof int[]) {</span>
+<span class="fc" id="L493">                ((int[]) array[col])[row] = this.bp.getInt(length);</span>
+<span class="fc bfc" id="L494" title="All 2 branches covered.">            } else if (array[col] instanceof float[]) {</span>
+<span class="fc" id="L495">                ((float[]) array[col])[row] = this.bp.getFloat(length);</span>
+<span class="fc bfc" id="L496" title="All 2 branches covered.">            } else if (array[col] instanceof double[]) {</span>
+<span class="fc" id="L497">                ((double[]) array[col])[row] = this.bp.getDouble(length);</span>
+<span class="pc bpc" id="L498" title="1 of 2 branches missed.">            } else if (array[col] instanceof long[]) {</span>
+<span class="fc" id="L499">                ((long[]) array[col])[row] = this.bp.getLong(length);</span>
             } else {
-<span class="nc" id="L503">                throw new FitsException(&quot;Invalid type for ASCII table conversion:&quot; + array[col]);</span>
+<span class="nc" id="L501">                throw new FitsException(&quot;Invalid type for ASCII table conversion:&quot; + array[col]);</span>
             }
-<span class="nc" id="L505">        } catch (FormatException e) {</span>
-<span class="nc" id="L506">            throw new FitsException(&quot;Error parsing data at row,col:&quot; + row + &quot;,&quot; + col + &quot;  &quot; + e);</span>
-<span class="fc" id="L507">        }</span>
-<span class="fc" id="L508">        return true;</span>
+<span class="nc" id="L503">        } catch (FormatException e) {</span>
+<span class="nc" id="L504">            throw new FitsException(&quot;Error parsing data at row,col:&quot; + row + &quot;,&quot; + col + &quot;  &quot; + e);</span>
+<span class="fc" id="L505">        }</span>
+<span class="fc" id="L506">        return true;</span>
     }
 
     /**
@@ -519,45 +517,45 @@ public class AsciiTable extends AbstractTableData {
     @Override
     public void fillHeader(Header hdr) {
         try {
-<span class="fc" id="L522">            Standard.context(AsciiTable.class);</span>
-<span class="fc" id="L523">            hdr.setXtension(&quot;TABLE&quot;);</span>
-<span class="fc" id="L524">            hdr.setBitpix(BasicHDU.BITPIX_BYTE);</span>
-<span class="fc" id="L525">            hdr.setNaxes(2);</span>
-<span class="fc" id="L526">            hdr.setNaxis(1, this.rowLen);</span>
-<span class="fc" id="L527">            hdr.setNaxis(2, this.nRows);</span>
-<span class="fc" id="L528">            Cursor&lt;String, HeaderCard&gt; iter = hdr.iterator();</span>
-<span class="fc" id="L529">            iter.setKey(NAXIS2.key());</span>
-<span class="fc" id="L530">            iter.next();</span>
-<span class="fc" id="L531">            iter.add(new HeaderCard(PCOUNT.key(), 0, PCOUNT.comment()));</span>
-<span class="fc" id="L532">            iter.add(new HeaderCard(GCOUNT.key(), 1, GCOUNT.comment()));</span>
-<span class="fc" id="L533">            iter.add(new HeaderCard(TFIELDS.key(), this.nFields, TFIELDS.comment()));</span>
+<span class="fc" id="L520">            Standard.context(AsciiTable.class);</span>
+<span class="fc" id="L521">            hdr.setXtension(&quot;TABLE&quot;);</span>
+<span class="fc" id="L522">            hdr.setBitpix(BasicHDU.BITPIX_BYTE);</span>
+<span class="fc" id="L523">            hdr.setNaxes(2);</span>
+<span class="fc" id="L524">            hdr.setNaxis(1, this.rowLen);</span>
+<span class="fc" id="L525">            hdr.setNaxis(2, this.nRows);</span>
+<span class="fc" id="L526">            Cursor&lt;String, HeaderCard&gt; iter = hdr.iterator();</span>
+<span class="fc" id="L527">            iter.setKey(NAXIS2.key());</span>
+<span class="fc" id="L528">            iter.next();</span>
+<span class="fc" id="L529">            iter.add(new HeaderCard(PCOUNT.key(), 0, PCOUNT.comment()));</span>
+<span class="fc" id="L530">            iter.add(new HeaderCard(GCOUNT.key(), 1, GCOUNT.comment()));</span>
+<span class="fc" id="L531">            iter.add(new HeaderCard(TFIELDS.key(), this.nFields, TFIELDS.comment()));</span>
 
-<span class="fc bfc" id="L535" title="All 2 branches covered.">            for (int i = 0; i &lt; this.nFields; i += 1) {</span>
-<span class="fc" id="L536">                addColInfo(i, iter);</span>
+<span class="fc bfc" id="L533" title="All 2 branches covered.">            for (int i = 0; i &lt; this.nFields; i += 1) {</span>
+<span class="fc" id="L534">                addColInfo(i, iter);</span>
             }
-<span class="fc" id="L538">        } catch (HeaderCardException e) {</span>
-<span class="fc" id="L539">            LOG.log(Level.SEVERE, &quot;ImpossibleException in fillHeader:&quot; + e.getMessage(), e);</span>
+<span class="fc" id="L536">        } catch (HeaderCardException e) {</span>
+<span class="fc" id="L537">            LOG.log(Level.SEVERE, &quot;ImpossibleException in fillHeader:&quot; + e.getMessage(), e);</span>
         } finally {
-<span class="pc" id="L541">            Standard.context(null);</span>
-<span class="fc" id="L542">        }</span>
-<span class="fc" id="L543">    }</span>
+<span class="pc" id="L539">            Standard.context(null);</span>
+<span class="fc" id="L540">        }</span>
+<span class="fc" id="L541">    }</span>
 
     /**
      * Read some data into the buffer.
      */
     private void getBuffer(int size, long offset) throws IOException, FitsException {
 
-<span class="fc bfc" id="L550" title="All 2 branches covered.">        if (this.currInput == null) {</span>
-<span class="fc" id="L551">            throw new IOException(&quot;No stream open to read&quot;);</span>
+<span class="fc bfc" id="L548" title="All 2 branches covered.">        if (this.currInput == null) {</span>
+<span class="fc" id="L549">            throw new IOException(&quot;No stream open to read&quot;);</span>
         }
 
-<span class="fc" id="L554">        this.buffer = new byte[size];</span>
-<span class="fc bfc" id="L555" title="All 2 branches covered.">        if (offset != 0) {</span>
-<span class="fc" id="L556">            FitsUtil.reposition(this.currInput, offset);</span>
+<span class="fc" id="L552">        this.buffer = new byte[size];</span>
+<span class="fc bfc" id="L553" title="All 2 branches covered.">        if (offset != 0) {</span>
+<span class="fc" id="L554">            FitsUtil.reposition(this.currInput, offset);</span>
         }
-<span class="fc" id="L558">        this.currInput.readFully(this.buffer);</span>
-<span class="fc" id="L559">        this.bp = new ByteParser(this.buffer);</span>
-<span class="fc" id="L560">    }</span>
+<span class="fc" id="L556">        this.currInput.readFully(this.buffer);</span>
+<span class="fc" id="L557">        this.bp = new ByteParser(this.buffer);</span>
+<span class="fc" id="L558">    }</span>
 
     /**
      * Get a column of data
@@ -571,8 +569,8 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public Object getColumn(int col) throws FitsException {
-<span class="fc" id="L574">        ensureData();</span>
-<span class="fc" id="L575">        return this.data[col];</span>
+<span class="fc" id="L572">        ensureData();</span>
+<span class="fc" id="L573">        return this.data[col];</span>
     }
 
     /**
@@ -587,42 +585,42 @@ public class AsciiTable extends AbstractTableData {
     @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;intended exposure of mutable data&quot;)
     public Object getData() throws FitsException {
 
-<span class="fc bfc" id="L590" title="All 2 branches covered.">        if (this.data == null) {</span>
+<span class="fc bfc" id="L588" title="All 2 branches covered.">        if (this.data == null) {</span>
 
-<span class="fc" id="L592">            this.data = new Object[this.nFields];</span>
+<span class="fc" id="L590">            this.data = new Object[this.nFields];</span>
 
-<span class="fc bfc" id="L594" title="All 2 branches covered.">            for (int i = 0; i &lt; this.nFields; i += 1) {</span>
-<span class="fc" id="L595">                this.data[i] = ArrayFuncs.newInstance(this.types[i], this.nRows);</span>
+<span class="fc bfc" id="L592" title="All 2 branches covered.">            for (int i = 0; i &lt; this.nFields; i += 1) {</span>
+<span class="fc" id="L593">                this.data[i] = ArrayFuncs.newInstance(this.types[i], this.nRows);</span>
             }
 
-<span class="fc bfc" id="L598" title="All 2 branches covered.">            if (this.buffer == null) {</span>
-<span class="fc" id="L599">                long newOffset = FitsUtil.findOffset(this.currInput);</span>
+<span class="fc bfc" id="L596" title="All 2 branches covered.">            if (this.buffer == null) {</span>
+<span class="fc" id="L597">                long newOffset = FitsUtil.findOffset(this.currInput);</span>
                 try {
-<span class="fc" id="L601">                    getBuffer(this.nRows * this.rowLen, this.fileOffset);</span>
+<span class="fc" id="L599">                    getBuffer(this.nRows * this.rowLen, this.fileOffset);</span>
 
-<span class="fc" id="L603">                } catch (IOException e) {</span>
-<span class="fc" id="L604">                    throw new FitsException(&quot;Error in deferred read -- file closed prematurely?:&quot; + e.getMessage(), e);</span>
-<span class="fc" id="L605">                }</span>
-<span class="fc" id="L606">                FitsUtil.reposition(this.currInput, newOffset);</span>
+<span class="fc" id="L601">                } catch (IOException e) {</span>
+<span class="fc" id="L602">                    throw new FitsException(&quot;Error in deferred read -- file closed prematurely?:&quot; + e.getMessage(), e);</span>
+<span class="fc" id="L603">                }</span>
+<span class="fc" id="L604">                FitsUtil.reposition(this.currInput, newOffset);</span>
             }
 
-<span class="fc" id="L609">            this.bp.setOffset(0);</span>
+<span class="fc" id="L607">            this.bp.setOffset(0);</span>
 
             int rowOffset;
-<span class="fc bfc" id="L612" title="All 2 branches covered.">            for (int i = 0; i &lt; this.nRows; i += 1) {</span>
-<span class="fc" id="L613">                rowOffset = this.rowLen * i;</span>
-<span class="fc bfc" id="L614" title="All 2 branches covered.">                for (int j = 0; j &lt; this.nFields; j += 1) {</span>
-<span class="fc bfc" id="L615" title="All 2 branches covered.">                    if (!extractElement(rowOffset + this.offsets[j], this.lengths[j], this.data, j, i, this.nulls[j])) {</span>
-<span class="pc bpc" id="L616" title="1 of 2 branches missed.">                        if (this.isNull == null) {</span>
-<span class="fc" id="L617">                            this.isNull = new boolean[this.nRows * this.nFields];</span>
+<span class="fc bfc" id="L610" title="All 2 branches covered.">            for (int i = 0; i &lt; this.nRows; i += 1) {</span>
+<span class="fc" id="L611">                rowOffset = this.rowLen * i;</span>
+<span class="fc bfc" id="L612" title="All 2 branches covered.">                for (int j = 0; j &lt; this.nFields; j += 1) {</span>
+<span class="fc bfc" id="L613" title="All 2 branches covered.">                    if (!extractElement(rowOffset + this.offsets[j], this.lengths[j], this.data, j, i, this.nulls[j])) {</span>
+<span class="pc bpc" id="L614" title="1 of 2 branches missed.">                        if (this.isNull == null) {</span>
+<span class="fc" id="L615">                            this.isNull = new boolean[this.nRows * this.nFields];</span>
                         }
 
-<span class="fc" id="L620">                        this.isNull[j + i * this.nFields] = true;</span>
+<span class="fc" id="L618">                        this.isNull[j + i * this.nFields] = true;</span>
                     }
                 }
             }
         }
-<span class="fc" id="L625">        return this.data;</span>
+<span class="fc" id="L623">        return this.data;</span>
     }
 
     /**
@@ -640,10 +638,10 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public Object getElement(int row, int col) throws FitsException {
-<span class="fc bfc" id="L643" title="All 2 branches covered.">        if (this.data != null) {</span>
-<span class="fc" id="L644">            return singleElement(row, col);</span>
+<span class="fc bfc" id="L641" title="All 2 branches covered.">        if (this.data != null) {</span>
+<span class="fc" id="L642">            return singleElement(row, col);</span>
         } else {
-<span class="fc" id="L646">            return parseSingleElement(row, col);</span>
+<span class="fc" id="L644">            return parseSingleElement(row, col);</span>
         }
     }
 
@@ -655,7 +653,7 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public int getNCols() {
-<span class="fc" id="L658">        return this.nFields;</span>
+<span class="fc" id="L656">        return this.nFields;</span>
     }
 
     /**
@@ -666,7 +664,7 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public int getNRows() {
-<span class="fc" id="L669">        return this.nRows;</span>
+<span class="fc" id="L667">        return this.nRows;</span>
     }
 
     /**
@@ -682,10 +680,10 @@ public class AsciiTable extends AbstractTableData {
     @Override
     public Object[] getRow(int row) throws FitsException {
 
-<span class="fc bfc" id="L685" title="All 2 branches covered.">        if (this.data != null) {</span>
-<span class="fc" id="L686">            return singleRow(row);</span>
+<span class="fc bfc" id="L683" title="All 2 branches covered.">        if (this.data != null) {</span>
+<span class="fc" id="L684">            return singleRow(row);</span>
         } else {
-<span class="fc" id="L688">            return parseSingleRow(row);</span>
+<span class="fc" id="L686">            return parseSingleRow(row);</span>
         }
     }
 
@@ -695,7 +693,7 @@ public class AsciiTable extends AbstractTableData {
      * @return The number of bytes for a single row in the table.
      */
     public int getRowLen() {
-<span class="fc" id="L698">        return this.rowLen;</span>
+<span class="fc" id="L696">        return this.rowLen;</span>
     }
 
     /**
@@ -707,7 +705,7 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     protected long getTrueSize() {
-<span class="fc" id="L710">        return (long) this.nRows * this.rowLen;</span>
+<span class="fc" id="L708">        return (long) this.nRows * this.rowLen;</span>
     }
 
     /**
@@ -720,10 +718,10 @@ public class AsciiTable extends AbstractTableData {
      * @return if the given element has been nulled.
      */
     public boolean isNull(int row, int col) {
-<span class="pc bpc" id="L723" title="1 of 2 branches missed.">        if (this.isNull != null) {</span>
-<span class="fc" id="L724">            return this.isNull[row * this.nFields + col];</span>
+<span class="pc bpc" id="L721" title="1 of 2 branches missed.">        if (this.isNull != null) {</span>
+<span class="fc" id="L722">            return this.isNull[row * this.nFields + col];</span>
         } else {
-<span class="nc" id="L726">            return false;</span>
+<span class="nc" id="L724">            return false;</span>
         }
     }
 
@@ -736,23 +734,23 @@ public class AsciiTable extends AbstractTableData {
      */
     private Object parseSingleElement(int row, int col) throws FitsException {
 
-<span class="fc" id="L739">        Object[] res = new Object[1];</span>
+<span class="fc" id="L737">        Object[] res = new Object[1];</span>
         try {
-<span class="fc" id="L741">            getBuffer(this.lengths[col], this.fileOffset + (long) row * (long) this.rowLen + this.offsets[col]);</span>
-<span class="nc" id="L742">        } catch (IOException e) {</span>
-<span class="nc" id="L743">            this.buffer = null;</span>
-<span class="nc" id="L744">            throw new FitsException(&quot;Unable to read element&quot;);</span>
-<span class="fc" id="L745">        }</span>
-<span class="fc" id="L746">        res[0] = ArrayFuncs.newInstance(this.types[col], 1);</span>
+<span class="fc" id="L739">            getBuffer(this.lengths[col], this.fileOffset + (long) row * (long) this.rowLen + this.offsets[col]);</span>
+<span class="nc" id="L740">        } catch (IOException e) {</span>
+<span class="nc" id="L741">            this.buffer = null;</span>
+<span class="nc" id="L742">            throw new FitsException(&quot;Unable to read element&quot;, e);</span>
+<span class="fc" id="L743">        }</span>
+<span class="fc" id="L744">        res[0] = ArrayFuncs.newInstance(this.types[col], 1);</span>
 
-<span class="pc bpc" id="L748" title="1 of 2 branches missed.">        if (extractElement(0, this.lengths[col], res, 0, 0, this.nulls[col])) {</span>
-<span class="fc" id="L749">            this.buffer = null;</span>
-<span class="fc" id="L750">            return res[0];</span>
+<span class="pc bpc" id="L746" title="1 of 2 branches missed.">        if (extractElement(0, this.lengths[col], res, 0, 0, this.nulls[col])) {</span>
+<span class="fc" id="L747">            this.buffer = null;</span>
+<span class="fc" id="L748">            return res[0];</span>
 
         } else {
 
-<span class="nc" id="L754">            this.buffer = null;</span>
-<span class="nc" id="L755">            return null;</span>
+<span class="nc" id="L752">            this.buffer = null;</span>
+<span class="nc" id="L753">            return null;</span>
         }
     }
 
@@ -765,24 +763,24 @@ public class AsciiTable extends AbstractTableData {
      */
     private Object[] parseSingleRow(int row) throws FitsException {
 
-<span class="fc" id="L768">        Object[] res = new Object[this.nFields];</span>
+<span class="fc" id="L766">        Object[] res = new Object[this.nFields];</span>
 
         try {
-<span class="fc" id="L771">            getBuffer(this.rowLen, this.fileOffset + (long) row * (long) this.rowLen);</span>
-<span class="nc" id="L772">        } catch (IOException e) {</span>
-<span class="nc" id="L773">            throw new FitsException(&quot;Unable to read row&quot;);</span>
-<span class="fc" id="L774">        }</span>
+<span class="fc" id="L769">            getBuffer(this.rowLen, this.fileOffset + (long) row * (long) this.rowLen);</span>
+<span class="nc" id="L770">        } catch (IOException e) {</span>
+<span class="nc" id="L771">            throw new FitsException(&quot;Unable to read row&quot;, e);</span>
+<span class="fc" id="L772">        }</span>
 
-<span class="fc bfc" id="L776" title="All 2 branches covered.">        for (int i = 0; i &lt; this.nFields; i += 1) {</span>
-<span class="fc" id="L777">            res[i] = ArrayFuncs.newInstance(this.types[i], 1);</span>
-<span class="pc bpc" id="L778" title="1 of 2 branches missed.">            if (!extractElement(this.offsets[i], this.lengths[i], res, i, 0, this.nulls[i])) {</span>
-<span class="nc" id="L779">                res[i] = null;</span>
+<span class="fc bfc" id="L774" title="All 2 branches covered.">        for (int i = 0; i &lt; this.nFields; i += 1) {</span>
+<span class="fc" id="L775">            res[i] = ArrayFuncs.newInstance(this.types[i], 1);</span>
+<span class="pc bpc" id="L776" title="1 of 2 branches missed.">            if (!extractElement(this.offsets[i], this.lengths[i], res, i, 0, this.nulls[i])) {</span>
+<span class="nc" id="L777">                res[i] = null;</span>
             }
         }
 
         // Invalidate buffer for future use.
-<span class="fc" id="L784">        this.buffer = null;</span>
-<span class="fc" id="L785">        return res;</span>
+<span class="fc" id="L782">        this.buffer = null;</span>
+<span class="fc" id="L783">        return res;</span>
     }
 
     /**
@@ -798,23 +796,23 @@ public class AsciiTable extends AbstractTableData {
     @Override
     public void read(ArrayDataInput str) throws FitsException {
         try {
-<span class="fc" id="L801">            setFileOffset(str);</span>
-<span class="fc" id="L802">            this.currInput = str;</span>
-<span class="fc bfc" id="L803" title="All 2 branches covered.">            if (str instanceof RandomAccess) {</span>
-<span class="fc" id="L804">                str.skipAllBytes((long) this.nRows * this.rowLen);</span>
+<span class="fc" id="L799">            setFileOffset(str);</span>
+<span class="fc" id="L800">            this.currInput = str;</span>
+<span class="fc bfc" id="L801" title="All 2 branches covered.">            if (str instanceof RandomAccess) {</span>
+<span class="fc" id="L802">                str.skipAllBytes((long) this.nRows * this.rowLen);</span>
             } else {
-<span class="pc bpc" id="L806" title="1 of 2 branches missed.">                if ((long) this.rowLen * this.nRows &gt; Integer.MAX_VALUE) {</span>
-<span class="nc" id="L807">                    throw new FitsException(&quot;Cannot read ASCII table &gt; 2 GB&quot;);</span>
+<span class="pc bpc" id="L804" title="1 of 2 branches missed.">                if ((long) this.rowLen * this.nRows &gt; Integer.MAX_VALUE) {</span>
+<span class="nc" id="L805">                    throw new FitsException(&quot;Cannot read ASCII table &gt; 2 GB&quot;);</span>
                 }
-<span class="fc" id="L809">                getBuffer(this.rowLen * this.nRows, 0);</span>
+<span class="fc" id="L807">                getBuffer(this.rowLen * this.nRows, 0);</span>
             }
-<span class="fc" id="L811">            str.skipAllBytes(FitsUtil.padding(this.nRows * this.rowLen));</span>
-<span class="nc" id="L812">        } catch (EOFException e) {</span>
-<span class="nc" id="L813">            throw new PaddingException(&quot;EOF skipping padding after ASCII Table&quot;, this, e);</span>
-<span class="nc" id="L814">        } catch (IOException e) {</span>
-<span class="nc" id="L815">            throw new FitsException(&quot;Error skipping padding after ASCII Table&quot;, e);</span>
-<span class="fc" id="L816">        }</span>
-<span class="fc" id="L817">    }</span>
+<span class="fc" id="L809">            str.skipAllBytes(FitsUtil.padding(this.nRows * this.rowLen));</span>
+<span class="nc" id="L810">        } catch (EOFException e) {</span>
+<span class="nc" id="L811">            throw new PaddingException(&quot;EOF skipping padding after ASCII Table&quot;, this, e);</span>
+<span class="nc" id="L812">        } catch (IOException e) {</span>
+<span class="nc" id="L813">            throw new FitsException(&quot;Error skipping padding after ASCII Table&quot;, e);</span>
+<span class="fc" id="L814">        }</span>
+<span class="fc" id="L815">    }</span>
 
     /**
      * Replace a column with new data.
@@ -829,16 +827,16 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public void setColumn(int col, Object newData) throws FitsException {
-<span class="fc" id="L832">        ensureData();</span>
-<span class="pc bpc" id="L833" title="4 of 8 branches missed.">        if (col &lt; 0 || col &gt;= this.nFields || newData.getClass() != this.data[col].getClass() || Array.getLength(newData) != Array.getLength(this.data[col])) {</span>
-<span class="nc" id="L834">            throw new FitsException(&quot;Invalid column/column mismatch:&quot; + col);</span>
+<span class="fc" id="L830">        ensureData();</span>
+<span class="pc bpc" id="L831" title="4 of 8 branches missed.">        if (col &lt; 0 || col &gt;= this.nFields || newData.getClass() != this.data[col].getClass() || Array.getLength(newData) != Array.getLength(this.data[col])) {</span>
+<span class="nc" id="L832">            throw new FitsException(&quot;Invalid column/column mismatch:&quot; + col);</span>
         }
-<span class="fc" id="L836">        this.data[col] = newData;</span>
+<span class="fc" id="L834">        this.data[col] = newData;</span>
 
         // Invalidate the buffer.
-<span class="fc" id="L839">        this.buffer = null;</span>
+<span class="fc" id="L837">        this.buffer = null;</span>
 
-<span class="fc" id="L841">    }</span>
+<span class="fc" id="L839">    }</span>
 
     /**
      * Modify an element in the table
@@ -855,18 +853,18 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public void setElement(int row, int col, Object newData) throws FitsException {
-<span class="fc" id="L858">        ensureData();</span>
+<span class="fc" id="L856">        ensureData();</span>
         try {
-<span class="fc" id="L860">            System.arraycopy(newData, 0, this.data[col], row, 1);</span>
-<span class="nc" id="L861">        } catch (Exception e) {</span>
-<span class="nc" id="L862">            throw new FitsException(&quot;Incompatible element:&quot; + row + &quot;,&quot; + col);</span>
-<span class="fc" id="L863">        }</span>
-<span class="fc" id="L864">        setNull(row, col, false);</span>
+<span class="fc" id="L858">            System.arraycopy(newData, 0, this.data[col], row, 1);</span>
+<span class="nc" id="L859">        } catch (Exception e) {</span>
+<span class="nc" id="L860">            throw new FitsException(&quot;Incompatible element:&quot; + row + &quot;,&quot; + col, e);</span>
+<span class="fc" id="L861">        }</span>
+<span class="fc" id="L862">        setNull(row, col, false);</span>
 
         // Invalidate the buffer
-<span class="fc" id="L867">        this.buffer = null;</span>
+<span class="fc" id="L865">        this.buffer = null;</span>
 
-<span class="fc" id="L869">    }</span>
+<span class="fc" id="L867">    }</span>
 
     /**
      * Mark (or unmark) an element as null. Note that if this FITS file is
@@ -882,18 +880,18 @@ public class AsciiTable extends AbstractTableData {
      *            True if the element is to be set to null.
      */
     public void setNull(int row, int col, boolean flag) {
-<span class="fc bfc" id="L885" title="All 2 branches covered.">        if (flag) {</span>
-<span class="fc bfc" id="L886" title="All 2 branches covered.">            if (this.isNull == null) {</span>
-<span class="fc" id="L887">                this.isNull = new boolean[this.nRows * this.nFields];</span>
+<span class="fc bfc" id="L883" title="All 2 branches covered.">        if (flag) {</span>
+<span class="fc bfc" id="L884" title="All 2 branches covered.">            if (this.isNull == null) {</span>
+<span class="fc" id="L885">                this.isNull = new boolean[this.nRows * this.nFields];</span>
             }
-<span class="fc" id="L889">            this.isNull[col + row * this.nFields] = true;</span>
-<span class="fc bfc" id="L890" title="All 2 branches covered.">        } else if (this.isNull != null) {</span>
-<span class="fc" id="L891">            this.isNull[col + row * this.nFields] = false;</span>
+<span class="fc" id="L887">            this.isNull[col + row * this.nFields] = true;</span>
+<span class="fc bfc" id="L888" title="All 2 branches covered.">        } else if (this.isNull != null) {</span>
+<span class="fc" id="L889">            this.isNull[col + row * this.nFields] = false;</span>
         }
 
         // Invalidate the buffer
-<span class="fc" id="L895">        this.buffer = null;</span>
-<span class="fc" id="L896">    }</span>
+<span class="fc" id="L893">        this.buffer = null;</span>
+<span class="fc" id="L894">    }</span>
 
     /**
      * Set the null string for a columns. This is not a public method since we
@@ -901,10 +899,10 @@ public class AsciiTable extends AbstractTableData {
      * also.
      */
     void setNullString(int col, String newNull) {
-<span class="pc bpc" id="L904" title="2 of 4 branches missed.">        if (col &gt;= 0 &amp;&amp; col &lt; this.nulls.length) {</span>
-<span class="fc" id="L905">            this.nulls[col] = newNull;</span>
+<span class="pc bpc" id="L902" title="2 of 4 branches missed.">        if (col &gt;= 0 &amp;&amp; col &lt; this.nulls.length) {</span>
+<span class="fc" id="L903">            this.nulls[col] = newNull;</span>
         }
-<span class="fc" id="L907">    }</span>
+<span class="fc" id="L905">    }</span>
 
     /**
      * Modify a row in the table
@@ -920,35 +918,35 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public void setRow(int row, Object[] newData) throws FitsException {
-<span class="pc bpc" id="L923" title="2 of 4 branches missed.">        if (row &lt; 0 || row &gt; this.nRows) {</span>
-<span class="nc" id="L924">            throw new FitsException(&quot;Invalid row in setRow&quot;);</span>
+<span class="pc bpc" id="L921" title="2 of 4 branches missed.">        if (row &lt; 0 || row &gt; this.nRows) {</span>
+<span class="nc" id="L922">            throw new FitsException(&quot;Invalid row in setRow&quot;);</span>
         }
-<span class="fc" id="L926">        ensureData();</span>
-<span class="fc bfc" id="L927" title="All 2 branches covered.">        for (int i = 0; i &lt; this.nFields; i += 1) {</span>
+<span class="fc" id="L924">        ensureData();</span>
+<span class="fc bfc" id="L925" title="All 2 branches covered.">        for (int i = 0; i &lt; this.nFields; i += 1) {</span>
             try {
-<span class="fc" id="L929">                System.arraycopy(newData[i], 0, this.data[i], row, 1);</span>
-<span class="nc" id="L930">            } catch (Exception e) {</span>
-<span class="nc" id="L931">                throw new FitsException(&quot;Unable to modify row: incompatible data:&quot; + row);</span>
-<span class="fc" id="L932">            }</span>
-<span class="fc" id="L933">            setNull(row, i, false);</span>
+<span class="fc" id="L927">                System.arraycopy(newData[i], 0, this.data[i], row, 1);</span>
+<span class="nc" id="L928">            } catch (Exception e) {</span>
+<span class="nc" id="L929">                throw new FitsException(&quot;Unable to modify row: incompatible data:&quot; + row, e);</span>
+<span class="fc" id="L930">            }</span>
+<span class="fc" id="L931">            setNull(row, i, false);</span>
         }
 
         // Invalidate the buffer
-<span class="fc" id="L937">        this.buffer = null;</span>
+<span class="fc" id="L935">        this.buffer = null;</span>
 
-<span class="fc" id="L939">    }</span>
+<span class="fc" id="L937">    }</span>
 
     /**
      * Extract a single element from a table. This returns an array of length 1.
      */
     private Object singleElement(int row, int col) {
 
-<span class="fc" id="L946">        Object res = null;</span>
-<span class="pc bpc" id="L947" title="3 of 4 branches missed.">        if (this.isNull == null || !this.isNull[row * this.nFields + col]) {</span>
-<span class="fc" id="L948">            res = ArrayFuncs.newInstance(this.types[col], 1);</span>
-<span class="fc" id="L949">            System.arraycopy(this.data[col], row, res, 0, 1);</span>
+<span class="fc" id="L944">        Object res = null;</span>
+<span class="pc bpc" id="L945" title="3 of 4 branches missed.">        if (this.isNull == null || !this.isNull[row * this.nFields + col]) {</span>
+<span class="fc" id="L946">            res = ArrayFuncs.newInstance(this.types[col], 1);</span>
+<span class="fc" id="L947">            System.arraycopy(this.data[col], row, res, 0, 1);</span>
         }
-<span class="fc" id="L951">        return res;</span>
+<span class="fc" id="L949">        return res;</span>
     }
 
     /**
@@ -957,14 +955,14 @@ public class AsciiTable extends AbstractTableData {
      */
     private Object[] singleRow(int row) {
 
-<span class="fc" id="L960">        Object[] res = new Object[this.nFields];</span>
-<span class="fc bfc" id="L961" title="All 2 branches covered.">        for (int i = 0; i &lt; this.nFields; i += 1) {</span>
-<span class="pc bpc" id="L962" title="2 of 4 branches missed.">            if (this.isNull == null || !this.isNull[row * this.nFields + i]) {</span>
-<span class="fc" id="L963">                res[i] = ArrayFuncs.newInstance(this.types[i], 1);</span>
-<span class="fc" id="L964">                System.arraycopy(this.data[i], row, res[i], 0, 1);</span>
+<span class="fc" id="L958">        Object[] res = new Object[this.nFields];</span>
+<span class="fc bfc" id="L959" title="All 2 branches covered.">        for (int i = 0; i &lt; this.nFields; i += 1) {</span>
+<span class="pc bpc" id="L960" title="2 of 4 branches missed.">            if (this.isNull == null || !this.isNull[row * this.nFields + i]) {</span>
+<span class="fc" id="L961">                res[i] = ArrayFuncs.newInstance(this.types[i], 1);</span>
+<span class="fc" id="L962">                System.arraycopy(this.data[i], row, res[i], 0, 1);</span>
             }
         }
-<span class="fc" id="L967">        return res;</span>
+<span class="fc" id="L965">        return res;</span>
     }
 
     /**
@@ -981,18 +979,18 @@ public class AsciiTable extends AbstractTableData {
     @Override
     public void updateAfterDelete(int oldNCol, Header hdr) throws FitsException {
 
-<span class="fc" id="L984">        int offset = 0;</span>
-<span class="fc bfc" id="L985" title="All 2 branches covered.">        for (int i = 0; i &lt; this.nFields; i += 1) {</span>
-<span class="fc" id="L986">            this.offsets[i] = offset;</span>
-<span class="fc" id="L987">            hdr.addValue(TBCOLn.n(i + 1), offset + 1);</span>
-<span class="fc" id="L988">            offset += this.lengths[i] + 1;</span>
+<span class="fc" id="L982">        int offset = 0;</span>
+<span class="fc bfc" id="L983" title="All 2 branches covered.">        for (int i = 0; i &lt; this.nFields; i += 1) {</span>
+<span class="fc" id="L984">            this.offsets[i] = offset;</span>
+<span class="fc" id="L985">            hdr.addValue(TBCOLn.n(i + 1), offset + 1);</span>
+<span class="fc" id="L986">            offset += this.lengths[i] + 1;</span>
         }
-<span class="fc bfc" id="L990" title="All 2 branches covered.">        for (int i = this.nFields; i &lt; oldNCol; i += 1) {</span>
-<span class="fc" id="L991">            hdr.deleteKey(TBCOLn.n(i + 1));</span>
+<span class="fc bfc" id="L988" title="All 2 branches covered.">        for (int i = this.nFields; i &lt; oldNCol; i += 1) {</span>
+<span class="fc" id="L989">            hdr.deleteKey(TBCOLn.n(i + 1));</span>
         }
 
-<span class="fc" id="L994">        hdr.addValue(NAXIS1, this.rowLen);</span>
-<span class="fc" id="L995">    }</span>
+<span class="fc" id="L992">        hdr.addValue(NAXIS1, this.rowLen);</span>
+<span class="fc" id="L993">    }</span>
 
     /**
      * Write the data to an output stream.
@@ -1007,55 +1005,55 @@ public class AsciiTable extends AbstractTableData {
     @Override
     public void write(ArrayDataOutput str) throws FitsException {
         // Make sure we have the data in hand.
-<span class="fc" id="L1010">        ensureData();</span>
+<span class="fc" id="L1008">        ensureData();</span>
         // If buffer is still around we can just reuse it,
         // since nothing we've done has invalidated it.
 
-<span class="fc bfc" id="L1014" title="All 2 branches covered.">        if (this.buffer == null) {</span>
+<span class="fc bfc" id="L1012" title="All 2 branches covered.">        if (this.buffer == null) {</span>
 
-<span class="pc bpc" id="L1016" title="1 of 2 branches missed.">            if (this.data == null) {</span>
-<span class="nc" id="L1017">                throw new FitsException(&quot;Attempt to write undefined ASCII Table&quot;);</span>
+<span class="pc bpc" id="L1014" title="1 of 2 branches missed.">            if (this.data == null) {</span>
+<span class="nc" id="L1015">                throw new FitsException(&quot;Attempt to write undefined ASCII Table&quot;);</span>
             }
 
-<span class="pc bpc" id="L1020" title="1 of 2 branches missed.">            if ((long) this.nRows * this.rowLen &gt; Integer.MAX_VALUE) {</span>
-<span class="nc" id="L1021">                throw new FitsException(&quot;Cannot write ASCII table &gt; 2 GB&quot;);</span>
+<span class="pc bpc" id="L1018" title="1 of 2 branches missed.">            if ((long) this.nRows * this.rowLen &gt; Integer.MAX_VALUE) {</span>
+<span class="nc" id="L1019">                throw new FitsException(&quot;Cannot write ASCII table &gt; 2 GB&quot;);</span>
             }
 
-<span class="fc" id="L1024">            this.buffer = new byte[this.nRows * this.rowLen];</span>
+<span class="fc" id="L1022">            this.buffer = new byte[this.nRows * this.rowLen];</span>
 
-<span class="fc" id="L1026">            this.bp = new ByteParser(this.buffer);</span>
-<span class="fc bfc" id="L1027" title="All 2 branches covered.">            for (int i = 0; i &lt; this.buffer.length; i += 1) {</span>
-<span class="fc" id="L1028">                this.buffer[i] = (byte) ' ';</span>
+<span class="fc" id="L1024">            this.bp = new ByteParser(this.buffer);</span>
+<span class="fc bfc" id="L1025" title="All 2 branches covered.">            for (int i = 0; i &lt; this.buffer.length; i += 1) {</span>
+<span class="fc" id="L1026">                this.buffer[i] = (byte) ' ';</span>
             }
 
-<span class="fc" id="L1031">            ByteFormatter bf = new ByteFormatter();</span>
+<span class="fc" id="L1029">            ByteFormatter bf = new ByteFormatter();</span>
 
-<span class="fc bfc" id="L1033" title="All 2 branches covered.">            for (int i = 0; i &lt; this.nRows; i += 1) {</span>
+<span class="fc bfc" id="L1031" title="All 2 branches covered.">            for (int i = 0; i &lt; this.nRows; i += 1) {</span>
 
-<span class="fc bfc" id="L1035" title="All 2 branches covered.">                for (int j = 0; j &lt; this.nFields; j += 1) {</span>
-<span class="fc" id="L1036">                    int offset = i * this.rowLen + this.offsets[j];</span>
-<span class="fc" id="L1037">                    int len = this.lengths[j];</span>
-<span class="fc bfc" id="L1038" title="All 4 branches covered.">                    if (this.isNull != null &amp;&amp; this.isNull[i * this.nFields + j]) {</span>
-<span class="pc bpc" id="L1039" title="1 of 2 branches missed.">                        if (this.nulls[j] == null) {</span>
-<span class="nc" id="L1040">                            throw new FitsException(&quot;No null value set when needed&quot;);</span>
+<span class="fc bfc" id="L1033" title="All 2 branches covered.">                for (int j = 0; j &lt; this.nFields; j += 1) {</span>
+<span class="fc" id="L1034">                    int offset = i * this.rowLen + this.offsets[j];</span>
+<span class="fc" id="L1035">                    int len = this.lengths[j];</span>
+<span class="fc bfc" id="L1036" title="All 4 branches covered.">                    if (this.isNull != null &amp;&amp; this.isNull[i * this.nFields + j]) {</span>
+<span class="pc bpc" id="L1037" title="1 of 2 branches missed.">                        if (this.nulls[j] == null) {</span>
+<span class="nc" id="L1038">                            throw new FitsException(&quot;No null value set when needed&quot;);</span>
                         }
-<span class="fc" id="L1042">                        bf.format(this.nulls[j], this.buffer, offset, len);</span>
+<span class="fc" id="L1040">                        bf.format(this.nulls[j], this.buffer, offset, len);</span>
                     } else {
-<span class="fc bfc" id="L1044" title="All 2 branches covered.">                        if (this.types[j] == String.class) {</span>
-<span class="fc" id="L1045">                            String[] s = (String[]) this.data[j];</span>
-<span class="fc" id="L1046">                            bf.format(s[i], this.buffer, offset, len);</span>
-<span class="fc bfc" id="L1047" title="All 2 branches covered.">                        } else if (this.types[j] == int.class) {</span>
-<span class="fc" id="L1048">                            int[] ia = (int[]) this.data[j];</span>
-<span class="fc" id="L1049">                            bf.format(ia[i], this.buffer, offset, len);</span>
-<span class="fc bfc" id="L1050" title="All 2 branches covered.">                        } else if (this.types[j] == float.class) {</span>
-<span class="fc" id="L1051">                            float[] fa = (float[]) this.data[j];</span>
-<span class="fc" id="L1052">                            bf.format(fa[i], this.buffer, offset, len);</span>
-<span class="fc bfc" id="L1053" title="All 2 branches covered.">                        } else if (this.types[j] == double.class) {</span>
-<span class="fc" id="L1054">                            double[] da = (double[]) this.data[j];</span>
-<span class="fc" id="L1055">                            bf.format(da[i], this.buffer, offset, len);</span>
-<span class="pc bpc" id="L1056" title="1 of 2 branches missed.">                        } else if (this.types[j] == long.class) {</span>
-<span class="fc" id="L1057">                            long[] la = (long[]) this.data[j];</span>
-<span class="fc" id="L1058">                            bf.format(la[i], this.buffer, offset, len);</span>
+<span class="fc bfc" id="L1042" title="All 2 branches covered.">                        if (this.types[j] == String.class) {</span>
+<span class="fc" id="L1043">                            String[] s = (String[]) this.data[j];</span>
+<span class="fc" id="L1044">                            bf.format(s[i], this.buffer, offset, len);</span>
+<span class="fc bfc" id="L1045" title="All 2 branches covered.">                        } else if (this.types[j] == int.class) {</span>
+<span class="fc" id="L1046">                            int[] ia = (int[]) this.data[j];</span>
+<span class="fc" id="L1047">                            bf.format(ia[i], this.buffer, offset, len);</span>
+<span class="fc bfc" id="L1048" title="All 2 branches covered.">                        } else if (this.types[j] == float.class) {</span>
+<span class="fc" id="L1049">                            float[] fa = (float[]) this.data[j];</span>
+<span class="fc" id="L1050">                            bf.format(fa[i], this.buffer, offset, len);</span>
+<span class="fc bfc" id="L1051" title="All 2 branches covered.">                        } else if (this.types[j] == double.class) {</span>
+<span class="fc" id="L1052">                            double[] da = (double[]) this.data[j];</span>
+<span class="fc" id="L1053">                            bf.format(da[i], this.buffer, offset, len);</span>
+<span class="pc bpc" id="L1054" title="1 of 2 branches missed.">                        } else if (this.types[j] == long.class) {</span>
+<span class="fc" id="L1055">                            long[] la = (long[]) this.data[j];</span>
+<span class="fc" id="L1056">                            bf.format(la[i], this.buffer, offset, len);</span>
                         }
                     }
                 }
@@ -1064,11 +1062,11 @@ public class AsciiTable extends AbstractTableData {
 
         // Now write the buffer.
         try {
-<span class="fc" id="L1067">            str.write(this.buffer);</span>
-<span class="fc" id="L1068">            FitsUtil.pad(str, this.buffer.length, (byte) ' ');</span>
-<span class="nc" id="L1069">        } catch (IOException e) {</span>
-<span class="nc" id="L1070">            throw new FitsException(&quot;Error writing ASCII Table data&quot;);</span>
-<span class="fc" id="L1071">        }</span>
-<span class="fc" id="L1072">    }</span>
+<span class="fc" id="L1065">            str.write(this.buffer);</span>
+<span class="fc" id="L1066">            FitsUtil.pad(str, this.buffer.length, (byte) ' ');</span>
+<span class="nc" id="L1067">        } catch (IOException e) {</span>
+<span class="nc" id="L1068">            throw new FitsException(&quot;Error writing ASCII Table data&quot;, e);</span>
+<span class="fc" id="L1069">        }</span>
+<span class="fc" id="L1070">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

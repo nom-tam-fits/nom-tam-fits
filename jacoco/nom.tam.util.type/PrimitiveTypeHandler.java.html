@@ -81,21 +81,21 @@ public final class PrimitiveTypeHandler {
 
     private static PrimitiveType&lt;?&gt;[] values() {
 <span class="fc" id="L83">        return new PrimitiveType[]{</span>
-                PrimitiveType.BOOLEAN,
-                PrimitiveType.BYTE,
-                PrimitiveType.CHAR,
-                PrimitiveType.DOUBLE,
-                PrimitiveType.FLOAT,
-                PrimitiveType.INT,
-                PrimitiveType.LONG,
-                PrimitiveType.SHORT,
-                PrimitiveType.STRING,
-                PrimitiveType.UNKNOWN
+                PrimitiveTypes.BOOLEAN,
+                PrimitiveTypes.BYTE,
+                PrimitiveTypes.CHAR,
+                PrimitiveTypes.DOUBLE,
+                PrimitiveTypes.FLOAT,
+                PrimitiveTypes.INT,
+                PrimitiveTypes.LONG,
+                PrimitiveTypes.SHORT,
+                PrimitiveTypes.STRING,
+                PrimitiveTypes.UNKNOWN
         };
     }
 
-<span class="nc" id="L97">    private PrimitiveTypeHandler() {</span>
-<span class="nc" id="L98">    }</span>
+<span class="fc" id="L97">    private PrimitiveTypeHandler() {</span>
+<span class="fc" id="L98">    }</span>
 
     public static PrimitiveType&lt;Buffer&gt; valueOf(int bitPix) {
 <span class="fc" id="L101">        return cast(byBitPix[bitPix + BIT_PIX_OFFSET]);</span>

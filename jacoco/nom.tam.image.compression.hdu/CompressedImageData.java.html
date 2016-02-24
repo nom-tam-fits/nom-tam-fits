@@ -36,9 +36,9 @@ import static nom.tam.fits.header.Compression.ZIMAGE;
 import java.nio.Buffer;
 
 import nom.tam.fits.BinaryTable;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.image.compression.tile.TiledImageCompressionOperation;
 import nom.tam.util.ArrayFuncs;
@@ -50,70 +50,85 @@ public class CompressedImageData extends BinaryTable {
      */
     private TiledImageCompressionOperation tiledImageOperation;
 
-    public CompressedImageData() {
+    protected CompressedImageData() {
 <span class="fc" id="L54">        super();</span>
 <span class="fc" id="L55">    }</span>
 
-    public CompressedImageData(Header hdr) throws FitsException {
+    protected CompressedImageData(Header hdr) throws FitsException {
 <span class="fc" id="L58">        super(hdr);</span>
 <span class="fc" id="L59">    }</span>
 
-    public void compress(CompressedImageHDU hdu) throws FitsException {
-<span class="fc" id="L62">        tiledImageOperation().compress(hdu);</span>
-<span class="fc" id="L63">    }</span>
-
     @Override
     public void fillHeader(Header h) throws FitsException {
-<span class="fc" id="L67">        super.fillHeader(h);</span>
-<span class="fc" id="L68">        h.addValue(ZIMAGE, true);</span>
-<span class="fc" id="L69">    }</span>
-
-    public &lt;T extends ICompressOption&gt; T getCompressOption(Class&lt;T&gt; clazz) {
-<span class="fc" id="L72">        return tiledImageOperation().compressOptions().unwrap(clazz);</span>
-    }
-
-    protected void forceNoLoss(int x, int y, int width, int heigth) {
-<span class="fc" id="L76">        this.tiledImageOperation.forceNoLoss(x, y, width, heigth);</span>
-<span class="fc" id="L77">    }</span>
-
-    public Buffer getUncompressedData(Header hdr) throws FitsException {
-        try {
-<span class="fc" id="L81">            this.tiledImageOperation = new TiledImageCompressionOperation(this).read(hdr);</span>
-<span class="fc" id="L82">            return this.tiledImageOperation.decompress();</span>
-        } finally {
-<span class="pc" id="L84">            this.tiledImageOperation = null;</span>
-        }
-    }
-
-    public void prepareUncompressedData(Object data, Header header) throws FitsException {
-<span class="fc" id="L89">        tiledImageOperation().readPrimaryHeaders(header);</span>
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">        if (data instanceof Buffer) {</span>
-<span class="nc" id="L91">            tiledImageOperation().prepareUncompressedData((Buffer) data);</span>
-        } else {
-<span class="fc" id="L93">            Buffer source = tiledImageOperation().getBaseType().newBuffer(this.tiledImageOperation.getBufferSize());</span>
-<span class="fc" id="L94">            ArrayFuncs.copyInto(data, source.array());</span>
-<span class="fc" id="L95">            tiledImageOperation().prepareUncompressedData(source);</span>
-        }
-<span class="fc" id="L97">    }</span>
+<span class="fc" id="L63">        super.fillHeader(h);</span>
+<span class="fc" id="L64">        h.addValue(ZIMAGE, true);</span>
+<span class="fc" id="L65">    }</span>
 
     private TiledImageCompressionOperation tiledImageOperation() {
-<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (this.tiledImageOperation == null) {</span>
-<span class="fc" id="L101">            this.tiledImageOperation = new TiledImageCompressionOperation(this);</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (this.tiledImageOperation == null) {</span>
+<span class="fc" id="L69">            this.tiledImageOperation = new TiledImageCompressionOperation(this);</span>
         }
-<span class="fc" id="L103">        return this.tiledImageOperation;</span>
+<span class="fc" id="L71">        return this.tiledImageOperation;</span>
+    }
+
+    protected void compress(CompressedImageHDU hdu) throws FitsException {
+<span class="fc" id="L75">        tiledImageOperation().compress(hdu);</span>
+<span class="fc" id="L76">    }</span>
+
+    protected void forceNoLoss(int x, int y, int width, int heigth) {
+<span class="fc" id="L79">        this.tiledImageOperation.forceNoLoss(x, y, width, heigth);</span>
+<span class="fc" id="L80">    }</span>
+
+    protected &lt;T extends ICompressOption&gt; T getCompressOption(Class&lt;T&gt; clazz) {
+<span class="fc" id="L83">        return tiledImageOperation().compressOptions().unwrap(clazz);</span>
+    }
+
+    protected Buffer getUncompressedData(Header hdr) throws FitsException {
+        try {
+<span class="fc" id="L88">            this.tiledImageOperation = new TiledImageCompressionOperation(this).read(hdr);</span>
+<span class="fc" id="L89">            return this.tiledImageOperation.decompress();</span>
+        } finally {
+<span class="pc" id="L91">            this.tiledImageOperation = null;</span>
+        }
+    }
+
+    protected void prepareUncompressedData(Object data, Header header) throws FitsException {
+<span class="fc" id="L96">        tiledImageOperation().readPrimaryHeaders(header);</span>
+<span class="fc" id="L97">        Buffer source = tiledImageOperation().getBaseType().newBuffer(this.tiledImageOperation.getBufferSize());</span>
+<span class="fc" id="L98">        ArrayFuncs.copyInto(data, source.array());</span>
+<span class="fc" id="L99">        tiledImageOperation().prepareUncompressedData(source);</span>
+<span class="fc" id="L100">    }</span>
+
+    /**
+     * preserve the null values in the image even if the compression algorithm
+     * is lossy.
+     *
+     * @param nullValue
+     *            the value representing null for byte/short and integer pixel
+     *            values
+     * @param compressionAlgorithm
+     *            compression algorithm to use for the null pixel mask
+     */
+    protected void preserveNulls(long nullValue, String compressionAlgorithm) {
+<span class="fc" id="L113">        tiledImageOperation().preserveNulls(nullValue, compressionAlgorithm);</span>
+<span class="fc" id="L114">    }</span>
+
+    protected CompressedImageData setAxis(int[] axes) {
+<span class="fc" id="L117">        tiledImageOperation().setAxes(axes);</span>
+<span class="fc" id="L118">        return this;</span>
     }
 
     protected void setCompressAlgorithm(HeaderCard compressAlgorithmCard) {
-<span class="fc" id="L107">        tiledImageOperation().setCompressAlgorithm(compressAlgorithmCard);</span>
-<span class="fc" id="L108">    }</span>
+<span class="fc" id="L122">        tiledImageOperation().setCompressAlgorithm(compressAlgorithmCard);</span>
+<span class="fc" id="L123">    }</span>
 
     protected void setQuantAlgorithm(HeaderCard quantAlgorithmCard) throws FitsException {
-<span class="fc" id="L111">        tiledImageOperation().setQuantAlgorithm(quantAlgorithmCard);</span>
-<span class="fc" id="L112">    }</span>
+<span class="fc" id="L126">        tiledImageOperation().setQuantAlgorithm(quantAlgorithmCard);</span>
+<span class="fc" id="L127">    }</span>
 
-    protected CompressedImageData setTileSize(int... axes) {
-<span class="fc" id="L115">        tiledImageOperation().setTileAxes(axes);</span>
-<span class="fc" id="L116">        return this;</span>
+    protected CompressedImageData setTileSize(int... axes) throws FitsException {
+<span class="fc" id="L130">        tiledImageOperation().setTileAxes(axes);</span>
+<span class="fc" id="L131">        return this;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

@@ -407,6 +407,37 @@
     public static final String ZSCALE_COLUMN = &quot;ZSCALE&quot;;
 
     /**
+     * &lt;p&gt;
+     * The null pixels in integer images are flagged by a reserved BLANK value
+     * and will be preserved if a lossless compression algorithm is used. If the
+     * image is compressed with a lossy algorithm, however (e.g., H-Compress
+     * with a scale factor greater than 1), then some other technique must be
+     * used to identify the null pixels in the image.
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * The recommended method of recording the null pixels when a lossy
+     * compression algorithm is used is to create an integer data mask with the
+     * same dimensions as the image tile. Set the null pixels to 1 and all the
+     * other pixels to 0, then compress the mask array using a lossless
+     * algorithm such as PLIO or GZIP. Store the compressed byte stream in a
+     * variable-length array column called ’NULL PIXEL MASK’ in the row
+     * corresponding to that image tile. The ZMASKCMP keyword should be used to
+     * record the name of the algorithm used to compress the data mask (e.g.,
+     * RICE 1). The data mask array pixels will be assumed to have the shortest
+     * integer datatype that is supported by the compression algorithm (i.e.,
+     * usually 8-bit bytes).
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * When uncompressing the image tile, the software must check if the
+     * corresponding compressed data mask exists with a length greater than 0,
+     * and if so, then uncompress the mask and set the corresponding undefined
+     * pixels in the image array to the appropriate value (as given by the BLANK
+     * keyword).
+     * &lt;/p&gt;
+     */
+    public static final String NULL_PIXEL_MASK_COLUMN = &quot;NULL_PIXEL_MASK_COLUMN&quot;;
+
+    /**
      * The number of 8-bit bytes in each original integer pixel value.
      */
     public static final String BYTEPIX = &quot;BYTEPIX&quot;;
@@ -443,47 +474,47 @@
     private final IFitsHeader uncompressedKey;
 
     Compression(HDU hdu, VALUE valueType, String comment) {
-<span class="fc" id="L446">        this(hdu, valueType, comment, null);</span>
-<span class="fc" id="L447">    }</span>
+<span class="fc" id="L477">        this(hdu, valueType, comment, null);</span>
+<span class="fc" id="L478">    }</span>
 
-<span class="fc" id="L449">    Compression(HDU hdu, VALUE valueType, String comment, IFitsHeader uncompressedKey) {</span>
-<span class="fc" id="L450">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.HEASARC, hdu, valueType, comment);</span>
-<span class="fc" id="L451">        this.uncompressedKey = uncompressedKey;</span>
-<span class="fc" id="L452">    }</span>
+<span class="fc" id="L480">    Compression(HDU hdu, VALUE valueType, String comment, IFitsHeader uncompressedKey) {</span>
+<span class="fc" id="L481">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.HEASARC, hdu, valueType, comment);</span>
+<span class="fc" id="L482">        this.uncompressedKey = uncompressedKey;</span>
+<span class="fc" id="L483">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L456">        return this.key.comment();</span>
+<span class="fc" id="L487">        return this.key.comment();</span>
     }
 
     public IFitsHeader getUncompressedKey() {
-<span class="fc" id="L460">        return this.uncompressedKey;</span>
+<span class="fc" id="L491">        return this.uncompressedKey;</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L465">        return this.key.hdu();</span>
+<span class="fc" id="L496">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L470">        return this.key.key();</span>
+<span class="fc" id="L501">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L475">        return this.key.n(number);</span>
+<span class="fc" id="L506">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L480">        return this.key.status();</span>
+<span class="fc" id="L511">        return this.key.status();</span>
     }
 
     @Override
     @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L486">        return this.key.valueType();</span>
+<span class="fc" id="L517">        return this.key.valueType();</span>
     }
 
 }

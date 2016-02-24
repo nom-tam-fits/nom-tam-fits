@@ -21,6 +21,7 @@ nom.tam.fits.utilities
 nom.tam.image
 nom.tam.image.compression.hdu
 nom.tam.image.compression.tile
+nom.tam.image.compression.tile.mask
 nom.tam.image.tile.operation
 nom.tam.image.tile.operation.buffer
 nom.tam.util

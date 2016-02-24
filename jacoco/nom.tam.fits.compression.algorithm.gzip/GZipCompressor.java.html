@@ -19,6 +19,7 @@ import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.FitsIO;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
+import nom.tam.util.type.PrimitiveTypes;
 
 /*
  * #%L
@@ -60,19 +61,19 @@ public abstract class GZipCompressor&lt;T extends Buffer&gt; implements ICompres
     public static class ByteGZipCompressor extends GZipCompressor&lt;ByteBuffer&gt; {
 
         public ByteGZipCompressor() {
-<span class="fc" id="L63">            super(1);</span>
-<span class="fc" id="L64">            this.nioBuffer = ByteBuffer.wrap(this.buffer);</span>
-<span class="fc" id="L65">        }</span>
+<span class="fc" id="L64">            super(1);</span>
+<span class="fc" id="L65">            this.nioBuffer = ByteBuffer.wrap(this.buffer);</span>
+<span class="fc" id="L66">        }</span>
 
         @Override
         protected void getPixel(ByteBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L69">            this.nioBuffer.put(pixelData);</span>
-<span class="fc" id="L70">        }</span>
+<span class="fc" id="L70">            this.nioBuffer.put(pixelData);</span>
+<span class="fc" id="L71">        }</span>
 
         @Override
         protected void setPixel(ByteBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L74">            pixelData.put(this.nioBuffer);</span>
-<span class="fc" id="L75">        }</span>
+<span class="fc" id="L75">            pixelData.put(this.nioBuffer);</span>
+<span class="fc" id="L76">        }</span>
     }
 
     public static class DoubleGZipCompressor extends GZipCompressor&lt;DoubleBuffer&gt; {
@@ -80,19 +81,19 @@ public abstract class GZipCompressor&lt;T extends Buffer&gt; implements ICompres
         protected static final int BYTE_SIZE_OF_DOUBLE = 8;
 
         public DoubleGZipCompressor() {
-<span class="fc" id="L83">            super(BYTE_SIZE_OF_DOUBLE);</span>
-<span class="fc" id="L84">            this.nioBuffer = ByteBuffer.wrap(this.buffer).asDoubleBuffer();</span>
-<span class="fc" id="L85">        }</span>
+<span class="fc" id="L84">            super(BYTE_SIZE_OF_DOUBLE);</span>
+<span class="fc" id="L85">            this.nioBuffer = ByteBuffer.wrap(this.buffer).asDoubleBuffer();</span>
+<span class="fc" id="L86">        }</span>
 
         @Override
         protected void getPixel(DoubleBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L89">            this.nioBuffer.put(pixelData);</span>
-<span class="fc" id="L90">        }</span>
+<span class="fc" id="L90">            this.nioBuffer.put(pixelData);</span>
+<span class="fc" id="L91">        }</span>
 
         @Override
         protected void setPixel(DoubleBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L94">            pixelData.put(this.nioBuffer);</span>
-<span class="fc" id="L95">        }</span>
+<span class="fc" id="L95">            pixelData.put(this.nioBuffer);</span>
+<span class="fc" id="L96">        }</span>
     }
 
     public static class FloatGZipCompressor extends GZipCompressor&lt;FloatBuffer&gt; {
@@ -100,19 +101,19 @@ public abstract class GZipCompressor&lt;T extends Buffer&gt; implements ICompres
         protected static final int BYTE_SIZE_OF_FLOAT = 4;
 
         public FloatGZipCompressor() {
-<span class="fc" id="L103">            super(BYTE_SIZE_OF_FLOAT);</span>
-<span class="fc" id="L104">            this.nioBuffer = ByteBuffer.wrap(this.buffer).asFloatBuffer();</span>
-<span class="fc" id="L105">        }</span>
+<span class="fc" id="L104">            super(BYTE_SIZE_OF_FLOAT);</span>
+<span class="fc" id="L105">            this.nioBuffer = ByteBuffer.wrap(this.buffer).asFloatBuffer();</span>
+<span class="fc" id="L106">        }</span>
 
         @Override
         protected void getPixel(FloatBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L109">            this.nioBuffer.put(pixelData);</span>
-<span class="fc" id="L110">        }</span>
+<span class="fc" id="L110">            this.nioBuffer.put(pixelData);</span>
+<span class="fc" id="L111">        }</span>
 
         @Override
         protected void setPixel(FloatBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L114">            pixelData.put(this.nioBuffer);</span>
-<span class="fc" id="L115">        }</span>
+<span class="fc" id="L115">            pixelData.put(this.nioBuffer);</span>
+<span class="fc" id="L116">        }</span>
     }
 
     public static class IntGZipCompressor extends GZipCompressor&lt;IntBuffer&gt; {
@@ -120,19 +121,19 @@ public abstract class GZipCompressor&lt;T extends Buffer&gt; implements ICompres
         protected static final int BYTE_SIZE_OF_INT = 4;
 
         public IntGZipCompressor() {
-<span class="fc" id="L123">            super(BYTE_SIZE_OF_INT);</span>
-<span class="fc" id="L124">            this.nioBuffer = ByteBuffer.wrap(this.buffer).asIntBuffer();</span>
-<span class="fc" id="L125">        }</span>
+<span class="fc" id="L124">            super(BYTE_SIZE_OF_INT);</span>
+<span class="fc" id="L125">            this.nioBuffer = ByteBuffer.wrap(this.buffer).asIntBuffer();</span>
+<span class="fc" id="L126">        }</span>
 
         @Override
         protected void getPixel(IntBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L129">            this.nioBuffer.put(pixelData);</span>
-<span class="fc" id="L130">        }</span>
+<span class="fc" id="L130">            this.nioBuffer.put(pixelData);</span>
+<span class="fc" id="L131">        }</span>
 
         @Override
         protected void setPixel(IntBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L134">            pixelData.put(this.nioBuffer);</span>
-<span class="fc" id="L135">        }</span>
+<span class="fc" id="L135">            pixelData.put(this.nioBuffer);</span>
+<span class="fc" id="L136">        }</span>
     }
 
     public static class LongGZipCompressor extends GZipCompressor&lt;LongBuffer&gt; {
@@ -140,19 +141,19 @@ public abstract class GZipCompressor&lt;T extends Buffer&gt; implements ICompres
         protected static final int BYTE_SIZE_OF_LONG = 8;
 
         public LongGZipCompressor() {
-<span class="fc" id="L143">            super(BYTE_SIZE_OF_LONG);</span>
-<span class="fc" id="L144">            this.nioBuffer = ByteBuffer.wrap(this.buffer).asLongBuffer();</span>
-<span class="fc" id="L145">        }</span>
+<span class="fc" id="L144">            super(BYTE_SIZE_OF_LONG);</span>
+<span class="fc" id="L145">            this.nioBuffer = ByteBuffer.wrap(this.buffer).asLongBuffer();</span>
+<span class="fc" id="L146">        }</span>
 
         @Override
         protected void getPixel(LongBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L149">            this.nioBuffer.put(pixelData);</span>
-<span class="fc" id="L150">        }</span>
+<span class="fc" id="L150">            this.nioBuffer.put(pixelData);</span>
+<span class="fc" id="L151">        }</span>
 
         @Override
         protected void setPixel(LongBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L154">            pixelData.put(this.nioBuffer);</span>
-<span class="fc" id="L155">        }</span>
+<span class="fc" id="L155">            pixelData.put(this.nioBuffer);</span>
+<span class="fc" id="L156">        }</span>
     }
 
     public static class ShortGZipCompressor extends GZipCompressor&lt;ShortBuffer&gt; {
@@ -160,19 +161,19 @@ public abstract class GZipCompressor&lt;T extends Buffer&gt; implements ICompres
         protected static final int BYTE_SIZE_OF_SHORT = 2;
 
         public ShortGZipCompressor() {
-<span class="fc" id="L163">            super(BYTE_SIZE_OF_SHORT);</span>
-<span class="fc" id="L164">            this.nioBuffer = ByteBuffer.wrap(this.buffer).asShortBuffer();</span>
-<span class="fc" id="L165">        }</span>
+<span class="fc" id="L164">            super(BYTE_SIZE_OF_SHORT);</span>
+<span class="fc" id="L165">            this.nioBuffer = ByteBuffer.wrap(this.buffer).asShortBuffer();</span>
+<span class="fc" id="L166">        }</span>
 
         @Override
         protected void getPixel(ShortBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L169">            this.nioBuffer.put(pixelData);</span>
-<span class="fc" id="L170">        }</span>
+<span class="fc" id="L170">            this.nioBuffer.put(pixelData);</span>
+<span class="fc" id="L171">        }</span>
 
         @Override
         protected void setPixel(ShortBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L174">            pixelData.put(this.nioBuffer);</span>
-<span class="fc" id="L175">        }</span>
+<span class="fc" id="L175">            pixelData.put(this.nioBuffer);</span>
+<span class="fc" id="L176">        }</span>
     }
 
     private final class TypeConversion&lt;B extends Buffer&gt; {
@@ -189,22 +190,22 @@ public abstract class GZipCompressor&lt;T extends Buffer&gt; implements ICompres
 
         private final Object toArray;
 
-<span class="fc" id="L192">        private TypeConversion(PrimitiveType&lt;B&gt; from) {</span>
-<span class="fc" id="L193">            this.from = from;</span>
-<span class="fc" id="L194">            this.to = getPrimitiveType(GZipCompressor.this.primitiveSize);</span>
-<span class="fc" id="L195">            this.toBuffer = GZipCompressor.this.nioBuffer;</span>
-<span class="fc" id="L196">            this.fromBuffer = from.asTypedBuffer(ByteBuffer.wrap(GZipCompressor.this.buffer));</span>
-<span class="fc" id="L197">            this.fromArray = from.newArray(DEFAULT_GZIP_BUFFER_SIZE / from.size());</span>
-<span class="fc" id="L198">            this.toArray = this.to.newArray(DEFAULT_GZIP_BUFFER_SIZE / this.to.size());</span>
-<span class="fc" id="L199">        }</span>
+<span class="fc" id="L193">        private TypeConversion(PrimitiveType&lt;B&gt; from) {</span>
+<span class="fc" id="L194">            this.from = from;</span>
+<span class="fc" id="L195">            this.to = getPrimitiveType(GZipCompressor.this.primitiveSize);</span>
+<span class="fc" id="L196">            this.toBuffer = GZipCompressor.this.nioBuffer;</span>
+<span class="fc" id="L197">            this.fromBuffer = from.asTypedBuffer(ByteBuffer.wrap(GZipCompressor.this.buffer));</span>
+<span class="fc" id="L198">            this.fromArray = from.newArray(DEFAULT_GZIP_BUFFER_SIZE / from.size());</span>
+<span class="fc" id="L199">            this.toArray = this.to.newArray(DEFAULT_GZIP_BUFFER_SIZE / this.to.size());</span>
+<span class="fc" id="L200">        }</span>
 
         int copy(int byteCount) {
-<span class="fc" id="L202">            this.fromBuffer.rewind();</span>
-<span class="fc" id="L203">            this.toBuffer.rewind();</span>
-<span class="fc" id="L204">            this.from.getArray(this.fromBuffer, this.fromArray);</span>
-<span class="fc" id="L205">            ArrayFuncs.copyInto(this.fromArray, this.toArray);</span>
-<span class="fc" id="L206">            this.to.putArray(this.toBuffer, this.toArray);</span>
-<span class="fc" id="L207">            return byteCount * this.to.size() / this.from.size();</span>
+<span class="fc" id="L203">            this.fromBuffer.rewind();</span>
+<span class="fc" id="L204">            this.toBuffer.rewind();</span>
+<span class="fc" id="L205">            this.from.getArray(this.fromBuffer, this.fromArray);</span>
+<span class="fc" id="L206">            ArrayFuncs.copyInto(this.fromArray, this.toArray);</span>
+<span class="fc" id="L207">            this.to.putArray(this.toBuffer, this.toArray);</span>
+<span class="fc" id="L208">            return byteCount * this.to.size() / this.from.size();</span>
         }
     }
 
@@ -212,93 +213,93 @@ public abstract class GZipCompressor&lt;T extends Buffer&gt; implements ICompres
 
     protected final int primitiveSize;
 
-<span class="fc" id="L215">    protected byte[] buffer = new byte[DEFAULT_GZIP_BUFFER_SIZE];</span>
+<span class="fc" id="L216">    protected byte[] buffer = new byte[DEFAULT_GZIP_BUFFER_SIZE];</span>
 
     protected T nioBuffer;
 
-<span class="fc" id="L219">    private final byte[] sizeArray = new byte[PrimitiveType.INT.size()];</span>
+<span class="fc" id="L220">    private final byte[] sizeArray = new byte[PrimitiveTypes.INT.size()];</span>
 
-<span class="fc" id="L221">    private final IntBuffer sizeBuffer = ByteBuffer.wrap(this.sizeArray).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();</span>
+<span class="fc" id="L222">    private final IntBuffer sizeBuffer = ByteBuffer.wrap(this.sizeArray).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();</span>
 
-<span class="fc" id="L223">    public GZipCompressor(int primitiveSize) {</span>
-<span class="fc" id="L224">        this.primitiveSize = primitiveSize;</span>
-<span class="fc" id="L225">    }</span>
+<span class="fc" id="L224">    public GZipCompressor(int primitiveSize) {</span>
+<span class="fc" id="L225">        this.primitiveSize = primitiveSize;</span>
+<span class="fc" id="L226">    }</span>
 
     @Override
     public boolean compress(T pixelData, ByteBuffer compressed) {
-<span class="fc" id="L229">        this.nioBuffer.rewind();</span>
-<span class="fc" id="L230">        int pixelDataLimit = pixelData.limit();</span>
-<span class="fc" id="L231">        try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {</span>
-<span class="fc bfc" id="L232" title="All 2 branches covered.">            while (pixelData.hasRemaining()) {</span>
-<span class="fc" id="L233">                int count = Math.min(pixelData.remaining(), this.nioBuffer.capacity());</span>
-<span class="fc" id="L234">                pixelData.limit(pixelData.position() + count);</span>
-<span class="fc" id="L235">                getPixel(pixelData, null);</span>
-<span class="fc" id="L236">                zip.write(this.buffer, 0, this.nioBuffer.position() * this.primitiveSize);</span>
-<span class="fc" id="L237">                this.nioBuffer.rewind();</span>
-<span class="fc" id="L238">                pixelData.limit(pixelDataLimit);</span>
-<span class="fc" id="L239">            }</span>
-<span class="pc bpc" id="L240" title="3 of 8 branches missed.">        } catch (IOException e) {</span>
-<span class="fc" id="L241">            throw new IllegalStateException(&quot;could not gzip data&quot;, e);</span>
-<span class="fc" id="L242">        }</span>
-<span class="fc" id="L243">        compressed.limit(compressed.position());</span>
-<span class="fc" id="L244">        return true;</span>
+<span class="fc" id="L230">        this.nioBuffer.rewind();</span>
+<span class="fc" id="L231">        int pixelDataLimit = pixelData.limit();</span>
+<span class="fc" id="L232">        try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">            while (pixelData.hasRemaining()) {</span>
+<span class="fc" id="L234">                int count = Math.min(pixelData.remaining(), this.nioBuffer.capacity());</span>
+<span class="fc" id="L235">                pixelData.limit(pixelData.position() + count);</span>
+<span class="fc" id="L236">                getPixel(pixelData, null);</span>
+<span class="fc" id="L237">                zip.write(this.buffer, 0, this.nioBuffer.position() * this.primitiveSize);</span>
+<span class="fc" id="L238">                this.nioBuffer.rewind();</span>
+<span class="fc" id="L239">                pixelData.limit(pixelDataLimit);</span>
+<span class="fc" id="L240">            }</span>
+<span class="pc bpc" id="L241" title="3 of 8 branches missed.">        } catch (IOException e) {</span>
+<span class="fc" id="L242">            throw new IllegalStateException(&quot;could not gzip data&quot;, e);</span>
+<span class="fc" id="L243">        }</span>
+<span class="fc" id="L244">        compressed.limit(compressed.position());</span>
+<span class="fc" id="L245">        return true;</span>
     }
 
     protected GZIPInputStream createGZipInputStream(ByteBuffer compressed) throws IOException {
-<span class="fc" id="L248">        return new GZIPInputStream(new ByteBufferInputStream(compressed), Math.min(compressed.limit() * 2, DEFAULT_GZIP_BUFFER_SIZE));</span>
+<span class="fc" id="L249">        return new GZIPInputStream(new ByteBufferInputStream(compressed), Math.min(compressed.limit() * 2, DEFAULT_GZIP_BUFFER_SIZE));</span>
     }
 
     protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
-<span class="fc" id="L252">        return new GZIPOutputStream(new ByteBufferOutputStream(compressed), Math.min(length * 2, DEFAULT_GZIP_BUFFER_SIZE));</span>
+<span class="fc" id="L253">        return new GZIPOutputStream(new ByteBufferOutputStream(compressed), Math.min(length * 2, DEFAULT_GZIP_BUFFER_SIZE));</span>
     }
 
     @Override
     public void decompress(ByteBuffer compressed, T pixelData) {
-<span class="fc" id="L257">        this.nioBuffer.rewind();</span>
-<span class="fc" id="L258">        TypeConversion&lt;Buffer&gt; typeConverter = getTypeConverter(compressed, pixelData.limit());</span>
-<span class="fc" id="L259">        try (GZIPInputStream zip = createGZipInputStream(compressed)) {</span>
+<span class="fc" id="L258">        this.nioBuffer.rewind();</span>
+<span class="fc" id="L259">        TypeConversion&lt;Buffer&gt; typeConverter = getTypeConverter(compressed, pixelData.limit());</span>
+<span class="fc" id="L260">        try (GZIPInputStream zip = createGZipInputStream(compressed)) {</span>
             int count;
-<span class="fc bfc" id="L261" title="All 2 branches covered.">            while ((count = zip.read(this.buffer)) &gt;= 0) {</span>
-<span class="fc bfc" id="L262" title="All 2 branches covered.">                if (typeConverter != null) {</span>
-<span class="fc" id="L263">                    count = typeConverter.copy(count);</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">            while ((count = zip.read(this.buffer)) &gt;= 0) {</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">                if (typeConverter != null) {</span>
+<span class="fc" id="L264">                    count = typeConverter.copy(count);</span>
                 }
-<span class="fc" id="L265">                this.nioBuffer.position(0);</span>
-<span class="fc" id="L266">                this.nioBuffer.limit(count / this.primitiveSize);</span>
-<span class="fc" id="L267">                setPixel(pixelData, null);</span>
+<span class="fc" id="L266">                this.nioBuffer.position(0);</span>
+<span class="fc" id="L267">                this.nioBuffer.limit(count / this.primitiveSize);</span>
+<span class="fc" id="L268">                setPixel(pixelData, null);</span>
             }
-<span class="pc bpc" id="L269" title="5 of 8 branches missed.">        } catch (IOException e) {</span>
-<span class="fc" id="L270">            throw new IllegalStateException(&quot;could not gunzip data&quot;, e);</span>
-<span class="fc" id="L271">        }</span>
-<span class="fc" id="L272">    }</span>
+<span class="pc bpc" id="L270" title="5 of 8 branches missed.">        } catch (IOException e) {</span>
+<span class="fc" id="L271">            throw new IllegalStateException(&quot;could not gunzip data&quot;, e);</span>
+<span class="fc" id="L272">        }</span>
+<span class="fc" id="L273">    }</span>
 
     protected abstract void getPixel(T pixelData, byte[] pixelBytes);
 
     @SuppressWarnings(&quot;unchecked&quot;)
     private &lt;B extends Buffer&gt; PrimitiveType&lt;B&gt; getPrimitiveType(int size) {
-<span class="fc" id="L278">        return (PrimitiveType&lt;B&gt;) PrimitiveTypeHandler.valueOf(size * FitsIO.BITS_OF_1_BYTE);</span>
+<span class="fc" id="L279">        return (PrimitiveType&lt;B&gt;) PrimitiveTypeHandler.valueOf(size * FitsIO.BITS_OF_1_BYTE);</span>
     }
 
     private TypeConversion&lt;Buffer&gt; getTypeConverter(ByteBuffer compressed, int nrOfPrimitiveElements) {
-<span class="fc bfc" id="L282" title="All 2 branches covered.">        if (compressed.limit() &gt; FitsIO.BYTES_IN_INTEGER) {</span>
-<span class="fc" id="L283">            int oldPosition = compressed.position();</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">        if (compressed.limit() &gt; FitsIO.BYTES_IN_INTEGER) {</span>
+<span class="fc" id="L284">            int oldPosition = compressed.position();</span>
             try {
-<span class="fc" id="L285">                compressed.position(compressed.limit() - this.sizeArray.length);</span>
-<span class="fc" id="L286">                compressed.get(this.sizeArray);</span>
-<span class="fc" id="L287">                int uncompressedSize = this.sizeBuffer.get(0);</span>
-<span class="fc bfc" id="L288" title="All 2 branches covered.">                if (uncompressedSize &gt; 0) {</span>
-<span class="fc" id="L289">                    compressed.position(oldPosition);</span>
-<span class="pc bpc" id="L290" title="1 of 2 branches missed.">                    if (uncompressedSize % nrOfPrimitiveElements == 0) {</span>
-<span class="fc" id="L291">                        int compressedPrimitiveSize = uncompressedSize / nrOfPrimitiveElements;</span>
-<span class="fc bfc" id="L292" title="All 2 branches covered.">                        if (compressedPrimitiveSize != this.primitiveSize) {</span>
-<span class="fc" id="L293">                            return new TypeConversion&lt;&gt;(getPrimitiveType(compressedPrimitiveSize));</span>
+<span class="fc" id="L286">                compressed.position(compressed.limit() - this.sizeArray.length);</span>
+<span class="fc" id="L287">                compressed.get(this.sizeArray);</span>
+<span class="fc" id="L288">                int uncompressedSize = this.sizeBuffer.get(0);</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">                if (uncompressedSize &gt; 0) {</span>
+<span class="fc" id="L290">                    compressed.position(oldPosition);</span>
+<span class="pc bpc" id="L291" title="1 of 2 branches missed.">                    if (uncompressedSize % nrOfPrimitiveElements == 0) {</span>
+<span class="fc" id="L292">                        int compressedPrimitiveSize = uncompressedSize / nrOfPrimitiveElements;</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">                        if (compressedPrimitiveSize != this.primitiveSize) {</span>
+<span class="fc" id="L294">                            return new TypeConversion&lt;&gt;(getPrimitiveType(compressedPrimitiveSize));</span>
                         }
                     }
                 }
             } finally {
-<span class="pc" id="L298">                compressed.position(oldPosition);</span>
-<span class="fc" id="L299">            }</span>
+<span class="pc" id="L299">                compressed.position(oldPosition);</span>
+<span class="fc" id="L300">            }</span>
         }
-<span class="fc" id="L301">        return null;</span>
+<span class="fc" id="L302">        return null;</span>
     }
 
     protected abstract void setPixel(T pixelData, byte[] pixelBytes);

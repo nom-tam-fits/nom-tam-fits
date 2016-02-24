@@ -78,7 +78,7 @@ import java.io.Serializable;
 
         // Now search in the order in which cards must appear
         // in the header.
-<span class="pc bpc" id="L81" title="1 of 4 branches missed.">        if (c1.equals(SIMPLE.key()) || c1.equals(XTENSION.key())) {</span>
+<span class="fc bfc" id="L81" title="All 4 branches covered.">        if (c1.equals(SIMPLE.key()) || c1.equals(XTENSION.key())) {</span>
 <span class="fc" id="L82">            return -1;</span>
 <span class="fc bfc" id="L83" title="All 4 branches covered.">        } else if (c2.equals(SIMPLE.key()) || c2.equals(XTENSION.key())) {</span>
 <span class="fc" id="L84">            return 1;</span>
@@ -133,10 +133,10 @@ import java.io.Serializable;
         // In principal this only needs to be in the first 36 cards,
         // but we put it here since it's convenient. BLOCKED is
         // deprecated currently.
-<span class="pc bpc" id="L136" title="1 of 2 branches missed.">        if (c1.equals(BLOCKED.key())) {</span>
-<span class="nc" id="L137">            return -1;</span>
-<span class="pc bpc" id="L138" title="1 of 2 branches missed.">        } else if (c2.equals(BLOCKED.key())) {</span>
-<span class="nc" id="L139">            return 1;</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        if (c1.equals(BLOCKED.key())) {</span>
+<span class="fc" id="L137">            return -1;</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        } else if (c2.equals(BLOCKED.key())) {</span>
+<span class="fc" id="L139">            return 1;</span>
         }
 
         // Note that this must be at the end, so the
@@ -157,24 +157,13 @@ import java.io.Serializable;
 <span class="fc" id="L157">        return 0;</span>
     }
 
-    /**
-     * @return Can two cards be exchanged when being written out?
-     * @param a
-     *            first card
-     * @param b
-     *            second card
-     */
-    public boolean equals(String a, String b) {
-<span class="nc bnc" id="L168" title="All 2 branches missed.">        return compare(a, b) == 0;</span>
-    }
-
     /** Find the index for NAXISn keywords */
     private static int naxisN(String key) {
-<span class="fc" id="L173">        int startOfNumber = NAXIS.key().length();</span>
-<span class="fc bfc" id="L174" title="All 6 branches covered.">        if (key.length() &gt; startOfNumber &amp;&amp; key.startsWith(NAXIS.key()) &amp;&amp; Character.isDigit(key.charAt(startOfNumber))) {</span>
-<span class="fc" id="L175">            return Integer.parseInt(key.substring(startOfNumber));</span>
+<span class="fc" id="L162">        int startOfNumber = NAXIS.key().length();</span>
+<span class="fc bfc" id="L163" title="All 6 branches covered.">        if (key.length() &gt; startOfNumber &amp;&amp; key.startsWith(NAXIS.key()) &amp;&amp; Character.isDigit(key.charAt(startOfNumber))) {</span>
+<span class="fc" id="L164">            return Integer.parseInt(key.substring(startOfNumber));</span>
         }
-<span class="fc" id="L177">        return -1;</span>
+<span class="fc" id="L166">        return -1;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

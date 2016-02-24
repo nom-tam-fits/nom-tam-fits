@@ -31,6 +31,8 @@
  * #L%
  */
 
+import static nom.tam.util.LoggerHelper.getLogger;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,17 +57,17 @@ public final class CompressionManager {
     /**
      * logger to log to.
      */
-<span class="fc" id="L58">    private static final Logger LOG = Logger.getLogger(CompressionManager.class.getName());</span>
+<span class="fc" id="L60">    private static final Logger LOG = getLogger(CompressionManager.class);</span>
 
-<span class="fc" id="L60">    private CompressionManager() {</span>
-<span class="fc" id="L61">    }</span>
+<span class="fc" id="L62">    private CompressionManager() {</span>
+<span class="fc" id="L63">    }</span>
 
     /**
      * This method decompresses a compressed input stream. The decompression
      * method is selected automatically based upon the first two bytes read.
      * 
      * @param compressed
-     *            The compressed input stram
+     *            The compressed input stream
      * @return A stream which wraps the input stream and decompresses it. If the
      *         input stream is not compressed, a pushback input stream wrapping
      *         the original stream is returned.
@@ -74,27 +76,27 @@ public final class CompressionManager {
      */
     public static InputStream decompress(InputStream compressed) throws FitsException {
 
-<span class="fc" id="L77">        BufferedInputStream pb = new BufferedInputStream(compressed, ONE_MEGABYTE);</span>
+<span class="fc" id="L79">        BufferedInputStream pb = new BufferedInputStream(compressed, ONE_MEGABYTE);</span>
 
-<span class="fc" id="L79">        pb.mark(2);</span>
-<span class="fc" id="L80">        int mag1 = -1;</span>
-<span class="fc" id="L81">        int mag2 = -1;</span>
+<span class="fc" id="L81">        pb.mark(2);</span>
+<span class="fc" id="L82">        int mag1 = -1;</span>
+<span class="fc" id="L83">        int mag2 = -1;</span>
 
         try {
-<span class="fc" id="L84">            mag1 = pb.read();</span>
-<span class="fc" id="L85">            mag2 = pb.read();</span>
+<span class="fc" id="L86">            mag1 = pb.read();</span>
+<span class="fc" id="L87">            mag2 = pb.read();</span>
             // Push the data back into the stream
-<span class="fc" id="L87">            pb.reset();</span>
+<span class="fc" id="L89">            pb.reset();</span>
 
-<span class="fc" id="L89">            ICompressProvider selectedProvider = selectCompressionProvider(mag1, mag2);</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">            if (selectedProvider != null) {</span>
-<span class="fc" id="L91">                return selectedProvider.decompress(pb);</span>
+<span class="fc" id="L91">            ICompressProvider selectedProvider = selectCompressionProvider(mag1, mag2);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">            if (selectedProvider != null) {</span>
+<span class="fc" id="L93">                return selectedProvider.decompress(pb);</span>
             } else {
-<span class="fc" id="L93">                return pb;</span>
+<span class="fc" id="L95">                return pb;</span>
             }
-<span class="nc" id="L95">        } catch (IOException e) {</span>
+<span class="nc" id="L97">        } catch (IOException e) {</span>
             // This is probably a prelude to failure...
-<span class="nc" id="L97">            throw new FitsException(&quot;Unable to analyze input stream&quot;, e);</span>
+<span class="nc" id="L99">            throw new FitsException(&quot;Unable to analyze input stream&quot;, e);</span>
         }
     }
 
@@ -107,31 +109,31 @@ public final class CompressionManager {
      * @return true if the file is compressed
      */
     public static boolean isCompressed(File file) {
-<span class="fc" id="L110">        InputStream fis = null;</span>
+<span class="fc" id="L112">        InputStream fis = null;</span>
         try {
-<span class="fc bfc" id="L112" title="All 2 branches covered.">            if (file.exists()) {</span>
-<span class="fc" id="L113">                fis = new FileInputStream(file);</span>
-<span class="fc" id="L114">                int mag1 = fis.read();</span>
-<span class="fc" id="L115">                int mag2 = fis.read();</span>
-<span class="fc" id="L116">                fis.close();</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">                return selectCompressionProvider(mag1, mag2) != null;</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            if (file.exists()) {</span>
+<span class="fc" id="L115">                fis = new FileInputStream(file);</span>
+<span class="fc" id="L116">                int mag1 = fis.read();</span>
+<span class="fc" id="L117">                int mag2 = fis.read();</span>
+<span class="fc" id="L118">                fis.close();</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">                return selectCompressionProvider(mag1, mag2) != null;</span>
             }
 
-<span class="nc" id="L120">        } catch (IOException e) {</span>
-<span class="nc" id="L121">            LOG.log(Level.FINEST, &quot;Error while  checkinf if file &quot; + file + &quot; is compressed&quot;, e);</span>
+<span class="nc" id="L122">        } catch (IOException e) {</span>
+<span class="nc" id="L123">            LOG.log(Level.FINEST, &quot;Error while  checkinf if file &quot; + file + &quot; is compressed&quot;, e);</span>
             // This is probably a prelude to failure...
-<span class="nc" id="L123">            return false;</span>
+<span class="nc" id="L125">            return false;</span>
 
         } finally {
-<span class="pc bpc" id="L126" title="6 of 8 branches missed.">            if (fis != null) {</span>
+<span class="pc bpc" id="L128" title="6 of 8 branches missed.">            if (fis != null) {</span>
                 try {
-<span class="pc" id="L128">                    fis.close();</span>
-<span class="nc" id="L129">                } catch (IOException e) {</span>
-<span class="nc" id="L130">                    LOG.log(Level.FINEST, &quot;could not close stream&quot;, e);</span>
-<span class="pc" id="L131">                }</span>
+<span class="pc" id="L130">                    fis.close();</span>
+<span class="nc" id="L131">                } catch (IOException e) {</span>
+<span class="nc" id="L132">                    LOG.log(Level.FINEST, &quot;could not close stream&quot;, e);</span>
+<span class="pc" id="L133">                }</span>
             }
         }
-<span class="fc" id="L134">        return false;</span>
+<span class="fc" id="L136">        return false;</span>
     }
 
     /**
@@ -143,40 +145,40 @@ public final class CompressionManager {
      * @return true if the file is compressed
      */
     public static boolean isCompressed(String filename) {
-<span class="fc bfc" id="L146" title="All 2 branches covered.">        if (filename == null) {</span>
-<span class="fc" id="L147">            return false;</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        if (filename == null) {</span>
+<span class="fc" id="L149">            return false;</span>
         }
-<span class="fc" id="L149">        File test = new File(filename);</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">        if (test.exists()) {</span>
-<span class="fc" id="L151">            return isCompressed(test);</span>
+<span class="fc" id="L151">        File test = new File(filename);</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        if (test.exists()) {</span>
+<span class="fc" id="L153">            return isCompressed(test);</span>
         }
 
-<span class="fc" id="L154">        int len = filename.length();</span>
-<span class="pc bpc" id="L155" title="1 of 8 branches missed.">        return len &gt; 2 &amp;&amp; (filename.substring(len - GZIP_EXTENTION.length()).equalsIgnoreCase(GZIP_EXTENTION) || //</span>
+<span class="fc" id="L156">        int len = filename.length();</span>
+<span class="pc bpc" id="L157" title="1 of 8 branches missed.">        return len &gt; 2 &amp;&amp; (filename.substring(len - GZIP_EXTENTION.length()).equalsIgnoreCase(GZIP_EXTENTION) || //</span>
                 filename.substring(len - COMPRESS_EXTENTION.length()).equals(COMPRESS_EXTENTION) || //
                 filename.substring(len - BZIP2_EXTENTION.length()).equals(BZIP2_EXTENTION));
     }
 
     private static ICompressProvider selectCompressionProvider(int mag1, int mag2) {
-<span class="fc" id="L161">        return nextCompressionProvider(mag1, mag2, null);</span>
+<span class="fc" id="L163">        return nextCompressionProvider(mag1, mag2, null);</span>
     }
 
     protected static ICompressProvider nextCompressionProvider(int mag1, int mag2, ICompressProvider old) {
-<span class="fc" id="L165">        ICompressProvider selectedProvider = null;</span>
-<span class="fc" id="L166">        int priority = 0;</span>
-<span class="fc" id="L167">        int maxPriority = Integer.MAX_VALUE;</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">        if (old != null) {</span>
-<span class="fc" id="L169">            maxPriority = old.priority();</span>
+<span class="fc" id="L167">        ICompressProvider selectedProvider = null;</span>
+<span class="fc" id="L168">        int priority = 0;</span>
+<span class="fc" id="L169">        int maxPriority = Integer.MAX_VALUE;</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        if (old != null) {</span>
+<span class="fc" id="L171">            maxPriority = old.priority();</span>
         }
-<span class="fc" id="L171">        ServiceLoader&lt;ICompressProvider&gt; compressionProviders = ServiceLoader.load(ICompressProvider.class, Thread.currentThread().getContextClassLoader());</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">        for (ICompressProvider provider : compressionProviders) {</span>
-<span class="pc bpc" id="L173" title="1 of 8 branches missed.">            if (provider.priority() &gt; Math.max(0, priority) &amp;&amp; provider.priority() &lt; maxPriority &amp;&amp; provider != old &amp;&amp; //</span>
+<span class="fc" id="L173">        ServiceLoader&lt;ICompressProvider&gt; compressionProviders = ServiceLoader.load(ICompressProvider.class, Thread.currentThread().getContextClassLoader());</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">        for (ICompressProvider provider : compressionProviders) {</span>
+<span class="pc bpc" id="L175" title="1 of 8 branches missed.">            if (provider.priority() &gt; Math.max(0, priority) &amp;&amp; provider.priority() &lt; maxPriority &amp;&amp; provider != old &amp;&amp; //</span>
                     provider.provides(mag1, mag2)) {
-<span class="fc" id="L175">                priority = provider.priority();</span>
-<span class="fc" id="L176">                selectedProvider = provider;</span>
+<span class="fc" id="L177">                priority = provider.priority();</span>
+<span class="fc" id="L178">                selectedProvider = provider;</span>
             }
-<span class="fc" id="L178">        }</span>
-<span class="fc" id="L179">        return selectedProvider;</span>
+<span class="fc" id="L180">        }</span>
+<span class="fc" id="L181">        return selectedProvider;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

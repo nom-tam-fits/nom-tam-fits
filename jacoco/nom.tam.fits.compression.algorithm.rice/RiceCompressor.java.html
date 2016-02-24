@@ -10,7 +10,7 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
 import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.DoubleQuantCompressor;
 import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.FloatQuantCompressor;
 import nom.tam.util.FitsIO;
-import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypes;
 
 /*
  * #%L
@@ -62,7 +62,7 @@ public abstract class RiceCompressor&lt;T extends Buffer&gt; implements ICompres
         private ByteBuffer pixelBuffer;
 
         public ByteRiceCompressor(RiceCompressOption option) {
-<span class="fc" id="L65">            super(option.setDefaultBytePix(PrimitiveType.BYTE.size()));</span>
+<span class="fc" id="L65">            super(option.setDefaultBytePix(PrimitiveTypes.BYTE.size()));</span>
 <span class="fc" id="L66">        }</span>
 
         @Override
@@ -92,8 +92,8 @@ public abstract class RiceCompressor&lt;T extends Buffer&gt; implements ICompres
     public static class DoubleRiceCompressor extends DoubleQuantCompressor {
 
         public DoubleRiceCompressor(RiceQuantizeCompressOption options) {
-<span class="nc" id="L95">            super(options, new IntRiceCompressor(options.getRiceCompressOption()));</span>
-<span class="nc" id="L96">        }</span>
+<span class="fc" id="L95">            super(options, new IntRiceCompressor(options.getRiceCompressOption()));</span>
+<span class="fc" id="L96">        }</span>
     }
 
     public static class FloatRiceCompressor extends FloatQuantCompressor {
@@ -108,7 +108,7 @@ public abstract class RiceCompressor&lt;T extends Buffer&gt; implements ICompres
         private IntBuffer pixelBuffer;
 
         public IntRiceCompressor(RiceCompressOption option) {
-<span class="fc" id="L111">            super(option.setDefaultBytePix(PrimitiveType.INT.size()));</span>
+<span class="fc" id="L111">            super(option.setDefaultBytePix(PrimitiveTypes.INT.size()));</span>
 <span class="fc" id="L112">        }</span>
 
         @Override
@@ -140,7 +140,7 @@ public abstract class RiceCompressor&lt;T extends Buffer&gt; implements ICompres
         private ShortBuffer pixelBuffer;
 
         public ShortRiceCompressor(RiceCompressOption option) {
-<span class="fc" id="L143">            super(option.setDefaultBytePix(PrimitiveType.SHORT.size()));</span>
+<span class="fc" id="L143">            super(option.setDefaultBytePix(PrimitiveTypes.SHORT.size()));</span>
 <span class="fc" id="L144">        }</span>
 
         @Override
@@ -228,15 +228,15 @@ public abstract class RiceCompressor&lt;T extends Buffer&gt; implements ICompres
 
 <span class="fc" id="L229">    private RiceCompressor(RiceCompressOption option) {</span>
 <span class="fc" id="L230">        this.blockSize = option.getBlockSize();</span>
-<span class="fc bfc" id="L231" title="All 2 branches covered.">        if (option.getBytePix() == PrimitiveType.BYTE.size()) {</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">        if (option.getBytePix() == PrimitiveTypes.BYTE.size()) {</span>
 <span class="fc" id="L232">            this.fsBits = FS_BITS_FOR_BYTE;</span>
 <span class="fc" id="L233">            this.fsMax = FS_MAX_FOR_BYTE;</span>
 <span class="fc" id="L234">            this.bitsPerPixel = FitsIO.BITS_OF_1_BYTE;</span>
-<span class="fc bfc" id="L235" title="All 2 branches covered.">        } else if (option.getBytePix() == PrimitiveType.SHORT.size()) {</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">        } else if (option.getBytePix() == PrimitiveTypes.SHORT.size()) {</span>
 <span class="fc" id="L236">            this.fsBits = FS_BITS_FOR_SHORT;</span>
 <span class="fc" id="L237">            this.fsMax = FS_MAX_FOR_SHORT;</span>
 <span class="fc" id="L238">            this.bitsPerPixel = FitsIO.BITS_OF_2_BYTES;</span>
-<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        } else if (option.getBytePix() == PrimitiveType.INT.size()) {</span>
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        } else if (option.getBytePix() == PrimitiveTypes.INT.size()) {</span>
 <span class="fc" id="L240">            this.fsBits = FS_BITS_FOR_INT;</span>
 <span class="fc" id="L241">            this.fsMax = FS_MAX_FOR_INT;</span>
 <span class="fc" id="L242">            this.bitsPerPixel = FitsIO.BITS_OF_4_BYTES;</span>
@@ -304,7 +304,7 @@ public abstract class RiceCompressor&lt;T extends Buffer&gt; implements ICompres
             }
 <span class="fc" id="L305">            long psum = (long) dpsum &gt;&gt; 1;</span>
             int fs;
-<span class="fc bfc" id="L307" title="All 2 branches covered.">            for (fs = 0; psum &gt; 0; fs++) {</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">            for (fs = 0; psum &gt; 0; fs++) { // NOSONAR</span>
 <span class="fc" id="L308">                psum &gt;&gt;= 1;</span>
             }
 
@@ -320,7 +320,7 @@ public abstract class RiceCompressor&lt;T extends Buffer&gt; implements ICompres
 <span class="fc bfc" id="L320" title="All 2 branches covered.">                for (int j = 0; j &lt; thisblock; j++) {</span>
 <span class="fc" id="L321">                    buffer.putLong(diff[j], this.bBits);</span>
                 }
-<span class="fc bfc" id="L323" title="All 4 branches covered.">            } else if (fs == 0 &amp;&amp; pixelsum == 0) {</span>
+<span class="fc bfc" id="L323" title="All 4 branches covered.">            } else if (fs == 0 &amp;&amp; pixelsum == 0) { // NOSONAR</span>
                 /*
                  * special low entropy case when FS = 0 and pixelsum=0 (all
                  * pixels in block are zero.) Output a 0 and return
@@ -389,11 +389,11 @@ public abstract class RiceCompressor&lt;T extends Buffer&gt; implements ICompres
         /* first x bytes of input buffer contain the value of the first */
         /* x byte integer value, without any encoding */
 <span class="fc" id="L391">        int lastpix = 0;</span>
-<span class="fc bfc" id="L392" title="All 2 branches covered.">        if (this.bitsPerPixel == PrimitiveType.BYTE.bitPix()) {</span>
+<span class="fc bfc" id="L392" title="All 2 branches covered.">        if (this.bitsPerPixel == PrimitiveTypes.BYTE.bitPix()) {</span>
 <span class="fc" id="L393">            lastpix = readBuffer.get();</span>
-<span class="fc bfc" id="L394" title="All 2 branches covered.">        } else if (this.bitsPerPixel == PrimitiveType.SHORT.bitPix()) {</span>
+<span class="fc bfc" id="L394" title="All 2 branches covered.">        } else if (this.bitsPerPixel == PrimitiveTypes.SHORT.bitPix()) {</span>
 <span class="fc" id="L395">            lastpix = readBuffer.getShort();</span>
-<span class="pc bpc" id="L396" title="1 of 2 branches missed.">        } else if (this.bitsPerPixel == PrimitiveType.INT.bitPix()) {</span>
+<span class="pc bpc" id="L396" title="1 of 2 branches missed.">        } else if (this.bitsPerPixel == PrimitiveTypes.INT.bitPix()) {</span>
 <span class="fc" id="L397">            lastpix = readBuffer.getInt();</span>
         }
 <span class="fc" id="L399">        int b = readBuffer.get() &amp; BYTE_MASK; /* bit buffer */</span>

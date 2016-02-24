@@ -31,13 +31,16 @@
  * #L%
  */
 
+import static nom.tam.util.LoggerHelper.getLogger;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.FitsException;
 
-<span class="fc" id="L40">public class BasicCompressProvider implements ICompressProvider {</span>
+<span class="fc" id="L43">public class BasicCompressProvider implements ICompressProvider {</span>
 
     private static final int PRIORITY = 10;
 
@@ -45,35 +48,35 @@ import nom.tam.fits.FitsException;
 
     private static final int COMPRESS_MAGIC_BYTE2 = 0x9d;
 
-<span class="fc" id="L48">    private static final Logger LOG = Logger.getLogger(BasicCompressProvider.class.getName());</span>
+<span class="fc" id="L51">    private static final Logger LOG = getLogger(BasicCompressProvider.class);</span>
 
     private InputStream compressInputStream(final InputStream compressed) throws IOException, FitsException {
         try {
-<span class="fc" id="L52">            Process proc = new ProcessBuilder(&quot;uncompress&quot;, &quot;-c&quot;).start();</span>
-<span class="fc" id="L53">            return new CloseIS(proc, compressed);</span>
-<span class="nc" id="L54">        } catch (Exception e) {</span>
-<span class="nc" id="L55">            ICompressProvider next = CompressionManager.nextCompressionProvider(COMPRESS_MAGIC_BYTE1, COMPRESS_MAGIC_BYTE2, this);</span>
-<span class="nc bnc" id="L56" title="All 2 branches missed.">            if (next != null) {</span>
-<span class="nc" id="L57">                LOG.warning(&quot;Error initiating .Z decompression: &quot; + e.getMessage() + &quot; trieing alternative decompressor&quot;);</span>
-<span class="nc" id="L58">                return next.decompress(compressed);</span>
+<span class="fc" id="L55">            Process proc = new ProcessBuilder(&quot;uncompress&quot;, &quot;-c&quot;).start();</span>
+<span class="fc" id="L56">            return new CloseIS(proc, compressed);</span>
+<span class="nc" id="L57">        } catch (Exception e) {</span>
+<span class="nc" id="L58">            ICompressProvider next = CompressionManager.nextCompressionProvider(COMPRESS_MAGIC_BYTE1, COMPRESS_MAGIC_BYTE2, this);</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">            if (next != null) {</span>
+<span class="nc" id="L60">                LOG.log(Level.WARNING, &quot;Error initiating .Z decompression: &quot; + e.getMessage() + &quot; trying alternative decompressor&quot;, e);</span>
+<span class="nc" id="L61">                return next.decompress(compressed);</span>
             }
-<span class="nc" id="L60">            throw new FitsException(&quot;Unable to read .Z compressed stream.\nIs `uncompress' in the path?\n:&quot; + e);</span>
+<span class="nc" id="L63">            throw new FitsException(&quot;Unable to read .Z compressed stream.\nIs 'uncompress' in the path?&quot;, e);</span>
         }
     }
 
     @Override
     public InputStream decompress(InputStream in) throws IOException, FitsException {
-<span class="fc" id="L66">        return compressInputStream(in);</span>
+<span class="fc" id="L69">        return compressInputStream(in);</span>
     }
 
     @Override
     public int priority() {
-<span class="fc" id="L71">        return PRIORITY;</span>
+<span class="fc" id="L74">        return PRIORITY;</span>
     }
 
     @Override
     public boolean provides(int mag1, int mag2) {
-<span class="fc bfc" id="L76" title="All 4 branches covered.">        return mag1 == COMPRESS_MAGIC_BYTE1 &amp;&amp; mag2 == COMPRESS_MAGIC_BYTE2;</span>
+<span class="fc bfc" id="L79" title="All 4 branches covered.">        return mag1 == COMPRESS_MAGIC_BYTE1 &amp;&amp; mag2 == COMPRESS_MAGIC_BYTE2;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

@@ -188,7 +188,7 @@ public class FitsHeap implements FitsElement {
 <span class="fc" id="L188">            o.flush();</span>
 <span class="fc" id="L189">            o.close();</span>
 <span class="nc" id="L190">        } catch (IOException e) {</span>
-<span class="nc" id="L191">            throw new FitsException(&quot;Unable to write variable column length data&quot;);</span>
+<span class="nc" id="L191">            throw new FitsException(&quot;Unable to write variable column length data&quot;, e);</span>
 <span class="fc" id="L192">        }</span>
 
 <span class="fc" id="L194">        System.arraycopy(bo.toByteArray(), 0, this.heap, this.heapSize, size);</span>

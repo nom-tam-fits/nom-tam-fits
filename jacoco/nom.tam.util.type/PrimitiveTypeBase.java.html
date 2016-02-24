@@ -132,7 +132,7 @@ abstract class PrimitiveTypeBase&lt;B extends Buffer&gt; implements PrimitiveTyp
     @Override
     public final B newBuffer(long length) {
         // TODO handle big arrays differently by using memory mapped files.
-<span class="nc" id="L135">        return wrap(newArray((int) length));</span>
+<span class="fc" id="L135">        return wrap(newArray((int) length));</span>
     }
 
     @Override
@@ -188,6 +188,11 @@ abstract class PrimitiveTypeBase&lt;B extends Buffer&gt; implements PrimitiveTyp
     @Override
     public Class&lt;?&gt; wrapperClass() {
 <span class="fc" id="L190">        return this.wrapperClass;</span>
+    }
+
+    @Override
+    public boolean is(PrimitiveType&lt;? extends Buffer&gt; other) {
+<span class="fc bfc" id="L195" title="All 2 branches covered.">        return this.bitPix == other.bitPix();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

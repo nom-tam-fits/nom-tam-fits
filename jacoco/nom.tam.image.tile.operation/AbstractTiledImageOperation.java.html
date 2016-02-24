@@ -37,9 +37,10 @@ import java.math.RoundingMode;
 import java.nio.Buffer;
 import java.util.Arrays;
 
+import nom.tam.fits.FitsException;
 import nom.tam.util.type.PrimitiveType;
 
-public class AbstractTiledImageOperation&lt;OPERATION extends AbstractTileOperation&gt; {
+public abstract class AbstractTiledImageOperation&lt;OPERATION extends ITileOperation&gt; implements ITiledImageOperation {
 
     private int[] axes;
 
@@ -54,96 +55,100 @@ public class AbstractTiledImageOperation&lt;OPERATION extends AbstractTileOperat
 
     private final Class&lt;OPERATION&gt; operationClass;
 
-<span class="fc" id="L57">    public AbstractTiledImageOperation(Class&lt;OPERATION&gt; operationClass) {</span>
-<span class="fc" id="L58">        this.operationClass = operationClass;</span>
-<span class="fc" id="L59">    }</span>
+<span class="fc" id="L58">    public AbstractTiledImageOperation(Class&lt;OPERATION&gt; operationClass) {</span>
+<span class="fc" id="L59">        this.operationClass = operationClass;</span>
+<span class="fc" id="L60">    }</span>
 
+    @Override
     public PrimitiveType&lt;Buffer&gt; getBaseType() {
-<span class="fc" id="L62">        return this.baseType;</span>
+<span class="fc" id="L64">        return this.baseType;</span>
     }
 
     public int getBufferSize() {
-<span class="fc" id="L66">        int bufferSize = 1;</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (int axisValue : this.axes) {</span>
-<span class="fc" id="L68">            bufferSize *= axisValue;</span>
+<span class="fc" id="L68">        int bufferSize = 1;</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        for (int axisValue : this.axes) {</span>
+<span class="fc" id="L70">            bufferSize *= axisValue;</span>
         }
-<span class="fc" id="L70">        return bufferSize;</span>
+<span class="fc" id="L72">        return bufferSize;</span>
     }
 
-    public void setTileAxes(int[] value) {
-<span class="fc" id="L74">        this.tileAxes = Arrays.copyOf(value, value.length);</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">        for (int index = 0; index &lt; this.tileAxes.length; index++) {</span>
-<span class="pc bpc" id="L76" title="1 of 2 branches missed.">            if (this.tileAxes[index] &lt;= 0) {</span>
-<span class="nc" id="L77">                this.tileAxes[index] = this.axes[index];</span>
+    @Override
+    public int getImageWidth() {
+<span class="fc" id="L77">        return this.axes[0];</span>
+    }
+
+    @Override
+    public OPERATION getTileOperation(int i) {
+<span class="fc" id="L82">        return this.tileOperations[i];</span>
+    }
+
+    public void setAxes(int[] axes) {
+<span class="fc" id="L86">        this.axes = Arrays.copyOf(axes, axes.length);</span>
+<span class="fc" id="L87">    }</span>
+
+    public void setTileAxes(int[] value) throws FitsException {
+<span class="fc" id="L90">        this.tileAxes = Arrays.copyOf(value, value.length);</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        for (int index = 0; index &lt; this.tileAxes.length; index++) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">            if (this.tileAxes[index] &lt;= 0) {</span>
+<span class="fc" id="L93">                this.tileAxes[index] = this.axes[index];</span>
             }
         }
-<span class="fc" id="L80">    }</span>
+<span class="fc" id="L96">    }</span>
 
-    protected boolean areAxesDefined() {
-<span class="pc bpc" id="L83" title="3 of 4 branches missed.">        return this.axes == null || this.axes.length == 0;</span>
+    protected boolean areAxesUndefined() {
+<span class="pc bpc" id="L99" title="1 of 4 branches missed.">        return this.axes == null || this.axes.length == 0;</span>
     }
 
-    protected boolean areTileAxesDefined() {
-<span class="pc bpc" id="L87" title="1 of 4 branches missed.">        return this.tileAxes == null || this.tileAxes.length == 0;</span>
+    protected boolean areTileAxesUndefined() {
+<span class="pc bpc" id="L103" title="1 of 4 branches missed.">        return this.tileAxes == null || this.tileAxes.length == 0;</span>
     }
 
-    protected void createTiles(ITileOperationInitialisation&lt;OPERATION&gt; init) {
-<span class="fc" id="L91">        final int imageWidth = this.axes[0];</span>
-<span class="fc" id="L92">        final int imageHeight = this.axes[1];</span>
-<span class="fc" id="L93">        final int tileWidth = this.tileAxes[0];</span>
-<span class="fc" id="L94">        final int tileHeight = this.tileAxes[1];</span>
-<span class="fc" id="L95">        final int nrOfTilesOnXAxis = BigDecimal.valueOf((double) imageWidth / (double) tileWidth).setScale(0, RoundingMode.CEILING).intValue();</span>
-<span class="fc" id="L96">        final int nrOfTilesOnYAxis = BigDecimal.valueOf((double) imageHeight / (double) tileHeight).setScale(0, RoundingMode.CEILING).intValue();</span>
-<span class="fc" id="L97">        int lastTileWidth = imageWidth - (nrOfTilesOnXAxis - 1) * tileWidth;</span>
-<span class="fc" id="L98">        int lastTileHeight = imageHeight - (nrOfTilesOnYAxis - 1) * tileHeight;</span>
-<span class="fc" id="L99">        int tileIndex = 0;</span>
-<span class="fc" id="L100">        this.tileOperations = (OPERATION[]) Array.newInstance(this.operationClass, nrOfTilesOnXAxis * nrOfTilesOnYAxis);</span>
-<span class="fc" id="L101">        init.tileCount(this.tileOperations.length);</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (int y = 0; y &lt; imageHeight; y += tileHeight) {</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">            boolean lastY = y + tileHeight &gt;= imageHeight;</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">            for (int x = 0; x &lt; imageWidth; x += tileWidth) {</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">                boolean lastX = x + tileWidth &gt;= imageWidth;</span>
-<span class="fc" id="L106">                int dataOffset = y * imageWidth + x;</span>
-<span class="fc" id="L107">                OPERATION tileOperation = init.createTileOperation(tileIndex, new TileArea().start(x, y));</span>
-<span class="fc bfc" id="L108" title="All 4 branches covered.">                tileOperation.setDimensions(dataOffset, lastX ? lastTileWidth : tileWidth, lastY ? lastTileHeight : tileHeight);</span>
-<span class="fc" id="L109">                this.tileOperations[tileIndex] = tileOperation;</span>
-<span class="fc" id="L110">                init.init(tileOperation);</span>
-<span class="fc" id="L111">                tileIndex++;</span>
+    protected void createTiles(ITileOperationInitialisation&lt;OPERATION&gt; init) throws FitsException {
+<span class="fc" id="L107">        final int imageWidth = this.axes[0];</span>
+<span class="fc" id="L108">        final int imageHeight = this.axes[1];</span>
+<span class="fc" id="L109">        final int tileWidth = this.tileAxes[0];</span>
+<span class="fc" id="L110">        final int tileHeight = this.tileAxes[1];</span>
+<span class="fc" id="L111">        final int nrOfTilesOnXAxis = BigDecimal.valueOf((double) imageWidth / (double) tileWidth).setScale(0, RoundingMode.CEILING).intValue();</span>
+<span class="fc" id="L112">        final int nrOfTilesOnYAxis = BigDecimal.valueOf((double) imageHeight / (double) tileHeight).setScale(0, RoundingMode.CEILING).intValue();</span>
+<span class="fc" id="L113">        int lastTileWidth = imageWidth - (nrOfTilesOnXAxis - 1) * tileWidth;</span>
+<span class="fc" id="L114">        int lastTileHeight = imageHeight - (nrOfTilesOnYAxis - 1) * tileHeight;</span>
+<span class="fc" id="L115">        int tileIndex = 0;</span>
+        @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L117">        OPERATION[] operations = (OPERATION[]) Array.newInstance(this.operationClass, nrOfTilesOnXAxis * nrOfTilesOnYAxis);</span>
+<span class="fc" id="L118">        this.tileOperations = operations;</span>
+<span class="fc" id="L119">        init.tileCount(this.tileOperations.length);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        for (int y = 0; y &lt; imageHeight; y += tileHeight) {</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">            boolean lastY = y + tileHeight &gt;= imageHeight;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">            for (int x = 0; x &lt; imageWidth; x += tileWidth) {</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">                boolean lastX = x + tileWidth &gt;= imageWidth;</span>
+<span class="fc" id="L124">                int dataOffset = y * imageWidth + x;</span>
+<span class="fc" id="L125">                OPERATION tileOperation = init.createTileOperation(tileIndex, new TileArea().start(x, y));</span>
+<span class="fc bfc" id="L126" title="All 4 branches covered.">                tileOperation.setDimensions(dataOffset, lastX ? lastTileWidth : tileWidth, lastY ? lastTileHeight : tileHeight);</span>
+<span class="fc" id="L127">                this.tileOperations[tileIndex] = tileOperation;</span>
+<span class="fc" id="L128">                init.init(tileOperation);</span>
+<span class="fc" id="L129">                tileIndex++;</span>
             }
         }
-<span class="fc" id="L114">    }</span>
-
-    protected int getImageWidth() {
-<span class="fc" id="L117">        return this.axes[0];</span>
-    }
+<span class="fc" id="L132">    }</span>
 
     protected int getNAxes() {
-<span class="fc" id="L121">        return this.axes.length;</span>
+<span class="fc" id="L135">        return this.axes.length;</span>
     }
 
     protected int getNumberOfTileOperations() {
-<span class="fc" id="L125">        return this.tileOperations.length;</span>
-    }
-
-    protected OPERATION getTile(int i) {
-<span class="fc" id="L129">        return this.tileOperations[i];</span>
+<span class="fc" id="L139">        return this.tileOperations.length;</span>
     }
 
     protected int[] getTileAxes() {
-<span class="fc" id="L133">        return this.tileAxes;</span>
+<span class="fc" id="L143">        return this.tileAxes;</span>
     }
 
     protected OPERATION[] getTileOperations() {
-<span class="fc" id="L137">        return this.tileOperations;</span>
+<span class="fc" id="L147">        return this.tileOperations;</span>
     }
 
-    protected void setAxes(int[] axes) {
-<span class="fc" id="L141">        this.axes = axes;</span>
-<span class="fc" id="L142">    }</span>
-
     protected void setBaseType(PrimitiveType&lt;Buffer&gt; baseType) {
-<span class="fc" id="L145">        this.baseType = baseType;</span>
-<span class="fc" id="L146">    }</span>
-
+<span class="fc" id="L151">        this.baseType = baseType;</span>
+<span class="fc" id="L152">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

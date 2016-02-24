@@ -31,10 +31,9 @@
  * #L%
  */
 
-import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressorOption;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
@@ -44,22 +43,22 @@ public final class HCompressScaleParameter extends CompressHeaderParameter&lt;HC
      * @param hCompressorOption
      */
     HCompressScaleParameter(HCompressorOption hCompressorOption) {
-<span class="fc" id="L47">        super(Compression.SCALE, hCompressorOption);</span>
-<span class="fc" id="L48">    }</span>
+<span class="fc" id="L46">        super(Compression.SCALE, hCompressorOption);</span>
+<span class="fc" id="L47">    }</span>
 
     @Override
-    public void getValueFromHeader(Header header) {
-<span class="fc" id="L52">        HeaderCard value = findZVal(header);</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (value != null) {</span>
-<span class="fc" id="L54">            getOption().setScale(value.getValue(Integer.class, -1));</span>
+    public void getValueFromHeader(IHeaderAccess header) {
+<span class="fc" id="L51">        HeaderCard value = findZVal(header);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (value != null) {</span>
+<span class="fc" id="L53">            getOption().setScale(value.getValue(Integer.class, -1));</span>
         }
-<span class="fc" id="L56">    }</span>
+<span class="fc" id="L55">    }</span>
 
     @Override
-    public void setValueInHeader(Header header) throws HeaderCardException {
-<span class="fc" id="L60">        int zvalIndex = nextFreeZVal(header);</span>
-<span class="fc" id="L61">        header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());</span>
-<span class="fc" id="L62">        header.addValue(Compression.ZVALn.n(zvalIndex), getOption().getScale());</span>
-<span class="fc" id="L63">    }</span>
+    public void setValueInHeader(IHeaderAccess header) {
+<span class="fc" id="L59">        int zvalIndex = nextFreeZVal(header);</span>
+<span class="fc" id="L60">        header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());</span>
+<span class="fc" id="L61">        header.addValue(Compression.ZVALn.n(zvalIndex), getOption().getScale());</span>
+<span class="fc" id="L62">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

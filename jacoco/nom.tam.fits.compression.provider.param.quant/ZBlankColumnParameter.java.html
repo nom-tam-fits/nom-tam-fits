@@ -51,10 +51,10 @@ public final class ZBlankColumnParameter extends CompressColumnParameter&lt;int[
     @Override
     public void getValueFromColumn(int index) {
         Integer bNull;
-<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        if (this.original != null) {</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (this.original != null) {</span>
 <span class="fc" id="L55">            bNull = getOption().getOriginal().getBNull();</span>
         } else {
-<span class="nc" id="L57">            bNull = getOption().getBNull();</span>
+<span class="fc" id="L57">            bNull = getOption().getBNull();</span>
         }
 <span class="fc bfc" id="L59" title="All 2 branches covered.">        if (bNull == null) {</span>
 <span class="fc" id="L60">            int[] originalColumn = originalColumn();</span>

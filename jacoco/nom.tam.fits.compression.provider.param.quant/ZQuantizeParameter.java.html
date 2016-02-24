@@ -31,9 +31,9 @@
  * #L%
  */
 
-import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.HeaderCard;
 import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
@@ -47,31 +47,32 @@ final class ZQuantizeParameter extends CompressHeaderParameter&lt;QuantizeOption
 <span class="fc" id="L47">    }</span>
 
     @Override
-    public void getValueFromHeader(Header header) {
-<span class="fc" id="L51">        String value = header.getStringValue(getName());</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(value)) {</span>
-<span class="fc" id="L53">            getOption().setDither(true);</span>
-<span class="fc" id="L54">            getOption().setDither2(true);</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">        } else if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(value)) {</span>
-<span class="fc" id="L56">            getOption().setDither(true);</span>
-<span class="fc" id="L57">            getOption().setDither2(false);</span>
+    public void getValueFromHeader(IHeaderAccess header) {
+<span class="fc" id="L51">        HeaderCard card = header.findCard(getName());</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        String value = card != null ? card.getValue() : null;</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(value)) {</span>
+<span class="fc" id="L54">            getOption().setDither(true);</span>
+<span class="fc" id="L55">            getOption().setDither2(true);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        } else if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(value)) {</span>
+<span class="fc" id="L57">            getOption().setDither(true);</span>
+<span class="fc" id="L58">            getOption().setDither2(false);</span>
         } else {
-<span class="fc" id="L59">            getOption().setDither(false);</span>
-<span class="fc" id="L60">            getOption().setDither2(false);</span>
+<span class="fc" id="L60">            getOption().setDither(false);</span>
+<span class="fc" id="L61">            getOption().setDither2(false);</span>
         }
-<span class="fc" id="L62">    }</span>
+<span class="fc" id="L63">    }</span>
 
     @Override
-    public void setValueInHeader(Header header) throws HeaderCardException {
+    public void setValueInHeader(IHeaderAccess header) {
         String value;
-<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        if (getOption().isDither2()) {</span>
-<span class="fc" id="L68">            value = Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2;</span>
-<span class="nc bnc" id="L69" title="All 2 branches missed.">        } else if (getOption().isDither()) {</span>
-<span class="nc" id="L70">            value = Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1;</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (getOption().isDither2()) {</span>
+<span class="fc" id="L69">            value = Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2;</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        } else if (getOption().isDither()) {</span>
+<span class="fc" id="L71">            value = Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1;</span>
         } else {
-<span class="nc" id="L72">            value = Compression.ZQUANTIZ_NO_DITHER;</span>
+<span class="fc" id="L73">            value = Compression.ZQUANTIZ_NO_DITHER;</span>
         }
-<span class="fc" id="L74">        header.card(Compression.ZQUANTIZ).value(value);</span>
-<span class="fc" id="L75">    }</span>
+<span class="fc" id="L75">        header.addValue(Compression.ZQUANTIZ, value);</span>
+<span class="fc" id="L76">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

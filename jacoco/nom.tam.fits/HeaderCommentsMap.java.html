@@ -57,24 +57,24 @@ public final class HeaderCommentsMap {
     @Deprecated
     public static String getComment(String key) {
 <span class="fc" id="L59">        key = simplyfyKey(key);</span>
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        for (Standard value : Standard.values()) {</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        for (Standard value : Standard.values()) {</span>
 <span class="fc" id="L61">            String comment = value.getCommentByKey(key);</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">            if (comment != null) {</span>
 <span class="fc" id="L63">                return comment;</span>
             }
         }
-<span class="nc" id="L66">        return null;</span>
+<span class="fc" id="L66">        return null;</span>
     }
 
     private static String simplyfyKey(String key) {
 <span class="fc" id="L70">        int firstDbPoint = key.indexOf(':');</span>
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        if (firstDbPoint &gt; 0) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (firstDbPoint &gt; 0) {</span>
 <span class="fc" id="L72">            int secondDoublePoint = key.indexOf(':', firstDbPoint + 1);</span>
 <span class="pc bpc" id="L73" title="1 of 2 branches missed.">            if (secondDoublePoint &gt; 0) {</span>
 <span class="fc" id="L74">                return key.substring(0, secondDoublePoint);</span>
             }
         }
-<span class="nc" id="L77">        return key;</span>
+<span class="fc" id="L77">        return key;</span>
     }
 
     @Deprecated

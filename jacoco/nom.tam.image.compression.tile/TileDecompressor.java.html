@@ -34,6 +34,8 @@
 import java.nio.Buffer;
 import java.util.logging.Logger;
 
+import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
+import nom.tam.image.compression.tile.mask.NullPixelMaskRestorer;
 import nom.tam.image.tile.operation.TileArea;
 
 public class TileDecompressor extends TileCompressionOperation {
@@ -41,32 +43,45 @@ public class TileDecompressor extends TileCompressionOperation {
     /**
      * logger to log to.
      */
-<span class="fc" id="L44">    private static final Logger LOG = Logger.getLogger(TileDecompressor.class.getName());</span>
+<span class="fc" id="L46">    private static final Logger LOG = Logger.getLogger(TileDecompressor.class.getName());</span>
+
+    private NullPixelMaskRestorer nullPixelMaskRestorer;
 
     protected TileDecompressor(TiledImageCompressionOperation array, int tileIndex, TileArea area) {
-<span class="fc" id="L47">        super(array, tileIndex, area);</span>
-<span class="fc" id="L48">    }</span>
+<span class="fc" id="L51">        super(array, tileIndex, area);</span>
+<span class="fc" id="L52">    }</span>
 
     @Override
     public void run() {
-<span class="fc" id="L52">        decompress();</span>
-<span class="fc" id="L53">        getTileBuffer().finish();</span>
-<span class="fc" id="L54">    }</span>
+<span class="fc" id="L56">        decompress();</span>
+<span class="fc" id="L57">        getTileBuffer().finish();</span>
+<span class="fc" id="L58">    }</span>
 
     private void decompress() {
-<span class="fc" id="L57">        initTileOptions();</span>
-<span class="fc" id="L58">        this.tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (this.compressionType == TileCompressionType.COMPRESSED) {</span>
-<span class="fc" id="L60">            getCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), this.tileOptions);</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">        } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {</span>
-<span class="fc" id="L62">            getGzipCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), null);</span>
-<span class="pc bpc" id="L63" title="1 of 2 branches missed.">        } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {</span>
-<span class="fc" id="L64">            Buffer typedBuffer = getBaseType().asTypedBuffer(this.compressedData);</span>
-<span class="fc" id="L65">            getBaseType().appendBuffer(getTileBuffer().getBuffer(), typedBuffer);</span>
-<span class="fc" id="L66">        } else {</span>
-<span class="nc" id="L67">            LOG.severe(&quot;Unknown compression column&quot;);</span>
-<span class="nc" id="L68">            throw new IllegalStateException(&quot;Unknown compression column&quot;);</span>
+<span class="fc" id="L61">        initTileOptions();</span>
+<span class="fc" id="L62">        this.tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (this.compressionType == TileCompressionType.COMPRESSED) {</span>
+<span class="fc" id="L64">            getCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), this.tileOptions);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">            if (this.nullPixelMaskRestorer != null) {</span>
+<span class="fc" id="L66">                this.nullPixelMaskRestorer.restoreNulls();</span>
+            }
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {</span>
+<span class="fc" id="L69">            getGzipCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), null);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {</span>
+<span class="fc" id="L71">            Buffer typedBuffer = getBaseType().asTypedBuffer(this.compressedData);</span>
+<span class="fc" id="L72">            getBaseType().appendBuffer(getTileBuffer().getBuffer(), typedBuffer);</span>
+<span class="fc" id="L73">        } else {</span>
+<span class="fc" id="L74">            LOG.severe(&quot;Unknown compression column&quot;);</span>
+<span class="fc" id="L75">            throw new IllegalStateException(&quot;Unknown compression column&quot;);</span>
         }
-<span class="fc" id="L70">    }</span>
+<span class="fc" id="L77">    }</span>
+
+    @Override
+    protected NullPixelMaskRestorer createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (imageNullPixelMask != null) {</span>
+<span class="fc" id="L82">            this.nullPixelMaskRestorer = imageNullPixelMask.createTileRestorer(getTileBuffer(), getTileIndex());</span>
+        }
+<span class="fc" id="L84">        return this.nullPixelMaskRestorer;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

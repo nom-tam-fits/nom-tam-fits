@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Data.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">Data.java</span></div><h1>Data.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
 
+import static nom.tam.util.LoggerHelper.getLogger;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -32,6 +34,8 @@
  */
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -53,14 +57,16 @@ import nom.tam.util.RandomAccess;
  * dimensionality.
  * &lt;/ul&gt;
  */
-<span class="fc" id="L56">public abstract class Data implements FitsElement {</span>
+<span class="fc" id="L60">public abstract class Data implements FitsElement {</span>
+
+<span class="fc" id="L62">    private static final Logger LOG = getLogger(Data.class);</span>
 
     private static final int FITS_BLOCK_SIZE_MINUS_ONE = FitsFactory.FITS_BLOCK_SIZE - 1;
 
     /**
      * The starting location of the data when last read
      */
-<span class="fc" id="L63">    protected long fileOffset = -1;</span>
+<span class="fc" id="L69">    protected long fileOffset = -1;</span>
 
     /**
      * The size of the data when last read
@@ -96,7 +102,7 @@ import nom.tam.util.RandomAccess;
      */
     @Override
     public long getFileOffset() {
-<span class="fc" id="L99">        return this.fileOffset;</span>
+<span class="fc" id="L105">        return this.fileOffset;</span>
     }
 
     /**
@@ -105,7 +111,7 @@ import nom.tam.util.RandomAccess;
      *             if the data could not be gathered .
      */
     public Object getKernel() throws FitsException {
-<span class="fc" id="L108">        return getData();</span>
+<span class="fc" id="L114">        return getData();</span>
     }
 
     /**
@@ -113,7 +119,7 @@ import nom.tam.util.RandomAccess;
      */
     @Override
     public long getSize() {
-<span class="fc" id="L116">        return FitsUtil.addPadding(getTrueSize());</span>
+<span class="fc" id="L122">        return FitsUtil.addPadding(getTrueSize());</span>
     }
 
     abstract long getTrueSize();
@@ -124,32 +130,33 @@ import nom.tam.util.RandomAccess;
     @Override
     public boolean reset() {
         try {
-<span class="fc" id="L127">            FitsUtil.reposition(this.input, this.fileOffset);</span>
-<span class="fc" id="L128">            return true;</span>
-<span class="nc" id="L129">        } catch (Exception e) {</span>
-<span class="nc" id="L130">            return false;</span>
+<span class="fc" id="L133">            FitsUtil.reposition(this.input, this.fileOffset);</span>
+<span class="fc" id="L134">            return true;</span>
+<span class="nc" id="L135">        } catch (Exception e) {</span>
+<span class="nc" id="L136">            LOG.log(Level.SEVERE, &quot;UINable to reset&quot;, e);</span>
+<span class="nc" id="L137">            return false;</span>
         }
     }
 
     @Override
     public void rewrite() throws FitsException {
 
-<span class="pc bpc" id="L137" title="1 of 2 branches missed.">        if (!rewriteable()) {</span>
-<span class="nc" id="L138">            throw new FitsException(&quot;Illegal attempt to rewrite data&quot;);</span>
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">        if (!rewriteable()) {</span>
+<span class="nc" id="L145">            throw new FitsException(&quot;Illegal attempt to rewrite data&quot;);</span>
         }
 
-<span class="fc" id="L141">        FitsUtil.reposition(this.input, this.fileOffset);</span>
-<span class="fc" id="L142">        write((ArrayDataOutput) this.input);</span>
+<span class="fc" id="L148">        FitsUtil.reposition(this.input, this.fileOffset);</span>
+<span class="fc" id="L149">        write((ArrayDataOutput) this.input);</span>
         try {
-<span class="fc" id="L144">            ((ArrayDataOutput) this.input).flush();</span>
-<span class="nc" id="L145">        } catch (IOException e) {</span>
-<span class="nc" id="L146">            throw new FitsException(&quot;Error in rewrite flush: &quot; + e);</span>
-<span class="fc" id="L147">        }</span>
-<span class="fc" id="L148">    }</span>
+<span class="fc" id="L151">            ((ArrayDataOutput) this.input).flush();</span>
+<span class="nc" id="L152">        } catch (IOException e) {</span>
+<span class="nc" id="L153">            throw new FitsException(&quot;Error in rewrite flush: &quot; + e);</span>
+<span class="fc" id="L154">        }</span>
+<span class="fc" id="L155">    }</span>
 
     @Override
     public boolean rewriteable() {
-<span class="pc bpc" id="L152" title="3 of 6 branches missed.">        return this.input != null &amp;&amp; this.fileOffset &gt;= 0</span>
+<span class="pc bpc" id="L159" title="3 of 6 branches missed.">        return this.input != null &amp;&amp; this.fileOffset &gt;= 0</span>
                 &amp;&amp; (getTrueSize() + FITS_BLOCK_SIZE_MINUS_ONE) / FitsFactory.FITS_BLOCK_SIZE == (this.dataSize + FITS_BLOCK_SIZE_MINUS_ONE) / FitsFactory.FITS_BLOCK_SIZE;
     }
 
@@ -160,12 +167,12 @@ import nom.tam.util.RandomAccess;
      *            reread information.
      */
     protected void setFileOffset(ArrayDataInput o) {
-<span class="fc bfc" id="L163" title="All 2 branches covered.">        if (o instanceof RandomAccess) {</span>
-<span class="fc" id="L164">            this.fileOffset = FitsUtil.findOffset(o);</span>
-<span class="fc" id="L165">            this.dataSize = getTrueSize();</span>
-<span class="fc" id="L166">            this.input = (RandomAccess) o;</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        if (o instanceof RandomAccess) {</span>
+<span class="fc" id="L171">            this.fileOffset = FitsUtil.findOffset(o);</span>
+<span class="fc" id="L172">            this.dataSize = getTrueSize();</span>
+<span class="fc" id="L173">            this.input = (RandomAccess) o;</span>
         }
-<span class="fc" id="L168">    }</span>
+<span class="fc" id="L175">    }</span>
 
     /**
      * Write the data -- including any buffering needed
