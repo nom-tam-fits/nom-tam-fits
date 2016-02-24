@@ -464,6 +464,7 @@ public class BinaryTableTest {
             bhdu.setColumnMeta(i, "TUNIT", "UNIT" + (i + 1), null, true);
             bhdu.setColumnMeta(i, "TX", i + 1, null, true);
             bhdu.setColumnMeta(i, "TY", 2. * (i + 1), null, true);
+            bhdu.setColumnMeta(i, "TZ", 3. * (i + 1), i+1, null, true);
         }
         bhdu.setCurrentColumn(1);
         Assert.assertEquals(-1, bhdu.findColumn("XXX"));
@@ -497,6 +498,8 @@ public class BinaryTableTest {
             assertEquals("M" + i + "D", "TX" + (i + 1), hc.getKey());
             hc = hdr.nextCard();
             assertEquals("M" + i + "E", "TY" + (i + 1), hc.getKey());
+            hc = hdr.nextCard();
+            assertEquals("M" + i + "F", "TZ" + (i + 1), hc.getKey());
         }
     }
 

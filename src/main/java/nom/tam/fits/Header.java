@@ -373,6 +373,25 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Add or replace a key with the given double value and comment. Note that
+     * float values will be promoted to doubles.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The double value.
+     * @param precision
+     *            The fixed number of decimal places to show.
+     * @param comment
+     *            A comment to append to the card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(String key, double val, int precision, String comment) throws HeaderCardException {
+        this.iter.add(new HeaderCard(key, val, precision, comment));
+    }
+
+    /**
      * Add or replace a key with the given long value and comment. Note that
      * int's will be promoted to long's.
      * 

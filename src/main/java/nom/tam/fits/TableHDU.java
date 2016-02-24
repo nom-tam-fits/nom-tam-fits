@@ -455,6 +455,11 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         this.myHeader.addValue(key + (index + 1), value, comment);
     }
 
+    public void setColumnMeta(int index, String key, double value, int precision, String comment, boolean after) throws FitsException {
+        setCurrentColumn(index, after);
+        this.myHeader.addValue(key + (index + 1), value, precision, comment);
+    }
+
     public void setColumnMeta(int index, String key, long value, String comment, boolean after) throws FitsException {
         setCurrentColumn(index, after);
         this.myHeader.addValue(key + (index + 1), value, comment);
