@@ -229,7 +229,8 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
     public boolean compress(T pixelData, ByteBuffer compressed) {
         this.nioBuffer.rewind();
         int pixelDataLimit = pixelData.limit();
-        try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {
+        try {
+            GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed);
             while (pixelData.hasRemaining()) {
                 int count = Math.min(pixelData.remaining(), this.nioBuffer.capacity());
                 pixelData.limit(pixelData.position() + count);
@@ -257,7 +258,8 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
     public void decompress(ByteBuffer compressed, T pixelData) {
         this.nioBuffer.rewind();
         TypeConversion<Buffer> typeConverter = getTypeConverter(compressed, pixelData.limit());
-        try (GZIPInputStream zip = createGZipInputStream(compressed)) {
+        try {
+            GZIPInputStream zip = createGZipInputStream(compressed);
             int count;
             while ((count = zip.read(this.buffer)) >= 0) {
                 if (typeConverter != null) {
@@ -291,7 +293,7 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
                     if (uncompressedSize % nrOfPrimitiveElements == 0) {
                         int compressedPrimitiveSize = uncompressedSize / nrOfPrimitiveElements;
                         if (compressedPrimitiveSize != this.primitiveSize) {
-                            return new TypeConversion<>(getPrimitiveType(compressedPrimitiveSize));
+                            return new TypeConversion<Buffer>(getPrimitiveType(compressedPrimitiveSize));
                         }
                     }
                 }
