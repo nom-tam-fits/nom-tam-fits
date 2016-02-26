@@ -216,4 +216,14 @@ public class EnumHeaderTest {
         assertSame(Standard.NAXISn, GenericKey.lookup(Standard.NAXISn.n(99).key()));
 
     }
+
+    @Test
+    public void testIFitsHeader() {
+        assertEquals(9, IFitsHeader.HDU.values().length);
+        assertSame(IFitsHeader.HDU.ANY, IFitsHeader.HDU.valueOf(IFitsHeader.HDU.ANY.name()));
+        assertEquals(14, IFitsHeader.SOURCE.values().length);
+        assertSame(IFitsHeader.SOURCE.UNKNOWN, IFitsHeader.SOURCE.valueOf(IFitsHeader.SOURCE.UNKNOWN.name()));
+        assertEquals(6, IFitsHeader.VALUE.values().length);
+        assertSame(IFitsHeader.VALUE.ANY, IFitsHeader.VALUE.valueOf(IFitsHeader.VALUE.ANY.name()));
+    }
 }

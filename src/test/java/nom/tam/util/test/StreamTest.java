@@ -34,10 +34,12 @@ package nom.tam.util.test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
+import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 
@@ -222,6 +224,42 @@ public class StreamTest {
             Assert.assertEquals("short[" + index + "]", expectedValues[index], values[index], 0);
         }
         Assert.assertEquals(0, in.available());
+    }
+
+    @Test
+    public void testStringArray() throws Exception {
+        String[] values = new String[10];
+        String[] expectedValues = new String[10];
+        int size = 0;
+        for (int index = 0; index < expectedValues.length; index++) {
+            expectedValues[index] = Integer.toString(index);
+            size += expectedValues[index].length();
+        }
+        ou.writePrimitiveArray(expectedValues);
+        ou.write(expectedValues);
+        ou.flush();
+        byte[] bytes = new byte[size];
+        in.readFully(bytes);
+
+        Assert.assertEquals(expectedValues.length, values.length);
+        Assert.assertEquals("0123456789", AsciiFuncs.asciiString(bytes));
+    }
+
+    @Test
+    public void testSkipManyBytes() throws Exception {
+        int total = 8192 * 2;
+        InputStream input = new ByteArrayInputStream(new byte[total]) {
+
+            @Override
+            public synchronized long skip(long n) {
+                StreamTest.<RuntimeException> throwAny(new IOException("all is broken"));
+                return 0L;
+            }
+        };
+        BufferedDataInputStream myIn = new BufferedDataInputStream(input);
+        myIn.skipAllBytes(10000L);
+        myIn.readFully(new byte[total - 10000]);
+        Assert.assertEquals(0, myIn.available());
     }
 
     @Test
@@ -472,7 +510,7 @@ public class StreamTest {
         try (BufferedDataOutputStream out = new BufferedDataOutputStream(o)) {
             out.writeBytes("bla bla\n");
         }
-        try (BufferedDataInputStream input = new BufferedDataInputStream(new ByteArrayInputStream(o.toByteArray()))){
+        try (BufferedDataInputStream input = new BufferedDataInputStream(new ByteArrayInputStream(o.toByteArray()))) {
             String line = input.readLine();
             Assert.assertEquals("bla bla", line);
         }
