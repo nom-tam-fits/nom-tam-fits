@@ -246,8 +246,10 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
             throw new IllegalStateException("could not gzip data", e);
         } finally {
             try {
-                if(zip != null) zip.close();
-            } catch(IOException e) {
+                if (zip != null) {
+                    zip.close();
+                }
+            } catch (IOException e) {
                 
             }
         }
@@ -285,8 +287,10 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
             throw new IllegalStateException("could not gunzip data", e);
         } finally {
             try {
-                if(zip != null) zip.close();
-            } catch(IOException e) {
+                if (zip != null) {
+                    zip.close();
+                }
+            } catch (IOException e) {
                 
             }
         }
