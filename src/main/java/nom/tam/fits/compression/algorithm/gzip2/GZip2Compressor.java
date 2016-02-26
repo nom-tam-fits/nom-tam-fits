@@ -126,10 +126,21 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];
         getPixel(pixelData, pixelBytes);
         pixelBytes = shuffle(pixelBytes);
+        
+        // AK:
+        // Instead of using Java 7's resource management, do it explicitly to retain Java 6 compatibility...
+        
+        GZIPOutputStream zip = null;
+        
         try {
-        	GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed);
+        	zip = createGZipOutputStream(pixelDataLimit, compressed);
             zip.write(pixelBytes, 0, pixelBytes.length);
+            zip.close();
         } catch (IOException e) {
+        	if (zip != null) {
+        		try { zip.close(); }
+        		catch (IOException e2) {}
+        	}
             throw new IllegalStateException("could not gzip data", e);
         }
         return true;
@@ -162,7 +173,6 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         		try { zip.close(); }
         		catch (IOException e2) {}
         	}
-        	
             throw new IllegalStateException("could not gunzip data", e);
         }
         pixelBytes = unshuffle(pixelBytes);

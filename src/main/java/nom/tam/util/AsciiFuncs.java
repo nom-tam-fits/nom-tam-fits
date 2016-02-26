@@ -72,7 +72,7 @@ public final class AsciiFuncs {
      * @return the extracted string
      */
     public static String asciiString(byte[] buf, int start, int len) {
-       	// AK:
+    	// AK:
     	// Instead of using Java 7's StandardCharsets.US_ASCII, let's
     	// use the locally defined equivalent to retain Java 6 compatibility...
         return new String(buf, start, len, US_ASCII);
@@ -102,7 +102,7 @@ public final class AsciiFuncs {
     }
     
     // AK:
-	// Instead of using Java 7's StandardCharsets.US_ASCII, let's
-	// use the locally defined equivalent to retain Java 6 compatibility...
+    // Instead of using Java 7's StandardCharsets.US_ASCII, let's
+    // use the locally defined equivalent to retain Java 6 compatibility...
     private final static Charset US_ASCII = Charset.forName("US_ASCII");
 }
