@@ -229,18 +229,14 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
     public boolean compress(T pixelData, ByteBuffer compressed) {
         this.nioBuffer.rewind();
         int pixelDataLimit = pixelData.limit();
-
-        GZIPOutputStream zip = null;
-
-        try {
-            zip = createGZipOutputStream(pixelDataLimit, compressed);
+        try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {
             while (pixelData.hasRemaining()) {
                 int count = Math.min(pixelData.remaining(), this.nioBuffer.capacity());
                 pixelData.limit(pixelData.position() + count);
                 getPixel(pixelData, null);
                 zip.write(this.buffer, 0, this.nioBuffer.position() * this.primitiveSize);
                 this.nioBuffer.rewind();
-                pixelData.limit(pixelDataLimit);    
+                pixelData.limit(pixelDataLimit);
             }
         } catch (IOException e) {
             throw new IllegalStateException("could not gzip data", e);
@@ -261,14 +257,7 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
     public void decompress(ByteBuffer compressed, T pixelData) {
         this.nioBuffer.rewind();
         TypeConversion<Buffer> typeConverter = getTypeConverter(compressed, pixelData.limit());
-
-        // AK:
-        // Instead of using Java 7's resource management, do it explicitly to retain Java 6 compatibility...
-
-        GZIPInputStream zip = null;
-
-        try {
-            zip = createGZipInputStream(compressed);
+        try (GZIPInputStream zip = createGZipInputStream(compressed)) {
             int count;
             while ((count = zip.read(this.buffer)) >= 0) {
                 if (typeConverter != null) {
@@ -302,7 +291,7 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
                     if (uncompressedSize % nrOfPrimitiveElements == 0) {
                         int compressedPrimitiveSize = uncompressedSize / nrOfPrimitiveElements;
                         if (compressedPrimitiveSize != this.primitiveSize) {
-                            return new TypeConversion<Buffer>(getPrimitiveType(compressedPrimitiveSize));
+                            return new TypeConversion<>(getPrimitiveType(compressedPrimitiveSize));
                         }
                     }
                 }
