@@ -104,5 +104,5 @@ public final class AsciiFuncs {
     // AK:
     // Instead of using Java 7's StandardCharsets.US_ASCII, let's
     // use the locally defined equivalent to retain Java 6 compatibility...
-    private static final Charset US_ASCII = Charset.forName("US_ASCII");
+    private static final Charset US_ASCII = Charset.forName("US-ASCII");
 }
