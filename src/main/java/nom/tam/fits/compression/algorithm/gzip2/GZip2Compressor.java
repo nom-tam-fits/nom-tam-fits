@@ -126,7 +126,8 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];
         getPixel(pixelData, pixelBytes);
         pixelBytes = shuffle(pixelBytes);
-        try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {
+        try {
+        	GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed);
             zip.write(pixelBytes, 0, pixelBytes.length);
         } catch (IOException e) {
             throw new IllegalStateException("could not gzip data", e);
@@ -138,7 +139,14 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
     public void decompress(ByteBuffer compressed, T pixelData) {
         int pixelDataLimit = pixelData.limit();
         byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];
-        try (GZIPInputStream zip = createGZipInputStream(compressed)) {
+        
+        // AK:
+        // Instead of using Java 7's resource management, do it explicitly to retain Java 6 compatibility...
+        
+        GZIPInputStream zip = null;
+        try {
+        	zip = createGZipInputStream(compressed);
+        	
             int count = 0;
             int offset = 0;
             while (offset < pixelBytes.length && count >= 0) {
@@ -147,7 +155,14 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
                     offset = offset + count;
                 }
             }
+            
+            zip.close(); 
         } catch (IOException e) {
+        	if (zip != null) {
+        		try { zip.close(); }
+        		catch (IOException e2) {}
+        	}
+        	
             throw new IllegalStateException("could not gunzip data", e);
         }
         pixelBytes = unshuffle(pixelBytes);

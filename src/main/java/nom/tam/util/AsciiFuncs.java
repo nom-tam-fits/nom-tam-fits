@@ -4,6 +4,8 @@
  */
 package nom.tam.util;
 
+import java.nio.charset.Charset;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -35,7 +37,6 @@ package nom.tam.util;
  * #L%
  */
 
-import java.nio.charset.StandardCharsets;
 
 /**
  * @author tmcglynn
@@ -71,7 +72,10 @@ public final class AsciiFuncs {
      * @return the extracted string
      */
     public static String asciiString(byte[] buf, int start, int len) {
-        return new String(buf, start, len, StandardCharsets.US_ASCII);
+       	// AK:
+    	// Instead of using Java 7's StandardCharsets.US_ASCII, let's
+    	// use the locally defined equivalent to retain Java 6 compatibility...
+        return new String(buf, start, len, US_ASCII);
     }
 
     /**
@@ -82,7 +86,10 @@ public final class AsciiFuncs {
      *            the string to convert
      */
     public static byte[] getBytes(String in) {
-        return in.getBytes(StandardCharsets.US_ASCII);
+    	// AK:
+    	// Instead of using Java 7's StandardCharsets.US_ASCII, let's
+    	// use the locally defined equivalent to retain Java 6 compatibility...
+        return in.getBytes(US_ASCII);
     }
 
     /**
@@ -93,4 +100,9 @@ public final class AsciiFuncs {
     public static boolean isWhitespace(char character) {
         return character == ' ' || character == '\t' || character == '\n' || character == '\r';
     }
+    
+    // AK:
+	// Instead of using Java 7's StandardCharsets.US_ASCII, let's
+	// use the locally defined equivalent to retain Java 6 compatibility...
+    private final static Charset US_ASCII = Charset.forName("US_ASCII");
 }

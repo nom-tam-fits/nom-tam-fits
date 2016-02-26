@@ -554,9 +554,9 @@ public class MultiArrayCopyFactory {
     private static final MultiArrayCopyFactory GENERIC = new Generic();
 
     static {
-        Map<Class<?>, Map<Class<?>, MultiArrayCopyFactory>> factories = new HashMap<>();
+        Map<Class<?>, Map<Class<?>, MultiArrayCopyFactory>> factories = new HashMap<Class<?>, Map<Class<?>, MultiArrayCopyFactory>>();
 
-        Map<Class<?>, MultiArrayCopyFactory> byteMap = new HashMap<>();
+        Map<Class<?>, MultiArrayCopyFactory> byteMap = new HashMap<Class<?>, MultiArrayCopyFactory>();
         byteMap.put(byte.class, new MultiArrayCopyFactory());
         byteMap.put(char.class, new ByteToChar());
         byteMap.put(short.class, new ByteToShort());
@@ -566,7 +566,7 @@ public class MultiArrayCopyFactory {
         byteMap.put(double.class, new ByteToDouble());
         factories.put(byte.class, Collections.unmodifiableMap(byteMap));
 
-        Map<Class<?>, MultiArrayCopyFactory> charMap = new HashMap<>();
+        Map<Class<?>, MultiArrayCopyFactory> charMap = new HashMap<Class<?>, MultiArrayCopyFactory>();
         charMap.put(byte.class, new CharToByte());
         charMap.put(char.class, new MultiArrayCopyFactory());
         charMap.put(short.class, new CharToShort());
@@ -576,7 +576,7 @@ public class MultiArrayCopyFactory {
         charMap.put(double.class, new CharToDouble());
         factories.put(char.class, Collections.unmodifiableMap(charMap));
 
-        Map<Class<?>, MultiArrayCopyFactory> shortMap = new HashMap<>();
+        Map<Class<?>, MultiArrayCopyFactory> shortMap = new HashMap<Class<?>, MultiArrayCopyFactory>();
         shortMap.put(byte.class, new ShortToByte());
         shortMap.put(char.class, new ShortToChar());
         shortMap.put(short.class, new MultiArrayCopyFactory());
@@ -586,7 +586,7 @@ public class MultiArrayCopyFactory {
         shortMap.put(double.class, new ShortToDouble());
         factories.put(short.class, Collections.unmodifiableMap(shortMap));
 
-        Map<Class<?>, MultiArrayCopyFactory> intMap = new HashMap<>();
+        Map<Class<?>, MultiArrayCopyFactory> intMap = new HashMap<Class<?>, MultiArrayCopyFactory>();
         intMap.put(byte.class, new IntToByte());
         intMap.put(char.class, new IntToChar());
         intMap.put(short.class, new IntToShort());
@@ -596,7 +596,7 @@ public class MultiArrayCopyFactory {
         intMap.put(double.class, new IntToDouble());
         factories.put(int.class, Collections.unmodifiableMap(intMap));
 
-        Map<Class<?>, MultiArrayCopyFactory> longMap = new HashMap<>();
+        Map<Class<?>, MultiArrayCopyFactory> longMap = new HashMap<Class<?>, MultiArrayCopyFactory>();
         longMap.put(byte.class, new LongToByte());
         longMap.put(char.class, new LongToChar());
         longMap.put(short.class, new LongToShort());
@@ -606,7 +606,7 @@ public class MultiArrayCopyFactory {
         longMap.put(double.class, new LongToDouble());
         factories.put(long.class, Collections.unmodifiableMap(longMap));
 
-        Map<Class<?>, MultiArrayCopyFactory> floatMap = new HashMap<>();
+        Map<Class<?>, MultiArrayCopyFactory> floatMap = new HashMap<Class<?>, MultiArrayCopyFactory>();
         floatMap.put(byte.class, new FloatToByte());
         floatMap.put(char.class, new FloatToChar());
         floatMap.put(short.class, new FloatToShort());
@@ -616,7 +616,7 @@ public class MultiArrayCopyFactory {
         floatMap.put(double.class, new FloatToDouble());
         factories.put(float.class, Collections.unmodifiableMap(floatMap));
 
-        Map<Class<?>, MultiArrayCopyFactory> doubleMap = new HashMap<>();
+        Map<Class<?>, MultiArrayCopyFactory> doubleMap = new HashMap<Class<?>, MultiArrayCopyFactory>();
         doubleMap.put(byte.class, new DoubleToByte());
         doubleMap.put(char.class, new DoubleToChar());
         doubleMap.put(short.class, new DoubleToShort());

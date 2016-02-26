@@ -163,10 +163,10 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     }
 
     /** An ordered list of the keys */
-    private final ArrayList<VALUE> ordered = new ArrayList<>();
+    private final ArrayList<VALUE> ordered = new ArrayList<VALUE>();
 
     /** The key value pairs */
-    private final HashMap<String, VALUE> keyed = new HashMap<>();
+    private final HashMap<String, VALUE> keyed = new HashMap<String, VALUE>();
 
     /**
      * Add an element to the list at a specified position. If that element was
@@ -236,7 +236,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        List<?> values = new ArrayList<>(c);
+        List<Object> values = new ArrayList<Object>(c);
         for (VALUE entry : this.ordered) {
             values.remove(entry);
         }
