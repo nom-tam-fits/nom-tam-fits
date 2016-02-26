@@ -234,21 +234,22 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
         
         try {
         	zip = createGZipOutputStream(pixelDataLimit, compressed);
-      	
             while (pixelData.hasRemaining()) {
                 int count = Math.min(pixelData.remaining(), this.nioBuffer.capacity());
                 pixelData.limit(pixelData.position() + count);
                 getPixel(pixelData, null);
                 zip.write(this.buffer, 0, this.nioBuffer.position() * this.primitiveSize);
                 this.nioBuffer.rewind();
-                pixelData.limit(pixelDataLimit);
-                
+                pixelData.limit(pixelDataLimit);    
                 zip.close();
             }
         } catch (IOException e) {
         	if (zip != null) {
-        		try { zip.close(); }
-        		catch (IOException e2) {}
+        		try {
+        			zip.close();
+        		}
+        		catch (IOException e2) {
+        		}
         	}
             throw new IllegalStateException("could not gzip data", e);
         }
@@ -288,8 +289,11 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
             zip.close();          
         } catch (IOException e) {
         	if (zip != null) {
-        		try { zip.close(); }
-        		catch (IOException e2) {}
+        		try {
+        			zip.close();
+        		}
+        		catch (IOException e2) {
+        		}
         	}
             throw new IllegalStateException("could not gunzip data", e);
         }

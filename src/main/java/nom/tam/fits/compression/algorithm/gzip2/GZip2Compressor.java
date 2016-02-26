@@ -138,8 +138,11 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
             zip.close();
         } catch (IOException e) {
         	if (zip != null) {
-        		try { zip.close(); }
-        		catch (IOException e2) {}
+        		try {
+        			zip.close();
+        		}
+        		catch (IOException e2) {	
+        		}
         	}
             throw new IllegalStateException("could not gzip data", e);
         }
@@ -157,7 +160,6 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         GZIPInputStream zip = null;
         try {
         	zip = createGZipInputStream(compressed);
-        	
             int count = 0;
             int offset = 0;
             while (offset < pixelBytes.length && count >= 0) {
@@ -166,12 +168,14 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
                     offset = offset + count;
                 }
             }
-            
             zip.close(); 
         } catch (IOException e) {
         	if (zip != null) {
-        		try { zip.close(); }
-        		catch (IOException e2) {}
+        		try {
+        			zip.close();
+        		}
+        		catch (IOException e2) {
+        		}
         	}
             throw new IllegalStateException("could not gunzip data", e);
         }
