@@ -126,23 +126,23 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];
         getPixel(pixelData, pixelBytes);
         pixelBytes = shuffle(pixelBytes);
-        
+
         // AK:
         // Instead of using Java 7's resource management, do it explicitly to retain Java 6 compatibility...
-        
+
         GZIPOutputStream zip = null;
-        
+
         try {
-        	zip = createGZipOutputStream(pixelDataLimit, compressed);
+            zip = createGZipOutputStream(pixelDataLimit, compressed);
             zip.write(pixelBytes, 0, pixelBytes.length);
             zip.close();
         } catch (IOException e) {
-        	if (zip != null) {
-        		try {
-        			zip.close();
-        		} catch (IOException e2) {
-        		}
-        	}
+            if (zip != null) {
+                try {
+                    zip.close();
+                } catch (IOException e2) {
+                }
+            }
             throw new IllegalStateException("could not gzip data", e);
         }
         return true;
@@ -152,13 +152,13 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
     public void decompress(ByteBuffer compressed, T pixelData) {
         int pixelDataLimit = pixelData.limit();
         byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];
-        
+
         // AK:
         // Instead of using Java 7's resource management, do it explicitly to retain Java 6 compatibility...
-        
+
         GZIPInputStream zip = null;
         try {
-        	zip = createGZipInputStream(compressed);
+            zip = createGZipInputStream(compressed);
             int count = 0;
             int offset = 0;
             while (offset < pixelBytes.length && count >= 0) {
@@ -169,12 +169,12 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
             }
             zip.close(); 
         } catch (IOException e) {
-        	if (zip != null) {
-        		try {
-        			zip.close();
-        		} catch (IOException e2) {
-        		}
-        	}
+            if (zip != null) {
+                try {
+                    zip.close();
+                } catch (IOException e2) {
+                }
+            }
             throw new IllegalStateException("could not gunzip data", e);
         }
         pixelBytes = unshuffle(pixelBytes);
