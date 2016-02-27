@@ -586,7 +586,7 @@ public class BaseFitsTest {
             expected = e;
         }
         Assert.assertNotNull(expected);
-        BufferedFile file = new BufferedFile("targetTestUndefinedRewrite.data", "rw") {
+        BufferedFile file = new BufferedFile("target/TestUndefinedRewrite.data", "rw") {
 
             @Override
             public void flush() throws IOException {
