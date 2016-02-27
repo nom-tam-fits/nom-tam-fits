@@ -575,8 +575,8 @@ public class BaseFitsTest {
 
     @Test
     public void testDataRepositionErrors() throws Exception {
-        final boolean[] fail = {
-            false
+        final int[] fail = {
+            100
         };
         TestUndefinedData data = new TestUndefinedData(new byte[10]);
         FitsException expected = null;
@@ -590,7 +590,8 @@ public class BaseFitsTest {
 
             @Override
             public void flush() throws IOException {
-                if (fail[0]) {
+                fail[0]--;
+                if (fail[0]<=0) {
                     throw new IOException("fail");
                 }
                 super.flush();
@@ -598,7 +599,8 @@ public class BaseFitsTest {
         };
         data.setFileOffset(file);
         data.rewrite();
-        fail[0] = true;
+        Assert.assertTrue(data.reset());
+        fail[0] = 3;
         expected = null;
         try {
             data.rewrite();
@@ -606,6 +608,6 @@ public class BaseFitsTest {
             expected = e;
         }
         Assert.assertNotNull(expected);
-
+        Assert.assertFalse(data.reset());
     }
 }

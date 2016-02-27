@@ -133,7 +133,7 @@ public abstract class Data implements FitsElement {
             FitsUtil.reposition(this.input, this.fileOffset);
             return true;
         } catch (Exception e) {
-            LOG.log(Level.SEVERE, "UINable to reset", e);
+            LOG.log(Level.SEVERE, "Unable to reset", e);
             return false;
         }
     }

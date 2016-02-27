@@ -97,4 +97,10 @@ public class HeaderOrderTest {
         Assert.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
         Assert.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
     }
+
+
+    @Test(expected=IllegalStateException.class)
+    public void testSaveNewCard() {
+        HeaderCard.saveNewHeaderCard("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "", false);
+    }
 }
