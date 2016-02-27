@@ -792,20 +792,7 @@ public class HeaderCard implements CursorValue<String> {
             if (this.value != null) {
 
                 if (this.isString) {
-                    String stringValue = this.value.replace("'", "''");
-                    if (FitsFactory.isLongStringsEnabled() && stringValue.length() > maxStringValueLength()) {
-                        writeLongStringValue(buf, stringValue);
-                        commentHandled = true;
-                    } else {
-                        // left justify the string inside the quotes
-                        buf.append('\'');
-                        buf.append(stringValue);
-                        buf.appendSpacesTo(alignSmallString);
-                        buf.append('\'');
-                        // Now add space to the comment area starting at column
-                        // 30
-                        buf.appendSpacesTo(alignPosition);
-                    }
+                    commentHandled = stringValueToString(alignSmallString, alignPosition, buf, commentHandled);
                 } else {
                     buf.appendSpacesTo(alignPosition - this.value.length());
                     buf.append(this.value);
@@ -835,6 +822,24 @@ public class HeaderCard implements CursorValue<String> {
         }
         buf.completeLine();
         return buf.toString();
+    }
+
+    private boolean stringValueToString(int alignSmallString, int alignPosition, FitsLineAppender buf, boolean commentHandled) {
+        String stringValue = this.value.replace("'", "''");
+        if (FitsFactory.isLongStringsEnabled() && stringValue.length() > maxStringValueLength()) {
+            writeLongStringValue(buf, stringValue);
+            commentHandled = true;
+        } else {
+            // left justify the string inside the quotes
+            buf.append('\'');
+            buf.append(stringValue);
+            buf.appendSpacesTo(alignSmallString);
+            buf.append('\'');
+            // Now add space to the comment area starting at column
+            // 30
+            buf.appendSpacesTo(alignPosition);
+        }
+        return commentHandled;
     }
 
     /**
