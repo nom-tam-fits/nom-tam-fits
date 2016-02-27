@@ -42,11 +42,6 @@ public abstract class BufferEncoder {
         this.sharedBuffer = sharedBuffer;
     }
 
-    protected void init(int bufferSize) {
-        this.sharedBuffer.buffer = new byte[bufferSize];
-        this.sharedBuffer.bufferOffset = 0;
-    }
-
     protected abstract void needBuffer(int need) throws IOException;
 
     protected void write(boolean[] b, int start, int length) throws IOException {

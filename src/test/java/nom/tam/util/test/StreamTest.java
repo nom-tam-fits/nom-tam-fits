@@ -237,12 +237,15 @@ public class StreamTest {
         }
         ou.writePrimitiveArray(expectedValues);
         ou.write(expectedValues);
+        ou.writeChars("**");
         ou.flush();
-        byte[] bytes = new byte[size];
+        byte[] bytes = new byte[size * 2];
         in.readFully(bytes);
-
         Assert.assertEquals(expectedValues.length, values.length);
-        Assert.assertEquals("0123456789", AsciiFuncs.asciiString(bytes));
+        Assert.assertEquals("01234567890123456789", AsciiFuncs.asciiString(bytes));
+        Assert.assertEquals('*', in.readChar());
+        Assert.assertEquals('*', in.readChar());
+        Assert.assertEquals(0, in.available());
     }
 
     @Test
@@ -451,6 +454,28 @@ public class StreamTest {
         ou.writeUTF("Ein test string");
         ou.flush();
         Assert.assertEquals("Ein test string", in.readUTF());
+        Assert.assertTrue(in.toString().contains("pos=17"));
+        Assert.assertEquals(0, in.available());
+    }
+
+    @Test
+    public void testIntEof() throws Exception {
+        BufferedDataInputStream in = new BufferedDataInputStream(new ByteArrayInputStream(new byte[3]));
+        EOFException expectedEof = null;
+        try {
+            in.readInt();
+        } catch (EOFException eof) {
+            expectedEof = eof;
+        }
+        Assert.assertNotNull(expectedEof);
+        Assert.assertEquals(0, in.available());
+    }
+
+    @Test
+    public void testReadLine() throws Exception {
+        BufferedDataInputStream in = new BufferedDataInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes("test line")));
+        Assert.assertTrue(in.toString().contains("pos=0"));
+        Assert.assertEquals("test line", in.readLine());
         Assert.assertEquals(0, in.available());
     }
 
@@ -501,7 +526,28 @@ public class StreamTest {
     @Test
     public void testEofHandlingShortArray() throws Exception {
         Assert.assertEquals(8, create8ByteInput().read(new short[10]));
-        Assert.assertEquals(8, create8ByteInput().readArray(new short[10]));
+        BufferedDataInputStream create8ByteInput = create8ByteInput();
+        Assert.assertEquals(8, create8ByteInput.readArray(new short[10]));
+        EOFException expectedEof = null;
+        try {
+            create8ByteInput.readArray(new short[10]);
+        } catch (EOFException eof) {
+            expectedEof = eof;
+        }
+        Assert.assertNotNull(expectedEof);
+    }
+
+    @Test
+    public void testEofHandlingByteArray() throws Exception {
+
+        BufferedDataInputStream create8ByteInput = create8ByteInput();
+        EOFException expectedEof = null;
+        try {
+            create8ByteInput.read(new byte[0], 0, 0);
+        } catch (EOFException eof) {
+            expectedEof = eof;
+        }
+        Assert.assertNull(expectedEof);
     }
 
     @Test
@@ -513,6 +559,15 @@ public class StreamTest {
         try (BufferedDataInputStream input = new BufferedDataInputStream(new ByteArrayInputStream(o.toByteArray()))) {
             String line = input.readLine();
             Assert.assertEquals("bla bla", line);
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void testFailedWriteArray() throws Exception {
+        ByteArrayOutputStream o = new ByteArrayOutputStream();
+        try (BufferedDataOutputStream out = new BufferedDataOutputStream(o)) {
+            out.writePrimitiveArray(3);
+            out.flush();
         }
     }
 
