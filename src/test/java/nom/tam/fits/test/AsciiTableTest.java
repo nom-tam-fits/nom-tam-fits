@@ -492,12 +492,47 @@ public class AsciiTableTest {
     }
 
     @Test
+    public void testOnEmptyTable() throws Exception {
+        // Create an empty table.
+        AsciiTable data = new AsciiTable();
+        assertEquals(0, data.getNRows());
+        
+        // deletion on empty table is ignored
+        data.deleteRows(0, 1);
+        assertEquals(0, data.getNRows());
+        
+        // isNull on empty table is always false
+        assertEquals(false, data.isNull(0, 0));
+    }
+
+
+    @Test
+    public void testDeleteRowsSimpleSpecialCases() throws Exception {
+        // Create a table with 50 rows to test with.
+        AsciiTable data = new AsciiTable();
+        for (int i = 0; i < 50; i += 1) {
+            data.addRow(getRow(i));
+        }
+        
+        // Negative start row leads to ignore of delete
+        data.deleteRows(-1, 1);
+        assertEquals(50, data.getNRows());
+        
+        // start row greater than number of rows leads to ignore of delete
+        data.deleteRows(100, 1234);
+        assertEquals(50, data.getNRows());
+
+        
+        // Excessive deletion length is ignored
+        data.deleteRows(49, 10);
+        assertEquals(49, data.getNRows());
+    }
+    
+    @Test
     public void testBadCases() throws Exception {
         // Create a table row by row .
         Fits f = new Fits();
         AsciiTable data = new AsciiTable();
-        Object[] row = new Object[4];
-
         for (int i = 0; i < 50; i += 1) {
             data.addRow(getRow(i));
         }
@@ -529,6 +564,7 @@ public class AsciiTableTest {
         actual = null;
         // nothing should happen.
         data.deleteRows(1, -1);
+
         try {
             data.deleteRows(1, 1);
         } catch (Exception e) {

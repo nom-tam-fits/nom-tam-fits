@@ -33,6 +33,7 @@ package nom.tam.fits.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -320,11 +321,34 @@ public class CompressTest {
 
     @Test
     public void testIsCompressed() throws Exception {
-        Assert.assertFalse(CompressionManager.isCompressed((String) null));
-        Assert.assertFalse(CompressionManager.isCompressed("target/notExistenFileThatHasNoCompression"));
-        Assert.assertTrue(CompressionManager.isCompressed("target/notExistenFileThatHasCompression.Z"));
-        Assert.assertTrue(CompressionManager.isCompressed("target/notExistenFileThatHasCompression.bz2"));
-        Assert.assertTrue(CompressionManager.isCompressed("target/notExistenFileThatHasCompression.gz"));
-        Assert.assertFalse(CompressionManager.isCompressed(new File("target/notExistenFileThatHasNoCompression")));
+        assertFalse(CompressionManager.isCompressed((String) null));
+        assertFalse(CompressionManager.isCompressed("target/notExistenFileThatHasNoCompression"));
+        assertTrue(CompressionManager.isCompressed("target/notExistenFileThatHasCompression.Z"));
+        assertTrue(CompressionManager.isCompressed("target/notExistenFileThatHasCompression.bz2"));
+        assertTrue(CompressionManager.isCompressed("target/notExistenFileThatHasCompression.gz"));
+        assertFalse(CompressionManager.isCompressed(new File("target/notExistenFileThatHasNoCompression")));
+    }
+    
+    /**
+     * Inconsistent implementation of File that leads to an IOException
+     * when 
+     */
+    private static class PseudoFile extends File {
+
+        private static final long serialVersionUID = 1L;
+
+        public PseudoFile(String pathname) {
+            super(pathname);
+        }
+        
+        @Override
+        public boolean exists() {
+            return true;
+        }
+    }
+
+    @Test
+    public void testIsCompressedSpecialCase() throws Exception {
+        assertFalse(CompressionManager.isCompressed(new PseudoFile("Wrong\0000Name")));
     }
 }
