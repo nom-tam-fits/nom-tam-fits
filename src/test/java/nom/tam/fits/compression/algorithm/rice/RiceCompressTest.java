@@ -80,7 +80,7 @@ public class RiceCompressTest {
 
         Assert.assertEquals(32, option.getBlockSize());
         Assert.assertEquals(16, option.getBytePix());
-        
+
         Assert.assertNull(option.unwrap(String.class));
     }
 
@@ -167,5 +167,42 @@ public class RiceCompressTest {
             compressor.decompress(compressed, ShortBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(shortArray, decompressedArray);
         }
+    }
+
+    @Test
+    public void testBitBuffer() {
+        byte[] expected = new byte[8];
+        byte[] bytes = new byte[8];
+        BitBuffer bitBuffer = new BitBuffer(ByteBuffer.wrap(bytes));
+        bitBuffer.putInt(99, 0);
+        bitBuffer.putLong(99L, 0);
+        Assert.assertArrayEquals(expected, bytes);
+        bitBuffer.putLong(2L * ((long) Integer.MAX_VALUE), 40);
+        expected = new byte[]{
+            0,
+            -1,
+            -1,
+            -1,
+            -2,
+            0,
+            0,
+            0
+        };
+        Assert.assertArrayEquals(expected, bytes);
+        bytes = new byte[8];
+        bitBuffer = new BitBuffer(ByteBuffer.wrap(bytes));
+        bitBuffer.putLong(3L, 3);
+        expected = new byte[]{
+                96,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            };
+        Assert.assertArrayEquals(expected, bytes);
+
     }
 }

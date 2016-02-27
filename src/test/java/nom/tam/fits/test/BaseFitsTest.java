@@ -37,6 +37,7 @@ import static org.junit.Assert.assertFalse;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
@@ -59,6 +60,7 @@ import nom.tam.fits.UndefinedHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
+import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
@@ -70,6 +72,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class BaseFitsTest {
+
+    private static final class TestUndefinedData extends UndefinedData {
+
+        private TestUndefinedData(Object x) {
+            super(x);
+        }
+
+        @Override
+        protected void setFileOffset(ArrayDataInput o) {
+            super.setFileOffset(o);
+        }
+
+    }
 
     private static final String TARGET_BASIC_FITS_TEST_FITS = "target/basicFitsTest.fits";
 
@@ -380,7 +395,7 @@ public class BaseFitsTest {
         }
         Assert.assertFalse(UndefinedHDU.isHeader(new Header()));
         Assert.assertTrue(UndefinedHDU.isData(undefinedData));
-        
+
         UndefinedData data = UndefinedHDU.encapsulate(undefinedData);
         Header header = new Header();
         header.pointToData(data);
@@ -470,7 +485,7 @@ public class BaseFitsTest {
         constrs[0].setAccessible(true);
         constrs[0].newInstance();
     }
-    
+
     @Test
     public void testFitsCheckSumPrivate() throws Exception {
         Constructor<?>[] constrs = FitsCheckSum.class.getDeclaredConstructors();
@@ -558,4 +573,39 @@ public class BaseFitsTest {
 
     }
 
+    @Test
+    public void testDataRepositionErrors() throws Exception {
+        final boolean[] fail = {
+            false
+        };
+        TestUndefinedData data = new TestUndefinedData(new byte[10]);
+        FitsException expected = null;
+        try {
+            data.rewrite();
+        } catch (FitsException e) {
+            expected = e;
+        }
+        Assert.assertNotNull(expected);
+        BufferedFile file = new BufferedFile("targetTestUndefinedRewrite.data", "rw") {
+
+            @Override
+            public void flush() throws IOException {
+                if (fail[0]) {
+                    throw new IOException("fail");
+                }
+                super.flush();
+            }
+        };
+        data.setFileOffset(file);
+        data.rewrite();
+        fail[0] = true;
+        expected = null;
+        try {
+            data.rewrite();
+        } catch (FitsException e) {
+            expected = e;
+        }
+        Assert.assertNotNull(expected);
+
+    }
 }
