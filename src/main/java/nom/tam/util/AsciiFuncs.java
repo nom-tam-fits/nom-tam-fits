@@ -37,7 +37,6 @@ import java.nio.charset.Charset;
  * #L%
  */
 
-
 /**
  * @author tmcglynn
  */
@@ -72,9 +71,9 @@ public final class AsciiFuncs {
      * @return the extracted string
      */
     public static String asciiString(byte[] buf, int start, int len) {
-    	// AK:
-    	// Instead of using Java 7's StandardCharsets.US_ASCII, let's
-    	// use the locally defined equivalent to retain Java 6 compatibility...
+        // AK:
+        // Instead of using Java 7's StandardCharsets.US_ASCII, let's
+        // use the locally defined equivalent to retain Java 6 compatibility...
         return new String(buf, start, len, US_ASCII);
     }
 
@@ -86,9 +85,9 @@ public final class AsciiFuncs {
      *            the string to convert
      */
     public static byte[] getBytes(String in) {
-    	// AK:
-    	// Instead of using Java 7's StandardCharsets.US_ASCII, let's
-    	// use the locally defined equivalent to retain Java 6 compatibility...
+        // AK:
+        // Instead of using Java 7's StandardCharsets.US_ASCII, let's
+        // use the locally defined equivalent to retain Java 6 compatibility...
         return in.getBytes(US_ASCII);
     }
 
@@ -100,7 +99,7 @@ public final class AsciiFuncs {
     public static boolean isWhitespace(char character) {
         return character == ' ' || character == '\t' || character == '\n' || character == '\r';
     }
-    
+
     // AK:
     // Instead of using Java 7's StandardCharsets.US_ASCII, let's
     // use the locally defined equivalent to retain Java 6 compatibility...
