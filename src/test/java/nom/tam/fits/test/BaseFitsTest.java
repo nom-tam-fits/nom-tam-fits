@@ -44,6 +44,7 @@ import java.net.URL;
 import java.util.Arrays;
 
 import nom.tam.fits.AsciiTableHDU;
+import nom.tam.fits.BadData;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Data;
@@ -61,6 +62,7 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
+import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
@@ -591,7 +593,7 @@ public class BaseFitsTest {
             @Override
             public void flush() throws IOException {
                 fail[0]--;
-                if (fail[0]<=0) {
+                if (fail[0] <= 0) {
                     throw new IOException("fail");
                 }
                 super.flush();
@@ -609,5 +611,50 @@ public class BaseFitsTest {
         }
         Assert.assertNotNull(expected);
         Assert.assertFalse(data.reset());
+    }
+
+    @Test
+    public void testFitsFactory() throws Exception {
+        String message = "";
+        try {
+            FitsFactory.dataFactory(new Header());
+        } catch (FitsException e) {
+            message = e.getMessage();
+        }
+        Assert.assertTrue(message.contains("Unrecognizable"));
+    }
+
+    @Test
+    public void testFitsFactoryData() throws Exception {
+        Assert.assertNull(FitsFactory.HDUFactory(new Header(), new BadData()));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsFactoryUnknown() throws Exception {
+        Assert.assertNull(FitsFactory.HDUFactory(this));
+    }
+
+    @Test
+    public void testSettings() throws Exception {
+        final boolean success[] = new boolean[1];
+        boolean oldValue = FitsFactory.getUseHierarch();
+        try {
+            Thread thread = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    FitsFactory.setUseHierarch(true);
+                    FitsFactory.useThreadLocalSettings(true);
+                    FitsFactory.setUseHierarch(false);
+                    FitsFactory.useThreadLocalSettings(false);
+                    success[0] = FitsFactory.getUseHierarch();
+                }
+            });
+            thread.start();
+            thread.join();
+        } finally {
+            FitsFactory.setUseHierarch(oldValue);
+        }
+        Assert.assertTrue(success[0]);
     }
 }

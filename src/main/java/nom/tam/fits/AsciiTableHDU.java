@@ -120,7 +120,9 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      * @return <CODE>true</CODE> if this is an ascii table header.
      */
     public static boolean isHeader(Header header) {
-        return header.getStringValue(XTENSION).trim().equals("TABLE");
+        String xtension = header.getStringValue(XTENSION);
+        xtension = xtension == null ? "" : xtension.trim();
+        return "TABLE".equals(xtension);
     }
 
     /**
