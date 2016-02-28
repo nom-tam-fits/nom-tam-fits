@@ -80,92 +80,95 @@ public class RiceCompressTest {
 
         Assert.assertEquals(32, option.getBlockSize());
         Assert.assertEquals(16, option.getBytePix());
-        
+
         Assert.assertNull(option.unwrap(String.class));
     }
 
     @Test
     public void testRiceByte() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data8.rise", "r");//
+        RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
+        RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data8.rise", "r");//
 
-        ) {
-            byte[] bytes = new byte[(int) file.length()];
-            file.read(bytes);
-            byte[] expectedBytes = new byte[(int) expected.length()];
-            expected.read(expectedBytes);
+        byte[] bytes = new byte[(int) file.length()];
+        file.read(bytes);
+        file.close();
 
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
-            ByteRiceCompressor compressor = new ByteRiceCompressor(option.setBytePix(PrimitiveTypes.BYTE.size()));
-            compressor.compress(ByteBuffer.wrap(bytes), compressed);
+        byte[] expectedBytes = new byte[(int) expected.length()];
+        expected.read(expectedBytes);
+        expected.close();
 
-            byte[] compressedArray = new byte[compressed.position()];
-            compressed.position(0);
-            compressed.get(compressedArray, 0, compressedArray.length);
-            Assert.assertArrayEquals(expectedBytes, compressedArray);
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
+        ByteRiceCompressor compressor = new ByteRiceCompressor(option.setBytePix(PrimitiveTypes.BYTE.size()));
+        compressor.compress(ByteBuffer.wrap(bytes), compressed);
 
-            byte[] decompressedArray = new byte[bytes.length];
-            compressed.position(0);
-            compressor.decompress(compressed, ByteBuffer.wrap(decompressedArray));
-            Assert.assertArrayEquals(bytes, decompressedArray);
-        }
+        byte[] compressedArray = new byte[compressed.position()];
+        compressed.position(0);
+        compressed.get(compressedArray, 0, compressedArray.length);
+        Assert.assertArrayEquals(expectedBytes, compressedArray);
+
+        byte[] decompressedArray = new byte[bytes.length];
+        compressed.position(0);
+        compressor.decompress(compressed, ByteBuffer.wrap(decompressedArray));
+        Assert.assertArrayEquals(bytes, decompressedArray);
     }
 
     @Test
     public void testRiceInt() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data32.rise", "r");//
+        RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
+        RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data32.rise", "r");//
 
-        ) {
-            byte[] bytes = new byte[(int) file.length()];
-            file.read(bytes);
-            byte[] expectedBytes = new byte[(int) expected.length()];
-            expected.read(expectedBytes);
+        byte[] bytes = new byte[(int) file.length()];
+        file.read(bytes);
+        file.close();
 
-            int[] intArray = new int[bytes.length / 4];
-            ByteBuffer.wrap(bytes).asIntBuffer().get(intArray);
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
-            IntRiceCompressor compressor = new IntRiceCompressor(option.setBytePix(PrimitiveTypes.INT.size()));
-            compressor.compress(IntBuffer.wrap(intArray), compressed);
+        byte[] expectedBytes = new byte[(int) expected.length()];
+        expected.read(expectedBytes);
+        expected.close();
 
-            byte[] compressedArray = new byte[compressed.position()];
-            compressed.position(0);
-            compressed.get(compressedArray, 0, compressedArray.length);
-            Assert.assertArrayEquals(expectedBytes, compressedArray);
+        int[] intArray = new int[bytes.length / 4];
+        ByteBuffer.wrap(bytes).asIntBuffer().get(intArray);
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
+        IntRiceCompressor compressor = new IntRiceCompressor(option.setBytePix(PrimitiveTypes.INT.size()));
+        compressor.compress(IntBuffer.wrap(intArray), compressed);
 
-            int[] decompressedArray = new int[intArray.length];
-            compressed.position(0);
-            compressor.decompress(compressed, IntBuffer.wrap(decompressedArray));
-            Assert.assertArrayEquals(intArray, decompressedArray);
-        }
+        byte[] compressedArray = new byte[compressed.position()];
+        compressed.position(0);
+        compressed.get(compressedArray, 0, compressedArray.length);
+        Assert.assertArrayEquals(expectedBytes, compressedArray);
+
+        int[] decompressedArray = new int[intArray.length];
+        compressed.position(0);
+        compressor.decompress(compressed, IntBuffer.wrap(decompressedArray));
+        Assert.assertArrayEquals(intArray, decompressedArray);
     }
 
     @Test
     public void testRiceShort() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data16.rise", "r");//
+        RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
+        RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data16.rise", "r");//
 
-        ) {
-            byte[] bytes = new byte[(int) file.length()];
-            file.read(bytes);
-            byte[] expectedBytes = new byte[(int) expected.length()];
-            expected.read(expectedBytes);
+        byte[] bytes = new byte[(int) file.length()];
+        file.read(bytes);
+        file.close();
 
-            short[] shortArray = new short[bytes.length / 2];
-            ByteBuffer.wrap(bytes).asShortBuffer().get(shortArray);
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
-            ShortRiceCompressor compressor = new ShortRiceCompressor(option.setBytePix(PrimitiveTypes.SHORT.size()));
-            compressor.compress(ShortBuffer.wrap(shortArray), compressed);
+        byte[] expectedBytes = new byte[(int) expected.length()];
+        expected.read(expectedBytes);
+        expected.close();
 
-            byte[] compressedArray = new byte[compressed.position()];
-            compressed.position(0);
-            compressed.get(compressedArray, 0, compressedArray.length);
-            Assert.assertArrayEquals(expectedBytes, compressedArray);
+        short[] shortArray = new short[bytes.length / 2];
+        ByteBuffer.wrap(bytes).asShortBuffer().get(shortArray);
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
+        ShortRiceCompressor compressor = new ShortRiceCompressor(option.setBytePix(PrimitiveTypes.SHORT.size()));
+        compressor.compress(ShortBuffer.wrap(shortArray), compressed);
 
-            short[] decompressedArray = new short[shortArray.length];
-            compressed.position(0);
-            compressor.decompress(compressed, ShortBuffer.wrap(decompressedArray));
-            Assert.assertArrayEquals(shortArray, decompressedArray);
-        }
+        byte[] compressedArray = new byte[compressed.position()];
+        compressed.position(0);
+        compressed.get(compressedArray, 0, compressedArray.length);
+        Assert.assertArrayEquals(expectedBytes, compressedArray);
+
+        short[] decompressedArray = new short[shortArray.length];
+        compressed.position(0);
+        compressor.decompress(compressed, ShortBuffer.wrap(decompressedArray));
+        Assert.assertArrayEquals(shortArray, decompressedArray);
     }
 }

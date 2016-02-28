@@ -85,7 +85,9 @@ public class BlackBoxImages {
     }
 
     private static void unsplitt(File base, File to) {
-        try (FileOutputStream out = new FileOutputStream(to); FileChannel outChannel = out.getChannel()) {
+        try {
+            FileOutputStream out = new FileOutputStream(to);
+            FileChannel outChannel = out.getChannel();
             int number = 0;
             long offset = 0L;
             File from = new File(base.getParentFile(), base.getName() + String.format("%02d", number) + ".part");
@@ -95,6 +97,7 @@ public class BlackBoxImages {
                 number++;
                 from = new File(base.getParentFile(), base.getName() + String.format("%02d", number) + ".part");
             }
+            out.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

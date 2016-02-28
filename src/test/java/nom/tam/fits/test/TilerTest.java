@@ -58,11 +58,11 @@ public class TilerTest {
         Class<?> baseClass = ArrayFuncs.getBaseClass(data);
         Object tile = Array.newInstance(baseClass, nx * ny);
         t.getTile(tile, new int[]{
-            y,
-            x
+                y,
+                x
         }, new int[]{
-            ny,
-            nx
+                ny,
+                nx
         });
 
         float sum0 = 0;
@@ -152,21 +152,24 @@ public class TilerTest {
 
     private void doTest(Object data, String suffix) throws IOException, FitsException, Exception {
 
-        try (Fits f = new Fits(); BufferedFile bf = new BufferedFile("target/tiler" + suffix + ".fits", "rw")) {
-            f.addHDU(Fits.makeHDU(data));
-            f.write(bf);
-        }
+        Fits f = new Fits();
+        BufferedFile bf = new BufferedFile("target/tiler" + suffix + ".fits", "rw");
+        f.addHDU(Fits.makeHDU(data));
+        f.write(bf);
+        bf.close();
+        f.close();
 
-        try (Fits f = new Fits("target/tiler" + suffix + ".fits")) {
-            ImageHDU h = (ImageHDU) f.readHDU();
-    
-            StandardImageTiler t = h.getTiler();
-            doTile("t1", data, t, 200, 200, 50, 50);
-            doTile("t2", data, t, 133, 133, 72, 26);
-    
-            h.getData().getKernel();
-            doTile("t3", data, t, 200, 200, 50, 50);
-            doTile("t4", data, t, 133, 133, 72, 26);
-        }
+
+        f = new Fits("target/tiler" + suffix + ".fits");
+        ImageHDU h = (ImageHDU) f.readHDU();
+
+        StandardImageTiler t = h.getTiler();
+        doTile("t1", data, t, 200, 200, 50, 50);
+        doTile("t2", data, t, 133, 133, 72, 26);
+
+        h.getData().getKernel();
+        doTile("t3", data, t, 200, 200, 50, 50);
+        doTile("t4", data, t, 133, 133, 72, 26);
+        f.close();
     }
 }

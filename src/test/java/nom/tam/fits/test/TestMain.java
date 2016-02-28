@@ -54,7 +54,7 @@ import org.junit.Test;
 
 public class TestMain {
 
-    public final static String LS = System.lineSeparator();
+    public final static String LS = System.getProperty("line.separator");
 
     @Test
     public void testNothing() throws Exception {

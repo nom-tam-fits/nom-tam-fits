@@ -178,206 +178,219 @@ public class GZipCompressTest {
     @Test
     public void testByteBuffers() throws Exception {
         byte[] expected = {
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
         };
         byte[] array = new byte[10];
-        try (OutputStream out = new ByteBufferOutputStream(ByteBuffer.wrap(array))) {
-            out.write(expected[0]);
-            out.write(expected, 1, 9);
-            Assert.assertArrayEquals(expected, array);
-        }
-        try (InputStream in = new ByteBufferInputStream(ByteBuffer.wrap(expected))) {
-            Assert.assertEquals(1, in.read());
-            in.read(array, 1, 9);
-            Assert.assertArrayEquals(expected, array);
-            Assert.assertEquals(-1, in.read());
-            Assert.assertEquals(-1, in.read(array, 1, 9));
-        }
+        OutputStream out = new ByteBufferOutputStream(ByteBuffer.wrap(array));
+        out.write(expected[0]);
+        out.write(expected, 1, 9);
+        out.close();
+        Assert.assertArrayEquals(expected, array);
+
+
+        InputStream in = new ByteBufferInputStream(ByteBuffer.wrap(expected));
+        Assert.assertEquals(1, in.read());
+        in.read(array, 1, 9);
+        in.close();
+        Assert.assertArrayEquals(expected, array);
+        Assert.assertEquals(-1, in.read());
+        Assert.assertEquals(-1, in.read(array, 1, 9));
     }
 
     @Test
     public void testGzipCompressByte() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/gzip1/test100Data8.gzip1", "r");//
-        ) {
-            byte[] bytes = new byte[(int) file.length()];
-            file.read(bytes);
-            byte[] expectedBytes = new byte[(int) expected.length()];
-            expected.read(expectedBytes);
+        RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
+        RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/gzip1/test100Data8.gzip1", "r");//
 
-            ByteBuffer byteArray = ByteBuffer.wrap(bytes);
+        byte[] bytes = new byte[(int) file.length()];
+        file.read(bytes);
+        file.close();
 
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
+        byte[] expectedBytes = new byte[(int) expected.length()];
+        expected.read(expectedBytes);           
+        expected.close();
 
-            new ByteGZipCompressor().compress(byteArray, compressed);
+        ByteBuffer byteArray = ByteBuffer.wrap(bytes);
 
-            byte[] compressedArray = new byte[compressed.position()];
-            compressed.position(0);
-            compressed.get(compressedArray, 0, compressedArray.length);
-            // Assert.assertArrayEquals(expectedBytes, compressedArray);
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
 
-            byte[] decompressedBytes = new byte[bytes.length];
-            ByteBuffer decompressedArray = ByteBuffer.wrap(decompressedBytes);
-            new ByteGZipCompressor().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
-            Assert.assertArrayEquals(bytes, decompressedBytes);
+        new ByteGZipCompressor().compress(byteArray, compressed);
 
-            compressed.rewind();
-            decompressedArray.rewind();
-            new ByteGZipCompressor().decompress(compressed, decompressedArray);
-            Assert.assertArrayEquals(bytes, decompressedBytes);
-        }
+        byte[] compressedArray = new byte[compressed.position()];
+        compressed.position(0);
+        compressed.get(compressedArray, 0, compressedArray.length);
+        // Assert.assertArrayEquals(expectedBytes, compressedArray);
+
+        byte[] decompressedBytes = new byte[bytes.length];
+        ByteBuffer decompressedArray = ByteBuffer.wrap(decompressedBytes);
+        new ByteGZipCompressor().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
+        Assert.assertArrayEquals(bytes, decompressedBytes);
+
+        compressed.rewind();
+        decompressedArray.rewind();
+        new ByteGZipCompressor().decompress(compressed, decompressedArray);
+        Assert.assertArrayEquals(bytes, decompressedBytes);
     }
 
     @Test
     public void testGzipCompressShort() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/gzip1/test100Data16.gzip1", "r");//
-        ) {
-            byte[] bytes = new byte[(int) file.length()];
-            file.read(bytes);
-            byte[] expectedBytes = new byte[(int) expected.length()];
-            expected.read(expectedBytes);
+        RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
+        RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/gzip1/test100Data16.gzip1", "r");//
 
-            ShortBuffer byteArray = ByteBuffer.wrap(bytes).asShortBuffer();
+        byte[] bytes = new byte[(int) file.length()];
+        file.read(bytes);
+        file.close();
 
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
+        byte[] expectedBytes = new byte[(int) expected.length()];
+        expected.read(expectedBytes);
+        expected.close();
 
-            new ShortGZipCompressor().compress(byteArray, compressed);
+        ShortBuffer byteArray = ByteBuffer.wrap(bytes).asShortBuffer();
 
-            byte[] compressedArray = new byte[compressed.position()];
-            compressed.position(0);
-            compressed.get(compressedArray, 0, compressedArray.length);
-            // Assert.assertArrayEquals(expectedBytes, compressedArray);
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
 
-            byte[] decompressedBytes = new byte[bytes.length];
-            ShortBuffer decompressedArray = ByteBuffer.wrap(decompressedBytes).asShortBuffer();
-            new ShortGZipCompressor().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
-            Assert.assertArrayEquals(bytes, decompressedBytes);
+        new ShortGZipCompressor().compress(byteArray, compressed);
 
-            compressed.rewind();
-            decompressedArray.rewind();
-            new ShortGZipCompressor().decompress(compressed, decompressedArray);
-            Assert.assertArrayEquals(bytes, decompressedBytes);
-        }
+        byte[] compressedArray = new byte[compressed.position()];
+        compressed.position(0);
+        compressed.get(compressedArray, 0, compressedArray.length);
+        // Assert.assertArrayEquals(expectedBytes, compressedArray);
+
+        byte[] decompressedBytes = new byte[bytes.length];
+        ShortBuffer decompressedArray = ByteBuffer.wrap(decompressedBytes).asShortBuffer();
+        new ShortGZipCompressor().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
+        Assert.assertArrayEquals(bytes, decompressedBytes);
+
+        compressed.rewind();
+        decompressedArray.rewind();
+        new ShortGZipCompressor().decompress(compressed, decompressedArray);
+        Assert.assertArrayEquals(bytes, decompressedBytes);
+
     }
 
     @Test
     public void testGzipCompressInt() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/gzip1/test100Data32.gzip1", "r");//
-        ) {
-            byte[] bytes = new byte[(int) file.length()];
-            file.read(bytes);
-            byte[] expectedBytes = new byte[(int) expected.length()];
-            expected.read(expectedBytes);
+        RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
+        RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/gzip1/test100Data32.gzip1", "r");//
 
-            IntBuffer byteArray = ByteBuffer.wrap(bytes).asIntBuffer();
+        byte[] bytes = new byte[(int) file.length()];
+        file.read(bytes);
+        file.close();
 
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
+        byte[] expectedBytes = new byte[(int) expected.length()];
+        expected.read(expectedBytes);
+        expected.close();
 
-            new IntGZipCompressor().compress(byteArray, compressed);
+        IntBuffer byteArray = ByteBuffer.wrap(bytes).asIntBuffer();
 
-            byte[] compressedArray = new byte[compressed.position()];
-            compressed.position(0);
-            compressed.get(compressedArray, 0, compressedArray.length);
-            // Assert.assertArrayEquals(expectedBytes, compressedArray);
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
 
-            byte[] decompressedBytes = new byte[bytes.length];
-            IntBuffer decompressedArray = ByteBuffer.wrap(decompressedBytes).asIntBuffer();
-            new IntGZipCompressor().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
-            Assert.assertArrayEquals(bytes, decompressedBytes);
+        new IntGZipCompressor().compress(byteArray, compressed);
 
-            compressed.rewind();
-            decompressedArray.rewind();
-            new IntGZipCompressor().decompress(compressed, decompressedArray);
-            Assert.assertArrayEquals(bytes, decompressedBytes);
-        }
+        byte[] compressedArray = new byte[compressed.position()];
+        compressed.position(0);
+        compressed.get(compressedArray, 0, compressedArray.length);
+        // Assert.assertArrayEquals(expectedBytes, compressedArray);
+
+        byte[] decompressedBytes = new byte[bytes.length];
+        IntBuffer decompressedArray = ByteBuffer.wrap(decompressedBytes).asIntBuffer();
+        new IntGZipCompressor().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
+        Assert.assertArrayEquals(bytes, decompressedBytes);
+
+        compressed.rewind();
+        decompressedArray.rewind();
+        new IntGZipCompressor().decompress(compressed, decompressedArray);
+        Assert.assertArrayEquals(bytes, decompressedBytes);
+
     }
 
     @Test
     public void testGzipCompressLong() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r")) {
-            byte[] bytes = new byte[(int) file.length()];
-            file.read(bytes);
-            IntBuffer intArray = ByteBuffer.wrap(bytes).asIntBuffer();
-            long[] longArray = new long[bytes.length / 4];
-            int[] tempInts = new int[longArray.length];
-            intArray.get(tempInts);
-            ArrayFuncs.copyInto(tempInts, longArray);
+        RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");
+        byte[] bytes = new byte[(int) file.length()];
+        file.read(bytes);
+        file.close();
 
-            LongBuffer byteArray = LongBuffer.wrap(longArray);
+        IntBuffer intArray = ByteBuffer.wrap(bytes).asIntBuffer();
+        long[] longArray = new long[bytes.length / 4];
+        int[] tempInts = new int[longArray.length];
+        intArray.get(tempInts);
+        ArrayFuncs.copyInto(tempInts, longArray);
 
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
+        LongBuffer byteArray = LongBuffer.wrap(longArray);
 
-            new LongGZipCompressor().compress(byteArray, compressed);
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
 
-            compressed.rewind();
+        new LongGZipCompressor().compress(byteArray, compressed);
 
-            LongBuffer decompressedArray = LongBuffer.wrap(new long[longArray.length]);
+        compressed.rewind();
 
-            new LongGZipCompressor().decompress(compressed, decompressedArray);
-            Assert.assertArrayEquals(longArray, decompressedArray.array());
-        }
+        LongBuffer decompressedArray = LongBuffer.wrap(new long[longArray.length]);
+
+        new LongGZipCompressor().decompress(compressed, decompressedArray);
+        Assert.assertArrayEquals(longArray, decompressedArray.array());
     }
 
     @Test
     public void testGzipCompressFloat() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r")) {
-            byte[] bytes = new byte[(int) file.length()];
-            file.read(bytes);
-            IntBuffer intArray = ByteBuffer.wrap(bytes).asIntBuffer();
-            float[] floatArray = new float[bytes.length / 4];
-            int[] tempInts = new int[floatArray.length];
-            intArray.get(tempInts);
-            ArrayFuncs.copyInto(tempInts, floatArray);
+        RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");
+        byte[] bytes = new byte[(int) file.length()];
+        file.read(bytes);
+        file.close();
 
-            FloatBuffer byteArray = FloatBuffer.wrap(floatArray);
+        IntBuffer intArray = ByteBuffer.wrap(bytes).asIntBuffer();
+        float[] floatArray = new float[bytes.length / 4];
+        int[] tempInts = new int[floatArray.length];
+        intArray.get(tempInts);
+        ArrayFuncs.copyInto(tempInts, floatArray);
 
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
+        FloatBuffer byteArray = FloatBuffer.wrap(floatArray);
 
-            new FloatGZipCompressor().compress(byteArray, compressed);
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
 
-            compressed.rewind();
+        new FloatGZipCompressor().compress(byteArray, compressed);
 
-            FloatBuffer decompressedArray = FloatBuffer.wrap(new float[floatArray.length]);
+        compressed.rewind();
 
-            new FloatGZipCompressor().decompress(compressed, decompressedArray);
-            Assert.assertArrayEquals(floatArray, decompressedArray.array(), 0.0000001f);
-        }
+        FloatBuffer decompressedArray = FloatBuffer.wrap(new float[floatArray.length]);
+
+        new FloatGZipCompressor().decompress(compressed, decompressedArray);
+        Assert.assertArrayEquals(floatArray, decompressedArray.array(), 0.0000001f);
     }
 
     @Test
     public void testGzipCompressDouble() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r")) {
-            byte[] bytes = new byte[(int) file.length()];
-            file.read(bytes);
-            IntBuffer intArray = ByteBuffer.wrap(bytes).asIntBuffer();
-            double[] doubleArray = new double[bytes.length / 4];
-            int[] tempInts = new int[doubleArray.length];
-            intArray.get(tempInts);
-            ArrayFuncs.copyInto(tempInts, doubleArray);
+        RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");
+        byte[] bytes = new byte[(int) file.length()];
+        file.read(bytes);
+        file.close();
 
-            DoubleBuffer byteArray = DoubleBuffer.wrap(doubleArray);
+        IntBuffer intArray = ByteBuffer.wrap(bytes).asIntBuffer();
+        double[] doubleArray = new double[bytes.length / 4];
+        int[] tempInts = new int[doubleArray.length];
+        intArray.get(tempInts);
+        ArrayFuncs.copyInto(tempInts, doubleArray);
 
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
+        DoubleBuffer byteArray = DoubleBuffer.wrap(doubleArray);
 
-            new DoubleGZipCompressor().compress(byteArray, compressed);
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
 
-            compressed.rewind();
+        new DoubleGZipCompressor().compress(byteArray, compressed);
 
-            DoubleBuffer decompressedArray = DoubleBuffer.wrap(new double[doubleArray.length]);
+        compressed.rewind();
 
-            new DoubleGZipCompressor().decompress(compressed, decompressedArray);
-            Assert.assertArrayEquals(doubleArray, decompressedArray.array(), 0.0000001);
-        }
+        DoubleBuffer decompressedArray = DoubleBuffer.wrap(new double[doubleArray.length]);
+
+        new DoubleGZipCompressor().decompress(compressed, decompressedArray);
+        Assert.assertArrayEquals(doubleArray, decompressedArray.array(), 0.0000001);
     }
 }

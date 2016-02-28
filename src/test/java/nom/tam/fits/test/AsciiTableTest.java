@@ -76,17 +76,19 @@ public class AsciiTableTest {
     public void createByColumn() throws Exception {
         Fits f = makeAsciiTable();
         writeFile(f, "target/at1.fits");
-
+        f.close();
+        
         // Read back the data from the file.
         f = new Fits("target/at1.fits");
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
         checkByColumn(hdu);
+        f.close();
 
-        try (Fits f2 = new Fits(new FileInputStream(new File("target/at1.fits")))) {
+        Fits f2 = new Fits(new FileInputStream(new File("target/at1.fits")));
             // lets trigger the read over a stream and test again
             hdu = (AsciiTableHDU) f2.getHDU(1);
             checkByColumn(hdu);
-        }
+        f2.close();
 
     }
 
@@ -119,16 +121,18 @@ public class AsciiTableTest {
         assertEquals(33, data.getRowLen());
 
         writeFile(f, "target/at2.fits");
-
+        f.close();
+        
         // Read it back.
         f = new Fits("target/at2.fits");
 
         checkByRow(f);
-
-        try (Fits f2 = new Fits(new FileInputStream(new File("target/at2.fits")))) {
+        f.close();
+        
+        Fits f2 = new Fits(new FileInputStream(new File("target/at2.fits")));
             // lets trigger the read over a stream and test again
             checkByRow(f2);
-        }
+        f2.close();
     }
 
     protected void checkByRow(Fits f) throws FitsException, IOException {
@@ -392,26 +396,28 @@ public class AsciiTableTest {
         };
 
         BasicHDU<?> ahdu = FitsFactory.hduFactory(o);
-        try (Fits f = new Fits()) {
+        Fits f = new Fits();
             f.addHDU(ahdu);
             f.write(bf);
-        }
+            f.close();
         bf.close();
 
         BasicHDU<?> bhdu;
-        try (Fits f = new Fits("target/at3.fits")) {
+        f = new Fits("target/at3.fits");
             bhdu = f.getHDU(1);
-        }
+   
         Header hdr = bhdu.getHeader();
         assertEquals(hdr.getStringValue("TFORM1"), "A1");
         assertEquals(hdr.getStringValue("TFORM2"), "A1");
         assertEquals(hdr.getStringValue("TFORM3"), "A1");
         assertEquals(hdr.getStringValue("TFORM4"), "A1");
         assertEquals(hdr.getStringValue("TFORM5"), "A3");
+        
+        f.close();
     }
 
     public void readByColumn() throws Exception {
-        try (Fits f = new Fits("target/at1.fits")) {
+        Fits f = new Fits("target/at1.fits");
             AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
             AsciiTable data = hdu.getData();
             Object[] cols = getSampleCols();
@@ -429,7 +435,7 @@ public class AsciiTableTest {
                 }
                 assertEquals("Ascii Columns:" + j, true, TestArrayFuncs.arrayEquals(cols[j], col, 1.e-6, 1.e-14));
             }
-        }
+            f.close();
     }
 
     public void readByElement() throws Exception {
@@ -548,7 +554,7 @@ public class AsciiTableTest {
         Assert.assertTrue(actual instanceof FitsException);
         Assert.assertTrue(actual.getCause() instanceof NullPointerException);
 
-        final List<LogRecord> logs = new ArrayList<>();
+        final List<LogRecord> logs = new ArrayList<LogRecord>();
         Logger.getLogger(AsciiTable.class.getName()).addHandler(new Handler() {
 
             @Override
