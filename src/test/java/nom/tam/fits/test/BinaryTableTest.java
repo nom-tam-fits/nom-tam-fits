@@ -67,6 +67,7 @@ import nom.tam.util.BufferedFile;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.TableException;
 import nom.tam.util.TestArrayFuncs;
+import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -1520,7 +1521,8 @@ public class BinaryTableTest {
 
                 @Override
                 public int[] getDimens() {
-                    throwException(new CloneNotSupportedException());
+
+                    ThrowAnyException.throwAnyAsRuntime(new CloneNotSupportedException());
                     return null;
                 }
             }
@@ -1832,15 +1834,6 @@ public class BinaryTableTest {
             3f,
             3f
         });
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T extends Throwable> void throwException(Throwable exception, Object dummy) throws T {
-        throw (T) exception;
-    }
-
-    public static void throwException(Throwable exception) {
-        BinaryTableTest.<RuntimeException> throwException(exception, null);
     }
 
     private BinaryTable createTestTable() throws FitsException {

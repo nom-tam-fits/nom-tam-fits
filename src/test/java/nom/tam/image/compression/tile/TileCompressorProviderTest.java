@@ -66,6 +66,7 @@ import nom.tam.image.tile.operation.ITileOperationInitialisation;
 import nom.tam.image.tile.operation.TileArea;
 import nom.tam.image.tile.operation.buffer.TileBuffer;
 import nom.tam.image.tile.operation.buffer.TileBufferFactory;
+import nom.tam.util.test.ThrowAnyException;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypes;
 
@@ -316,7 +317,7 @@ public class TileCompressorProviderTest {
 
             @Override
             public void addLine(HeaderCard fcard) {
-                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+                ThrowAnyException.throwHeaderCardException("");
             }
         });
         headerAccess.addValue(ZBITPIX, 32);
@@ -328,7 +329,7 @@ public class TileCompressorProviderTest {
 
             @Override
             public void addLine(HeaderCard fcard) {
-                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+                ThrowAnyException.throwHeaderCardException("");
             }
         });
         headerAccess.addValue(ZCMPTYPE, "XXX");
@@ -350,37 +351,37 @@ public class TileCompressorProviderTest {
 
             @Override
             public VALUE valueType() {
-                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+                ThrowAnyException.throwHeaderCardException("");
                 return null;
             }
 
             @Override
             public SOURCE status() {
-                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+                ThrowAnyException.throwHeaderCardException("");
                 return null;
             }
 
             @Override
             public IFitsHeader n(int... number) {
-                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+                ThrowAnyException.throwHeaderCardException("");
                 return null;
             }
 
             @Override
             public String key() {
-                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+                ThrowAnyException.throwHeaderCardException("");
                 return null;
             }
 
             @Override
             public HDU hdu() {
-                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+                ThrowAnyException.throwHeaderCardException("");
                 return null;
             }
 
             @Override
             public String comment() {
-                TileCompressorProviderTest.<RuntimeException> throwAny(new HeaderCardException(""));
+                ThrowAnyException.throwHeaderCardException("");
                 return null;
             }
         }, "XXX");
@@ -392,10 +393,6 @@ public class TileCompressorProviderTest {
         for (TileCompressionType type : TileCompressionType.values()) {
             Assert.assertSame(type, TileCompressionType.valueOf(type.name()));
         }
-    }
-
-    private static <E extends Throwable> void throwAny(Throwable e) throws E {
-        throw (E) e;
     }
 
     private void testTileSizes(int tileWidth, int tileHeigth) throws HeaderCardException, FitsException {

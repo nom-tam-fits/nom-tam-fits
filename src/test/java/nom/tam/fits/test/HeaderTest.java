@@ -31,13 +31,7 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import static nom.tam.fits.header.Standard.BITPIX;
-import static nom.tam.fits.header.Standard.END;
-import static nom.tam.fits.header.Standard.EXTEND;
-import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.*;
-import static nom.tam.fits.header.Standard.SIMPLE;
-import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.extra.NOAOExt.CRPIX1;
 import static nom.tam.fits.header.extra.NOAOExt.CRPIX2;
 import static nom.tam.fits.header.extra.NOAOExt.CRVAL1;
@@ -79,6 +73,7 @@ import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
+import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -850,7 +845,7 @@ public class HeaderTest {
 
             @Override
             public synchronized void write(byte[] b, int off, int len) {
-                HeaderTest.<RuntimeException> throwAny(new IOException("all goes wrong!"));
+                ThrowAnyException.throwIOException("all goes wrong!");
             }
         }, 80);
         Header header = new Header();
@@ -875,9 +870,5 @@ public class HeaderTest {
             ImageHDU hdu = (ImageHDU) f.getHDU(0);
             Header hdr = hdu.getHeader();
         }
-    }
-
-    private static <E extends Throwable> void throwAny(Throwable e) throws E {
-        throw (E) e;
     }
 }

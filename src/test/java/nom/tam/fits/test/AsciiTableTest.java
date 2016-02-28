@@ -57,6 +57,7 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.TestArrayFuncs;
+import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -496,15 +497,14 @@ public class AsciiTableTest {
         // Create an empty table.
         AsciiTable data = new AsciiTable();
         assertEquals(0, data.getNRows());
-        
+
         // deletion on empty table is ignored
         data.deleteRows(0, 1);
         assertEquals(0, data.getNRows());
-        
+
         // isNull on empty table is always false
         assertEquals(false, data.isNull(0, 0));
     }
-
 
     @Test
     public void testDeleteRowsSimpleSpecialCases() throws Exception {
@@ -513,21 +513,20 @@ public class AsciiTableTest {
         for (int i = 0; i < 50; i += 1) {
             data.addRow(getRow(i));
         }
-        
+
         // Negative start row leads to ignore of delete
         data.deleteRows(-1, 1);
         assertEquals(50, data.getNRows());
-        
+
         // start row greater than number of rows leads to ignore of delete
         data.deleteRows(100, 1234);
         assertEquals(50, data.getNRows());
 
-        
         // Excessive deletion length is ignored
         data.deleteRows(49, 10);
         assertEquals(49, data.getNRows());
     }
-    
+
     @Test
     public void testBadCases() throws Exception {
         // Create a table row by row .
@@ -604,7 +603,7 @@ public class AsciiTableTest {
 
             @Override
             public Cursor<String, HeaderCard> iterator() {
-                AsciiTableTest.<RuntimeException> throwAny(new HeaderCardException("all is broken"));
+                ThrowAnyException.throwHeaderCardException("all is broken");
                 return null;
             }
         });
@@ -643,10 +642,6 @@ public class AsciiTableTest {
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual instanceof FitsException);
 
-    }
-
-    private static <E extends Throwable> void throwAny(Throwable e) throws E {
-        throw (E) e;
     }
 
     private void setFieldNull(Object data, String fieldName) throws Exception {

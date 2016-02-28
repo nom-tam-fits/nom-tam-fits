@@ -43,19 +43,25 @@ import static nom.tam.fits.header.Standard.REFERENC;
 import static nom.tam.fits.header.Standard.TELESCOP;
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.TimeZone;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
-import nom.tam.fits.ImageData;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.FitsFactory;
+import nom.tam.fits.Header;
+import nom.tam.fits.ImageData;
+import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.TestArrayFuncs;
+import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -96,7 +102,7 @@ public class ImageTest {
         BasicHDU<?>[] hdus;
         try (Fits f = new Fits(new File("target/image1.fits"))) {
             hdus = f.read();
-    
+
             assertEquals("fbyte image", true, TestArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
             assertEquals("fshort image", true, TestArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
             assertEquals("fint image", true, TestArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
@@ -144,7 +150,7 @@ public class ImageTest {
             }
             Assert.assertNotNull(actual);
             f.insertHDU(makeHDU(bimg), f.getNumberOfHDUs());
-    
+
             f.addHDU(Fits.makeHDU(simg));
             f.addHDU(Fits.makeHDU(iimg));
             f.addHDU(Fits.makeHDU(limg));
@@ -152,11 +158,11 @@ public class ImageTest {
             f.addHDU(Fits.makeHDU(dimg));
             f.addHDU(Fits.makeHDU(img3));
             f.addHDU(Fits.makeHDU(img1));
-    
+
             assertEquals("HDU count before", f.getNumberOfHDUs(), 8);
-    
+
             // Write a FITS file.
-    
+
             try (BufferedFile bf = new BufferedFile("target/image1.fits", "rw")) {
                 f.write(bf);
                 bf.flush();
@@ -164,10 +170,10 @@ public class ImageTest {
         }
 
         try (BufferedFile bf = new BufferedFile(new File("target/image1.fits")); Fits f = new Fits("target/image1.fits")) {
-    
+
             // Read a FITS file
             BasicHDU<?>[] hdus = f.read();
-    
+
             assertEquals("HDU count after", 8, f.getNumberOfHDUs());
             assertEquals("byte image", true, TestArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
             assertEquals("[40, 40]", Arrays.toString(hdus[0].getAxes()));
@@ -201,7 +207,7 @@ public class ImageTest {
             assertEquals(32, hdus[0].getBlankValue());
             assertEquals("deg", hdus[0].getBUnit());
             assertEquals(-2000., hdus[0].getEpoch(), 0.0001);
-    
+
             assertEquals("short image", true, TestArrayFuncs.arrayEquals(simg, hdus[1].getData().getKernel()));
             assertEquals("int image", true, TestArrayFuncs.arrayEquals(iimg, hdus[2].getData().getKernel()));
             assertEquals("long image", true, TestArrayFuncs.arrayEquals(limg, hdus[3].getData().getKernel()));
@@ -209,7 +215,7 @@ public class ImageTest {
             assertEquals("double image", true, TestArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
             assertEquals("int3 image", true, TestArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
             assertEquals("double1 image", true, TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
-    
+
             Assert.assertArrayEquals(new byte[0], (byte[]) new ImageData().getData());
         }
     }
@@ -233,5 +239,64 @@ public class ImageTest {
         hdu.addValue(Standard.EPOCH, -2000.);
 
         return hdu;
+    }
+
+    @Test
+    public void testImageHeaderNull() throws FitsException {
+        Assert.assertNull(ImageHDU.manufactureHeader(null));
+    }
+
+    @Test
+    public void testWrongImageInfo() throws FitsException {
+        ImageHDU image = (ImageHDU) FitsFactory.hduFactory(new byte[10][10]);
+        image.getHeader().removeCard(Standard.SIMPLE.key());
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintStream print = new PrintStream(out, true);
+        image.info(print);
+        Assert.assertTrue(out.toString().contains("bad header"));
+
+        image = (ImageHDU) FitsFactory.hduFactory(new byte[10][10]);
+        image = new ImageHDU(image.getHeader(), new ImageData((Object) null));
+
+        out = new ByteArrayOutputStream();
+        print = new PrintStream(out, true);
+        image.info(print);
+        Assert.assertTrue(out.toString().contains("No Data"));
+
+        image = (ImageHDU) FitsFactory.hduFactory(new byte[10][10]);
+        image = new ImageHDU(image.getHeader(), new ImageData((Object) null) {
+
+            @Override
+            public Object getData() {
+                throw new IllegalStateException();
+            }
+        });
+
+        out = new ByteArrayOutputStream();
+        print = new PrintStream(out, true);
+        image.info(print);
+        Assert.assertTrue(out.toString().contains("Unable"));
+
+    }
+
+    @Test
+    public void testSetFailedPrimaryHdu() throws FitsException {
+        Fits f = new Fits();
+        ImageHDU image = (ImageHDU) FitsFactory.hduFactory(new byte[10][10]);
+        f.insertHDU(image, 0);
+        ImageData imageData = new ImageData(new byte[10][10]);
+        Header header = new Header() {
+
+            @Override
+            public boolean getBooleanValue(String key, boolean dft) {
+                //ok we are in the parent setPrimary not let it fail ;-)
+                ThrowAnyException.throwFitsException("");
+                return super.getBooleanValue(key, dft);
+            }
+        };
+        image = new ImageHDU(header, imageData);
+        f.insertHDU(image, 0);
+
     }
 }

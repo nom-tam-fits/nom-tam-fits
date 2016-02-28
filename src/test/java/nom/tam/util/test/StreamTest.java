@@ -255,7 +255,7 @@ public class StreamTest {
 
             @Override
             public synchronized long skip(long n) {
-                StreamTest.<RuntimeException> throwAny(new IOException("all is broken"));
+                ThrowAnyException.throwIOException("all is broken");
                 return 0L;
             }
         };
@@ -581,15 +581,11 @@ public class StreamTest {
                 if (count == 0) {
                     return count = 8;
                 }
-                StreamTest.<RuntimeException> throwAny(new EOFException("all is broken"));
+                ThrowAnyException.throwAnyAsRuntime(new EOFException("all is broken"));
                 return 1;
             }
         };
         BufferedDataInputStream bi = new BufferedDataInputStream(fileInput);
         return bi;
-    }
-
-    private static <E extends Throwable> void throwAny(Throwable e) throws E {
-        throw (E) e;
     }
 }
