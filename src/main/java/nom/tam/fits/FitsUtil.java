@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -291,9 +292,7 @@ public final class FitsUtil {
         int len = padding(size);
         if (len > 0) {
             byte[] buf = new byte[len];
-            for (int i = 0; i < len; i += 1) {
-                buf[i] = fill;
-            }
+            Arrays.fill(buf, fill);
             try {
                 stream.write(buf);
                 stream.flush();

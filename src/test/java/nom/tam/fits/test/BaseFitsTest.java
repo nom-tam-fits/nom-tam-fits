@@ -657,4 +657,28 @@ public class BaseFitsTest {
         }
         Assert.assertTrue(success[0]);
     }
+
+    @Test(expected = FitsException.class)
+    public void testFitsUtilPad() throws Exception {
+        BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream()) {
+
+            @Override
+            public void write(byte[] b) throws IOException {
+                throw new IOException();
+            }
+        };
+        FitsUtil.pad(out, 1L, (byte) 0);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsUtilRepositionNull() throws Exception {
+        FitsUtil.reposition(null, 1);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsUtilReposition() throws Exception {
+        BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream());
+        FitsUtil.reposition(out, -1);
+    }
+
 }
