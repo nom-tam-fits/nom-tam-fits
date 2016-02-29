@@ -581,7 +581,7 @@ public class ArrayFuncs2Test {
 
     @Test
     public void copyDoubleInto() {
-        double[][] deepArray = new double[][]{
+        float[][] deepArray = new float[][]{
             {
                 1,
                 2,

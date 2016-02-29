@@ -126,10 +126,22 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];
         getPixel(pixelData, pixelBytes);
         pixelBytes = shuffle(pixelBytes);
-        try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {
+        
+        GZIPOutputStream zip = null;
+        
+        try {
+            zip = createGZipOutputStream(pixelDataLimit, compressed);
             zip.write(pixelBytes, 0, pixelBytes.length);
         } catch (IOException e) {
             throw new IllegalStateException("could not gzip data", e);
+        } finally {
+            try {
+                if (zip != null) {
+                    zip.close();
+                }
+            } catch (IOException e) {
+            
+            }
         }
         return true;
     }
@@ -138,7 +150,11 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
     public void decompress(ByteBuffer compressed, T pixelData) {
         int pixelDataLimit = pixelData.limit();
         byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];
-        try (GZIPInputStream zip = createGZipInputStream(compressed)) {
+        
+        GZIPInputStream zip = null;
+        
+        try {
+            zip = createGZipInputStream(compressed);
             int count = 0;
             int offset = 0;
             while (offset < pixelBytes.length && count >= 0) {
@@ -149,6 +165,14 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
             }
         } catch (IOException e) {
             throw new IllegalStateException("could not gunzip data", e);
+        } finally {
+            try {
+                if (zip != null) {
+                    zip.close();
+                }
+            } catch (IOException e) {
+                
+            }
         }
         pixelBytes = unshuffle(pixelBytes);
         setPixel(pixelData, pixelBytes);

@@ -431,7 +431,7 @@ public class TileCompressorProviderTest {
     }
 
     private static List<TileCompressionOperation> getTileCompressionOperations(TiledImageCompressionOperation operationsOfImage) {
-        List<TileCompressionOperation> tiles = new ArrayList<>();
+        List<TileCompressionOperation> tiles = new ArrayList<TileCompressionOperation>();
         try {
             for (int index = 0; index < 10000; index++) {
                 tiles.add((TileCompressionOperation) Access.getTile(operationsOfImage, index));

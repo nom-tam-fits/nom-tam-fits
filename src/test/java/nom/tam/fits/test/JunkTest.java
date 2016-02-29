@@ -32,6 +32,9 @@ package nom.tam.fits.test;
  */
 
 import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.BufferedFile;
@@ -46,19 +49,26 @@ import org.junit.Test;
  */
 public class JunkTest {
 
-    boolean readSuccess(String file) {
-        try (Fits f = new Fits(file)) {
+    boolean readSuccess(String file) { 
+        Fits f = null;
+        try {
+            f = new Fits(file);
             f.read();
             return true;
         } catch (Exception e) {
             return false;
+        } finally {
+            try { f.close(); }
+            catch(IOException e) {
+                
+            }
         }
     }
 
     @Test
     public void test() throws Exception {
-
-        try (Fits f = new Fits()) {
+        
+            Fits f = new Fits();
     
             byte[] bimg = new byte[40];
             for (int i = 10; i < bimg.length; i += 1) {
@@ -71,13 +81,15 @@ public class JunkTest {
             // Write a FITS file.
     
             // Valid FITS with one HDU
-            try (BufferedFile bf = new BufferedFile("target/j1.fits", "rw")) {
+            BufferedFile bf = new BufferedFile("target/j1.fits", "rw");
                 f.write(bf);
                 bf.flush();
-            }
+                bf.close();
+          
+            
     
             // Invalid junk with no valid FITS.
-            BufferedFile bf = new BufferedFile("target/j2.fits", "rw");
+            bf = new BufferedFile("target/j2.fits", "rw");
             bf.write(new byte[10]);
             bf.close();
     
@@ -94,14 +106,18 @@ public class JunkTest {
                 bf.write("A random string".getBytes());
             }
             bf.close();
-        }
+            f.close();
 
         int pos = 0;
-        try (Fits f = new Fits("target/j1.fits")) {
+       try {
+           f = new Fits("target/j1.fits");
             f.read();
         } catch (Exception e) {
             pos = 1;
+        } finally {
+            f.close();
         }
+       
         assertTrue("Junk Test: Valid File OK,Dft", readSuccess("target/j1.fits"));
         assertTrue("Junk Test: Invalid File Fails, Dft", !readSuccess("target/j2.fits"));
         assertTrue("Junk Test: Short junk fails, Dft", !readSuccess("target/j3.fits"));

@@ -41,7 +41,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -66,11 +65,11 @@ import org.junit.Test;
  * BufferedDataInputStream and BufferedDataOutputStream. A limited comparison to
  * the standard I/O classes can also be made.
  * <p>
- * Input and output of all primitive scalar and tiledImageOperation types is
- * tested, however input and output of String data is not. Users may choose to
- * test the BufferedFile class, the BufferedDataXPUT classes tiledImageOperation
- * methods, the BufferedDataXPUT classes using the methods of DataXput, the
- * traditional I/O classes, or any combination thereof.
+ * Input and output of all primitive scalar and tiledImageOperation types is tested, however
+ * input and output of String data is not. Users may choose to test the
+ * BufferedFile class, the BufferedDataXPUT classes tiledImageOperation methods, the
+ * BufferedDataXPUT classes using the methods of DataXput, the traditional I/O
+ * classes, or any combination thereof.
  */
 public class BufferedFileTest {
 
@@ -112,7 +111,7 @@ public class BufferedFileTest {
                 sleep();
             }
             if (exception) {
-                ThrowAnyException.throwIOException("" + hashCode());
+                BufferedFileTest.<RuntimeException> throwAny(new IOException("" + hashCode()));
             }
         }
 
@@ -153,7 +152,7 @@ public class BufferedFileTest {
                 sleep();
             }
             if (exception) {
-                ThrowAnyException.throwIOException("" + hashCode());
+                BufferedFileTest.<RuntimeException> throwAny(new IOException("" + hashCode()));
             }
         }
     }
@@ -202,6 +201,10 @@ public class BufferedFileTest {
         } catch (InterruptedException e) {
             Assert.fail("thread interupted");
         }
+    }
+
+    private static <E extends Throwable> void throwAny(Throwable e) throws E {
+        throw (E) e;
     }
 
     private long lastTime;
@@ -592,10 +595,10 @@ public class BufferedFileTest {
      * Usage: java nom.tam.util.test.BufferedFileTester file [dim [iter
      * [flags]]] where file is the file to be read and written. dim is the
      * dimension of the arrays to be written. iter is the number of times each
-     * tiledImageOperation is written. flags a string indicating what I/O to
-     * test O -- test old I/O (RandomAccessFile and standard streams) R --
-     * BufferedFile (i.e., random access) S -- BufferedDataXPutStream X --
-     * BufferedDataXPutStream using standard methods
+     * tiledImageOperation is written. flags a string indicating what I/O to test O -- test
+     * old I/O (RandomAccessFile and standard streams) R -- BufferedFile (i.e.,
+     * random access) S -- BufferedDataXPutStream X -- BufferedDataXPutStream
+     * using standard methods
      */
     public void doTest(String filename, int dim, int iter) throws Exception {
         System.out.println("Allocating arrays.");
@@ -1048,35 +1051,5 @@ public class BufferedFileTest {
                 Assert.fail("not all streams closed");
             }
         }
-    }
-
-    @Test
-    public void testNullArray() throws IOException {
-        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        assertEquals(bf.readLArray(null), 0L);
-    }
-
-    @Test(expected = IOException.class)
-    public void testNoArray() throws IOException {
-        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        assertEquals(bf.readLArray(Integer.valueOf(0)), 0L);
-    }
-
-    @Test(expected = EOFException.class)
-    public void testSmallArray() throws IOException {
-        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        assertEquals(bf.readLArray(new byte[11]), 0L);
-    }
-
-    @Test(expected = IOException.class)
-    public void testFullyOutside() throws IOException {
-        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        bf.readFully(new byte[5], 10, 5);
-    }
-
-    @Test(expected = EOFException.class)
-    public void testFullyEOF() throws IOException {
-        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
-        bf.readFully(new byte[12], 0, 12);
     }
 }

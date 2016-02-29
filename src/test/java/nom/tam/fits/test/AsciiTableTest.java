@@ -57,7 +57,6 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.TestArrayFuncs;
-import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -77,17 +76,19 @@ public class AsciiTableTest {
     public void createByColumn() throws Exception {
         Fits f = makeAsciiTable();
         writeFile(f, "target/at1.fits");
-
+        f.close();
+        
         // Read back the data from the file.
         f = new Fits("target/at1.fits");
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
         checkByColumn(hdu);
+        f.close();
 
-        try (Fits f2 = new Fits(new FileInputStream(new File("target/at1.fits")))) {
+        Fits f2 = new Fits(new FileInputStream(new File("target/at1.fits")));
             // lets trigger the read over a stream and test again
             hdu = (AsciiTableHDU) f2.getHDU(1);
             checkByColumn(hdu);
-        }
+        f2.close();
 
     }
 
@@ -120,16 +121,18 @@ public class AsciiTableTest {
         assertEquals(33, data.getRowLen());
 
         writeFile(f, "target/at2.fits");
-
+        f.close();
+        
         // Read it back.
         f = new Fits("target/at2.fits");
 
         checkByRow(f);
-
-        try (Fits f2 = new Fits(new FileInputStream(new File("target/at2.fits")))) {
+        f.close();
+        
+        Fits f2 = new Fits(new FileInputStream(new File("target/at2.fits")));
             // lets trigger the read over a stream and test again
             checkByRow(f2);
-        }
+        f2.close();
     }
 
     protected void checkByRow(Fits f) throws FitsException, IOException {
@@ -393,26 +396,28 @@ public class AsciiTableTest {
         };
 
         BasicHDU<?> ahdu = FitsFactory.hduFactory(o);
-        try (Fits f = new Fits()) {
+        Fits f = new Fits();
             f.addHDU(ahdu);
             f.write(bf);
-        }
+            f.close();
         bf.close();
 
         BasicHDU<?> bhdu;
-        try (Fits f = new Fits("target/at3.fits")) {
+        f = new Fits("target/at3.fits");
             bhdu = f.getHDU(1);
-        }
+   
         Header hdr = bhdu.getHeader();
         assertEquals(hdr.getStringValue("TFORM1"), "A1");
         assertEquals(hdr.getStringValue("TFORM2"), "A1");
         assertEquals(hdr.getStringValue("TFORM3"), "A1");
         assertEquals(hdr.getStringValue("TFORM4"), "A1");
         assertEquals(hdr.getStringValue("TFORM5"), "A3");
+        
+        f.close();
     }
 
     public void readByColumn() throws Exception {
-        try (Fits f = new Fits("target/at1.fits")) {
+        Fits f = new Fits("target/at1.fits");
             AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
             AsciiTable data = hdu.getData();
             Object[] cols = getSampleCols();
@@ -430,7 +435,7 @@ public class AsciiTableTest {
                 }
                 assertEquals("Ascii Columns:" + j, true, TestArrayFuncs.arrayEquals(cols[j], col, 1.e-6, 1.e-14));
             }
-        }
+            f.close();
     }
 
     public void readByElement() throws Exception {
@@ -493,45 +498,12 @@ public class AsciiTableTest {
     }
 
     @Test
-    public void testOnEmptyTable() throws Exception {
-        // Create an empty table.
-        AsciiTable data = new AsciiTable();
-        assertEquals(0, data.getNRows());
-
-        // deletion on empty table is ignored
-        data.deleteRows(0, 1);
-        assertEquals(0, data.getNRows());
-
-        // isNull on empty table is always false
-        assertEquals(false, data.isNull(0, 0));
-    }
-
-    @Test
-    public void testDeleteRowsSimpleSpecialCases() throws Exception {
-        // Create a table with 50 rows to test with.
-        AsciiTable data = new AsciiTable();
-        for (int i = 0; i < 50; i += 1) {
-            data.addRow(getRow(i));
-        }
-
-        // Negative start row leads to ignore of delete
-        data.deleteRows(-1, 1);
-        assertEquals(50, data.getNRows());
-
-        // start row greater than number of rows leads to ignore of delete
-        data.deleteRows(100, 1234);
-        assertEquals(50, data.getNRows());
-
-        // Excessive deletion length is ignored
-        data.deleteRows(49, 10);
-        assertEquals(49, data.getNRows());
-    }
-
-    @Test
     public void testBadCases() throws Exception {
         // Create a table row by row .
         Fits f = new Fits();
         AsciiTable data = new AsciiTable();
+        Object[] row = new Object[4];
+
         for (int i = 0; i < 50; i += 1) {
             data.addRow(getRow(i));
         }
@@ -563,7 +535,6 @@ public class AsciiTableTest {
         actual = null;
         // nothing should happen.
         data.deleteRows(1, -1);
-
         try {
             data.deleteRows(1, 1);
         } catch (Exception e) {
@@ -583,7 +554,7 @@ public class AsciiTableTest {
         Assert.assertTrue(actual instanceof FitsException);
         Assert.assertTrue(actual.getCause() instanceof NullPointerException);
 
-        final List<LogRecord> logs = new ArrayList<>();
+        final List<LogRecord> logs = new ArrayList<LogRecord>();
         Logger.getLogger(AsciiTable.class.getName()).addHandler(new Handler() {
 
             @Override
@@ -603,7 +574,7 @@ public class AsciiTableTest {
 
             @Override
             public Cursor<String, HeaderCard> iterator() {
-                ThrowAnyException.throwHeaderCardException("all is broken");
+                AsciiTableTest.<RuntimeException> throwAny(new HeaderCardException("all is broken"));
                 return null;
             }
         });
@@ -642,6 +613,10 @@ public class AsciiTableTest {
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual instanceof FitsException);
 
+    }
+
+    private static <E extends Throwable> void throwAny(Throwable e) throws E {
+        throw (E) e;
     }
 
     private void setFieldNull(Object data, String fieldName) throws Exception {

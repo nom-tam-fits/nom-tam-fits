@@ -52,11 +52,11 @@ public class CompressWihtoutDependenciesTest {
 
     @Test
     public void testWthoutApacheCompression() throws Exception {
-        final List<Object> assertions = new ArrayList<>();
+        final List<Object> assertions = new ArrayList<Object>();
         Class<?> clazz;
         Method method;
-        FileInputStream in1;
-        FileInputStream in2;
+        FileInputStream in1 = null;
+        FileInputStream in2 = null;
         try {
             clazz = Thread.currentThread().getContextClassLoader().loadClass(CompressionManager.class.getName());
             method = clazz.getMethod("decompress", InputStream.class);
@@ -64,8 +64,11 @@ public class CompressWihtoutDependenciesTest {
             in2 = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits.bz2");
         } catch (Exception e) {
             assertions.add(e);
+            if (in1 != null) in1.close();
+            if (in2 != null) in2.close();     
             return;
         }
+        
         try {
             // first do a normal fits file without compression
             method.invoke(clazz, in1);
@@ -75,6 +78,10 @@ public class CompressWihtoutDependenciesTest {
         } catch (Exception e) {
             assertions.add(e);
         }
+        
+        if (in1 != null) in1.close();
+        if (in2 != null) in2.close();    
+        
         assertEquals(assertions.get(0), "ok");
         assertTrue(assertions.get(1) instanceof InvocationTargetException);
         assertTrue(((InvocationTargetException) assertions.get(1)).getCause() instanceof NoClassDefFoundError);

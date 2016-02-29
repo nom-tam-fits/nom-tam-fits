@@ -229,7 +229,11 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
     public boolean compress(T pixelData, ByteBuffer compressed) {
         this.nioBuffer.rewind();
         int pixelDataLimit = pixelData.limit();
-        try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {
+        
+        GZIPOutputStream zip = null;
+        
+        try {
+            zip = createGZipOutputStream(pixelDataLimit, compressed);
             while (pixelData.hasRemaining()) {
                 int count = Math.min(pixelData.remaining(), this.nioBuffer.capacity());
                 pixelData.limit(pixelData.position() + count);
@@ -240,6 +244,14 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
             }
         } catch (IOException e) {
             throw new IllegalStateException("could not gzip data", e);
+        } finally {
+            try {
+                if (zip != null) {
+                    zip.close();
+                }
+            } catch (IOException e) {
+                
+            }
         }
         compressed.limit(compressed.position());
         return true;
@@ -257,7 +269,11 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
     public void decompress(ByteBuffer compressed, T pixelData) {
         this.nioBuffer.rewind();
         TypeConversion<Buffer> typeConverter = getTypeConverter(compressed, pixelData.limit());
-        try (GZIPInputStream zip = createGZipInputStream(compressed)) {
+        
+        GZIPInputStream zip = null;
+        
+        try {
+            zip = createGZipInputStream(compressed);
             int count;
             while ((count = zip.read(this.buffer)) >= 0) {
                 if (typeConverter != null) {
@@ -269,6 +285,14 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
             }
         } catch (IOException e) {
             throw new IllegalStateException("could not gunzip data", e);
+        } finally {
+            try {
+                if (zip != null) {
+                    zip.close();
+                }
+            } catch (IOException e) {
+                
+            }
         }
     }
 
@@ -291,7 +315,7 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
                     if (uncompressedSize % nrOfPrimitiveElements == 0) {
                         int compressedPrimitiveSize = uncompressedSize / nrOfPrimitiveElements;
                         if (compressedPrimitiveSize != this.primitiveSize) {
-                            return new TypeConversion<>(getPrimitiveType(compressedPrimitiveSize));
+                            return new TypeConversion<Buffer>(getPrimitiveType(compressedPrimitiveSize));
                         }
                     }
                 }

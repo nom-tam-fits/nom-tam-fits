@@ -31,7 +31,13 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import static nom.tam.fits.header.Standard.*;
+import static nom.tam.fits.header.Standard.AUTHOR;
+import static nom.tam.fits.header.Standard.COMMENT;
+import static nom.tam.fits.header.Standard.DATAMAX;
+import static nom.tam.fits.header.Standard.DATAMIN;
+import static nom.tam.fits.header.Standard.DATE_OBS;
+import static nom.tam.fits.header.Standard.INSTRUME;
+import static nom.tam.fits.header.Standard.ORIGIN;
 
 import java.util.Date;
 
@@ -40,8 +46,6 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsDate;
 import nom.tam.fits.Header;
 import nom.tam.fits.FitsException;
-import nom.tam.fits.header.Compression;
-import nom.tam.fits.header.Standard;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -64,10 +68,9 @@ public class BuilderApiTest {
                 .card(INSTRUME).value("The very best")//
                 .card(ORIGIN).value("private")//
                 .card(COMMENT).comment("something to comment")//
-                .card(THEAP).value(2L)//
                 .card(DATAMIN).value(1)//
                 .card(DATAMAX).value(2f)//
-                .card(Standard.BSCALE).value(3d)//
+                .card(DATAMAX).value(3d)//
                 .card(AUTHOR).value(true);
 
         Assert.assertEquals("2015-07-11T05:21:25.446", header.getStringValue(DATE_OBS));
@@ -76,10 +79,8 @@ public class BuilderApiTest {
         Assert.assertEquals("private", header.getStringValue(ORIGIN));
         Assert.assertEquals("something to comment", header.findCard(COMMENT).getComment());
         Assert.assertEquals(null, header.getStringValue(COMMENT));
-        Assert.assertEquals(2L, header.getLongValue(THEAP));
         Assert.assertEquals(1, header.getIntValue(DATAMIN));
-        Assert.assertEquals(2f, header.getFloatValue(DATAMAX), 0.000001f);
-        Assert.assertEquals(3d, header.getDoubleValue(Standard.BSCALE), 0.000001d);
+        Assert.assertEquals(3d, header.getDoubleValue(DATAMAX), 0.000001d);
         Assert.assertEquals(true, header.getBooleanValue(AUTHOR));
 
         date = new FitsDate("2015-07-12T05:21:25.446").toDate();
@@ -88,10 +89,8 @@ public class BuilderApiTest {
                 .card(INSTRUME).value("The very very best")//
                 .card(ORIGIN).value("other")//
                 .card(COMMENT).comment("something else to comment")//
-                .card(THEAP).value(200L)//
                 .card(DATAMIN).value(100)//
                 .card(DATAMAX).value(200f)//
-                .card(Standard.BSCALE).value(300d)//
                 .card(AUTHOR).value(false);
 
         Assert.assertEquals("2015-07-12T05:21:25.446", header.getStringValue(DATE_OBS));
@@ -100,10 +99,8 @@ public class BuilderApiTest {
         Assert.assertEquals("other", header.getStringValue(ORIGIN));
         Assert.assertEquals("something else to comment", header.findCard(COMMENT).getComment());
         Assert.assertEquals(null, header.getStringValue(COMMENT));
-        Assert.assertEquals(200L, header.getLongValue(THEAP));
         Assert.assertEquals(100, header.getIntValue(DATAMIN));
-        Assert.assertEquals(200f, header.getFloatValue(DATAMAX), 0.000001f);
-        Assert.assertEquals(300d, header.getDoubleValue(Standard.BSCALE), 0.000001d);
+        Assert.assertEquals(200d, header.getDoubleValue(DATAMAX), 0.000001d);
         Assert.assertEquals(false, header.getBooleanValue(AUTHOR));
 
     }

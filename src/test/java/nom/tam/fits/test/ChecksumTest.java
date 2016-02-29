@@ -52,7 +52,6 @@ import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.Cursor;
-import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.Test;
 
@@ -88,7 +87,7 @@ public class ChecksumTest {
 
             @Override
             public ImageData getData() {
-                ThrowAnyException.throwIOException("fake");
+                BinaryTableTest.throwException(new IOException("fake"));
                 return null;
             }
         };

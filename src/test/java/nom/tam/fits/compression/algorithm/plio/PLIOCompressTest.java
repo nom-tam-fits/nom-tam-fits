@@ -46,96 +46,99 @@ public class PLIOCompressTest {
 
     @Test
     public void testPLIOShort() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test100Data16.plio", "r");//
+        RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
+        RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test100Data16.plio", "r");//
 
-        ) {
-            byte[] bytes = new byte[(int) file.length()];
-            file.read(bytes);
+        byte[] bytes = new byte[(int) file.length()];
+        file.read(bytes);
+        file.close();
 
-            short[] shortArray = new short[bytes.length / 2];
-            ShortBuffer shortbuffer = ByteBuffer.wrap(bytes).asShortBuffer();
-            shortbuffer.get(shortArray);
+        short[] shortArray = new short[bytes.length / 2];
+        ShortBuffer shortbuffer = ByteBuffer.wrap(bytes).asShortBuffer();
+        shortbuffer.get(shortArray);
 
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[(int) expected.length()]);
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[(int) expected.length()]);
 
-            byte[] expectedCompressedBytes = new byte[(int) expected.length()];
-            expected.read(expectedCompressedBytes);
-            short[] expectedCompressedShorts = new short[(int) expected.length() / 2];
-            ByteBuffer.wrap(expectedCompressedBytes).asShortBuffer().get(expectedCompressedShorts);
+        byte[] expectedCompressedBytes = new byte[(int) expected.length()];
+        expected.read(expectedCompressedBytes);
+        short[] expectedCompressedShorts = new short[(int) expected.length() / 2];
+        expected.close();
+        
+        ByteBuffer.wrap(expectedCompressedBytes).asShortBuffer().get(expectedCompressedShorts);
 
-            new ShortPLIOCompressor().compress(ShortBuffer.wrap(shortArray), compressed);
+        new ShortPLIOCompressor().compress(ShortBuffer.wrap(shortArray), compressed);
 
-            Assert.assertArrayEquals(expectedCompressedBytes, compressed.array());
-            ShortBuffer px_dst = ShortBuffer.allocate(shortArray.length);
-            new ShortPLIOCompressor().decompress(compressed, px_dst);
+        Assert.assertArrayEquals(expectedCompressedBytes, compressed.array());
+        ShortBuffer px_dst = ShortBuffer.allocate(shortArray.length);
+        new ShortPLIOCompressor().decompress(compressed, px_dst);
 
-            Assert.assertArrayEquals(shortArray, px_dst.array());
+        Assert.assertArrayEquals(shortArray, px_dst.array());
 
-            // now lets try the mini header variant.
+        // now lets try the mini header variant.
 
-            ByteBuffer wrap = ByteBuffer.wrap(expectedCompressedBytes, 8, expectedCompressedBytes.length - 8);
-            ShortBuffer smallShortBuffer = wrap.asShortBuffer();
-            smallShortBuffer.put(0, (short) 0);
-            smallShortBuffer.put(1, (short) 0);
-            smallShortBuffer.put(2, compressed.asShortBuffer().get(3));
+        ByteBuffer wrap = ByteBuffer.wrap(expectedCompressedBytes, 8, expectedCompressedBytes.length - 8);
+        ShortBuffer smallShortBuffer = wrap.asShortBuffer();
+        smallShortBuffer.put(0, (short) 0);
+        smallShortBuffer.put(1, (short) 0);
+        smallShortBuffer.put(2, compressed.asShortBuffer().get(3));
 
-            Arrays.fill(px_dst.array(), (short) 0);
+        Arrays.fill(px_dst.array(), (short) 0);
 
-            new ShortPLIOCompressor().decompress(wrap, px_dst);
-            Assert.assertArrayEquals(shortArray, px_dst.array());
-        }
+        new ShortPLIOCompressor().decompress(wrap, px_dst);
+        Assert.assertArrayEquals(shortArray, px_dst.array());
     }
 
     @Test
     public void testPLIOByte() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test100Data8.plio", "r");//
+        RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
+        RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test100Data8.plio", "r");//
 
-        ) {
-            byte[] bytes = new byte[(int) file.length()];
-            file.read(bytes);
+        byte[] bytes = new byte[(int) file.length()];
+        file.read(bytes);
+        file.close();
 
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[(int) expected.length()]);
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[(int) expected.length()]);
 
-            byte[] expectedCompressedBytes = new byte[(int) expected.length()];
-            expected.read(expectedCompressedBytes);
-            short[] expectedCompressedShorts = new short[(int) expected.length() / 2];
-            ByteBuffer.wrap(expectedCompressedBytes).asShortBuffer().get(expectedCompressedShorts);
+        byte[] expectedCompressedBytes = new byte[(int) expected.length()];
+        expected.read(expectedCompressedBytes);
+        short[] expectedCompressedShorts = new short[(int) expected.length() / 2];
+        expected.close();
+        
+        ByteBuffer.wrap(expectedCompressedBytes).asShortBuffer().get(expectedCompressedShorts);
 
-            new BytePLIOCompressor().compress(ByteBuffer.wrap(bytes), compressed);
+        new BytePLIOCompressor().compress(ByteBuffer.wrap(bytes), compressed);
 
-            Assert.assertArrayEquals(expectedCompressedBytes, compressed.array());
-            ByteBuffer px_dst = ByteBuffer.allocate(bytes.length);
-            new BytePLIOCompressor().decompress(compressed, px_dst);
+        Assert.assertArrayEquals(expectedCompressedBytes, compressed.array());
+        ByteBuffer px_dst = ByteBuffer.allocate(bytes.length);
+        new BytePLIOCompressor().decompress(compressed, px_dst);
 
-            Assert.assertArrayEquals(bytes, px_dst.array());
-        }
+        Assert.assertArrayEquals(bytes, px_dst.array());
     }
 
     @Test
     public void testPLIO99Byte() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data8.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test99Data8.plio", "r");//
+        RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data8.bin", "r");//
+        RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test99Data8.plio", "r");//
 
-        ) {
-            byte[] bytes = new byte[(int) file.length()];
-            file.read(bytes);
+        byte[] bytes = new byte[(int) file.length()];
+        file.read(bytes);
+        file.close();
 
-            ByteBuffer compressed = ByteBuffer.wrap(new byte[(int) expected.length()]);
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[(int) expected.length()]);
 
-            byte[] expectedCompressedBytes = new byte[(int) expected.length()];
-            expected.read(expectedCompressedBytes);
-            short[] expectedCompressedShorts = new short[(int) expected.length() / 2];
-            ByteBuffer.wrap(expectedCompressedBytes).asShortBuffer().get(expectedCompressedShorts);
+        byte[] expectedCompressedBytes = new byte[(int) expected.length()];
+        expected.read(expectedCompressedBytes);
+        short[] expectedCompressedShorts = new short[(int) expected.length() / 2];
+        expected.close();
+        
+        ByteBuffer.wrap(expectedCompressedBytes).asShortBuffer().get(expectedCompressedShorts);
 
-            new BytePLIOCompressor().compress(ByteBuffer.wrap(bytes), compressed);
+        new BytePLIOCompressor().compress(ByteBuffer.wrap(bytes), compressed);
 
-            Assert.assertArrayEquals(expectedCompressedBytes, compressed.array());
-            ByteBuffer px_dst = ByteBuffer.allocate(bytes.length);
-            new BytePLIOCompressor().decompress(compressed, px_dst);
+        Assert.assertArrayEquals(expectedCompressedBytes, compressed.array());
+        ByteBuffer px_dst = ByteBuffer.allocate(bytes.length);
+        new BytePLIOCompressor().decompress(compressed, px_dst);
 
-            Assert.assertArrayEquals(bytes, px_dst.array());
-        }
+        Assert.assertArrayEquals(bytes, px_dst.array());
     }
 }

@@ -46,12 +46,12 @@ public class TestFitsFileWithVeryBigHeaders {
     private BasicHDU<?> hdu;
 
     protected long oneTest(long count) throws FitsException, IOException {
-        try (Fits f = new Fits(BlackBoxImages.getBlackBoxImage("OEP.fits"))) {
+        Fits f = new Fits(BlackBoxImages.getBlackBoxImage("OEP.fits"));
 
-            while ((this.hdu = f.readHDU()) != null) {
-                count = count + this.hdu.getHeader().getSize();
-            }
+        while ((this.hdu = f.readHDU()) != null) {
+            count = count + this.hdu.getHeader().getSize();
         }
+        f.close();
         return count;
     }
 

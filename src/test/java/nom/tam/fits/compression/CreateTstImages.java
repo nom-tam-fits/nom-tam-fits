@@ -78,7 +78,7 @@ public class CreateTstImages {
     }
 
     private static void extractCompressedData(int edge, String nr) throws Exception {
-        List<String> types = new ArrayList<>();
+        List<String> types = new ArrayList<String>();
 
         File fitsFile = new File("target/compress/test" + edge + "Data" + nr + ".fits");
         File compressedFile = new File("target/compress/test" + edge + "Data" + nr + ".fits.fz");
