@@ -180,7 +180,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
             int xlen = super.read(obuf, currentOffset, remainingToRead);
             if (xlen <= 0) {
                 if (total == 0) {
-                    throw new EOFException();
+                    throw new EOFException(); // should not be possible
                 } else {
                     return total;
                 }
@@ -327,7 +327,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     @Override
     public String readLine() throws IOException {
         // Punt on this and use BufferedReader routines.
-        StringBuilder b = new StringBuilder("");
+        StringBuilder b = new StringBuilder(0);
         int chr;
         while ((chr = read()) >= 0) {
             if (chr != '\n') {

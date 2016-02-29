@@ -140,13 +140,6 @@ public final class FitsFactory {
     }
 
     /**
-     * @return Get the current status of ASCII table writing
-     */
-    static boolean getUseAsciiTables() {
-        return current().useAsciiTables;
-    }
-
-    /**
      * @return <code>true</code> if we are processing HIERARCH style keywords
      */
     public static boolean getUseHierarch() {

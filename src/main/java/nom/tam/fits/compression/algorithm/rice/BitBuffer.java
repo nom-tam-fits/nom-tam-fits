@@ -68,10 +68,6 @@ public class BitBuffer {
         this.buffer = writeBuffer;
     }
 
-    public ByteBuffer asByteBuffer() {
-        return this.buffer;
-    }
-
     public int bitbuffer() {
         return this.buffer.get((int) (this.position / BITS_OF_1_BYTE));
     }
@@ -81,10 +77,6 @@ public class BitBuffer {
             putByte((byte) 0, (int) (BITS_OF_1_BYTE - this.position % BITS_OF_1_BYTE));
         }
         this.buffer.position((int) (this.position / BITS_OF_1_BYTE));
-    }
-
-    public void limit(int newLimit) {
-        this.buffer.limit(newLimit);
     }
 
     public int missingBitsInCurrentByte() {

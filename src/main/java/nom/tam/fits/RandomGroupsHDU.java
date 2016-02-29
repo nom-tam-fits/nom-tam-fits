@@ -154,8 +154,9 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
             return hdr.getBooleanValue(GROUPS);
         }
 
-        String s = hdr.getStringValue(XTENSION);
-        if (s.trim().equals("IMAGE")) {
+        String xtension = hdr.getStringValue(XTENSION);
+        xtension = xtension == null ? "" : xtension.trim();
+        if ("IMAGE".equals(xtension)) {
             return hdr.getBooleanValue(GROUPS);
         }
 

@@ -120,7 +120,7 @@ public final class CompressionManager {
             }
 
         } catch (IOException e) {
-            LOG.log(Level.FINEST, "Error while  checkinf if file " + file + " is compressed", e);
+            LOG.log(Level.FINEST, "Error while checking if file " + file + " is compressed", e);
             // This is probably a prelude to failure...
             return false;
 

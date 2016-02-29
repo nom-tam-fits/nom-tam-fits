@@ -93,9 +93,9 @@ public class ImageHDU extends BasicHDU<ImageData> {
     public static boolean isHeader(Header hdr) {
         boolean found = hdr.getBooleanValue(SIMPLE);
         if (!found) {
-            String s = hdr.getStringValue(XTENSION);
-            if (s != null && //
-                    ("IMAGE".equals(s.trim()) || "IUEIMAGE".equals(s.trim()))) {
+            String xtension = hdr.getStringValue(XTENSION);
+            xtension = xtension == null ? "" : xtension.trim();
+            if ("IMAGE".equals(xtension) || "IUEIMAGE".equals(xtension)) {
                 found = true;
             }
         }
