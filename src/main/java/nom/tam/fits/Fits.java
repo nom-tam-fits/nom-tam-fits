@@ -37,6 +37,7 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -859,6 +860,33 @@ public class Fits implements Closeable {
         }
     }
 
+    /**
+     * Write the FITS to the specified file name. This is a wrapper method provided for convenience, which calls the
+     * {@link #write(DataOutput)} method. It creates a suitable {@link nom.tam.util.BufferedDataOutputStream},
+     * to which the FITS is then written. Upon completion the underlying stream is closed. Failure to create
+     * or close the underlying stream will result in a {@link java.io.IOException} being thrown, while
+     * failures from {@link #write(DataOutput)} will result in the propagated {@link FitsException} being thrown.
+     * 
+     * @param fileName
+     *             a file name to which the FITS is to be written.
+     * @throws FitsException
+     *             if {@link #write(DataOutput)} failed
+     * @throws IOException
+     *             if the underlying output stream could not be created or closed.
+     */
+    public void write(String fileName) throws FitsException, IOException {
+        BufferedDataOutputStream stream = new BufferedDataOutputStream(new FileOutputStream(fileName));
+       
+        try {
+            write(stream);
+        } catch (FitsException e) {
+            throw e; 
+        } finally {
+            stream.close();
+        }   
+    }
+    
+    
     @Override
     public void close() throws IOException {
         if (dataStr != null) {
