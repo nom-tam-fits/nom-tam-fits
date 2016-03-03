@@ -18,3 +18,5 @@ release.properties
 /target/
 /nom-tam-fits.sonargraph/
 /target/
+.idea
+nom-tam-fits.iml
