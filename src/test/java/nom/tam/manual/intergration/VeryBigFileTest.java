@@ -40,6 +40,7 @@ import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.SaveClose;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -54,16 +55,23 @@ public class VeryBigFileTest {
     @Test
     @Ignore
     public void testVeryBigDataFiles() throws Exception {
-        try (Fits f = new Fits()) {
+        Fits f = null;
+        try {
+            f = new Fits();
             ImageData data = new ImageData(new float[50000][50000]);
             Header manufactureHeader = ImageHDU.manufactureHeader(data);
             f.addHDU(FitsFactory.hduFactory(manufactureHeader, data));
             BufferedFile bf = new BufferedFile("target/big.fits", "rw");
             f.write(bf);
             System.out.println(Arrays.toString(ArrayFuncs.getDimensions(f.getHDU(0).getData().getData())));
+        } finally {
+            SaveClose.close(f);
         }
-        try (Fits f = new Fits("target/big.fits")) {
+        try {
+            f = new Fits("target/big.fits");
             System.out.println(Arrays.toString(ArrayFuncs.getDimensions(f.getHDU(0).getData().getData())));
+        } finally {
+            SaveClose.close(f);
         }
     }
 }

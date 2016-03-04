@@ -42,6 +42,7 @@ import nom.tam.fits.FitsException;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.SaveClose;
 
 import org.junit.Test;
 
@@ -151,22 +152,31 @@ public class TilerTest {
     }
 
     private void doTest(Object data, String suffix) throws IOException, FitsException, Exception {
-
-        try (Fits f = new Fits(); BufferedFile bf = new BufferedFile("target/tiler" + suffix + ".fits", "rw")) {
+        Fits f = null;
+        BufferedFile bf = null;
+        try {
+            f = new Fits();
+            bf = new BufferedFile("target/tiler" + suffix + ".fits", "rw");
             f.addHDU(Fits.makeHDU(data));
             f.write(bf);
+        } finally {
+            SaveClose.close(bf);
+            SaveClose.close(f);
         }
 
-        try (Fits f = new Fits("target/tiler" + suffix + ".fits")) {
+        try {
+            f = new Fits("target/tiler" + suffix + ".fits");
             ImageHDU h = (ImageHDU) f.readHDU();
-    
+
             StandardImageTiler t = h.getTiler();
             doTile("t1", data, t, 200, 200, 50, 50);
             doTile("t2", data, t, 133, 133, 72, 26);
-    
+
             h.getData().getKernel();
             doTile("t3", data, t, 200, 200, 50, 50);
             doTile("t4", data, t, 133, 133, 72, 26);
+        } finally {
+            SaveClose.close(f);
         }
     }
 }

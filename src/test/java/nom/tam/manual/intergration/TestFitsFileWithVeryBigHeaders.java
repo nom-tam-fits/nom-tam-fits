@@ -37,6 +37,7 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.util.BlackBoxImages;
+import nom.tam.util.SaveClose;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -46,11 +47,15 @@ public class TestFitsFileWithVeryBigHeaders {
     private BasicHDU<?> hdu;
 
     protected long oneTest(long count) throws FitsException, IOException {
-        try (Fits f = new Fits(BlackBoxImages.getBlackBoxImage("OEP.fits"))) {
+        Fits f = null;
+        try {
+            f = new Fits(BlackBoxImages.getBlackBoxImage("OEP.fits"));
 
             while ((this.hdu = f.readHDU()) != null) {
                 count = count + this.hdu.getHeader().getSize();
             }
+        } finally {
+            SaveClose.close(f);
         }
         return count;
     }
