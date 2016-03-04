@@ -128,7 +128,9 @@ public class BaseFitsTest {
 
     @Test
     public void testFitsDeleteHdu() throws Exception {
-        try (Fits fits1 = makeAsciiTable()) {
+        Fits fits1 = null;
+        try {
+            fits1 = makeAsciiTable();
             fits1.read();
             Exception actual = null;
             try {
@@ -144,9 +146,11 @@ public class BaseFitsTest {
             fits1.deleteHDU(2);
             fits1.deleteHDU(2);
             writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
+        } finally {
+            SaveClose.close(fits1);
         }
 
-        Fits fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
+        fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
         fits1.readHDU();
         AsciiTableHDU hdu2 = (AsciiTableHDU) fits1.readHDU();
         AsciiTableHDU hdu3 = (AsciiTableHDU) fits1.readHDU();
@@ -432,12 +436,19 @@ public class BaseFitsTest {
             actual = ex;
         }
         Assert.assertNotNull(actual);
-        try (Fits fits = new Fits("nom/tam/fits/test/test.fits", false)) {
+        Fits fits = null;
+        try {
+            fits = new Fits("nom/tam/fits/test/test.fits", false);
             Assert.assertNotNull(fits.readHDU());
             Assert.assertEquals(1, fits.currentSize());
+        } finally {
+            SaveClose.close(fits);
         }
-        try (Fits fits = new Fits(FILE + new File("src/test/resources/nom/tam/fits/test/test.fits").getAbsolutePath(), false)) {
+        try {
+            fits = new Fits(FILE + new File("src/test/resources/nom/tam/fits/test/test.fits").getAbsolutePath(), false);
             Assert.assertNotNull(fits.readHDU());
+        } finally {
+            SaveClose.close(fits);
         }
         actual = null;
         try {
@@ -453,8 +464,11 @@ public class BaseFitsTest {
             actual = ex;
         }
         Assert.assertNotNull(actual);
-        try (Fits fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits", false)) {
+        try {
+            fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits", false);
             Assert.assertNotNull(fits.readHDU());
+        } finally {
+            SaveClose.close(fits);
         }
     }
 

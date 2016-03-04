@@ -65,6 +65,7 @@ import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.ColumnTable;
+import nom.tam.util.SaveClose;
 import nom.tam.util.TableException;
 import nom.tam.util.TestArrayFuncs;
 import nom.tam.util.test.ThrowAnyException;
@@ -240,13 +241,19 @@ public class BinaryTableTest {
         Header hdr = new Header();
         tab.fillHeader(hdr);
         BasicHDU<?> hdu = FitsFactory.hduFactory(hdr, tab);
-        try (Fits f = new Fits(); BufferedFile bf = new BufferedFile("target/bt12.fits", "rw")) {
+        Fits f = null;
+        try {
+            f = new Fits();
+            BufferedFile bf = new BufferedFile("target/bt12.fits", "rw");
             f.addHDU(hdu);
             f.write(bf);
+        } finally {
+            SaveClose.close(f);
         }
         System.out.println("Wrote file bt12.fits");
 
-        try (Fits f = new Fits("target/bt12.fits")) {
+        try {
+            f = new Fits("target/bt12.fits");
             BinaryTableHDU btu = (BinaryTableHDU) f.getHDU(1);
             // In the first column the first string is the longest so all
             // strings
@@ -281,6 +288,8 @@ public class BinaryTableTest {
                     assertEquals("cmp" + i + "," + j, test.trim(), results[i][j].trim());
                 }
             }
+        } finally {
+            SaveClose.close(f);
         }
         // Cleanup...
         strings[0] = oldString;
@@ -1329,7 +1338,7 @@ public class BinaryTableTest {
         setFieldNull(btab, "table");
         setFieldNull(btab, "currInput");
         Exception actual = null;
-        final List<LogRecord> logs = new ArrayList<>();
+        final List<LogRecord> logs = new ArrayList<LogRecord>();
         Logger.getLogger(BinaryTable.class.getName()).addHandler(new Handler() {
 
             @Override

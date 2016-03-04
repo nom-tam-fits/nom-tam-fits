@@ -38,6 +38,7 @@ import java.util.Arrays;
 
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.BytePLIOCompressor;
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.ShortPLIOCompressor;
+import nom.tam.util.SaveClose;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -46,10 +47,12 @@ public class PLIOCompressTest {
 
     @Test
     public void testPLIOShort() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test100Data16.plio", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test100Data16.plio", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
 
@@ -84,15 +87,20 @@ public class PLIOCompressTest {
 
             new ShortPLIOCompressor().decompress(wrap, px_dst);
             Assert.assertArrayEquals(shortArray, px_dst.array());
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testPLIOByte() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test100Data8.plio", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test100Data8.plio", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
 
@@ -110,15 +118,20 @@ public class PLIOCompressTest {
             new BytePLIOCompressor().decompress(compressed, px_dst);
 
             Assert.assertArrayEquals(bytes, px_dst.array());
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testPLIO99Byte() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data8.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test99Data8.plio", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data8.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test99Data8.plio", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
 
@@ -136,6 +149,9 @@ public class PLIOCompressTest {
             new BytePLIOCompressor().decompress(compressed, px_dst);
 
             Assert.assertArrayEquals(bytes, px_dst.array());
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 }

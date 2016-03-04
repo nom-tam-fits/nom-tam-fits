@@ -44,6 +44,7 @@ import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompresso
 import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
 import nom.tam.fits.header.Compression;
+import nom.tam.util.SaveClose;
 import nom.tam.util.type.PrimitiveTypes;
 
 import org.junit.Assert;
@@ -86,10 +87,12 @@ public class RiceCompressTest {
 
     @Test
     public void testRiceByte() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data8.rise", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data8.rise", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -108,15 +111,20 @@ public class RiceCompressTest {
             compressed.position(0);
             compressor.decompress(compressed, ByteBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(bytes, decompressedArray);
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testRiceInt() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data32.rise", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data32.rise", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -137,15 +145,20 @@ public class RiceCompressTest {
             compressed.position(0);
             compressor.decompress(compressed, IntBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(intArray, decompressedArray);
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testRiceShort() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data16.rise", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data16.rise", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -166,6 +179,9 @@ public class RiceCompressTest {
             compressed.position(0);
             compressor.decompress(compressed, ShortBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(shortArray, decompressedArray);
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
@@ -193,15 +209,15 @@ public class RiceCompressTest {
         bitBuffer = new BitBuffer(ByteBuffer.wrap(bytes));
         bitBuffer.putLong(3L, 3);
         expected = new byte[]{
-                96,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0
-            };
+            96,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        };
         Assert.assertArrayEquals(expected, bytes);
 
     }

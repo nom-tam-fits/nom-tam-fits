@@ -52,7 +52,7 @@ public class CompressWihtoutDependenciesTest {
 
     @Test
     public void testWthoutApacheCompression() throws Exception {
-        final List<Object> assertions = new ArrayList<>();
+        final List<Object> assertions = new ArrayList<Object>();
         Class<?> clazz;
         Method method;
         FileInputStream in1;
