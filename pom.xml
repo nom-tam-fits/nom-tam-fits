@@ -79,7 +79,9 @@
 			<name>Jorgo Baker</name>
 		</contributor>
 		<contributor>
-			<name>A. Kovacs</name>
+			<name>Attila Kovacs</name>
+			<email>attila [at] submm [dot] caltech [dot] edu</email>
+			<url>http://www.submm.caltech.edu/~attila</url>
 		</contributor>
 		<contributor>
 			<name>V. Forchi</name>
@@ -96,6 +98,9 @@
 		<contributor>
 			<name>Martin Vrábel</name>
 		</contributor>
+		<contributor>
+			<name>Jonathan Cook</name>
+		</contributor>		
 	</contributors>
 	<scm>
 		<connection>scm:git:https://github.com/nom-tam-fits/nom-tam-fits.git</connection>

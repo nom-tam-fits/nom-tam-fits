@@ -64,6 +64,7 @@ import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.image.compression.hdu.CompressedImageHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.SaveClose;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -137,7 +138,10 @@ public class ReadWriteProvidedCompressedImageTest {
      * few memory as possible.
      */
     private <T> void assertCompressedToUncompressedImage(String fileName, String unCompfileName, Class<T> clazz, IHDUAsserter<T> reader) throws Exception {
-        try (Fits f = new Fits(fileName); Fits unFits = new Fits(unCompfileName)) {
+        Fits f = null;
+        try {
+            f = new Fits(fileName);
+            Fits unFits = new Fits(unCompfileName);
             ImageHDU hdu = readHDU(unFits, ImageHDU.class);
             unFits.deleteHDU(0);
             CompressedImageHDU uncompHdu = readHDU(f, CompressedImageHDU.class);
@@ -158,6 +162,8 @@ public class ReadWriteProvidedCompressedImageTest {
                 }
             }
             Assert.assertFalse(hdu != null || uncompHdu != null);
+        } finally {
+            SaveClose.close(f);
         }
     }
 

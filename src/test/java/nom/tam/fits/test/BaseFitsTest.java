@@ -49,6 +49,7 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Data;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
@@ -58,16 +59,15 @@ import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.UndefinedData;
 import nom.tam.fits.UndefinedHDU;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
-import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.LoggerHelper;
+import nom.tam.util.SaveClose;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -482,6 +482,15 @@ public class BaseFitsTest {
     @Test
     public void testLoggerHelperPrivate() throws Exception {
         Constructor<?>[] constrs = LoggerHelper.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+
+    @Test
+    public void testSaveClosePrivate() throws Exception {
+        Constructor<?>[] constrs = SaveClose.class.getDeclaredConstructors();
         assertEquals(constrs.length, 1);
         assertFalse(constrs[0].isAccessible());
         constrs[0].setAccessible(true);

@@ -212,7 +212,7 @@ public class Fits implements Closeable {
     /**
      * A vector of HDUs that have been added to this Fits object.
      */
-    private final List<BasicHDU<?>> hduList = new ArrayList<>();
+    private final List<BasicHDU<?>> hduList = new ArrayList<BasicHDU<?>>();
 
     /**
      * Has the input stream reached the EOF?
