@@ -37,7 +37,6 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -56,6 +55,7 @@ import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.RandomAccess;
+import nom.tam.util.SaveClose;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -861,32 +861,29 @@ public class Fits implements Closeable {
     }
 
     /**
-     * Write the FITS to the specified file name. This is a wrapper method provided for convenience, which calls the
-     * {@link #write(DataOutput)} method. It creates a suitable {@link nom.tam.util.BufferedDataOutputStream},
-     * to which the FITS is then written. Upon completion the underlying stream is closed. Failure to create
-     * or close the underlying stream will result in a {@link java.io.IOException} being thrown, while
-     * failures from {@link #write(DataOutput)} will result in the propagated {@link FitsException} being thrown.
+     * Write the FITS to the specified file. This is a wrapper method provided
+     * for convenience, which calls the {@link #write(DataOutput)} method. It
+     * creates a suitable {@link nom.tam.util.BufferedFile}, to which the FITS
+     * is then written. Upon completion the underlying stream is closed.
      * 
-     * @param fileName
-     *             a file name to which the FITS is to be written.
+     * @param file
+     *            a file to which the FITS is to be written.
      * @throws FitsException
      *             if {@link #write(DataOutput)} failed
      * @throws IOException
-     *             if the underlying output stream could not be created or closed.
+     *             if the underlying output stream could not be created or
+     *             closed.
      */
-    public void write(String fileName) throws FitsException, IOException {
-        BufferedDataOutputStream stream = new BufferedDataOutputStream(new FileOutputStream(fileName));
-       
+    public void write(File file) throws IOException, FitsException {
+        BufferedFile bf = null;
         try {
-            write(stream);
-        } catch (FitsException e) {
-            throw e; 
+            bf = new BufferedFile(file, "rw");
+            write(bf);
         } finally {
-            stream.close();
-        }   
+            SaveClose.close(bf);
+        }
     }
-    
-    
+
     @Override
     public void close() throws IOException {
         if (dataStr != null) {

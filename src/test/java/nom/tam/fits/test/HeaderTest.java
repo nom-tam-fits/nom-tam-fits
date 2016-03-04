@@ -52,6 +52,7 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -98,15 +99,12 @@ public class HeaderTest {
 
         float[][] img = new float[300][300];
         Fits f = null;
-        BufferedFile bf = null;
         try {
             f = new Fits();
-            bf = new BufferedFile("target/ht1.fits", "rw");
             ImageHDU hdu = (ImageHDU) Fits.makeHDU(img);
             f.addHDU(hdu);
-            f.write(bf);
+            f.write(new File("target/ht1.fits"));
         } finally {
-            SaveClose.close(bf);
             SaveClose.close(f);
         }
     }
