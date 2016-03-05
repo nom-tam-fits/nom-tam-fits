@@ -34,11 +34,11 @@ package nom.tam.fits;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,8 +51,6 @@ import nom.tam.util.RandomAccess;
  * classes.
  */
 public final class FitsUtil {
-
-    private static final int MAX_NUMBER_OF_REDIRECTIONS = 5;
 
     private static final int BYTE_REPRESENTING_BLANK = 32;
 
@@ -215,33 +213,18 @@ public final class FitsUtil {
      *             if the operation failed
      */
     public static InputStream getURLStream(URL url, int level) throws IOException {
-        if (level > MAX_NUMBER_OF_REDIRECTIONS) {
-            throw new IOException("Two many levels of redirection in URL");
-        }
-        URLConnection conn = url.openConnection();
-        // Map<String,List<String>> hdrs = conn.getHeaderFields();
-        Map hdrs = conn.getHeaderFields();
-
-        // Read through the headers and see if there is a redirection header.
-        // We loop (rather than just do a get on hdrs)
-        // since we want to match without regard to case.
-        String[] keys = (String[]) hdrs.keySet().toArray(new String[0]);
-        // for (String key: hdrs.keySet()) {
-        for (String key : keys) {
-            if (key != null && key.toLowerCase().equals("location")) {
-                // String val = hdrs.get(key).get(0);
-                String val = (String) ((List) hdrs.get(key)).get(0);
-                if (val != null) {
-                    val = val.trim();
-                    if (val.length() > 0) {
-                        // Redirect
-                        return getURLStream(new URL(val), level + 1);
-                    }
-                }
+        URLConnection conn = null;
+        int code = -1;
+        try {
+            conn = url.openConnection();
+            if (conn instanceof HttpURLConnection) {
+                code = ((HttpURLConnection) conn).getResponseCode();
             }
+            return conn.getInputStream();
+        } catch (ProtocolException e) {
+            LOG.log(Level.WARNING, "could not connect to " + url + (code >= 0 ? " got responce-code" + code : ""), e);
+            throw e;
         }
-        // No redirection
-        return conn.getInputStream();
     }
 
     /**

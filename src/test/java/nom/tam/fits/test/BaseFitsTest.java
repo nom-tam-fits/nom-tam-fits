@@ -35,11 +35,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -63,11 +70,13 @@ import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.LoggerHelper;
 import nom.tam.util.SaveClose;
+import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -704,4 +713,185 @@ public class BaseFitsTest {
         FitsUtil.reposition(out, -1);
     }
 
+    @Test(expected = FitsException.class)
+    public void testFitsWriteException1() throws Exception {
+        DataOutput out = (DataOutput) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{
+            DataOutput.class
+        }, new InvocationHandler() {
+
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                return null;
+            }
+        });
+        try {
+            new Fits().write(out);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("ArrayDataOutput"));
+            throw e;
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsWriteException2() throws Exception {
+        DataOutput out = new DataOutputStream(new ByteArrayOutputStream()) {
+
+            @Override
+            public void flush() throws IOException {
+                throw new IOException("failed flush");
+            }
+        };
+        try {
+            new Fits().write(out);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("flush"));
+            throw e;
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsWriteException3() throws Exception {
+        DataOutput out = new BufferedFile("target/testFitsWriteException3", "rw") {
+
+            @Override
+            public void setLength(long newLength) throws IOException {
+                throw new IOException("failed trimm");
+            }
+        };
+        try {
+            new Fits().write(out);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("resiz"));
+            throw e;
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsWriteException4() throws Exception {
+
+        try {
+            new Fits(new File("target/doesNotExistAtAll"));
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("existent"));
+            throw e;
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsWriteException5() throws Exception {
+        File writeOnlyTestFile = new File("target/writeOnlyTestFile") {
+
+            @Override
+            public boolean canRead() {
+                return true;
+            }
+        };
+        try {
+            writeOnlyTestFile.createNewFile();
+            writeOnlyTestFile.setReadable(false);
+            writeOnlyTestFile.setWritable(false);
+
+            new Fits(writeOnlyTestFile);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("Unable"));
+            throw e;
+        } finally {
+            writeOnlyTestFile.setReadable(true);
+            writeOnlyTestFile.setWritable(true);
+        }
+    }
+
+    @Test
+    public void testFitsWithArrayDataInput() throws Exception {
+        BufferedDataInputStream in = null;
+        Fits f = null;
+        try {
+            in = new BufferedDataInputStream(new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits"));
+            f = new Fits(in);
+            Assert.assertNotNull(f.getStream());
+            Assert.assertEquals(1, f.size());
+            f.skipHDU(); // should do nothing at all -)
+        } finally {
+            SaveClose.close(f);
+            SaveClose.close(in);
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsCompressedWithFileInput() throws Exception {
+        Fits f = null;
+        try {
+            f = new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits.gz"), true) {
+
+                @Override
+                protected void streamInit(InputStream inputStream) throws FitsException {
+                    ThrowAnyException.throwIOException("could not open stream");
+                }
+            };
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("Unable"));
+            throw e;
+        } finally {
+            SaveClose.close(f);
+        }
+    }
+
+    @Test
+    public void testFitsReadWithArrayDataInput() throws Exception {
+        BufferedDataInputStream in = null;
+        Fits f = null;
+        try {
+            in = new BufferedDataInputStream(new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits"));
+            f = new Fits();
+            f.read(in);
+            Assert.assertEquals(1, f.size());
+            f.skipHDU(); // should do nothing at all -)
+        } finally {
+            SaveClose.close(f);
+            SaveClose.close(in);
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsFileInputFailed() throws Exception {
+        Fits f = null;
+        try {
+            f = new Fits("src/test/resources/nom/tam/fits/test/test.fits.gz", true) {
+
+                @Override
+                protected void fileInit(File myFile, boolean compressed) throws FitsException {
+                    ThrowAnyException.throwIOException("could not open stream");
+                }
+            };
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("detect"));
+            throw e;
+        } finally {
+            SaveClose.close(f);
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsFileInputFailed2() throws Exception {
+        Fits f = null;
+        try {
+            f = new Fits("nom/tam/fits/test/test.fits.gz", true) {
+
+                @Override
+                protected void streamInit(InputStream inputStream) throws FitsException {
+                    ThrowAnyException.throwIOException("could not open stream");
+                }
+            };
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("detect"));
+            throw e;
+        } finally {
+            SaveClose.close(f);
+        }
+    }
+
+    @Test()
+    public void testFitsReadEmpty() throws Exception {
+        Assert.assertArrayEquals(new BasicHDU<?>[0], new Fits().read());
+    }
 }

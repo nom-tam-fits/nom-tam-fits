@@ -196,13 +196,7 @@ public class Fits implements Closeable {
      *            the input stream to close.
      */
     public static void saveClose(InputStream in) {
-        if (in != null) {
-            try {
-                in.close();
-            } catch (IOException e) {
-                LOG.log(Level.INFO, "close failed, ignoring", e);
-            }
-        }
+        SaveClose.close(in);
     }
 
     /**
@@ -789,27 +783,7 @@ public class Fits implements Closeable {
      *             if the initialization failed
      */
     protected void streamInit(InputStream inputStream) throws FitsException {
-        inputStream = CompressionManager.decompress(inputStream);
-        if (inputStream instanceof ArrayDataInput) {
-            this.dataStr = (ArrayDataInput) inputStream;
-        } else {
-            // Use efficient blocking for input.
-            this.dataStr = new BufferedDataInputStream(inputStream);
-        }
-    }
-
-    /**
-     * Initialize the stream.
-     * 
-     * @param str
-     *            The user specified input stream
-     * @param seekable
-     *            ignored
-     * @throws FitsException
-     *             if the operation failed
-     */
-    protected void streamInit(InputStream str, boolean seekable) throws FitsException {
-        streamInit(str);
+        this.dataStr = new BufferedDataInputStream(CompressionManager.decompress(inputStream));
     }
 
     /**
@@ -821,10 +795,8 @@ public class Fits implements Closeable {
      *             if the operation failed
      */
     public void write(DataOutput os) throws FitsException {
-
         ArrayDataOutput obs;
         boolean newOS = false;
-
         if (os instanceof ArrayDataOutput) {
             obs = (ArrayDataOutput) os;
         } else if (os instanceof DataOutputStream) {
@@ -833,15 +805,8 @@ public class Fits implements Closeable {
         } else {
             throw new FitsException("Cannot create ArrayDataOutput from class " + os.getClass().getName());
         }
-
-        BasicHDU<?> hh;
-        for (int i = 0; i < getNumberOfHDUs(); i += 1) {
-            try {
-                hh = this.hduList.get(i);
-                hh.write(obs);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                throw new FitsException("Internal Error: Vector Inconsistency" + e, e);
-            }
+        for (BasicHDU<?> basicHDU : hduList) {
+            basicHDU.write(obs);
         }
         if (newOS) {
             try {
