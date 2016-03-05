@@ -33,17 +33,73 @@ package nom.tam.fits.compression.algorithm.plio;
 
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.Arrays;
 
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.BytePLIOCompressor;
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.ShortPLIOCompressor;
+import nom.tam.fits.compression.algorithm.plio.PLIOCompress.IntPLIOCompressor;
 import nom.tam.util.SaveClose;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 public class PLIOCompressTest {
+
+    @Test
+    public void testPLIOInt() throws Exception {
+        RandomAccessFile file = null;
+        // no expected in this case because cfitsio does not support int plio
+        // compression
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
+
+            byte[] bytes = new byte[(int) file.length()];
+            file.read(bytes);
+
+            int[] intArray = new int[bytes.length / 4];
+            IntBuffer intBuffer = ByteBuffer.wrap(bytes).asIntBuffer();
+            intBuffer.get(intArray);
+            // limit to 24 bit values (max supported by plio
+            for (int index = 0; index < intArray.length; index++) {
+                intArray[index] = intArray[index] & 0xFFF;
+            }
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[(int) file.length() * 10]);
+            new IntPLIOCompressor().compress(IntBuffer.wrap(intArray), compressed);
+
+            compressed.rewind();
+            IntBuffer px_dst = IntBuffer.allocate(intArray.length);
+
+            new IntPLIOCompressor().decompress(compressed, px_dst);
+
+            Assert.assertArrayEquals(intArray, px_dst.array());
+        } finally {
+            SaveClose.close(file);
+        }
+    }
+
+    @Test
+    public void testPLIOBigShort() throws Exception {
+        short[] shortArray = new short[1024];
+        for (int index = 0; index < shortArray.length; index += 4) {
+            shortArray[index] = Short.MAX_VALUE;
+            shortArray[index + 1] = Short.MAX_VALUE;
+        }
+
+        ShortBuffer shortbuffer = ShortBuffer.wrap(shortArray);
+
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 10]);
+
+        new ShortPLIOCompressor().compress(shortbuffer, compressed);
+
+        compressed.rewind();
+        ShortBuffer px_dst = ShortBuffer.allocate(shortArray.length);
+
+        new ShortPLIOCompressor().decompress(compressed, px_dst);
+
+        Assert.assertArrayEquals(shortArray, px_dst.array());
+    }
 
     @Test
     public void testPLIOShort() throws Exception {
