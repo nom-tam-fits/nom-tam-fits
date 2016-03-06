@@ -38,8 +38,8 @@ import java.nio.ShortBuffer;
 import java.util.Arrays;
 
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.BytePLIOCompressor;
-import nom.tam.fits.compression.algorithm.plio.PLIOCompress.ShortPLIOCompressor;
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.IntPLIOCompressor;
+import nom.tam.fits.compression.algorithm.plio.PLIOCompress.ShortPLIOCompressor;
 import nom.tam.util.SaveClose;
 
 import org.junit.Assert;
@@ -61,9 +61,9 @@ public class PLIOCompressTest {
             int[] intArray = new int[bytes.length / 4];
             IntBuffer intBuffer = ByteBuffer.wrap(bytes).asIntBuffer();
             intBuffer.get(intArray);
-            // limit to 24 bit values (max supported by plio
+            // limit to 16 bit positiv values (max supported by plio
             for (int index = 0; index < intArray.length; index++) {
-                intArray[index] = intArray[index] & 0xFFF;
+                intArray[index] = intArray[index] & 0x7FFF;
             }
             ByteBuffer compressed = ByteBuffer.wrap(new byte[(int) file.length() * 10]);
             new IntPLIOCompressor().compress(IntBuffer.wrap(intArray), compressed);
@@ -89,7 +89,7 @@ public class PLIOCompressTest {
 
         ShortBuffer shortbuffer = ShortBuffer.wrap(shortArray);
 
-        ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 10]);
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
 
         new ShortPLIOCompressor().compress(shortbuffer, compressed);
 
@@ -99,6 +99,15 @@ public class PLIOCompressTest {
         new ShortPLIOCompressor().decompress(compressed, px_dst);
 
         Assert.assertArrayEquals(shortArray, px_dst.array());
+
+        //now lets see if the additional bytes are set to 0.
+        compressed.rewind();
+        px_dst = ShortBuffer.allocate(shortArray.length + 10);
+        Arrays.fill(px_dst.array(), Short.MAX_VALUE);
+        new ShortPLIOCompressor().decompress(compressed, px_dst);
+        for (int index = shortArray.length; index < px_dst.array().length; index++) {
+            Assert.assertEquals(0, px_dst.get(index));
+        }
     }
 
     @Test

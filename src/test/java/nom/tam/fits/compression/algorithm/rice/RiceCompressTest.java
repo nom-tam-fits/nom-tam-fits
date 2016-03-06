@@ -32,6 +32,7 @@ package nom.tam.fits.compression.algorithm.rice;
  */
 
 import java.io.RandomAccessFile;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -220,5 +221,33 @@ public class RiceCompressTest {
         };
         Assert.assertArrayEquals(expected, bytes);
 
+    }
+
+    @Test(expected = BufferUnderflowException.class)
+    public void testAdditionalBytes() throws Exception {
+        RandomAccessFile compressedFile = null;
+        try {
+            compressedFile = new RandomAccessFile("src/test/resources/nom/tam/image/comp/rise/test100Data8.rise", "r");//
+            byte[] compressedBytes = new byte[(int) compressedFile.length()];
+            compressedFile.read(compressedBytes);
+
+            byte[] decompressedArray = new byte[10100];
+            ByteBuffer compressed = ByteBuffer.wrap(compressedBytes);
+            ByteRiceCompressor compressor = new ByteRiceCompressor(option.setBytePix(PrimitiveTypes.BYTE.size()));
+            compressor.decompress(compressed, ByteBuffer.wrap(decompressedArray));
+        } finally {
+            SaveClose.close(compressedFile);
+        }
+
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testWrongBytePix() throws Exception {
+        try {
+            new ByteRiceCompressor(option.setBytePix(99));
+        } catch (UnsupportedOperationException e) {
+            Assert.assertTrue(e.getMessage().contains("only"));
+            throw e;
+        }
     }
 }
