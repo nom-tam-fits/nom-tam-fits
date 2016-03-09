@@ -109,8 +109,8 @@ public class HashedListTest {
     @Test
     public void testCollection() {
 
-        HashedList<TestCursorValue> h1 = new HashedList<>();
-        HashedList<TestCursorValue> h2 = new HashedList<>();
+        HashedList<TestCursorValue> h1 = new HashedList<TestCursorValue>();
+        HashedList<TestCursorValue> h2 = new HashedList<TestCursorValue>();
 
         // Add a few unkeyed rows.
 
@@ -208,7 +208,7 @@ public class HashedListTest {
 
     @Test
     public void testCursor() {
-        HashedList<TestCursorValue> h1 = new HashedList<>();
+        HashedList<TestCursorValue> h1 = new HashedList<TestCursorValue>();
 
         h1.add(new TestCursorValue("key 1", "Row 1"));
         h1.add(new TestCursorValue("Row 3"));
@@ -257,7 +257,7 @@ public class HashedListTest {
     @Test
     public void testIterator() {
 
-        HashedList<TestCursorValue> h1 = new HashedList<>();
+        HashedList<TestCursorValue> h1 = new HashedList<TestCursorValue>();
 
         h1.add(new TestCursorValue("key 4", "Row 4"));
         h1.add(new TestCursorValue("key 5", "Row 5"));
@@ -294,7 +294,7 @@ public class HashedListTest {
 
     @Test(expected = NoSuchElementException.class)
     public void testIndexOfWhenNotInList() {
-        HashedList<TestCursorValue> h = new HashedList<>();
+        HashedList<TestCursorValue> h = new HashedList<TestCursorValue>();
 
         h.indexOf(new TestCursorValue("K", "R"));
     }
@@ -302,7 +302,7 @@ public class HashedListTest {
     @Deprecated
     @Test
     public void testIteratorAddWithKeyAndValue() {
-        HashedList<TestCursorValue> h = new HashedList<>();
+        HashedList<TestCursorValue> h = new HashedList<TestCursorValue>();
         h.iterator(0).add("OtherK", new TestCursorValue("K", "R"));
 
         assertFalse(h.containsKey("OtherK"));
@@ -311,21 +311,21 @@ public class HashedListTest {
 
     @Test(expected = NoSuchElementException.class)
     public void testIteratorWithNegativeIndex() {
-        HashedList<TestCursorValue> h = new HashedList<>();
+        HashedList<TestCursorValue> h = new HashedList<TestCursorValue>();
 
         h.iterator(-1);
     }
 
     @Test(expected = NoSuchElementException.class)
     public void testIteratorWithTooBigIndex() {
-        HashedList<TestCursorValue> h = new HashedList<>();
+        HashedList<TestCursorValue> h = new HashedList<TestCursorValue>();
 
         h.iterator(h.size() + 1);
     }
 
     @Test(expected = NoSuchElementException.class)
     public void testIteratorForNonPresentKey() {
-        HashedList<TestCursorValue> h = new HashedList<>();
+        HashedList<TestCursorValue> h = new HashedList<TestCursorValue>();
         h.add(new TestCursorValue("K", "R"));
 
         h.iterator("K1");
@@ -333,7 +333,7 @@ public class HashedListTest {
 
     @Test
     public void testIteratorNextWithCount() {
-        HashedList<TestCursorValue> h = new HashedList<>();
+        HashedList<TestCursorValue> h = new HashedList<TestCursorValue>();
         h.add(new TestCursorValue("K1", "R1"));
         h.add(new TestCursorValue("K2", "R2"));
         h.add(new TestCursorValue("K3", "R3"));
@@ -344,21 +344,21 @@ public class HashedListTest {
 
     @Test(expected = NoSuchElementException.class)
     public void testIteratorNextWhenNone() {
-        HashedList<TestCursorValue> h = new HashedList<>();
+        HashedList<TestCursorValue> h = new HashedList<TestCursorValue>();
 
         h.iterator(0).next();
     }
 
     @Test(expected = NoSuchElementException.class)
     public void testIteratorPrevWhenNone() {
-        HashedList<TestCursorValue> h = new HashedList<>();
+        HashedList<TestCursorValue> h = new HashedList<TestCursorValue>();
 
         h.iterator(0).prev();
     }
 
     @Test
     public void testRemoveWhenIndexOutsideBounds() {
-        HashedList<TestCursorValue> h = new HashedList<>();
+        HashedList<TestCursorValue> h = new HashedList<TestCursorValue>();
         h.add(new TestCursorValue("K", "R"));
 
         assertFalse(h.remove(-1));
@@ -367,7 +367,7 @@ public class HashedListTest {
 
     @Test
     public void testRemoveWhenNotPresent() {
-        HashedList<TestCursorValue> h = new HashedList<>();
+        HashedList<TestCursorValue> h = new HashedList<TestCursorValue>();
         h.add(new TestCursorValue("K", "R"));
 
         assertFalse(h.remove("R1"));
@@ -375,7 +375,7 @@ public class HashedListTest {
 
     @Test
     public void testRemoveKeyWhenNotPresent() {
-        HashedList<TestCursorValue> h = new HashedList<>();
+        HashedList<TestCursorValue> h = new HashedList<TestCursorValue>();
         h.add(new TestCursorValue("K", "R"));
 
         assertFalse(h.removeKey("K1"));
@@ -383,7 +383,7 @@ public class HashedListTest {
 
     @Test
     public void testReplaceKeySpecialCases() {
-        HashedList<TestCursorValue> h = new HashedList<>();
+        HashedList<TestCursorValue> h = new HashedList<TestCursorValue>();
         h.add(new TestCursorValue("K", "R"));
 
         assertFalse(h.replaceKey("K1", "K2"));

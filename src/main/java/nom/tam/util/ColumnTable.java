@@ -259,7 +259,7 @@ public class ColumnTable<T> implements DataTable {
                 is.read(table.doublePointers[index], arrOffset, size);
             }
         };
-        Map<PrimitiveType<?>, PointerAccess<?>> pointerAccess = new HashMap<>();
+        Map<PrimitiveType<?>, PointerAccess<?>> pointerAccess = new HashMap<PrimitiveType<?>, PointerAccess<?>>();
         pointerAccess.put(PrimitiveTypes.BYTE, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypes.BYTE.type()]);
         pointerAccess.put(PrimitiveTypes.BOOLEAN, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypes.BOOLEAN.type()]);
         pointerAccess.put(PrimitiveTypes.CHAR, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypes.CHAR.type()]);

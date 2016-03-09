@@ -60,7 +60,9 @@ public class FitsBenchmark {
     private void helloWorld() {
         try {
             long count = 0;
-            try (Fits f = new Fits(BlackBoxImages.getBlackBoxImage("OEP.fits"))) {
+            Fits f = null;
+            try {
+                f = new Fits(BlackBoxImages.getBlackBoxImage("OEP.fits"));
                 BasicHDU<?> hdu;
                 while ((hdu = f.readHDU()) != null) {
                     count = count + hdu.getHeader().getSize();
@@ -68,6 +70,8 @@ public class FitsBenchmark {
                         return;
                     }
                 }
+            } finally {
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,7 +86,6 @@ public class FitsBenchmark {
     private boolean unkeyedKey(String key) {
         return "COMMENT".equals(key) || "HISTORY".equals(key) || key.trim().isEmpty();
     }
-    
 
     @Benchmark
     public void testEmptyString2() {

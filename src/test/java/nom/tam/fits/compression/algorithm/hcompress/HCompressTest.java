@@ -49,6 +49,7 @@ import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.header.Compression;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.SaveClose;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -57,10 +58,12 @@ public class HCompressTest {
 
     @Test
     public void testHcompressByte() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test100Data8.huf", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test100Data8.huf", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -83,15 +86,20 @@ public class HCompressTest {
             byte[] decompressedArray = new byte[byteArray.length];
             byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(byteArray, decompressedArray);
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testHcompressByteOdd() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data8.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data8.huf", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data8.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data8.huf", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -114,15 +122,20 @@ public class HCompressTest {
             byte[] decompressedArray = new byte[byteArray.length];
             byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(byteArray, decompressedArray);
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testHcompressByteScale4() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale4/test100Data8.4huf", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale4/test100Data8.4huf", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -145,13 +158,17 @@ public class HCompressTest {
             byte[] decompressedArray = new byte[byteArray.length];
             byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(byteArray, decompressedArray);
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testHcompressDouble() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-64.bin", "r")) {
-
+        RandomAccessFile file = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-64.bin", "r");
             HCompressorQuantizeOption quant = new HCompressorQuantizeOption();
             quant.setDither(true);
             quant.setSeed(8864L);
@@ -179,13 +196,16 @@ public class HCompressTest {
             double[] decompressedArray = new double[doubleArray.length];
             doubleHCompress.decompress(ByteBuffer.wrap(compressedArray), DoubleBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(doubleArray, decompressedArray, quant.getBScale() * 1.5);
+        } finally {
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testHcompressFloat() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-32.bin", "r")) {
-
+        RandomAccessFile file = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-32.bin", "r");
             HCompressorQuantizeOption quant = new HCompressorQuantizeOption();
             quant.setDither(true);
             quant.setSeed(8864L);
@@ -214,14 +234,19 @@ public class HCompressTest {
             float[] decompressedArray = new float[floatArray.length];
             floatHCompress.decompress(ByteBuffer.wrap(compressedArray), FloatBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(floatArray, decompressedArray, (float) (quant.getBScale() * 1.5));
+        } finally {
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testHcompressInt() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test100Data32.huf", "r");//
-        ) {
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test100Data32.huf", "r");//
+
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -244,14 +269,20 @@ public class HCompressTest {
             int[] decompressedArray = new int[intArray.length];
             intHCompress.decompress(ByteBuffer.wrap(expectedBytes), IntBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(intArray, decompressedArray);
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testHcompressIntOdd() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data32.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data32.huf", "r");//
-        ) {
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data32.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data32.huf", "r");//
+
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -275,16 +306,22 @@ public class HCompressTest {
             intHCompress.decompress(ByteBuffer.wrap(expectedBytes), IntBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(intArray, decompressedArray);
 
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testHcompressIntScale4() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale4/test100Data32.4huf", "r");//
-                RandomAccessFile expectedUncompressed = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale4/test100Data4huf32.uncompressed", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        RandomAccessFile expectedUncompressed = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale4/test100Data32.4huf", "r");//
+            expectedUncompressed = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale4/test100Data4huf32.uncompressed", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -325,15 +362,21 @@ public class HCompressTest {
                 sum2 += decompressedArray[index];
             }
             Assert.assertEquals(sum1 / intArray.length, sum2 / intArray.length, 0.5d);
+        } finally {
+            SaveClose.close(expectedUncompressed);
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testHcompressShort() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test100Data16.huf", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test100Data16.huf", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -356,15 +399,20 @@ public class HCompressTest {
             short[] decompressedArray = new short[shortArray.length];
             shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(shortArray, decompressedArray);
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testHcompressShortOdd() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data16.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data16.huf", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data16.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data16.huf", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -387,15 +435,20 @@ public class HCompressTest {
             short[] decompressedArray = new short[shortArray.length];
             shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(shortArray, decompressedArray);
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testHcompressShortScale4() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale4/test100Data16.4huf", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale4/test100Data16.4huf", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -418,6 +471,9 @@ public class HCompressTest {
             short[] decompressedArray = new short[shortArray.length];
             shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(shortArray, decompressedArray);
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 

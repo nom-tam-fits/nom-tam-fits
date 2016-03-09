@@ -35,6 +35,7 @@ import static org.junit.Assert.assertTrue;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.SaveClose;
 
 import org.junit.Test;
 
@@ -47,46 +48,55 @@ import org.junit.Test;
 public class JunkTest {
 
     boolean readSuccess(String file) {
-        try (Fits f = new Fits(file)) {
+        Fits f = null;
+        try {
+            f = new Fits(file);
             f.read();
             return true;
         } catch (Exception e) {
             return false;
+        } finally {
+            SaveClose.close(f);
         }
     }
 
     @Test
     public void test() throws Exception {
+        Fits f = null;
+        try {
+            f = new Fits();
 
-        try (Fits f = new Fits()) {
-    
             byte[] bimg = new byte[40];
             for (int i = 10; i < bimg.length; i += 1) {
                 bimg[i] = (byte) i;
             }
-    
+
             // Make HDUs of various types.
             f.addHDU(Fits.makeHDU(bimg));
-    
+
             // Write a FITS file.
-    
+
             // Valid FITS with one HDU
-            try (BufferedFile bf = new BufferedFile("target/j1.fits", "rw")) {
-                f.write(bf);
-                bf.flush();
+            BufferedFile bfx = null;
+            try {
+                bfx = new BufferedFile("target/j1.fits", "rw");
+                f.write(bfx);
+                bfx.flush();
+            } finally {
+                SaveClose.close(bfx);
             }
-    
+
             // Invalid junk with no valid FITS.
             BufferedFile bf = new BufferedFile("target/j2.fits", "rw");
             bf.write(new byte[10]);
             bf.close();
-    
+
             // Valid FITS followed by short junk.
             bf = new BufferedFile("target/j3.fits", "rw");
             f.write(bf);
             bf.write("JUNKJUNK".getBytes());
             bf.close();
-    
+
             // Valid FITS followed by long junk.
             bf = new BufferedFile("target/j4.fits", "rw");
             f.write(bf);
@@ -94,13 +104,18 @@ public class JunkTest {
                 bf.write("A random string".getBytes());
             }
             bf.close();
+        } finally {
+            SaveClose.close(f);
         }
 
         int pos = 0;
-        try (Fits f = new Fits("target/j1.fits")) {
+        try {
+            f = new Fits("target/j1.fits");
             f.read();
         } catch (Exception e) {
             pos = 1;
+        } finally {
+            SaveClose.close(f);
         }
         assertTrue("Junk Test: Valid File OK,Dft", readSuccess("target/j1.fits"));
         assertTrue("Junk Test: Invalid File Fails, Dft", !readSuccess("target/j2.fits"));

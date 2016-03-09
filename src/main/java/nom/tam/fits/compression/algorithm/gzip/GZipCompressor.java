@@ -17,6 +17,7 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ByteBufferInputStream;
 import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.FitsIO;
+import nom.tam.util.SaveClose;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 import nom.tam.util.type.PrimitiveTypes;
@@ -229,7 +230,9 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
     public boolean compress(T pixelData, ByteBuffer compressed) {
         this.nioBuffer.rewind();
         int pixelDataLimit = pixelData.limit();
-        try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {
+        GZIPOutputStream zip = null;
+        try {
+            zip = createGZipOutputStream(pixelDataLimit, compressed);
             while (pixelData.hasRemaining()) {
                 int count = Math.min(pixelData.remaining(), this.nioBuffer.capacity());
                 pixelData.limit(pixelData.position() + count);
@@ -240,24 +243,20 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
             }
         } catch (IOException e) {
             throw new IllegalStateException("could not gzip data", e);
+        } finally {
+            SaveClose.close(zip);
         }
         compressed.limit(compressed.position());
         return true;
-    }
-
-    protected GZIPInputStream createGZipInputStream(ByteBuffer compressed) throws IOException {
-        return new GZIPInputStream(new ByteBufferInputStream(compressed), Math.min(compressed.limit() * 2, DEFAULT_GZIP_BUFFER_SIZE));
-    }
-
-    protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
-        return new GZIPOutputStream(new ByteBufferOutputStream(compressed), Math.min(length * 2, DEFAULT_GZIP_BUFFER_SIZE));
     }
 
     @Override
     public void decompress(ByteBuffer compressed, T pixelData) {
         this.nioBuffer.rewind();
         TypeConversion<Buffer> typeConverter = getTypeConverter(compressed, pixelData.limit());
-        try (GZIPInputStream zip = createGZipInputStream(compressed)) {
+        GZIPInputStream zip = null;
+        try {
+            zip = createGZipInputStream(compressed);
             int count;
             while ((count = zip.read(this.buffer)) >= 0) {
                 if (typeConverter != null) {
@@ -269,10 +268,10 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
             }
         } catch (IOException e) {
             throw new IllegalStateException("could not gunzip data", e);
+        } finally {
+            SaveClose.close(zip);
         }
     }
-
-    protected abstract void getPixel(T pixelData, byte[] pixelBytes);
 
     @SuppressWarnings("unchecked")
     private <B extends Buffer> PrimitiveType<B> getPrimitiveType(int size) {
@@ -291,7 +290,7 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
                     if (uncompressedSize % nrOfPrimitiveElements == 0) {
                         int compressedPrimitiveSize = uncompressedSize / nrOfPrimitiveElements;
                         if (compressedPrimitiveSize != this.primitiveSize) {
-                            return new TypeConversion<>(getPrimitiveType(compressedPrimitiveSize));
+                            return new TypeConversion<Buffer>(getPrimitiveType(compressedPrimitiveSize));
                         }
                     }
                 }
@@ -301,6 +300,16 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
         }
         return null;
     }
+
+    protected GZIPInputStream createGZipInputStream(ByteBuffer compressed) throws IOException {
+        return new GZIPInputStream(new ByteBufferInputStream(compressed), Math.min(compressed.limit() * 2, DEFAULT_GZIP_BUFFER_SIZE));
+    }
+
+    protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
+        return new GZIPOutputStream(new ByteBufferOutputStream(compressed), Math.min(length * 2, DEFAULT_GZIP_BUFFER_SIZE));
+    }
+
+    protected abstract void getPixel(T pixelData, byte[] pixelBytes);
 
     protected abstract void setPixel(T pixelData, byte[] pixelBytes);
 

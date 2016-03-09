@@ -79,7 +79,7 @@ public final class FitsFactory {
 
     private static final FitsSettings GLOBAL_SETTINGS = new FitsSettings();
 
-    private static final ThreadLocal<FitsSettings> LOCAL_SETTINGS = new ThreadLocal<>();
+    private static final ThreadLocal<FitsSettings> LOCAL_SETTINGS = new ThreadLocal<FitsSettings>();
 
     private static ExecutorService threadPool;
 

@@ -139,7 +139,7 @@ public class Header implements FitsElement {
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
      */
-    private final HashedList<HeaderCard> cards = new HashedList<>();
+    private final HashedList<HeaderCard> cards = new HashedList<HeaderCard>();
 
     /**
      * This iterator allows one to run through the list.
@@ -209,7 +209,7 @@ public class Header implements FitsElement {
         if (!COMMENT.key().equals(dup.getKey()) && !HISTORY.key().equals(dup.getKey()) && !dup.getKey().trim().isEmpty()) {
             LOG.log(Level.WARNING, "Warning: multiple occurrences of key:" + dup.getKey());
             if (this.duplicates == null) {
-                this.duplicates = new ArrayList<>();
+                this.duplicates = new ArrayList<HeaderCard>();
             }
             this.duplicates.add(dup);
         }

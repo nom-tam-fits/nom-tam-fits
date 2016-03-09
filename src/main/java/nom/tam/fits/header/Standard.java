@@ -611,7 +611,7 @@ public enum Standard implements IFitsHeader {
 
     public static final IFitsHeader NAXIS2 = NAXISn.n(2);
 
-    private static final ThreadLocal<Class<?>> COMMENT_CONTEXT = new ThreadLocal<>();
+    private static final ThreadLocal<Class<?>> COMMENT_CONTEXT = new ThreadLocal<Class<?>>();
 
     private final StandardCommentReplacement[] commentReplacements;
 

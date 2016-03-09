@@ -37,12 +37,14 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 
 import nom.tam.fits.Fits;
-import nom.tam.fits.ImageHDU;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.ImageHDU;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.SaveClose;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -53,7 +55,7 @@ import org.junit.Test;
  */
 public class TilerTest {
 
-    void doTile(String test, Object data, StandardImageTiler t, int x, int y, int nx, int ny) throws Exception {
+    private boolean doTile(String test, Object data, StandardImageTiler t, int x, int y, int nx, int ny) throws Exception {
 
         Class<?> baseClass = ArrayFuncs.getBaseClass(data);
         Object tile = Array.newInstance(baseClass, nx * ny);
@@ -67,15 +69,54 @@ public class TilerTest {
 
         float sum0 = 0;
         float sum1 = 0;
-
+        int length = Array.getLength(tile);
         for (int i = 0; i < nx; i += 1) {
             for (int j = 0; j < ny; j += 1) {
-                sum0 += ((Number) Array.get(tile, i + j * nx)).doubleValue();
+                int tileOffset = i + j * nx;
+                if (tileOffset >= length) {
+                    return false;
+                }
+                sum0 += ((Number) Array.get(tile, tileOffset)).doubleValue();
+                try {
+                    sum1 += ((Number) Array.get(Array.get(data, j + y), i + x)).doubleValue();
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    return false;
+                }
+            }
+        }
+
+        assertEquals("Tiler" + test, sum0, sum1, 0);
+
+        return true;
+    }
+
+    private boolean doTile2(String test, Object data, StandardImageTiler t, int x, int y, int nx, int ny) throws Exception {
+
+        Object tile = t.getTile(new int[]{
+            y,
+            x
+        }, new int[]{
+            ny,
+            nx
+        });
+
+        float sum0 = 0;
+        float sum1 = 0;
+
+        int length = Array.getLength(tile);
+        for (int i = 0; i < nx; i += 1) {
+            for (int j = 0; j < ny; j += 1) {
+                int tileOffset = i + j * nx;
+                if (tileOffset >= length) {
+                    return false;
+                }
+                sum0 += ((Number) Array.get(tile, tileOffset)).doubleValue();
                 sum1 += ((Number) Array.get(Array.get(data, j + y), i + x)).doubleValue();
             }
         }
 
         assertEquals("Tiler" + test, sum0, sum1, 0);
+        return true;
     }
 
     @Test
@@ -151,22 +192,59 @@ public class TilerTest {
     }
 
     private void doTest(Object data, String suffix) throws IOException, FitsException, Exception {
-
-        try (Fits f = new Fits(); BufferedFile bf = new BufferedFile("target/tiler" + suffix + ".fits", "rw")) {
+        Fits f = null;
+        BufferedFile bf = null;
+        try {
+            f = new Fits();
+            bf = new BufferedFile("target/tiler" + suffix + ".fits", "rw");
             f.addHDU(Fits.makeHDU(data));
             f.write(bf);
+        } finally {
+            SaveClose.close(bf);
+            SaveClose.close(f);
         }
 
-        try (Fits f = new Fits("target/tiler" + suffix + ".fits")) {
+        try {
+            f = new Fits("target/tiler" + suffix + ".fits");
             ImageHDU h = (ImageHDU) f.readHDU();
-    
+
             StandardImageTiler t = h.getTiler();
             doTile("t1", data, t, 200, 200, 50, 50);
+            doTile2("t1", data, t, 200, 200, 50, 50);
             doTile("t2", data, t, 133, 133, 72, 26);
-    
+            doTile2("t2", data, t, 133, 133, 72, 26);
+
             h.getData().getKernel();
             doTile("t3", data, t, 200, 200, 50, 50);
+            doTile2("t3", data, t, 200, 200, 50, 50);
             doTile("t4", data, t, 133, 133, 72, 26);
+            doTile2("t4", data, t, 133, 133, 72, 26);
+
+            Assert.assertFalse(doTile("t5", data, t, 500, 500, 72, 26));
+            IOException expected = null;
+            try {
+                doTile2("t5", data, t, 500, 500, 72, 26);
+            } catch (IOException e) {
+                expected = e;
+            }
+            Assert.assertNotNull(expected);
+            Assert.assertTrue(expected.getMessage().contains("within"));
+
+            expected = null;
+            try {
+                t.getTile(new int[]{
+                    10,
+                    10
+                }, new int[]{
+                    20
+                });
+            } catch (IOException e) {
+                expected = e;
+            }
+            Assert.assertNotNull(expected);
+            Assert.assertTrue(expected.getMessage().contains("Inconsistent"));
+        } finally {
+            SaveClose.close(f);
         }
     }
 }

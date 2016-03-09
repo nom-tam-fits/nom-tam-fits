@@ -44,6 +44,7 @@ import java.net.URL;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.compress.CompressionLibLoaderProtection;
 import nom.tam.fits.compress.CompressionManager;
 import nom.tam.fits.compress.ExternalBZip2CompressionProvider;
@@ -53,7 +54,9 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.SimpleWebServer;
+import fi.iki.elonen.NanoHTTPD.Response;
 
 /**
  * Test reading .Z and .gz compressed files.
@@ -65,7 +68,28 @@ public class CompressTest {
     @BeforeClass
     public static void setup() throws IOException {
         File files = new File("src/test/resources/nom/tam/fits/test").getAbsoluteFile();
-        webserver = new SimpleWebServer("localhost", 9999, files, true);
+        webserver = new SimpleWebServer("localhost", 9999, files, true) {
+
+            @Override
+            public Response serve(IHTTPSession session) {
+                String uri = session.getUri();
+                if (uri.startsWith("/relocate")) {
+                    int end = uri.indexOf('/', 1);
+                    int index = Integer.parseInt(uri.substring("/relocate".length(), end)) - 1;
+                    String newUri;
+                    if (index > 0) {
+                        newUri = "http://localhost:9999/relocate" + index + uri.substring(end);
+                    } else {
+                        newUri = "http://localhost:9999" + uri.substring(end);
+                    }
+                    System.out.println(newUri);
+                    Response res = new Response(Response.Status.REDIRECT, null, (String) null);
+                    res.addHeader("Location", newUri);
+                    return res;
+                }
+                return super.serve(session);
+            }
+        };
         webserver.start();
     }
 
@@ -250,6 +274,27 @@ public class CompressTest {
         f.close();
     }
 
+    @Test
+    public void testZRelocated3() throws Exception {
+        Fits f = new Fits("http://localhost:9999/relocate3/rp600245n00_im1.fits.Z");
+
+        BasicHDU<?> h = f.readHDU();
+        short[][] data = (short[][]) h.getKernel();
+        double sum = 0;
+        for (short[] element : data) {
+            for (int j = 0; j < element.length; j += 1) {
+                sum += element[j];
+            }
+        }
+        assertEquals("ZCompress", sum, 91806., 0);
+        f.close();
+    }
+
+    @Test(expected = FitsException.class)
+    public void testZRelocated9() throws Exception {
+        Fits f = new Fits("http://localhost:9999/relocate900/rp600245n00_im1.fits.Z");
+    }
+
     private int total(short[][] data) {
         int total = 0;
         for (short[] element : data) {
@@ -328,10 +373,9 @@ public class CompressTest {
         assertTrue(CompressionManager.isCompressed("target/notExistenFileThatHasCompression.gz"));
         assertFalse(CompressionManager.isCompressed(new File("target/notExistenFileThatHasNoCompression")));
     }
-    
+
     /**
-     * Inconsistent implementation of File that leads to an IOException
-     * when 
+     * Inconsistent implementation of File that leads to an IOException when
      */
     private static class PseudoFile extends File {
 
@@ -340,7 +384,7 @@ public class CompressTest {
         public PseudoFile(String pathname) {
             super(pathname);
         }
-        
+
         @Override
         public boolean exists() {
             return true;

@@ -56,6 +56,7 @@ import nom.tam.fits.TableHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
+import nom.tam.util.SaveClose;
 import nom.tam.util.TestArrayFuncs;
 import nom.tam.util.test.ThrowAnyException;
 
@@ -82,11 +83,14 @@ public class AsciiTableTest {
         f = new Fits("target/at1.fits");
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
         checkByColumn(hdu);
-
-        try (Fits f2 = new Fits(new FileInputStream(new File("target/at1.fits")))) {
+        Fits f2 = null;
+        try {
+            f2 = new Fits(new FileInputStream(new File("target/at1.fits")));
             // lets trigger the read over a stream and test again
             hdu = (AsciiTableHDU) f2.getHDU(1);
             checkByColumn(hdu);
+        } finally {
+            SaveClose.close(f2);
         }
 
     }
@@ -125,10 +129,13 @@ public class AsciiTableTest {
         f = new Fits("target/at2.fits");
 
         checkByRow(f);
-
-        try (Fits f2 = new Fits(new FileInputStream(new File("target/at2.fits")))) {
+        Fits f2 = null;
+        try {
+            f2 = new Fits(new FileInputStream(new File("target/at2.fits")));
             // lets trigger the read over a stream and test again
             checkByRow(f2);
+        } finally {
+            SaveClose.close(f2);
         }
     }
 
@@ -393,15 +400,22 @@ public class AsciiTableTest {
         };
 
         BasicHDU<?> ahdu = FitsFactory.hduFactory(o);
-        try (Fits f = new Fits()) {
+        Fits f = null;
+        try {
+            f = new Fits();
             f.addHDU(ahdu);
             f.write(bf);
+        } finally {
+            SaveClose.close(f);
         }
         bf.close();
 
         BasicHDU<?> bhdu;
-        try (Fits f = new Fits("target/at3.fits")) {
+        try {
+            f = new Fits("target/at3.fits");
             bhdu = f.getHDU(1);
+        } finally {
+            SaveClose.close(f);
         }
         Header hdr = bhdu.getHeader();
         assertEquals(hdr.getStringValue("TFORM1"), "A1");
@@ -412,7 +426,9 @@ public class AsciiTableTest {
     }
 
     public void readByColumn() throws Exception {
-        try (Fits f = new Fits("target/at1.fits")) {
+        Fits f = null;
+        try {
+            f = new Fits("target/at1.fits");
             AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
             AsciiTable data = hdu.getData();
             Object[] cols = getSampleCols();
@@ -430,6 +446,8 @@ public class AsciiTableTest {
                 }
                 assertEquals("Ascii Columns:" + j, true, TestArrayFuncs.arrayEquals(cols[j], col, 1.e-6, 1.e-14));
             }
+        } finally {
+            SaveClose.close(f);
         }
     }
 
@@ -583,7 +601,7 @@ public class AsciiTableTest {
         Assert.assertTrue(actual instanceof FitsException);
         Assert.assertTrue(actual.getCause() instanceof NullPointerException);
 
-        final List<LogRecord> logs = new ArrayList<>();
+        final List<LogRecord> logs = new ArrayList<LogRecord>();
         Logger.getLogger(AsciiTable.class.getName()).addHandler(new Handler() {
 
             @Override

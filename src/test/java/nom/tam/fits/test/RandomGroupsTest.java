@@ -45,6 +45,7 @@ import nom.tam.fits.RandomGroupsHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.SaveClose;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -61,20 +62,22 @@ public class RandomGroupsTest {
         float[] pa = new float[3];
 
         Object[][] data = new Object[1][2];
-        try (BufferedFile bf = new BufferedFile("target/rg1.fits", "rw")) {
-    
+        BufferedFile bf = null;
+        try {
+            bf = new BufferedFile("target/rg1.fits", "rw");
+
             data[0][0] = pa;
             data[0][1] = fa;
-    
+
             // First lets write out the file painfully group by group.
             BasicHDU<?> hdu = Fits.makeHDU(data);
             Header hdr = hdu.getHeader();
             // Change the number of groups
             hdr.addValue("GCOUNT", 20, "Number of groups");
             hdr.write(bf);
-    
+
             for (int i = 0; i < 20; i += 1) {
-    
+
                 for (int j = 0; j < pa.length; j += 1) {
                     pa[j] = i + j;
                 }
@@ -84,21 +87,25 @@ public class RandomGroupsTest {
                 // Write a group
                 bf.writeArray(data);
             }
-    
+
             byte[] padding = new byte[FitsUtil.padding(20 * ArrayFuncs.computeLSize(data))];
             bf.write(padding);
-    
+
             bf.flush();
+        } finally {
+            SaveClose.close(bf);
         }
 
         // Read back the data.
-        try (Fits f = new Fits("target/rg1.fits")){
+        Fits f = null;
+        try {
+            f = new Fits("target/rg1.fits");
             BasicHDU<?>[] hdus = f.read();
-    
+
             data = (Object[][]) hdus[0].getKernel();
-    
+
             for (int i = 0; i < data.length; i += 1) {
-    
+
                 pa = (float[]) data[i][0];
                 fa = (float[][]) data[i][1];
                 for (int j = 0; j < pa.length; j += 1) {
@@ -108,23 +115,31 @@ public class RandomGroupsTest {
                     assertEquals("dataTest:" + i + " " + j, i * j, fa[j][j], 0);
                 }
             }
+        } finally {
+            SaveClose.close(f);
         }
 
         // Now do it in one fell swoop -- but we have to have
         // all the data in place first.
-        try (Fits f = new Fits(); BufferedFile bf = new BufferedFile("target/rg2.fits", "rw")) {
+        try {
+            f = new Fits();
+            bf = new BufferedFile("target/rg2.fits", "rw");
             // Generate a FITS HDU from the kernel.
             f.addHDU(Fits.makeHDU(data));
             f.write(bf);
-    
+
             bf.flush();
+        } finally {
+            SaveClose.close(bf);
+            SaveClose.close(f);
         }
 
-        try (Fits f = new Fits("target/rg2.fits")) {
+        try {
+            f = new Fits("target/rg2.fits");
             BasicHDU<?> groupHDU = f.read()[0];
             data = (Object[][]) groupHDU.getKernel();
             for (int i = 0; i < data.length; i += 1) {
-    
+
                 pa = (float[]) data[i][0];
                 fa = (float[][]) data[i][1];
                 for (int j = 0; j < pa.length; j += 1) {
@@ -139,10 +154,12 @@ public class RandomGroupsTest {
             String groupInfo = new String(out.toByteArray());
             Assert.assertEquals(20, groupHDU.getGroupCount());
             Assert.assertEquals(3, groupHDU.getParameterCount());
-    
+
             Assert.assertTrue(groupInfo.indexOf("Number of groups:20") >= 0);
             Assert.assertTrue(groupInfo.indexOf("Parameters: float[3]") >= 0);
             Assert.assertTrue(groupInfo.indexOf("Data:float[20, 20]") >= 0);
+        } finally {
+            SaveClose.close(f);
         }
     }
 
@@ -166,18 +183,22 @@ public class RandomGroupsTest {
         float[][] fa = new float[20][20];
         float[] pa = new float[3];
         RandomGroupsData groups;
-
-        try (BufferedFile bf = new BufferedFile("target/testResetData", "rw")) {
+        BufferedFile bf = null;
+        try {
+            bf = new BufferedFile("target/testResetData", "rw");
             Object[][] data = new Object[1][2];
             data[0][0] = pa;
             data[0][1] = fa;
             groups = (RandomGroupsData) Fits.makeHDU(data).getData();
             bf.writeLong(1);
             groups.write(bf);
+        } finally {
+            SaveClose.close(bf);
         }
 
         // ok now test it
-        try (BufferedFile bf = new BufferedFile("target/testResetData", "rw")) {
+        try {
+            bf = new BufferedFile("target/testResetData", "rw");
             bf.readLong();
             groups = new RandomGroupsData();
             groups.read(bf);
@@ -186,6 +207,8 @@ public class RandomGroupsTest {
             Assert.assertEquals(0, bf.getFilePointer());
             groups.reset();
             Assert.assertEquals(8, bf.getFilePointer());
+        } finally {
+            SaveClose.close(bf);
         }
     }
 

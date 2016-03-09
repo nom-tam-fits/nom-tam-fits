@@ -479,10 +479,6 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
                     nextPixel(lastpix);
                 }
             }
-            if (readBuffer.limit() < readBuffer.position()) {
-                LOG.severe("decompressing failed, no more bytes to decompress reached: " + readBuffer.limit() + " but only reached index " + i + " of " + nx);
-                throw new IllegalStateException("decompressing failed, no more bytes to decompress");
-            }
         }
         if (readBuffer.limit() > readBuffer.position()) {
             LOG.warning("decompressing left over some extra bytes got: " + readBuffer.limit() + " but needed only " + readBuffer.position());

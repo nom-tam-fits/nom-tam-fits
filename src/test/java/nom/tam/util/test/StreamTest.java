@@ -42,6 +42,7 @@ import java.io.PipedOutputStream;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.SaveClose;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -553,21 +554,33 @@ public class StreamTest {
     @Test
     public void testReadWriteLine() throws Exception {
         ByteArrayOutputStream o = new ByteArrayOutputStream();
-        try (BufferedDataOutputStream out = new BufferedDataOutputStream(o)) {
+        BufferedDataOutputStream out = null;
+        try {
+            out = new BufferedDataOutputStream(o);
             out.writeBytes("bla bla\n");
+        } finally {
+            SaveClose.close(out);
         }
-        try (BufferedDataInputStream input = new BufferedDataInputStream(new ByteArrayInputStream(o.toByteArray()))) {
+        BufferedDataInputStream input = null;
+        try {
+            input = new BufferedDataInputStream(new ByteArrayInputStream(o.toByteArray()));
             String line = input.readLine();
             Assert.assertEquals("bla bla", line);
+        } finally {
+            SaveClose.close(input);
         }
     }
 
     @Test(expected = IOException.class)
     public void testFailedWriteArray() throws Exception {
         ByteArrayOutputStream o = new ByteArrayOutputStream();
-        try (BufferedDataOutputStream out = new BufferedDataOutputStream(o)) {
+        BufferedDataOutputStream out = null;
+        try {
+            out = new BufferedDataOutputStream(o);
             out.writePrimitiveArray(3);
             out.flush();
+        } finally {
+            SaveClose.close(out);
         }
     }
 
