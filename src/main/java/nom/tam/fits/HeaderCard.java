@@ -9,6 +9,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -175,6 +176,23 @@ public class HeaderCard implements CursorValue<String> {
         return value;
     }
 
+    /**
+     * Create a string from a double making sure that it's not more than 20
+     * characters long. Probably would be better if we had a way to override
+     * this since we can loose precision for some doubles.
+     */
+    private static String dblString(double input, int prec) {
+        DecimalFormat df = new DecimalFormat("0.0;-0.0");
+        df.setMaximumFractionDigits(prec);
+        df.setMinimumFractionDigits(prec);
+        String value = df.format(input);
+        if (value.length() > MAX_DOUBLE_STRING_LENGTH) {
+            return dblString(BigDecimal.valueOf(input));
+        }
+        return value;
+    }
+
+
     private static ArrayDataInput stringToArrayInputStream(String card) {
         byte[] bytes = AsciiFuncs.getBytes(card);
         if (bytes.length % FITS_HEADER_CARD_SIZE != 0) {
@@ -327,6 +345,24 @@ public class HeaderCard implements CursorValue<String> {
      *            keyword (null for a comment)
      * @param value
      *            value (null for a comment or keyword without an '=')
+     * @param precision
+     *            Number of decimal places (fixed format).
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword
+     */
+    public HeaderCard(String key, double value, int precision, String comment) throws HeaderCardException {
+        this(key, dblString(value, precision), comment, false, false);
+    }
+
+    /**
+     * Create a HeaderCard from its component parts
+     *
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
      * @param comment
      *            comment
      * @exception HeaderCardException
@@ -335,6 +371,25 @@ public class HeaderCard implements CursorValue<String> {
     public HeaderCard(String key, float value, String comment) throws HeaderCardException {
         this(key, dblString(value), comment, false, false);
     }
+
+    /**
+     * Create a HeaderCard from its component parts
+     *
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
+     * @param precision
+     *            Number of decimal places (fixed format).
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword
+     */
+    public HeaderCard(String key, float value, int precision, String comment) throws HeaderCardException {
+        this(key, dblString(value, precision), comment, false, false);
+    }
+
 
     /**
      * Create a HeaderCard from its component parts
