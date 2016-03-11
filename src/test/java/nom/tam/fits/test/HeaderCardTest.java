@@ -50,6 +50,7 @@ import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -349,6 +350,13 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard("TEST", "bla bla", "dummy");
         assertEquals(String.class, hc.valueType());
         assertEquals("bla bla", hc.getValue(String.class, null));
+    }
+
+    @Test
+    public void testCommentLine() throws Exception {
+        HeaderCard hc = new HeaderCard("", "dummyafsdfasdfasfasdf", false);
+        assertEquals(String.class, hc.valueType());
+        Assert.assertTrue(hc.toString().startsWith("        "));
     }
 
     @Test

@@ -242,8 +242,7 @@ public class HeaderCard implements CursorValue<String> {
         this.key = card.substring(0, MAX_KEYWORD_LENGTH).trim();
 
         // if it is an empty key, assume the remainder of the card is a comment
-        if (this.key.length() == 0) {
-            this.key = "";
+        if (this.key.isEmpty()) {
             this.comment = card.substring(MAX_KEYWORD_LENGTH);
             return;
         }
@@ -776,6 +775,9 @@ public class HeaderCard implements CursorValue<String> {
                 alignPosition = buf.length();
             } else {
                 buf.append(this.key);
+                if (this.key.isEmpty()) {
+                    buf.append(' ');
+                }
                 buf.appendSpacesTo(MAX_KEYWORD_LENGTH);
             }
         }
