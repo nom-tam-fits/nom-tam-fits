@@ -285,7 +285,7 @@ public class UserProvidedTest {
             while (iterator.hasNext()) {
                 HeaderCard headerCard = (HeaderCard) iterator.next();
                 String start = headerCard.getKey();
-                if (start.isEmpty()){
+                if (start.isEmpty()) {
                     "".toString();
                 }
                 start = (start + "         ").substring(0, 8);
@@ -295,6 +295,34 @@ public class UserProvidedTest {
         } finally {
             SaveClose.close(fitsSrc);
         }
+    }
 
+    @Test
+    public void testIOTransparentSituation() throws Exception {
+        FitsFactory.setLongStringsEnabled(true);
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
+
+        FileInputStream stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("16913-1.fits"));
+        BasicHDU<?> bhduMain = null;
+        Fits fitsSrc = null;
+        try {
+            fitsSrc = new Fits(stream);
+            bhduMain = fitsSrc.readHDU(); // Product
+        } finally {
+            SaveClose.close(fitsSrc);
+        }
+
+        BasicHDU<?> bhduMainAgain = null;
+        Fits fitsEmpty = null;
+        try {
+            fitsEmpty = new Fits();
+            fitsEmpty.addHDU(bhduMain);
+            bhduMainAgain = fitsEmpty.getHDU(fitsEmpty.getNumberOfHDUs() - 1);
+        } finally {
+            SaveClose.close(fitsEmpty);
+        }
+
+        Assert.assertSame(bhduMainAgain, bhduMain);
     }
 }
