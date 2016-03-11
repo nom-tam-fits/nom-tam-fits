@@ -7,7 +7,7 @@
 		<version>7</version>
 	</parent>
 	<groupId>gov.nasa.gsfc.heasarc</groupId>
-	<version>1.14.2-SNAPSHOT</version>
+	<version>1.14.2</version>
 	<packaging>jar</packaging>
 	<artifactId>nom-tam-fits</artifactId>
 	<name>nom.tam FITS library</name>
@@ -106,7 +106,7 @@
 		<connection>scm:git:https://github.com/nom-tam-fits/nom-tam-fits.git</connection>
 		<developerConnection>scm:git:https://github.com/nom-tam-fits/nom-tam-fits.git</developerConnection>
 		<url>https://github.com/nom-tam-fits/nom-tam-fits</url>
-		<tag>HEAD</tag>
+		<tag>nom-tam-fits-1.14.2</tag>
 	</scm>
 	<distributionManagement>
 		<repository>
