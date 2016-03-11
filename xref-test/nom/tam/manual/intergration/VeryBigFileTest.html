@@ -48,33 +48,41 @@
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.ImageHDU;
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayFuncs;
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.BufferedFile;
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> org.junit.Ignore;
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/manual/intergration/VeryBigFileTest.html">VeryBigFileTest</a> {
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment">     * this test is only for manual usage with enough memory allocated.</em>
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment">     * @throws Exception</em>
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>      @Test
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>      @Ignore
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testVeryBigDataFiles() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          <strong class="jxr_keyword">try</strong> (Fits f = <strong class="jxr_keyword">new</strong> Fits()) {
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>              ImageData data = <strong class="jxr_keyword">new</strong> ImageData(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[50000][50000]);
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>              Header manufactureHeader = ImageHDU.manufactureHeader(data);
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>              f.addHDU(FitsFactory.hduFactory(manufactureHeader, data));
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>              BufferedFile bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/big.fits"</span>, <span class="jxr_string">"rw"</span>);
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>              f.write(bf);
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>              System.out.println(Arrays.toString(ArrayFuncs.getDimensions(f.getHDU(0).getData().getData())));
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          }
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          <strong class="jxr_keyword">try</strong> (Fits f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/big.fits"</span>)) {
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SaveClose;
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> org.junit.Ignore;
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/manual/intergration/VeryBigFileTest.html">VeryBigFileTest</a> {
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment">     * this test is only for manual usage with enough memory allocated.</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment">     * @throws Exception</em>
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>      @Test
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>      @Ignore
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testVeryBigDataFiles() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          Fits f = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>              f = <strong class="jxr_keyword">new</strong> Fits();
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>              ImageData data = <strong class="jxr_keyword">new</strong> ImageData(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[50000][50000]);
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>              Header manufactureHeader = ImageHDU.manufactureHeader(data);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>              f.addHDU(FitsFactory.hduFactory(manufactureHeader, data));
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>              BufferedFile bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/big.fits"</span>, <span class="jxr_string">"rw"</span>);
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>              f.write(bf);
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>              System.out.println(Arrays.toString(ArrayFuncs.getDimensions(f.getHDU(0).getData().getData())));
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          }
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>      }
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  }
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>              SaveClose.close(f);
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          }
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>              f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/big.fits"</span>);
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>              System.out.println(Arrays.toString(ArrayFuncs.getDimensions(f.getHDU(0).getData().getData())));
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>              SaveClose.close(f);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>          }
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>      }
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2016 nom-tam-fits. All rights reserved.</div>

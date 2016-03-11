@@ -78,20 +78,20 @@ public class MultiArrayIterator {
     }
 
     public void reset() {
-<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (this.baseIsNoSubArray) {</span>
-<span class="nc" id="L82">            this.baseNextCalled = false;</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (this.baseIsNoSubArray) {</span>
+<span class="fc" id="L82">            this.baseNextCalled = false;</span>
         } else {
-<span class="nc" id="L84">            this.pointer.reset();</span>
+<span class="fc" id="L84">            this.pointer.reset();</span>
         }
-<span class="nc" id="L86">    }</span>
+<span class="fc" id="L86">    }</span>
 
     public int size() {
-<span class="nc" id="L89">        int size = 0;</span>
+<span class="fc" id="L89">        int size = 0;</span>
         Object next;
-<span class="nc bnc" id="L91" title="All 2 branches missed.">        while ((next = next()) != null) {</span>
-<span class="nc" id="L92">            size += Array.getLength(next);</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        while ((next = next()) != null) {</span>
+<span class="fc" id="L92">            size += Array.getLength(next);</span>
         }
-<span class="nc" id="L94">        return size;</span>
+<span class="fc" id="L94">        return size;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

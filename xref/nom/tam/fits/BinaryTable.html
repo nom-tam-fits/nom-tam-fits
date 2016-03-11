@@ -279,7 +279,7 @@
 <a class="jxr_linenumber" name="L271" href="#L271">271</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">     * A list describing each of the columns in the table</em>
 <a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>     <strong class="jxr_keyword">private</strong> List&lt;ColumnDesc&gt; columnList = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>     <strong class="jxr_keyword">private</strong> List&lt;ColumnDesc&gt; columnList = <strong class="jxr_keyword">new</strong> ArrayList&lt;ColumnDesc&gt;();
 <a class="jxr_linenumber" name="L275" href="#L275">275</a> 
 <a class="jxr_linenumber" name="L276" href="#L276">276</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">     * The number of rows in the table.</em>
@@ -329,7 +329,7 @@
 <a class="jxr_linenumber" name="L321" href="#L321">321</a>         ColumnTable&lt;SaveState&gt; tab = (ColumnTable&lt;SaveState&gt;) tabIn;
 <a class="jxr_linenumber" name="L322" href="#L322">322</a>         <em class="jxr_comment">// This will throw an error if this isn't the correct type.</em>
 <a class="jxr_linenumber" name="L323" href="#L323">323</a>         <a href="../../../nom/tam/fits/BinaryTable.html">SaveState</a> extra = tab.getExtraState();
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>         <strong class="jxr_keyword">this</strong>.columnList = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>         <strong class="jxr_keyword">this</strong>.columnList = <strong class="jxr_keyword">new</strong> ArrayList&lt;ColumnDesc&gt;();
 <a class="jxr_linenumber" name="L325" href="#L325">325</a>         <strong class="jxr_keyword">for</strong> (ColumnDesc col : extra.columns) {
 <a class="jxr_linenumber" name="L326" href="#L326">326</a>             <a href="../../../nom/tam/fits/BinaryTable.html">ColumnDesc</a> copy = (ColumnDesc) col.clone();
 <a class="jxr_linenumber" name="L327" href="#L327">327</a>             copy.column = <strong class="jxr_keyword">null</strong>;

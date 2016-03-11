@@ -189,17 +189,17 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 
     @Override
     public void write(String[] s) throws IOException {
-<span class="nc" id="L192">        write(s, 0, s.length);</span>
-<span class="nc" id="L193">    }</span>
+<span class="fc" id="L192">        write(s, 0, s.length);</span>
+<span class="fc" id="L193">    }</span>
 
     @Override
     public void write(String[] s, int start, int len) throws IOException {
         // Do not worry about buffering this specially since the
         // strings may be of differing lengths.
-<span class="nc bnc" id="L199" title="All 2 branches missed.">        for (String element : s) {</span>
-<span class="nc" id="L200">            writeBytes(element);</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">        for (String element : s) {</span>
+<span class="fc" id="L200">            writeBytes(element);</span>
         }
-<span class="nc" id="L202">    }</span>
+<span class="fc" id="L202">    }</span>
 
     @Override
     public void writeArray(Object o) throws IOException {
@@ -228,8 +228,8 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 
     @Override
     public void writeChars(String s) throws IOException {
-<span class="nc" id="L231">        this.bufferEncoder.writeChars(s);</span>
-<span class="nc" id="L232">    }</span>
+<span class="fc" id="L231">        this.bufferEncoder.writeChars(s);</span>
+<span class="fc" id="L232">    }</span>
 
     @Override
     public void writeDouble(double d) throws IOException {

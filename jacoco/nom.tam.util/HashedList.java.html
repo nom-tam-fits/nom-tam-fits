@@ -163,10 +163,10 @@ import java.util.NoSuchElementException;
     }
 
     /** An ordered list of the keys */
-<span class="fc" id="L166">    private final ArrayList&lt;VALUE&gt; ordered = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L166">    private final ArrayList&lt;VALUE&gt; ordered = new ArrayList&lt;VALUE&gt;();</span>
 
     /** The key value pairs */
-<span class="fc" id="L169">    private final HashMap&lt;String, VALUE&gt; keyed = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L169">    private final HashMap&lt;String, VALUE&gt; keyed = new HashMap&lt;String, VALUE&gt;();</span>
 
     /**
      * Add an element to the list at a specified position. If that element was
@@ -236,7 +236,7 @@ import java.util.NoSuchElementException;
 
     @Override
     public boolean containsAll(Collection&lt;?&gt; c) {
-<span class="fc" id="L239">        List&lt;?&gt; values = new ArrayList&lt;&gt;(c);</span>
+<span class="fc" id="L239">        List&lt;?&gt; values = new ArrayList&lt;Object&gt;(c);</span>
 <span class="fc bfc" id="L240" title="All 2 branches covered.">        for (VALUE entry : this.ordered) {</span>
 <span class="fc" id="L241">            values.remove(entry);</span>
 <span class="fc" id="L242">        }</span>

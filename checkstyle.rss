@@ -25,7 +25,7 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;1996 - 2016 nom-tam-fits</copyright>
     <item>
-      <title>File: 185,
+      <title>File: 186,
              Errors: 0,
              Warnings: 0,
              Infos: 0
@@ -1573,6 +1573,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.image.tile.operation.buffer.TileBufferFactory.java">nom/tam/image/tile/operation/buffer/TileBufferFactory.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://nom-tam-fits.github.io/nom-tam-fits/checkstyle.html#nom.tam.util.SaveClose.java">nom/tam/util/SaveClose.java</a>
                 </td>
                 <td>
                   0

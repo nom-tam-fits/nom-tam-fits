@@ -105,7 +105,13 @@
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>          Assert.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>          Assert.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>      }
-<a class="jxr_linenumber" name="L100" href="#L100">100</a> }
+<a class="jxr_linenumber" name="L100" href="#L100">100</a> 
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> 
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>     @Test(expected=IllegalStateException.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSaveNewCard() {
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>         HeaderCard.saveNewHeaderCard(<span class="jxr_string">"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"</span>, <span class="jxr_string">""</span>, false);
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>     }
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2016 nom-tam-fits. All rights reserved.</div>

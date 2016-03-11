@@ -43,13 +43,13 @@ public class MultiArrayPointer {
 <span class="pc bpc" id="L43" title="1 of 4 branches missed.">        if (isArray &amp;&amp; Object.class.equals(elementClazz.getComponentType())) {</span>
             // ok object array lets check it the elements are arrays.
 <span class="fc" id="L45">            int length = Array.getLength(element);</span>
-<span class="pc bpc" id="L46" title="1 of 2 branches missed.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="pc bfc" id="L46" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
 <span class="fc" id="L47">                Object subElement = Array.get(element, index);</span>
 <span class="pc bpc" id="L48" title="1 of 2 branches missed.">                if (subElement != null) {</span>
 <span class="fc" id="L49">                    return subElement.getClass().isArray();</span>
                 }
             }
-<span class="nc" id="L52">            return false;</span>
+<span class="fc" id="L52">            return false;</span>
         }
 <span class="pc bpc" id="L54" title="1 of 4 branches missed.">        return isArray &amp;&amp; elementClazz.getComponentType().isArray();</span>
     }
@@ -96,7 +96,7 @@ public class MultiArrayPointer {
 <span class="fc" id="L96">                return MultiArrayPointer.END;</span>
             }
 <span class="fc" id="L98">            Object element = Array.get(this.array, this.index++);</span>
-<span class="pc bpc" id="L99" title="1 of 4 branches missed.">            if (element != null &amp;&amp; isSubArray(element)) {</span>
+<span class="fc bfc" id="L99" title="All 4 branches covered.">            if (element != null &amp;&amp; isSubArray(element)) {</span>
 <span class="fc" id="L100">                activateSub(element);</span>
             } else {
 <span class="fc" id="L102">                return element;</span>
@@ -105,9 +105,9 @@ public class MultiArrayPointer {
     }
 
     public void reset() {
-<span class="nc" id="L108">        this.index = 0;</span>
-<span class="nc" id="L109">        deactivateSub();</span>
-<span class="nc" id="L110">    }</span>
+<span class="fc" id="L108">        this.index = 0;</span>
+<span class="fc" id="L109">        deactivateSub();</span>
+<span class="fc" id="L110">    }</span>
 
     private void set(Object newArray) {
 <span class="fc" id="L113">        this.array = newArray;</span>

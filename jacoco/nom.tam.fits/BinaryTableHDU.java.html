@@ -94,7 +94,7 @@ public class BinaryTableHDU extends TableHDU&lt;BinaryTable&gt; {
      * consistent.
      */
     public static boolean isData(Object o) {
-<span class="pc bpc" id="L97" title="1 of 6 branches missed.">        return o instanceof nom.tam.util.ColumnTable || o instanceof Object[][] || o instanceof Object[];</span>
+<span class="fc bfc" id="L97" title="All 6 branches covered.">        return o instanceof nom.tam.util.ColumnTable || o instanceof Object[][] || o instanceof Object[];</span>
     }
 
     /**
@@ -106,8 +106,8 @@ public class BinaryTableHDU extends TableHDU&lt;BinaryTable&gt; {
      */
     public static boolean isHeader(Header header) {
 <span class="fc" id="L108">        String xten = header.getStringValue(XTENSION);</span>
-<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (xten == null) {</span>
-<span class="nc" id="L110">            return false;</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        if (xten == null) {</span>
+<span class="fc" id="L110">            return false;</span>
         }
 <span class="fc" id="L112">        xten = xten.trim();</span>
 <span class="pc bpc" id="L113" title="1 of 4 branches missed.">        return xten.equals(&quot;BINTABLE&quot;) || xten.equals(&quot;A3DTABLE&quot;);</span>

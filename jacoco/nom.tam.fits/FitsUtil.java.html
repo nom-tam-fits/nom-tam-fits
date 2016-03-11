@@ -34,10 +34,11 @@
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,8 +52,6 @@ import nom.tam.util.RandomAccess;
  */
 public final class FitsUtil {
 
-    private static final int MAX_NUMBER_OF_REDIRECTIONS = 5;
-
     private static final int BYTE_REPRESENTING_BLANK = 32;
 
     private static final int BYTE_REPRESENTING_MAX_ASCII_VALUE = 126;
@@ -60,15 +59,15 @@ public final class FitsUtil {
     /**
      * the logger to log to.
      */
-<span class="fc" id="L63">    private static final Logger LOG = Logger.getLogger(FitsUtil.class.getName());</span>
+<span class="fc" id="L62">    private static final Logger LOG = Logger.getLogger(FitsUtil.class.getName());</span>
 
-<span class="fc" id="L65">    private static boolean wroteCheckingError = false;</span>
+<span class="fc" id="L64">    private static boolean wroteCheckingError = false;</span>
 
     /**
      * Utility class, do not instantiate it.
      */
-<span class="fc" id="L70">    private FitsUtil() {</span>
-<span class="fc" id="L71">    }</span>
+<span class="fc" id="L69">    private FitsUtil() {</span>
+<span class="fc" id="L70">    }</span>
 
     /**
      * @return Total size of blocked FITS element, using e.v. padding to fits
@@ -77,7 +76,7 @@ public final class FitsUtil {
      *            the current size.
      */
     public static int addPadding(int size) {
-<span class="fc" id="L80">        return size + padding(size);</span>
+<span class="fc" id="L79">        return size + padding(size);</span>
     }
 
     /**
@@ -87,7 +86,7 @@ public final class FitsUtil {
      *            the current size.
      */
     public static long addPadding(long size) {
-<span class="fc" id="L90">        return size + padding(size);</span>
+<span class="fc" id="L89">        return size + padding(size);</span>
     }
 
     /**
@@ -97,11 +96,11 @@ public final class FitsUtil {
      */
     static byte[] booleanToByte(boolean[] bool) {
 
-<span class="fc" id="L100">        byte[] byt = new byte[bool.length];</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">        for (int i = 0; i &lt; bool.length; i += 1) {</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">            byt[i] = bool[i] ? (byte) 'T' : (byte) 'F';</span>
+<span class="fc" id="L99">        byte[] byt = new byte[bool.length];</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        for (int i = 0; i &lt; bool.length; i += 1) {</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">            byt[i] = bool[i] ? (byte) 'T' : (byte) 'F';</span>
         }
-<span class="fc" id="L104">        return byt;</span>
+<span class="fc" id="L103">        return byt;</span>
     }
 
     /**
@@ -112,7 +111,7 @@ public final class FitsUtil {
      *            the max string length
      */
     public static String[] byteArrayToStrings(byte[] bytes, int maxLen) {
-<span class="fc" id="L115">        boolean checking = FitsFactory.getCheckAsciiStrings();</span>
+<span class="fc" id="L114">        boolean checking = FitsFactory.getCheckAsciiStrings();</span>
 
         // Note that if a String in a binary table contains an internal 0,
         // the FITS standard says that it is to be considered as terminating
@@ -120,26 +119,26 @@ public final class FitsUtil {
         // data back may not include subsequent characters.
         // No warning of this truncation is given.
 
-<span class="fc" id="L123">        String[] res = new String[bytes.length / maxLen];</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">        for (int i = 0; i &lt; res.length; i += 1) {</span>
+<span class="fc" id="L122">        String[] res = new String[bytes.length / maxLen];</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        for (int i = 0; i &lt; res.length; i += 1) {</span>
 
-<span class="fc" id="L126">            int start = i * maxLen;</span>
-<span class="fc" id="L127">            int end = start + maxLen;</span>
+<span class="fc" id="L125">            int start = i * maxLen;</span>
+<span class="fc" id="L126">            int end = start + maxLen;</span>
             // Pre-trim the string to avoid keeping memory
             // hanging around. (Suggested by J.C. Segovia, ESA).
 
             // Note that the FITS standard does not mandate
             // that we should be trimming the string at all, but
             // this seems to best meet the desires of the community.
-<span class="fc bfc" id="L134" title="All 2 branches covered.">            for (; start &lt; end; start += 1) {</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">                if (bytes[start] != BYTE_REPRESENTING_BLANK) {</span>
-<span class="fc" id="L136">                    break; // Skip only spaces.</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">            for (; start &lt; end; start += 1) {</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">                if (bytes[start] != BYTE_REPRESENTING_BLANK) {</span>
+<span class="fc" id="L135">                    break; // Skip only spaces.</span>
                 }
             }
 
-<span class="fc bfc" id="L140" title="All 2 branches covered.">            for (; end &gt; start; end -= 1) {</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">                if (bytes[end - 1] != BYTE_REPRESENTING_BLANK) {</span>
-<span class="fc" id="L142">                    break;</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">            for (; end &gt; start; end -= 1) {</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">                if (bytes[end - 1] != BYTE_REPRESENTING_BLANK) {</span>
+<span class="fc" id="L141">                    break;</span>
                 }
             }
 
@@ -151,26 +150,26 @@ public final class FitsUtil {
             // if the user requests.
 
             // The lack of handling of null bytes was noted by Laurent Bourges.
-<span class="fc" id="L154">            boolean errFound = false;</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">            for (int j = start; j &lt; end; j += 1) {</span>
+<span class="fc" id="L153">            boolean errFound = false;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">            for (int j = start; j &lt; end; j += 1) {</span>
 
-<span class="fc bfc" id="L157" title="All 2 branches covered.">                if (bytes[j] == 0) {</span>
-<span class="fc" id="L158">                    end = j;</span>
-<span class="fc" id="L159">                    break;</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">                if (bytes[j] == 0) {</span>
+<span class="fc" id="L157">                    end = j;</span>
+<span class="fc" id="L158">                    break;</span>
                 }
-<span class="fc bfc" id="L161" title="All 6 branches covered.">                if (checking &amp;&amp; (bytes[j] &lt; BYTE_REPRESENTING_BLANK || bytes[j] &gt; BYTE_REPRESENTING_MAX_ASCII_VALUE)) {</span>
-<span class="fc" id="L162">                    errFound = true;</span>
-<span class="fc" id="L163">                    bytes[j] = BYTE_REPRESENTING_BLANK;</span>
+<span class="fc bfc" id="L160" title="All 6 branches covered.">                if (checking &amp;&amp; (bytes[j] &lt; BYTE_REPRESENTING_BLANK || bytes[j] &gt; BYTE_REPRESENTING_MAX_ASCII_VALUE)) {</span>
+<span class="fc" id="L161">                    errFound = true;</span>
+<span class="fc" id="L162">                    bytes[j] = BYTE_REPRESENTING_BLANK;</span>
                 }
             }
-<span class="fc" id="L166">            res[i] = AsciiFuncs.asciiString(bytes, start, end - start);</span>
-<span class="fc bfc" id="L167" title="All 4 branches covered.">            if (errFound &amp;&amp; !FitsUtil.wroteCheckingError) {</span>
-<span class="fc" id="L168">                LOG.log(Level.SEVERE, &quot;Warning: Invalid ASCII character[s] detected in string: &quot; + res[i]</span>
+<span class="fc" id="L165">            res[i] = AsciiFuncs.asciiString(bytes, start, end - start);</span>
+<span class="fc bfc" id="L166" title="All 4 branches covered.">            if (errFound &amp;&amp; !FitsUtil.wroteCheckingError) {</span>
+<span class="fc" id="L167">                LOG.log(Level.SEVERE, &quot;Warning: Invalid ASCII character[s] detected in string: &quot; + res[i]</span>
                         + &quot; Converted to space[s].  Any subsequent invalid characters will be converted silently&quot;);
-<span class="fc" id="L170">                FitsUtil.wroteCheckingError = true;</span>
+<span class="fc" id="L169">                FitsUtil.wroteCheckingError = true;</span>
             }
         }
-<span class="fc" id="L173">        return res;</span>
+<span class="fc" id="L172">        return res;</span>
 
     }
 
@@ -180,12 +179,12 @@ public final class FitsUtil {
      *            the array of bytes to get the booleans from.
      */
     static boolean[] byteToBoolean(byte[] bytes) {
-<span class="fc" id="L183">        boolean[] bool = new boolean[bytes.length];</span>
+<span class="fc" id="L182">        boolean[] bool = new boolean[bytes.length];</span>
 
-<span class="fc bfc" id="L185" title="All 2 branches covered.">        for (int i = 0; i &lt; bytes.length; i += 1) {</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">            bool[i] = bytes[i] == 'T';</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">        for (int i = 0; i &lt; bytes.length; i += 1) {</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">            bool[i] = bytes[i] == 'T';</span>
         }
-<span class="fc" id="L188">        return bool;</span>
+<span class="fc" id="L187">        return bool;</span>
     }
 
     /**
@@ -194,10 +193,10 @@ public final class FitsUtil {
      *            the stream to get the position
      */
     public static long findOffset(Closeable o) {
-<span class="fc bfc" id="L197" title="All 2 branches covered.">        if (o instanceof RandomAccess) {</span>
-<span class="fc" id="L198">            return ((RandomAccess) o).getFilePointer();</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">        if (o instanceof RandomAccess) {</span>
+<span class="fc" id="L197">            return ((RandomAccess) o).getFilePointer();</span>
         } else {
-<span class="fc" id="L200">            return -1;</span>
+<span class="fc" id="L199">            return -1;</span>
         }
     }
 
@@ -214,33 +213,18 @@ public final class FitsUtil {
      *             if the operation failed
      */
     public static InputStream getURLStream(URL url, int level) throws IOException {
-<span class="pc bpc" id="L217" title="1 of 2 branches missed.">        if (level &gt; MAX_NUMBER_OF_REDIRECTIONS) {</span>
-<span class="nc" id="L218">            throw new IOException(&quot;Two many levels of redirection in URL&quot;);</span>
-        }
-<span class="fc" id="L220">        URLConnection conn = url.openConnection();</span>
-        // Map&lt;String,List&lt;String&gt;&gt; hdrs = conn.getHeaderFields();
-<span class="fc" id="L222">        Map hdrs = conn.getHeaderFields();</span>
-
-        // Read through the headers and see if there is a redirection header.
-        // We loop (rather than just do a get on hdrs)
-        // since we want to match without regard to case.
-<span class="fc" id="L227">        String[] keys = (String[]) hdrs.keySet().toArray(new String[0]);</span>
-        // for (String key: hdrs.keySet()) {
-<span class="fc bfc" id="L229" title="All 2 branches covered.">        for (String key : keys) {</span>
-<span class="pc bpc" id="L230" title="1 of 4 branches missed.">            if (key != null &amp;&amp; key.toLowerCase().equals(&quot;location&quot;)) {</span>
-                // String val = hdrs.get(key).get(0);
-<span class="nc" id="L232">                String val = (String) ((List) hdrs.get(key)).get(0);</span>
-<span class="nc bnc" id="L233" title="All 2 branches missed.">                if (val != null) {</span>
-<span class="nc" id="L234">                    val = val.trim();</span>
-<span class="nc bnc" id="L235" title="All 2 branches missed.">                    if (val.length() &gt; 0) {</span>
-                        // Redirect
-<span class="nc" id="L237">                        return getURLStream(new URL(val), level + 1);</span>
-                    }
-                }
+<span class="fc" id="L216">        URLConnection conn = null;</span>
+<span class="fc" id="L217">        int code = -1;</span>
+        try {
+<span class="fc" id="L219">            conn = url.openConnection();</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">            if (conn instanceof HttpURLConnection) {</span>
+<span class="fc" id="L221">                code = ((HttpURLConnection) conn).getResponseCode();</span>
             }
+<span class="fc" id="L223">            return conn.getInputStream();</span>
+<span class="fc" id="L224">        } catch (ProtocolException e) {</span>
+<span class="pc bpc" id="L225" title="1 of 2 branches missed.">            LOG.log(Level.WARNING, &quot;could not connect to &quot; + url + (code &gt;= 0 ? &quot; got responce-code&quot; + code : &quot;&quot;), e);</span>
+<span class="fc" id="L226">            throw e;</span>
         }
-        // No redirection
-<span class="fc" id="L243">        return conn.getInputStream();</span>
     }
 
     /**
@@ -252,13 +236,13 @@ public final class FitsUtil {
      */
     public static int maxLength(String[] strings) throws FitsException {
 
-<span class="fc" id="L255">        int max = 0;</span>
-<span class="fc bfc" id="L256" title="All 2 branches covered.">        for (String element : strings) {</span>
-<span class="fc bfc" id="L257" title="All 4 branches covered.">            if (element != null &amp;&amp; element.length() &gt; max) {</span>
-<span class="fc" id="L258">                max = element.length();</span>
+<span class="fc" id="L239">        int max = 0;</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">        for (String element : strings) {</span>
+<span class="fc bfc" id="L241" title="All 4 branches covered.">            if (element != null &amp;&amp; element.length() &gt; max) {</span>
+<span class="fc" id="L242">                max = element.length();</span>
             }
         }
-<span class="fc" id="L261">        return max;</span>
+<span class="fc" id="L245">        return max;</span>
     }
 
     /**
@@ -272,8 +256,8 @@ public final class FitsUtil {
      *             if the operation failed
      */
     public static void pad(ArrayDataOutput stream, long size) throws FitsException {
-<span class="fc" id="L275">        pad(stream, size, (byte) 0);</span>
-<span class="fc" id="L276">    }</span>
+<span class="fc" id="L259">        pad(stream, size, (byte) 0);</span>
+<span class="fc" id="L260">    }</span>
 
     /**
      * Add padding to an output stream.
@@ -288,20 +272,18 @@ public final class FitsUtil {
      *             if the operation failed
      */
     public static void pad(ArrayDataOutput stream, long size, byte fill) throws FitsException {
-<span class="fc" id="L291">        int len = padding(size);</span>
-<span class="fc bfc" id="L292" title="All 2 branches covered.">        if (len &gt; 0) {</span>
-<span class="fc" id="L293">            byte[] buf = new byte[len];</span>
-<span class="fc bfc" id="L294" title="All 2 branches covered.">            for (int i = 0; i &lt; len; i += 1) {</span>
-<span class="fc" id="L295">                buf[i] = fill;</span>
-            }
+<span class="fc" id="L275">        int len = padding(size);</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">        if (len &gt; 0) {</span>
+<span class="fc" id="L277">            byte[] buf = new byte[len];</span>
+<span class="fc" id="L278">            Arrays.fill(buf, fill);</span>
             try {
-<span class="fc" id="L298">                stream.write(buf);</span>
-<span class="fc" id="L299">                stream.flush();</span>
-<span class="nc" id="L300">            } catch (Exception e) {</span>
-<span class="nc" id="L301">                throw new FitsException(&quot;Unable to write padding&quot;, e);</span>
-<span class="fc" id="L302">            }</span>
+<span class="fc" id="L280">                stream.write(buf);</span>
+<span class="fc" id="L281">                stream.flush();</span>
+<span class="fc" id="L282">            } catch (Exception e) {</span>
+<span class="fc" id="L283">                throw new FitsException(&quot;Unable to write padding&quot;, e);</span>
+<span class="fc" id="L284">            }</span>
         }
-<span class="fc" id="L304">    }</span>
+<span class="fc" id="L286">    }</span>
 
     /**
      * @return How many bytes are needed to fill a 2880 block?
@@ -309,16 +291,16 @@ public final class FitsUtil {
      *            the size without padding
      */
     public static int padding(int size) {
-<span class="fc" id="L312">        return padding((long) size);</span>
+<span class="fc" id="L294">        return padding((long) size);</span>
     }
 
     public static int padding(long size) {
 
-<span class="fc" id="L317">        int mod = (int) (size % FitsFactory.FITS_BLOCK_SIZE);</span>
-<span class="fc bfc" id="L318" title="All 2 branches covered.">        if (mod &gt; 0) {</span>
-<span class="fc" id="L319">            mod = FitsFactory.FITS_BLOCK_SIZE - mod;</span>
+<span class="fc" id="L299">        int mod = (int) (size % FitsFactory.FITS_BLOCK_SIZE);</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">        if (mod &gt; 0) {</span>
+<span class="fc" id="L301">            mod = FitsFactory.FITS_BLOCK_SIZE - mod;</span>
         }
-<span class="fc" id="L321">        return mod;</span>
+<span class="fc" id="L303">        return mod;</span>
     }
 
     /**
@@ -332,17 +314,17 @@ public final class FitsUtil {
      *             if the operation was failed or not possible
      */
     public static void reposition(Closeable o, long offset) throws FitsException {
-<span class="pc bpc" id="L335" title="1 of 2 branches missed.">        if (o == null) {</span>
-<span class="nc" id="L336">            throw new FitsException(&quot;Attempt to reposition null stream&quot;);</span>
-<span class="pc bpc" id="L337" title="2 of 4 branches missed.">        } else if (!(o instanceof RandomAccess) || offset &lt; 0) {</span>
-<span class="nc" id="L338">            throw new FitsException(&quot;Invalid attempt to reposition stream &quot; + o + &quot; of type &quot; + o.getClass().getName() + &quot; to &quot; + offset);</span>
+<span class="fc bfc" id="L317" title="All 2 branches covered.">        if (o == null) {</span>
+<span class="fc" id="L318">            throw new FitsException(&quot;Attempt to reposition null stream&quot;);</span>
+<span class="pc bpc" id="L319" title="1 of 4 branches missed.">        } else if (!(o instanceof RandomAccess) || offset &lt; 0) {</span>
+<span class="fc" id="L320">            throw new FitsException(&quot;Invalid attempt to reposition stream &quot; + o + &quot; of type &quot; + o.getClass().getName() + &quot; to &quot; + offset);</span>
         }
         try {
-<span class="fc" id="L341">            ((RandomAccess) o).seek(offset);</span>
-<span class="nc" id="L342">        } catch (IOException e) {</span>
-<span class="nc" id="L343">            throw new FitsException(&quot;Unable to repostion stream &quot; + o + &quot; of type &quot; + o.getClass().getName() + &quot; to &quot; + offset + &quot;   Exception:&quot; + e.getMessage(), e);</span>
-<span class="fc" id="L344">        }</span>
-<span class="fc" id="L345">    }</span>
+<span class="fc" id="L323">            ((RandomAccess) o).seek(offset);</span>
+<span class="fc" id="L324">        } catch (IOException e) {</span>
+<span class="fc" id="L325">            throw new FitsException(&quot;Unable to repostion stream &quot; + o + &quot; of type &quot; + o.getClass().getName() + &quot; to &quot; + offset + &quot;   Exception:&quot; + e.getMessage(), e);</span>
+<span class="fc" id="L326">        }</span>
+<span class="fc" id="L327">    }</span>
 
     /**
      * Convert an array of Strings to bytes.
@@ -354,24 +336,24 @@ public final class FitsUtil {
      *            the max length (in bytes) of every String
      */
     public static byte[] stringsToByteArray(String[] stringArray, int maxLen) {
-<span class="fc" id="L357">        byte[] res = new byte[stringArray.length * maxLen];</span>
-<span class="fc bfc" id="L358" title="All 2 branches covered.">        for (int i = 0; i &lt; stringArray.length; i += 1) {</span>
-<span class="fc" id="L359">            byte[] bstr = null;</span>
-<span class="fc bfc" id="L360" title="All 2 branches covered.">            if (stringArray[i] == null) {</span>
-<span class="fc" id="L361">                bstr = new byte[0];</span>
+<span class="fc" id="L339">        byte[] res = new byte[stringArray.length * maxLen];</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">        for (int i = 0; i &lt; stringArray.length; i += 1) {</span>
+<span class="fc" id="L341">            byte[] bstr = null;</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">            if (stringArray[i] == null) {</span>
+<span class="fc" id="L343">                bstr = new byte[0];</span>
             } else {
-<span class="fc" id="L363">                bstr = AsciiFuncs.getBytes(stringArray[i]);</span>
+<span class="fc" id="L345">                bstr = AsciiFuncs.getBytes(stringArray[i]);</span>
             }
-<span class="fc" id="L365">            int cnt = bstr.length;</span>
-<span class="fc bfc" id="L366" title="All 2 branches covered.">            if (cnt &gt; maxLen) {</span>
-<span class="fc" id="L367">                cnt = maxLen;</span>
+<span class="fc" id="L347">            int cnt = bstr.length;</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">            if (cnt &gt; maxLen) {</span>
+<span class="fc" id="L349">                cnt = maxLen;</span>
             }
-<span class="fc" id="L369">            System.arraycopy(bstr, 0, res, i * maxLen, cnt);</span>
-<span class="fc bfc" id="L370" title="All 2 branches covered.">            for (int j = cnt; j &lt; maxLen; j += 1) {</span>
-<span class="fc" id="L371">                res[i * maxLen + j] = (byte) ' ';</span>
+<span class="fc" id="L351">            System.arraycopy(bstr, 0, res, i * maxLen, cnt);</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">            for (int j = cnt; j &lt; maxLen; j += 1) {</span>
+<span class="fc" id="L353">                res[i * maxLen + j] = (byte) ' ';</span>
             }
         }
-<span class="fc" id="L374">        return res;</span>
+<span class="fc" id="L356">        return res;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

@@ -107,32 +107,35 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
 <span class="fc" id="L107">        }</span>
     }
 
-<span class="fc" id="L110">    public static class IntPLIOCompressor extends PLIOCompress implements ICompressor&lt;IntBuffer&gt; {</span>
+    /**
+     * Attention int values are limited to 24 bits!
+     */
+<span class="fc" id="L113">    public static class IntPLIOCompressor extends PLIOCompress implements ICompressor&lt;IntBuffer&gt; {</span>
 
         private IntBuffer pixelData;
 
         @Override
         public boolean compress(IntBuffer buffer, ByteBuffer compressed) {
-<span class="nc" id="L116">            this.pixelData = buffer;</span>
-<span class="nc" id="L117">            super.compress(compressed.asShortBuffer(), this.pixelData.limit());</span>
-<span class="nc" id="L118">            return true;</span>
+<span class="fc" id="L119">            this.pixelData = buffer;</span>
+<span class="fc" id="L120">            super.compress(compressed.asShortBuffer(), this.pixelData.limit());</span>
+<span class="fc" id="L121">            return true;</span>
         }
 
         @Override
         public void decompress(ByteBuffer compressed, IntBuffer buffer) {
-<span class="fc" id="L123">            this.pixelData = buffer;</span>
-<span class="fc" id="L124">            decompress(compressed.asShortBuffer(), this.pixelData.limit());</span>
-<span class="fc" id="L125">        }</span>
+<span class="fc" id="L126">            this.pixelData = buffer;</span>
+<span class="fc" id="L127">            decompress(compressed.asShortBuffer(), this.pixelData.limit());</span>
+<span class="fc" id="L128">        }</span>
 
         @Override
         protected int nextPixel() {
-<span class="nc" id="L129">            return this.pixelData.get();</span>
+<span class="fc" id="L132">            return this.pixelData.get();</span>
         }
 
         @Override
         protected void put(int index, int pixel) {
-<span class="fc" id="L134">            this.pixelData.put(index, (short) pixel);</span>
-<span class="fc" id="L135">        }</span>
+<span class="fc" id="L137">            this.pixelData.put(index, (short) pixel);</span>
+<span class="fc" id="L138">        }</span>
     }
 
     private static final int FIRST_VALUE_WITH_13_BIT = 4096;
@@ -175,7 +178,7 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
 
     private static final int OPCODE_8 = 8;
 
-<span class="fc" id="L178">    private static final short[] PLIO_HEADER = {</span>
+<span class="fc" id="L181">    private static final short[] PLIO_HEADER = {</span>
         (short) 0,
         (short) 7,
         (short) -100,
@@ -201,88 +204,88 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
      *            number of pixels to convert
      */
     protected void compress(ShortBuffer compressedData, int npix) {
-<span class="fc" id="L204">        compressedData.put(PLIO_HEADER);</span>
-<span class="fc" id="L205">        final int xe = npix - 1;</span>
-<span class="fc" id="L206">        int op = PLIO_HEADER.length;</span>
+<span class="fc" id="L207">        compressedData.put(PLIO_HEADER);</span>
+<span class="fc" id="L208">        final int xe = npix - 1;</span>
+<span class="fc" id="L209">        int op = PLIO_HEADER.length;</span>
         /* Computing MAX */
-<span class="fc" id="L208">        int pv = Math.max(0, nextPixel());</span>
-<span class="fc" id="L209">        int x1 = 0;</span>
-<span class="fc" id="L210">        int iz = 0;</span>
-<span class="fc" id="L211">        int hi = 1;</span>
-<span class="fc" id="L212">        int nv = 0;</span>
-<span class="fc bfc" id="L213" title="All 2 branches covered.">        for (int ip = 0; ip &lt;= xe; ++ip) {</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">            if (ip &lt; xe) {</span>
+<span class="fc" id="L211">        int pv = Math.max(0, nextPixel());</span>
+<span class="fc" id="L212">        int x1 = 0;</span>
+<span class="fc" id="L213">        int iz = 0;</span>
+<span class="fc" id="L214">        int hi = 1;</span>
+<span class="fc" id="L215">        int nv = 0;</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        for (int ip = 0; ip &lt;= xe; ++ip) {</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">            if (ip &lt; xe) {</span>
                 /* Computing MAX */
-<span class="fc" id="L216">                nv = Math.max(0, nextPixel());</span>
-<span class="fc bfc" id="L217" title="All 2 branches covered.">                if (nv == pv) {</span>
-<span class="fc" id="L218">                    continue;</span>
+<span class="fc" id="L219">                nv = Math.max(0, nextPixel());</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">                if (nv == pv) {</span>
+<span class="fc" id="L221">                    continue;</span>
                 }
-<span class="fc bfc" id="L220" title="All 2 branches covered.">                if (pv == 0) {</span>
-<span class="fc" id="L221">                    pv = nv;</span>
-<span class="fc" id="L222">                    x1 = ip + 1;</span>
-<span class="fc" id="L223">                    continue;</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">                if (pv == 0) {</span>
+<span class="fc" id="L224">                    pv = nv;</span>
+<span class="fc" id="L225">                    x1 = ip + 1;</span>
+<span class="fc" id="L226">                    continue;</span>
                 }
             } else {
-<span class="pc bpc" id="L226" title="1 of 2 branches missed.">                if (pv == 0) {</span>
-<span class="fc" id="L227">                    x1 = xe + 1;</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">                if (pv == 0) {</span>
+<span class="fc" id="L230">                    x1 = xe + 1;</span>
                 }
             }
 
-<span class="fc" id="L231">            int np = ip - x1 + 1;</span>
-<span class="fc" id="L232">            int nz = x1 - iz;</span>
-<span class="fc" id="L233">            boolean skip = false;</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">            if (pv &gt; 0) {</span>
-<span class="fc" id="L235">                int dv = pv - hi;</span>
-<span class="fc bfc" id="L236" title="All 2 branches covered.">                if (dv != 0) {</span>
-<span class="fc" id="L237">                    hi = pv;</span>
-<span class="pc bpc" id="L238" title="1 of 2 branches missed.">                    if (Math.abs(dv) &gt; LAST_VALUE_FITTING_IN_12_BIT) {</span>
-<span class="nc" id="L239">                        compressedData.put(op, (short) ((pv &amp; LAST_VALUE_FITTING_IN_12_BIT) + FIRST_VALUE_WITH_13_BIT));</span>
-<span class="nc" id="L240">                        ++op;</span>
-<span class="nc" id="L241">                        compressedData.put(op, (short) (pv / FIRST_VALUE_WITH_13_BIT));</span>
-<span class="nc" id="L242">                        ++op;</span>
+<span class="fc" id="L234">            int np = ip - x1 + 1;</span>
+<span class="fc" id="L235">            int nz = x1 - iz;</span>
+<span class="fc" id="L236">            boolean skip = false;</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">            if (pv &gt; 0) {</span>
+<span class="fc" id="L238">                int dv = pv - hi;</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">                if (dv != 0) {</span>
+<span class="fc" id="L240">                    hi = pv;</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">                    if (Math.abs(dv) &gt; LAST_VALUE_FITTING_IN_12_BIT) {</span>
+<span class="fc" id="L242">                        compressedData.put(op, (short) ((pv &amp; LAST_VALUE_FITTING_IN_12_BIT) + FIRST_VALUE_WITH_13_BIT));</span>
+<span class="fc" id="L243">                        ++op;</span>
+<span class="fc" id="L244">                        compressedData.put(op, (short) (pv / FIRST_VALUE_WITH_13_BIT));</span>
+<span class="fc" id="L245">                        ++op;</span>
                     } else {
-<span class="fc bfc" id="L244" title="All 2 branches covered.">                        if (dv &lt; 0) {</span>
-<span class="fc" id="L245">                            compressedData.put(op, (short) (-dv + VALUE_OF_BIT_13_AND14_ON));</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">                        if (dv &lt; 0) {</span>
+<span class="fc" id="L248">                            compressedData.put(op, (short) (-dv + VALUE_OF_BIT_13_AND14_ON));</span>
                         } else {
-<span class="fc" id="L247">                            compressedData.put(op, (short) (dv + FIRST_VALUE_WITH_14_BIT));</span>
+<span class="fc" id="L250">                            compressedData.put(op, (short) (dv + FIRST_VALUE_WITH_14_BIT));</span>
                         }
-<span class="fc" id="L249">                        ++op;</span>
-<span class="fc bfc" id="L250" title="All 4 branches covered.">                        if (np == 1 &amp;&amp; nz == 0) {</span>
-<span class="fc" id="L251">                            int v = compressedData.get(op - 1);</span>
-<span class="fc" id="L252">                            compressedData.put(op - 1, (short) (v | FIRST_VALUE_WITH_15_BIT));</span>
-<span class="fc" id="L253">                            skip = true;</span>
+<span class="fc" id="L252">                        ++op;</span>
+<span class="fc bfc" id="L253" title="All 4 branches covered.">                        if (np == 1 &amp;&amp; nz == 0) {</span>
+<span class="fc" id="L254">                            int v = compressedData.get(op - 1);</span>
+<span class="fc" id="L255">                            compressedData.put(op - 1, (short) (v | FIRST_VALUE_WITH_15_BIT));</span>
+<span class="fc" id="L256">                            skip = true;</span>
                         }
                     }
                 }
             }
-<span class="fc bfc" id="L258" title="All 2 branches covered.">            if (!skip) {</span>
-<span class="fc bfc" id="L259" title="All 2 branches covered.">                if (nz &gt; 0) {</span>
-<span class="fc bfc" id="L260" title="All 2 branches covered.">                    while (nz &gt; 0) {</span>
-<span class="fc" id="L261">                        compressedData.put(op, (short) Math.min(LAST_VALUE_FITTING_IN_12_BIT, nz));</span>
-<span class="fc" id="L262">                        ++op;</span>
-<span class="fc" id="L263">                        nz += -LAST_VALUE_FITTING_IN_12_BIT;</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">            if (!skip) {</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">                if (nz &gt; 0) {</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">                    while (nz &gt; 0) {</span>
+<span class="fc" id="L264">                        compressedData.put(op, (short) Math.min(LAST_VALUE_FITTING_IN_12_BIT, nz));</span>
+<span class="fc" id="L265">                        ++op;</span>
+<span class="fc" id="L266">                        nz += -LAST_VALUE_FITTING_IN_12_BIT;</span>
                     }
-<span class="pc bpc" id="L265" title="1 of 4 branches missed.">                    if (np == 1 &amp;&amp; pv &gt; 0) {</span>
-<span class="fc" id="L266">                        compressedData.put(op - 1, (short) (compressedData.get(op - 1) + N20481));</span>
-<span class="fc" id="L267">                        skip = true;</span>
+<span class="pc bpc" id="L268" title="1 of 4 branches missed.">                    if (np == 1 &amp;&amp; pv &gt; 0) {</span>
+<span class="fc" id="L269">                        compressedData.put(op - 1, (short) (compressedData.get(op - 1) + N20481));</span>
+<span class="fc" id="L270">                        skip = true;</span>
                     }
                 }
             }
-<span class="fc bfc" id="L271" title="All 2 branches covered.">            if (!skip) {</span>
-<span class="fc bfc" id="L272" title="All 2 branches covered.">                while (np &gt; 0) {</span>
-<span class="fc" id="L273">                    compressedData.put(op, (short) (Math.min(LAST_VALUE_FITTING_IN_12_BIT, np) + FIRST_VALUE_WITH_15_BIT));</span>
-<span class="fc" id="L274">                    ++op;</span>
-<span class="fc" id="L275">                    np += -LAST_VALUE_FITTING_IN_12_BIT;</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">            if (!skip) {</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">                while (np &gt; 0) {</span>
+<span class="fc" id="L276">                    compressedData.put(op, (short) (Math.min(LAST_VALUE_FITTING_IN_12_BIT, np) + FIRST_VALUE_WITH_15_BIT));</span>
+<span class="fc" id="L277">                    ++op;</span>
+<span class="fc" id="L278">                    np += -LAST_VALUE_FITTING_IN_12_BIT;</span>
                 }
             }
-<span class="fc" id="L278">            x1 = ip + 1;</span>
-<span class="fc" id="L279">            iz = x1;</span>
-<span class="fc" id="L280">            pv = nv;</span>
+<span class="fc" id="L281">            x1 = ip + 1;</span>
+<span class="fc" id="L282">            iz = x1;</span>
+<span class="fc" id="L283">            pv = nv;</span>
         }
-<span class="fc" id="L282">        compressedData.put(HEADER_SIZE_FIELD1, (short) (op % FIRST_VALUE_WITH_16_BIT));</span>
-<span class="fc" id="L283">        compressedData.put(HEADER_SIZE_FIELD2, (short) (op / FIRST_VALUE_WITH_16_BIT));</span>
-<span class="fc" id="L284">        compressedData.position(op);</span>
-<span class="fc" id="L285">    }</span>
+<span class="fc" id="L285">        compressedData.put(HEADER_SIZE_FIELD1, (short) (op % FIRST_VALUE_WITH_16_BIT));</span>
+<span class="fc" id="L286">        compressedData.put(HEADER_SIZE_FIELD2, (short) (op / FIRST_VALUE_WITH_16_BIT));</span>
+<span class="fc" id="L287">        compressedData.position(op);</span>
+<span class="fc" id="L288">    }</span>
 
     /**
      * PL_L2PI -- Translate a PLIO line list into an integer pixel
@@ -298,72 +301,72 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
     protected int decompress(ShortBuffer compressedData, int npix) {
         int llfirt;
         int lllen;
-<span class="fc bfc" id="L301" title="All 2 branches covered.">        if (!(compressedData.get(2) &gt; 0)) {</span>
-<span class="fc" id="L302">            lllen = (compressedData.get(HEADER_SIZE_FIELD2) &lt;&lt; SHIFT_15_BITS) + compressedData.get(HEADER_SIZE_FIELD1);</span>
-<span class="fc" id="L303">            llfirt = compressedData.get(1);</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">        if (!(compressedData.get(2) &gt; 0)) {</span>
+<span class="fc" id="L305">            lllen = (compressedData.get(HEADER_SIZE_FIELD2) &lt;&lt; SHIFT_15_BITS) + compressedData.get(HEADER_SIZE_FIELD1);</span>
+<span class="fc" id="L306">            llfirt = compressedData.get(1);</span>
         } else {
-<span class="fc" id="L305">            lllen = compressedData.get(MINI_HEADER_SIZE_FIELD);</span>
-<span class="fc" id="L306">            llfirt = MINI_HEADER_SIZE;</span>
+<span class="fc" id="L308">            lllen = compressedData.get(MINI_HEADER_SIZE_FIELD);</span>
+<span class="fc" id="L309">            llfirt = MINI_HEADER_SIZE;</span>
         }
-<span class="fc" id="L308">        final int xe = npix;</span>
-<span class="fc" id="L309">        int op = 0;</span>
-<span class="fc" id="L310">        int x1 = 1;</span>
-<span class="fc" id="L311">        int pv = 1;</span>
-<span class="pc bpc" id="L312" title="1 of 2 branches missed.">        for (int ip = llfirt; ip &lt;= lllen; ++ip) {</span>
-<span class="fc" id="L313">            final int opcode = compressedData.get(ip) / FIRST_VALUE_WITH_13_BIT;</span>
-<span class="fc" id="L314">            final int data = compressedData.get(ip) &amp; LAST_VALUE_FITTING_IN_12_BIT;</span>
-<span class="fc" id="L315">            final int sw0001 = opcode + 1;</span>
-<span class="fc bfc" id="L316" title="All 6 branches covered.">            if (sw0001 == OPCODE_1 || sw0001 == OPCODE_5 || sw0001 == OPCODE_6) {</span>
-<span class="fc" id="L317">                final int x2 = x1 + data - 1;</span>
-<span class="fc" id="L318">                final int i2 = Math.min(x2, xe);</span>
-<span class="fc" id="L319">                final int np = i2 - Math.max(x1, 0) + 1;</span>
-<span class="pc bpc" id="L320" title="1 of 2 branches missed.">                if (np &gt; 0) {</span>
-<span class="fc" id="L321">                    final int otop = op + np - 1;</span>
-<span class="fc bfc" id="L322" title="All 2 branches covered.">                    if (!(opcode == OPCODE_4)) {</span>
-<span class="fc bfc" id="L323" title="All 2 branches covered.">                        for (int index = op; index &lt;= otop; ++index) {</span>
-<span class="fc" id="L324">                            put(index, 0);</span>
+<span class="fc" id="L311">        final int xe = npix;</span>
+<span class="fc" id="L312">        int op = 0;</span>
+<span class="fc" id="L313">        int x1 = 1;</span>
+<span class="fc" id="L314">        int pv = 1;</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">        for (int ip = llfirt; ip &lt;= lllen; ++ip) {</span>
+<span class="fc" id="L316">            final int opcode = compressedData.get(ip) / FIRST_VALUE_WITH_13_BIT;</span>
+<span class="fc" id="L317">            final int data = compressedData.get(ip) &amp; LAST_VALUE_FITTING_IN_12_BIT;</span>
+<span class="fc" id="L318">            final int sw0001 = opcode + 1;</span>
+<span class="fc bfc" id="L319" title="All 6 branches covered.">            if (sw0001 == OPCODE_1 || sw0001 == OPCODE_5 || sw0001 == OPCODE_6) {</span>
+<span class="fc" id="L320">                final int x2 = x1 + data - 1;</span>
+<span class="fc" id="L321">                final int i2 = Math.min(x2, xe);</span>
+<span class="fc" id="L322">                final int np = i2 - Math.max(x1, 0) + 1;</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">                if (np &gt; 0) {</span>
+<span class="fc" id="L324">                    final int otop = op + np - 1;</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">                    if (!(opcode == OPCODE_4)) {</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">                        for (int index = op; index &lt;= otop; ++index) {</span>
+<span class="fc" id="L327">                            put(index, 0);</span>
                         }
-<span class="pc bpc" id="L326" title="1 of 4 branches missed.">                        if (opcode == OPCODE_5 &amp;&amp; i2 == x2) {</span>
-<span class="fc" id="L327">                            put(otop, pv);</span>
+<span class="pc bpc" id="L329" title="1 of 4 branches missed.">                        if (opcode == OPCODE_5 &amp;&amp; i2 == x2) {</span>
+<span class="fc" id="L330">                            put(otop, pv);</span>
                         }
                     } else {
-<span class="fc bfc" id="L330" title="All 2 branches covered.">                        for (int index = op; index &lt;= otop; ++index) {</span>
-<span class="fc" id="L331">                            put(index, pv);</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">                        for (int index = op; index &lt;= otop; ++index) {</span>
+<span class="fc" id="L334">                            put(index, pv);</span>
                         }
                     }
-<span class="fc" id="L334">                    op = otop + 1;</span>
+<span class="fc" id="L337">                    op = otop + 1;</span>
                 }
-<span class="fc" id="L336">                x1 = x2 + 1;</span>
-<span class="pc bpc" id="L337" title="1 of 2 branches missed.">            } else if (sw0001 == OPCODE_2) {</span>
-<span class="nc" id="L338">                pv = (compressedData.get(ip + 1) &lt;&lt; SHIFT_12_BITS) + data;</span>
-<span class="nc" id="L339">                ++ip;</span>
-<span class="fc bfc" id="L340" title="All 2 branches covered.">            } else if (sw0001 == OPCODE_3) {</span>
-<span class="fc" id="L341">                pv += data;</span>
-<span class="fc bfc" id="L342" title="All 2 branches covered.">            } else if (sw0001 == OPCODE_4) {</span>
-<span class="fc" id="L343">                pv -= data;</span>
-<span class="fc bfc" id="L344" title="All 2 branches covered.">            } else if (sw0001 == OPCODE_7) {</span>
-<span class="fc" id="L345">                pv += data;</span>
-<span class="pc bpc" id="L346" title="2 of 4 branches missed.">                if (x1 &gt;= 0 &amp;&amp; x1 &lt;= xe) {</span>
-<span class="fc" id="L347">                    put(op, pv);</span>
-<span class="fc" id="L348">                    ++op;</span>
+<span class="fc" id="L339">                x1 = x2 + 1;</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">            } else if (sw0001 == OPCODE_2) {</span>
+<span class="fc" id="L341">                pv = (compressedData.get(ip + 1) &lt;&lt; SHIFT_12_BITS) + data;</span>
+<span class="fc" id="L342">                ++ip;</span>
+<span class="fc bfc" id="L343" title="All 2 branches covered.">            } else if (sw0001 == OPCODE_3) {</span>
+<span class="fc" id="L344">                pv += data;</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">            } else if (sw0001 == OPCODE_4) {</span>
+<span class="fc" id="L346">                pv -= data;</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">            } else if (sw0001 == OPCODE_7) {</span>
+<span class="fc" id="L348">                pv += data;</span>
+<span class="pc bpc" id="L349" title="2 of 4 branches missed.">                if (x1 &gt;= 0 &amp;&amp; x1 &lt;= xe) {</span>
+<span class="fc" id="L350">                    put(op, pv);</span>
+<span class="fc" id="L351">                    ++op;</span>
                 }
-<span class="fc" id="L350">                ++x1;</span>
-<span class="pc bpc" id="L351" title="1 of 2 branches missed.">            } else if (sw0001 == OPCODE_8) {</span>
-<span class="fc" id="L352">                pv -= data;</span>
-<span class="pc bpc" id="L353" title="2 of 4 branches missed.">                if (x1 &gt;= 0 &amp;&amp; x1 &lt;= xe) {</span>
-<span class="fc" id="L354">                    put(op, pv);</span>
-<span class="fc" id="L355">                    ++op;</span>
+<span class="fc" id="L353">                ++x1;</span>
+<span class="pc bpc" id="L354" title="1 of 2 branches missed.">            } else if (sw0001 == OPCODE_8) {</span>
+<span class="fc" id="L355">                pv -= data;</span>
+<span class="pc bpc" id="L356" title="2 of 4 branches missed.">                if (x1 &gt;= 0 &amp;&amp; x1 &lt;= xe) {</span>
+<span class="fc" id="L357">                    put(op, pv);</span>
+<span class="fc" id="L358">                    ++op;</span>
                 }
-<span class="fc" id="L357">                ++x1;</span>
+<span class="fc" id="L360">                ++x1;</span>
             }
-<span class="fc bfc" id="L359" title="All 2 branches covered.">            if (x1 &gt; xe) {</span>
-<span class="fc" id="L360">                break;</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">            if (x1 &gt; xe) {</span>
+<span class="fc" id="L363">                break;</span>
             }
         }
-<span class="pc bpc" id="L363" title="1 of 2 branches missed.">        for (int index = op; index &lt; npix; ++index) {</span>
-<span class="nc" id="L364">            put(index, 0);</span>
+<span class="fc bfc" id="L366" title="All 2 branches covered.">        for (int index = op; index &lt; npix; ++index) {</span>
+<span class="fc" id="L367">            put(index, 0);</span>
         }
-<span class="fc" id="L366">        return npix;</span>
+<span class="fc" id="L369">        return npix;</span>
     }
 
     protected abstract int nextPixel();

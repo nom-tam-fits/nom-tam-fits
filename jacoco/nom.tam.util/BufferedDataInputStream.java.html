@@ -153,8 +153,8 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
      */
     private int eofCheck(EOFException e, int i, int start, int length) throws EOFException {
 
-<span class="pc bpc" id="L156" title="1 of 2 branches missed.">        if (i == start) {</span>
-<span class="nc" id="L157">            throw e;</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        if (i == start) {</span>
+<span class="fc" id="L157">            throw e;</span>
         } else {
 <span class="fc" id="L159">            return (i - start) * length;</span>
         }
@@ -179,10 +179,10 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
             // Use just the buffered I/O to get needed info.
 <span class="fc" id="L180">            int xlen = super.read(obuf, currentOffset, remainingToRead);</span>
 <span class="fc bfc" id="L181" title="All 2 branches covered.">            if (xlen &lt;= 0) {</span>
-<span class="pc bpc" id="L182" title="1 of 2 branches missed.">                if (total == 0) {</span>
-<span class="fc" id="L183">                    throw new EOFException();</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">                if (total == 0) {</span>
+<span class="fc" id="L183">                    throw new EOFException(); // should not be possible</span>
                 } else {
-<span class="nc" id="L185">                    return total;</span>
+<span class="fc" id="L185">                    return total;</span>
                 }
             } else {
 <span class="fc" id="L188">                remainingToRead -= xlen;</span>
@@ -271,8 +271,8 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     private void readBytesIntoSharedBuffer(int bytes) throws IOException, EOFException {
 <span class="fc" id="L273">        this.sharedBuffer.invalidate();</span>
-<span class="pc bpc" id="L274" title="1 of 2 branches missed.">        if (read(this.sharedBuffer.buffer, 0, bytes) &lt; bytes) {</span>
-<span class="nc" id="L275">            throw new EOFException();</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">        if (read(this.sharedBuffer.buffer, 0, bytes) &lt; bytes) {</span>
+<span class="fc" id="L275">            throw new EOFException();</span>
         }
 <span class="fc" id="L277">    }</span>
 
@@ -327,16 +327,16 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     @Override
     public String readLine() throws IOException {
         // Punt on this and use BufferedReader routines.
-<span class="fc" id="L330">        StringBuilder b = new StringBuilder(&quot;&quot;);</span>
+<span class="fc" id="L330">        StringBuilder b = new StringBuilder(0);</span>
         int chr;
-<span class="pc bpc" id="L332" title="1 of 2 branches missed.">        while ((chr = read()) &gt;= 0) {</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">        while ((chr = read()) &gt;= 0) {</span>
 <span class="fc bfc" id="L333" title="All 2 branches covered.">            if (chr != '\n') {</span>
 <span class="fc" id="L334">                b.append((char) chr);</span>
             } else {
 <span class="fc" id="L336">                return b.toString();</span>
             }
         }
-<span class="nc" id="L339">        return b.toString();</span>
+<span class="fc" id="L339">        return b.toString();</span>
     }
 
     @Override
@@ -420,13 +420,13 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 <span class="fc" id="L420">            this.skipBuf = new byte[BufferedDataInputStream.SKIP_BUFFER_SIZE];</span>
         }
 <span class="fc" id="L422">        long remainingToSkip = skip;</span>
-<span class="pc bpc" id="L423" title="1 of 2 branches missed.">        while (remainingToSkip &gt; BufferedDataInputStream.SKIP_BUFFER_SIZE) {</span>
-<span class="nc" id="L424">            int got = read(this.skipBuf, 0, BufferedDataInputStream.SKIP_BUFFER_SIZE);</span>
-<span class="nc bnc" id="L425" title="All 2 branches missed.">            if (got &lt;= 0) {</span>
+<span class="fc bfc" id="L423" title="All 2 branches covered.">        while (remainingToSkip &gt; BufferedDataInputStream.SKIP_BUFFER_SIZE) {</span>
+<span class="fc" id="L424">            int got = read(this.skipBuf, 0, BufferedDataInputStream.SKIP_BUFFER_SIZE);</span>
+<span class="pc bpc" id="L425" title="1 of 2 branches missed.">            if (got &lt;= 0) {</span>
 <span class="nc" id="L426">                break;</span>
             }
-<span class="nc" id="L428">            remainingToSkip -= got;</span>
-<span class="nc" id="L429">        }</span>
+<span class="fc" id="L428">            remainingToSkip -= got;</span>
+<span class="fc" id="L429">        }</span>
 <span class="fc bfc" id="L430" title="All 2 branches covered.">        while (remainingToSkip &gt; 0) {</span>
 <span class="fc" id="L431">            int got = read(this.skipBuf, 0, (int) remainingToSkip);</span>
 <span class="pc bpc" id="L432" title="1 of 2 branches missed.">            if (got &lt;= 0) {</span>
@@ -445,7 +445,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     @Override
     public String toString() {
-<span class="nc" id="L448">        return super.toString() + &quot;[count=&quot; + this.count + &quot;,pos=&quot; + this.pos + &quot;]&quot;;</span>
+<span class="fc" id="L448">        return super.toString() + &quot;[count=&quot; + this.count + &quot;,pos=&quot; + this.pos + &quot;]&quot;;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

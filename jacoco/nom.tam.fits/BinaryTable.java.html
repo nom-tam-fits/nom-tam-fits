@@ -271,7 +271,7 @@ public class BinaryTable extends AbstractTableData {
     /**
      * A list describing each of the columns in the table
      */
-<span class="fc" id="L274">    private List&lt;ColumnDesc&gt; columnList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L274">    private List&lt;ColumnDesc&gt; columnList = new ArrayList&lt;ColumnDesc&gt;();</span>
 
     /**
      * The number of rows in the table.
@@ -321,7 +321,7 @@ public class BinaryTable extends AbstractTableData {
 <span class="fc" id="L321">        ColumnTable&lt;SaveState&gt; tab = (ColumnTable&lt;SaveState&gt;) tabIn;</span>
         // This will throw an error if this isn't the correct type.
 <span class="fc" id="L323">        SaveState extra = tab.getExtraState();</span>
-<span class="fc" id="L324">        this.columnList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L324">        this.columnList = new ArrayList&lt;ColumnDesc&gt;();</span>
 <span class="fc bfc" id="L325" title="All 2 branches covered.">        for (ColumnDesc col : extra.columns) {</span>
 <span class="fc" id="L326">            ColumnDesc copy = (ColumnDesc) col.clone();</span>
 <span class="fc" id="L327">            copy.column = null;</span>

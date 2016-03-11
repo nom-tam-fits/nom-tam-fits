@@ -116,7 +116,7 @@
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> 
 <a class="jxr_linenumber" name="L109" href="#L109">109</a>     <strong class="jxr_keyword">static</strong> List&lt;String&gt; limitString(String string, <strong class="jxr_keyword">int</strong> size) {
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>         string = string.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').replace(<span class="jxr_string">"  "</span>, <span class="jxr_string">" "</span>).replace(<span class="jxr_string">"  "</span>, <span class="jxr_string">" "</span>).replace(<span class="jxr_string">"  "</span>, <span class="jxr_string">" "</span>);
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>         List&lt;String&gt; result = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>         List&lt;String&gt; result = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>         <strong class="jxr_keyword">while</strong> (string.length() &gt; 80) {
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>             <strong class="jxr_keyword">int</strong> split = 80;
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>             <strong class="jxr_keyword">while</strong> (!Character.isWhitespace(string.charAt(split))) {

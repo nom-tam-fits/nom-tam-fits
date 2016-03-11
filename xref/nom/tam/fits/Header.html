@@ -147,7 +147,7 @@
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     * The actual header data stored as a HashedList of HeaderCard's.</em>
 <a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> HashedList&lt;HeaderCard&gt; cards = <strong class="jxr_keyword">new</strong> HashedList&lt;&gt;();
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> HashedList&lt;HeaderCard&gt; cards = <strong class="jxr_keyword">new</strong> HashedList&lt;HeaderCard&gt;();
 <a class="jxr_linenumber" name="L143" href="#L143">143</a> 
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L145" href="#L145">145</a> <em class="jxr_javadoccomment">     * This iterator allows one to run through the list.</em>
@@ -215,9 +215,9 @@
 <a class="jxr_linenumber" name="L207" href="#L207">207</a> 
 <a class="jxr_linenumber" name="L208" href="#L208">208</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> addDuplicate(<a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> dup) {
 <a class="jxr_linenumber" name="L209" href="#L209">209</a>         <strong class="jxr_keyword">if</strong> (!COMMENT.key().equals(dup.getKey()) &amp;&amp; !HISTORY.key().equals(dup.getKey()) &amp;&amp; !dup.getKey().trim().isEmpty()) {
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>             LOG.log(Level.WARNING, <span class="jxr_string">"Warning: multiple occurrences of key:"</span> + dup.getKey());
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>             LOG.log(Level.WARNING, <span class="jxr_string">"Multiple occurrences of key:"</span> + dup.getKey());
 <a class="jxr_linenumber" name="L211" href="#L211">211</a>             <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.duplicates == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L212" href="#L212">212</a>                 <strong class="jxr_keyword">this</strong>.duplicates = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>                 <strong class="jxr_keyword">this</strong>.duplicates = <strong class="jxr_keyword">new</strong> ArrayList&lt;HeaderCard&gt;();
 <a class="jxr_linenumber" name="L213" href="#L213">213</a>             }
 <a class="jxr_linenumber" name="L214" href="#L214">214</a>             <strong class="jxr_keyword">this</strong>.duplicates.add(dup);
 <a class="jxr_linenumber" name="L215" href="#L215">215</a>         }

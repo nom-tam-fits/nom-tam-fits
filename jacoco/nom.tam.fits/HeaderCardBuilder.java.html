@@ -158,9 +158,9 @@ public class HeaderCardBuilder {
      *             if the card creation failed.
      */
     public HeaderCardBuilder value(double newValue) throws HeaderCardException {
-<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        if (this.card == null) {</span>
-<span class="nc" id="L162">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
-<span class="nc" id="L163">            this.header.addLine(this.card);</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L162">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
+<span class="fc" id="L163">            this.header.addLine(this.card);</span>
         } else {
 <span class="fc" id="L165">            this.card.setValue(newValue);</span>
         }
@@ -218,13 +218,13 @@ public class HeaderCardBuilder {
      *             if the card creation failed.
      */
     public HeaderCardBuilder value(long newValue) throws HeaderCardException {
-<span class="nc bnc" id="L221" title="All 2 branches missed.">        if (this.card == null) {</span>
-<span class="nc" id="L222">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
-<span class="nc" id="L223">            this.header.addLine(this.card);</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L222">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
+<span class="fc" id="L223">            this.header.addLine(this.card);</span>
         } else {
-<span class="nc" id="L225">            this.card.setValue(newValue);</span>
+<span class="fc" id="L225">            this.card.setValue(newValue);</span>
         }
-<span class="nc" id="L227">        return this;</span>
+<span class="fc" id="L227">        return this;</span>
     }
 
     /**

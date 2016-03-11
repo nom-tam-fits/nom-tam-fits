@@ -188,7 +188,7 @@
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>             <strong class="jxr_keyword">int</strong> xlen = <strong class="jxr_keyword">super</strong>.read(obuf, currentOffset, remainingToRead);
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>             <strong class="jxr_keyword">if</strong> (xlen &lt;= 0) {
 <a class="jxr_linenumber" name="L182" href="#L182">182</a>                 <strong class="jxr_keyword">if</strong> (total == 0) {
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> EOFException();
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> EOFException(); <em class="jxr_comment">// should not be possible</em>
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>                 } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>                     <strong class="jxr_keyword">return</strong> total;
 <a class="jxr_linenumber" name="L186" href="#L186">186</a>                 }
@@ -335,7 +335,7 @@
 <a class="jxr_linenumber" name="L327" href="#L327">327</a>     @Override
 <a class="jxr_linenumber" name="L328" href="#L328">328</a>     <strong class="jxr_keyword">public</strong> String readLine() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L329" href="#L329">329</a>         <em class="jxr_comment">// Punt on this and use BufferedReader routines.</em>
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>         StringBuilder b = <strong class="jxr_keyword">new</strong> StringBuilder(<span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>         StringBuilder b = <strong class="jxr_keyword">new</strong> StringBuilder(0);
 <a class="jxr_linenumber" name="L331" href="#L331">331</a>         <strong class="jxr_keyword">int</strong> chr;
 <a class="jxr_linenumber" name="L332" href="#L332">332</a>         <strong class="jxr_keyword">while</strong> ((chr = read()) &gt;= 0) {
 <a class="jxr_linenumber" name="L333" href="#L333">333</a>             <strong class="jxr_keyword">if</strong> (chr != '\n') {

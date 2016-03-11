@@ -112,11 +112,11 @@ public class UndefinedData extends Data {
 <span class="fc" id="L112">            head.addValue(GCOUNT, 1);</span>
             // Just in case!
 <span class="fc" id="L114">            head.addValue(EXTEND, true);</span>
-<span class="nc" id="L115">        } catch (HeaderCardException e) {</span>
-<span class="nc" id="L116">            LOG.log(Level.SEVERE, &quot;Unable to create unknown header&quot;, e);</span>
+<span class="fc" id="L115">        } catch (HeaderCardException e) {</span>
+<span class="fc" id="L116">            LOG.log(Level.SEVERE, &quot;Unable to create unknown header&quot;, e);</span>
         } finally {
 <span class="pc" id="L118">            Standard.context(null);</span>
-<span class="pc" id="L119">        }</span>
+<span class="fc" id="L119">        }</span>
 <span class="fc" id="L120">    }</span>
 
     @Override
@@ -136,17 +136,17 @@ public class UndefinedData extends Data {
 <span class="fc" id="L136">        setFileOffset(i);</span>
         try {
 <span class="fc" id="L138">            i.readFully(this.data);</span>
-<span class="nc" id="L139">        } catch (IOException e) {</span>
-<span class="nc" id="L140">            throw new FitsException(&quot;Unable to read unknown data:&quot; + e);</span>
+<span class="fc" id="L139">        } catch (IOException e) {</span>
+<span class="fc" id="L140">            throw new FitsException(&quot;Unable to read unknown data:&quot; + e);</span>
 <span class="fc" id="L141">        }</span>
 
 <span class="fc" id="L143">        int pad = FitsUtil.padding(getTrueSize());</span>
         try {
 <span class="fc" id="L145">            i.skipAllBytes(pad);</span>
-<span class="nc" id="L146">        } catch (EOFException e) {</span>
-<span class="nc" id="L147">            throw new PaddingException(&quot;EOF skipping padding in undefined data&quot;, this, e);</span>
-<span class="nc" id="L148">        } catch (IOException e) {</span>
-<span class="nc" id="L149">            throw new FitsException(&quot;Error skipping padding in undefined data&quot;, e);</span>
+<span class="fc" id="L146">        } catch (EOFException e) {</span>
+<span class="fc" id="L147">            throw new PaddingException(&quot;EOF skipping padding in undefined data&quot;, this, e);</span>
+<span class="fc" id="L148">        } catch (IOException e) {</span>
+<span class="fc" id="L149">            throw new FitsException(&quot;Error skipping padding in undefined data&quot;, e);</span>
 <span class="fc" id="L150">        }</span>
 <span class="fc" id="L151">    }</span>
 

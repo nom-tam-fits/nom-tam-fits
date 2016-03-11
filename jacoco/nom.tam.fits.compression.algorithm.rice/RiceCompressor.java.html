@@ -236,12 +236,12 @@ public abstract class RiceCompressor&lt;T extends Buffer&gt; implements ICompres
 <span class="fc" id="L236">            this.fsBits = FS_BITS_FOR_SHORT;</span>
 <span class="fc" id="L237">            this.fsMax = FS_MAX_FOR_SHORT;</span>
 <span class="fc" id="L238">            this.bitsPerPixel = FitsIO.BITS_OF_2_BYTES;</span>
-<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        } else if (option.getBytePix() == PrimitiveTypes.INT.size()) {</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        } else if (option.getBytePix() == PrimitiveTypes.INT.size()) {</span>
 <span class="fc" id="L240">            this.fsBits = FS_BITS_FOR_INT;</span>
 <span class="fc" id="L241">            this.fsMax = FS_MAX_FOR_INT;</span>
 <span class="fc" id="L242">            this.bitsPerPixel = FitsIO.BITS_OF_4_BYTES;</span>
         } else {
-<span class="nc" id="L244">            throw new UnsupportedOperationException(&quot;Rice only supports 1/2/4 type per pixel&quot;);</span>
+<span class="fc" id="L244">            throw new UnsupportedOperationException(&quot;Rice only supports 1/2/4 type per pixel&quot;);</span>
         }
         /*
          * From bsize derive: FSBITS = # bits required to store FS FSMAX =
@@ -479,16 +479,12 @@ public abstract class RiceCompressor&lt;T extends Buffer&gt; implements ICompres
 <span class="fc" id="L479">                    nextPixel(lastpix);</span>
                 }
             }
-<span class="pc bpc" id="L482" title="1 of 2 branches missed.">            if (readBuffer.limit() &lt; readBuffer.position()) {</span>
-<span class="nc" id="L483">                LOG.severe(&quot;decompressing failed, no more bytes to decompress reached: &quot; + readBuffer.limit() + &quot; but only reached index &quot; + i + &quot; of &quot; + nx);</span>
-<span class="nc" id="L484">                throw new IllegalStateException(&quot;decompressing failed, no more bytes to decompress&quot;);</span>
-            }
-<span class="fc" id="L486">        }</span>
-<span class="fc bfc" id="L487" title="All 2 branches covered.">        if (readBuffer.limit() &gt; readBuffer.position()) {</span>
-<span class="fc" id="L488">            LOG.warning(&quot;decompressing left over some extra bytes got: &quot; + readBuffer.limit() + &quot; but needed only &quot; + readBuffer.position());</span>
+<span class="fc" id="L482">        }</span>
+<span class="fc bfc" id="L483" title="All 2 branches covered.">        if (readBuffer.limit() &gt; readBuffer.position()) {</span>
+<span class="fc" id="L484">            LOG.warning(&quot;decompressing left over some extra bytes got: &quot; + readBuffer.limit() + &quot; but needed only &quot; + readBuffer.position());</span>
         }
 
-<span class="fc" id="L491">    }</span>
+<span class="fc" id="L487">    }</span>
 
     protected abstract int nextPixel();
 

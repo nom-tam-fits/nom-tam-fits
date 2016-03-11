@@ -487,22 +487,18 @@
 <a class="jxr_linenumber" name="L479" href="#L479">479</a>                     nextPixel(lastpix);
 <a class="jxr_linenumber" name="L480" href="#L480">480</a>                 }
 <a class="jxr_linenumber" name="L481" href="#L481">481</a>             }
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>             <strong class="jxr_keyword">if</strong> (readBuffer.limit() &lt; readBuffer.position()) {
-<a class="jxr_linenumber" name="L483" href="#L483">483</a>                 LOG.severe(<span class="jxr_string">"decompressing failed, no more bytes to decompress reached: "</span> + readBuffer.limit() + <span class="jxr_string">" but only reached index "</span> + i + <span class="jxr_string">" of "</span> + nx);
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"decompressing failed, no more bytes to decompress"</span>);
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>             }
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>         }
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>         <strong class="jxr_keyword">if</strong> (readBuffer.limit() &gt; readBuffer.position()) {
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>             LOG.warning(<span class="jxr_string">"decompressing left over some extra bytes got: "</span> + readBuffer.limit() + <span class="jxr_string">" but needed only "</span> + readBuffer.position());
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>         }
+<a class="jxr_linenumber" name="L482" href="#L482">482</a>         }
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>         <strong class="jxr_keyword">if</strong> (readBuffer.limit() &gt; readBuffer.position()) {
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>             LOG.warning(<span class="jxr_string">"decompressing left over some extra bytes got: "</span> + readBuffer.limit() + <span class="jxr_string">" but needed only "</span> + readBuffer.position());
+<a class="jxr_linenumber" name="L485" href="#L485">485</a>         }
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> 
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>     }
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> 
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">int</strong> nextPixel();
 <a class="jxr_linenumber" name="L490" href="#L490">490</a> 
-<a class="jxr_linenumber" name="L491" href="#L491">491</a>     }
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> nextPixel(<strong class="jxr_keyword">int</strong> pixel);
 <a class="jxr_linenumber" name="L492" href="#L492">492</a> 
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">int</strong> nextPixel();
-<a class="jxr_linenumber" name="L494" href="#L494">494</a> 
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> nextPixel(<strong class="jxr_keyword">int</strong> pixel);
-<a class="jxr_linenumber" name="L496" href="#L496">496</a> 
-<a class="jxr_linenumber" name="L497" href="#L497">497</a> }
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2016 nom-tam-fits. All rights reserved.</div>

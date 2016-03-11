@@ -41,10 +41,11 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor;
+import nom.tam.util.SaveClose;
 
 public abstract class GZip2Compressor&lt;T extends Buffer&gt; extends GZipCompressor&lt;T&gt; {
 
-<span class="fc" id="L47">    public static class ByteGZip2Compress extends ByteGZipCompressor {</span>
+<span class="fc" id="L48">    public static class ByteGZip2Compress extends ByteGZipCompressor {</span>
     }
 
     public static class IntGZip2Compressor extends GZip2Compressor&lt;IntBuffer&gt; {
@@ -52,19 +53,19 @@ public abstract class GZip2Compressor&lt;T extends Buffer&gt; extends GZipCompre
         protected static final int BYTE_SIZE_OF_INT = 4;
 
         public IntGZip2Compressor() {
-<span class="fc" id="L55">            super(BYTE_SIZE_OF_INT);</span>
-<span class="fc" id="L56">        }</span>
+<span class="fc" id="L56">            super(BYTE_SIZE_OF_INT);</span>
+<span class="fc" id="L57">        }</span>
 
         @Override
         protected void getPixel(IntBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L60">            IntBuffer pixelBuffer = ByteBuffer.wrap(pixelBytes).asIntBuffer();</span>
-<span class="fc" id="L61">            pixelBuffer.put(pixelData);</span>
-<span class="fc" id="L62">        }</span>
+<span class="fc" id="L61">            IntBuffer pixelBuffer = ByteBuffer.wrap(pixelBytes).asIntBuffer();</span>
+<span class="fc" id="L62">            pixelBuffer.put(pixelData);</span>
+<span class="fc" id="L63">        }</span>
 
         @Override
         protected void setPixel(IntBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L66">            pixelData.put(ByteBuffer.wrap(pixelBytes).asIntBuffer());</span>
-<span class="fc" id="L67">        }</span>
+<span class="fc" id="L67">            pixelData.put(ByteBuffer.wrap(pixelBytes).asIntBuffer());</span>
+<span class="fc" id="L68">        }</span>
     }
 
     public static class LongGZip2Compressor extends GZip2Compressor&lt;LongBuffer&gt; {
@@ -72,19 +73,19 @@ public abstract class GZip2Compressor&lt;T extends Buffer&gt; extends GZipCompre
         protected static final int BYTE_SIZE_OF_LONG = 8;
 
         public LongGZip2Compressor() {
-<span class="fc" id="L75">            super(BYTE_SIZE_OF_LONG);</span>
-<span class="fc" id="L76">        }</span>
+<span class="fc" id="L76">            super(BYTE_SIZE_OF_LONG);</span>
+<span class="fc" id="L77">        }</span>
 
         @Override
         protected void getPixel(LongBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L80">            LongBuffer pixelBuffer = ByteBuffer.wrap(pixelBytes).asLongBuffer();</span>
-<span class="fc" id="L81">            pixelBuffer.put(pixelData);</span>
-<span class="fc" id="L82">        }</span>
+<span class="fc" id="L81">            LongBuffer pixelBuffer = ByteBuffer.wrap(pixelBytes).asLongBuffer();</span>
+<span class="fc" id="L82">            pixelBuffer.put(pixelData);</span>
+<span class="fc" id="L83">        }</span>
 
         @Override
         protected void setPixel(LongBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L86">            pixelData.put(ByteBuffer.wrap(pixelBytes).asLongBuffer());</span>
-<span class="fc" id="L87">        }</span>
+<span class="fc" id="L87">            pixelData.put(ByteBuffer.wrap(pixelBytes).asLongBuffer());</span>
+<span class="fc" id="L88">        }</span>
     }
 
     public static class ShortGZip2Compressor extends GZip2Compressor&lt;ShortBuffer&gt; {
@@ -92,92 +93,100 @@ public abstract class GZip2Compressor&lt;T extends Buffer&gt; extends GZipCompre
         protected static final int BYTE_SIZE_OF_SHORT = 2;
 
         public ShortGZip2Compressor() {
-<span class="fc" id="L95">            super(BYTE_SIZE_OF_SHORT);</span>
-<span class="fc" id="L96">        }</span>
+<span class="fc" id="L96">            super(BYTE_SIZE_OF_SHORT);</span>
+<span class="fc" id="L97">        }</span>
 
         @Override
         protected void getPixel(ShortBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L100">            ShortBuffer shortBuffer = ByteBuffer.wrap(pixelBytes).asShortBuffer();</span>
-<span class="fc" id="L101">            shortBuffer.put(pixelData);</span>
-<span class="fc" id="L102">        }</span>
+<span class="fc" id="L101">            ShortBuffer shortBuffer = ByteBuffer.wrap(pixelBytes).asShortBuffer();</span>
+<span class="fc" id="L102">            shortBuffer.put(pixelData);</span>
+<span class="fc" id="L103">        }</span>
 
         @Override
         protected void setPixel(ShortBuffer pixelData, byte[] pixelBytes) {
-<span class="fc" id="L106">            pixelData.put(ByteBuffer.wrap(pixelBytes).asShortBuffer());</span>
-<span class="fc" id="L107">        }</span>
+<span class="fc" id="L107">            pixelData.put(ByteBuffer.wrap(pixelBytes).asShortBuffer());</span>
+<span class="fc" id="L108">        }</span>
     }
 
     public GZip2Compressor(int primitiveSize) {
-<span class="fc" id="L111">        super(primitiveSize);</span>
-<span class="fc" id="L112">    }</span>
+<span class="fc" id="L112">        super(primitiveSize);</span>
+<span class="fc" id="L113">    }</span>
 
     private int[] calculateOffsets(byte[] byteArray) {
-<span class="fc" id="L115">        int[] offset = new int[this.primitiveSize];</span>
-<span class="fc" id="L116">        offset[0] = 0;</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">        for (int primitivIndex = 1; primitivIndex &lt; this.primitiveSize; primitivIndex++) {</span>
-<span class="fc" id="L118">            offset[primitivIndex] = offset[primitivIndex - 1] + byteArray.length / this.primitiveSize;</span>
+<span class="fc" id="L116">        int[] offset = new int[this.primitiveSize];</span>
+<span class="fc" id="L117">        offset[0] = 0;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        for (int primitivIndex = 1; primitivIndex &lt; this.primitiveSize; primitivIndex++) {</span>
+<span class="fc" id="L119">            offset[primitivIndex] = offset[primitivIndex - 1] + byteArray.length / this.primitiveSize;</span>
         }
-<span class="fc" id="L120">        return offset;</span>
+<span class="fc" id="L121">        return offset;</span>
     }
 
     @Override
     public boolean compress(T pixelData, ByteBuffer compressed) {
-<span class="fc" id="L125">        int pixelDataLimit = pixelData.limit();</span>
-<span class="fc" id="L126">        byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];</span>
-<span class="fc" id="L127">        getPixel(pixelData, pixelBytes);</span>
-<span class="fc" id="L128">        pixelBytes = shuffle(pixelBytes);</span>
-<span class="fc" id="L129">        try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {</span>
-<span class="fc" id="L130">            zip.write(pixelBytes, 0, pixelBytes.length);</span>
-<span class="pc bpc" id="L131" title="3 of 8 branches missed.">        } catch (IOException e) {</span>
-<span class="fc" id="L132">            throw new IllegalStateException(&quot;could not gzip data&quot;, e);</span>
-<span class="fc" id="L133">        }</span>
-<span class="fc" id="L134">        return true;</span>
+<span class="fc" id="L126">        int pixelDataLimit = pixelData.limit();</span>
+<span class="fc" id="L127">        byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];</span>
+<span class="fc" id="L128">        getPixel(pixelData, pixelBytes);</span>
+<span class="fc" id="L129">        pixelBytes = shuffle(pixelBytes);</span>
+<span class="fc" id="L130">        GZIPOutputStream zip = null;</span>
+        try {
+<span class="fc" id="L132">            zip = createGZipOutputStream(pixelDataLimit, compressed);</span>
+<span class="fc" id="L133">            zip.write(pixelBytes, 0, pixelBytes.length);</span>
+<span class="fc" id="L134">        } catch (IOException e) {</span>
+<span class="fc" id="L135">            throw new IllegalStateException(&quot;could not gzip data&quot;, e);</span>
+        } finally {
+<span class="fc" id="L137">            SaveClose.close(zip);</span>
+<span class="fc" id="L138">        }</span>
+<span class="fc" id="L139">        return true;</span>
     }
 
     @Override
     public void decompress(ByteBuffer compressed, T pixelData) {
-<span class="fc" id="L139">        int pixelDataLimit = pixelData.limit();</span>
-<span class="fc" id="L140">        byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];</span>
-<span class="fc" id="L141">        try (GZIPInputStream zip = createGZipInputStream(compressed)) {</span>
-<span class="fc" id="L142">            int count = 0;</span>
-<span class="fc" id="L143">            int offset = 0;</span>
-<span class="pc bpc" id="L144" title="1 of 4 branches missed.">            while (offset &lt; pixelBytes.length &amp;&amp; count &gt;= 0) {</span>
-<span class="fc" id="L145">                count = zip.read(pixelBytes, offset, pixelBytes.length - offset);</span>
-<span class="pc bpc" id="L146" title="1 of 2 branches missed.">                if (count &gt;= 0) {</span>
-<span class="fc" id="L147">                    offset = offset + count;</span>
+<span class="fc" id="L144">        int pixelDataLimit = pixelData.limit();</span>
+<span class="fc" id="L145">        byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];</span>
+<span class="fc" id="L146">        GZIPInputStream zip = null;</span>
+        try {
+<span class="fc" id="L148">            zip = createGZipInputStream(compressed);</span>
+<span class="fc" id="L149">            int count = 0;</span>
+<span class="fc" id="L150">            int offset = 0;</span>
+<span class="pc bpc" id="L151" title="1 of 4 branches missed.">            while (offset &lt; pixelBytes.length &amp;&amp; count &gt;= 0) {</span>
+<span class="fc" id="L152">                count = zip.read(pixelBytes, offset, pixelBytes.length - offset);</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">                if (count &gt;= 0) {</span>
+<span class="fc" id="L154">                    offset = offset + count;</span>
                 }
             }
-<span class="pc bpc" id="L150" title="5 of 8 branches missed.">        } catch (IOException e) {</span>
-<span class="fc" id="L151">            throw new IllegalStateException(&quot;could not gunzip data&quot;, e);</span>
-<span class="fc" id="L152">        }</span>
-<span class="fc" id="L153">        pixelBytes = unshuffle(pixelBytes);</span>
-<span class="fc" id="L154">        setPixel(pixelData, pixelBytes);</span>
-<span class="fc" id="L155">    }</span>
+<span class="fc" id="L157">        } catch (IOException e) {</span>
+<span class="fc" id="L158">            throw new IllegalStateException(&quot;could not gunzip data&quot;, e);</span>
+        } finally {
+<span class="fc" id="L160">            SaveClose.close(zip);</span>
+<span class="fc" id="L161">        }</span>
+<span class="fc" id="L162">        pixelBytes = unshuffle(pixelBytes);</span>
+<span class="fc" id="L163">        setPixel(pixelData, pixelBytes);</span>
+<span class="fc" id="L164">    }</span>
 
     public byte[] shuffle(byte[] byteArray) {
-<span class="fc" id="L158">        byte[] result = new byte[byteArray.length];</span>
-<span class="fc" id="L159">        int resultIndex = 0;</span>
-<span class="fc" id="L160">        int[] offset = calculateOffsets(byteArray);</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">        for (int index = 0; index &lt; byteArray.length; index += this.primitiveSize) {</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">            for (int primitiveIndex = 0; primitiveIndex &lt; this.primitiveSize; primitiveIndex++) {</span>
-<span class="fc" id="L163">                result[resultIndex + offset[primitiveIndex]] = byteArray[index + primitiveIndex];</span>
+<span class="fc" id="L167">        byte[] result = new byte[byteArray.length];</span>
+<span class="fc" id="L168">        int resultIndex = 0;</span>
+<span class="fc" id="L169">        int[] offset = calculateOffsets(byteArray);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        for (int index = 0; index &lt; byteArray.length; index += this.primitiveSize) {</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">            for (int primitiveIndex = 0; primitiveIndex &lt; this.primitiveSize; primitiveIndex++) {</span>
+<span class="fc" id="L172">                result[resultIndex + offset[primitiveIndex]] = byteArray[index + primitiveIndex];</span>
             }
-<span class="fc" id="L165">            resultIndex++;</span>
+<span class="fc" id="L174">            resultIndex++;</span>
         }
-<span class="fc" id="L167">        return result;</span>
+<span class="fc" id="L176">        return result;</span>
     }
 
     public byte[] unshuffle(byte[] byteArray) {
-<span class="fc" id="L171">        byte[] result = new byte[byteArray.length];</span>
-<span class="fc" id="L172">        int resultIndex = 0;</span>
-<span class="fc" id="L173">        int[] offset = calculateOffsets(byteArray);</span>
-<span class="fc bfc" id="L174" title="All 2 branches covered.">        for (int index = 0; index &lt; byteArray.length; index += this.primitiveSize) {</span>
-<span class="fc bfc" id="L175" title="All 2 branches covered.">            for (int primitiveIndex = 0; primitiveIndex &lt; this.primitiveSize; primitiveIndex++) {</span>
-<span class="fc" id="L176">                result[index + primitiveIndex] = byteArray[resultIndex + offset[primitiveIndex]];</span>
+<span class="fc" id="L180">        byte[] result = new byte[byteArray.length];</span>
+<span class="fc" id="L181">        int resultIndex = 0;</span>
+<span class="fc" id="L182">        int[] offset = calculateOffsets(byteArray);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        for (int index = 0; index &lt; byteArray.length; index += this.primitiveSize) {</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">            for (int primitiveIndex = 0; primitiveIndex &lt; this.primitiveSize; primitiveIndex++) {</span>
+<span class="fc" id="L185">                result[index + primitiveIndex] = byteArray[resultIndex + offset[primitiveIndex]];</span>
             }
-<span class="fc" id="L178">            resultIndex++;</span>
+<span class="fc" id="L187">            resultIndex++;</span>
         }
-<span class="fc" id="L180">        return result;</span>
+<span class="fc" id="L189">        return result;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

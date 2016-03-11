@@ -132,40 +132,42 @@ public class FitsLineAppender {
 <span class="fc" id="L132">    }</span>
 
     /**
-     * append a number of spaces to the line, limited to the line length!
+     * append a number of spaces to the line, limited to the line length! This
+     * will only be done if the line is already started, so attention when a
+     * line is still empty this method will have no effect on empty lines.
      * 
      * @param count
      *            the number of spaces to write.
      */
     public void appendSpacesTo(int count) {
-<span class="fc" id="L141">        this.charCount = this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">        if (this.charCount != 0) {</span>
-<span class="fc" id="L143">            int spaces = count - this.charCount;</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">            if (spaces &gt; 0) {</span>
-<span class="fc" id="L145">                this.buffer.append(FitsLineAppender.FULL_CARD_AS_SPACES, 0, spaces);</span>
-<span class="fc" id="L146">                this.charCount += spaces;</span>
+<span class="fc" id="L143">        this.charCount = this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        if (this.charCount != 0) {</span>
+<span class="fc" id="L145">            int spaces = count - this.charCount;</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">            if (spaces &gt; 0) {</span>
+<span class="fc" id="L147">                this.buffer.append(FitsLineAppender.FULL_CARD_AS_SPACES, 0, spaces);</span>
+<span class="fc" id="L148">                this.charCount += spaces;</span>
             }
         }
-<span class="fc" id="L149">    }</span>
+<span class="fc" id="L151">    }</span>
 
     /**
      * fill the rest of current line with spaces and start a new fits line.
      */
     public void completeLine() {
-<span class="fc" id="L155">        int count = HeaderCard.FITS_HEADER_CARD_SIZE - this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">        if (count &lt; HeaderCard.FITS_HEADER_CARD_SIZE) {</span>
-<span class="fc" id="L157">            this.buffer.append(FitsLineAppender.FULL_CARD_AS_SPACES, 0, count);</span>
+<span class="fc" id="L157">        int count = HeaderCard.FITS_HEADER_CARD_SIZE - this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        if (count &lt; HeaderCard.FITS_HEADER_CARD_SIZE) {</span>
+<span class="fc" id="L159">            this.buffer.append(FitsLineAppender.FULL_CARD_AS_SPACES, 0, count);</span>
         }
         // line completed start with 0;
-<span class="fc" id="L160">        this.charCount = 0;</span>
-<span class="fc" id="L161">    }</span>
+<span class="fc" id="L162">        this.charCount = 0;</span>
+<span class="fc" id="L163">    }</span>
 
     /**
      * @return the character position in the current line.
      */
     public int length() {
-<span class="fc" id="L167">        this.charCount = this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;</span>
-<span class="fc" id="L168">        return this.charCount;</span>
+<span class="fc" id="L169">        this.charCount = this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;</span>
+<span class="fc" id="L170">        return this.charCount;</span>
     }
 
     /**
@@ -173,18 +175,18 @@ public class FitsLineAppender {
      *         line.
      */
     public int spaceLeftInLine() {
-<span class="fc" id="L176">        this.charCount = this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;</span>
-<span class="fc" id="L177">        return HeaderCard.FITS_HEADER_CARD_SIZE - this.charCount;</span>
+<span class="fc" id="L178">        this.charCount = this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;</span>
+<span class="fc" id="L179">        return HeaderCard.FITS_HEADER_CARD_SIZE - this.charCount;</span>
     }
 
     @Override
     public String toString() {
-<span class="fc" id="L182">        return this.buffer.toString();</span>
+<span class="fc" id="L184">        return this.buffer.toString();</span>
     }
 
     public void append(String key, int start, int end) {
-<span class="fc" id="L186">        this.buffer.append(key, start, end);</span>
-<span class="fc" id="L187">        this.charCount += end - start;</span>
-<span class="fc" id="L188">    }</span>
+<span class="fc" id="L188">        this.buffer.append(key, start, end);</span>
+<span class="fc" id="L189">        this.charCount += end - start;</span>
+<span class="fc" id="L190">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

@@ -93,9 +93,9 @@ public class ImageHDU extends BasicHDU&lt;ImageData&gt; {
     public static boolean isHeader(Header hdr) {
 <span class="fc" id="L94">        boolean found = hdr.getBooleanValue(SIMPLE);</span>
 <span class="fc bfc" id="L95" title="All 2 branches covered.">        if (!found) {</span>
-<span class="fc" id="L96">            String s = hdr.getStringValue(XTENSION);</span>
-<span class="pc bpc" id="L97" title="2 of 6 branches missed.">            if (s != null &amp;&amp; //</span>
-                    (&quot;IMAGE&quot;.equals(s.trim()) || &quot;IUEIMAGE&quot;.equals(s.trim()))) {
+<span class="fc" id="L96">            String xtension = hdr.getStringValue(XTENSION);</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">            xtension = xtension == null ? &quot;&quot; : xtension.trim();</span>
+<span class="pc bpc" id="L98" title="1 of 4 branches missed.">            if (&quot;IMAGE&quot;.equals(xtension) || &quot;IUEIMAGE&quot;.equals(xtension)) {</span>
 <span class="fc" id="L99">                found = true;</span>
             }
         }
@@ -117,8 +117,8 @@ public class ImageHDU extends BasicHDU&lt;ImageData&gt; {
      *             if the object does not contain valid image data.
      */
     public static Header manufactureHeader(Data d) throws FitsException {
-<span class="pc bpc" id="L120" title="1 of 2 branches missed.">        if (d == null) {</span>
-<span class="nc" id="L121">            return null;</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        if (d == null) {</span>
+<span class="fc" id="L121">            return null;</span>
         }
 
 <span class="fc" id="L124">        Header h = new Header();</span>
@@ -156,10 +156,10 @@ public class ImageHDU extends BasicHDU&lt;ImageData&gt; {
      */
     @Override
     public void info(PrintStream stream) {
-<span class="pc bpc" id="L159" title="1 of 2 branches missed.">        if (isHeader(this.myHeader)) {</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (isHeader(this.myHeader)) {</span>
 <span class="fc" id="L160">            stream.println(&quot;  Image&quot;);</span>
         } else {
-<span class="nc" id="L162">            stream.println(&quot;  Image (bad header)&quot;);</span>
+<span class="fc" id="L162">            stream.println(&quot;  Image (bad header)&quot;);</span>
         }
 
 <span class="fc" id="L165">        stream.println(&quot;      Header Information:&quot;);</span>
@@ -172,14 +172,14 @@ public class ImageHDU extends BasicHDU&lt;ImageData&gt; {
 
 <span class="fc" id="L173">        stream.println(&quot;      Data information:&quot;);</span>
         try {
-<span class="pc bpc" id="L175" title="1 of 2 branches missed.">            if (this.myData.getData() == null) {</span>
-<span class="nc" id="L176">                stream.println(&quot;        No Data&quot;);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">            if (this.myData.getData() == null) {</span>
+<span class="fc" id="L176">                stream.println(&quot;        No Data&quot;);</span>
             } else {
 <span class="fc" id="L178">                stream.println(&quot;         &quot; + ArrayFuncs.arrayDescription(this.myData.getData()));</span>
             }
-<span class="nc" id="L180">        } catch (Exception e) {</span>
-<span class="nc" id="L181">            LOG.log(Level.SEVERE, &quot;Unable to get image data&quot;, e);</span>
-<span class="nc" id="L182">            stream.println(&quot;      Unable to get data&quot;);</span>
+<span class="fc" id="L180">        } catch (Exception e) {</span>
+<span class="fc" id="L181">            LOG.log(Level.SEVERE, &quot;Unable to get image data&quot;, e);</span>
+<span class="fc" id="L182">            stream.println(&quot;      Unable to get data&quot;);</span>
 <span class="fc" id="L183">        }</span>
 <span class="fc" id="L184">    }</span>
 
@@ -189,8 +189,8 @@ public class ImageHDU extends BasicHDU&lt;ImageData&gt; {
 
         try {
 <span class="fc" id="L191">            super.setPrimaryHDU(status);</span>
-<span class="nc" id="L192">        } catch (FitsException e) {</span>
-<span class="nc" id="L193">            LOG.log(Level.SEVERE, &quot;Impossible exception in ImageData&quot;, e);</span>
+<span class="fc" id="L192">        } catch (FitsException e) {</span>
+<span class="fc" id="L193">            LOG.log(Level.SEVERE, &quot;Impossible exception in ImageData&quot;, e);</span>
 <span class="fc" id="L194">        }</span>
 
 <span class="fc bfc" id="L196" title="All 2 branches covered.">        if (status) {</span>

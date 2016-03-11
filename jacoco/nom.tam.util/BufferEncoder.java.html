@@ -42,160 +42,155 @@ public abstract class BufferEncoder {
 <span class="fc" id="L42">        this.sharedBuffer = sharedBuffer;</span>
 <span class="fc" id="L43">    }</span>
 
-    protected void init(int bufferSize) {
-<span class="nc" id="L46">        this.sharedBuffer.buffer = new byte[bufferSize];</span>
-<span class="nc" id="L47">        this.sharedBuffer.bufferOffset = 0;</span>
-<span class="nc" id="L48">    }</span>
-
     protected abstract void needBuffer(int need) throws IOException;
 
     protected void write(boolean[] b, int start, int length) throws IOException {
-<span class="fc bfc" id="L53" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L54">            writeBoolean(b[i]);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
+<span class="fc" id="L49">            writeBoolean(b[i]);</span>
         }
-<span class="fc" id="L56">    }</span>
+<span class="fc" id="L51">    }</span>
 
     protected abstract void write(byte[] buf, int offset, int length) throws IOException;
 
     protected void write(char[] c, int start, int length) throws IOException {
-<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L62">            writeChar(c[i]);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
+<span class="fc" id="L57">            writeChar(c[i]);</span>
         }
-<span class="fc" id="L64">    }</span>
+<span class="fc" id="L59">    }</span>
 
     protected void write(double[] d, int start, int length) throws IOException {
-<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L68">            writeLong(Double.doubleToLongBits(d[i]));</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
+<span class="fc" id="L63">            writeLong(Double.doubleToLongBits(d[i]));</span>
         }
-<span class="fc" id="L70">    }</span>
+<span class="fc" id="L65">    }</span>
 
     protected void write(float[] f, int start, int length) throws IOException {
-<span class="fc bfc" id="L73" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L74">            writeInt(Float.floatToIntBits(f[i]));</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
+<span class="fc" id="L69">            writeInt(Float.floatToIntBits(f[i]));</span>
         }
-<span class="fc" id="L76">    }</span>
+<span class="fc" id="L71">    }</span>
 
     protected void write(int[] i, int start, int length) throws IOException {
-<span class="fc bfc" id="L79" title="All 2 branches covered.">        for (int ii = start; ii &lt; start + length; ii++) {</span>
-<span class="fc" id="L80">            writeInt(i[ii]);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        for (int ii = start; ii &lt; start + length; ii++) {</span>
+<span class="fc" id="L75">            writeInt(i[ii]);</span>
         }
-<span class="fc" id="L82">    }</span>
+<span class="fc" id="L77">    }</span>
 
     protected void write(long[] l, int start, int length) throws IOException {
-<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L86">            writeLong(l[i]);</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
+<span class="fc" id="L81">            writeLong(l[i]);</span>
         }
-<span class="fc" id="L88">    }</span>
+<span class="fc" id="L83">    }</span>
 
     protected void write(short[] s, int start, int length) throws IOException {
-<span class="fc bfc" id="L91" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L92">            writeShort(s[i]);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
+<span class="fc" id="L87">            writeShort(s[i]);</span>
         }
-<span class="fc" id="L94">    }</span>
+<span class="fc" id="L89">    }</span>
 
     protected void write(String[] s, int start, int length) throws IOException {
-<span class="fc bfc" id="L97" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L98">            write(AsciiFuncs.getBytes(s[i]), 0, s[i].length());</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
+<span class="fc" id="L93">            write(AsciiFuncs.getBytes(s[i]), 0, s[i].length());</span>
         }
-<span class="fc" id="L100">    }</span>
+<span class="fc" id="L95">    }</span>
 
     protected void writeArray(Object o) throws IOException {
-<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if (!o.getClass().isArray()) {</span>
-<span class="nc" id="L104">            throw new IOException(&quot;Invalid object passed to BufferedDataOutputStream.write&quot; + o.getClass().getName());</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (!o.getClass().isArray()) {</span>
+<span class="fc" id="L99">            throw new IOException(&quot;Invalid object passed to BufferedDataOutputStream.write&quot; + o.getClass().getName());</span>
         }
-<span class="fc" id="L106">        int length = Array.getLength(o);</span>
+<span class="fc" id="L101">        int length = Array.getLength(o);</span>
         // Is this a multidimensional array? If so process recursiv
-<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (o.getClass().getComponentType().isArray()) {</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">            for (int i = 0; i &lt; length; i++) {</span>
-<span class="fc" id="L110">                writeArray(Array.get(o, i));</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        if (o.getClass().getComponentType().isArray()) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">            for (int i = 0; i &lt; length; i++) {</span>
+<span class="fc" id="L105">                writeArray(Array.get(o, i));</span>
             }
         } else {
-<span class="fc bfc" id="L113" title="All 2 branches covered.">            if (o instanceof boolean[]) {</span>
-<span class="fc" id="L114">                write((boolean[]) o, 0, length);</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">            } else if (o instanceof byte[]) {</span>
-<span class="fc" id="L116">                write((byte[]) o, 0, length);</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">            } else if (o instanceof char[]) {</span>
-<span class="fc" id="L118">                write((char[]) o, 0, length);</span>
-<span class="fc bfc" id="L119" title="All 2 branches covered.">            } else if (o instanceof short[]) {</span>
-<span class="fc" id="L120">                write((short[]) o, 0, length);</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">            } else if (o instanceof int[]) {</span>
-<span class="fc" id="L122">                write((int[]) o, 0, length);</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">            } else if (o instanceof long[]) {</span>
-<span class="fc" id="L124">                write((long[]) o, 0, length);</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">            } else if (o instanceof float[]) {</span>
-<span class="fc" id="L126">                write((float[]) o, 0, length);</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">            } else if (o instanceof double[]) {</span>
-<span class="fc" id="L128">                write((double[]) o, 0, length);</span>
-<span class="pc bpc" id="L129" title="1 of 2 branches missed.">            } else if (o instanceof String[]) {</span>
-<span class="nc" id="L130">                write((String[]) o, 0, length);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">            if (o instanceof boolean[]) {</span>
+<span class="fc" id="L109">                write((boolean[]) o, 0, length);</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">            } else if (o instanceof byte[]) {</span>
+<span class="fc" id="L111">                write((byte[]) o, 0, length);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">            } else if (o instanceof char[]) {</span>
+<span class="fc" id="L113">                write((char[]) o, 0, length);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            } else if (o instanceof short[]) {</span>
+<span class="fc" id="L115">                write((short[]) o, 0, length);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">            } else if (o instanceof int[]) {</span>
+<span class="fc" id="L117">                write((int[]) o, 0, length);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            } else if (o instanceof long[]) {</span>
+<span class="fc" id="L119">                write((long[]) o, 0, length);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">            } else if (o instanceof float[]) {</span>
+<span class="fc" id="L121">                write((float[]) o, 0, length);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">            } else if (o instanceof double[]) {</span>
+<span class="fc" id="L123">                write((double[]) o, 0, length);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">            } else if (o instanceof String[]) {</span>
+<span class="fc" id="L125">                write((String[]) o, 0, length);</span>
             } else {
-<span class="fc bfc" id="L132" title="All 2 branches covered.">                for (int i = 0; i &lt; length; i++) {</span>
-<span class="fc" id="L133">                    writeArray(Array.get(o, i));</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">                for (int i = 0; i &lt; length; i++) {</span>
+<span class="fc" id="L128">                    writeArray(Array.get(o, i));</span>
                 }
             }
         }
-<span class="fc" id="L137">    }</span>
+<span class="fc" id="L132">    }</span>
 
     protected void writeBoolean(boolean b) throws IOException {
-<span class="fc" id="L140">        needBuffer(FitsIO.BYTES_IN_BOOLEAN);</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">        if (b) {</span>
-<span class="fc" id="L142">            this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset] = (byte) 1;</span>
+<span class="fc" id="L135">        needBuffer(FitsIO.BYTES_IN_BOOLEAN);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        if (b) {</span>
+<span class="fc" id="L137">            this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset] = (byte) 1;</span>
         } else {
-<span class="fc" id="L144">            this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset] = (byte) 0;</span>
+<span class="fc" id="L139">            this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset] = (byte) 0;</span>
         }
-<span class="fc" id="L146">        this.sharedBuffer.bufferOffset++;</span>
-<span class="fc" id="L147">    }</span>
+<span class="fc" id="L141">        this.sharedBuffer.bufferOffset++;</span>
+<span class="fc" id="L142">    }</span>
 
     protected void writeByte(int b) throws IOException {
-<span class="fc" id="L150">        needBuffer(FitsIO.BYTES_IN_BYTE);</span>
-<span class="fc" id="L151">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) b;</span>
-<span class="fc" id="L152">    }</span>
+<span class="fc" id="L145">        needBuffer(FitsIO.BYTES_IN_BYTE);</span>
+<span class="fc" id="L146">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) b;</span>
+<span class="fc" id="L147">    }</span>
 
     protected void writeChar(int c) throws IOException {
-<span class="fc" id="L155">        needBuffer(FitsIO.BYTES_IN_CHAR);</span>
-<span class="fc" id="L156">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (c &gt;&gt;&gt; FitsIO.BITS_OF_1_BYTE);</span>
-<span class="fc" id="L157">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) c;</span>
-<span class="fc" id="L158">    }</span>
+<span class="fc" id="L150">        needBuffer(FitsIO.BYTES_IN_CHAR);</span>
+<span class="fc" id="L151">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (c &gt;&gt;&gt; FitsIO.BITS_OF_1_BYTE);</span>
+<span class="fc" id="L152">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) c;</span>
+<span class="fc" id="L153">    }</span>
 
     protected void writeChars(String s) throws IOException {
-<span class="fc" id="L161">        int len = s.length();</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">        for (int i = 0; i &lt; len; i++) {</span>
-<span class="fc" id="L163">            writeChar(s.charAt(i));</span>
+<span class="fc" id="L156">        int len = s.length();</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        for (int i = 0; i &lt; len; i++) {</span>
+<span class="fc" id="L158">            writeChar(s.charAt(i));</span>
         }
-<span class="fc" id="L165">    }</span>
+<span class="fc" id="L160">    }</span>
 
     protected void writeDouble(double d) throws IOException {
-<span class="fc" id="L168">        writeLong(Double.doubleToLongBits(d));</span>
-<span class="fc" id="L169">    }</span>
+<span class="fc" id="L163">        writeLong(Double.doubleToLongBits(d));</span>
+<span class="fc" id="L164">    }</span>
 
     protected void writeFloat(float f) throws IOException {
-<span class="fc" id="L172">        writeInt(Float.floatToIntBits(f));</span>
-<span class="fc" id="L173">    }</span>
+<span class="fc" id="L167">        writeInt(Float.floatToIntBits(f));</span>
+<span class="fc" id="L168">    }</span>
 
     protected void writeInt(int i) throws IOException {
-<span class="fc" id="L176">        needBuffer(FitsIO.BYTES_IN_INTEGER);</span>
-<span class="fc" id="L177">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (i &gt;&gt;&gt; FitsIO.BITS_OF_3_BYTES);</span>
-<span class="fc" id="L178">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (i &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES);</span>
-<span class="fc" id="L179">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (i &gt;&gt;&gt; FitsIO.BITS_OF_1_BYTE);</span>
-<span class="fc" id="L180">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) i;</span>
-<span class="fc" id="L181">    }</span>
+<span class="fc" id="L171">        needBuffer(FitsIO.BYTES_IN_INTEGER);</span>
+<span class="fc" id="L172">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (i &gt;&gt;&gt; FitsIO.BITS_OF_3_BYTES);</span>
+<span class="fc" id="L173">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (i &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES);</span>
+<span class="fc" id="L174">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (i &gt;&gt;&gt; FitsIO.BITS_OF_1_BYTE);</span>
+<span class="fc" id="L175">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) i;</span>
+<span class="fc" id="L176">    }</span>
 
     protected void writeLong(long l) throws IOException {
-<span class="fc" id="L184">        needBuffer(FitsIO.BYTES_IN_LONG);</span>
-<span class="fc" id="L185">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_7_BYTES);</span>
-<span class="fc" id="L186">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_6_BYTES);</span>
-<span class="fc" id="L187">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_5_BYTES);</span>
-<span class="fc" id="L188">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_4_BYTES);</span>
-<span class="fc" id="L189">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_3_BYTES);</span>
-<span class="fc" id="L190">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES);</span>
-<span class="fc" id="L191">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_1_BYTE);</span>
-<span class="fc" id="L192">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) l;</span>
-<span class="fc" id="L193">    }</span>
+<span class="fc" id="L179">        needBuffer(FitsIO.BYTES_IN_LONG);</span>
+<span class="fc" id="L180">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_7_BYTES);</span>
+<span class="fc" id="L181">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_6_BYTES);</span>
+<span class="fc" id="L182">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_5_BYTES);</span>
+<span class="fc" id="L183">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_4_BYTES);</span>
+<span class="fc" id="L184">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_3_BYTES);</span>
+<span class="fc" id="L185">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES);</span>
+<span class="fc" id="L186">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_1_BYTE);</span>
+<span class="fc" id="L187">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) l;</span>
+<span class="fc" id="L188">    }</span>
 
     protected void writeShort(int s) throws IOException {
-<span class="fc" id="L196">        needBuffer(FitsIO.BYTES_IN_SHORT);</span>
-<span class="fc" id="L197">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (s &gt;&gt;&gt; FitsIO.BITS_OF_1_BYTE);</span>
-<span class="fc" id="L198">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) s;</span>
-<span class="fc" id="L199">    }</span>
+<span class="fc" id="L191">        needBuffer(FitsIO.BYTES_IN_SHORT);</span>
+<span class="fc" id="L192">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (s &gt;&gt;&gt; FitsIO.BITS_OF_1_BYTE);</span>
+<span class="fc" id="L193">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) s;</span>
+<span class="fc" id="L194">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

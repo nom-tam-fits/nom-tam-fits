@@ -425,11 +425,11 @@ public class AsciiTable extends AbstractTableData {
     @Override
     public void deleteRows(int start, int len) throws FitsException {
         try {
-<span class="pc bpc" id="L428" title="3 of 8 branches missed.">            if (this.nRows == 0 || start &lt; 0 || start &gt;= this.nRows || len &lt;= 0) {</span>
+<span class="fc bfc" id="L428" title="All 8 branches covered.">            if (this.nRows == 0 || start &lt; 0 || start &gt;= this.nRows || len &lt;= 0) {</span>
 <span class="fc" id="L429">                return;</span>
             }
-<span class="pc bpc" id="L431" title="1 of 2 branches missed.">            if (start + len &gt; this.nRows) {</span>
-<span class="nc" id="L432">                len = this.nRows - start;</span>
+<span class="fc bfc" id="L431" title="All 2 branches covered.">            if (start + len &gt; this.nRows) {</span>
+<span class="fc" id="L432">                len = this.nRows - start;</span>
             }
 <span class="fc" id="L434">            ensureData();</span>
 <span class="fc bfc" id="L435" title="All 2 branches covered.">            for (int i = 0; i &lt; this.nFields; i += 1) {</span>
@@ -718,10 +718,10 @@ public class AsciiTable extends AbstractTableData {
      * @return if the given element has been nulled.
      */
     public boolean isNull(int row, int col) {
-<span class="pc bpc" id="L721" title="1 of 2 branches missed.">        if (this.isNull != null) {</span>
+<span class="fc bfc" id="L721" title="All 2 branches covered.">        if (this.isNull != null) {</span>
 <span class="fc" id="L722">            return this.isNull[row * this.nFields + col];</span>
         } else {
-<span class="nc" id="L724">            return false;</span>
+<span class="fc" id="L724">            return false;</span>
         }
     }
 

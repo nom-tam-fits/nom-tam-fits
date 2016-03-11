@@ -49,11 +49,11 @@ public abstract class BufferDecoder {
         private long primitiveArrayCount;
 
         protected long primitiveArrayRecurse(Object o) throws IOException {
-<span class="pc bpc" id="L52" title="1 of 2 branches missed.">            if (o == null) {</span>
-<span class="nc" id="L53">                return this.primitiveArrayCount;</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">            if (o == null) {</span>
+<span class="fc" id="L53">                return this.primitiveArrayCount;</span>
             }
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">            if (!o.getClass().isArray()) {</span>
-<span class="nc" id="L56">                throw new IOException(&quot;Invalid object passed to BufferedDataInputStream.readArray:&quot; + o.getClass().getName());</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">            if (!o.getClass().isArray()) {</span>
+<span class="fc" id="L56">                throw new IOException(&quot;Invalid object passed to BufferedDataInputStream.readArray:&quot; + o.getClass().getName());</span>
             }
 <span class="fc" id="L58">            int length = Array.getLength(o);</span>
             // Is this a multidimensional array? If so process recursively.
@@ -70,8 +70,8 @@ public abstract class BufferDecoder {
 <span class="fc bfc" id="L70" title="All 2 branches covered.">                } else if (type == PrimitiveTypes.BYTE) {</span>
 <span class="fc" id="L71">                    int len = read((byte[]) o, 0, length);</span>
 <span class="fc" id="L72">                    this.primitiveArrayCount += len;</span>
-<span class="pc bpc" id="L73" title="1 of 2 branches missed.">                    if (len &lt; length) {</span>
-<span class="nc" id="L74">                        throw new EOFException();</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">                    if (len &lt; length) {</span>
+<span class="fc" id="L74">                        throw new EOFException();</span>
                     }
 <span class="fc bfc" id="L76" title="All 2 branches covered.">                } else if (type == PrimitiveTypes.CHAR) {</span>
 <span class="fc" id="L77">                    this.primitiveArrayCount += read((char[]) o, 0, length);</span>
@@ -309,11 +309,11 @@ public abstract class BufferDecoder {
     }
 
     protected void readFully(byte[] b, int off, int len) throws IOException {
-<span class="pc bpc" id="L312" title="3 of 6 branches missed.">        if (off &lt; 0 || len &lt; 0 || off + len &gt; b.length) {</span>
-<span class="nc" id="L313">            throw new IOException(&quot;Attempt to read outside byte array&quot;);</span>
+<span class="pc bpc" id="L312" title="2 of 6 branches missed.">        if (off &lt; 0 || len &lt; 0 || off + len &gt; b.length) {</span>
+<span class="fc" id="L313">            throw new IOException(&quot;Attempt to read outside byte array&quot;);</span>
         }
-<span class="pc bpc" id="L315" title="1 of 2 branches missed.">        if (read(b, off, len) &lt; len) {</span>
-<span class="nc" id="L316">            throw new EOFException();</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">        if (read(b, off, len) &lt; len) {</span>
+<span class="fc" id="L316">            throw new EOFException();</span>
         }
 <span class="fc" id="L318">    }</span>
 

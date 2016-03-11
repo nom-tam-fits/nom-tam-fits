@@ -58,9 +58,9 @@ import nom.tam.util.Cursor;
  */
 public class CompressedImageHDU extends BinaryTableHDU {
 
-<span class="fc" id="L61">    static final Map&lt;IFitsHeader, BackupRestoreUnCompressedHeaderCard&gt; COMPRESSED_HEADER_MAPPING = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L61">    static final Map&lt;IFitsHeader, BackupRestoreUnCompressedHeaderCard&gt; COMPRESSED_HEADER_MAPPING = new HashMap&lt;IFitsHeader, BackupRestoreUnCompressedHeaderCard&gt;();</span>
 
-<span class="fc" id="L63">    static final Map&lt;IFitsHeader, BackupRestoreUnCompressedHeaderCard&gt; UNCOMPRESSED_HEADER_MAPPING = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L63">    static final Map&lt;IFitsHeader, BackupRestoreUnCompressedHeaderCard&gt; UNCOMPRESSED_HEADER_MAPPING = new HashMap&lt;IFitsHeader, BackupRestoreUnCompressedHeaderCard&gt;();</span>
 
     /**
      * Prepare a compressed image hdu for the specified image. the tile axis

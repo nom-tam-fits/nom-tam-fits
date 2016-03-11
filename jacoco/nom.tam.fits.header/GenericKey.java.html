@@ -54,7 +54,7 @@ public final class GenericKey {
     private static final Map&lt;String, IFitsHeader&gt; STANDARD_KEYS;
 
     static {
-<span class="fc" id="L57">        Map&lt;String, IFitsHeader&gt; headers = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L57">        Map&lt;String, IFitsHeader&gt; headers = new HashMap&lt;String, IFitsHeader&gt;();</span>
 <span class="fc bfc" id="L58" title="All 2 branches covered.">        for (IFitsHeader key : Standard.values()) {</span>
 <span class="fc" id="L59">            headers.put(key.key(), key);</span>
         }

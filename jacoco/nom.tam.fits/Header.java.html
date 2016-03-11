@@ -139,7 +139,7 @@ public class Header implements FitsElement {
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
      */
-<span class="fc" id="L142">    private final HashedList&lt;HeaderCard&gt; cards = new HashedList&lt;&gt;();</span>
+<span class="fc" id="L142">    private final HashedList&lt;HeaderCard&gt; cards = new HashedList&lt;HeaderCard&gt;();</span>
 
     /**
      * This iterator allows one to run through the list.
@@ -207,9 +207,9 @@ public class Header implements FitsElement {
 
     private void addDuplicate(HeaderCard dup) {
 <span class="fc bfc" id="L209" title="All 6 branches covered.">        if (!COMMENT.key().equals(dup.getKey()) &amp;&amp; !HISTORY.key().equals(dup.getKey()) &amp;&amp; !dup.getKey().trim().isEmpty()) {</span>
-<span class="fc" id="L210">            LOG.log(Level.WARNING, &quot;Warning: multiple occurrences of key:&quot; + dup.getKey());</span>
+<span class="fc" id="L210">            LOG.log(Level.WARNING, &quot;Multiple occurrences of key:&quot; + dup.getKey());</span>
 <span class="fc bfc" id="L211" title="All 2 branches covered.">            if (this.duplicates == null) {</span>
-<span class="fc" id="L212">                this.duplicates = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L212">                this.duplicates = new ArrayList&lt;HeaderCard&gt;();</span>
             }
 <span class="fc" id="L214">            this.duplicates.add(dup);</span>
         }
