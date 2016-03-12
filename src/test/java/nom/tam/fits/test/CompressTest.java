@@ -515,6 +515,19 @@ public class CompressTest {
         new BZip2CompressionProvider().decompress(null);
     }
 
+    @Test(expected = IOException.class)
+    public void testBZip2CompressionProviderFailureOther() throws Exception {
+        InputStream in = new ByteArrayInputStream(new byte[100]) {
+
+            @Override
+            public synchronized int read() {
+                ThrowAnyException.throwAnyAsRuntime(new Exception("readError"));
+                return -1;
+            }
+        };
+        new BZip2CompressionProvider().decompress(in);
+    }
+
     @Test
     public void testCloseIS() throws Exception {
         OutputStream out = new ByteArrayOutputStream();
@@ -701,4 +714,10 @@ public class CompressTest {
         // we assume a success even if the join failes
         close.read();
     }
+
+    @Test(expected = IOException.class)
+    public void testBasicCompressProviderFail() throws Exception {
+        new BasicCompressProvider().decompress(null);
+    }
+
 }
