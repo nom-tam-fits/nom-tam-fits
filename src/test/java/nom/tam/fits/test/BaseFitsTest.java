@@ -419,13 +419,12 @@ public class BaseFitsTest {
         BufferedDataOutputStream os = null;
         Exception e = null;
         try {
-            os = new BufferedDataOutputStream(new ByteArrayOutputStream() {
+            os = new BufferedDataOutputStream(new ByteArrayOutputStream()) {
 
-                @Override
-                public synchronized void write(byte[] b, int off, int len) {
+                public void write(byte[] b) throws IOException {
                     ThrowAnyException.throwIOException("could not write");
-                }
-            });
+                };
+            };
             hdu.getData().write(os);
         } catch (FitsException io) {
             e = io;
