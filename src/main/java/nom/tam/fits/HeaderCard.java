@@ -864,15 +864,16 @@ public class HeaderCard implements CursorValue<String> {
         return null;
     }
 
+    /**
+     * detect the decimal type of the value, does it fit in a Double/BigInteger
+     * or must it be a BigDecimal to keep the needed precission.
+     * 
+     * @param value
+     *            the String value to check.
+     * @return the type to fit the value
+     */
     private static Class<?> getDecimalNumberType(String value) {
-        // We should detect if we are loosing precision here
-        BigDecimal bigDecimal = null;
-
-        try {
-            bigDecimal = new BigDecimal(value);
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("could not parse " + value + " cause:" + e.getCause());
-        }
+        BigDecimal bigDecimal = new BigDecimal(value);
         if (bigDecimal.abs().compareTo(HeaderCard.LONG_MAX_VALUE_AS_BIG_DECIMAL) > 0 && bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
             return BigInteger.class;
         } else if (bigDecimal.equals(BigDecimal.valueOf(Double.valueOf(value)))) {

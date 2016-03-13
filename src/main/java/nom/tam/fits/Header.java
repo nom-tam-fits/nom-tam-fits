@@ -1226,14 +1226,10 @@ public class Header implements FitsElement {
      */
     void nullImage() {
         this.iter = iterator();
-        try {
-            addValue(SIMPLE, true);
-            addValue(BITPIX, BasicHDU.BITPIX_BYTE);
-            addValue(NAXIS, 0);
-            addValue(EXTEND, true);
-        } catch (HeaderCardException e) {
-            LOG.log(Level.SEVERE, "could not create null image, should not be possible", e);
-        }
+        this.iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), SIMPLE.comment(), false).setValue(true));
+        this.iter.add(HeaderCard.saveNewHeaderCard(BITPIX.key(), BITPIX.comment(), false).setValue(BasicHDU.BITPIX_BYTE));
+        this.iter.add(HeaderCard.saveNewHeaderCard(NAXIS.key(), NAXIS.comment(), false).setValue(0));
+        this.iter.add(HeaderCard.saveNewHeaderCard(EXTEND.key(), EXTEND.comment(), false).setValue(true));
     }
 
     /**
@@ -1532,12 +1528,8 @@ public class Header implements FitsElement {
 
             if (findCard(NAXISn.n(nax)) != null) {
                 this.iter.next();
-                try {
-                    deleteKey("EXTEND");
-                    this.iter.add(new HeaderCard(EXTEND.key(), true, EXTEND.comment()));
-                } catch (Exception e) {
-                    LOG.log(Level.FINE, "exception ignored in setSimple", e);
-                }
+                deleteKey(EXTEND);
+                this.iter.add(HeaderCard.saveNewHeaderCard(EXTEND.key(), EXTEND.comment(), false).setValue(true));
             }
         }
         this.iter = iterator();
