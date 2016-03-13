@@ -349,11 +349,11 @@ public class HeaderCardTest {
 
     @Test
     public void testFixedLongDoubles() throws Exception {
-        HeaderCard hc = new HeaderCard("TEST", -123456.78915, 4, "dummy");
+        HeaderCard hc = new HeaderCard("TEST", -123456.78905, 4, "dummy");
         String val = hc.getValue();
         assertEquals("tld1", val.length(), 12);
         assertEquals(Double.class, hc.valueType());
-        assertEquals(Double.valueOf(-123456.7892), hc.getValue(Double.class, null));
+        assertEquals(Double.valueOf(-123456.7891), hc.getValue(Double.class, null));
     }
 
     @Test

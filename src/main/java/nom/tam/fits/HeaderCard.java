@@ -9,7 +9,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,6 +72,11 @@ public class HeaderCard implements CursorValue<String> {
     private static final int HIERARCH_WITH_BLANK_LENGTH = HIERARCH_WITH_BLANK.length();
 
     private static final String HIERARCH_WITH_DOT = NonStandard.HIERARCH.key() + ".";
+
+    private static final int MAX_DOUBLE_SIGNIFICANT_DIGITS = 16;
+
+    private static final int MAX_FLOAT_SIGNIFICANT_DIGITS = 7;
+
 
     /**
      * regexp for IEEE floats
@@ -149,6 +153,49 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
+     * Rounds the given number to the specified significant digits.
+     * This is from a StackOverflow question:
+     * <a href="http://stackoverflow.com/questions/202302/rounding-to-an-arbitrary-number-of-significant-digits">
+     *     Rounding to an arbitrary number of significant digits</a>
+     * @param num number that will be rounded
+     * @param n the number of significant digits
+     * @return number rounded to the specified significant digits
+     */
+    public static double roundToSignificantFigures(double num, int n) {
+        if (num == 0) {
+            return 0;
+        }
+
+        final double d = Math.ceil(Math.log10(num < 0 ? -num : num));
+        final int power = n - (int) d;
+
+        final double magnitude = Math.pow(10, power);
+        final long shifted = Math.round(num * magnitude);
+        return shifted / magnitude;
+    }
+
+    /**
+     * Returns the double value as a fixed
+     * @param input a floating point value being converted
+     * @param precision number of decimal places to be shown
+     * @param maxSigDigits the maximum significant digits allowed by the precision of the source floating point type
+     * @return A fixed decimal value as a string
+     * @throws IllegalArgumentException if the significant digits used by fixed decimal representation exceeds the
+     *          significant digits stored within the source floating point type.
+     */
+    private static String toFixedString(double input, int precision, int maxSigDigits) throws IllegalArgumentException {
+        long iPart = (long) input;
+        int sigDigitsRemaining = maxSigDigits - Long.toString(Math.abs(iPart)).length() - precision;
+        if (sigDigitsRemaining < 0) {
+            throw new IllegalArgumentException("The value exceeds the number of significant digits present");
+        }
+        double value = roundToSignificantFigures(input, maxSigDigits);
+        String format = "%." + precision + "f";
+        return String.format(format, value);
+    }
+
+
+    /**
      * Create a string from a BigDecimal making sure that it's not more than 20
      * characters long. Probably would be better if we had a way to override
      * this since we can loose precision for some doubles.
@@ -177,21 +224,28 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * Create a string from a double making sure that it's not more than 20
-     * characters long. Probably would be better if we had a way to override
-     * this since we can loose precision for some doubles.
+     * Create a fixed decimal string from a double
+     * @param input float value being converted
+     * @param prec the number of decimal places to show
+     * @return fixed decimal string.
+     * @throws IllegalArgumentException if the significant digits used by fixed decimal representation exceeds the
+     *          significant digits stored within the source floating point type.
      */
     private static String dblString(double input, int prec) {
-        DecimalFormat df = new DecimalFormat("0.0;-0.0");
-        df.setMaximumFractionDigits(prec);
-        df.setMinimumFractionDigits(prec);
-        String value = df.format(input);
-        if (value.length() > MAX_DOUBLE_STRING_LENGTH) {
-            return dblString(BigDecimal.valueOf(input));
-        }
-        return value;
+        return toFixedString(input, prec, MAX_DOUBLE_SIGNIFICANT_DIGITS);
     }
 
+    /**
+     * Create a fixed decimal string from a float
+     * @param input float value being converted
+     * @param prec the number of decimal places to show
+     * @return fixed decimal string.
+     * @throws IllegalArgumentException if the significant digits used by fixed decimal representation exceeds the
+     *          significant digits stored within the source floating point type.
+     */
+    private static String dblString(float input, int prec) {
+        return toFixedString(input, prec, MAX_FLOAT_SIGNIFICANT_DIGITS);
+    }
 
     private static ArrayDataInput stringToArrayInputStream(String card) {
         byte[] bytes = AsciiFuncs.getBytes(card);

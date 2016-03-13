@@ -55,6 +55,14 @@
 				<picUrl>http://www.gravatar.com/avatar/6f82a608d349cc24f05604242422b1b8.png</picUrl>
 			</properties>
 		</developer>
+		<developer>
+			<id>whcleveland</id>
+			<name>William H. Cleveland Jr.</name>
+			<email>whclevelandjr [at] gmail [dot] com</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
 	</developers>
 	<contributors>
 		<contributor>
