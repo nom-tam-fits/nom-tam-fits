@@ -37,6 +37,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -44,6 +45,7 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.TruncatedFileException;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter;
 import nom.tam.util.AsciiFuncs;
@@ -186,7 +188,7 @@ public class HeaderCardTest {
     @Test
     public void testBigDecimal2() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", new BigDecimal("123.66666666666666666666666666666666666666666666666666666666666666666"), "dummy");
-        assertEquals(Double.class, hc.valueType());
+        assertEquals(BigDecimal.class, hc.valueType());
         assertEquals("123.6666666666666667", hc.getValue());
         assertEquals(new BigDecimal("123.6666666666666667"), hc.getValue(BigDecimal.class, null));
         assertEquals(new Double("123.6666666666666667"), hc.getValue(Double.class, null));
@@ -430,8 +432,80 @@ public class HeaderCardTest {
     }
 
     @Test
-    public void testSimpleKeyWordWithoutValue() throws Exception {
-     
+    public void testKeyWordNullability() throws Exception {
+        assertEquals("TEST    = 'VALUE   '           / COMMENT                                        ", new HeaderCard("TEST", "VALUE", "COMMENT", true).toString());
+        assertEquals("TEST    = 'VALUE   '           / COMMENT                                        ", new HeaderCard("TEST", "VALUE", "COMMENT", false).toString());
+        assertEquals("TEST    =                      / COMMENT                                        ", new HeaderCard("TEST", null, "COMMENT", true).toString());
+        assertEquals("TEST    COMMENT                                                                 ", new HeaderCard("TEST", null, "COMMENT", false).toString());
+        HeaderCardException actual = null;
+        try {
+            new HeaderCard(null, "VALUE", "COMMENT", true);
+        } catch (HeaderCardException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        assertEquals(true, new HeaderCard("TEST", "VALUE", "COMMENT", true).isKeyValuePair());
+        assertEquals(true, new HeaderCard("TEST", "VALUE", "COMMENT", false).isKeyValuePair());
+        assertEquals(false, new HeaderCard("TEST", null, "COMMENT", true).isKeyValuePair());
+        assertEquals(false, new HeaderCard("TEST", null, "COMMENT", false).isKeyValuePair());
 
+    }
+
+    @Test(expected = TruncatedFileException.class)
+    public void testTruncatedLine() throws Exception {
+        new HeaderCard(new BufferedDataInputStream(new ByteArrayInputStream("TO_SHORT    ".getBytes())) {
+
+            @Override
+            public int read(byte[] obuf, int offset, int length) throws IOException {
+                try {
+                    return super.read(obuf, offset, length);
+                } catch (Exception e) {
+                    return 0;
+                }
+            }
+        });
+    }
+
+    @Test
+    public void testKeyWordCommentedValue() throws Exception {
+        // the important thing is that the equals sign my not be at the 9
+        // position
+        String cardString = new HeaderCard("XX", null, "= COMMENT", false).toString();
+        assertEquals("XX        = COMMENT                                                             ", cardString);
+        Assert.assertTrue(cardString.indexOf('=') > 8);
+        HeaderCard card = HeaderCard.create(cardString);
+        assertEquals("XX", card.getKey());
+        assertNull(card.getValue());
+        assertEquals("= COMMENT", card.getComment());
+    }
+
+    @Test
+    public void testUnknownValueType() throws Exception {
+        HeaderCard headerCard = new HeaderCard("XX", 5, "COMMENT");
+        headerCard.setValue("ABCD");
+        Class<?> type = headerCard.valueType();
+        assertNull(type);
+    }
+
+    @Test
+    public void testBigDecimalValueType() throws Exception {
+        HeaderCard headerCard = new HeaderCard("XX", 1, null);
+        headerCard.setValue("55555555555555555555.555555555555555");
+        Class<?> type = headerCard.valueType();
+        assertEquals(BigDecimal.class, type);
+        headerCard.setValue("55.55");
+        type = headerCard.valueType();
+        assertEquals(Double.class, type);
+    }
+
+    @Test
+    public void testBigDIntegerValueType() throws Exception {
+        HeaderCard headerCard = new HeaderCard("XX", 1, null);
+        headerCard.setValue("55555555555555555555555555555555555");
+        Class<?> type = headerCard.valueType();
+        assertEquals(BigInteger.class, type);
+        headerCard.setValue("5555");
+        type = headerCard.valueType();
+        assertEquals(Integer.class, type);
     }
 }

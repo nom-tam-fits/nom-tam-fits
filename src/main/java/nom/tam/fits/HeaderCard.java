@@ -875,7 +875,7 @@ public class HeaderCard implements CursorValue<String> {
         }
         if (bigDecimal.abs().compareTo(HeaderCard.LONG_MAX_VALUE_AS_BIG_DECIMAL) > 0 && bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
             return BigInteger.class;
-        } else if (bigDecimal.doubleValue() == Double.valueOf(value)) { // NOSONAR
+        } else if (bigDecimal.equals(BigDecimal.valueOf(Double.valueOf(value)))) {
             return Double.class;
         } else {
             return BigDecimal.class;
