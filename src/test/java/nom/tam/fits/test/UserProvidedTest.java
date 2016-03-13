@@ -31,6 +31,11 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -43,6 +48,8 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.header.NonStandard;
+import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
+import nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter;
 import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
@@ -63,6 +70,7 @@ public class UserProvidedTest {
     public void before() {
         longStringsEnabled = FitsFactory.isLongStringsEnabled();
         useHierarch = FitsFactory.getUseHierarch();
+        FitsFactory.setHierarchFormater(new StandardIHierarchKeyFormatter());
     }
 
     @After
@@ -259,5 +267,62 @@ public class UserProvidedTest {
         } else {
             builder.append(indent);
         }
+    }
+
+    @Test
+    public void testBlanksSituation() throws Exception {
+        FitsFactory.setLongStringsEnabled(true);
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
+
+        FileInputStream stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("16913-1.fits"));
+        BasicHDU<?> bhduMain = null;
+        Fits fitsSrc = null;
+        try {
+            fitsSrc = new Fits(stream);
+            bhduMain = fitsSrc.readHDU(); // Product
+            Cursor<String, HeaderCard> iterator = bhduMain.getHeader().iterator();
+            while (iterator.hasNext()) {
+                HeaderCard headerCard = (HeaderCard) iterator.next();
+                String start = headerCard.getKey();
+                if (start.isEmpty()) {
+                    "".toString();
+                }
+                start = (start + "         ").substring(0, 8);
+                Assert.assertTrue(headerCard.toString().startsWith(start));
+            }
+
+        } finally {
+            SaveClose.close(fitsSrc);
+        }
+    }
+
+    @Test
+    public void testIOTransparentSituation() throws Exception {
+        FitsFactory.setLongStringsEnabled(true);
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
+
+        FileInputStream stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("16913-1.fits"));
+        BasicHDU<?> bhduMain = null;
+        Fits fitsSrc = null;
+        try {
+            fitsSrc = new Fits(stream);
+            bhduMain = fitsSrc.readHDU(); // Product
+        } finally {
+            SaveClose.close(fitsSrc);
+        }
+
+        BasicHDU<?> bhduMainAgain = null;
+        Fits fitsEmpty = null;
+        try {
+            fitsEmpty = new Fits();
+            fitsEmpty.addHDU(bhduMain);
+            bhduMainAgain = fitsEmpty.getHDU(fitsEmpty.getNumberOfHDUs() - 1);
+        } finally {
+            SaveClose.close(fitsEmpty);
+        }
+
+        Assert.assertSame(bhduMainAgain, bhduMain);
     }
 }

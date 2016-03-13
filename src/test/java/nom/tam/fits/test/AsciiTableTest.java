@@ -398,8 +398,8 @@ public class AsciiTableTest {
                 null
             }
         };
-
-        BasicHDU<?> ahdu = FitsFactory.hduFactory(o);
+        // use the depricated factory method.
+        BasicHDU<?> ahdu = FitsFactory.HDUFactory(o);
         Fits f = null;
         try {
             f = new Fits();

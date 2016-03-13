@@ -39,6 +39,8 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
@@ -600,5 +602,24 @@ public class StreamTest {
         };
         BufferedDataInputStream bi = new BufferedDataInputStream(fileInput);
         return bi;
+    }
+
+    @Test
+    public void testSaveClose() {
+        ByteArrayInputStream io = new ByteArrayInputStream(new byte[0]) {
+
+            @Override
+            public void close() throws IOException {
+                throw new IOException();
+            }
+        };
+        // the exception should cause nothing ;-) so the test is successfull if
+        // there is no exception.
+        SaveClose.close(io);
+    }
+
+    @Test
+    public void testReadWithoutSource() throws FitsException, IOException {
+        Assert.assertNull(new Fits().readHDU());
     }
 }

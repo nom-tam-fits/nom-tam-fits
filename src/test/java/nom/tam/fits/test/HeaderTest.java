@@ -55,6 +55,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -983,5 +984,36 @@ public class HeaderTest {
         } finally {
             SaveClose.close(fits);
         }
+    }
+
+    @Test(expected = IOException.class)
+    public void truncatedFileExceptionTest2() throws Exception {
+        String header = "SIMPLE                                                                          " + //
+                "XXXXXX                                                                          ";
+        BufferedDataInputStream data = new BufferedDataInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(header)));
+        new Header().read(data);
+    }
+
+
+    @Test
+    public void testFailedReset() throws Exception {
+        Assert.assertFalse(new Header().reset());
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFailedRewrite() throws Exception {
+      new Header().rewrite();
+    }
+    
+
+
+    @Test
+    public void testSetSimpleWithAxis() throws Exception {
+        Header header = new Header();
+        header.setNaxes(1);
+        header.setNaxis(1, 2);
+        header.setSimple(true);
+        assertEquals("T",header.findCard(SIMPLE).getValue());
+        assertEquals("T",header.findCard(EXTEND).getValue());
     }
 }

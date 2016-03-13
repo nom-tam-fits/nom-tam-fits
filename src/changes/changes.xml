@@ -1,5 +1,16 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
+		<release version="1.14.2" date="2016-03-11" description="Maintenance release with minor bug fixes and enhancements.">
+			<action type="update">
+				Maintenance release with important bug fixes and the restoration of java 6 support.
+			</action>
+			<action type="update" dev="ritchieGitHub" issue="84">
+				Fits does not handle comments that start with 8 blank characters correctly when reading/writing/reading bug .
+			</action>
+			<action type="update" dev="ritchieGitHub" issue="80">
+				Restored Java 6 compatibility. 
+			</action>
+	    </release>
 		<release version="1.14.1" date="2016-02-24" description="Maintenance release with minor bug fixes and enhancements.">
 			<action type="update">
 				Maintenance release with minor bug fixes and enhancements.

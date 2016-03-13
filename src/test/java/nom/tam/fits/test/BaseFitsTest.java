@@ -34,9 +34,11 @@ package nom.tam.fits.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -61,11 +63,13 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.UndefinedData;
 import nom.tam.fits.UndefinedHDU;
+import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
@@ -400,6 +404,112 @@ public class BaseFitsTest {
         buf.close();
         Assert.assertEquals((byte) 1, data[0]);
 
+    }
+
+    @Test
+    public void testFitsUndefinedHduIOProblems() throws Exception {
+        Header head = new Header();
+        head.setXtension("UNKNOWN");
+        head.setBitpix(BasicHDU.BITPIX_BYTE);
+        head.setNaxes(1);
+        head.addValue("NAXIS1", 1000, null);
+        head.addValue("PCOUNT", 0, null);
+        head.addValue("GCOUNT", 2, null);
+        final UndefinedHDU hdu = (UndefinedHDU) FitsFactory.hduFactory(head);
+        BufferedDataOutputStream os = null;
+        Exception e = null;
+        try {
+            os = new BufferedDataOutputStream(new ByteArrayOutputStream()) {
+
+                public void write(byte[] b) throws IOException {
+                    ThrowAnyException.throwIOException("could not write");
+                };
+            };
+            hdu.getData().write(os);
+        } catch (FitsException io) {
+            e = io;
+        } finally {
+            SaveClose.close(os);
+        }
+        Assert.assertNotNull(e);
+
+        BufferedDataInputStream is = null;
+        e = null;
+        try {
+            is = new BufferedDataInputStream(new ByteArrayInputStream(new byte[1000]) {
+
+                @Override
+                public synchronized int read(byte[] b, int off, int len) {
+                    ThrowAnyException.throwIOException("could not write");
+                    return -1;
+                }
+            });
+            hdu.getData().read(is);
+        } catch (FitsException io) {
+            e = io;
+        } finally {
+            SaveClose.close(os);
+        }
+        Assert.assertNotNull(e);
+
+        is = null;
+        e = null;
+        try {
+            is = new BufferedDataInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
+
+                @Override
+                public void skipAllBytes(int toSkip) throws IOException {
+                    ThrowAnyException.throwIOException("could not write");
+                    super.skipAllBytes(toSkip);
+                }
+            };
+            hdu.getData().read(is);
+        } catch (FitsException io) {
+            e = io;
+        } finally {
+            SaveClose.close(os);
+        }
+        Assert.assertNotNull(e);
+        Assert.assertTrue(e.getCause() instanceof IOException);
+
+        is = null;
+        e = null;
+        try {
+            is = new BufferedDataInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
+
+                @Override
+                public void skipAllBytes(int toSkip) throws IOException {
+                    ThrowAnyException.throwAnyAsRuntime(new EOFException("could not write"));
+                    super.skipAllBytes(toSkip);
+                }
+            };
+            hdu.getData().read(is);
+        } catch (FitsException io) {
+            e = io;
+        } finally {
+            SaveClose.close(os);
+        }
+        Assert.assertNotNull(e);
+        Assert.assertTrue(e.getCause() instanceof EOFException);
+    }
+
+    @Test
+    public void testFitsUndefinedHduFillHeader() throws Exception {
+        Header head = new Header();
+        head.setXtension("UNKNOWN");
+        head.setBitpix(BasicHDU.BITPIX_BYTE);
+        head.setNaxes(1);
+        head.addValue("NAXIS1", 1000, null);
+        head.addValue("PCOUNT", 0, null);
+        head.addValue("GCOUNT", 2, null);
+        final UndefinedHDU hdu = (UndefinedHDU) FitsFactory.hduFactory(head);
+        // test is that the exception will not be noticed.
+        new Header(hdu.getData()) {
+
+            public void addValue(IFitsHeader key, int val) throws HeaderCardException {
+                throw new HeaderCardException("sothing wrong");
+            }
+        };
     }
 
     @Test

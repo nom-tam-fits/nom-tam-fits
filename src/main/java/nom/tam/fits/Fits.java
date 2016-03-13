@@ -632,6 +632,9 @@ public class Fits implements Closeable {
      */
     public BasicHDU<?> readHDU() throws FitsException, IOException {
         if (this.dataStr == null || this.atEOF) {
+            if (this.dataStr == null) {
+                LOG.warning("trying to read a hdu, without an input source!");
+            }
             return null;
         }
         if (this.dataStr instanceof RandomAccess && this.lastFileOffset > 0) {

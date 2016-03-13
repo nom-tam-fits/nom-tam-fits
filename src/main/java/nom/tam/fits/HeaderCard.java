@@ -241,18 +241,8 @@ public class HeaderCard implements CursorValue<String> {
 
         String card = readOneHeaderLine(dis);
 
-        if (FitsFactory.getUseHierarch() && card.length() > HIERARCH_WITH_BLANK_LENGTH && card.startsWith(HIERARCH_WITH_BLANK)) {
+        if (FitsFactory.getUseHierarch() && card.startsWith(HIERARCH_WITH_BLANK)) {
             hierarchCard(card, dis);
-            return;
-        }
-
-        // We are going to assume that the value has no blanks in
-        // it unless it is enclosed in quotes. Also, we assume that
-        // a / terminates the string (except inside quotes)
-
-        // treat short lines as special keywords
-        if (card.length() < HIERARCH_WITH_BLANK_LENGTH) {
-            this.key = card;
             return;
         }
 
@@ -260,8 +250,7 @@ public class HeaderCard implements CursorValue<String> {
         this.key = card.substring(0, MAX_KEYWORD_LENGTH).trim();
 
         // if it is an empty key, assume the remainder of the card is a comment
-        if (this.key.length() == 0) {
-            this.key = "";
+        if (this.key.isEmpty()) {
             this.comment = card.substring(MAX_KEYWORD_LENGTH);
             return;
         }
@@ -701,6 +690,17 @@ public class HeaderCard implements CursorValue<String> {
         return maxStringValueLength;
     }
 
+    /**
+     * Read exactly one complete fits header line from the input.
+     * 
+     * @param dis
+     *            the data input stream to read the line
+     * @return a string of exactly 80 characters
+     * @throws IOException
+     *             if the input stream could not be read
+     * @throws TruncatedFileException
+     *             is there was not a complete line available in the input.
+     */
     private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
         byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
         int len;
@@ -831,6 +831,9 @@ public class HeaderCard implements CursorValue<String> {
                 alignPosition = buf.length();
             } else {
                 buf.append(this.key);
+                if (this.key.isEmpty()) {
+                    buf.append(' ');
+                }
                 buf.appendSpacesTo(MAX_KEYWORD_LENGTH);
             }
         }
@@ -916,18 +919,19 @@ public class HeaderCard implements CursorValue<String> {
         return null;
     }
 
+    /**
+     * detect the decimal type of the value, does it fit in a Double/BigInteger
+     * or must it be a BigDecimal to keep the needed precission.
+     * 
+     * @param value
+     *            the String value to check.
+     * @return the type to fit the value
+     */
     private static Class<?> getDecimalNumberType(String value) {
-        // We should detect if we are loosing precision here
-        BigDecimal bigDecimal = null;
-
-        try {
-            bigDecimal = new BigDecimal(value);
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("could not parse " + value + " cause:" + e.getCause());
-        }
+        BigDecimal bigDecimal = new BigDecimal(value);
         if (bigDecimal.abs().compareTo(HeaderCard.LONG_MAX_VALUE_AS_BIG_DECIMAL) > 0 && bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
             return BigInteger.class;
-        } else if (bigDecimal.doubleValue() == Double.valueOf(value)) { // NOSONAR
+        } else if (bigDecimal.equals(BigDecimal.valueOf(Double.valueOf(value)))) {
             return Double.class;
         } else {
             return BigDecimal.class;
