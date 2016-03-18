@@ -54,6 +54,7 @@ import nom.tam.util.BufferedDataInputStream;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class HeaderCardTest {
@@ -187,7 +188,9 @@ public class HeaderCardTest {
 
     @Test
     public void testBigDecimal2() throws Exception {
-        HeaderCard hc = new HeaderCard("TEST", new BigDecimal("123.66666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666"), "dummy");
+        HeaderCard hc =
+                new HeaderCard("TEST",
+                        new BigDecimal("123.66666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666"), "dummy");
         assertEquals(BigDecimal.class, hc.valueType());
         assertEquals("123.66666666666666666666666666666666666666666666666666666666666666667", hc.getValue());
         assertEquals(new BigDecimal("123.66666666666666666666666666666666666666666666666666666666666666667"), hc.getValue(BigDecimal.class, null));
@@ -196,7 +199,9 @@ public class HeaderCardTest {
 
     @Test
     public void testBigDecimal3() throws Exception {
-        HeaderCard hc = new HeaderCard("TEST", new BigDecimal("1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567.890123456789012345678901234567890"), "dummy");
+        HeaderCard hc =
+                new HeaderCard("TEST", new BigDecimal(
+                        "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567.890123456789012345678901234567890"), "dummy");
         assertEquals(BigInteger.class, hc.valueType());
         assertEquals("1.234567890123456789012345678901234567890123456789012345678901235E+96", hc.getValue());
         assertEquals(new BigInteger("1234567890123456789012345678901234567890123456789012345678901235000000000000000000000000000000000"), hc.getValue(BigInteger.class, null));
@@ -276,6 +281,19 @@ public class HeaderCardTest {
     }
 
     @Test
+    @Ignore
+    public void testHierarchExtremValues() throws Exception {
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(1));
+        HeaderCard hc;
+        hc = new HeaderCard("HIERARCH [xxxx].@{ping}", "xx", "Comment");
+        assertEquals("HIERARCH [xxxx].@{ping} = 'xx' / Comment                                        ", hc.toString());
+        HeaderCard reparsedCard = HeaderCard.create(hc.toString());
+        assertEquals("HIERARCH [xxxx].@{ping}", reparsedCard.getKey());
+        
+    }
+
+    @Test
     public void testHierarch() throws Exception {
 
         HeaderCard hc;
@@ -340,7 +358,9 @@ public class HeaderCardTest {
     public void testLongDoubles() throws Exception {
         // Check to see if we make long double values
         // fit in the recommended space.
-        HeaderCard hc = new HeaderCard("TEST", new BigDecimal("123456789012345678901234567890123456789012345678901234567.8901234567890123456789012345678901234567890123456789012345678901234567890"), "dummy");
+        HeaderCard hc =
+                new HeaderCard("TEST", new BigDecimal(
+                        "123456789012345678901234567890123456789012345678901234567.8901234567890123456789012345678901234567890123456789012345678901234567890"), "dummy");
         String val = hc.getValue();
         assertEquals("tld1", val.length(), 69);
         assertEquals(BigDecimal.class, hc.valueType());
