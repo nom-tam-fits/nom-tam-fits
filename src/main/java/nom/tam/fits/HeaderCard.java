@@ -803,6 +803,46 @@ public class HeaderCard implements CursorValue<String> {
      *            the new value to set
      * @return the HeaderCard itself
      */
+    public HeaderCard setValue(BigDecimal update) {
+        this.value = dblString(update, spaceAvailableForValue(key));
+        return this;
+    }
+
+    /**
+     * Set the value for this card.
+     *
+     * @param update
+     *            the new value to set
+     * @param precision
+     *            the number of decimal places to show
+     * @return the HeaderCard itself
+     */
+    public HeaderCard setValue(double update, int precision) {
+        this.value = dblString(update, precision, spaceAvailableForValue(key));
+        return this;
+    }
+
+    /**
+     * Set the value for this card.
+     *
+     * @param update
+     *            the new value to set
+     * @param precision
+     *            the number of decimal places to show
+     * @return the HeaderCard itself
+     */
+    public HeaderCard setValue(BigDecimal update, int precision) {
+        this.value = dblString(update, precision, spaceAvailableForValue(key));
+        return this;
+    }
+
+    /**
+     * Set the value for this card.
+     *
+     * @param update
+     *            the new value to set
+     * @return the HeaderCard itself
+     */
     public HeaderCard setValue(float update) {
         this.value = dblString(update, spaceAvailableForValue(key));
         return this;

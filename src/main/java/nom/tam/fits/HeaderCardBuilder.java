@@ -31,6 +31,8 @@ package nom.tam.fits;
  * #L%
  */
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 
 import nom.tam.fits.header.IFitsHeader;
@@ -56,6 +58,11 @@ public class HeaderCardBuilder {
      * the current selected key.
      */
     private IFitsHeader key;
+
+    /**
+     * scale to use for decimal values.
+     */
+    private int scale = -1;
 
     /**
      * constructor to the header card builder.
@@ -159,10 +166,44 @@ public class HeaderCardBuilder {
      */
     public HeaderCardBuilder value(double newValue) throws HeaderCardException {
         if (this.card == null) {
-            this.card = new HeaderCard(this.key.key(), newValue, null);
+            if (scale >= 0) {
+                this.card = new HeaderCard(this.key.key(), newValue, scale, null);
+            } else {
+                this.card = new HeaderCard(this.key.key(), newValue, null);
+            }
             this.header.addLine(this.card);
         } else {
-            this.card.setValue(newValue);
+            if (scale >= 0) {
+                this.card.setValue(newValue, scale);
+            } else {
+                this.card.setValue(newValue);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
+    public HeaderCardBuilder value(BigDecimal newValue) throws HeaderCardException {
+        final BigDecimal scaledValue;
+        if (scale >= 0) {
+            scaledValue = newValue.setScale(scale, RoundingMode.HALF_UP);
+        } else {
+            scaledValue = newValue;
+        }
+        if (this.card == null) {
+            this.card = new HeaderCard(this.key.key(), scaledValue, null);
+            this.header.addLine(this.card);
+        } else {
+            this.card.setValue(scaledValue);
         }
         return this;
     }
@@ -244,6 +285,28 @@ public class HeaderCardBuilder {
         } else {
             this.card.setValue(newValue);
         }
+        return this;
+    }
+
+    /**
+     * set the scale for the following decimal values.
+     * 
+     * @param newScale
+     *            the new scale to use
+     * @return this
+     */
+    public HeaderCardBuilder scale(int newScale) {
+        this.scale = newScale;
+        return this;
+    }
+
+    /**
+     * use no scale for the following decimal values.
+     * 
+     * @return this
+     */
+    public HeaderCardBuilder noScale() {
+        this.scale = -1;
         return this;
     }
 }

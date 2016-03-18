@@ -33,6 +33,7 @@ package nom.tam.fits.test;
 
 import static nom.tam.fits.header.Standard.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import nom.tam.fits.BasicHDU;
@@ -68,6 +69,9 @@ public class BuilderApiTest {
                 .card(DATAMIN).value(1)//
                 .card(DATAMAX).value(2f)//
                 .card(Standard.BSCALE).value(3d)//
+                .scale(1)//
+                .card(Standard.BZERO).value(5.55d)//
+                .card(Standard.EQUINOX).value(new BigDecimal("5.55"))//
                 .card(AUTHOR).value(true);
 
         Assert.assertEquals("2015-07-11T05:21:25.446", header.getStringValue(DATE_OBS));
@@ -80,6 +84,8 @@ public class BuilderApiTest {
         Assert.assertEquals(1, header.getIntValue(DATAMIN));
         Assert.assertEquals(2f, header.getFloatValue(DATAMAX), 0.000001f);
         Assert.assertEquals(3d, header.getDoubleValue(Standard.BSCALE), 0.000001d);
+        Assert.assertEquals(5.6d, header.getDoubleValue(Standard.BZERO), 0.000001d);
+        Assert.assertEquals(5.6d, header.getDoubleValue(Standard.EQUINOX), 0.000001d);
         Assert.assertEquals(true, header.getBooleanValue(AUTHOR));
 
         date = new FitsDate("2015-07-12T05:21:25.446").toDate();
@@ -92,6 +98,9 @@ public class BuilderApiTest {
                 .card(DATAMIN).value(100)//
                 .card(DATAMAX).value(200f)//
                 .card(Standard.BSCALE).value(300d)//
+                .scale(2)//
+                .card(Standard.BZERO).value(500.055d)//
+                .card(Standard.EQUINOX).value(new BigDecimal("500.055"))//
                 .card(AUTHOR).value(false);
 
         Assert.assertEquals("2015-07-12T05:21:25.446", header.getStringValue(DATE_OBS));
@@ -104,6 +113,8 @@ public class BuilderApiTest {
         Assert.assertEquals(100, header.getIntValue(DATAMIN));
         Assert.assertEquals(200f, header.getFloatValue(DATAMAX), 0.000001f);
         Assert.assertEquals(300d, header.getDoubleValue(Standard.BSCALE), 0.000001d);
+        Assert.assertEquals(500.06d, header.getDoubleValue(Standard.BZERO), 0.000001d);
+        Assert.assertEquals(500.06d, header.getDoubleValue(Standard.EQUINOX), 0.000001d);
         Assert.assertEquals(false, header.getBooleanValue(AUTHOR));
 
     }
