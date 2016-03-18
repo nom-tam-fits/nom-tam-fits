@@ -108,7 +108,7 @@ public class GenerateReleaseNote {
 
     static List<String> limitString(String string, int size) {
         string = string.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').replace("  ", " ").replace("  ", " ").replace("  ", " ");
-        List<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<String>();
         while (string.length() > 80) {
             int split = 80;
             while (!Character.isWhitespace(string.charAt(split))) {

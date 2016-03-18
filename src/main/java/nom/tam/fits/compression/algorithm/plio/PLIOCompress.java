@@ -107,6 +107,9 @@ public abstract class PLIOCompress {
         }
     }
 
+    /**
+     * Attention int values are limited to 24 bits!
+     */
     public static class IntPLIOCompressor extends PLIOCompress implements ICompressor<IntBuffer> {
 
         private IntBuffer pixelData;

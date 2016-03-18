@@ -149,8 +149,6 @@ public abstract class StandardImageTiler implements ImageTiler {
             this.randomAccessFile.read((double[]) output, outputOffset, segment);
         } else if (this.base == byte.class) {
             this.randomAccessFile.read((byte[]) output, outputOffset, segment);
-        } else if (this.base == char.class) {
-            this.randomAccessFile.read((char[]) output, outputOffset, segment);
         } else if (this.base == long.class) {
             this.randomAccessFile.read((long[]) output, outputOffset, segment);
         } else {

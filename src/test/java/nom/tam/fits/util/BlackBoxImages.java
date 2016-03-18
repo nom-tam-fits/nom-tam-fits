@@ -41,6 +41,8 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.zip.GZIPInputStream;
 
+import nom.tam.util.SaveClose;
+
 public class BlackBoxImages {
 
     public static String getBlackBoxImage(final String fileName) {
@@ -85,7 +87,10 @@ public class BlackBoxImages {
     }
 
     private static void unsplitt(File base, File to) {
-        try (FileOutputStream out = new FileOutputStream(to); FileChannel outChannel = out.getChannel()) {
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(to);
+            FileChannel outChannel = out.getChannel();
             int number = 0;
             long offset = 0L;
             File from = new File(base.getParentFile(), base.getName() + String.format("%02d", number) + ".part");
@@ -97,6 +102,8 @@ public class BlackBoxImages {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            SaveClose.close(out);
         }
     }
 

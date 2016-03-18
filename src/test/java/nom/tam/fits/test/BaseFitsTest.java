@@ -34,12 +34,21 @@ package nom.tam.fits.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -49,25 +58,29 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Data;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.UndefinedData;
 import nom.tam.fits.UndefinedHDU;
-import nom.tam.fits.FitsException;
+import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
-import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.LoggerHelper;
+import nom.tam.util.SaveClose;
+import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -128,7 +141,9 @@ public class BaseFitsTest {
 
     @Test
     public void testFitsDeleteHdu() throws Exception {
-        try (Fits fits1 = makeAsciiTable()) {
+        Fits fits1 = null;
+        try {
+            fits1 = makeAsciiTable();
             fits1.read();
             Exception actual = null;
             try {
@@ -144,9 +159,11 @@ public class BaseFitsTest {
             fits1.deleteHDU(2);
             fits1.deleteHDU(2);
             writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
+        } finally {
+            SaveClose.close(fits1);
         }
 
-        Fits fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
+        fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
         fits1.readHDU();
         AsciiTableHDU hdu2 = (AsciiTableHDU) fits1.readHDU();
         AsciiTableHDU hdu3 = (AsciiTableHDU) fits1.readHDU();
@@ -390,6 +407,112 @@ public class BaseFitsTest {
     }
 
     @Test
+    public void testFitsUndefinedHduIOProblems() throws Exception {
+        Header head = new Header();
+        head.setXtension("UNKNOWN");
+        head.setBitpix(BasicHDU.BITPIX_BYTE);
+        head.setNaxes(1);
+        head.addValue("NAXIS1", 1000, null);
+        head.addValue("PCOUNT", 0, null);
+        head.addValue("GCOUNT", 2, null);
+        final UndefinedHDU hdu = (UndefinedHDU) FitsFactory.hduFactory(head);
+        BufferedDataOutputStream os = null;
+        Exception e = null;
+        try {
+            os = new BufferedDataOutputStream(new ByteArrayOutputStream()) {
+
+                public void write(byte[] b) throws IOException {
+                    ThrowAnyException.throwIOException("could not write");
+                };
+            };
+            hdu.getData().write(os);
+        } catch (FitsException io) {
+            e = io;
+        } finally {
+            SaveClose.close(os);
+        }
+        Assert.assertNotNull(e);
+
+        BufferedDataInputStream is = null;
+        e = null;
+        try {
+            is = new BufferedDataInputStream(new ByteArrayInputStream(new byte[1000]) {
+
+                @Override
+                public synchronized int read(byte[] b, int off, int len) {
+                    ThrowAnyException.throwIOException("could not write");
+                    return -1;
+                }
+            });
+            hdu.getData().read(is);
+        } catch (FitsException io) {
+            e = io;
+        } finally {
+            SaveClose.close(os);
+        }
+        Assert.assertNotNull(e);
+
+        is = null;
+        e = null;
+        try {
+            is = new BufferedDataInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
+
+                @Override
+                public void skipAllBytes(int toSkip) throws IOException {
+                    ThrowAnyException.throwIOException("could not write");
+                    super.skipAllBytes(toSkip);
+                }
+            };
+            hdu.getData().read(is);
+        } catch (FitsException io) {
+            e = io;
+        } finally {
+            SaveClose.close(os);
+        }
+        Assert.assertNotNull(e);
+        Assert.assertTrue(e.getCause() instanceof IOException);
+
+        is = null;
+        e = null;
+        try {
+            is = new BufferedDataInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
+
+                @Override
+                public void skipAllBytes(int toSkip) throws IOException {
+                    ThrowAnyException.throwAnyAsRuntime(new EOFException("could not write"));
+                    super.skipAllBytes(toSkip);
+                }
+            };
+            hdu.getData().read(is);
+        } catch (FitsException io) {
+            e = io;
+        } finally {
+            SaveClose.close(os);
+        }
+        Assert.assertNotNull(e);
+        Assert.assertTrue(e.getCause() instanceof EOFException);
+    }
+
+    @Test
+    public void testFitsUndefinedHduFillHeader() throws Exception {
+        Header head = new Header();
+        head.setXtension("UNKNOWN");
+        head.setBitpix(BasicHDU.BITPIX_BYTE);
+        head.setNaxes(1);
+        head.addValue("NAXIS1", 1000, null);
+        head.addValue("PCOUNT", 0, null);
+        head.addValue("GCOUNT", 2, null);
+        final UndefinedHDU hdu = (UndefinedHDU) FitsFactory.hduFactory(head);
+        // test is that the exception will not be noticed.
+        new Header(hdu.getData()) {
+
+            public void addValue(IFitsHeader key, int val) throws HeaderCardException {
+                throw new HeaderCardException("sothing wrong");
+            }
+        };
+    }
+
+    @Test
     public void testreadWriteHdu() throws Exception {
         byte[] undefinedData = new byte[1000];
         for (int index = 0; index < undefinedData.length; index++) {
@@ -432,12 +555,19 @@ public class BaseFitsTest {
             actual = ex;
         }
         Assert.assertNotNull(actual);
-        try (Fits fits = new Fits("nom/tam/fits/test/test.fits", false)) {
+        Fits fits = null;
+        try {
+            fits = new Fits("nom/tam/fits/test/test.fits", false);
             Assert.assertNotNull(fits.readHDU());
             Assert.assertEquals(1, fits.currentSize());
+        } finally {
+            SaveClose.close(fits);
         }
-        try (Fits fits = new Fits(FILE + new File("src/test/resources/nom/tam/fits/test/test.fits").getAbsolutePath(), false)) {
+        try {
+            fits = new Fits(FILE + new File("src/test/resources/nom/tam/fits/test/test.fits").getAbsolutePath(), false);
             Assert.assertNotNull(fits.readHDU());
+        } finally {
+            SaveClose.close(fits);
         }
         actual = null;
         try {
@@ -453,8 +583,11 @@ public class BaseFitsTest {
             actual = ex;
         }
         Assert.assertNotNull(actual);
-        try (Fits fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits", false)) {
+        try {
+            fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits", false);
             Assert.assertNotNull(fits.readHDU());
+        } finally {
+            SaveClose.close(fits);
         }
     }
 
@@ -482,6 +615,15 @@ public class BaseFitsTest {
     @Test
     public void testLoggerHelperPrivate() throws Exception {
         Constructor<?>[] constrs = LoggerHelper.class.getDeclaredConstructors();
+        assertEquals(constrs.length, 1);
+        assertFalse(constrs[0].isAccessible());
+        constrs[0].setAccessible(true);
+        constrs[0].newInstance();
+    }
+
+    @Test
+    public void testSaveClosePrivate() throws Exception {
+        Constructor<?>[] constrs = SaveClose.class.getDeclaredConstructors();
         assertEquals(constrs.length, 1);
         assertFalse(constrs[0].isAccessible());
         constrs[0].setAccessible(true);
@@ -681,4 +823,185 @@ public class BaseFitsTest {
         FitsUtil.reposition(out, -1);
     }
 
+    @Test(expected = FitsException.class)
+    public void testFitsWriteException1() throws Exception {
+        DataOutput out = (DataOutput) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{
+            DataOutput.class
+        }, new InvocationHandler() {
+
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                return null;
+            }
+        });
+        try {
+            new Fits().write(out);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("ArrayDataOutput"));
+            throw e;
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsWriteException2() throws Exception {
+        DataOutput out = new DataOutputStream(new ByteArrayOutputStream()) {
+
+            @Override
+            public void flush() throws IOException {
+                throw new IOException("failed flush");
+            }
+        };
+        try {
+            new Fits().write(out);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("flush"));
+            throw e;
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsWriteException3() throws Exception {
+        DataOutput out = new BufferedFile("target/testFitsWriteException3", "rw") {
+
+            @Override
+            public void setLength(long newLength) throws IOException {
+                throw new IOException("failed trimm");
+            }
+        };
+        try {
+            new Fits().write(out);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("resiz"));
+            throw e;
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsWriteException4() throws Exception {
+
+        try {
+            new Fits(new File("target/doesNotExistAtAll"));
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("existent"));
+            throw e;
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsWriteException5() throws Exception {
+        File writeOnlyTestFile = new File("target/writeOnlyTestFile") {
+
+            @Override
+            public boolean canRead() {
+                return true;
+            }
+        };
+        try {
+            writeOnlyTestFile.createNewFile();
+            writeOnlyTestFile.setReadable(false);
+            writeOnlyTestFile.setWritable(false);
+
+            new Fits(writeOnlyTestFile);
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("Unable"));
+            throw e;
+        } finally {
+            writeOnlyTestFile.setReadable(true);
+            writeOnlyTestFile.setWritable(true);
+        }
+    }
+
+    @Test
+    public void testFitsWithArrayDataInput() throws Exception {
+        BufferedDataInputStream in = null;
+        Fits f = null;
+        try {
+            in = new BufferedDataInputStream(new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits"));
+            f = new Fits(in);
+            Assert.assertNotNull(f.getStream());
+            Assert.assertEquals(1, f.size());
+            f.skipHDU(); // should do nothing at all -)
+        } finally {
+            SaveClose.close(f);
+            SaveClose.close(in);
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsCompressedWithFileInput() throws Exception {
+        Fits f = null;
+        try {
+            f = new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits.gz"), true) {
+
+                @Override
+                protected void streamInit(InputStream inputStream) throws FitsException {
+                    ThrowAnyException.throwIOException("could not open stream");
+                }
+            };
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("Unable"));
+            throw e;
+        } finally {
+            SaveClose.close(f);
+        }
+    }
+
+    @Test
+    public void testFitsReadWithArrayDataInput() throws Exception {
+        BufferedDataInputStream in = null;
+        Fits f = null;
+        try {
+            in = new BufferedDataInputStream(new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits"));
+            f = new Fits();
+            f.read(in);
+            Assert.assertEquals(1, f.size());
+            f.skipHDU(); // should do nothing at all -)
+        } finally {
+            SaveClose.close(f);
+            SaveClose.close(in);
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsFileInputFailed() throws Exception {
+        Fits f = null;
+        try {
+            f = new Fits("src/test/resources/nom/tam/fits/test/test.fits.gz", true) {
+
+                @Override
+                protected void fileInit(File myFile, boolean compressed) throws FitsException {
+                    ThrowAnyException.throwIOException("could not open stream");
+                }
+            };
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("detect"));
+            throw e;
+        } finally {
+            SaveClose.close(f);
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFitsFileInputFailed2() throws Exception {
+        Fits f = null;
+        try {
+            f = new Fits("nom/tam/fits/test/test.fits.gz", true) {
+
+                @Override
+                protected void streamInit(InputStream inputStream) throws FitsException {
+                    ThrowAnyException.throwIOException("could not open stream");
+                }
+            };
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("detect"));
+            throw e;
+        } finally {
+            SaveClose.close(f);
+        }
+    }
+
+    @Test()
+    public void testFitsReadEmpty() throws Exception {
+        Assert.assertArrayEquals(new BasicHDU<?>[0], new Fits().read());
+    }
 }

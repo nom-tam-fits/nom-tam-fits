@@ -51,7 +51,7 @@ public final class PrimitiveTypeHandler {
 
     static  {
         byBitPix = new PrimitiveType[BIT_PIX_OFFSET * 2 + 1];
-        Map<Class<?>, PrimitiveType<?>> initialByClass = new HashMap<>();
+        Map<Class<?>, PrimitiveType<?>> initialByClass = new HashMap<Class<?>, PrimitiveType<?>>();
         for (PrimitiveType<?> type : values()) {
             if (type.bitPix() != 0) {
                 byBitPix[type.bitPix() + BIT_PIX_OFFSET] = type;

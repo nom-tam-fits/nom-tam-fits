@@ -33,11 +33,14 @@ package nom.tam.fits.compression.algorithm.plio;
 
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.Arrays;
 
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.BytePLIOCompressor;
+import nom.tam.fits.compression.algorithm.plio.PLIOCompress.IntPLIOCompressor;
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.ShortPLIOCompressor;
+import nom.tam.util.SaveClose;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -45,11 +48,76 @@ import org.junit.Test;
 public class PLIOCompressTest {
 
     @Test
-    public void testPLIOShort() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test100Data16.plio", "r");//
+    public void testPLIOInt() throws Exception {
+        RandomAccessFile file = null;
+        // no expected in this case because cfitsio does not support int plio
+        // compression
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
 
-        ) {
+            byte[] bytes = new byte[(int) file.length()];
+            file.read(bytes);
+
+            int[] intArray = new int[bytes.length / 4];
+            IntBuffer intBuffer = ByteBuffer.wrap(bytes).asIntBuffer();
+            intBuffer.get(intArray);
+            // limit to 16 bit positiv values (max supported by plio
+            for (int index = 0; index < intArray.length; index++) {
+                intArray[index] = intArray[index] & 0x7FFF;
+            }
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[(int) file.length() * 10]);
+            new IntPLIOCompressor().compress(IntBuffer.wrap(intArray), compressed);
+
+            compressed.rewind();
+            IntBuffer px_dst = IntBuffer.allocate(intArray.length);
+
+            new IntPLIOCompressor().decompress(compressed, px_dst);
+
+            Assert.assertArrayEquals(intArray, px_dst.array());
+        } finally {
+            SaveClose.close(file);
+        }
+    }
+
+    @Test
+    public void testPLIOBigShort() throws Exception {
+        short[] shortArray = new short[1024];
+        for (int index = 0; index < shortArray.length; index += 4) {
+            shortArray[index] = Short.MAX_VALUE;
+            shortArray[index + 1] = Short.MAX_VALUE;
+        }
+
+        ShortBuffer shortbuffer = ShortBuffer.wrap(shortArray);
+
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[shortArray.length * 2]);
+
+        new ShortPLIOCompressor().compress(shortbuffer, compressed);
+
+        compressed.rewind();
+        ShortBuffer px_dst = ShortBuffer.allocate(shortArray.length);
+
+        new ShortPLIOCompressor().decompress(compressed, px_dst);
+
+        Assert.assertArrayEquals(shortArray, px_dst.array());
+
+        //now lets see if the additional bytes are set to 0.
+        compressed.rewind();
+        px_dst = ShortBuffer.allocate(shortArray.length + 10);
+        Arrays.fill(px_dst.array(), Short.MAX_VALUE);
+        new ShortPLIOCompressor().decompress(compressed, px_dst);
+        for (int index = shortArray.length; index < px_dst.array().length; index++) {
+            Assert.assertEquals(0, px_dst.get(index));
+        }
+    }
+
+    @Test
+    public void testPLIOShort() throws Exception {
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test100Data16.plio", "r");//
+
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
 
@@ -84,15 +152,20 @@ public class PLIOCompressTest {
 
             new ShortPLIOCompressor().decompress(wrap, px_dst);
             Assert.assertArrayEquals(shortArray, px_dst.array());
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testPLIOByte() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test100Data8.plio", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test100Data8.plio", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
 
@@ -110,15 +183,20 @@ public class PLIOCompressTest {
             new BytePLIOCompressor().decompress(compressed, px_dst);
 
             Assert.assertArrayEquals(bytes, px_dst.array());
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testPLIO99Byte() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data8.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test99Data8.plio", "r");//
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data8.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/plio/test99Data8.plio", "r");//
 
-        ) {
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
 
@@ -136,6 +214,9 @@ public class PLIOCompressTest {
             new BytePLIOCompressor().decompress(compressed, px_dst);
 
             Assert.assertArrayEquals(bytes, px_dst.array());
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 }

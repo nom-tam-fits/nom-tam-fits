@@ -9,6 +9,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,6 +62,10 @@ import nom.tam.util.CursorValue;
  */
 public class HeaderCard implements CursorValue<String> {
 
+    private static final int SPACE_NEEDED_FOR_EQUAL_AND_TWO_BLANKS = 3;
+
+    private static final double MAX_DECIMAL_VALUE_TO_USE_PLAIN_STRING = 1.0E16;
+
     private static final Logger LOG = Logger.getLogger(HeaderCard.class.getName());
 
     private static final String CONTINUE_CARD_PREFIX = CONTINUE.key() + "  '";
@@ -84,8 +89,6 @@ public class HeaderCard implements CursorValue<String> {
      * regexp for numbers.
      */
     private static final Pattern LONG_REGEX = Pattern.compile("[+-]?[0-9][0-9]*");
-
-    private static final int MAX_DOUBLE_STRING_LENGTH = 20;
 
     /**
      * max number of characters an integer can have.
@@ -148,31 +151,79 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * Create a string from a BigDecimal making sure that it's not more than 20
-     * characters long. Probably would be better if we had a way to override
-     * this since we can loose precision for some doubles.
+     * Create a string from a BigDecimal making sure that it's not longer than
+     * the available space.
+     * 
+     * @param decimalValue
+     *            the decimal value to print
+     * @param precision
+     *            the precision to use
+     * @param availableSpace
+     *            the space available for the value
+     * @return the string representing the value.
      */
-    private static String dblString(BigDecimal input) {
-        String value = input.toString();
-        BigDecimal decimal = input;
-        while (value.length() > MAX_DOUBLE_STRING_LENGTH) {
-            decimal = input.setScale(decimal.scale() - 1, BigDecimal.ROUND_HALF_UP);
+    private static String dblString(BigDecimal decimalValue, int precision, int availableSpace) {
+        BigDecimal decimal = decimalValue;
+        if (precision >= 0) {
+            decimal = decimalValue.setScale(precision, RoundingMode.HALF_UP);
+        }
+        double absInput = Math.abs(decimalValue.doubleValue());
+        if (absInput > 0d && absInput < MAX_DECIMAL_VALUE_TO_USE_PLAIN_STRING) {
+            String value = decimal.toPlainString();
+            if (value.length() < availableSpace) {
+                return value;
+            }
+        }
+        String value = decimalValue.toString();
+        while (value.length() > availableSpace) {
+            decimal = decimalValue.setScale(decimal.scale() - 1, BigDecimal.ROUND_HALF_UP);
             value = decimal.toString();
         }
         return value;
     }
 
     /**
-     * Create a string from a double making sure that it's not more than 20
-     * characters long. Probably would be better if we had a way to override
-     * this since we can loose precision for some doubles.
+     * Create a string from a BigDecimal making sure that it's not longer than
+     * the available space.
+     * 
+     * @param decimalValue
+     *            the decimal value to print
+     * @param availableSpace
+     *            the space available for the value
+     * @return the string representing the value.
      */
-    private static String dblString(double input) {
-        String value = Double.toString(input);
-        if (value.length() > MAX_DOUBLE_STRING_LENGTH) {
-            return dblString(BigDecimal.valueOf(input));
-        }
-        return value;
+    private static String dblString(BigDecimal decimalValue, int availableSpace) {
+        return dblString(decimalValue, -1, availableSpace);
+    }
+
+    /**
+     * Create a string from a BigDecimal making sure that it's not longer than
+     * the available space.
+     * 
+     * @param decimalValue
+     *            the decimal value to print
+     * @param availableSpace
+     *            the space available for the value
+     * @return the string representing the value.
+     */
+    private static String dblString(double decimalValue, int availableSpace) {
+        return dblString(BigDecimal.valueOf(decimalValue), -1, availableSpace);
+    }
+
+    /**
+     * @param input
+     *            float value being converted
+     * @param precision
+     *            the number of decimal places to show
+     * @return Create a fixed decimal string from a double with the specified
+     *         precision.
+     */
+    private static String dblString(double input, int precision, int availableSpace) {
+        return dblString(BigDecimal.valueOf(input), precision, availableSpace);
+    }
+
+    private static int spaceAvailableForValue(String key) {
+        return FITS_HEADER_CARD_SIZE - (Math.max(key.length(), CONTINUE.key().length()) + SPACE_NEEDED_FOR_EQUAL_AND_TWO_BLANKS);
     }
 
     private static ArrayDataInput stringToArrayInputStream(String card) {
@@ -223,18 +274,8 @@ public class HeaderCard implements CursorValue<String> {
 
         String card = readOneHeaderLine(dis);
 
-        if (FitsFactory.getUseHierarch() && card.length() > HIERARCH_WITH_BLANK_LENGTH && card.startsWith(HIERARCH_WITH_BLANK)) {
+        if (FitsFactory.getUseHierarch() && card.startsWith(HIERARCH_WITH_BLANK)) {
             hierarchCard(card, dis);
-            return;
-        }
-
-        // We are going to assume that the value has no blanks in
-        // it unless it is enclosed in quotes. Also, we assume that
-        // a / terminates the string (except inside quotes)
-
-        // treat short lines as special keywords
-        if (card.length() < HIERARCH_WITH_BLANK_LENGTH) {
-            this.key = card;
             return;
         }
 
@@ -242,8 +283,7 @@ public class HeaderCard implements CursorValue<String> {
         this.key = card.substring(0, MAX_KEYWORD_LENGTH).trim();
 
         // if it is an empty key, assume the remainder of the card is a comment
-        if (this.key.length() == 0) {
-            this.key = "";
+        if (this.key.isEmpty()) {
             this.comment = card.substring(MAX_KEYWORD_LENGTH);
             return;
         }
@@ -269,7 +309,7 @@ public class HeaderCard implements CursorValue<String> {
      *                for any invalid keyword
      */
     public HeaderCard(String key, BigDecimal value, String comment) throws HeaderCardException {
-        this(key, dblString(value), comment, false, false);
+        this(key, dblString(value, spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
@@ -285,7 +325,7 @@ public class HeaderCard implements CursorValue<String> {
      *                for any invalid keyword
      */
     public HeaderCard(String key, BigInteger value, String comment) throws HeaderCardException {
-        this(key, dblString(new BigDecimal(value)), comment, false, false);
+        this(key, dblString(new BigDecimal(value), spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
@@ -317,7 +357,25 @@ public class HeaderCard implements CursorValue<String> {
      *                for any invalid keyword
      */
     public HeaderCard(String key, double value, String comment) throws HeaderCardException {
-        this(key, dblString(value), comment, false, false);
+        this(key, dblString(value, spaceAvailableForValue(key)), comment, false, false);
+    }
+
+    /**
+     * Create a HeaderCard from its component parts
+     *
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
+     * @param precision
+     *            Number of decimal places (fixed format).
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword
+     */
+    public HeaderCard(String key, double value, int precision, String comment) throws HeaderCardException {
+        this(key, dblString(value, precision, spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
@@ -333,7 +391,25 @@ public class HeaderCard implements CursorValue<String> {
      *                for any invalid keyword
      */
     public HeaderCard(String key, float value, String comment) throws HeaderCardException {
-        this(key, dblString(value), comment, false, false);
+        this(key, dblString(value, spaceAvailableForValue(key)), comment, false, false);
+    }
+
+    /**
+     * Create a HeaderCard from its component parts
+     *
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
+     * @param precision
+     *            Number of decimal places (fixed format).
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword
+     */
+    public HeaderCard(String key, float value, int precision, String comment) throws HeaderCardException {
+        this(key, dblString(value, precision, spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
@@ -646,6 +722,17 @@ public class HeaderCard implements CursorValue<String> {
         return maxStringValueLength;
     }
 
+    /**
+     * Read exactly one complete fits header line from the input.
+     * 
+     * @param dis
+     *            the data input stream to read the line
+     * @return a string of exactly 80 characters
+     * @throws IOException
+     *             if the input stream could not be read
+     * @throws TruncatedFileException
+     *             is there was not a complete line available in the input.
+     */
     private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
         byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
         int len;
@@ -705,7 +792,7 @@ public class HeaderCard implements CursorValue<String> {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(double update) {
-        this.value = dblString(update);
+        this.value = dblString(update, spaceAvailableForValue(key));
         return this;
     }
 
@@ -717,7 +804,7 @@ public class HeaderCard implements CursorValue<String> {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(float update) {
-        this.value = dblString(update);
+        this.value = dblString(update, spaceAvailableForValue(key));
         return this;
     }
 
@@ -776,6 +863,9 @@ public class HeaderCard implements CursorValue<String> {
                 alignPosition = buf.length();
             } else {
                 buf.append(this.key);
+                if (this.key.isEmpty()) {
+                    buf.append(' ');
+                }
                 buf.appendSpacesTo(MAX_KEYWORD_LENGTH);
             }
         }
@@ -861,18 +951,19 @@ public class HeaderCard implements CursorValue<String> {
         return null;
     }
 
+    /**
+     * detect the decimal type of the value, does it fit in a Double/BigInteger
+     * or must it be a BigDecimal to keep the needed precission.
+     * 
+     * @param value
+     *            the String value to check.
+     * @return the type to fit the value
+     */
     private static Class<?> getDecimalNumberType(String value) {
-        // We should detect if we are loosing precision here
-        BigDecimal bigDecimal = null;
-
-        try {
-            bigDecimal = new BigDecimal(value);
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("could not parse " + value + " cause:" + e.getCause());
-        }
+        BigDecimal bigDecimal = new BigDecimal(value);
         if (bigDecimal.abs().compareTo(HeaderCard.LONG_MAX_VALUE_AS_BIG_DECIMAL) > 0 && bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
             return BigInteger.class;
-        } else if (bigDecimal.doubleValue() == Double.valueOf(value)) { // NOSONAR
+        } else if (bigDecimal.equals(BigDecimal.valueOf(Double.valueOf(value)))) {
             return Double.class;
         } else {
             return BigDecimal.class;

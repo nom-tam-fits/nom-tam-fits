@@ -7,7 +7,7 @@
 		<version>7</version>
 	</parent>
 	<groupId>gov.nasa.gsfc.heasarc</groupId>
-	<version>1.14.2-SNAPSHOT</version>
+	<version>1.14.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<artifactId>nom-tam-fits</artifactId>
 	<name>nom.tam FITS library</name>
@@ -55,6 +55,14 @@
 				<picUrl>http://www.gravatar.com/avatar/6f82a608d349cc24f05604242422b1b8.png</picUrl>
 			</properties>
 		</developer>
+		<developer>
+			<id>whcleveland</id>
+			<name>William H. Cleveland Jr.</name>
+			<email>whclevelandjr [at] gmail [dot] com</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
 	</developers>
 	<contributors>
 		<contributor>
@@ -79,7 +87,9 @@
 			<name>Jorgo Baker</name>
 		</contributor>
 		<contributor>
-			<name>A. Kovacs</name>
+			<name>Attila Kovacs</name>
+			<email>attila [at] submm [dot] caltech [dot] edu</email>
+			<url>http://www.submm.caltech.edu/~attila</url>
 		</contributor>
 		<contributor>
 			<name>V. Forchi</name>
@@ -95,6 +105,9 @@
 		</contributor>
 		<contributor>
 			<name>Martin Vrábel</name>
+		</contributor>
+		<contributor>
+			<name>Jonathan Cook</name>
 		</contributor>
 	</contributors>
 	<scm>
@@ -195,8 +208,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -349,7 +362,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.4.201502262128</version>
+				<version>0.7.6.201602180812</version>
 				<executions>
 					<execution>
 						<id>default-prepare-agent</id>
@@ -377,7 +390,7 @@
 										<limit>
 											<counter>LINE</counter>
 											<value>COVEREDRATIO</value>
-											<minimum>0.96</minimum>
+											<minimum>0.97</minimum>
 										</limit>
 									</limits>
 								</rule>
@@ -389,12 +402,12 @@
 			<plugin>
 				<groupId>org.eluder.coveralls</groupId>
 				<artifactId>coveralls-maven-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>4.1.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.1</version>
+				<version>3.0.3</version>
 				<executions>
 					<execution>
 						<goals>
@@ -498,7 +511,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.15</version>
+				<version>2.17</version>
 				<configuration>
 					<configLocation>${project.basedir}/src/main/checkstyle/nom-tam-fits-style.xml</configLocation>
 					<suppressionsLocation>${project.basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
@@ -555,7 +568,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.4</version>
+				<version>3.6</version>
 				<configuration>
 					<linkXref>true</linkXref>
 					<sourceEncoding>UTF-8</sourceEncoding>
@@ -572,12 +585,12 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.1</version>
+				<version>3.0.3</version>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.4.201502262128</version>
+				<version>0.7.6.201602180812</version>
 			</plugin>
 		</plugins>
 	</reporting>

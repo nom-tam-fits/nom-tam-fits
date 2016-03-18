@@ -132,7 +132,9 @@ public class FitsLineAppender {
     }
 
     /**
-     * append a number of spaces to the line, limited to the line length!
+     * append a number of spaces to the line, limited to the line length! This
+     * will only be done if the line is already started, so attention when a
+     * line is still empty this method will have no effect on empty lines.
      * 
      * @param count
      *            the number of spaces to write.

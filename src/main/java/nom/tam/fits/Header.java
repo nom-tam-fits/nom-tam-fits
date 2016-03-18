@@ -139,7 +139,7 @@ public class Header implements FitsElement {
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
      */
-    private final HashedList<HeaderCard> cards = new HashedList<>();
+    private final HashedList<HeaderCard> cards = new HashedList<HeaderCard>();
 
     /**
      * This iterator allows one to run through the list.
@@ -207,9 +207,9 @@ public class Header implements FitsElement {
 
     private void addDuplicate(HeaderCard dup) {
         if (!COMMENT.key().equals(dup.getKey()) && !HISTORY.key().equals(dup.getKey()) && !dup.getKey().trim().isEmpty()) {
-            LOG.log(Level.WARNING, "Warning: multiple occurrences of key:" + dup.getKey());
+            LOG.log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
             if (this.duplicates == null) {
-                this.duplicates = new ArrayList<>();
+                this.duplicates = new ArrayList<HeaderCard>();
             }
             this.duplicates.add(dup);
         }
@@ -370,6 +370,25 @@ public class Header implements FitsElement {
      */
     public void addValue(String key, double val, String comment) throws HeaderCardException {
         addHeaderCard(key, new HeaderCard(key, val, comment));
+    }
+
+    /**
+     * Add or replace a key with the given double value and comment. Note that
+     * float values will be promoted to doubles.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The double value.
+     * @param precision
+     *            The fixed number of decimal places to show.
+     * @param comment
+     *            A comment to append to the card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(String key, double val, int precision, String comment) throws HeaderCardException {
+        this.iter.add(new HeaderCard(key, val, precision, comment));
     }
 
     /**
@@ -1226,14 +1245,10 @@ public class Header implements FitsElement {
      */
     void nullImage() {
         this.iter = iterator();
-        try {
-            addValue(SIMPLE, true);
-            addValue(BITPIX, BasicHDU.BITPIX_BYTE);
-            addValue(NAXIS, 0);
-            addValue(EXTEND, true);
-        } catch (HeaderCardException e) {
-            LOG.log(Level.SEVERE, "could not create null image, should not be possible", e);
-        }
+        this.iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), SIMPLE.comment(), false).setValue(true));
+        this.iter.add(HeaderCard.saveNewHeaderCard(BITPIX.key(), BITPIX.comment(), false).setValue(BasicHDU.BITPIX_BYTE));
+        this.iter.add(HeaderCard.saveNewHeaderCard(NAXIS.key(), NAXIS.comment(), false).setValue(0));
+        this.iter.add(HeaderCard.saveNewHeaderCard(EXTEND.key(), EXTEND.comment(), false).setValue(true));
     }
 
     /**
@@ -1532,12 +1547,8 @@ public class Header implements FitsElement {
 
             if (findCard(NAXISn.n(nax)) != null) {
                 this.iter.next();
-                try {
-                    deleteKey("EXTEND");
-                    this.iter.add(new HeaderCard(EXTEND.key(), true, EXTEND.comment()));
-                } catch (Exception e) {
-                    LOG.log(Level.FINE, "exception ignored in setSimple", e);
-                }
+                deleteKey(EXTEND);
+                this.iter.add(HeaderCard.saveNewHeaderCard(EXTEND.key(), EXTEND.comment(), false).setValue(true));
             }
         }
         this.iter = iterator();

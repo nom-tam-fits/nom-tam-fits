@@ -60,6 +60,7 @@ import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.SaveClose;
 import nom.tam.util.TestArrayFuncs;
 import nom.tam.util.test.ThrowAnyException;
 
@@ -100,7 +101,9 @@ public class ImageTest {
         double[] img1 = (double[]) ArrayFuncs.flatten(dimg);
 
         BasicHDU<?>[] hdus;
-        try (Fits f = new Fits(new File("target/image1.fits"))) {
+        Fits f = null;
+        try {
+            f = new Fits(new File("target/image1.fits"));
             hdus = f.read();
 
             assertEquals("fbyte image", true, TestArrayFuncs.arrayEquals(bimg, hdus[0].getData().getKernel()));
@@ -111,6 +114,8 @@ public class ImageTest {
             assertEquals("fdouble image", true, TestArrayFuncs.arrayEquals(dimg, hdus[5].getData().getKernel()));
             assertEquals("fint3 image", true, TestArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
             assertEquals("fdouble1 image", true, TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
+        } finally {
+            f.close();
         }
     }
 
@@ -142,7 +147,9 @@ public class ImageTest {
 
         // Make HDUs of various types.
         Exception actual = null;
-        try (Fits f = new Fits()) {
+        Fits f = null;
+        try {
+            f = new Fits();
             try {
                 f.insertHDU(makeHDU(bimg), f.getNumberOfHDUs() + 1);
             } catch (Exception ex) {
@@ -162,14 +169,22 @@ public class ImageTest {
             assertEquals("HDU count before", f.getNumberOfHDUs(), 8);
 
             // Write a FITS file.
-
-            try (BufferedFile bf = new BufferedFile("target/image1.fits", "rw")) {
+            BufferedFile bf = null;
+            try {
+                bf = new BufferedFile("target/image1.fits", "rw");
                 f.write(bf);
                 bf.flush();
+            } finally {
+                SaveClose.close(bf);
             }
+        } finally {
+            SaveClose.close(f);
         }
 
-        try (BufferedFile bf = new BufferedFile(new File("target/image1.fits")); Fits f = new Fits("target/image1.fits")) {
+        BufferedFile bf = null;
+        try {
+            bf = new BufferedFile(new File("target/image1.fits"));
+            f = new Fits("target/image1.fits");
 
             // Read a FITS file
             BasicHDU<?>[] hdus = f.read();
@@ -217,6 +232,9 @@ public class ImageTest {
             assertEquals("double1 image", true, TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
 
             Assert.assertArrayEquals(new byte[0], (byte[]) new ImageData().getData());
+        } finally {
+            SaveClose.close(f);
+            SaveClose.close(bf);
         }
     }
 
@@ -290,7 +308,7 @@ public class ImageTest {
 
             @Override
             public boolean getBooleanValue(String key, boolean dft) {
-                //ok we are in the parent setPrimary not let it fail ;-)
+                // ok we are in the parent setPrimary not let it fail ;-)
                 ThrowAnyException.throwFitsException("");
                 return super.getBooleanValue(key, dft);
             }
@@ -299,4 +317,5 @@ public class ImageTest {
         f.insertHDU(image, 0);
 
     }
+    
 }

@@ -271,7 +271,7 @@ public class BinaryTable extends AbstractTableData {
     /**
      * A list describing each of the columns in the table
      */
-    private List<ColumnDesc> columnList = new ArrayList<>();
+    private List<ColumnDesc> columnList = new ArrayList<ColumnDesc>();
 
     /**
      * The number of rows in the table.
@@ -321,7 +321,7 @@ public class BinaryTable extends AbstractTableData {
         ColumnTable<SaveState> tab = (ColumnTable<SaveState>) tabIn;
         // This will throw an error if this isn't the correct type.
         SaveState extra = tab.getExtraState();
-        this.columnList = new ArrayList<>();
+        this.columnList = new ArrayList<ColumnDesc>();
         for (ColumnDesc col : extra.columns) {
             ColumnDesc copy = (ColumnDesc) col.clone();
             copy.column = null;

@@ -53,6 +53,7 @@ import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.quant.QuantizeParameters;
 import nom.tam.fits.header.Compression;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.SaveClose;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -654,8 +655,10 @@ public class QuantizeTest {
 
     @Test
     public void testQuant1Double() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-64.bin", "r");//
-        ) {
+        RandomAccessFile file = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-64.bin", "r");//
+
             byte[] bytes = new byte[(int) file.length()];
             double[] doubles = new double[bytes.length / 8];
             file.read(bytes);
@@ -684,13 +687,17 @@ public class QuantizeTest {
             Assert.assertEquals(0d, option.getBZero(), 1e-19);
             Assert.assertEquals(0, option.getIntMinValue());
             Assert.assertEquals(1911354, option.getIntMaxValue());
+        } finally {
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testQuant1Float() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-32.bin", "r");//
-        ) {
+        RandomAccessFile file = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-32.bin", "r");//
+
             byte[] bytes = new byte[(int) file.length()];
             float[] floats = new float[bytes.length / 4];
             double[] doubles = new double[bytes.length / 4];
@@ -724,6 +731,8 @@ public class QuantizeTest {
             Assert.assertEquals(0, option.getIntMinValue());
             Assert.assertEquals(1907849, option.getIntMaxValue());
 
+        } finally {
+            SaveClose.close(file);
         }
     }
 

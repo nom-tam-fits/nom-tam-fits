@@ -65,6 +65,9 @@ public class CloseIS extends FilterInputStream {
 
     public CloseIS(Process proc, final InputStream compressed) {
         super(new BufferedInputStream(proc.getInputStream(), CompressionManager.ONE_MEGABYTE));
+        if (compressed == null) {
+            throw new NullPointerException();
+        }
         this.proc = proc;
         final InputStream error = proc.getErrorStream();
         this.output = proc.getInputStream();

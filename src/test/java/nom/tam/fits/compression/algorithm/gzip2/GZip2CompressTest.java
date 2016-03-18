@@ -49,6 +49,7 @@ import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ShortGZip2Compre
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ByteBufferInputStream;
 import nom.tam.util.ByteBufferOutputStream;
+import nom.tam.util.SaveClose;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -186,25 +187,36 @@ public class GZip2CompressTest {
             10
         };
         byte[] array = new byte[10];
-        try (OutputStream out = new ByteBufferOutputStream(ByteBuffer.wrap(array))) {
+        OutputStream out = null;
+        try {
+            out = new ByteBufferOutputStream(ByteBuffer.wrap(array));
             out.write(expected[0]);
             out.write(expected, 1, 9);
             Assert.assertArrayEquals(expected, array);
+        } finally {
+            SaveClose.close(out);
         }
-        try (InputStream in = new ByteBufferInputStream(ByteBuffer.wrap(expected))) {
+        InputStream in = null;
+        try {
+            in = new ByteBufferInputStream(ByteBuffer.wrap(expected));
             Assert.assertEquals(1, in.read());
             in.read(array, 1, 9);
             Assert.assertArrayEquals(expected, array);
             Assert.assertEquals(-1, in.read());
             Assert.assertEquals(-1, in.read(array, 1, 9));
+        } finally {
+            SaveClose.close(in);
         }
     }
 
     @Test
     public void testGzipCompressByte() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/gzip2/test100Data8.gzip2", "r");//
-        ) {
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/gzip2/test100Data8.gzip2", "r");//
+
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -230,14 +242,20 @@ public class GZip2CompressTest {
             decompressedArray.rewind();
             new ByteGZip2Compress().decompress(compressed, decompressedArray);
             Assert.assertArrayEquals(bytes, decompressedBytes);
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testGzipCompressShort() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/gzip2/test100Data16.gzip2", "r");//
-        ) {
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data16.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/gzip2/test100Data16.gzip2", "r");//
+
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -263,14 +281,20 @@ public class GZip2CompressTest {
             decompressedArray.rewind();
             new ShortGZip2Compressor().decompress(compressed, decompressedArray);
             Assert.assertArrayEquals(bytes, decompressedBytes);
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testGzipCompressInt() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
-                RandomAccessFile expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/gzip2/test100Data32.gzip2", "r");//
-        ) {
+        RandomAccessFile file = null;
+        RandomAccessFile expected = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/gzip2/test100Data32.gzip2", "r");//
+
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             byte[] expectedBytes = new byte[(int) expected.length()];
@@ -296,12 +320,17 @@ public class GZip2CompressTest {
             decompressedArray.rewind();
             new IntGZip2Compressor().decompress(compressed, decompressedArray);
             Assert.assertArrayEquals(bytes, decompressedBytes);
+        } finally {
+            SaveClose.close(expected);
+            SaveClose.close(file);
         }
     }
 
     @Test
     public void testGzipCompressLong() throws Exception {
-        try (RandomAccessFile file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r")) {
+        RandomAccessFile file = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data32.bin", "r");
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
             IntBuffer intArray = ByteBuffer.wrap(bytes).asIntBuffer();
@@ -322,6 +351,8 @@ public class GZip2CompressTest {
 
             new LongGZip2Compressor().decompress(compressed, decompressedArray);
             Assert.assertArrayEquals(longArray, decompressedArray.array());
+        } finally {
+            SaveClose.close(file);
         }
     }
 }

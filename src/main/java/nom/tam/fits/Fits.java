@@ -55,6 +55,7 @@ import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.RandomAccess;
+import nom.tam.util.SaveClose;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -195,13 +196,7 @@ public class Fits implements Closeable {
      *            the input stream to close.
      */
     public static void saveClose(InputStream in) {
-        if (in != null) {
-            try {
-                in.close();
-            } catch (IOException e) {
-                LOG.log(Level.INFO, "close failed, ignoring", e);
-            }
-        }
+        SaveClose.close(in);
     }
 
     /**
@@ -212,7 +207,7 @@ public class Fits implements Closeable {
     /**
      * A vector of HDUs that have been added to this Fits object.
      */
-    private final List<BasicHDU<?>> hduList = new ArrayList<>();
+    private final List<BasicHDU<?>> hduList = new ArrayList<BasicHDU<?>>();
 
     /**
      * Has the input stream reached the EOF?
@@ -637,6 +632,9 @@ public class Fits implements Closeable {
      */
     public BasicHDU<?> readHDU() throws FitsException, IOException {
         if (this.dataStr == null || this.atEOF) {
+            if (this.dataStr == null) {
+                LOG.warning("trying to read a hdu, without an input source!");
+            }
             return null;
         }
         if (this.dataStr instanceof RandomAccess && this.lastFileOffset > 0) {
@@ -788,27 +786,7 @@ public class Fits implements Closeable {
      *             if the initialization failed
      */
     protected void streamInit(InputStream inputStream) throws FitsException {
-        inputStream = CompressionManager.decompress(inputStream);
-        if (inputStream instanceof ArrayDataInput) {
-            this.dataStr = (ArrayDataInput) inputStream;
-        } else {
-            // Use efficient blocking for input.
-            this.dataStr = new BufferedDataInputStream(inputStream);
-        }
-    }
-
-    /**
-     * Initialize the stream.
-     * 
-     * @param str
-     *            The user specified input stream
-     * @param seekable
-     *            ignored
-     * @throws FitsException
-     *             if the operation failed
-     */
-    protected void streamInit(InputStream str, boolean seekable) throws FitsException {
-        streamInit(str);
+        this.dataStr = new BufferedDataInputStream(CompressionManager.decompress(inputStream));
     }
 
     /**
@@ -820,10 +798,8 @@ public class Fits implements Closeable {
      *             if the operation failed
      */
     public void write(DataOutput os) throws FitsException {
-
         ArrayDataOutput obs;
         boolean newOS = false;
-
         if (os instanceof ArrayDataOutput) {
             obs = (ArrayDataOutput) os;
         } else if (os instanceof DataOutputStream) {
@@ -832,15 +808,8 @@ public class Fits implements Closeable {
         } else {
             throw new FitsException("Cannot create ArrayDataOutput from class " + os.getClass().getName());
         }
-
-        BasicHDU<?> hh;
-        for (int i = 0; i < getNumberOfHDUs(); i += 1) {
-            try {
-                hh = this.hduList.get(i);
-                hh.write(obs);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                throw new FitsException("Internal Error: Vector Inconsistency" + e, e);
-            }
+        for (BasicHDU<?> basicHDU : hduList) {
+            basicHDU.write(obs);
         }
         if (newOS) {
             try {
@@ -856,6 +825,30 @@ public class Fits implements Closeable {
             } catch (IOException e) {
                 throw new FitsException("Error resizing the FITS output stream: " + e, e);
             }
+        }
+    }
+
+    /**
+     * Write the FITS to the specified file. This is a wrapper method provided
+     * for convenience, which calls the {@link #write(DataOutput)} method. It
+     * creates a suitable {@link nom.tam.util.BufferedFile}, to which the FITS
+     * is then written. Upon completion the underlying stream is closed.
+     * 
+     * @param file
+     *            a file to which the FITS is to be written.
+     * @throws FitsException
+     *             if {@link #write(DataOutput)} failed
+     * @throws IOException
+     *             if the underlying output stream could not be created or
+     *             closed.
+     */
+    public void write(File file) throws IOException, FitsException {
+        BufferedFile bf = null;
+        try {
+            bf = new BufferedFile(file, "rw");
+            write(bf);
+        } finally {
+            SaveClose.close(bf);
         }
     }
 

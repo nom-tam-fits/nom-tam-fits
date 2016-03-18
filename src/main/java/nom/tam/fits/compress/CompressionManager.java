@@ -43,6 +43,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.FitsException;
+import nom.tam.util.SaveClose;
 
 public final class CompressionManager {
 
@@ -75,9 +76,7 @@ public final class CompressionManager {
      *             when the stream could not be read or decompressed
      */
     public static InputStream decompress(InputStream compressed) throws FitsException {
-
         BufferedInputStream pb = new BufferedInputStream(compressed, ONE_MEGABYTE);
-
         pb.mark(2);
         int mag1 = -1;
         int mag2 = -1;
@@ -87,7 +86,6 @@ public final class CompressionManager {
             mag2 = pb.read();
             // Push the data back into the stream
             pb.reset();
-
             ICompressProvider selectedProvider = selectCompressionProvider(mag1, mag2);
             if (selectedProvider != null) {
                 return selectedProvider.decompress(pb);
@@ -118,20 +116,12 @@ public final class CompressionManager {
                 fis.close();
                 return selectCompressionProvider(mag1, mag2) != null;
             }
-
         } catch (IOException e) {
             LOG.log(Level.FINEST, "Error while checking if file " + file + " is compressed", e);
             // This is probably a prelude to failure...
             return false;
-
         } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    LOG.log(Level.FINEST, "could not close stream", e);
-                }
-            }
+            SaveClose.close(fis);
         }
         return false;
     }
