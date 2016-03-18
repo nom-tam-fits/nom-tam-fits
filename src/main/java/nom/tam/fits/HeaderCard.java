@@ -9,6 +9,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,6 +62,10 @@ import nom.tam.util.CursorValue;
  */
 public class HeaderCard implements CursorValue<String> {
 
+    private static final int SPACE_NEEDED_FOR_EQUAL_AND_TWO_BLANKS = 3;
+
+    private static final double MAX_DECIMAL_VALUE_TO_USE_PLAIN_STRING = 1.0E16;
+
     private static final Logger LOG = Logger.getLogger(HeaderCard.class.getName());
 
     private static final String CONTINUE_CARD_PREFIX = CONTINUE.key() + "  '";
@@ -73,11 +78,6 @@ public class HeaderCard implements CursorValue<String> {
 
     private static final String HIERARCH_WITH_DOT = NonStandard.HIERARCH.key() + ".";
 
-    private static final int MAX_DOUBLE_SIGNIFICANT_DIGITS = 16;
-
-    private static final int MAX_FLOAT_SIGNIFICANT_DIGITS = 7;
-
-
     /**
      * regexp for IEEE floats
      */
@@ -89,8 +89,6 @@ public class HeaderCard implements CursorValue<String> {
      * regexp for numbers.
      */
     private static final Pattern LONG_REGEX = Pattern.compile("[+-]?[0-9][0-9]*");
-
-    private static final int MAX_DOUBLE_STRING_LENGTH = 20;
 
     /**
      * max number of characters an integer can have.
@@ -153,98 +151,79 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * Rounds the given number to the specified significant digits.
-     * This is from a StackOverflow question:
-     * <a href="http://stackoverflow.com/questions/202302/rounding-to-an-arbitrary-number-of-significant-digits">
-     *     Rounding to an arbitrary number of significant digits</a>
-     * @param num number that will be rounded
-     * @param n the number of significant digits
-     * @return number rounded to the specified significant digits
+     * Create a string from a BigDecimal making sure that it's not longer than
+     * the available space.
+     * 
+     * @param decimalValue
+     *            the decimal value to print
+     * @param precision
+     *            the precision to use
+     * @param availableSpace
+     *            the space available for the value
+     * @return the string representing the value.
      */
-    public static double roundToSignificantFigures(double num, int n) {
-        if (num == 0) {
-            return 0;
+    private static String dblString(BigDecimal decimalValue, int precision, int availableSpace) {
+        BigDecimal decimal = decimalValue;
+        if (precision >= 0) {
+            decimal = decimalValue.setScale(precision, RoundingMode.HALF_UP);
         }
-
-        final double d = Math.ceil(Math.log10(num < 0 ? -num : num));
-        final int power = n - (int) d;
-
-        final double magnitude = Math.pow(10, power);
-        final long shifted = Math.round(num * magnitude);
-        return shifted / magnitude;
-    }
-
-    /**
-     * Returns the double value as a fixed
-     * @param input a floating point value being converted
-     * @param precision number of decimal places to be shown
-     * @param maxSigDigits the maximum significant digits allowed by the precision of the source floating point type
-     * @return A fixed decimal value as a string
-     * @throws IllegalArgumentException if the significant digits used by fixed decimal representation exceeds the
-     *          significant digits stored within the source floating point type.
-     */
-    private static String toFixedString(double input, int precision, int maxSigDigits) throws IllegalArgumentException {
-        long iPart = (long) input;
-        int sigDigitsRemaining = maxSigDigits - Long.toString(Math.abs(iPart)).length() - precision;
-        if (sigDigitsRemaining < 0) {
-            throw new IllegalArgumentException("The value exceeds the number of significant digits present");
+        double absInput = Math.abs(decimalValue.doubleValue());
+        if (absInput > 0d && absInput < MAX_DECIMAL_VALUE_TO_USE_PLAIN_STRING) {
+            String value = decimal.toPlainString();
+            if (value.length() < availableSpace) {
+                return value;
+            }
         }
-        double value = roundToSignificantFigures(input, maxSigDigits);
-        String format = "%." + precision + "f";
-        return String.format(format, value);
-    }
-
-
-    /**
-     * Create a string from a BigDecimal making sure that it's not more than 20
-     * characters long. Probably would be better if we had a way to override
-     * this since we can loose precision for some doubles.
-     */
-    private static String dblString(BigDecimal input) {
-        String value = input.toString();
-        BigDecimal decimal = input;
-        while (value.length() > MAX_DOUBLE_STRING_LENGTH) {
-            decimal = input.setScale(decimal.scale() - 1, BigDecimal.ROUND_HALF_UP);
+        String value = decimalValue.toString();
+        while (value.length() > availableSpace) {
+            decimal = decimalValue.setScale(decimal.scale() - 1, BigDecimal.ROUND_HALF_UP);
             value = decimal.toString();
         }
         return value;
     }
 
     /**
-     * Create a string from a double making sure that it's not more than 20
-     * characters long. Probably would be better if we had a way to override
-     * this since we can loose precision for some doubles.
+     * Create a string from a BigDecimal making sure that it's not longer than
+     * the available space.
+     * 
+     * @param decimalValue
+     *            the decimal value to print
+     * @param availableSpace
+     *            the space available for the value
+     * @return the string representing the value.
      */
-    private static String dblString(double input) {
-        String value = Double.toString(input);
-        if (value.length() > MAX_DOUBLE_STRING_LENGTH) {
-            return dblString(BigDecimal.valueOf(input));
-        }
-        return value;
+    private static String dblString(BigDecimal decimalValue, int availableSpace) {
+        return dblString(decimalValue, -1, availableSpace);
     }
 
     /**
-     * Create a fixed decimal string from a double
-     * @param input float value being converted
-     * @param prec the number of decimal places to show
-     * @return fixed decimal string.
-     * @throws IllegalArgumentException if the significant digits used by fixed decimal representation exceeds the
-     *          significant digits stored within the source floating point type.
+     * Create a string from a BigDecimal making sure that it's not longer than
+     * the available space.
+     * 
+     * @param decimalValue
+     *            the decimal value to print
+     * @param availableSpace
+     *            the space available for the value
+     * @return the string representing the value.
      */
-    private static String dblString(double input, int prec) {
-        return toFixedString(input, prec, MAX_DOUBLE_SIGNIFICANT_DIGITS);
+    private static String dblString(double decimalValue, int availableSpace) {
+        return dblString(BigDecimal.valueOf(decimalValue), -1, availableSpace);
     }
 
     /**
-     * Create a fixed decimal string from a float
-     * @param input float value being converted
-     * @param prec the number of decimal places to show
-     * @return fixed decimal string.
-     * @throws IllegalArgumentException if the significant digits used by fixed decimal representation exceeds the
-     *          significant digits stored within the source floating point type.
+     * @param input
+     *            float value being converted
+     * @param precision
+     *            the number of decimal places to show
+     * @return Create a fixed decimal string from a double with the specified
+     *         precision.
      */
-    private static String dblString(float input, int prec) {
-        return toFixedString(input, prec, MAX_FLOAT_SIGNIFICANT_DIGITS);
+    private static String dblString(double input, int precision, int availableSpace) {
+        return dblString(BigDecimal.valueOf(input), precision, availableSpace);
+    }
+
+    private static int spaceAvailableForValue(String key) {
+        return FITS_HEADER_CARD_SIZE - (Math.max(key.length(), CONTINUE.key().length()) + SPACE_NEEDED_FOR_EQUAL_AND_TWO_BLANKS);
     }
 
     private static ArrayDataInput stringToArrayInputStream(String card) {
@@ -330,7 +309,7 @@ public class HeaderCard implements CursorValue<String> {
      *                for any invalid keyword
      */
     public HeaderCard(String key, BigDecimal value, String comment) throws HeaderCardException {
-        this(key, dblString(value), comment, false, false);
+        this(key, dblString(value, spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
@@ -346,7 +325,7 @@ public class HeaderCard implements CursorValue<String> {
      *                for any invalid keyword
      */
     public HeaderCard(String key, BigInteger value, String comment) throws HeaderCardException {
-        this(key, dblString(new BigDecimal(value)), comment, false, false);
+        this(key, dblString(new BigDecimal(value), spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
@@ -378,7 +357,7 @@ public class HeaderCard implements CursorValue<String> {
      *                for any invalid keyword
      */
     public HeaderCard(String key, double value, String comment) throws HeaderCardException {
-        this(key, dblString(value), comment, false, false);
+        this(key, dblString(value, spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
@@ -396,7 +375,7 @@ public class HeaderCard implements CursorValue<String> {
      *                for any invalid keyword
      */
     public HeaderCard(String key, double value, int precision, String comment) throws HeaderCardException {
-        this(key, dblString(value, precision), comment, false, false);
+        this(key, dblString(value, precision, spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
@@ -412,7 +391,7 @@ public class HeaderCard implements CursorValue<String> {
      *                for any invalid keyword
      */
     public HeaderCard(String key, float value, String comment) throws HeaderCardException {
-        this(key, dblString(value), comment, false, false);
+        this(key, dblString(value, spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
@@ -430,9 +409,8 @@ public class HeaderCard implements CursorValue<String> {
      *                for any invalid keyword
      */
     public HeaderCard(String key, float value, int precision, String comment) throws HeaderCardException {
-        this(key, dblString(value, precision), comment, false, false);
+        this(key, dblString(value, precision, spaceAvailableForValue(key)), comment, false, false);
     }
-
 
     /**
      * Create a HeaderCard from its component parts
@@ -814,7 +792,7 @@ public class HeaderCard implements CursorValue<String> {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(double update) {
-        this.value = dblString(update);
+        this.value = dblString(update, spaceAvailableForValue(key));
         return this;
     }
 
@@ -826,7 +804,7 @@ public class HeaderCard implements CursorValue<String> {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(float update) {
-        this.value = dblString(update);
+        this.value = dblString(update, spaceAvailableForValue(key));
         return this;
     }
 
