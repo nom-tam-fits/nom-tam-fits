@@ -138,6 +138,31 @@ public class HeaderCard implements CursorValue<String> {
     private static final int STRING_SPLIT_POSITION_FOR_EXTRA_COMMENT_SPACE = 35;
 
     /**
+     * The comment part of the card (set to null if there's no comment)
+     */
+    private String comment;
+
+    /**
+     * A flag indicating whether or not this is a string value
+     */
+    private boolean isString;
+
+    /**
+     * The keyword part of the card (set to null if there's no keyword)
+     */
+    private String key;
+
+    /**
+     * Does this card represent a nullable field. ?
+     */
+    private boolean nullable;
+
+    /**
+     * The value part of the card (set to null if there's no value)
+     */
+    private String value;
+
+    /**
      * @return a created HeaderCard from a FITS card string.
      * @param card
      *            the 80 character card image
@@ -153,7 +178,21 @@ public class HeaderCard implements CursorValue<String> {
     /**
      * Create a string from a BigDecimal making sure that it's not longer than
      * the available space.
-     * 
+     *
+     * @param decimalValue
+     *            the decimal value to print
+     * @param availableSpace
+     *            the space available for the value
+     * @return the string representing the value.
+     */
+    private static String dblString(BigDecimal decimalValue, int availableSpace) {
+        return dblString(decimalValue, -1, availableSpace);
+    }
+
+    /**
+     * Create a string from a BigDecimal making sure that it's not longer than
+     * the available space.
+     *
      * @param decimalValue
      *            the decimal value to print
      * @param precision
@@ -185,21 +224,7 @@ public class HeaderCard implements CursorValue<String> {
     /**
      * Create a string from a BigDecimal making sure that it's not longer than
      * the available space.
-     * 
-     * @param decimalValue
-     *            the decimal value to print
-     * @param availableSpace
-     *            the space available for the value
-     * @return the string representing the value.
-     */
-    private static String dblString(BigDecimal decimalValue, int availableSpace) {
-        return dblString(decimalValue, -1, availableSpace);
-    }
-
-    /**
-     * Create a string from a BigDecimal making sure that it's not longer than
-     * the available space.
-     * 
+     *
      * @param decimalValue
      *            the decimal value to print
      * @param availableSpace
@@ -222,6 +247,84 @@ public class HeaderCard implements CursorValue<String> {
         return dblString(BigDecimal.valueOf(input), precision, availableSpace);
     }
 
+    /**
+     * attention float to double cases are very lossy so a toString is needed to
+     * keep the precision. proof =(double)500.055f
+     *
+     * @param floatValue
+     *            the float value
+     * @return the BigDecimal as close to the value of the float as possible
+     */
+    private static BigDecimal floatToBigDecimal(float floatValue) {
+        return new BigDecimal(Float.toString(floatValue));
+    }
+
+    /**
+     * detect the decimal type of the value, does it fit in a Double/BigInteger
+     * or must it be a BigDecimal to keep the needed precission.
+     *
+     * @param value
+     *            the String value to check.
+     * @return the type to fit the value
+     */
+    private static Class<?> getDecimalNumberType(String value) {
+        BigDecimal bigDecimal = new BigDecimal(value);
+        if (bigDecimal.abs().compareTo(HeaderCard.LONG_MAX_VALUE_AS_BIG_DECIMAL) > 0 && bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
+            return BigInteger.class;
+        } else if (bigDecimal.equals(BigDecimal.valueOf(Double.valueOf(value)))) {
+            return Double.class;
+        } else {
+            return BigDecimal.class;
+        }
+    }
+
+    private static Class<?> getIntegerNumberType(String value) {
+        int length = value.length();
+        if (value.charAt(0) == '-' || value.charAt(0) == '+') {
+            length--;
+        }
+        if (length <= HeaderCard.MAX_INTEGER_STRING_SIZE) {
+            return Integer.class;
+        } else if (length <= HeaderCard.MAX_LONG_STRING_SIZE) {
+            return Long.class;
+        } else {
+            return BigInteger.class;
+        }
+    }
+
+    /**
+     * Read exactly one complete fits header line from the input.
+     *
+     * @param dis
+     *            the data input stream to read the line
+     * @return a string of exactly 80 characters
+     * @throws IOException
+     *             if the input stream could not be read
+     * @throws TruncatedFileException
+     *             is there was not a complete line available in the input.
+     */
+    private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
+        byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
+        int len;
+        int need = FITS_HEADER_CARD_SIZE;
+        try {
+            while (need > 0) {
+                len = dis.in().read(buffer, FITS_HEADER_CARD_SIZE - need, need);
+                if (len == 0) {
+                    throw new TruncatedFileException("nothing to read left");
+                }
+                need -= len;
+            }
+        } catch (EOFException e) {
+            if (need == FITS_HEADER_CARD_SIZE) {
+                throw e;
+            }
+            throw new TruncatedFileException(e.getMessage());
+        }
+        dis.cardRead();
+        return AsciiFuncs.asciiString(buffer);
+    }
+
     private static int spaceAvailableForValue(String key) {
         return FITS_HEADER_CARD_SIZE - (Math.max(key.length(), CONTINUE.key().length()) + SPACE_NEEDED_FOR_EQUAL_AND_TWO_BLANKS);
     }
@@ -238,29 +341,25 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * The comment part of the card (set to null if there's no comment)
+     * This method is only used internally when it is sure that the creation of
+     * the card is granted not to throw an exception
+     *
+     * @param key
+     *            the key for the card
+     * @param comment
+     *            the comment for the card
+     * @param isString
+     *            is this a string value card?
+     * @return the new HeaderCard
      */
-    private String comment;
-
-    /**
-     * A flag indicating whether or not this is a string value
-     */
-    private boolean isString;
-
-    /**
-     * The keyword part of the card (set to null if there's no keyword)
-     */
-    private String key;
-
-    /**
-     * Does this card represent a nullable field. ?
-     */
-    private boolean nullable;
-
-    /**
-     * The value part of the card (set to null if there's no value)
-     */
-    private String value;
+    protected static HeaderCard saveNewHeaderCard(String key, String comment, boolean isString) {
+        try {
+            return new HeaderCard(key, null, comment, false, isString);
+        } catch (HeaderCardException e) {
+            LOG.log(Level.SEVERE, "Impossible Exception for internal card creation:" + key, e);
+            throw new IllegalStateException(e);
+        }
+    }
 
     public HeaderCard(ArrayDataInput dis) throws TruncatedFileException, IOException {
         this(new HeaderCardCountingArrayDataInput(dis));
@@ -351,22 +450,6 @@ public class HeaderCard implements CursorValue<String> {
      *            keyword (null for a comment)
      * @param value
      *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
-     */
-    public HeaderCard(String key, double value, String comment) throws HeaderCardException {
-        this(key, dblString(value, spaceAvailableForValue(key)), comment, false, false);
-    }
-
-    /**
-     * Create a HeaderCard from its component parts
-     *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
      * @param precision
      *            Number of decimal places (fixed format).
      * @param comment
@@ -390,7 +473,7 @@ public class HeaderCard implements CursorValue<String> {
      * @exception HeaderCardException
      *                for any invalid keyword
      */
-    public HeaderCard(String key, float value, String comment) throws HeaderCardException {
+    public HeaderCard(String key, double value, String comment) throws HeaderCardException {
         this(key, dblString(value, spaceAvailableForValue(key)), comment, false, false);
     }
 
@@ -409,7 +492,23 @@ public class HeaderCard implements CursorValue<String> {
      *                for any invalid keyword
      */
     public HeaderCard(String key, float value, int precision, String comment) throws HeaderCardException {
-        this(key, dblString(value, precision, spaceAvailableForValue(key)), comment, false, false);
+        this(key, dblString(floatToBigDecimal(value), precision, spaceAvailableForValue(key)), comment, false, false);
+    }
+
+    /**
+     * Create a HeaderCard from its component parts
+     *
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword
+     */
+    public HeaderCard(String key, float value, String comment) throws HeaderCardException {
+        this(key, dblString(floatToBigDecimal(value), spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
@@ -563,22 +662,6 @@ public class HeaderCard implements CursorValue<String> {
         return copy;
     }
 
-    private void extractValueCommentFromString(HeaderCardCountingArrayDataInput dis, String card) throws IOException, TruncatedFileException {
-        // extract the value/comment part of the string
-        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
-
-        if (FitsFactory.isLongStringsEnabled() && parsedValue.isString() && parsedValue.getValue().endsWith("&")) {
-            longStringCard(dis, parsedValue);
-        } else {
-            this.value = parsedValue.getValue();
-            this.isString = parsedValue.isString();
-            this.comment = parsedValue.getComment();
-            if (!this.isString && this.value.indexOf('\'') >= 0) {
-                throw new IllegalArgumentException("no single quotes allowed in values");
-            }
-        }
-    }
-
     /**
      * @return the comment from this card
      */
@@ -641,27 +724,6 @@ public class HeaderCard implements CursorValue<String> {
         }
     }
 
-    private Boolean getBooleanValue(Boolean defaultValue) {
-        if ("T".equals(this.value)) {
-            return Boolean.TRUE;
-        } else if ("F".equals(this.value)) {
-            return Boolean.FALSE;
-        }
-        return defaultValue;
-    }
-
-    /**
-     * Process HIERARCH style cards... HIERARCH LEV1 LEV2 ... = value / comment
-     * The keyword for the card will be "HIERARCH.LEV1.LEV2..." A '/' is assumed
-     * to start a comment.
-     *
-     * @param dis
-     */
-    private void hierarchCard(String card, HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
-        this.key = FitsHeaderCardParser.parseCardKey(card);
-        extractValueCommentFromString(dis, card);
-    }
-
     /**
      * @return Is this a key/value card?
      */
@@ -676,85 +738,6 @@ public class HeaderCard implements CursorValue<String> {
         return this.isString;
     }
 
-    private void longStringCard(HeaderCardCountingArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException {
-        // ok this is a longString now read over all continues.
-        StringBuilder longValue = new StringBuilder();
-        StringBuilder longComment = null;
-        ParsedValue continueCard = parsedValue;
-        do {
-            if (continueCard.getValue() != null) {
-                longValue.append(continueCard.getValue());
-            }
-            if (continueCard.getComment() != null) {
-                if (longComment == null) {
-                    longComment = new StringBuilder();
-                } else {
-                    longComment.append(' ');
-                }
-                longComment.append(continueCard.getComment());
-            }
-            continueCard = null;
-            if (longValue.length() > 0 && longValue.charAt(longValue.length() - 1) == '&') {
-                longValue.setLength(longValue.length() - 1);
-                dis.mark();
-                String card = readOneHeaderLine(dis);
-                if (card.startsWith(CONTINUE.key())) {
-                    // extract the value/comment part of the string
-                    continueCard = FitsHeaderCardParser.parseCardValue(card);
-                } else {
-                    // the & was part of the string put it back.
-                    longValue.append('&');
-                    // ok move the input stream one card back.
-                    dis.reset();
-                }
-            }
-        } while (continueCard != null);
-        this.comment = longComment == null ? null : longComment.toString();
-        this.value = longValue.toString();
-        this.isString = true;
-    }
-
-    private int maxStringValueLength() {
-        int maxStringValueLength = HeaderCard.MAX_STRING_VALUE_LENGTH;
-        if (FitsFactory.getUseHierarch() && getKey().length() > MAX_KEYWORD_LENGTH) {
-            maxStringValueLength -= getKey().length() - MAX_KEYWORD_LENGTH;
-        }
-        return maxStringValueLength;
-    }
-
-    /**
-     * Read exactly one complete fits header line from the input.
-     * 
-     * @param dis
-     *            the data input stream to read the line
-     * @return a string of exactly 80 characters
-     * @throws IOException
-     *             if the input stream could not be read
-     * @throws TruncatedFileException
-     *             is there was not a complete line available in the input.
-     */
-    private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
-        byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
-        int len;
-        int need = FITS_HEADER_CARD_SIZE;
-        try {
-            while (need > 0) {
-                len = dis.in().read(buffer, FITS_HEADER_CARD_SIZE - need, need);
-                if (len == 0) {
-                    throw new TruncatedFileException("nothing to read left");
-                }
-                need -= len;
-            }
-        } catch (EOFException e) {
-            if (need == FITS_HEADER_CARD_SIZE) {
-                throw e;
-            }
-            throw new TruncatedFileException(e.getMessage());
-        }
-        dis.cardRead();
-        return AsciiFuncs.asciiString(buffer);
-    }
-
     /**
      * set the comment of a card.
      *
@@ -766,10 +749,15 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * Set the key.
+     * Set the value for this card.
+     *
+     * @param update
+     *            the new value to set
+     * @return the HeaderCard itself
      */
-    void setKey(String newKey) {
-        this.key = newKey;
+    public HeaderCard setValue(BigDecimal update) {
+        this.value = dblString(update, spaceAvailableForValue(this.key));
+        return this;
     }
 
     /**
@@ -792,19 +780,7 @@ public class HeaderCard implements CursorValue<String> {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(double update) {
-        this.value = dblString(update, spaceAvailableForValue(key));
-        return this;
-    }
-
-    /**
-     * Set the value for this card.
-     *
-     * @param update
-     *            the new value to set
-     * @return the HeaderCard itself
-     */
-    public HeaderCard setValue(BigDecimal update) {
-        this.value = dblString(update, spaceAvailableForValue(key));
+        this.value = dblString(update, spaceAvailableForValue(this.key));
         return this;
     }
 
@@ -818,7 +794,19 @@ public class HeaderCard implements CursorValue<String> {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(double update, int precision) {
-        this.value = dblString(update, precision, spaceAvailableForValue(key));
+        this.value = dblString(update, precision, spaceAvailableForValue(this.key));
+        return this;
+    }
+
+    /**
+     * Set the value for this card.
+     *
+     * @param update
+     *            the new value to set
+     * @return the HeaderCard itself
+     */
+    public HeaderCard setValue(float update) {
+        this.value = dblString(floatToBigDecimal(update), spaceAvailableForValue(this.key));
         return this;
     }
 
@@ -831,20 +819,8 @@ public class HeaderCard implements CursorValue<String> {
      *            the number of decimal places to show
      * @return the HeaderCard itself
      */
-    public HeaderCard setValue(BigDecimal update, int precision) {
-        this.value = dblString(update, precision, spaceAvailableForValue(key));
-        return this;
-    }
-
-    /**
-     * Set the value for this card.
-     *
-     * @param update
-     *            the new value to set
-     * @return the HeaderCard itself
-     */
-    public HeaderCard setValue(float update) {
-        this.value = dblString(update, spaceAvailableForValue(key));
+    public HeaderCard setValue(float update, int precision) {
+        this.value = dblString(floatToBigDecimal(update), precision, spaceAvailableForValue(this.key));
         return this;
     }
 
@@ -954,24 +930,6 @@ public class HeaderCard implements CursorValue<String> {
         return buf.toString();
     }
 
-    private boolean stringValueToString(int alignSmallString, int alignPosition, FitsLineAppender buf, boolean commentHandled) {
-        String stringValue = this.value.replace("'", "''");
-        if (FitsFactory.isLongStringsEnabled() && stringValue.length() > maxStringValueLength()) {
-            writeLongStringValue(buf, stringValue);
-            commentHandled = true;
-        } else {
-            // left justify the string inside the quotes
-            buf.append('\'');
-            buf.append(stringValue);
-            buf.appendSpacesTo(alignSmallString);
-            buf.append('\'');
-            // Now add space to the comment area starting at column
-            // 30
-            buf.appendSpacesTo(alignPosition);
-        }
-        return commentHandled;
-    }
-
     /**
      * @return the type of the value.
      */
@@ -991,37 +949,105 @@ public class HeaderCard implements CursorValue<String> {
         return null;
     }
 
-    /**
-     * detect the decimal type of the value, does it fit in a Double/BigInteger
-     * or must it be a BigDecimal to keep the needed precission.
-     * 
-     * @param value
-     *            the String value to check.
-     * @return the type to fit the value
-     */
-    private static Class<?> getDecimalNumberType(String value) {
-        BigDecimal bigDecimal = new BigDecimal(value);
-        if (bigDecimal.abs().compareTo(HeaderCard.LONG_MAX_VALUE_AS_BIG_DECIMAL) > 0 && bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
-            return BigInteger.class;
-        } else if (bigDecimal.equals(BigDecimal.valueOf(Double.valueOf(value)))) {
-            return Double.class;
+    private void extractValueCommentFromString(HeaderCardCountingArrayDataInput dis, String card) throws IOException, TruncatedFileException {
+        // extract the value/comment part of the string
+        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
+
+        if (FitsFactory.isLongStringsEnabled() && parsedValue.isString() && parsedValue.getValue().endsWith("&")) {
+            longStringCard(dis, parsedValue);
         } else {
-            return BigDecimal.class;
+            this.value = parsedValue.getValue();
+            this.isString = parsedValue.isString();
+            this.comment = parsedValue.getComment();
+            if (!this.isString && this.value.indexOf('\'') >= 0) {
+                throw new IllegalArgumentException("no single quotes allowed in values");
+            }
         }
     }
 
-    private static Class<?> getIntegerNumberType(String value) {
-        int length = value.length();
-        if (value.charAt(0) == '-' || value.charAt(0) == '+') {
-            length--;
+    private Boolean getBooleanValue(Boolean defaultValue) {
+        if ("T".equals(this.value)) {
+            return Boolean.TRUE;
+        } else if ("F".equals(this.value)) {
+            return Boolean.FALSE;
         }
-        if (length <= HeaderCard.MAX_INTEGER_STRING_SIZE) {
-            return Integer.class;
-        } else if (length <= HeaderCard.MAX_LONG_STRING_SIZE) {
-            return Long.class;
+        return defaultValue;
+    }
+
+    /**
+     * Process HIERARCH style cards... HIERARCH LEV1 LEV2 ... = value / comment
+     * The keyword for the card will be "HIERARCH.LEV1.LEV2..." A '/' is assumed
+     * to start a comment.
+     *
+     * @param dis
+     */
+    private void hierarchCard(String card, HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
+        this.key = FitsHeaderCardParser.parseCardKey(card);
+        extractValueCommentFromString(dis, card);
+    }
+
+    private void longStringCard(HeaderCardCountingArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException {
+        // ok this is a longString now read over all continues.
+        StringBuilder longValue = new StringBuilder();
+        StringBuilder longComment = null;
+        ParsedValue continueCard = parsedValue;
+        do {
+            if (continueCard.getValue() != null) {
+                longValue.append(continueCard.getValue());
+            }
+            if (continueCard.getComment() != null) {
+                if (longComment == null) {
+                    longComment = new StringBuilder();
+                } else {
+                    longComment.append(' ');
+                }
+                longComment.append(continueCard.getComment());
+            }
+            continueCard = null;
+            if (longValue.length() > 0 && longValue.charAt(longValue.length() - 1) == '&') {
+                longValue.setLength(longValue.length() - 1);
+                dis.mark();
+                String card = readOneHeaderLine(dis);
+                if (card.startsWith(CONTINUE.key())) {
+                    // extract the value/comment part of the string
+                    continueCard = FitsHeaderCardParser.parseCardValue(card);
+                } else {
+                    // the & was part of the string put it back.
+                    longValue.append('&');
+                    // ok move the input stream one card back.
+                    dis.reset();
+                }
+            }
+        } while (continueCard != null);
+        this.comment = longComment == null ? null : longComment.toString();
+        this.value = longValue.toString();
+        this.isString = true;
+    }
+
+    private int maxStringValueLength() {
+        int maxStringValueLength = HeaderCard.MAX_STRING_VALUE_LENGTH;
+        if (FitsFactory.getUseHierarch() && getKey().length() > MAX_KEYWORD_LENGTH) {
+            maxStringValueLength -= getKey().length() - MAX_KEYWORD_LENGTH;
+        }
+        return maxStringValueLength;
+    }
+
+    private boolean stringValueToString(int alignSmallString, int alignPosition, FitsLineAppender buf, boolean commentHandled) {
+        String stringValue = this.value.replace("'", "''");
+        if (FitsFactory.isLongStringsEnabled() && stringValue.length() > maxStringValueLength()) {
+            writeLongStringValue(buf, stringValue);
+            commentHandled = true;
         } else {
-            return BigInteger.class;
+            // left justify the string inside the quotes
+            buf.append('\'');
+            buf.append(stringValue);
+            buf.appendSpacesTo(alignSmallString);
+            buf.append('\'');
+            // Now add space to the comment area starting at column
+            // 30
+            buf.appendSpacesTo(alignPosition);
         }
+        return commentHandled;
     }
 
     private void writeLongStringValue(FitsLineAppender buf, String stringValueString) {
@@ -1082,23 +1108,9 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * This method is only used internally when it is sure that the creation of
-     * the card is granted not to throw an exception
-     * 
-     * @param key
-     *            the key for the card
-     * @param comment
-     *            the comment for the card
-     * @param isString
-     *            is this a string value card?
-     * @return the new HeaderCard
+     * Set the key.
      */
-    protected static HeaderCard saveNewHeaderCard(String key, String comment, boolean isString) {
-        try {
-            return new HeaderCard(key, null, comment, false, isString);
-        } catch (HeaderCardException e) {
-            LOG.log(Level.SEVERE, "Impossible Exception for internal card creation:" + key, e);
-            throw new IllegalStateException(e);
-        }
+    void setKey(String newKey) {
+        this.key = newKey;
     }
 }

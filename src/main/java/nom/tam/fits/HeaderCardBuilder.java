@@ -220,10 +220,18 @@ public class HeaderCardBuilder {
      */
     public HeaderCardBuilder value(float newValue) throws HeaderCardException {
         if (this.card == null) {
-            this.card = new HeaderCard(this.key.key(), newValue, null);
+            if (scale >= 0) {
+                this.card = new HeaderCard(this.key.key(), newValue, scale, null);
+            } else {
+                this.card = new HeaderCard(this.key.key(), newValue, null);
+            }
             this.header.addLine(this.card);
         } else {
-            this.card.setValue(newValue);
+            if (scale >= 0) {
+                this.card.setValue(newValue, scale);
+            } else {
+                this.card.setValue(newValue);
+            }
         }
         return this;
     }

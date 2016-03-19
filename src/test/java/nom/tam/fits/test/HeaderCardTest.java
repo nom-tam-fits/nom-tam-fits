@@ -264,8 +264,11 @@ public class HeaderCardTest {
     public void testFloat() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", -123456789012345678.242342429f, "dummy");
         String val = hc.getValue();
-        assertEquals(Long.class, hc.valueType());
-        assertEquals(Double.valueOf(-123456789012345678d), hc.getValue(Double.class, null), 100000000000d);
+        assertEquals(Double.class, hc.valueType());
+        assertEquals(Double.valueOf(-123456789012345678d), hc.getValue(Double.class, null), 10000000000d);
+        hc.setValue(12345.6666f, 2);
+        assertEquals(Double.class, hc.valueType());
+        assertEquals(Double.valueOf(12345.67d), hc.getValue(Double.class, null), 10000000000d);
     }
 
     @Test
@@ -345,8 +348,15 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard("TEST", 9999, "dummy");
         assertEquals(Integer.class, hc.valueType());
         assertEquals(Integer.valueOf(9999), hc.getValue(Integer.class, null));
+        hc.setValue("+9999");
+        assertEquals(Integer.class, hc.valueType());
+        assertEquals(Integer.valueOf(9999), hc.getValue(Integer.class, null));
+        hc.setValue("-9999");
+        assertEquals(Integer.class, hc.valueType());
+        assertEquals(Integer.valueOf(-9999), hc.getValue(Integer.class, null));
     }
 
+    
     @Test
     public void testLong() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", 999999999999999999L, "dummy");
