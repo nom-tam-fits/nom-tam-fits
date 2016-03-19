@@ -41,7 +41,6 @@ import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.XTENSION;
 
 import java.io.PrintStream;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.util.ArrayFuncs;
@@ -170,7 +169,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * @throws FitsException
      *             if the operation failed
      */
-    public static Data manufactureData(Header header) throws FitsException {
+    public static RandomGroupsData manufactureData(Header header) throws FitsException {
 
         int gcount = header.getIntValue(GCOUNT, -1);
         int pcount = header.getIntValue(PCOUNT, -1);
@@ -281,12 +280,8 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      *            <code>true</code> if the header should be primary
      */
     @Override
-    protected void setPrimaryHDU(boolean status) {
-        try {
-            super.setPrimaryHDU(status);
-        } catch (FitsException e) {
-            LOG.log(Level.SEVERE, "Unreachable catch in RandomGroupsHDU", e);
-        }
+    protected void setPrimaryHDU(boolean status) throws FitsException {
+        super.setPrimaryHDU(status);
         if (status) {
             this.myHeader.setSimple(true);
         } else {

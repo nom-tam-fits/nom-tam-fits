@@ -31,6 +31,7 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.NAXISn;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -67,6 +68,8 @@ import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.RandomGroupsData;
+import nom.tam.fits.RandomGroupsHDU;
 import nom.tam.fits.UndefinedData;
 import nom.tam.fits.UndefinedHDU;
 import nom.tam.fits.header.IFitsHeader;
@@ -491,6 +494,77 @@ public class BaseFitsTest {
         }
         Assert.assertNotNull(e);
         Assert.assertTrue(e.getCause() instanceof EOFException);
+    }
+
+    @Test
+    public void testFitsRandomGroupHDUProblem1() throws Exception {
+        FitsException actual = null;
+        try {
+            RandomGroupsHDU.encapsulate(new Object());
+        } catch (FitsException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual.getMessage().contains("invalid"));
+        Header header = new Header()//
+                .card(Standard.GROUPS).value(true)//
+                .card(Standard.GCOUNT).value(2)//
+                .card(Standard.PCOUNT).value(2)//
+                .card(NAXISn.n(1)).value(0)//
+                .card(Standard.NAXIS).value(1)//
+                .header();
+        actual = null;
+        try {
+            RandomGroupsHDU.manufactureData(header);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual.getMessage().toLowerCase().contains("invalid"));
+        header.card(Standard.NAXIS).value(2)//
+                .card(NAXISn.n(2)).value(2)//
+                .card(Standard.NAXIS.BITPIX).value(22);
+        actual = null;
+        try {
+            RandomGroupsHDU.manufactureData(header);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual.getMessage().contains("BITPIX"));
+        header.card(NAXISn.n(2)).value(-2)//
+                .card(Standard.NAXIS.BITPIX).value(32);
+        actual = null;
+        try {
+            RandomGroupsHDU.manufactureData(header);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual.getMessage().contains("dimension"));
+
+    }
+
+    @Test
+    public void testFitsRandomGroupHDUmanufactureData() throws Exception {
+        Header header = new Header()//
+                .card(Standard.GROUPS).value(true)//
+                .card(Standard.GCOUNT).value(0)//
+                .card(Standard.PCOUNT).value(2)//
+                .card(Standard.NAXIS).value(2)//
+                .card(NAXISn.n(1)).value(0)//
+                .card(NAXISn.n(2)).value(2)//
+                .card(Standard.NAXIS.BITPIX).value(32)//
+                .header();
+        RandomGroupsData data = RandomGroupsHDU.manufactureData(header);
+        Object[][] dataArray = (Object[][]) data.getData();
+        Assert.assertEquals(0, dataArray.length);
+        
+        RandomGroupsHDU randomGroupsHDU = new RandomGroupsHDU(header, data);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        randomGroupsHDU.info(new PrintStream(out));
+        String groupInfo = out.toString("UTF-8");
+        Assert.assertTrue(groupInfo.contains("unreadable data"));
     }
 
     @Test

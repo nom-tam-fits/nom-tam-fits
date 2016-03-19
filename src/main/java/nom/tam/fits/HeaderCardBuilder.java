@@ -317,4 +317,11 @@ public class HeaderCardBuilder {
         this.scale = -1;
         return this;
     }
+
+    /**
+     * @return the filled header.
+     */
+    public Header header() {
+        return header;
+    }
 }

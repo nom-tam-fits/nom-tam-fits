@@ -31,7 +31,14 @@ package nom.tam.fits;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.NAXISn;
+import static org.junit.Assert.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.NoSuchElementException;
+
+import nom.tam.fits.header.Standard;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -56,4 +63,52 @@ public class ProtectedFitsTest {
             throw e;
         }
     }
+
+    @Test
+    public void testRandomGroupsHDUmanufactureHeader() throws Exception {
+        FitsException actual = null;
+        try {
+            RandomGroupsHDU.manufactureHeader(null);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual.getMessage().contains("null"));
+
+    }
+
+    @Test
+    public void testFitsRandomGroupHDUisHeader() throws Exception {
+        Header header = new Header()//
+                .card(Standard.GROUPS).value(true)//
+                .card(Standard.GCOUNT).value(2)//
+                .card(Standard.PCOUNT).value(2)//
+                .card(Standard.NAXIS).value(2)//
+                .card(NAXISn.n(1)).value(0)//
+                .card(NAXISn.n(2)).value(2)//
+                .card(Standard.NAXIS.BITPIX).value(32)//
+                .header();
+
+        Assert.assertFalse(RandomGroupsHDU.isHeader(header));
+        header.card(Standard.SIMPLE).value(true);
+        Assert.assertTrue(RandomGroupsHDU.isHeader(header));
+        header.deleteKey(Standard.SIMPLE);
+        header.card(Standard.XTENSION).value("IMAGE");
+        Assert.assertTrue(RandomGroupsHDU.isHeader(header));
+        RandomGroupsHDU randomGroupsHDU = new RandomGroupsHDU(header, RandomGroupsHDU.manufactureData(header));
+        Assert.assertTrue(randomGroupsHDU.isHeader());
+        randomGroupsHDU.setPrimaryHDU(true);
+        Assert.assertTrue(randomGroupsHDU.getHeader().getBooleanValue(Standard.SIMPLE));
+        randomGroupsHDU.setPrimaryHDU(false);
+        Assert.assertFalse(randomGroupsHDU.getHeader().getBooleanValue(Standard.SIMPLE));
+        Assert.assertEquals("IMAGE", randomGroupsHDU.getHeader().getStringValue(Standard.XTENSION));
+        
+        randomGroupsHDU = new RandomGroupsHDU(null, RandomGroupsHDU.manufactureData(header));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        randomGroupsHDU.info(new PrintStream(out));
+        String groupInfo = out.toString("UTF-8");
+        Assert.assertTrue(groupInfo.contains("No Header"));
+        
+    }
+
 }
