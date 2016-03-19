@@ -32,7 +32,6 @@ package nom.tam.fits;
  */
 
 import static nom.tam.fits.header.Standard.NAXISn;
-import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -102,13 +101,70 @@ public class ProtectedFitsTest {
         randomGroupsHDU.setPrimaryHDU(false);
         Assert.assertFalse(randomGroupsHDU.getHeader().getBooleanValue(Standard.SIMPLE));
         Assert.assertEquals("IMAGE", randomGroupsHDU.getHeader().getStringValue(Standard.XTENSION));
-        
+
         randomGroupsHDU = new RandomGroupsHDU(null, RandomGroupsHDU.manufactureData(header));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         randomGroupsHDU.info(new PrintStream(out));
         String groupInfo = out.toString("UTF-8");
         Assert.assertTrue(groupInfo.contains("No Header"));
-        
+
     }
 
+    @Test
+    public void testFitsRandomGroupData() throws Exception {
+        RandomGroupsData data = new RandomGroupsData(new Object[0][]);
+        FitsException actual = null;
+        try {
+            data.fillHeader(new Header());
+        } catch (FitsException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual.getMessage().toLowerCase().contains("not conform"));
+        Object[][] dataArray = {
+            new Object[]{
+                new double[10],
+                new int[10],
+            }
+        };
+        data = new RandomGroupsData(dataArray);
+        actual = null;
+        try {
+            data.fillHeader(new Header());
+        } catch (FitsException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual.getMessage().toLowerCase().contains("not agree"));
+        dataArray = new Object[][]{
+            new Object[]{
+                new int[10][10],
+                new int[10],
+            }
+        };
+        data = new RandomGroupsData(dataArray);
+        actual = null;
+        try {
+            data.fillHeader(new Header());
+        } catch (FitsException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual.getMessage().toLowerCase().contains("not 1 d array"));
+        dataArray = new Object[][]{
+            new Object[]{
+                new String[10],
+                new String[10],
+            }
+        };
+        data = new RandomGroupsData(dataArray);
+        actual = null;
+        try {
+            data.fillHeader(new Header());
+        } catch (FitsException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual.getMessage().toLowerCase().contains("string not supported"));
+    }
 }

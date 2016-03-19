@@ -559,12 +559,91 @@ public class BaseFitsTest {
         RandomGroupsData data = RandomGroupsHDU.manufactureData(header);
         Object[][] dataArray = (Object[][]) data.getData();
         Assert.assertEquals(0, dataArray.length);
-        
+
         RandomGroupsHDU randomGroupsHDU = new RandomGroupsHDU(header, data);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         randomGroupsHDU.info(new PrintStream(out));
         String groupInfo = out.toString("UTF-8");
         Assert.assertTrue(groupInfo.contains("unreadable data"));
+    }
+
+    @Test
+    public void testFitsRandomGroupDataWrite() throws Exception {
+        RandomGroupsData data = new RandomGroupsData(new Object[][]{
+            new Object[]{
+                new int[10],
+                new int[10],
+            }
+        });
+        BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream()) {
+
+            @Override
+            public void writeArray(Object o) throws IOException {
+                throw new IOException();
+            }
+        };
+        FitsException actual = null;
+        try {
+            data.write(out);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual.getMessage().toLowerCase().contains("error writing"));
+
+    }
+
+    @Test
+    public void testFitsRandomGroupDataRead() throws Exception {
+        ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
+        BufferedDataOutputStream out = new BufferedDataOutputStream(outBytes);
+        Object[][] dataArray = new Object[][]{
+            new Object[]{
+                new int[10],
+                new int[10],
+            }
+        };
+        out.writeArray(dataArray);
+        out.close();
+
+        RandomGroupsData data = new RandomGroupsData(dataArray);
+        BufferedDataInputStream in = new BufferedDataInputStream(new ByteArrayInputStream(new byte[0]));
+        FitsException actual = null;
+        try {
+            data.read(in);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual.getMessage().toLowerCase().contains("error reading"));
+
+        in = new BufferedDataInputStream(new ByteArrayInputStream(outBytes.toByteArray()));
+        actual = null;
+        try {
+            data.read(in);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual.getMessage().toLowerCase().contains("eof reading padding"));
+
+        outBytes.write(new byte[2880]);
+        in = new BufferedDataInputStream(new ByteArrayInputStream(outBytes.toByteArray())) {
+
+            @Override
+            public void skipAllBytes(int toSkip) throws IOException {
+               throw new IOException();
+            }
+        };
+        actual = null;
+        try {
+            data.read(in);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual.getMessage().toLowerCase().contains("io error"));
+
     }
 
     @Test
