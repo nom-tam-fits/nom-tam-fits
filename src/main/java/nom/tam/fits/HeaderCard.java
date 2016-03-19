@@ -9,6 +9,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -249,14 +250,14 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * attention float to double cases are very lossy so a toString is needed to
-     * keep the precision. proof =(double)500.055f
+     * keep the precision. proof (double)500.055f = 500.05499267578125d
      *
      * @param floatValue
      *            the float value
      * @return the BigDecimal as close to the value of the float as possible
      */
     private static BigDecimal floatToBigDecimal(float floatValue) {
-        return new BigDecimal(Float.toString(floatValue));
+        return new BigDecimal(floatValue, MathContext.DECIMAL32);
     }
 
     /**

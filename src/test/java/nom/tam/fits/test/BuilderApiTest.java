@@ -32,8 +32,10 @@ package nom.tam.fits.test;
  */
 
 import static nom.tam.fits.header.Standard.*;
+import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Date;
 
 import nom.tam.fits.BasicHDU;
@@ -113,7 +115,7 @@ public class BuilderApiTest {
                 .noScale()//
                 .card(TZEROn.n(1)).value(100.99999d)//
                 .card(TZEROn.n(2)).value(new BigDecimal("100.99999"))//
-                .card(TZEROn.n(4)).value(100.99999f)//
+                .card(TZEROn.n(4)).value(100.999f)//
                 .card(AUTHOR).value(false);
 
         Assert.assertEquals("2015-07-12T05:21:25.446", header.getStringValue(DATE_OBS));
@@ -131,7 +133,7 @@ public class BuilderApiTest {
         Assert.assertEquals(100.99999d, header.getDoubleValue(TZEROn.n(1)), 0.000001d);
         Assert.assertEquals(100.99999d, header.getDoubleValue(TZEROn.n(2)), 0.000001d);
         Assert.assertEquals(500.06f, header.getFloatValue(TZEROn.n(3)), 0.000001f);
-        Assert.assertEquals(100.99999f, header.getFloatValue(TZEROn.n(4)), 0.000001f);
+        Assert.assertEquals(100.999f, header.getFloatValue(TZEROn.n(4)), 0.000001f);
         Assert.assertEquals(false, header.getBooleanValue(AUTHOR));
         Assert.assertEquals(50.55f, header.getFloatValue(TZEROn.n(5)), 0.000001f);
 
