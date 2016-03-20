@@ -46,7 +46,7 @@ import nom.tam.util.test.ThrowAnyException;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class BasicHduFailureTests {
+public class BasicHduFailureTest {
 
     @Test
     public void testAxisFailuer() throws Exception {
