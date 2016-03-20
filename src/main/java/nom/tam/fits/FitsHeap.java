@@ -207,9 +207,11 @@ public class FitsHeap implements FitsElement {
         if (this.heapSize > 0) {
             allocate();
             try {
-                str.read(this.heap, 0, this.heapSize);
+                if (str.read(this.heap, 0, this.heapSize) < this.heapSize) {
+                    throw new FitsException("Error reading heap, no more data");
+                }
             } catch (IOException e) {
-                throw new FitsException("Error reading heap:" + e);
+                throw new FitsException("Error reading heap " + e.getMessage(), e);
             }
         }
 
@@ -247,7 +249,7 @@ public class FitsHeap implements FitsElement {
         try {
             str.write(this.heap, 0, this.heapSize);
         } catch (IOException e) {
-            throw new FitsException("Error writing heap:" + e);
+            throw new FitsException("Error writing heap:" + e.getMessage(), e);
         }
     }
 }

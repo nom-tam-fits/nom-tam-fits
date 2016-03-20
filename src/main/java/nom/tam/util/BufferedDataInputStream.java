@@ -180,7 +180,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
             int xlen = super.read(obuf, currentOffset, remainingToRead);
             if (xlen <= 0) {
                 if (total == 0) {
-                    throw new EOFException(); // should not be possible
+                    throw new EOFException(); 
                 } else {
                     return total;
                 }
