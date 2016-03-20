@@ -63,6 +63,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 
@@ -266,11 +267,12 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     public int getBitPix() throws FitsException {
-        int bitpix = this.myHeader.getIntValue("BITPIX", -1);
+        int bitpix = this.myHeader.getIntValue(Standard.BITPIX, -1);
         switch (bitpix) {
             case BITPIX_BYTE:
             case BITPIX_SHORT:
             case BITPIX_INT:
+            case BITPIX_LONG:
             case BITPIX_FLOAT:
             case BITPIX_DOUBLE:
                 break;
