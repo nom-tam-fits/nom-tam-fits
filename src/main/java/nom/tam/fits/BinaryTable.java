@@ -1842,8 +1842,10 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Update the header after a deletion. * @throws FitsException if the
-     * operation failed
+     * Update the header after a deletion.
+     * 
+     * @throws FitsException
+     *             if the operation failed
      */
     @Override
     public void updateAfterDelete(int oldNcol, Header hdr) throws FitsException {

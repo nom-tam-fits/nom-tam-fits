@@ -268,6 +268,58 @@ public class StreamTest {
         Assert.assertEquals(0, myIn.available());
     }
 
+    @Test(expected = EOFException.class)
+    public void testSkipBytesWithException1() throws Exception {
+        int total = 256;
+        InputStream input = new ByteArrayInputStream(new byte[total]) {
+
+            @Override
+            public synchronized long skip(long n) {
+                ThrowAnyException.throwIOException("all is broken");
+                return 0L;
+            }
+        };
+        BufferedDataInputStream myIn = null;
+        try {
+            myIn = new BufferedDataInputStream(input) {
+
+                @Override
+                public synchronized int read(byte[] b, int off, int len) {
+                    return -10;
+                }
+            };
+            myIn.skipAllBytes(100L);
+        } finally {
+            SaveClose.close(myIn);
+        }
+    }
+
+    @Test(expected = EOFException.class)
+    public void testSkipBytesWithException2() throws Exception {
+        int total = 8192 + 256;
+        InputStream input = new ByteArrayInputStream(new byte[total]) {
+
+            @Override
+            public synchronized long skip(long n) {
+                ThrowAnyException.throwIOException("all is broken");
+                return 0L;
+            }
+        };
+        BufferedDataInputStream myIn = null;
+        try {
+            myIn = new BufferedDataInputStream(input) {
+
+                @Override
+                public synchronized int read(byte[] b, int off, int len) {
+                    return -10;
+                }
+            };
+            myIn.skipAllBytes(total - 100L);
+        } finally {
+            SaveClose.close(myIn);
+        }
+    }
+
     @Test
     public void testBoolean() throws Exception {
         boolean[] value = new boolean[10];

@@ -53,13 +53,14 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.FitsHeap;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.PaddingException;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.header.Standard;
+import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
@@ -474,7 +475,7 @@ public class BinaryTableTest {
             bhdu.setColumnMeta(i, "TUNIT", "UNIT" + (i + 1), null, true);
             bhdu.setColumnMeta(i, "TX", i + 1, null, true);
             bhdu.setColumnMeta(i, "TY", 2. * (i + 1), null, true);
-            bhdu.setColumnMeta(i, "TZ", 3. * (i + 1), i+1, null, true);
+            bhdu.setColumnMeta(i, "TZ", 3. * (i + 1), i + 1, null, true);
         }
         bhdu.setCurrentColumn(1);
         Assert.assertEquals(-1, bhdu.findColumn("XXX"));
@@ -1750,7 +1751,7 @@ public class BinaryTableTest {
     }
 
     @Test
-    public void testColumnAddRow() throws Exception {
+    public void testColumnAddRowInt() throws Exception {
         BinaryTable btab = new BinaryTable();
         btab.getData().addRow(TEST_ROW);
         assertArrayEquals(new int[]{
@@ -1759,6 +1760,85 @@ public class BinaryTableTest {
             3
         }, btab.getData().getSizes());
         assertEquals(3, btab.getData().getNCols());
+    }
+
+    @Test
+    public void testColumnAddRowBoolean() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        Object[] testRow = new Object[]{
+            new boolean[]{
+                true,
+                false,
+                true
+            }
+        };
+        btab.addRow(testRow);
+
+        assertEquals((int) 'T', ((byte[]) btab.getData().getColumn(0))[0]);
+        assertEquals((int) 'F', ((byte[]) btab.getData().getColumn(0))[1]);
+        assertEquals((int) 'T', ((byte[]) btab.getData().getColumn(0))[2]);
+        assertEquals(1, btab.getData().getNCols());
+
+        BinaryTableHDU tableHdu = new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ArrayDataOutput os = new BufferedDataOutputStream(out);
+
+        Fits f = new Fits();
+        f.addHDU(tableHdu);
+        f.write(os);
+        SaveClose.close(f);
+        SaveClose.close(os);
+
+        f = new Fits();
+        f.read(new BufferedDataInputStream(new ByteArrayInputStream(out.toByteArray())));
+        btab = (BinaryTable) f.getHDU(1).getData();
+
+        assertEquals((int) 'T', ((byte[]) btab.getData().getColumn(0))[0]);
+        assertEquals((int) 'F', ((byte[]) btab.getData().getColumn(0))[1]);
+        assertEquals((int) 'T', ((byte[]) btab.getData().getColumn(0))[2]);
+        assertEquals(1, btab.getData().getNCols());
+    }
+
+    @Test
+    public void testColumnAddRowChar() throws Exception {
+
+        BinaryTable btab = new BinaryTable();
+        Object[] testRow = new Object[]{
+            new char[]{
+                'a',
+                'b',
+                'c'
+            }
+        };
+        btab.addRow(testRow);
+
+        assertEquals('a', ((char[]) btab.getData().getColumn(0))[0]);
+        assertEquals('b', ((char[]) btab.getData().getColumn(0))[1]);
+        assertEquals('c', ((char[]) btab.getData().getColumn(0))[2]);
+        assertEquals(1, btab.getData().getNCols());
+
+        BinaryTableHDU tableHdu = new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ArrayDataOutput os = new BufferedDataOutputStream(out);
+
+        Fits f = new Fits();
+        f.addHDU(tableHdu);
+        f.write(os);
+        SaveClose.close(f);
+        SaveClose.close(os);
+
+        f = new Fits();
+        f.read(new BufferedDataInputStream(new ByteArrayInputStream(out.toByteArray())));
+        btab = (BinaryTable) f.getHDU(1).getData();
+
+        // very strange cast to short?
+        assertEquals((short) 'a', ((short[]) btab.getData().getColumn(0))[0]);
+        assertEquals((short) 'b', ((short[]) btab.getData().getColumn(0))[1]);
+        assertEquals((short) 'c', ((short[]) btab.getData().getColumn(0))[2]);
+        assertEquals(1, btab.getData().getNCols());
+
     }
 
     @Test(expected = TableException.class)

@@ -180,7 +180,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
             int xlen = super.read(obuf, currentOffset, remainingToRead);
             if (xlen <= 0) {
                 if (total == 0) {
-                    throw new EOFException(); 
+                    throw new EOFException();
                 } else {
                     return total;
                 }
@@ -401,7 +401,11 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
                     break;
                 }
             } catch (IOException e) {
+                long lastNeed = need;
                 need = handleExceptionInSkip(need, e);
+                if (need >= lastNeed) {
+                    break;
+                }
             }
         }
         if (need > 0) {
