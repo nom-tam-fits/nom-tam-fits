@@ -4,6 +4,8 @@
  */
 package nom.tam.util;
 
+import java.nio.charset.Charset;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -35,12 +37,12 @@ package nom.tam.util;
  * #L%
  */
 
-import java.nio.charset.StandardCharsets;
-
 /**
  * @author tmcglynn
  */
 public final class AsciiFuncs {
+
+    private static final Charset US_ASCII = Charset.forName("US-ASCII");
 
     /**
      * utility class not to be instantiated.
@@ -71,7 +73,7 @@ public final class AsciiFuncs {
      * @return the extracted string
      */
     public static String asciiString(byte[] buf, int start, int len) {
-        return new String(buf, start, len, StandardCharsets.US_ASCII);
+        return new String(buf, start, len, US_ASCII);
     }
 
     /**
@@ -82,7 +84,7 @@ public final class AsciiFuncs {
      *            the string to convert
      */
     public static byte[] getBytes(String in) {
-        return in.getBytes(StandardCharsets.US_ASCII);
+        return in.getBytes(US_ASCII);
     }
 
     /**

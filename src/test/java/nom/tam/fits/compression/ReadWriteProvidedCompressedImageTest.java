@@ -360,7 +360,6 @@ public class ReadWriteProvidedCompressedImageTest {
         ImageIcon icon = new ImageIcon(img);
         JLabel label = new JLabel(icon);
         frame.getContentPane().add(label, BorderLayout.CENTER);
-        frame.revalidate();
         frame.repaint();
         frame.pack();
         frame.setVisible(true);
