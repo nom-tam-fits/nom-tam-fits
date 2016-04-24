@@ -6,6 +6,11 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<files>
 		<file>
+			<source>src/assembly/BUILD.txt</source>
+			<destName>BUILD</destName>
+			<outputDirectory>java/v1.0</outputDirectory>
+		</file>
+		<file>
 			<source>target/${artifact.artifactId}-${artifact.version}.jar</source>
 			<destName>fits.jar</destName>
 			<outputDirectory>java</outputDirectory>
@@ -54,4 +59,11 @@
 			</includes>
 		</fileSet>
 	</fileSets>
+	<dependencySets>
+		<dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<outputDirectory>java/v1.0/dependencies</outputDirectory>
+			<scope>compile</scope>
+		</dependencySet>
+	</dependencySets>
 </assembly>
