@@ -477,11 +477,7 @@ public final class ArrayFuncs {
      * @return The allocated array.
      */
     public static Object newInstance(Class<?> cl, int dim) {
-        Object o = Array.newInstance(cl, dim);
-        if (o == null) {
-            throw new OutOfMemoryError("Unable to allocate array: " + cl + "[" + dim + "]");
-        }
-        return o;
+        return Array.newInstance(cl, dim);
     }
 
     /**
@@ -502,11 +498,7 @@ public final class ArrayFuncs {
                 1
             };
         }
-        Object o = Array.newInstance(cl, dims);
-        if (o == null) {
-            throw new OutOfMemoryError("Unable to allocate array: " + cl + Arrays.toString(dims));
-        }
-        return o;
+        return Array.newInstance(cl, dims);
     }
 
     /**

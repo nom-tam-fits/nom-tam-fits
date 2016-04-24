@@ -40,6 +40,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -1263,6 +1264,10 @@ public class BinaryTableTest {
             for (int i = 0; i < data.length; i += 1) {
                 assertEquals("vardata" + i, true, TestArrayFuncs.arrayEquals(data[i], bhdu.getColumn(i)));
             }
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            bhdu.info(new PrintStream(out));
+            Assert.assertTrue(out.toString().contains("Heap size is: 8500 bytes"));
         } catch (Exception e) {
             e.printStackTrace(System.err);
             throw e;
@@ -1841,6 +1846,16 @@ public class BinaryTableTest {
 
     }
 
+    @Test
+    public void testEmptyBinaryTableInfo() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        BinaryTableHDU tableHdu = new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintStream stream = new PrintStream(out);
+        tableHdu.info(stream);
+        Assert.assertTrue(out.toString().contains("No data present"));
+    }
+
     @Test(expected = TableException.class)
     public void testColumnAddWrongRowSize() throws Exception {
         BinaryTable btab = new BinaryTable();
@@ -1928,6 +1943,12 @@ public class BinaryTableTest {
         });
     }
 
+    @Test(expected = FitsException.class)
+    public void testCouldNotEncapsulate() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab).encapsulate(Integer.valueOf(1));
+    }
+
     private BinaryTable createTestTable() throws FitsException {
         BinaryTable btab = new BinaryTable();
 
@@ -1944,4 +1965,5 @@ public class BinaryTableTest {
         f.addHDU(Fits.makeHDU(btab));
         return btab;
     }
+
 }

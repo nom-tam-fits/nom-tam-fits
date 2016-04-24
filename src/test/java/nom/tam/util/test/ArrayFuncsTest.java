@@ -44,12 +44,21 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.TestArrayFuncs;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * @author Thomas McGlynn
  */
 public class ArrayFuncsTest {
+
+    public static class CloneFailTest implements Cloneable {
+
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+            throw new IllegalStateException();
+        }
+    }
 
     public class CloneTest implements Cloneable {
 
@@ -624,4 +633,61 @@ public class ArrayFuncsTest {
         constrs[0].setAccessible(true);
         constrs[0].newInstance();
     }
+
+    @Test
+    public void testGenericCloneFail1() throws Exception {
+        Assert.assertNull(ArrayFuncs.genericClone(this));
+    }
+
+    @Test
+    public void testGenericCloneFail2() throws Exception {
+        Assert.assertNull(ArrayFuncs.genericClone(new CloneFailTest()));
+    }
+
+    @Test
+    public void testVoidBaseClass() throws Exception {
+        Assert.assertEquals(void.class, ArrayFuncs.getBaseClass(null));
+    }
+
+    @Test
+    public void testVoidBaseLength() throws Exception {
+        Assert.assertEquals(0, ArrayFuncs.getBaseLength(null));
+    }
+
+    @Test
+    public void testCurlNull() throws Exception {
+        Assert.assertNull(ArrayFuncs.curl(null, null));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testCurlNonArray() throws Exception {
+        Assert.assertNull(ArrayFuncs.curl(this, null));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testCurlWrongArray() throws Exception {
+        Assert.assertNull(ArrayFuncs.curl(new int[]{
+            1,
+            2,
+            3
+        }, new int[]{
+            99
+        }));
+    }
+
+    @Test
+    public void testDeepCloneFail1() throws Exception {
+        Assert.assertNull(ArrayFuncs.deepClone(this));
+    }
+
+    @Test
+    public void testDeepCloneFail2() throws Exception {
+        Assert.assertNull(ArrayFuncs.deepClone(new CloneFailTest()));
+    }
+
+    @Test
+    public void testnLElementsFail() throws Exception {
+        Assert.assertEquals(1, ArrayFuncs.nLElements(this));
+    }
+
 }
