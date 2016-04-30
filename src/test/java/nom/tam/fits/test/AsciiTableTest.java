@@ -31,8 +31,11 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
+import static nom.tam.fits.header.Standard.TBCOLn;
+import static nom.tam.fits.header.Standard.TFORMn;
+import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -53,7 +56,10 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.TableHDU;
+import nom.tam.fits.header.Standard;
+import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.SaveClose;
@@ -756,5 +762,53 @@ public class AsciiTableTest {
     public void testGetWrongColumnFormat() throws Exception {
         AsciiTableHDU hdu = (AsciiTableHDU) makeAsciiTable().getHDU(1);
         hdu.getColumnFormat(5);
+    }
+
+    @Test
+    public void testToInvalidTable() throws Exception {
+        Header hdr = new Header();
+        hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
+                .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(4)//
+                .card(Standard.TFORMn.n(1)).value(4);
+        FitsException actual = null;
+        try {
+            new AsciiTable(hdr);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual.getMessage().startsWith("Invalid Specification"));
+        hdr.deleteKey(Standard.TFORMn.n(1));// because the isString can not be
+                                            // changed.
+        hdr.card(Standard.TFORMn.n(1)).value("Z1");
+        actual = null;
+        try {
+            new AsciiTable(hdr);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual.getMessage().startsWith("could not parse column"));
+    }
+
+    @Test
+    public void testToBigTable() throws Exception {
+        Header hdr = new Header();
+        hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
+                .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(4)//
+                .card(Standard.TFORMn.n(1)).value("I1");
+        ArrayDataInput str = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
+        FitsException actual = null;
+        try {
+            new AsciiTable(hdr).read(str);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual.getMessage().contains("table > 2"));
     }
 }
