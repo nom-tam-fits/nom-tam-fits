@@ -31,11 +31,12 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import static nom.tam.fits.header.Standard.TBCOLn;
-import static nom.tam.fits.header.Standard.TFORMn;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -54,12 +55,14 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.PaddingException;
 import nom.tam.fits.TableHDU;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
+import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataInputStream;
+import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.SaveClose;
@@ -810,5 +813,251 @@ public class AsciiTableTest {
         }
         assertNotNull(actual);
         assertTrue(actual.getMessage().contains("table > 2"));
+    }
+
+    @Test
+    public void testToBigTable2() throws Exception {
+        Header hdr = new Header();
+        hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
+                .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(4)//
+                .card(Standard.TFORMn.n(1)).value("I1");
+        ArrayDataOutput str = new BufferedDataOutputStream(new ByteArrayOutputStream());
+        FitsException actual = null;
+        try {
+            new AsciiTable(hdr) {
+
+                // to get over ensure data
+                public Object getData() throws FitsException {
+                    try {
+                        Field field = AsciiTable.class.getDeclaredField("data");
+                        field.setAccessible(true);
+                        field.set(this, new Object[]{
+                            new int[10]
+                        });
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    return super.getData();
+                };
+            }.write(str);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual.getMessage().contains("table > 2"));
+    }
+
+    @Test
+    public void testToFailedWrite() throws Exception {
+        Header hdr = new Header();
+        hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
+                .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(4)//
+                .card(Standard.TFORMn.n(1)).value("I1");
+        ArrayDataOutput str = new BufferedDataOutputStream(new ByteArrayOutputStream());
+        FitsException actual = null;
+        try {
+            new AsciiTable(hdr) {
+
+                // to get over ensure data
+                public Object getData() throws FitsException {
+                    return null;
+                };
+            }.write(str);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual.getMessage().contains("undefined ASCII Table"));
+    }
+
+    @Test
+    public void testToFailedWrite2() throws Exception {
+        AsciiTableHDU table = (AsciiTableHDU) Fits.makeHDU(getSampleCols());
+        ArrayDataOutput str = new BufferedDataOutputStream(new ByteArrayOutputStream()) {
+
+            int count = 0;
+
+            @Override
+            public void write(byte[] b) throws IOException {
+                count += b.length;
+                if (count > 4500) {
+                    throw new IOException("XXXXX");
+                }
+                super.write(b);
+            }
+        };
+        FitsException actual = null;
+        try {
+            table.getData().write(str);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual.getCause().getMessage().contains("XXXXX"));
+    }
+
+    @Test
+    public void testFailingGetElementTable() throws Exception {
+        Header hdr = new Header();
+        hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
+                .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(4)//
+                .card(Standard.TFORMn.n(1)).value("I1");
+        ArrayDataInput str = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
+        FitsException actual = null;
+        try {
+            new AsciiTable(hdr).getElement(0, 0);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual.getCause() instanceof IOException);
+    }
+
+    @Test
+    public void testFailingGetRowTable() throws Exception {
+        Header hdr = new Header();
+        hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
+                .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(4)//
+                .card(Standard.TFORMn.n(1)).value("I1");
+        ArrayDataInput str = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
+        FitsException actual = null;
+        try {
+            new AsciiTable(hdr).getRow(0);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual.getCause() instanceof IOException);
+    }
+
+    @Test
+    public void testIncompatibleElement() throws Exception {
+        Header hdr = new Header();
+        hdr.card(Standard.NAXIS1).value(1)//
+                .card(Standard.NAXIS2).value(1)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(2)//
+                .card(Standard.TFORMn.n(1)).value("I1");
+        ArrayDataInput str = new BufferedDataInputStream(new ByteArrayInputStream(new byte[2880 * 2]));
+        FitsException actual = null;
+        try {
+            AsciiTable asciiTable = new AsciiTable(hdr);
+            asciiTable.read(str);
+            asciiTable.getElement(0, 0);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual.getMessage().contains("Error parsing data"));
+    }
+
+    @Test
+    public void testIllegalSetRow() throws Exception {
+        Header hdr = new Header();
+        hdr.card(Standard.NAXIS1).value(1)//
+                .card(Standard.NAXIS2).value(1)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(2)//
+                .card(Standard.TFORMn.n(1)).value("I1");
+        FitsException actual = null;
+        try {
+            AsciiTable asciiTable = new AsciiTable(hdr) {
+
+                // to let ensureData think there is data
+                @Override
+                public Object getData() throws FitsException {
+                    return null;
+                }
+            };
+            asciiTable.setRow(0, new Object[]{
+                new int[10]
+            });
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual.getMessage().contains("incompatible data"));
+    }
+
+    @Test
+    public void testIllegalSetRow2() throws Exception {
+        Header hdr = new Header();
+        hdr.card(Standard.NAXIS1).value(1)//
+                .card(Standard.NAXIS2).value(1)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(2)//
+                .card(Standard.TFORMn.n(1)).value("I1");
+        FitsException actual = null;
+        try {
+            AsciiTable asciiTable = new AsciiTable(hdr);
+            asciiTable.setRow(-1, null);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual.getMessage().contains("Invalid row"));
+    }
+
+    @Test
+    public void testFailedRead() throws Exception {
+        Header hdr = new Header();
+        hdr.card(Standard.NAXIS1).value(1)//
+                .card(Standard.NAXIS2).value(1)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(2)//
+                .card(Standard.TFORMn.n(1)).value("I1");
+        ArrayDataInput str = new BufferedDataInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
+        FitsException actual = null;
+        try {
+            AsciiTable asciiTable = new AsciiTable(hdr) {
+
+                // to laow the padding excewption to initialize.
+                @Override
+                public Object getData() throws FitsException {
+                    return new Object[]{
+                        new int[10]
+                    };
+                }
+            };
+            asciiTable.read(str);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual instanceof PaddingException);
+    }
+
+    @Test
+    public void testFailedRead2() throws Exception {
+        Header hdr = new Header();
+        hdr.card(Standard.NAXIS1).value(1)//
+                .card(Standard.NAXIS2).value(1)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(2)//
+                .card(Standard.TFORMn.n(1)).value("I1");
+        ArrayDataInput str = new BufferedDataInputStream(new ByteArrayInputStream(new byte[2880 - 1])) {
+
+            @Override
+            public void readFully(byte[] b) throws IOException {
+                throw new IOException("XXXXX");
+            }
+        };
+        FitsException actual = null;
+        try {
+            AsciiTable asciiTable = new AsciiTable(hdr);
+            asciiTable.read(str);
+        } catch (FitsException e) {
+            actual = e;
+        }
+        assertNotNull(actual);
+        assertTrue(actual.getCause().getMessage().contains("XXXXX"));
     }
 }
