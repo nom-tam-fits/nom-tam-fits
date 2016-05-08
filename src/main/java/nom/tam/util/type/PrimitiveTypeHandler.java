@@ -38,9 +38,13 @@ import java.util.Map;
 
 public final class PrimitiveTypeHandler {
 
+    private static final int MAX_TYPE_VALUE = 256;
+
     private static final int BIT_PIX_OFFSET = 64;
 
     private static PrimitiveType<?>[] byBitPix;
+
+    private static PrimitiveType<?>[] byType;
 
     private static Map<Class<?>, PrimitiveType<? extends Buffer>> byClass;
 
@@ -49,13 +53,15 @@ public final class PrimitiveTypeHandler {
         return (PrimitiveType<B>) primitiveType;
     }
 
-    static  {
+    static {
         byBitPix = new PrimitiveType[BIT_PIX_OFFSET * 2 + 1];
+        byType = new PrimitiveType[MAX_TYPE_VALUE];
         Map<Class<?>, PrimitiveType<?>> initialByClass = new HashMap<Class<?>, PrimitiveType<?>>();
         for (PrimitiveType<?> type : values()) {
             if (type.bitPix() != 0) {
                 byBitPix[type.bitPix() + BIT_PIX_OFFSET] = type;
             }
+            byType[type.type()] = type;
             initialByClass.put(type.primitiveClass(), type);
             initialByClass.put(type.wrapperClass(), type);
             if (type.bufferClass() != null) {
@@ -81,16 +87,16 @@ public final class PrimitiveTypeHandler {
 
     private static PrimitiveType<?>[] values() {
         return new PrimitiveType[]{
-                PrimitiveTypes.BOOLEAN,
-                PrimitiveTypes.BYTE,
-                PrimitiveTypes.CHAR,
-                PrimitiveTypes.DOUBLE,
-                PrimitiveTypes.FLOAT,
-                PrimitiveTypes.INT,
-                PrimitiveTypes.LONG,
-                PrimitiveTypes.SHORT,
-                PrimitiveTypes.STRING,
-                PrimitiveTypes.UNKNOWN
+            PrimitiveTypes.BOOLEAN,
+            PrimitiveTypes.BYTE,
+            PrimitiveTypes.CHAR,
+            PrimitiveTypes.DOUBLE,
+            PrimitiveTypes.FLOAT,
+            PrimitiveTypes.INT,
+            PrimitiveTypes.LONG,
+            PrimitiveTypes.SHORT,
+            PrimitiveTypes.STRING,
+            PrimitiveTypes.UNKNOWN
         };
     }
 
@@ -99,5 +105,9 @@ public final class PrimitiveTypeHandler {
 
     public static PrimitiveType<Buffer> valueOf(int bitPix) {
         return cast(byBitPix[bitPix + BIT_PIX_OFFSET]);
+    }
+
+    public static PrimitiveType<Buffer> valueOf(char type) {
+        return cast(byType[type]);
     }
 }

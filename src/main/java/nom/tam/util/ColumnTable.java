@@ -915,9 +915,80 @@ public class ColumnTable<T> implements DataTable {
                 int size = this.sizes[col];
 
                 char colType = this.types[col];
-                PointerAccess<?> accessor = POINTER_ACCESSORS_BY_TYPE[colType];
-                accessor.write(this, os, columnIndex[colType], arrOffset, size);
+                POINTER_ACCESSORS_BY_TYPE[colType].write(this, os, columnIndex[colType], arrOffset, size);
                 columnIndex[colType] += 1;
+            }
+        }
+    }
+
+    /**
+     * Write a column of a table.
+     * 
+     * @param os
+     *            the output stream to write to.
+     * @param rowStart
+     *            first row to write
+     * @param rowEnd
+     *            row number that should not be written anymore
+     * @param columnNr
+     *            zero based column number to write.
+     * @throws IOException
+     *             if the write operation failed
+     */
+    public void write(ArrayDataOutput os, int rowStart, int rowEnd, int columnNr) throws IOException {
+        if (this.rowSize == 0) {
+            return;
+        }
+        int[] columnIndex = new int[MAX_COLUMN_INDEXES];
+        for (int row = 0; row < this.nrow; row += 1) {
+            if (row >= rowStart && row < rowEnd) {
+                Arrays.fill(columnIndex, 0);
+                // Loop over the columns within the row.
+                for (int col = 0; col < this.arrays.length; col += 1) {
+
+                    int arrOffset = this.sizes[col] * row;
+                    int size = this.sizes[col];
+
+                    char colType = this.types[col];
+                    if (columnNr == col) {
+                        POINTER_ACCESSORS_BY_TYPE[colType].write(this, os, columnIndex[colType], arrOffset, size);
+                    }
+                    columnIndex[colType] += 1;
+                }
+            }
+        }
+    }
+
+    /**
+     * Read a column of a table.
+     * 
+     * @param is
+     *            The input stream to read from.
+     * @param rowStart
+     *            first row to read
+     * @param rowEnd
+     *            row number that should not be read anymore
+     * @param columnNr
+     *            the columnNumber to read.
+     * @throws IOException
+     *             if the reading failed
+     */
+    public void read(ArrayDataInput is, int rowStart, int rowEnd, int columnNr) throws IOException {
+        int[] columnIndex = new int[MAX_COLUMN_INDEXES];
+        // While we have not finished reading the table..
+        for (int row = 0; row < this.nrow; row += 1) {
+            if (row >= rowStart && row < rowEnd) {
+                Arrays.fill(columnIndex, 0);
+                // Loop over the columns within the row.
+                for (int col = 0; col < this.arrays.length; col += 1) {
+                    int arrOffset = this.sizes[col] * row;
+                    int size = this.sizes[col];
+                    char colType = this.types[col];
+                    if (col == columnNr) {
+                        POINTER_ACCESSORS_BY_TYPE[colType].read(this, is, columnIndex[colType], arrOffset, size);
+                    }
+                    columnIndex[colType] += 1;
+                }
             }
         }
     }

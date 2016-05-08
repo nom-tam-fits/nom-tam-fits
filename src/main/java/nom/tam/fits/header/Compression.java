@@ -38,6 +38,14 @@ package nom.tam.fits.header;
  */
 public enum Compression implements IFitsHeader {
     /**
+     * (required keyword) This keyword must have the logical value T. The value
+     * field of this keyword shall be ’T’ to indicate that the FITS binary table
+     * extension contains a compressed BINTABLE, and that logically this
+     * extension should be interpreted as a tile-compressed binary table.
+     */
+    ZTABLE(HDU.ANY, VALUE.LOGICAL, ""),
+
+    /**
      * (required keyword) This keyword must have the logical value T. It
      * indicates that the FITS binary table extension contains a compressed
      * image and that logically this extension should be interpreted as an image
