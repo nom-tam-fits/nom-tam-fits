@@ -31,6 +31,8 @@ package nom.tam.image.compression.hdu;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.TFIELDS;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +40,11 @@ import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
+import nom.tam.fits.header.Compression;
+import nom.tam.fits.header.Standard;
 import nom.tam.image.compression.bintable.BinaryTableTile;
 import nom.tam.image.compression.bintable.BinaryTableTileCompressor;
+import nom.tam.image.compression.bintable.BinaryTableTileDecompressor;
 import nom.tam.util.ColumnTable;
 
 public class CompressedTableData extends BinaryTable {
@@ -53,6 +58,26 @@ public class CompressedTableData extends BinaryTable {
 
     public CompressedTableData(Header hdr) throws FitsException {
         super(hdr);
+    }
+
+    public BinaryTable asBinaryTable(BinaryTable dataToFill, Header compressedHeader, Header targetHeader) throws FitsException {
+        int nrows = targetHeader.getIntValue(Standard.NAXIS2);
+        int ncols = compressedHeader.getIntValue(TFIELDS);
+        this.rowsPerTile = compressedHeader.getIntValue(Compression.ZTILELEN, nrows);
+        this.tiles = new ArrayList<BinaryTableTile>();
+        BinaryTable.createColumnDataFor(dataToFill);
+        for (int rowStart = 0; rowStart < nrows; rowStart += this.rowsPerTile) {
+            for (int column = 0; column < ncols; column++) {
+                BinaryTableTileDecompressor binaryTableTile = new BinaryTableTileDecompressor(this, dataToFill.getData(), rowStart, rowStart + this.rowsPerTile, column);
+                this.tiles.add(binaryTableTile);
+                binaryTableTile.execute(FitsFactory.threadPool());
+            }
+        }
+
+        for (BinaryTableTile binaryTableTile : this.tiles) {
+            binaryTableTile.waitForResult();
+        }
+        return dataToFill;
     }
 
     public void compress() {
@@ -86,5 +111,4 @@ public class CompressedTableData extends BinaryTable {
         this.rowsPerTile = value;
         return this;
     }
-
 }

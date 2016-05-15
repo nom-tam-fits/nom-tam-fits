@@ -51,6 +51,7 @@ import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.FloatGZipCompresso
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.IntGZipCompressor;
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.LongGZipCompressor;
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.ShortGZipCompressor;
+import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ByteGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.IntGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ShortGZip2Compressor;
@@ -238,6 +239,7 @@ public class CompressorProvider implements ICompressorProvider {
         {FloatHCompressor.class, HCompressQuantizeParameters.class},
         {DoubleHCompressor.class, HCompressQuantizeParameters.class},
         {DoubleHCompressor.class},
+        {ByteGZip2Compressor.class},
         {ShortGZip2Compressor.class},
         {IntGZip2Compressor.class},
         {LongGZip2Compressor.class},

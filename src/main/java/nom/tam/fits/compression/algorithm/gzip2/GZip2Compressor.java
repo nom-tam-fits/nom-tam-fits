@@ -45,7 +45,7 @@ import nom.tam.util.SaveClose;
 
 public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T> {
 
-    public static class ByteGZip2Compress extends ByteGZipCompressor {
+    public static class ByteGZip2Compressor extends ByteGZipCompressor {
     }
 
     public static class IntGZip2Compressor extends GZip2Compressor<IntBuffer> {

@@ -8,6 +8,8 @@ import nom.tam.fits.header.hierarch.IHierarchKeyFormatter;
 import nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter;
 import nom.tam.image.compression.hdu.CompressedImageData;
 import nom.tam.image.compression.hdu.CompressedImageHDU;
+import nom.tam.image.compression.hdu.CompressedTableData;
+import nom.tam.image.compression.hdu.CompressedTableHDU;
 
 /*
  * #%L
@@ -114,6 +116,8 @@ public final class FitsFactory {
             return AsciiTableHDU.manufactureData(hdr);
         } else if (CompressedImageHDU.isHeader(hdr)) {
             return CompressedImageHDU.manufactureData(hdr);
+        } else if (CompressedTableHDU.isHeader(hdr)) {
+            return CompressedTableHDU.manufactureData(hdr);
         } else if (BinaryTableHDU.isHeader(hdr)) {
             return BinaryTableHDU.manufactureData(hdr);
         } else if (UndefinedHDU.isHeader(hdr)) {
@@ -167,6 +171,8 @@ public final class FitsFactory {
             return (BasicHDU<DataClass>) new RandomGroupsHDU(hdr, (RandomGroupsData) d);
         } else if (current().useAsciiTables && d instanceof AsciiTable) {
             return (BasicHDU<DataClass>) new AsciiTableHDU(hdr, (AsciiTable) d);
+        } else if (d instanceof CompressedTableData) {
+            return (BasicHDU<DataClass>) new CompressedTableHDU(hdr, (CompressedTableData) d);
         } else if (d instanceof BinaryTable) {
             return (BasicHDU<DataClass>) new BinaryTableHDU(hdr, (BinaryTable) d);
         } else if (d instanceof UndefinedData) {

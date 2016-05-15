@@ -31,12 +31,12 @@ package nom.tam.image.compression.hdu;
  * #L%
  */
 
-import static org.junit.Assert.*;
-
+import java.io.File;
 import java.util.Random;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.Fits;
 import nom.tam.fits.Header;
 
 import org.junit.Test;
@@ -66,8 +66,22 @@ public class CompressedTableTest {
 
         BinaryTableHDU binaryTableHDU = new BinaryTableHDU(header, btab);
         binaryTableHDU.addColumn(this.doubles);
+        binaryTableHDU.getData().fillHeader(header);
+        Fits fits = new Fits();
+        fits.addHDU(binaryTableHDU);
+        fits.write(new File("target/testBinaryTable.fits"));
+        try {
+            System.setProperty("compressed.table.experimental", "true");
 
-        CompressedTableHDU.fromBinaryTableHDU(binaryTableHDU, 10).compress();
+            Fits fitsComp = new Fits("src/test/resources/nom/tam/table/comp/testBinaryTable.fits.fz");
+            CompressedTableHDU cfitsioTable = (CompressedTableHDU) fitsComp.getHDU(1);
 
+            BinaryTableHDU binaryTable2HDU = cfitsioTable.asBinaryTableHDU();
+
+            CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(binaryTableHDU, 10).compress();
+
+        } finally {
+            System.setProperty("compressed.table.experimental", "false");
+        }
     }
 }

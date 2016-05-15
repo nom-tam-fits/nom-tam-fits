@@ -37,9 +37,11 @@ import static nom.tam.fits.header.Compression.ZBITPIX;
 import static nom.tam.fits.header.Compression.ZBLANK;
 import static nom.tam.fits.header.Compression.ZBLOCKED;
 import static nom.tam.fits.header.Compression.ZCMPTYPE;
+import static nom.tam.fits.header.Compression.ZCTYPn;
 import static nom.tam.fits.header.Compression.ZDATASUM;
 import static nom.tam.fits.header.Compression.ZDITHER0;
 import static nom.tam.fits.header.Compression.ZEXTEND;
+import static nom.tam.fits.header.Compression.ZFORMn;
 import static nom.tam.fits.header.Compression.ZGCOUNT;
 import static nom.tam.fits.header.Compression.ZHECKSUM;
 import static nom.tam.fits.header.Compression.ZIMAGE;
@@ -49,7 +51,9 @@ import static nom.tam.fits.header.Compression.ZNAXISn;
 import static nom.tam.fits.header.Compression.ZPCOUNT;
 import static nom.tam.fits.header.Compression.ZQUANTIZ;
 import static nom.tam.fits.header.Compression.ZSIMPLE;
+import static nom.tam.fits.header.Compression.ZTABLE;
 import static nom.tam.fits.header.Compression.ZTENSION;
+import static nom.tam.fits.header.Compression.ZTILELEN;
 import static nom.tam.fits.header.Compression.ZTILEn;
 import static nom.tam.fits.header.Compression.ZVALn;
 import static nom.tam.fits.header.Standard.BITPIX;
@@ -58,7 +62,6 @@ import static nom.tam.fits.header.Standard.GCOUNT;
 import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.PCOUNT;
-import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.TTYPEn;
 import static nom.tam.fits.header.Standard.XTENSION;
@@ -104,12 +107,29 @@ enum BackupRestoreUnCompressedHeaderCard {
     MAP_NAXIS(NAXIS),
     MAP_NAXISn(NAXISn),
     MAP_PCOUNT(PCOUNT),
-    MAP_TFIELDS(TFIELDS),
+    // MAP_TFIELDS(TFIELDS),
+    MAP_ZFORMn(ZFORMn) {
+
+        @Override
+        protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+            String newKey = uncompressedHeaderKey().n(GenericKey.getN(card.getKey())).key();
+            headerIterator.add(new HeaderCard(newKey, card.getValue(String.class, ""), card.getComment()));
+        }
+
+        @Override
+        protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+            String newKey = compressedHeaderKey().n(GenericKey.getN(card.getKey())).key();
+            headerIterator.add(new HeaderCard(newKey, card.getValue(String.class, ""), card.getComment()));
+        }
+
+    },
     MAP_TFORMn(TFORMn),
     MAP_TTYPEn(TTYPEn),
     MAP_XTENSION(XTENSION),
     MAP_ZBITPIX(ZBITPIX),
     MAP_ZBLANK(ZBLANK),
+    MAP_ZTILELEN(ZTILELEN),
+    MAP_ZCTYPn(ZCTYPn),
     MAP_ZBLOCKED(ZBLOCKED),
     MAP_ZCMPTYPE(ZCMPTYPE),
     MAP_ZDATASUM(ZDATASUM),
@@ -118,6 +138,7 @@ enum BackupRestoreUnCompressedHeaderCard {
     MAP_ZGCOUNT(ZGCOUNT),
     MAP_ZHECKSUM(ZHECKSUM),
     MAP_ZIMAGE(ZIMAGE),
+    MAP_ZTABLE(ZTABLE),
     MAP_ZNAMEn(ZNAMEn),
     MAP_ZNAXIS(ZNAXIS),
     MAP_ZNAXISn(ZNAXISn) {

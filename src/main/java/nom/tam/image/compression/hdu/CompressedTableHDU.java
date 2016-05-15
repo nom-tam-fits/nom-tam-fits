@@ -32,6 +32,7 @@ package nom.tam.image.compression.hdu;
  */
 
 import static nom.tam.fits.header.Compression.ZTABLE;
+import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
@@ -71,7 +72,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
             BackupRestoreUnCompressedHeaderCard.restore(card, iterator);
         }
         CompressedTableHDU compressedImageHDU = new CompressedTableHDU(header, compressedData);
-        compressedData.prepareUncompressedData(binaryTableHDU.getData().getData(), header);
+        compressedData.prepareUncompressedData(binaryTableHDU.getData().getData(), binaryTableHDU.getHeader());
         return compressedImageHDU;
     }
 
@@ -83,6 +84,9 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @return <CODE>true</CODE> if this HDU has a valid header.
      */
     public static boolean isHeader(Header hdr) {
+        if (!System.getProperty("compressed.table.experimental", "false").equals("true")) {
+            return false;
+        }
         return hdr.getBooleanValue(ZTABLE, false);
     }
 
@@ -94,8 +98,23 @@ public class CompressedTableHDU extends BinaryTableHDU {
         super(hdr, datum);
     }
 
-    public void compress() {
+    public BinaryTableHDU asBinaryTableHDU() throws FitsException {
+        Header header = new Header();
+        Cursor<String, HeaderCard> headerIterator = header.iterator();
+        Cursor<String, HeaderCard> iterator = getHeader().iterator();
+        while (iterator.hasNext()) {
+            HeaderCard card = iterator.next();
+            BackupRestoreUnCompressedHeaderCard.backup(card, headerIterator);
+        }
+        BinaryTable data = BinaryTableHDU.manufactureData(header);
+        BinaryTableHDU tableHDU = new BinaryTableHDU(header, data);
+        getData().asBinaryTable(data, getHeader(), header);
+        return tableHDU;
+    }
+
+    public CompressedTableHDU compress() {
         getData().compress();
+        return this;
     }
 
     @Override

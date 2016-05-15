@@ -42,7 +42,7 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.util.zip.GZIPOutputStream;
 
-import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ByteGZip2Compress;
+import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ByteGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.IntGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ShortGZip2Compressor;
@@ -58,7 +58,7 @@ public class GZip2CompressTest {
 
     @Test(expected = IllegalStateException.class)
     public void testByteCompressIOException() throws Exception {
-        new ByteGZip2Compress() {
+        new ByteGZip2Compressor() {
 
             @Override
             protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
@@ -90,7 +90,7 @@ public class GZip2CompressTest {
 
     @Test(expected = NullPointerException.class)
     public void testByteNullVariantCompress() throws Exception {
-        new ByteGZip2Compress() {
+        new ByteGZip2Compressor() {
 
             protected java.util.zip.GZIPInputStream createGZipInputStream(ByteBuffer buffer) throws java.io.IOException {
                 return null;
@@ -105,7 +105,7 @@ public class GZip2CompressTest {
 
     @Test(expected = NullPointerException.class)
     public void testByteNullVariantDecompress() throws Exception {
-        new ByteGZip2Compress() {
+        new ByteGZip2Compressor() {
 
             protected java.util.zip.GZIPInputStream createGZipInputStream(ByteBuffer buffer) throws java.io.IOException {
                 return null;
@@ -121,13 +121,13 @@ public class GZip2CompressTest {
     @Test(expected = BufferOverflowException.class)
     public void testByteGzipCompressFailures1() throws Exception {
         byte[] byteArray = new byte[100];
-        new ByteGZip2Compress().compress(ByteBuffer.wrap(byteArray), ByteBuffer.wrap(new byte[0]));
+        new ByteGZip2Compressor().compress(ByteBuffer.wrap(byteArray), ByteBuffer.wrap(new byte[0]));
     }
 
     @Test(expected = IllegalStateException.class)
     public void testByteGzipCompressFailures2() throws Exception {
         byte[] byteArray = new byte[100];
-        new ByteGZip2Compress().decompress(ByteBuffer.wrap(new byte[1]), ByteBuffer.wrap(byteArray));
+        new ByteGZip2Compressor().decompress(ByteBuffer.wrap(new byte[1]), ByteBuffer.wrap(byteArray));
     }
 
     @Test(expected = NullPointerException.class)
@@ -226,7 +226,7 @@ public class GZip2CompressTest {
 
             ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
 
-            new ByteGZip2Compress().compress(byteArray, compressed);
+            new ByteGZip2Compressor().compress(byteArray, compressed);
 
             byte[] compressedArray = new byte[compressed.position()];
             compressed.position(0);
@@ -235,12 +235,12 @@ public class GZip2CompressTest {
 
             byte[] decompressedBytes = new byte[bytes.length];
             ByteBuffer decompressedArray = ByteBuffer.wrap(decompressedBytes);
-            new ByteGZip2Compress().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
+            new ByteGZip2Compressor().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
             Assert.assertArrayEquals(bytes, decompressedBytes);
 
             compressed.rewind();
             decompressedArray.rewind();
-            new ByteGZip2Compress().decompress(compressed, decompressedArray);
+            new ByteGZip2Compressor().decompress(compressed, decompressedArray);
             Assert.assertArrayEquals(bytes, decompressedBytes);
         } finally {
             SaveClose.close(expected);

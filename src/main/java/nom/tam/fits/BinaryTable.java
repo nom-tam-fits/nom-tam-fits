@@ -250,6 +250,18 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
+     * TODO: this is only for internal access!
+     * 
+     * @param table
+     *            the table to create the column data.
+     * @throws FitsException
+     *             if the data could not be created.
+     */
+    public static void createColumnDataFor(BinaryTable table) throws FitsException {
+        table.createTable();
+    }
+
+    /**
      * This is the area in which variable length column data lives.
      */
     private final FitsHeap heap;
