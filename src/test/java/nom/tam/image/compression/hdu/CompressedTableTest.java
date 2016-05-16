@@ -80,6 +80,8 @@ public class CompressedTableTest {
 
             CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(binaryTableHDU, 10).compress();
 
+            compressed.info(System.out);
+
         } finally {
             System.setProperty("compressed.table.experimental", "false");
         }

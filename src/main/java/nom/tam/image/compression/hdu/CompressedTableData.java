@@ -32,6 +32,7 @@ package nom.tam.image.compression.hdu;
  */
 
 import static nom.tam.fits.header.Standard.TFIELDS;
+import static nom.tam.image.compression.bintable.BinaryTableTileDescription.tile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,26 +61,6 @@ public class CompressedTableData extends BinaryTable {
         super(hdr);
     }
 
-    public BinaryTable asBinaryTable(BinaryTable dataToFill, Header compressedHeader, Header targetHeader) throws FitsException {
-        int nrows = targetHeader.getIntValue(Standard.NAXIS2);
-        int ncols = compressedHeader.getIntValue(TFIELDS);
-        this.rowsPerTile = compressedHeader.getIntValue(Compression.ZTILELEN, nrows);
-        this.tiles = new ArrayList<BinaryTableTile>();
-        BinaryTable.createColumnDataFor(dataToFill);
-        for (int rowStart = 0; rowStart < nrows; rowStart += this.rowsPerTile) {
-            for (int column = 0; column < ncols; column++) {
-                BinaryTableTileDecompressor binaryTableTile = new BinaryTableTileDecompressor(this, dataToFill.getData(), rowStart, rowStart + this.rowsPerTile, column);
-                this.tiles.add(binaryTableTile);
-                binaryTableTile.execute(FitsFactory.threadPool());
-            }
-        }
-
-        for (BinaryTableTile binaryTableTile : this.tiles) {
-            binaryTableTile.waitForResult();
-        }
-        return dataToFill;
-    }
-
     public void compress() {
         for (BinaryTableTile binaryTableTile : this.tiles) {
             binaryTableTile.execute(FitsFactory.threadPool());
@@ -96,11 +77,42 @@ public class CompressedTableData extends BinaryTable {
             this.rowsPerTile = nrows;
         }
         this.tiles = new ArrayList<BinaryTableTile>();
-        for (int rowStart = 0; rowStart < nrows; rowStart += this.rowsPerTile) {
-            for (int column = 0; column < ncols; column++) {
-                this.tiles.add(new BinaryTableTileCompressor(data, rowStart, rowStart + this.rowsPerTile, column));
+        for (int column = 0; column < ncols; column++) {
+            addByteVaryingColumn();
+            int tileIndex = 1;
+            for (int rowStart = 0; rowStart < nrows; rowStart += this.rowsPerTile) {
+                addRow(new byte[ncols][0]);
+                this.tiles.add(new BinaryTableTileCompressor(this, data, tile()//
+                        .rowStart(rowStart)//
+                        .rowEnd(rowStart + this.rowsPerTile)//
+                        .tileIndex(tileIndex++)//
+                        .column(column)));
             }
         }
+    }
+
+    protected BinaryTable asBinaryTable(BinaryTable dataToFill, Header compressedHeader, Header targetHeader) throws FitsException {
+        int nrows = targetHeader.getIntValue(Standard.NAXIS2);
+        int ncols = compressedHeader.getIntValue(TFIELDS);
+        this.rowsPerTile = compressedHeader.getIntValue(Compression.ZTILELEN, nrows);
+        this.tiles = new ArrayList<BinaryTableTile>();
+        BinaryTable.createColumnDataFor(dataToFill);
+        for (int column = 0; column < ncols; column++) {
+            String compressionAlgorithm = compressedHeader.getStringValue(Compression.ZCTYPn.n(column + 1));
+            for (int rowStart = 0; rowStart < nrows; rowStart += this.rowsPerTile) {
+                BinaryTableTileDecompressor binaryTableTile = new BinaryTableTileDecompressor(this, dataToFill.getData(), tile()//
+                        .rowStart(rowStart)//
+                        .rowEnd(rowStart + this.rowsPerTile)//
+                        .column(column)//
+                        .compressionAlgorithm(compressionAlgorithm));
+                this.tiles.add(binaryTableTile);
+                binaryTableTile.execute(FitsFactory.threadPool());
+            }
+        }
+        for (BinaryTableTile binaryTableTile : this.tiles) {
+            binaryTableTile.waitForResult();
+        }
+        return dataToFill;
     }
 
     protected int getRowsPerTile() {

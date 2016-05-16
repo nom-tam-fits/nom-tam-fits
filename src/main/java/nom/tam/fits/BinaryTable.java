@@ -176,92 +176,6 @@ public class BinaryTable extends AbstractTableData {
     private static final Logger LOG = Logger.getLogger(BinaryTable.class.getName());
 
     /**
-     * Convert a two-d table to a table of columns. Handle String specially.
-     * Every other element of data should be a primitive array of some
-     * dimensionality. Basically the translates a table expressed as objects in
-     * row order to a table with objects in column order.
-     */
-    private static Object[] convertToColumns(Object[][] data) {
-        Object[] row = data[0];
-        int nrow = data.length;
-        Object[] results = new Object[row.length];
-        for (int col = 0; col < row.length; col++) {
-            if (row[col] instanceof String) {
-                String[] sa = new String[nrow];
-                for (int irow = 0; irow < nrow; irow++) {
-                    sa[irow] = (String) data[irow][col];
-                }
-                results[col] = sa;
-            } else {
-                Class<?> base = ArrayFuncs.getBaseClass(row[col]);
-                int[] dims = ArrayFuncs.getDimensions(row[col]);
-
-                if (dims.length > 1 || dims[0] > 1) {
-                    int[] xdims = new int[dims.length + 1];
-                    xdims[0] = nrow;
-
-                    Object[] arr = (Object[]) ArrayFuncs.newInstance(base, xdims);
-                    for (int irow = 0; irow < nrow; irow++) {
-                        arr[irow] = data[irow][col];
-                    }
-                    results[col] = arr;
-                } else {
-                    Object arr = ArrayFuncs.newInstance(base, nrow);
-                    for (int irow = 0; irow < nrow; irow++) {
-                        System.arraycopy(data[irow][col], 0, arr, irow, 1);
-                    }
-                    results[col] = arr;
-                }
-
-            }
-        }
-        return results;
-    }
-
-    /**
-     * Parse the TDIMS value. If the TDIMS value cannot be deciphered a one-d
-     * array with the size given in arrsiz is returned.
-     *
-     * @param tdims
-     *            The value of the TDIMSn card.
-     * @return An int array of the desired dimensions. Note that the order of
-     *         the tdims is the inverse of the order in the TDIMS key.
-     */
-    public static int[] getTDims(String tdims) {
-
-        // The TDIMs value should be of the form: "(iiii,jjjj,kkk,...)"
-        int[] dims = null;
-        int first = tdims.indexOf('(');
-        int last = tdims.lastIndexOf(')');
-        if (first >= 0 && last > first) {
-
-            tdims = tdims.substring(first + 1, last - first);
-
-            java.util.StringTokenizer st = new java.util.StringTokenizer(tdims, ",");
-            int dim = st.countTokens();
-            if (dim > 0) {
-                dims = new int[dim];
-                for (int i = dim - 1; i >= 0; i -= 1) {
-                    dims[i] = Integer.parseInt(st.nextToken().trim());
-                }
-            }
-        }
-        return dims;
-    }
-
-    /**
-     * TODO: this is only for internal access!
-     * 
-     * @param table
-     *            the table to create the column data.
-     * @throws FitsException
-     *             if the data could not be created.
-     */
-    public static void createColumnDataFor(BinaryTable table) throws FitsException {
-        table.createTable();
-    }
-
-    /**
      * This is the area in which variable length column data lives.
      */
     private final FitsHeap heap;
@@ -306,6 +220,92 @@ public class BinaryTable extends AbstractTableData {
      * table.
      */
     private ArrayDataInput currInput;
+
+    /**
+     * TODO: this is only for internal access!
+     *
+     * @param table
+     *            the table to create the column data.
+     * @throws FitsException
+     *             if the data could not be created.
+     */
+    public static void createColumnDataFor(BinaryTable table) throws FitsException {
+        table.createTable();
+    }
+
+    /**
+     * Parse the TDIMS value. If the TDIMS value cannot be deciphered a one-d
+     * array with the size given in arrsiz is returned.
+     *
+     * @param tdims
+     *            The value of the TDIMSn card.
+     * @return An int array of the desired dimensions. Note that the order of
+     *         the tdims is the inverse of the order in the TDIMS key.
+     */
+    public static int[] getTDims(String tdims) {
+
+        // The TDIMs value should be of the form: "(iiii,jjjj,kkk,...)"
+        int[] dims = null;
+        int first = tdims.indexOf('(');
+        int last = tdims.lastIndexOf(')');
+        if (first >= 0 && last > first) {
+
+            tdims = tdims.substring(first + 1, last - first);
+
+            java.util.StringTokenizer st = new java.util.StringTokenizer(tdims, ",");
+            int dim = st.countTokens();
+            if (dim > 0) {
+                dims = new int[dim];
+                for (int i = dim - 1; i >= 0; i -= 1) {
+                    dims[i] = Integer.parseInt(st.nextToken().trim());
+                }
+            }
+        }
+        return dims;
+    }
+
+    /**
+     * Convert a two-d table to a table of columns. Handle String specially.
+     * Every other element of data should be a primitive array of some
+     * dimensionality. Basically the translates a table expressed as objects in
+     * row order to a table with objects in column order.
+     */
+    private static Object[] convertToColumns(Object[][] data) {
+        Object[] row = data[0];
+        int nrow = data.length;
+        Object[] results = new Object[row.length];
+        for (int col = 0; col < row.length; col++) {
+            if (row[col] instanceof String) {
+                String[] sa = new String[nrow];
+                for (int irow = 0; irow < nrow; irow++) {
+                    sa[irow] = (String) data[irow][col];
+                }
+                results[col] = sa;
+            } else {
+                Class<?> base = ArrayFuncs.getBaseClass(row[col]);
+                int[] dims = ArrayFuncs.getDimensions(row[col]);
+
+                if (dims.length > 1 || dims[0] > 1) {
+                    int[] xdims = new int[dims.length + 1];
+                    xdims[0] = nrow;
+
+                    Object[] arr = (Object[]) ArrayFuncs.newInstance(base, xdims);
+                    for (int irow = 0; irow < nrow; irow++) {
+                        arr[irow] = data[irow][col];
+                    }
+                    results[col] = arr;
+                } else {
+                    Object arr = ArrayFuncs.newInstance(base, nrow);
+                    for (int irow = 0; irow < nrow; irow++) {
+                        System.arraycopy(data[irow][col], 0, arr, irow, 1);
+                    }
+                    results[col] = arr;
+                }
+
+            }
+        }
+        return results;
+    }
 
     /**
      * Create a null binary table data segment.
@@ -502,80 +502,6 @@ public class BinaryTable extends AbstractTableData {
         return addFlattenedColumn(o, dims, false);
     }
 
-    /**
-     * This function is needed since we had made addFlattenedColumn public so in
-     * principle a user might have called it directly.
-     *
-     * @param o
-     *            The new column data. This should be a one-dimensional
-     *            primitive array.
-     * @param dims
-     *            The dimensions of one row of the column.
-     * @param allocated
-     *            is it already in the columnList?
-     * @return the new column size
-     * @throws FitsException
-     */
-    int addFlattenedColumn(Object o, int[] dims, boolean allocated) throws FitsException {
-
-        ColumnDesc added;
-        if (!allocated) {
-            added = new ColumnDesc();
-            added.dimens = dims;
-        } else {
-            added = this.columnList.get(this.columnList.size() - 1);
-        }
-        added.base = ArrayFuncs.getBaseClass(o);
-        added.isBoolean = added.base == boolean.class;
-        added.isString = added.base == String.class;
-
-        // Convert to column first in case
-        // this is a String or variable length array.
-        o = arrayToColumn(added, o);
-
-        int size = 1;
-
-        for (int dim2 : dims) {
-            size *= dim2;
-        }
-        added.size = size;
-
-        // Check that the number of rows is consistent.
-        if (size != 0 && this.columnList.size() > 1) {
-            int xRow = Array.getLength(o) / size;
-            if (xRow > 0 && xRow != this.nRow) {
-                throw new FitsException("Added column does not have correct row count");
-            }
-        }
-
-        if (!added.isVarying) {
-            added.model = ArrayFuncs.newInstance(ArrayFuncs.getBaseClass(o), dims);
-            this.rowLen += size * ArrayFuncs.getBaseLength(o);
-        } else {
-            if (added.isLongVary) {
-                added.model = new long[2];
-                this.rowLen += FitsIO.BYTES_IN_LONG * 2;
-            } else {
-                added.model = new int[2];
-                this.rowLen += FitsIO.BYTES_IN_INTEGER * 2;
-            }
-        }
-
-        // Only add to table if table already exists or if we
-        // are filling up the last element in columns.
-        // This way if we allocate a bunch of columns at the beginning
-        // we only create the column table after we have all the columns
-        // ready.
-        added.column = o;
-        if (this.table != null) {
-            this.table.addColumn(o, added.size);
-        }
-        if (!this.columnList.contains(added)) {
-            this.columnList.add(added);
-        }
-        return this.columnList.size();
-    }
-
     @Override
     public int addRow(Object[] o) throws FitsException {
         ensureData();
@@ -600,6 +526,491 @@ public class BinaryTable extends AbstractTableData {
         }
 
         return this.nRow;
+    }
+
+    /**
+     * Delete a set of columns. Note that this does not fix the header, so users
+     * should normally call the routine in TableHDU. * @throws FitsException if
+     * the operation failed
+     */
+    @Override
+    public void deleteColumns(int start, int len) throws FitsException {
+        ensureData();
+        try {
+            this.rowLen = this.table.deleteColumns(start, len);
+            // Need to get rid of the column level metadata.
+            for (int i = start + len - 1; i >= start; i -= 1) {
+                if (i >= 0 && i <= this.columnList.size()) {
+                    this.columnList.remove(i);
+                }
+            }
+        } catch (Exception e) {
+            throw new FitsException("Error deleting columns from BinaryTable", e);
+        }
+    }
+
+    /**
+     * Delete rows from a table.
+     *
+     * @param row
+     *            The 0-indexed start of the rows to be deleted.
+     * @param len
+     *            The number of rows to be deleted. * @throws FitsException if
+     *            the operation failed
+     */
+    @Override
+    public void deleteRows(int row, int len) throws FitsException {
+        ensureData();
+        this.table.deleteRows(row, len);
+        this.nRow -= len;
+    }
+
+    /**
+     * Update a FITS header to reflect the current state of the data. * @throws
+     * FitsException if the operation failed
+     */
+    @Override
+    public void fillHeader(Header h) throws FitsException {
+        try {
+            Standard.context(BinaryTable.class);
+            h.setXtension("BINTABLE");
+            h.setBitpix(BasicHDU.BITPIX_BYTE);
+            h.setNaxes(2);
+            h.setNaxis(1, this.rowLen);
+            h.setNaxis(2, this.nRow);
+            h.addValue(PCOUNT, this.heap.size());
+            h.addValue(GCOUNT, 1);
+            Cursor<String, HeaderCard> iter = h.iterator();
+            iter.setKey(GCOUNT.key());
+            iter.next();
+            iter.add(new HeaderCard(TFIELDS.key(), this.columnList.size(), TFIELDS.comment()));
+            for (int i = 0; i < this.columnList.size(); i++) {
+                if (i > 0) {
+                    h.positionAfterIndex(TFORMn, i);
+                }
+                fillForColumn(h, i, iter);
+            }
+        } finally {
+            Standard.context(null);
+        }
+    }
+
+    /**
+     * @return the types in the table, not the underlying types (e.g., for
+     *         varying length arrays or booleans).
+     */
+    public Class<?>[] getBases() {
+        return this.table.getBases();
+    }
+
+    /**
+     * Get a given column
+     *
+     * @param col
+     *            The index of the column. * @throws FitsException if the
+     *            operation failed
+     */
+    @Override
+    public Object getColumn(int col) throws FitsException {
+        ensureData();
+        Object res = getFlattenedColumn(col);
+        res = encurl(res, col, this.nRow);
+        return res;
+    }
+
+    @Override
+    public ColumnTable<SaveState> getData() throws FitsException {
+        if (this.table == null) {
+            if (this.currInput == null) {
+                throw new FitsException("Cannot find input for deferred read");
+            }
+            this.table = createTable();
+            long currentOffset = FitsUtil.findOffset(this.currInput);
+            FitsUtil.reposition(this.currInput, this.fileOffset);
+            readTrueData(this.input);
+            FitsUtil.reposition(this.currInput, currentOffset);
+        }
+        return this.table;
+    }
+
+    public int[][] getDimens() {
+        int[][] dimens = new int[this.columnList.size()][];
+        for (int i = 0; i < dimens.length; i++) {
+            dimens[i] = this.columnList.get(i).dimens;
+        }
+        return dimens;
+    }
+
+    /**
+     * Get a particular element from the table.
+     *
+     * @param i
+     *            The row of the element.
+     * @param j
+     *            The column of the element. * @throws FitsException if the
+     *            operation failed
+     */
+    @Override
+    public Object getElement(int i, int j) throws FitsException {
+
+        if (!validRow(i) || !validColumn(j)) {
+            throw new FitsException("No such element");
+        }
+
+        ColumnDesc colDesc = this.columnList.get(j);
+        Object ele;
+        if (colDesc.isVarying) {
+            // Have to read in entire data set.
+            ensureData();
+        }
+
+        if (this.table == null) {
+            // This is really inefficient.
+            // Need to either save the row, or just read the one element.
+            Object[] row = getRow(i);
+            ele = row[j];
+
+        } else {
+            ele = this.table.getElement(i, j);
+            ele = columnToArray(colDesc, ele, 1);
+            ele = encurl(ele, j, 1);
+            if (ele instanceof Object[]) {
+                ele = ((Object[]) ele)[0];
+            }
+        }
+
+        return ele;
+    }
+
+    public Object[] getFlatColumns() {
+        ensureDataSilent();
+        return this.table.getColumns();
+    }
+
+    /**
+     * @return column in flattened format. For large tables getting a column in
+     *         standard format can be inefficient because a separate object is
+     *         needed for each row. Leaving the data in flattened format means
+     *         that only a single object is created.
+     * @param col
+     *            the column to flatten
+     * @throws FitsException
+     *             if the column could not be flattened
+     */
+    public Object getFlattenedColumn(int col) throws FitsException {
+        ensureData();
+        if (!validColumn(col)) {
+            throw new FitsException("Invalid column");
+        }
+        Object res = this.table.getColumn(col);
+        ColumnDesc colDesc = this.columnList.get(col);
+        return columnToArray(colDesc, res, this.nRow);
+    }
+
+    /**
+     * @return the offset to the heap
+     */
+    public int getHeapOffset() {
+        return this.heapOffset;
+    }
+
+    /**
+     * @return the size of the heap -- including the offset from the end of the
+     *         table data.
+     */
+    public int getHeapSize() {
+        return this.heapOffset + this.heap.size();
+    }
+
+    /**
+     * @return a row that may be used for direct i/o to the table.
+     */
+    public Object[] getModelRow() {
+        Object[] modelRow = new Object[this.columnList.size()];
+        for (int i = 0; i < modelRow.length; i++) {
+            modelRow[i] = this.columnList.get(i).model;
+        }
+        return modelRow;
+    }
+
+    /**
+     * Get the number of columns in the table.
+     */
+    @Override
+    public int getNCols() {
+        return this.columnList.size();
+    }
+
+    /**
+     * Get the number of rows in the table
+     */
+    @Override
+    public int getNRows() {
+        return this.nRow;
+    }
+
+    /**
+     * @return a particular element from the table but do no processing of this
+     *         element (e.g., dimension conversion or extraction of variable
+     *         length array elements/)
+     * @param i
+     *            The row of the element.
+     * @param j
+     *            The column of the element.
+     * @throws FitsException
+     *             if the operation failed
+     */
+    public Object getRawElement(int i, int j) throws FitsException {
+        ensureData();
+        return this.table.getElement(i, j);
+    }
+
+    /**
+     * Get a given row
+     *
+     * @param row
+     *            The index of the row to be returned.
+     * @return A row of data. * @throws FitsException if the operation failed
+     */
+    @Override
+    public Object[] getRow(int row) throws FitsException {
+
+        if (!validRow(row)) {
+            throw new FitsException("Invalid row");
+        }
+
+        Object[] res;
+        if (this.table != null) {
+            res = getMemoryRow(row);
+        } else {
+            res = getFileRow(row);
+        }
+        return res;
+    }
+
+    public int[] getSizes() {
+        int[] sizes = new int[this.columnList.size()];
+        for (int i = 0; i < sizes.length; i++) {
+            sizes[i] = this.columnList.get(i).size;
+        }
+        return sizes;
+    }
+
+    /**
+     * Get the size of the data in the HDU sans padding.
+     */
+    @Override
+    public long getTrueSize() {
+        long len = (long) this.nRow * this.rowLen;
+        if (this.heap.size() > 0) {
+            len += this.heap.size() + this.heapOffset;
+        }
+        return len;
+    }
+
+    public char[] getTypes() {
+        ensureDataSilent();
+        return this.table.getTypes();
+    }
+
+    /**
+     * Read the data -- or defer reading on random access. * @throws
+     * FitsException if the operation failed
+     */
+    @Override
+    public void read(ArrayDataInput i) throws FitsException {
+
+        setFileOffset(i);
+        this.currInput = i;
+
+        if (i instanceof RandomAccess) {
+
+            try {
+                i.skipAllBytes(getTrueSize());
+                this.heapReadFromStream = false;
+            } catch (IOException e) {
+                throw new FitsException("Unable to skip binary table HDU:" + e, e);
+            }
+            try {
+                i.skipAllBytes(FitsUtil.padding(getTrueSize()));
+            } catch (EOFException e) {
+                throw new PaddingException("Missing padding after binary table", this, e);
+            } catch (IOException e) {
+                throw new FitsException("Error skipping padding after binary table", e);
+            }
+
+        } else {
+
+            /**
+             * Read the data associated with the HDU including the hash area if
+             * present.
+             *
+             * @param i
+             *            The input stream
+             */
+            if (this.table == null) {
+                this.table = createTable();
+            }
+
+            readTrueData(i);
+        }
+    }
+
+    /**
+     * Replace a column in the table.
+     *
+     * @param col
+     *            The index of the column to be replaced.
+     * @param xcol
+     *            The new data for the column
+     * @throws FitsException
+     *             Thrown if the data does not match the current column
+     *             description.
+     */
+    @Override
+    public void setColumn(int col, Object xcol) throws FitsException {
+
+        ColumnDesc colDesc = this.columnList.get(col);
+        xcol = arrayToColumn(colDesc, xcol);
+        xcol = ArrayFuncs.flatten(xcol);
+        setFlattenedColumn(col, xcol);
+    }
+
+    /**
+     * Replace a single element within the table.
+     *
+     * @param i
+     *            The row of the data.
+     * @param j
+     *            The column of the data.
+     * @param o
+     *            The replacement data. * @throws FitsException if the operation
+     *            failed
+     */
+    @Override
+    public void setElement(int i, int j, Object o) throws FitsException {
+        ensureData();
+        ColumnDesc colDesc = this.columnList.get(j);
+        if (colDesc.isVarying) {
+
+            int size = Array.getLength(o);
+            // The offset for the row is the offset to the heap plus the
+            // offset within the heap.
+            int offset = (int) this.heap.getSize();
+            this.heap.putData(o);
+            if (colDesc.isLongVary) {
+                this.table.setElement(i, j, new long[]{
+                    size,
+                    offset
+                });
+            } else {
+                this.table.setElement(i, j, new int[]{
+                    size,
+                    offset
+                });
+            }
+
+        } else {
+            this.table.setElement(i, j, ArrayFuncs.flatten(o));
+        }
+    }
+
+    /**
+     * Set a column with the data already flattened.
+     *
+     * @param col
+     *            The index of the column to be replaced.
+     * @param data
+     *            The new data array. This should be a one-d primitive array.
+     * @throws FitsException
+     *             Thrown if the type of length of the replacement data differs
+     *             from the original.
+     */
+    public void setFlattenedColumn(int col, Object data) throws FitsException {
+        ensureData();
+
+        Object oldCol = this.table.getColumn(col);
+        if (data.getClass() != oldCol.getClass() || Array.getLength(data) != Array.getLength(oldCol)) {
+            throw new FitsException("Replacement column mismatch at column:" + col);
+        }
+        this.table.setColumn(col, data);
+    }
+
+    /**
+     * Replace a row in the table.
+     *
+     * @param row
+     *            The index of the row to be replaced.
+     * @param data
+     *            The new values for the row.
+     * @throws FitsException
+     *             Thrown if the new row cannot match the existing data.
+     */
+    @Override
+    public void setRow(int row, Object[] data) throws FitsException {
+        ensureData();
+        if (data.length != getNCols()) {
+            throw new FitsException("Updated row size does not agree with table");
+        }
+
+        Object[] ydata = new Object[data.length];
+
+        for (int col = 0; col < data.length; col++) {
+            Object o = ArrayFuncs.flatten(data[col]);
+            ColumnDesc colDesc = this.columnList.get(col);
+            ydata[col] = arrayToColumn(colDesc, o);
+        }
+        this.table.setRow(row, ydata);
+    }
+
+    /**
+     * Update the header after a deletion.
+     *
+     * @throws FitsException
+     *             if the operation failed
+     */
+    @Override
+    public void updateAfterDelete(int oldNcol, Header hdr) throws FitsException {
+        hdr.addValue(NAXIS1, this.rowLen);
+    }
+
+    /**
+     * Write the table, heap and padding. * @throws FitsException if the
+     * operation failed
+     */
+    @Override
+    public void write(ArrayDataOutput os) throws FitsException {
+        ensureData();
+        try {
+
+            this.table.write(os);
+            if (this.heapOffset > 0) {
+                int off = this.heapOffset;
+                // Minimize memory usage. This also accommodates
+                // the possibility that heapOffset > 2GB.
+                // Previous code might have allocated up to 2GB
+                // array. [In practice this is always going
+                // to be really small though...]
+                int arrSiz = MAX_EMPTY_BLOCK_SIZE;
+                while (off > 0) {
+                    if (arrSiz > off) {
+                        arrSiz = off;
+                    }
+                    os.write(new byte[arrSiz]);
+                    off -= arrSiz;
+                }
+            }
+
+            // Now check if we need to write the heap
+            if (this.heap.size() > 0) {
+                this.heap.write(os);
+            }
+
+            FitsUtil.pad(os, getTrueSize());
+
+        } catch (IOException e) {
+            throw new FitsException("Unable to write table:" + e, e);
+        }
     }
 
     /**
@@ -857,10 +1268,6 @@ public class BinaryTable extends AbstractTableData {
         return o;
     }
 
-    protected ColumnTable<SaveState> createColumnTable(Object[] arrCol, int[] sizes) throws TableException {
-        return new ColumnTable<SaveState>(arrCol, sizes);
-    }
-
     /**
      * Create a column table given the number of rows and a model row. This is
      * used when we defer instantiation of the ColumnTable until the user
@@ -884,43 +1291,6 @@ public class BinaryTable extends AbstractTableData {
         this.table = createColumnTable(arrCol, sizes);
         saveExtraState();
         return this.table;
-    }
-
-    /**
-     * Delete a set of columns. Note that this does not fix the header, so users
-     * should normally call the routine in TableHDU. * @throws FitsException if
-     * the operation failed
-     */
-    @Override
-    public void deleteColumns(int start, int len) throws FitsException {
-        ensureData();
-        try {
-            this.rowLen = this.table.deleteColumns(start, len);
-            // Need to get rid of the column level metadata.
-            for (int i = start + len - 1; i >= start; i -= 1) {
-                if (i >= 0 && i <= this.columnList.size()) {
-                    this.columnList.remove(i);
-                }
-            }
-        } catch (Exception e) {
-            throw new FitsException("Error deleting columns from BinaryTable", e);
-        }
-    }
-
-    /**
-     * Delete rows from a table.
-     *
-     * @param row
-     *            The 0-indexed start of the rows to be deleted.
-     * @param len
-     *            The number of rows to be deleted. * @throws FitsException if
-     *            the operation failed
-     */
-    @Override
-    public void deleteRows(int row, int len) throws FitsException {
-        ensureData();
-        this.table.deleteRows(row, len);
-        this.nRow -= len;
     }
 
     private Object encapsulate(Object o) {
@@ -981,193 +1351,6 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Update the header to reflect the details of a given column. * @throws
-     * FitsException if the operation failed
-     */
-    void fillForColumn(Header h, int col, Cursor<String, HeaderCard> iter) throws FitsException {
-
-        String tform;
-        ColumnDesc colDesc = this.columnList.get(col);
-
-        if (colDesc.isVarying) {
-            if (colDesc.isLongVary) {
-                tform = "1Q";
-            } else {
-                tform = "1P";
-            }
-
-        } else {
-            tform = "" + colDesc.size;
-
-        }
-
-        if (colDesc.base == int.class) {
-            tform += "J";
-        } else if (colDesc.base == short.class || colDesc.base == char.class) {
-            tform += "I";
-        } else if (colDesc.base == byte.class) {
-            tform += "B";
-        } else if (colDesc.base == float.class) {
-            if (colDesc.isComplex) {
-                tform += "C";
-            } else {
-                tform += "E";
-            }
-        } else if (colDesc.base == double.class) {
-            if (colDesc.isComplex) {
-                tform += "M";
-            } else {
-                tform += "D";
-            }
-        } else if (colDesc.base == long.class) {
-            tform += "K";
-        } else if (colDesc.base == boolean.class) {
-            tform += "L";
-        } else if (colDesc.base == String.class) {
-            tform += "A";
-        } else {
-            throw new FitsException("Invalid column data class:" + colDesc.base);
-        }
-        IFitsHeader key = TFORMn.n(col + 1);
-        iter.add(new HeaderCard(key.key(), tform, key.comment()));
-
-        if (colDesc.dimens.length > 0 && !colDesc.isVarying) {
-
-            StringBuffer tdim = new StringBuffer();
-            char comma = '(';
-            for (int i = colDesc.dimens.length - 1; i >= 0; i -= 1) {
-                tdim.append(comma);
-                tdim.append(colDesc.dimens[i]);
-                comma = ',';
-            }
-            tdim.append(')');
-            key = TDIMn.n(col + 1);
-            iter.add(new HeaderCard(key.key(), tdim.toString(), key.comment()));
-        }
-    }
-
-    /**
-     * Update a FITS header to reflect the current state of the data. * @throws
-     * FitsException if the operation failed
-     */
-    @Override
-    public void fillHeader(Header h) throws FitsException {
-        try {
-            Standard.context(BinaryTable.class);
-            h.setXtension("BINTABLE");
-            h.setBitpix(BasicHDU.BITPIX_BYTE);
-            h.setNaxes(2);
-            h.setNaxis(1, this.rowLen);
-            h.setNaxis(2, this.nRow);
-            h.addValue(PCOUNT, this.heap.size());
-            h.addValue(GCOUNT, 1);
-            Cursor<String, HeaderCard> iter = h.iterator();
-            iter.setKey(GCOUNT.key());
-            iter.next();
-            iter.add(new HeaderCard(TFIELDS.key(), this.columnList.size(), TFIELDS.comment()));
-            for (int i = 0; i < this.columnList.size(); i++) {
-                if (i > 0) {
-                    h.positionAfterIndex(TFORMn, i);
-                }
-                fillForColumn(h, i, iter);
-            }
-        } finally {
-            Standard.context(null);
-        }
-    }
-
-    /**
-     * @return the types in the table, not the underlying types (e.g., for
-     *         varying length arrays or booleans).
-     */
-    public Class<?>[] getBases() {
-        return this.table.getBases();
-    }
-
-    /**
-     * Get a given column
-     *
-     * @param col
-     *            The index of the column. * @throws FitsException if the
-     *            operation failed
-     */
-    @Override
-    public Object getColumn(int col) throws FitsException {
-        ensureData();
-        Object res = getFlattenedColumn(col);
-        res = encurl(res, col, this.nRow);
-        return res;
-    }
-
-    @Override
-    public ColumnTable<SaveState> getData() throws FitsException {
-        if (this.table == null) {
-            if (this.currInput == null) {
-                throw new FitsException("Cannot find input for deferred read");
-            }
-            this.table = createTable();
-            long currentOffset = FitsUtil.findOffset(this.currInput);
-            FitsUtil.reposition(this.currInput, this.fileOffset);
-            readTrueData(this.input);
-            FitsUtil.reposition(this.currInput, currentOffset);
-        }
-        return this.table;
-    }
-
-    ColumnDesc getDescriptor(int column) {
-        return this.columnList.get(column);
-    }
-
-    public int[][] getDimens() {
-        int[][] dimens = new int[this.columnList.size()][];
-        for (int i = 0; i < dimens.length; i++) {
-            dimens[i] = this.columnList.get(i).dimens;
-        }
-        return dimens;
-    }
-
-    /**
-     * Get a particular element from the table.
-     *
-     * @param i
-     *            The row of the element.
-     * @param j
-     *            The column of the element. * @throws FitsException if the
-     *            operation failed
-     */
-    @Override
-    public Object getElement(int i, int j) throws FitsException {
-
-        if (!validRow(i) || !validColumn(j)) {
-            throw new FitsException("No such element");
-        }
-
-        ColumnDesc colDesc = this.columnList.get(j);
-        Object ele;
-        if (colDesc.isVarying) {
-            // Have to read in entire data set.
-            ensureData();
-        }
-
-        if (this.table == null) {
-            // This is really inefficient.
-            // Need to either save the row, or just read the one element.
-            Object[] row = getRow(i);
-            ele = row[j];
-
-        } else {
-            ele = this.table.getElement(i, j);
-            ele = columnToArray(colDesc, ele, 1);
-            ele = encurl(ele, j, 1);
-            if (ele instanceof Object[]) {
-                ele = ((Object[]) ele)[0];
-            }
-        }
-
-        return ele;
-    }
-
-    /**
      * @return row from the file. * @throws FitsException if the operation
      *         failed
      */
@@ -1200,46 +1383,6 @@ public class BinaryTable extends AbstractTableData {
         return data;
     }
 
-    public Object[] getFlatColumns() {
-        ensureDataSilent();
-        return this.table.getColumns();
-    }
-
-    /**
-     * @return column in flattened format. For large tables getting a column in
-     *         standard format can be inefficient because a separate object is
-     *         needed for each row. Leaving the data in flattened format means
-     *         that only a single object is created.
-     * @param col
-     *            the column to flatten
-     * @throws FitsException
-     *             if the column could not be flattened
-     */
-    public Object getFlattenedColumn(int col) throws FitsException {
-        ensureData();
-        if (!validColumn(col)) {
-            throw new FitsException("Invalid column");
-        }
-        Object res = this.table.getColumn(col);
-        ColumnDesc colDesc = this.columnList.get(col);
-        return columnToArray(colDesc, res, this.nRow);
-    }
-
-    /**
-     * @return the offset to the heap
-     */
-    public int getHeapOffset() {
-        return this.heapOffset;
-    }
-
-    /**
-     * @return the size of the heap -- including the offset from the end of the
-     *         table data.
-     */
-    public int getHeapSize() {
-        return this.heapOffset + this.heap.size();
-    }
-
     /**
      * Get a row from memory. * @throws FitsException if the operation failed
      */
@@ -1259,142 +1402,6 @@ public class BinaryTable extends AbstractTableData {
 
         return data;
 
-    }
-
-    /**
-     * @return a row that may be used for direct i/o to the table.
-     */
-    public Object[] getModelRow() {
-        Object[] modelRow = new Object[this.columnList.size()];
-        for (int i = 0; i < modelRow.length; i++) {
-            modelRow[i] = this.columnList.get(i).model;
-        }
-        return modelRow;
-    }
-
-    /**
-     * Get the number of columns in the table.
-     */
-    @Override
-    public int getNCols() {
-        return this.columnList.size();
-    }
-
-    /**
-     * Get the number of rows in the table
-     */
-    @Override
-    public int getNRows() {
-        return this.nRow;
-    }
-
-    /**
-     * @return a particular element from the table but do no processing of this
-     *         element (e.g., dimension conversion or extraction of variable
-     *         length array elements/)
-     * @param i
-     *            The row of the element.
-     * @param j
-     *            The column of the element.
-     * @throws FitsException
-     *             if the operation failed
-     */
-    public Object getRawElement(int i, int j) throws FitsException {
-        ensureData();
-        return this.table.getElement(i, j);
-    }
-
-    /**
-     * Get a given row
-     *
-     * @param row
-     *            The index of the row to be returned.
-     * @return A row of data. * @throws FitsException if the operation failed
-     */
-    @Override
-    public Object[] getRow(int row) throws FitsException {
-
-        if (!validRow(row)) {
-            throw new FitsException("Invalid row");
-        }
-
-        Object[] res;
-        if (this.table != null) {
-            res = getMemoryRow(row);
-        } else {
-            res = getFileRow(row);
-        }
-        return res;
-    }
-
-    public int[] getSizes() {
-        int[] sizes = new int[this.columnList.size()];
-        for (int i = 0; i < sizes.length; i++) {
-            sizes[i] = this.columnList.get(i).size;
-        }
-        return sizes;
-    }
-
-    /**
-     * Get the explicit or implied length of the TFORM field
-     */
-    int getTFORMLength(String tform) {
-
-        tform = tform.trim();
-
-        if (Character.isDigit(tform.charAt(0))) {
-            return initialNumber(tform);
-
-        } else {
-            return 1;
-        }
-    }
-
-    /**
-     * Get the type in the TFORM field
-     */
-    char getTFORMType(String tform) {
-
-        for (int i = 0; i < tform.length(); i++) {
-            if (!Character.isDigit(tform.charAt(i))) {
-                return tform.charAt(i);
-            }
-        }
-        return 0;
-    }
-
-    /**
-     * Get the type in a varying length column TFORM
-     */
-    char getTFORMVarType(String tform) {
-
-        int ind = tform.indexOf("P");
-        if (ind < 0) {
-            ind = tform.indexOf("Q");
-        }
-
-        if (tform.length() > ind + 1) {
-            return tform.charAt(ind + 1);
-        } else {
-            return 0;
-        }
-    }
-
-    /**
-     * Get the size of the data in the HDU sans padding.
-     */
-    @Override
-    public long getTrueSize() {
-        long len = (long) this.nRow * this.rowLen;
-        if (this.heap.size() > 0) {
-            len += this.heap.size() + this.heapOffset;
-        }
-        return len;
-    }
-
-    public char[] getTypes() {
-        ensureDataSilent();
-        return this.table.getTypes();
     }
 
     /**
@@ -1449,19 +1456,6 @@ public class BinaryTable extends AbstractTableData {
             return checkDCompVary((double[][][]) o);
         }
         return false;
-    }
-
-    /**
-     * Update the header to reflect information about a given column. This
-     * routine tries to ensure that the Header is organized by column. * @throws
-     * FitsException if the operation failed
-     */
-    void pointToColumn(int col, Header hdr) throws FitsException {
-        Cursor<String, HeaderCard> iter = hdr.iterator();
-        if (col > 0) {
-            hdr.positionAfterIndex(TFORMn, col);
-        }
-        fillForColumn(hdr, col, iter);
     }
 
     /**
@@ -1596,47 +1590,32 @@ public class BinaryTable extends AbstractTableData {
         return bSize;
     }
 
-    /**
-     * Read the data -- or defer reading on random access. * @throws
-     * FitsException if the operation failed
-     */
-    @Override
-    public void read(ArrayDataInput i) throws FitsException {
+    private void saveExtraState() {
+        this.table.setExtraState(new SaveState(this.columnList, this.heap));
+    }
 
-        setFileOffset(i);
-        this.currInput = i;
-
-        if (i instanceof RandomAccess) {
-
-            try {
-                i.skipAllBytes(getTrueSize());
-                this.heapReadFromStream = false;
-            } catch (IOException e) {
-                throw new FitsException("Unable to skip binary table HDU:" + e, e);
-            }
-            try {
-                i.skipAllBytes(FitsUtil.padding(getTrueSize()));
-            } catch (EOFException e) {
-                throw new PaddingException("Missing padding after binary table", this, e);
-            } catch (IOException e) {
-                throw new FitsException("Error skipping padding after binary table", e);
-            }
-
-        } else {
-
-            /**
-             * Read the data associated with the HDU including the hash area if
-             * present.
-             *
-             * @param i
-             *            The input stream
-             */
-            if (this.table == null) {
-                this.table = createTable();
-            }
-
-            readTrueData(i);
+    protected void addByteVaryingColumn() throws TableException {
+        ColumnDesc added = new ColumnDesc();
+        this.columnList.add(added);
+        added.isVarying = true;
+        added.isLongVary = true;
+        added.dimens = new int[]{
+            2
+        };
+        added.size = 2;
+        added.base = byte.class;
+        added.isBoolean = false;
+        added.isString = false;
+        added.model = new long[2];
+        this.rowLen += FitsIO.BYTES_IN_LONG * 2;
+        added.column = new long[0];
+        if (this.table != null) {
+            this.table.addColumn(added.column, added.size);
         }
+    }
+
+    protected ColumnTable<SaveState> createColumnTable(Object[] arrCol, int[] sizes) throws TableException {
+        return new ColumnTable<SaveState>(arrCol, sizes);
     }
 
     /**
@@ -1683,28 +1662,228 @@ public class BinaryTable extends AbstractTableData {
         }
     }
 
-    private void saveExtraState() {
-        this.table.setExtraState(new SaveState(this.columnList, this.heap));
+    /**
+     * Check if the column number is valid.
+     *
+     * @param j
+     *            The Java index (first=0) of the column to check.
+     * @return <code>true</code> if the column is valid
+     */
+    protected boolean validColumn(int j) {
+        return j >= 0 && j < getNCols();
     }
 
     /**
-     * Replace a column in the table.
+     * Check to see if this is a valid row.
      *
-     * @param col
-     *            The index of the column to be replaced.
-     * @param xcol
-     *            The new data for the column
-     * @throws FitsException
-     *             Thrown if the data does not match the current column
-     *             description.
+     * @param i
+     *            The Java index (first=0) of the row to check.
+     * @return <code>true</code> if the row is valid
      */
-    @Override
-    public void setColumn(int col, Object xcol) throws FitsException {
+    protected boolean validRow(int i) {
+        return getNRows() > 0 && i >= 0 && i < getNRows();
+    }
 
+    /**
+     * This function is needed since we had made addFlattenedColumn public so in
+     * principle a user might have called it directly.
+     *
+     * @param o
+     *            The new column data. This should be a one-dimensional
+     *            primitive array.
+     * @param dims
+     *            The dimensions of one row of the column.
+     * @param allocated
+     *            is it already in the columnList?
+     * @return the new column size
+     * @throws FitsException
+     */
+    int addFlattenedColumn(Object o, int[] dims, boolean allocated) throws FitsException {
+
+        ColumnDesc added;
+        if (!allocated) {
+            added = new ColumnDesc();
+            added.dimens = dims;
+        } else {
+            added = this.columnList.get(this.columnList.size() - 1);
+        }
+        added.base = ArrayFuncs.getBaseClass(o);
+        added.isBoolean = added.base == boolean.class;
+        added.isString = added.base == String.class;
+
+        // Convert to column first in case
+        // this is a String or variable length array.
+        o = arrayToColumn(added, o);
+
+        int size = 1;
+
+        for (int dim2 : dims) {
+            size *= dim2;
+        }
+        added.size = size;
+
+        // Check that the number of rows is consistent.
+        if (size != 0 && this.columnList.size() > 1) {
+            int xRow = Array.getLength(o) / size;
+            if (xRow > 0 && xRow != this.nRow) {
+                throw new FitsException("Added column does not have correct row count");
+            }
+        }
+
+        if (!added.isVarying) {
+            added.model = ArrayFuncs.newInstance(ArrayFuncs.getBaseClass(o), dims);
+            this.rowLen += size * ArrayFuncs.getBaseLength(o);
+        } else {
+            if (added.isLongVary) {
+                added.model = new long[2];
+                this.rowLen += FitsIO.BYTES_IN_LONG * 2;
+            } else {
+                added.model = new int[2];
+                this.rowLen += FitsIO.BYTES_IN_INTEGER * 2;
+            }
+        }
+
+        // Only add to table if table already exists or if we
+        // are filling up the last element in columns.
+        // This way if we allocate a bunch of columns at the beginning
+        // we only create the column table after we have all the columns
+        // ready.
+        added.column = o;
+        if (this.table != null) {
+            this.table.addColumn(o, added.size);
+        }
+        if (!this.columnList.contains(added)) {
+            this.columnList.add(added);
+        }
+        return this.columnList.size();
+    }
+
+    /**
+     * Update the header to reflect the details of a given column. * @throws
+     * FitsException if the operation failed
+     */
+    void fillForColumn(Header h, int col, Cursor<String, HeaderCard> iter) throws FitsException {
+
+        String tform;
         ColumnDesc colDesc = this.columnList.get(col);
-        xcol = arrayToColumn(colDesc, xcol);
-        xcol = ArrayFuncs.flatten(xcol);
-        setFlattenedColumn(col, xcol);
+
+        if (colDesc.isVarying) {
+            if (colDesc.isLongVary) {
+                tform = "1Q";
+            } else {
+                tform = "1P";
+            }
+
+        } else {
+            tform = "" + colDesc.size;
+
+        }
+
+        if (colDesc.base == int.class) {
+            tform += "J";
+        } else if (colDesc.base == short.class || colDesc.base == char.class) {
+            tform += "I";
+        } else if (colDesc.base == byte.class) {
+            tform += "B";
+        } else if (colDesc.base == float.class) {
+            if (colDesc.isComplex) {
+                tform += "C";
+            } else {
+                tform += "E";
+            }
+        } else if (colDesc.base == double.class) {
+            if (colDesc.isComplex) {
+                tform += "M";
+            } else {
+                tform += "D";
+            }
+        } else if (colDesc.base == long.class) {
+            tform += "K";
+        } else if (colDesc.base == boolean.class) {
+            tform += "L";
+        } else if (colDesc.base == String.class) {
+            tform += "A";
+        } else {
+            throw new FitsException("Invalid column data class:" + colDesc.base);
+        }
+        IFitsHeader key = TFORMn.n(col + 1);
+        iter.add(new HeaderCard(key.key(), tform, key.comment()));
+
+        if (colDesc.dimens.length > 0 && !colDesc.isVarying) {
+
+            StringBuffer tdim = new StringBuffer();
+            char comma = '(';
+            for (int i = colDesc.dimens.length - 1; i >= 0; i -= 1) {
+                tdim.append(comma);
+                tdim.append(colDesc.dimens[i]);
+                comma = ',';
+            }
+            tdim.append(')');
+            key = TDIMn.n(col + 1);
+            iter.add(new HeaderCard(key.key(), tdim.toString(), key.comment()));
+        }
+    }
+
+    ColumnDesc getDescriptor(int column) {
+        return this.columnList.get(column);
+    }
+
+    /**
+     * Get the explicit or implied length of the TFORM field
+     */
+    int getTFORMLength(String tform) {
+
+        tform = tform.trim();
+
+        if (Character.isDigit(tform.charAt(0))) {
+            return initialNumber(tform);
+
+        } else {
+            return 1;
+        }
+    }
+
+    /**
+     * Get the type in the TFORM field
+     */
+    char getTFORMType(String tform) {
+
+        for (int i = 0; i < tform.length(); i++) {
+            if (!Character.isDigit(tform.charAt(i))) {
+                return tform.charAt(i);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Get the type in a varying length column TFORM
+     */
+    char getTFORMVarType(String tform) {
+
+        int ind = tform.indexOf("P");
+        if (ind < 0) {
+            ind = tform.indexOf("Q");
+        }
+
+        if (tform.length() > ind + 1) {
+            return tform.charAt(ind + 1);
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Update the header to reflect information about a given column. This
+     * routine tries to ensure that the Header is organized by column. * @throws
+     * FitsException if the operation failed
+     */
+    void pointToColumn(int col, Header hdr) throws FitsException {
+        Cursor<String, HeaderCard> iter = hdr.iterator();
+        if (col > 0) {
+            hdr.positionAfterIndex(TFORMn, col);
+        }
+        fillForColumn(hdr, col, iter);
     }
 
     /**
@@ -1765,163 +1944,4 @@ public class BinaryTable extends AbstractTableData {
         }
         return false;
     }
-
-    /**
-     * Replace a single element within the table.
-     *
-     * @param i
-     *            The row of the data.
-     * @param j
-     *            The column of the data.
-     * @param o
-     *            The replacement data. * @throws FitsException if the operation
-     *            failed
-     */
-    @Override
-    public void setElement(int i, int j, Object o) throws FitsException {
-        ensureData();
-        ColumnDesc colDesc = this.columnList.get(j);
-        if (colDesc.isVarying) {
-
-            int size = Array.getLength(o);
-            // The offset for the row is the offset to the heap plus the
-            // offset within the heap.
-            int offset = (int) this.heap.getSize();
-            this.heap.putData(o);
-            if (colDesc.isLongVary) {
-                this.table.setElement(i, j, new long[]{
-                    size,
-                    offset
-                });
-            } else {
-                this.table.setElement(i, j, new int[]{
-                    size,
-                    offset
-                });
-            }
-
-        } else {
-            this.table.setElement(i, j, ArrayFuncs.flatten(o));
-        }
-    }
-
-    /**
-     * Set a column with the data already flattened.
-     *
-     * @param col
-     *            The index of the column to be replaced.
-     * @param data
-     *            The new data array. This should be a one-d primitive array.
-     * @throws FitsException
-     *             Thrown if the type of length of the replacement data differs
-     *             from the original.
-     */
-    public void setFlattenedColumn(int col, Object data) throws FitsException {
-        ensureData();
-
-        Object oldCol = this.table.getColumn(col);
-        if (data.getClass() != oldCol.getClass() || Array.getLength(data) != Array.getLength(oldCol)) {
-            throw new FitsException("Replacement column mismatch at column:" + col);
-        }
-        this.table.setColumn(col, data);
-    }
-
-    /**
-     * Replace a row in the table.
-     *
-     * @param row
-     *            The index of the row to be replaced.
-     * @param data
-     *            The new values for the row.
-     * @throws FitsException
-     *             Thrown if the new row cannot match the existing data.
-     */
-    @Override
-    public void setRow(int row, Object[] data) throws FitsException {
-        ensureData();
-        if (data.length != getNCols()) {
-            throw new FitsException("Updated row size does not agree with table");
-        }
-
-        Object[] ydata = new Object[data.length];
-
-        for (int col = 0; col < data.length; col++) {
-            Object o = ArrayFuncs.flatten(data[col]);
-            ColumnDesc colDesc = this.columnList.get(col);
-            ydata[col] = arrayToColumn(colDesc, o);
-        }
-        this.table.setRow(row, ydata);
-    }
-
-    /**
-     * Update the header after a deletion.
-     * 
-     * @throws FitsException
-     *             if the operation failed
-     */
-    @Override
-    public void updateAfterDelete(int oldNcol, Header hdr) throws FitsException {
-        hdr.addValue(NAXIS1, this.rowLen);
-    }
-
-    /**
-     * Check if the column number is valid.
-     *
-     * @param j
-     *            The Java index (first=0) of the column to check.
-     * @return <code>true</code> if the column is valid
-     */
-    protected boolean validColumn(int j) {
-        return j >= 0 && j < getNCols();
-    }
-
-    /**
-     * Check to see if this is a valid row.
-     *
-     * @param i
-     *            The Java index (first=0) of the row to check.
-     * @return <code>true</code> if the row is valid
-     */
-    protected boolean validRow(int i) {
-        return getNRows() > 0 && i >= 0 && i < getNRows();
-    }
-
-    /**
-     * Write the table, heap and padding. * @throws FitsException if the
-     * operation failed
-     */
-    @Override
-    public void write(ArrayDataOutput os) throws FitsException {
-        ensureData();
-        try {
-
-            this.table.write(os);
-            if (this.heapOffset > 0) {
-                int off = this.heapOffset;
-                // Minimize memory usage. This also accommodates
-                // the possibility that heapOffset > 2GB.
-                // Previous code might have allocated up to 2GB
-                // array. [In practice this is always going
-                // to be really small though...]
-                int arrSiz = MAX_EMPTY_BLOCK_SIZE;
-                while (off > 0) {
-                    if (arrSiz > off) {
-                        arrSiz = off;
-                    }
-                    os.write(new byte[arrSiz]);
-                    off -= arrSiz;
-                }
-            }
-
-            // Now check if we need to write the heap
-            if (this.heap.size() > 0) {
-                this.heap.write(os);
-            }
-
-            FitsUtil.pad(os, getTrueSize());
-
-        } catch (IOException e) {
-            throw new FitsException("Unable to write table:" + e, e);
-        }
-    }
-};
+}

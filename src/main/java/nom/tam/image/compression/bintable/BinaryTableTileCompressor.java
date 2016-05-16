@@ -31,40 +31,45 @@ package nom.tam.image.compression.bintable;
  * #L%
  */
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.Buffer;
+import java.nio.ByteBuffer;
 
+import nom.tam.fits.FitsException;
+import nom.tam.image.compression.hdu.CompressedTableData;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.ColumnTable;
 
 public class BinaryTableTileCompressor extends BinaryTableTile {
 
-    private final Buffer primitiveBuffer;
+    private final CompressedTableData binData;
 
-    public BinaryTableTileCompressor(ColumnTable<?> data, int rowStart, int rowEnd, int column) {
-        super(data, rowStart, rowEnd, column);
-        this.primitiveBuffer = this.type.newBuffer((rowEnd - rowStart) * data.getSizes()[column]);
+    public BinaryTableTileCompressor(CompressedTableData binData, ColumnTable<?> columnTable, BinaryTableTileDescription description) {
+        super(columnTable, description);
+        this.binData = binData;
     }
 
     @Override
     public void run() {
-        ArrayDataOutput os = new BufferedDataOutputStream(new ByteArrayOutputStream()) {
-
-            @Override
-            public void write(double[] d, int start, int length) throws IOException {
-                BinaryTableTileCompressor.this.write(d, start, length);
-            }
-        };
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[getUncompressedSizeInBytes()]);
+        ArrayDataOutput os = new BufferedDataOutputStream(new ByteBufferOutputStream(buffer));
         try {
             this.data.write(os, this.rowStart, this.rowEnd, this.column);
         } catch (IOException e) {
-            //
+            throw new IllegalStateException("could not write compressed data", e);
         }
-    }
-
-    protected void write(double[] d, int start, int length) {
-        this.type.appendBuffer(this.primitiveBuffer, this.type.wrap(d).position(start).limit(start + length));
+        buffer.rewind();
+        ByteBuffer compressedBuffer = ByteBuffer.wrap(new byte[getUncompressedSizeInBytes()]);
+        getCompressorControl().compress(buffer, compressedBuffer, null);
+        byte[] compressedBytes = new byte[compressedBuffer.position()];
+        compressedBuffer.rewind();
+        compressedBuffer.get(compressedBytes);
+        try {
+            // TODO: synchronize this.
+            this.binData.setElement(getTileIndex() - 1, this.column, compressedBytes);
+        } catch (FitsException e) {
+            throw new IllegalStateException("could not include compressed data into the table", e);
+        }
     }
 }

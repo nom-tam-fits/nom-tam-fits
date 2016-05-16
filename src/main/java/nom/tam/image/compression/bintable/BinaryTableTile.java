@@ -35,6 +35,8 @@ import java.nio.Buffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
+import nom.tam.fits.compression.provider.CompressorProvider;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
@@ -55,16 +57,25 @@ public abstract class BinaryTableTile implements Runnable {
 
     protected final int column;
 
+    protected final String compressionAlgorithm;
+
     protected final PrimitiveType<Buffer> type;
+
+    protected final int length;
+
+    protected final int tileIndex;
 
     private Future<?> future;
 
-    public BinaryTableTile(ColumnTable<?> data, int rowStart, int rowEnd, int column) {
+    public BinaryTableTile(ColumnTable<?> data, BinaryTableTileDescription description) {
         this.data = data;
-        this.rowStart = rowStart;
-        this.rowEnd = rowEnd;
-        this.column = column;
-        this.type = PrimitiveTypeHandler.valueOf(data.getTypes()[column]);
+        this.rowStart = description.getRowStart();
+        this.rowEnd = description.getRowEnd();
+        this.column = description.getColumn();
+        this.tileIndex = description.getTileIndex();
+        this.compressionAlgorithm = description.getCompressionAlgorithm();
+        this.type = PrimitiveTypeHandler.valueOf(data.getTypes()[this.column]);
+        this.length = (this.rowEnd - this.rowStart) * data.getSizes()[this.column];
     }
 
     public void execute(ExecutorService threadPool) {
@@ -79,4 +90,15 @@ public abstract class BinaryTableTile implements Runnable {
         }
     }
 
+    protected ICompressorControl getCompressorControl() {
+        return CompressorProvider.findCompressorControl(null, this.compressionAlgorithm, byte.class);
+    }
+
+    protected int getTileIndex() {
+        return this.tileIndex;
+    }
+
+    protected int getUncompressedSizeInBytes() {
+        return this.length * this.type.size();
+    }
 }
