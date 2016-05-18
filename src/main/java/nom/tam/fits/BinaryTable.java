@@ -1375,7 +1375,10 @@ public class BinaryTable extends AbstractTableData {
         for (int col = 0; col < data.length; col++) {
             ColumnDesc colDesc = this.columnList.get(col);
             data[col] = columnToArray(colDesc, data[col], 1);
-            data[col] = encurl(data[col], col, 1);
+            // AK -- 05/18/16 -- Do not encurl variable length columns into multidim arrays
+            if (!colDesc.isVarying) {
+                data[col] = encurl(data[col], col, 1);
+            }
             if (data[col] instanceof Object[]) {
                 data[col] = ((Object[]) data[col])[0];
             }
@@ -1393,8 +1396,11 @@ public class BinaryTable extends AbstractTableData {
         for (int col = 0; col < modelRow.length; col++) {
             ColumnDesc colDesc = this.columnList.get(col);
             Object o = this.table.getElement(row, col);
-            o = columnToArray(colDesc, o, 1);
-            data[col] = encurl(o, col, 1);
+            data[col] = columnToArray(colDesc, o, 1);
+            // AK -- 05/18/16 -- Do not encurl variable length columns into multidim arrays
+            if (!colDesc.isVarying) {
+                data[col] = encurl(data[col], col, 1);
+            }
             if (data[col] instanceof Object[]) {
                 data[col] = ((Object[]) data[col])[0];
             }
