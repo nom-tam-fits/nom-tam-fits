@@ -31,14 +31,20 @@ package nom.tam.image.compression.hdu;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
+
 import java.io.File;
 import java.util.Random;
 
-import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.Standard;
+import nom.tam.util.Cursor;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class CompressedTableTest {
@@ -59,17 +65,7 @@ public class CompressedTableTest {
 
     @Test
     public void testBasicBinaryTable() throws Exception {
-        BinaryTable btab = new BinaryTable();
 
-        Header header = new Header();
-        btab.fillHeader(header);
-
-        BinaryTableHDU binaryTableHDU = new BinaryTableHDU(header, btab);
-        binaryTableHDU.addColumn(this.doubles);
-        binaryTableHDU.getData().fillHeader(header);
-        Fits fits = new Fits();
-        fits.addHDU(binaryTableHDU);
-        fits.write(new File("target/testBinaryTable.fits"));
         try {
             System.setProperty("compressed.table.experimental", "true");
 
@@ -78,12 +74,86 @@ public class CompressedTableTest {
 
             BinaryTableHDU binaryTable2HDU = cfitsioTable.asBinaryTableHDU();
 
-            CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(binaryTableHDU, 10).compress();
+            Fits fits = new Fits();
+            fits.addHDU(binaryTable2HDU);
+            fits.write(new File("target/testBinaryTable_uncompressed.fits"));
+            fits.close();
 
-            compressed.info(System.out);
+            CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(binaryTable2HDU, 10).compress();
+            compressed.compress();
+            fits = new Fits();
+            fits.addHDU(compressed);
+            fits.write(new File("target/testBinaryTable_recompressed.fits"));
+            fits.close();
 
         } finally {
             System.setProperty("compressed.table.experimental", "false");
         }
+
+        Fits fits = new Fits("target/testBinaryTable_uncompressed.fits");
+        Header header = fits.getHDU(1).getHeader();
+        Cursor<String, HeaderCard> iter = header.iterator();
+        assertStringCard(Standard.XTENSION, XTENSION_BINTABLE, iter.next());
+        assertIntCard(Standard.BITPIX, 8, iter.next());
+        assertIntCard(Standard.NAXIS, 2, iter.next());
+        assertIntCard(Standard.NAXISn.n(1), 200, iter.next());
+        assertIntCard(Standard.NAXISn.n(2), 50, iter.next());
+        assertIntCard(Standard.PCOUNT, 0, iter.next());
+        assertIntCard(Standard.GCOUNT, 1, iter.next());
+        assertIntCard(Standard.TFIELDS, 1, iter.next());
+        // the order of the next two fields is not fix
+        assertStringCard(Standard.TFORMn.n(1), "25D", header.card(Standard.TFORMn.n(1)).card());
+        assertStringCard(Standard.TDIMn.n(1), "(5,5)", header.card(Standard.TDIMn.n(1)).card());
+        fits.close();
+
+        if (1 == 1) {
+            return;// TODO: continue.
+        }
+        /**
+         * <pre>
+         * XTENSION= 'BINTABLE'           / marks beginning of new HDU                     
+         * BITPIX  =                    8 / bits per data value                            
+         * NAXIS   =                    2 / number of axes                                 
+         * NAXIS1  =                   16 / size of the n'th axis                          
+         * NAXIS2  =                    1 / size of the n'th axis                          
+         * PCOUNT  =                 8800 / Required value                                 
+         * GCOUNT  =                    1 / Required value                                 
+         * TFIELDS =                    1 / Number of table fields                         
+         * TFORM1  = '1QB(8800)'          / column data format                             
+         * TDIM1   = '(5,5)   '           / dimensionality of the array                    
+         * ZTABLE  =                    T / this is a compressed table                     
+         * ZTILELEN=                   50 / number of rows in each tile                    
+         * ZNAXIS1 =                  200 / size of the n'th axis                          
+         * ZNAXIS2 =                   50 / size of the n'th axis                          
+         * ZPCOUNT =                    0 / Required value                                 
+         * ZFORM1  = '25D     '           / column data format                             
+         * ZCTYP1  = 'GZIP_2  '           / compression algorithm for column
+         * </pre>
+         */
+        fits = new Fits("target/testBinaryTable_recompressed.fits");
+        header = fits.getHDU(1).getHeader();
+        iter = header.iterator();
+        assertStringCard(Standard.XTENSION, XTENSION_BINTABLE, iter.next());
+        assertIntCard(Standard.BITPIX, 8, iter.next());
+        assertIntCard(Standard.NAXIS, 2, iter.next());
+        assertIntCard(Standard.NAXISn.n(1), 16, iter.next());
+        assertIntCard(Standard.NAXISn.n(2), 1, iter.next());
+        assertIntCard(Standard.PCOUNT, 0, iter.next());
+        assertIntCard(Standard.GCOUNT, 1, iter.next());
+        assertIntCard(Standard.TFIELDS, 1, iter.next());
+        // the order of the next two fields is not fix
+        assertStringCard(Standard.TFORMn.n(1), "25D", header.card(Standard.TFORMn.n(1)).card());
+        assertStringCard(Standard.TDIMn.n(1), "(5,5)", header.card(Standard.TDIMn.n(1)).card());
+        fits.close();
+    }
+
+    private void assertStringCard(IFitsHeader expectedKey, String expectedValue, HeaderCard card) {
+        Assert.assertEquals(expectedKey.key(), card.getKey());
+        Assert.assertEquals(expectedValue, card.getValue());
+    }
+
+    private void assertIntCard(IFitsHeader expectedKey, int expectedValue, HeaderCard card) {
+        Assert.assertEquals(expectedKey.key(), card.getKey());
+        Assert.assertEquals(Integer.valueOf(expectedValue), card.getValue(Integer.class, -1));
     }
 }

@@ -35,7 +35,7 @@ import static nom.tam.fits.header.Standard.BITPIX;
 import static nom.tam.fits.header.Standard.END;
 import static nom.tam.fits.header.Standard.EXTEND;
 import static nom.tam.fits.header.Standard.NAXIS;
-import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.*;
 import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.extra.NOAOExt.CRPIX1;
 import static nom.tam.fits.header.extra.NOAOExt.CRPIX2;
@@ -845,7 +845,7 @@ public class HeaderTest {
         }
         assertNotNull(actual);
         assertTrue(actual.getMessage().indexOf("XTENSION") > 0);
-        header.findCard("XTENSION").setValue("BINTABLE");
+        header.findCard(XTENSION.key()).setValue(XTENSION_BINTABLE);
         actual = null;
         try {
             header.write(out);

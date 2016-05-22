@@ -37,6 +37,7 @@ import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.XTENSION;
+import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 import static nom.tam.util.LoggerHelper.getLogger;
 
 import java.io.PrintStream;
@@ -95,7 +96,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
         if (!found) {
             String xtension = hdr.getStringValue(XTENSION);
             xtension = xtension == null ? "" : xtension.trim();
-            if ("IMAGE".equals(xtension) || "IUEIMAGE".equals(xtension)) {
+            if (XTENSION_IMAGE.equals(xtension) || "IUEIMAGE".equals(xtension)) {
                 found = true;
             }
         }
@@ -196,7 +197,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
         if (status) {
             this.myHeader.setSimple(true);
         } else {
-            this.myHeader.setXtension("IMAGE");
+            this.myHeader.setXtension(XTENSION_IMAGE);
         }
     }
 }

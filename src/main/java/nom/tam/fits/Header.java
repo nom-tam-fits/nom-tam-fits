@@ -44,6 +44,7 @@ import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.XTENSION;
+import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
 
 import java.io.EOFException;
@@ -488,7 +489,7 @@ public class Header implements FitsElement {
                 throw new FitsException("Empty XTENSION keyword");
             }
             isExtension = true;
-            if (value.equals("BINTABLE") || value.equals("A3DTABLE") || value.equals("TABLE")) {
+            if (value.equals(XTENSION_BINTABLE) || value.equals("A3DTABLE") || value.equals("TABLE")) {
                 isTable = true;
             }
         }
@@ -1559,8 +1560,7 @@ public class Header implements FitsElement {
      * Set the XTENSION keyword to the given value.
      * 
      * @param val
-     *            The name of the extension. "IMAGE" and "BINTABLE" are
-     *            supported.
+     *            The name of the extension.
      */
     public void setXtension(String val) {
         deleteKey(SIMPLE);

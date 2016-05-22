@@ -31,6 +31,8 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.XTENSION;
+import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -1216,7 +1218,7 @@ public class BinaryTableTest {
         assertEquals("HDR1", data.length, hdr.getIntValue("TFIELDS"));
         assertEquals("HDR2", 2, hdr.getIntValue("NAXIS"));
         assertEquals("HDR3", 8, hdr.getIntValue("BITPIX"));
-        assertEquals("HDR4", "BINTABLE", hdr.getStringValue("XTENSION"));
+        assertEquals("HDR4", XTENSION_BINTABLE, hdr.getStringValue(XTENSION.key()));
         assertEquals("HDR5", "bytes", hdr.getStringValue("TTYPE1"));
         assertEquals("HDR6", "doubles", hdr.getStringValue("TTYPE7"));
 

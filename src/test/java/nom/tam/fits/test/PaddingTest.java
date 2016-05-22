@@ -31,6 +31,7 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 import static org.junit.Assert.assertEquals;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -148,7 +149,7 @@ public class PaddingTest {
             BufferedFile bf = new BufferedFile("target/padding2.fits", "rw");
             f.write(bf);
 
-            hdu.getHeader().setXtension("IMAGE");
+            hdu.getHeader().setXtension(XTENSION_IMAGE);
             Cursor<String, HeaderCard> curs = hdu.getHeader().iterator();
             int cnt = 0;
             // Write the header

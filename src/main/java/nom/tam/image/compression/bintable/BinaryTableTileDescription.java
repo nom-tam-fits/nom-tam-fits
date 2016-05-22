@@ -43,7 +43,7 @@ public final class BinaryTableTileDescription {
 
     private int tileIndex;
 
-    private String compressionAlgorithm = Compression.ZCMPTYPE_GZIP_1;
+    private String compressionAlgorithm;
 
     public static BinaryTableTileDescription tile() {
         return new BinaryTableTileDescription();
@@ -83,6 +83,9 @@ public final class BinaryTableTileDescription {
     }
 
     protected String getCompressionAlgorithm() {
+        if (this.compressionAlgorithm == null) {
+            return Compression.ZCMPTYPE_GZIP_2;
+        }
         return this.compressionAlgorithm;
     }
 

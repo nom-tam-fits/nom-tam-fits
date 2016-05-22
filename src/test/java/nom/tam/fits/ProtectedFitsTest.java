@@ -32,6 +32,7 @@ package nom.tam.fits;
  */
 
 import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -92,7 +93,7 @@ public class ProtectedFitsTest {
         header.card(Standard.SIMPLE).value(true);
         Assert.assertTrue(RandomGroupsHDU.isHeader(header));
         header.deleteKey(Standard.SIMPLE);
-        header.card(Standard.XTENSION).value("IMAGE");
+        header.card(Standard.XTENSION).value(XTENSION_IMAGE);
         Assert.assertTrue(RandomGroupsHDU.isHeader(header));
         RandomGroupsHDU randomGroupsHDU = new RandomGroupsHDU(header, RandomGroupsHDU.manufactureData(header));
         Assert.assertTrue(randomGroupsHDU.isHeader());
@@ -100,7 +101,7 @@ public class ProtectedFitsTest {
         Assert.assertTrue(randomGroupsHDU.getHeader().getBooleanValue(Standard.SIMPLE));
         randomGroupsHDU.setPrimaryHDU(false);
         Assert.assertFalse(randomGroupsHDU.getHeader().getBooleanValue(Standard.SIMPLE));
-        Assert.assertEquals("IMAGE", randomGroupsHDU.getHeader().getStringValue(Standard.XTENSION));
+        Assert.assertEquals(XTENSION_IMAGE, randomGroupsHDU.getHeader().getStringValue(Standard.XTENSION));
 
         randomGroupsHDU = new RandomGroupsHDU(null, RandomGroupsHDU.manufactureData(header));
         ByteArrayOutputStream out = new ByteArrayOutputStream();

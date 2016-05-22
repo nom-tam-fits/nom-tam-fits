@@ -38,6 +38,7 @@ import static nom.tam.fits.header.Standard.TDIMn;
 import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.THEAP;
+import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -573,7 +574,7 @@ public class BinaryTable extends AbstractTableData {
     public void fillHeader(Header h) throws FitsException {
         try {
             Standard.context(BinaryTable.class);
-            h.setXtension("BINTABLE");
+            h.setXtension(XTENSION_BINTABLE);
             h.setBitpix(BasicHDU.BITPIX_BYTE);
             h.setNaxes(2);
             h.setNaxis(1, this.rowLen);
