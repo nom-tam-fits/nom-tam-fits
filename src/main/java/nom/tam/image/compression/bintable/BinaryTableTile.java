@@ -89,6 +89,10 @@ public abstract class BinaryTableTile implements Runnable {
         header.card(Compression.ZCTYPn.n(this.column)).value(this.compressionAlgorithm);
     }
 
+    public int getTileIndex() {
+        return this.tileIndex;
+    }
+
     public void waitForResult() {
         try {
             this.future.get();
@@ -101,11 +105,8 @@ public abstract class BinaryTableTile implements Runnable {
         return CompressorProvider.findCompressorControl(null, this.compressionAlgorithm, byte.class);
     }
 
-    protected int getTileIndex() {
-        return this.tileIndex;
-    }
-
     protected int getUncompressedSizeInBytes() {
         return this.length * this.type.size();
     }
+
 }

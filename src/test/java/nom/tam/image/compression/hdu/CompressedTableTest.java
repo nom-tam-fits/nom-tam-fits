@@ -54,10 +54,10 @@ public class CompressedTableTest {
     public CompressedTableTest() {
         super();
         Random random = new Random();
-        for (int i1 = 0; i1 < doubles.length; i1++) {
-            for (int i2 = 0; i2 < doubles[i1].length; i2++) {
-                for (int i3 = 0; i3 < doubles[i1][i2].length; i3++) {
-                    doubles[i1][i2][i3] = random.nextDouble();
+        for (int i1 = 0; i1 < this.doubles.length; i1++) {
+            for (int i2 = 0; i2 < this.doubles[i1].length; i2++) {
+                for (int i3 = 0; i3 < this.doubles[i1][i2].length; i3++) {
+                    this.doubles[i1][i2][i3] = random.nextDouble();
                 }
             }
         }
@@ -105,28 +105,27 @@ public class CompressedTableTest {
         assertStringCard(Standard.TFORMn.n(1), "25D", header.card(Standard.TFORMn.n(1)).card());
         assertStringCard(Standard.TDIMn.n(1), "(5,5)", header.card(Standard.TDIMn.n(1)).card());
         fits.close();
-
         if (1 == 1) {
-            return;// TODO: continue.
+            return;
         }
         /**
          * <pre>
-         * XTENSION= 'BINTABLE'           / marks beginning of new HDU                     
-         * BITPIX  =                    8 / bits per data value                            
-         * NAXIS   =                    2 / number of axes                                 
-         * NAXIS1  =                   16 / size of the n'th axis                          
-         * NAXIS2  =                    1 / size of the n'th axis                          
-         * PCOUNT  =                 8800 / Required value                                 
-         * GCOUNT  =                    1 / Required value                                 
-         * TFIELDS =                    1 / Number of table fields                         
-         * TFORM1  = '1QB(8800)'          / column data format                             
-         * TDIM1   = '(5,5)   '           / dimensionality of the array                    
-         * ZTABLE  =                    T / this is a compressed table                     
-         * ZTILELEN=                   50 / number of rows in each tile                    
-         * ZNAXIS1 =                  200 / size of the n'th axis                          
-         * ZNAXIS2 =                   50 / size of the n'th axis                          
-         * ZPCOUNT =                    0 / Required value                                 
-         * ZFORM1  = '25D     '           / column data format                             
+         * XTENSION= 'BINTABLE'           / marks beginning of new HDU
+         * BITPIX  =                    8 / bits per data value
+         * NAXIS   =                    2 / number of axes
+         * NAXIS1  =                   16 / size of the n'th axis
+         * NAXIS2  =                    1 / size of the n'th axis
+         * PCOUNT  =                 8800 / Required value
+         * GCOUNT  =                    1 / Required value
+         * TFIELDS =                    1 / Number of table fields
+         * TFORM1  = '1QB(8800)'          / column data format
+         * TDIM1   = '(5,5)   '           / dimensionality of the array
+         * ZTABLE  =                    T / this is a compressed table
+         * ZTILELEN=                   50 / number of rows in each tile
+         * ZNAXIS1 =                  200 / size of the n'th axis
+         * ZNAXIS2 =                   50 / size of the n'th axis
+         * ZPCOUNT =                    0 / Required value
+         * ZFORM1  = '25D     '           / column data format
          * ZCTYP1  = 'GZIP_2  '           / compression algorithm for column
          * </pre>
          */
@@ -147,13 +146,13 @@ public class CompressedTableTest {
         fits.close();
     }
 
-    private void assertStringCard(IFitsHeader expectedKey, String expectedValue, HeaderCard card) {
-        Assert.assertEquals(expectedKey.key(), card.getKey());
-        Assert.assertEquals(expectedValue, card.getValue());
-    }
-
     private void assertIntCard(IFitsHeader expectedKey, int expectedValue, HeaderCard card) {
         Assert.assertEquals(expectedKey.key(), card.getKey());
         Assert.assertEquals(Integer.valueOf(expectedValue), card.getValue(Integer.class, -1));
+    }
+
+    private void assertStringCard(IFitsHeader expectedKey, String expectedValue, HeaderCard card) {
+        Assert.assertEquals(expectedKey.key(), card.getKey());
+        Assert.assertEquals(expectedValue, card.getValue());
     }
 }

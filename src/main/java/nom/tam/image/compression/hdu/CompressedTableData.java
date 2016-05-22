@@ -72,6 +72,7 @@ public class CompressedTableData extends BinaryTable {
             binaryTableTile.waitForResult();
             binaryTableTile.fillHeader(header);
         }
+        fillHeader(header);
     }
 
     public void prepareUncompressedData(ColumnTable<SaveState> data, Header header) throws FitsException {
@@ -106,12 +107,14 @@ public class CompressedTableData extends BinaryTable {
         this.tiles = new ArrayList<BinaryTableTile>();
         BinaryTable.createColumnDataFor(dataToFill);
         for (int column = 0; column < ncols; column++) {
+            int tileIndex = 1;
             String compressionAlgorithm = compressedHeader.getStringValue(Compression.ZCTYPn.n(column + 1));
             for (int rowStart = 0; rowStart < nrows; rowStart += this.rowsPerTile) {
                 BinaryTableTileDecompressor binaryTableTile = new BinaryTableTileDecompressor(this, dataToFill.getData(), tile()//
                         .rowStart(rowStart)//
                         .rowEnd(rowStart + this.rowsPerTile)//
                         .column(column)//
+                        .tileIndex(tileIndex++)//
                         .compressionAlgorithm(compressionAlgorithm));
                 this.tiles.add(binaryTableTile);
                 binaryTableTile.execute(FitsFactory.threadPool());
