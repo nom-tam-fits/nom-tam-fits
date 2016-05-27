@@ -37,7 +37,9 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.header.Standard;
 import nom.tam.util.Cursor;
+import nom.tam.util.type.PrimitiveTypes;
 
 public class CompressedTableHDU extends BinaryTableHDU {
 
@@ -57,7 +59,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      *             if the binary table could not be used to create a compressed
      *             binary table.
      */
-    public static CompressedTableHDU fromBinaryTableHDU(BinaryTableHDU binaryTableHDU, int tileRows) throws FitsException {
+    public static CompressedTableHDU fromBinaryTableHDU(BinaryTableHDU binaryTableHDU, int tileRows, String... columnCompressionAlgorithms) throws FitsException {
         Header header = new Header();
         CompressedTableData compressedData = new CompressedTableData();
         compressedData.setRowsPerTile(binaryTableHDU.getData().getNRows());
@@ -72,6 +74,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
             BackupRestoreUnCompressedHeaderCard.restore(card, iterator);
         }
         CompressedTableHDU compressedImageHDU = new CompressedTableHDU(header, compressedData);
+        compressedData.setColumnCompressionAlgorithms(columnCompressionAlgorithms);
         compressedData.prepareUncompressedData(binaryTableHDU.getData().getData(), binaryTableHDU.getHeader());
         return compressedImageHDU;
     }
@@ -100,6 +103,9 @@ public class CompressedTableHDU extends BinaryTableHDU {
 
     public BinaryTableHDU asBinaryTableHDU() throws FitsException {
         Header header = new Header();
+        header.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
+        header.addValue(Standard.BITPIX, PrimitiveTypes.BYTE.bitPix());
+        header.addValue(Standard.NAXIS, 2);
         Cursor<String, HeaderCard> headerIterator = header.iterator();
         Cursor<String, HeaderCard> iterator = getHeader().iterator();
         while (iterator.hasNext()) {
@@ -112,8 +118,8 @@ public class CompressedTableHDU extends BinaryTableHDU {
         return tableHDU;
     }
 
-    public CompressedTableHDU compress() {
-        getData().compress();
+    public CompressedTableHDU compress() throws FitsException {
+        getData().compress(getHeader());
         return this;
     }
 

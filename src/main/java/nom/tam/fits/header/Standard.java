@@ -613,6 +613,16 @@ public enum Standard implements IFitsHeader {
 
     private static final ThreadLocal<Class<?>> COMMENT_CONTEXT = new ThreadLocal<Class<?>>();
 
+    /**
+     * The value of the XTENSION keword in case of a binary table.
+     */
+    public static final String XTENSION_BINTABLE = "BINTABLE";
+
+    /**
+     * The value of the XTENSION keword in case of an image.
+     */
+    public static final String XTENSION_IMAGE = "IMAGE";
+
     private final StandardCommentReplacement[] commentReplacements;
 
     @SuppressWarnings("CPD-START")

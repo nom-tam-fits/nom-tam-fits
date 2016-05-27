@@ -35,8 +35,11 @@ import java.nio.Buffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.provider.CompressorProvider;
+import nom.tam.fits.header.Compression;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
@@ -82,6 +85,14 @@ public abstract class BinaryTableTile implements Runnable {
         this.future = threadPool.submit(this);
     }
 
+    public void fillHeader(Header header) throws HeaderCardException {
+        header.card(Compression.ZCTYPn.n(this.column)).value(this.compressionAlgorithm);
+    }
+
+    public int getTileIndex() {
+        return this.tileIndex;
+    }
+
     public void waitForResult() {
         try {
             this.future.get();
@@ -94,11 +105,8 @@ public abstract class BinaryTableTile implements Runnable {
         return CompressorProvider.findCompressorControl(null, this.compressionAlgorithm, byte.class);
     }
 
-    protected int getTileIndex() {
-        return this.tileIndex;
-    }
-
     protected int getUncompressedSizeInBytes() {
         return this.length * this.type.size();
     }
+
 }

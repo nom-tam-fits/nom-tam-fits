@@ -39,6 +39,7 @@ import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.XTENSION;
+import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 
 import java.io.PrintStream;
 import java.util.logging.Logger;
@@ -155,7 +156,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
         String xtension = hdr.getStringValue(XTENSION);
         xtension = xtension == null ? "" : xtension.trim();
-        if ("IMAGE".equals(xtension)) {
+        if (XTENSION_IMAGE.equals(xtension)) {
             return hdr.getBooleanValue(GROUPS);
         }
 
@@ -285,7 +286,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
         if (status) {
             this.myHeader.setSimple(true);
         } else {
-            this.myHeader.setXtension("IMAGE");
+            this.myHeader.setXtension(XTENSION_IMAGE);
         }
     }
 }
