@@ -1563,7 +1563,9 @@ public class BinaryTable extends AbstractTableData {
                 throw new FitsException("Invalid type in column:" + col);
         }
         if (colDesc.isVarying) {
-            dims = new int[] { 2 };
+            dims = new int[]{
+                2 
+            };
             colBase = int.class;
             bSize = FitsIO.BYTES_IN_INTEGER * 2;
             if (colDesc.isLongVary) {
