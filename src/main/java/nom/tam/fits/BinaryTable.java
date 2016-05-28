@@ -1565,8 +1565,7 @@ public class BinaryTable extends AbstractTableData {
         }
         if (colDesc.isVarying) {
             dims = new int[]{
-                this.nRow,
-                2
+                2 
             };
             colBase = int.class;
             bSize = FitsIO.BYTES_IN_INTEGER * 2;
