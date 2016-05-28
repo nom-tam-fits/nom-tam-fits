@@ -54,6 +54,10 @@ public class CompressedTableHDU extends BinaryTableHDU {
      *            the binary table to compress
      * @param tileRows
      *            the number of rows that should be compressed per tile.
+     * @param columnCompressionAlgorithms
+     *            the compression algorithms to use for the columns (optional
+     *            default compression will be used if a column has no
+     *            compression specified)
      * @return the prepared compressed binaary table hdu.
      * @throws FitsException
      *             if the binary table could not be used to create a compressed
