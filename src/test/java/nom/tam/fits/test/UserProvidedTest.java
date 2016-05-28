@@ -31,9 +31,6 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -42,6 +39,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import nom.tam.fits.BasicHDU;
+import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
@@ -324,5 +322,97 @@ public class UserProvidedTest {
         }
 
         Assert.assertSame(bhduMainAgain, bhduMain);
+    }
+
+    @Test
+    public void testBinaryTableEncurlProblem() throws Exception {
+        FitsFactory.setLongStringsEnabled(true);
+        FitsFactory.setUseHierarch(true);
+
+        FileInputStream stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("varlen-bintable.fits"));
+        BinaryTableHDU bhduMain = null;
+        Fits fitsSrc = null;
+        try {
+            fitsSrc = new Fits(stream);
+            fitsSrc.readHDU(); // skip the image
+            bhduMain = (BinaryTableHDU) fitsSrc.readHDU(); // theres the table
+            assertCurledHdu(bhduMain);
+            fitsSrc.close();
+            fitsSrc.write(new File("target/varlen-bintable-rewite.fits"));
+            fitsSrc.close();
+            // now read it again and see if the data is still as expected
+            fitsSrc = new Fits(new File("target/varlen-bintable-rewite.fits"));
+            fitsSrc.readHDU(); // skip the image
+            bhduMain = (BinaryTableHDU) fitsSrc.readHDU(); // theres the table
+            assertCurledHdu(bhduMain);
+        } finally {
+            SaveClose.close(fitsSrc);
+        }
+    }
+
+    private void assertCurledHdu(BinaryTableHDU bhduMain) throws FitsException {
+        //@formatter:off
+        Object[][] expected = {
+                new double[][]{
+                      {  54237.5535530787   },
+                      {  54237.55355314815  },
+                      {  54237.553552777776 },
+                      {  54237.553552777776 },
+                      {  54237.553552777776 },
+                      {  54237.553552777776 },
+                      {  54237.553553287034 },
+                      {  54237.553552777776 },
+                      {  54237.55355329861  },
+                      {  54237.55355331019   },
+                },new String[]{
+                        "FOCOBS_X_Y_Z"      ,
+                        "PHIOBS_X_Y_Z"      ,
+                        "INCLINOMETER_3"    ,
+                        "INCLINOMETER_1"    ,
+                        "PHI_X_Y_Z"         ,
+                        "INCLINOMETER_2"    ,
+                        "LAPSE_RATE"        ,
+                        "PTC_METR_MODE"     ,
+                        "DPHI_X_Y_Z"        ,
+                        "DFOCUS_X_Y_Z"
+                }, new double[][]{
+                        {2.78, -4.4, 6.479},  
+                        {0.0040, 0.0060, 0.0},
+                        {23.31, 49.64, 1.3  },
+                        {-12.26, -51.35, 2.7},
+                        {0.04, 0.0060, 0.0  },
+                        {32.86, 52.75, 0.0  },
+                        {0.0065             },
+                        {32.0               },
+                        {0.0, 0.0, 0.0      },
+                        {0.0, 0.0, 0.0      }
+                },new byte[][]{                        
+                        {109, 109, 32, 47, 32, 109, 109, 32, 47, 32, 109, 109},
+                        {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
+                        {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
+                        {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
+                        {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
+                        {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
+                        {75, 47, 109},
+                        {45},
+                        {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
+                        {109, 109, 32, 47, 32, 109, 109, 32, 47, 32, 109, 109},
+                }
+        };
+        //@formatter:on
+        Assert.assertEquals(4, bhduMain.getNCols());
+        Assert.assertEquals(10, bhduMain.getNRows());
+        for (int column = 0; column < 4; column++) {
+            for (int row = 0; row < 10; row++) {
+                Object element = bhduMain.getElement(row, column);
+                if (column == 0 || column == 2) {
+                    Assert.assertArrayEquals((double[]) expected[column][row], (double[]) element, 0.00001);
+                } else if (column == 1) {
+                    Assert.assertEquals((String) expected[column][row], (String) element);
+                } else if (column == 3) {
+                    Assert.assertArrayEquals((byte[]) expected[column][row], (byte[]) element);
+                }
+            }
+        }
     }
 }
