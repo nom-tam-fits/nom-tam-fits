@@ -72,6 +72,8 @@ public class CompressedTableTest {
             Fits fitsComp = new Fits("src/test/resources/nom/tam/table/comp/testBinaryTable.fits.fz");
             CompressedTableHDU cfitsioTable = (CompressedTableHDU) fitsComp.getHDU(1);
 
+            cfitsioTable.info(System.out);
+
             BinaryTableHDU binaryTable2HDU = cfitsioTable.asBinaryTableHDU();
 
             Fits fits = new Fits();
@@ -105,30 +107,7 @@ public class CompressedTableTest {
         assertStringCard(Standard.TFORMn.n(1), "25D", header.card(Standard.TFORMn.n(1)).card());
         assertStringCard(Standard.TDIMn.n(1), "(5,5)", header.card(Standard.TDIMn.n(1)).card());
         fits.close();
-        if (1 == 1) {
-            return;
-        }
-        /**
-         * <pre>
-         * XTENSION= 'BINTABLE'           / marks beginning of new HDU
-         * BITPIX  =                    8 / bits per data value
-         * NAXIS   =                    2 / number of axes
-         * NAXIS1  =                   16 / size of the n'th axis
-         * NAXIS2  =                    1 / size of the n'th axis
-         * PCOUNT  =                 8800 / Required value
-         * GCOUNT  =                    1 / Required value
-         * TFIELDS =                    1 / Number of table fields
-         * TFORM1  = '1QB(8800)'          / column data format
-         * TDIM1   = '(5,5)   '           / dimensionality of the array
-         * ZTABLE  =                    T / this is a compressed table
-         * ZTILELEN=                   50 / number of rows in each tile
-         * ZNAXIS1 =                  200 / size of the n'th axis
-         * ZNAXIS2 =                   50 / size of the n'th axis
-         * ZPCOUNT =                    0 / Required value
-         * ZFORM1  = '25D     '           / column data format
-         * ZCTYP1  = 'GZIP_2  '           / compression algorithm for column
-         * </pre>
-         */
+
         fits = new Fits("target/testBinaryTable_recompressed.fits");
         header = fits.getHDU(1).getHeader();
         iter = header.iterator();
@@ -136,12 +115,12 @@ public class CompressedTableTest {
         assertIntCard(Standard.BITPIX, 8, iter.next());
         assertIntCard(Standard.NAXIS, 2, iter.next());
         assertIntCard(Standard.NAXISn.n(1), 16, iter.next());
-        assertIntCard(Standard.NAXISn.n(2), 1, iter.next());
-        assertIntCard(Standard.PCOUNT, 0, iter.next());
+        assertIntCard(Standard.NAXISn.n(2), 5, iter.next());
+        assertIntCard(Standard.PCOUNT, 1380, iter.next());
         assertIntCard(Standard.GCOUNT, 1, iter.next());
         assertIntCard(Standard.TFIELDS, 1, iter.next());
         // the order of the next two fields is not fix
-        assertStringCard(Standard.TFORMn.n(1), "25D", header.card(Standard.TFORMn.n(1)).card());
+        assertStringCard(Standard.TFORMn.n(1), "1QB", header.card(Standard.TFORMn.n(1)).card());
         assertStringCard(Standard.TDIMn.n(1), "(5,5)", header.card(Standard.TDIMn.n(1)).card());
         fits.close();
     }

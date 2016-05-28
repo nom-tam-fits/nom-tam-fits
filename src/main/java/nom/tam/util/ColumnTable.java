@@ -434,6 +434,9 @@ public class ColumnTable<T> implements DataTable {
             }
             initializePointers();
             this.nrow += 1;
+            if (rowSize == 0) {
+                this.rowSize = this.nrow * ArrayFuncs.getBaseLength(getRow(this.nrow - 1));
+            }
         }
     }
 
