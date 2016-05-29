@@ -143,6 +143,20 @@ public class BinaryTable extends AbstractTableData {
         }
 
         /**
+         * @return new instance of the array with space for the specified number
+         *         of rows.
+         * @param nRow
+         *            the number of rows to allocate the array for
+         */
+        public Object newInstance(int nRow) {
+            return ArrayFuncs.newInstance(ArrayFuncs.getBaseClass(this.model), this.size * nRow);
+        }
+
+        public int rowLen() {
+            return this.size * PrimitiveTypeHandler.valueOf(this.base).size();
+        }
+
+        /**
          * @return Is this a variable length column using longs? [Must have
          *         isVarying true too]
          */
@@ -544,7 +558,7 @@ public class BinaryTable extends AbstractTableData {
             for (int i = start + len - 1; i >= start; i -= 1) {
                 if (i >= 0 && i <= this.columnList.size()) {
                     ColumnDesc columnDesc = this.columnList.get(i);
-                    this.rowLen -= columnDesc.size * PrimitiveTypeHandler.valueOf(columnDesc.base).size();
+                    this.rowLen -= columnDesc.rowLen();
                     this.columnList.remove(i);
                 }
             }
@@ -1289,7 +1303,7 @@ public class BinaryTable extends AbstractTableData {
                 arrCol[i] = desc.column;
                 desc.column = null;
             } else {
-                arrCol[i] = ArrayFuncs.newInstance(ArrayFuncs.getBaseClass(desc.model), desc.size * this.nRow);
+                arrCol[i] = desc.newInstance(this.nRow);
             }
         }
         this.table = createColumnTable(arrCol, sizes);
@@ -1355,8 +1369,9 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @return row from the file. * @throws FitsException if the operation
-     *         failed
+     * @return row from the file.
+     * @throws FitsException
+     *             if the operation failed
      */
     private Object[] getFileRow(int row) throws FitsException {
 
@@ -1366,7 +1381,7 @@ public class BinaryTable extends AbstractTableData {
         Object[] data = new Object[this.columnList.size()];
         for (int col = 0; col < data.length; col++) {
             ColumnDesc colDesc = this.columnList.get(col);
-            data[col] = ArrayFuncs.newInstance(ArrayFuncs.getBaseClass(colDesc.model), colDesc.size);
+            data[col] = colDesc.newInstance(1);
         }
 
         try {
@@ -1766,22 +1781,18 @@ public class BinaryTable extends AbstractTableData {
      * FitsException if the operation failed
      */
     void fillForColumn(Header h, int col, Cursor<String, HeaderCard> iter) throws FitsException {
-
-        String tform;
         ColumnDesc colDesc = this.columnList.get(col);
 
+        String tform;
         if (colDesc.isVarying) {
             if (colDesc.isLongVary) {
                 tform = "1Q";
             } else {
                 tform = "1P";
             }
-
         } else {
-            tform = "" + colDesc.size;
-
+            tform = Integer.toString(colDesc.size);
         }
-
         if (colDesc.base == int.class) {
             tform += "J";
         } else if (colDesc.base == short.class || colDesc.base == char.class) {
