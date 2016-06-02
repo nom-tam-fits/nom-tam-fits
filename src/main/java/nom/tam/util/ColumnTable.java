@@ -280,9 +280,6 @@ public class ColumnTable<T> implements DataTable {
     /** The number of rows */
     private int nrow;
 
-    /** The size of a row in bytes */
-    private int rowSize;
-
     /**
      * The base type of each row (using the second character of the [x class
      * names of the arrays.
@@ -345,8 +342,6 @@ public class ColumnTable<T> implements DataTable {
 
         String classname = newColumn.getClass().getName();
         this.nrow = checkColumnConsistency(newColumn, classname, this.nrow, size);
-
-        this.rowSize += this.nrow * ArrayFuncs.getBaseLength(newColumn);
 
         int ncol = this.arrays.length;
 
@@ -434,9 +429,6 @@ public class ColumnTable<T> implements DataTable {
             }
             initializePointers();
             this.nrow += 1;
-            if (rowSize == 0) {
-                this.rowSize = this.nrow * ArrayFuncs.getBaseLength(getRow(this.nrow - 1));
-            }
         }
     }
 
@@ -485,7 +477,6 @@ public class ColumnTable<T> implements DataTable {
         }
 
         this.nrow = ratio;
-        this.rowSize = newRowSize;
         this.arrays = newArrays;
         this.sizes = newSizes;
     }
@@ -531,7 +522,6 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Delete a contiguous set of columns from the table.
      * 
-     * @return the rowlength
      * @param start
      *            The first column (0-indexed) to be deleted.
      * @param len
@@ -540,16 +530,13 @@ public class ColumnTable<T> implements DataTable {
      *             if the request goes outside the boundaries of the table or if
      *             the length is negative.
      */
-    public int deleteColumns(int start, int len) throws TableException {
+    public void deleteColumns(int start, int len) throws TableException {
         int ncol = this.arrays.length;
         if (start < 0 || len < 0 || start + len > ncol) {
             throw new TableException("Invalid request to delete columns start: " + start + " length:" + len + " for table with " + ncol + " columns.");
         }
         if (len == 0) {
-            return this.rowSize;
-        }
-        for (int i = start; i < start + len; i += 1) {
-            this.rowSize -= this.sizes[i] * ArrayFuncs.getBaseLength(this.arrays[i]);
+            return;
         }
         int ocol = ncol;
         ncol -= len;
@@ -577,7 +564,6 @@ public class ColumnTable<T> implements DataTable {
         this.types = newTypes;
 
         initializePointers();
-        return this.rowSize;
     }
 
     /**
@@ -905,9 +891,6 @@ public class ColumnTable<T> implements DataTable {
      *             if the write operation failed
      */
     public void write(ArrayDataOutput os) throws IOException {
-        if (this.rowSize == 0) {
-            return;
-        }
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
         for (int row = 0; row < this.nrow; row += 1) {
             Arrays.fill(columnIndex, 0);
@@ -939,9 +922,6 @@ public class ColumnTable<T> implements DataTable {
      *             if the write operation failed
      */
     public void write(ArrayDataOutput os, int rowStart, int rowEnd, int columnNr) throws IOException {
-        if (this.rowSize == 0) {
-            return;
-        }
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
         for (int row = 0; row < this.nrow; row += 1) {
             if (row >= rowStart && row < rowEnd) {
