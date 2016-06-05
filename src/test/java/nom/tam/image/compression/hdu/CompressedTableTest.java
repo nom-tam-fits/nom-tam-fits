@@ -42,9 +42,12 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
+import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.Cursor;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class CompressedTableTest {
@@ -63,36 +66,40 @@ public class CompressedTableTest {
         }
     }
 
+    @Before
+    public void setup() {
+        System.setProperty("compressed.table.experimental", "true");
+
+    }
+
+    @After
+    public void teardown() {
+        System.clearProperty("compressed.table.experimental");
+    }
+
     @Test
     public void testBasicBinaryTable() throws Exception {
 
-        try {
-            System.setProperty("compressed.table.experimental", "true");
+        Fits fitsComp = new Fits("src/test/resources/nom/tam/table/comp/testBinaryTable.fits.fz");
+        CompressedTableHDU cfitsioTable = (CompressedTableHDU) fitsComp.getHDU(1);
 
-            Fits fitsComp = new Fits("src/test/resources/nom/tam/table/comp/testBinaryTable.fits.fz");
-            CompressedTableHDU cfitsioTable = (CompressedTableHDU) fitsComp.getHDU(1);
+        cfitsioTable.info(System.out);
 
-            cfitsioTable.info(System.out);
+        BinaryTableHDU binaryTable2HDU = cfitsioTable.asBinaryTableHDU();
 
-            BinaryTableHDU binaryTable2HDU = cfitsioTable.asBinaryTableHDU();
+        Fits fits = new Fits();
+        fits.addHDU(binaryTable2HDU);
+        fits.write(new File("target/testBinaryTable_uncompressed.fits"));
+        fits.close();
 
-            Fits fits = new Fits();
-            fits.addHDU(binaryTable2HDU);
-            fits.write(new File("target/testBinaryTable_uncompressed.fits"));
-            fits.close();
+        CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(binaryTable2HDU, 10).compress();
+        compressed.compress();
+        fits = new Fits();
+        fits.addHDU(compressed);
+        fits.write(new File("target/testBinaryTable_recompressed.fits"));
+        fits.close();
 
-            CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(binaryTable2HDU, 10).compress();
-            compressed.compress();
-            fits = new Fits();
-            fits.addHDU(compressed);
-            fits.write(new File("target/testBinaryTable_recompressed.fits"));
-            fits.close();
-
-        } finally {
-            System.setProperty("compressed.table.experimental", "false");
-        }
-
-        Fits fits = new Fits("target/testBinaryTable_uncompressed.fits");
+        fits = new Fits("target/testBinaryTable_uncompressed.fits");
         Header header = fits.getHDU(1).getHeader();
         Cursor<String, HeaderCard> iter = header.iterator();
         assertStringCard(Standard.XTENSION, XTENSION_BINTABLE, iter.next());
@@ -123,6 +130,46 @@ public class CompressedTableTest {
         assertStringCard(Standard.TFORMn.n(1), "1QB", header.card(Standard.TFORMn.n(1)).card());
         assertStringCard(Standard.TDIMn.n(1), "(5,5)", header.card(Standard.TDIMn.n(1)).card());
         fits.close();
+    }
+
+    @Test
+    public void testCompressedVarTable() throws Exception {
+        String compressedVarTable = BlackBoxImages.getBlackBoxImage("map_one_source_a_level_1_cal.fits.fz");
+        Fits fitsComp = new Fits(compressedVarTable);
+        CompressedTableHDU cfitsioTable = (CompressedTableHDU) fitsComp.getHDU(1);
+
+        cfitsioTable.info(System.out);
+
+        BinaryTableHDU binaryTable2HDU = cfitsioTable.asBinaryTableHDU();
+        Fits fits = new Fits();
+        fits.addHDU(binaryTable2HDU);
+        fits.write(new File("target/map_one_source_a_level_1_cal_uncompressed.fits"));
+        fits.close();
+        fitsComp.close();
+
+        fits = new Fits("target/map_one_source_a_level_1_cal_uncompressed.fits");
+        BinaryTableHDU table = (BinaryTableHDU) fits.getHDU(1);
+
+        Assert.assertNotNull(table); // table could be read.
+
+        Assert.assertEquals(21, table.getNCols());
+        Assert.assertEquals(1, table.getNRows());
+
+        String originalVarTable = BlackBoxImages.getBlackBoxImage("map_one_source_a_level_1_cal.fits");
+        Fits fitsOrg = new Fits(originalVarTable);
+        Header orgHeader = fitsOrg.getHDU(1).getHeader();
+
+        Assert.assertEquals(orgHeader.getSize(), table.getHeader().getSize());
+        Cursor<String, HeaderCard> iterator = orgHeader.iterator();
+        while (iterator.hasNext()) {
+            HeaderCard headerCard = (HeaderCard) iterator.next();
+            String uncompressed = table.getHeader().getStringValue(headerCard.getKey());
+            String original = orgHeader.getStringValue(headerCard.getKey());
+            if (uncompressed != null || original != null) {
+                Assert.assertEquals(original, uncompressed);
+            }
+        }
+        fitsOrg.close();
     }
 
     private void assertIntCard(IFitsHeader expectedKey, int expectedValue, HeaderCard card) {

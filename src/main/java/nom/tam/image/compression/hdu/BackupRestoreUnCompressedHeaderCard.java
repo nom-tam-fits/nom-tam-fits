@@ -63,7 +63,6 @@ import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.fits.header.Standard.TFORMn;
-import static nom.tam.fits.header.Standard.TTYPEn;
 import static nom.tam.fits.header.Standard.XTENSION;
 
 import java.util.Map;
@@ -124,7 +123,6 @@ enum BackupRestoreUnCompressedHeaderCard {
 
     },
     MAP_TFORMn(TFORMn),
-    MAP_TTYPEn(TTYPEn),
     MAP_XTENSION(XTENSION),
     MAP_ZBITPIX(ZBITPIX),
     MAP_ZBLANK(ZBLANK),

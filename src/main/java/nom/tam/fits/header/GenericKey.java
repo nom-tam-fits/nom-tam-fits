@@ -112,8 +112,10 @@ public final class GenericKey {
     public static int getN(String card) {
         int index = card.length() - 1;
         int n = 0;
+        int numberBase = 1;
         while (index >= 0 && Character.isDigit(card.charAt(index))) {
-            n = n * NUMBER_BASE + card.charAt(index) - '0';
+            n = n + (card.charAt(index) - '0') * numberBase;
+            numberBase *= NUMBER_BASE;
             index--;
         }
         return n;

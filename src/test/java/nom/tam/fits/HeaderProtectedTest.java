@@ -35,6 +35,8 @@ import static nom.tam.fits.header.Standard.GROUPS;
 
 import java.io.ByteArrayOutputStream;
 
+import nom.tam.fits.header.GenericKey;
+import nom.tam.fits.header.Standard;
 import nom.tam.util.BufferedDataOutputStream;
 
 import org.junit.Assert;
@@ -73,5 +75,13 @@ public class HeaderProtectedTest {
         header.addValue(GROUPS, true);
         header.write(new BufferedDataOutputStream(new ByteArrayOutputStream(), 80));
         Assert.assertEquals(2L, header.trueDataSize());
+    }
+
+    @Test
+    public void testGenericKey() {
+        Assert.assertEquals(1, GenericKey.getN(Standard.TFORMn.n(1).key()));
+        Assert.assertEquals(12, GenericKey.getN(Standard.TFORMn.n(12).key()));
+        Assert.assertEquals(123, GenericKey.getN(Standard.TFORMn.n(123).key()));
+        Assert.assertEquals(1234, GenericKey.getN(Standard.TFORMn.n(1234).key()));
     }
 }
