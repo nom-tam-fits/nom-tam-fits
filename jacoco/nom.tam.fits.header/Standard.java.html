@@ -613,66 +613,76 @@ import nom.tam.fits.UndefinedData;
 
 <span class="fc" id="L614">    private static final ThreadLocal&lt;Class&lt;?&gt;&gt; COMMENT_CONTEXT = new ThreadLocal&lt;Class&lt;?&gt;&gt;();</span>
 
+    /**
+     * The value of the XTENSION keword in case of a binary table.
+     */
+    public static final String XTENSION_BINTABLE = &quot;BINTABLE&quot;;
+
+    /**
+     * The value of the XTENSION keword in case of an image.
+     */
+    public static final String XTENSION_IMAGE = &quot;IMAGE&quot;;
+
     private final StandardCommentReplacement[] commentReplacements;
 
     @SuppressWarnings(&quot;CPD-START&quot;)
     private final IFitsHeader key;
 
-<span class="fc" id="L621">    Standard(SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {</span>
-<span class="fc" id="L622">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
-<span class="fc" id="L623">        this.commentReplacements = replacements;</span>
-<span class="fc" id="L624">    }</span>
+<span class="fc" id="L631">    Standard(SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {</span>
+<span class="fc" id="L632">        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);</span>
+<span class="fc" id="L633">        this.commentReplacements = replacements;</span>
+<span class="fc" id="L634">    }</span>
 
-<span class="fc" id="L626">    Standard(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {</span>
-<span class="pc bpc" id="L627" title="1 of 2 branches missed.">        this.key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);</span>
-<span class="fc" id="L628">        this.commentReplacements = replacements;</span>
-<span class="fc" id="L629">    }</span>
+<span class="fc" id="L636">    Standard(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {</span>
+<span class="pc bpc" id="L637" title="1 of 2 branches missed.">        this.key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);</span>
+<span class="fc" id="L638">        this.commentReplacements = replacements;</span>
+<span class="fc" id="L639">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L633">        Class&lt;?&gt; contextClass = COMMENT_CONTEXT.get();</span>
-<span class="fc bfc" id="L634" title="All 2 branches covered.">        if (contextClass == null) {</span>
-<span class="fc" id="L635">            contextClass = Object.class;</span>
+<span class="fc" id="L643">        Class&lt;?&gt; contextClass = COMMENT_CONTEXT.get();</span>
+<span class="fc bfc" id="L644" title="All 2 branches covered.">        if (contextClass == null) {</span>
+<span class="fc" id="L645">            contextClass = Object.class;</span>
         }
-<span class="fc bfc" id="L637" title="All 2 branches covered.">        for (StandardCommentReplacement stdCommentReplacement : commentReplacements) {</span>
-<span class="fc bfc" id="L638" title="All 2 branches covered.">            if (stdCommentReplacement.getContext().isAssignableFrom(contextClass)) {</span>
-<span class="fc bfc" id="L639" title="All 2 branches covered.">                if (stdCommentReplacement.getComment() != null) {</span>
-<span class="fc" id="L640">                    return stdCommentReplacement.getComment();</span>
+<span class="fc bfc" id="L647" title="All 2 branches covered.">        for (StandardCommentReplacement stdCommentReplacement : commentReplacements) {</span>
+<span class="fc bfc" id="L648" title="All 2 branches covered.">            if (stdCommentReplacement.getContext().isAssignableFrom(contextClass)) {</span>
+<span class="fc bfc" id="L649" title="All 2 branches covered.">                if (stdCommentReplacement.getComment() != null) {</span>
+<span class="fc" id="L650">                    return stdCommentReplacement.getComment();</span>
                 }
             }
         }
-<span class="fc" id="L644">        return this.key.comment();</span>
+<span class="fc" id="L654">        return this.key.comment();</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L649">        return this.key.hdu();</span>
+<span class="fc" id="L659">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L654">        return this.key.key();</span>
+<span class="fc" id="L664">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L659">        return this.key.n(number);</span>
+<span class="fc" id="L669">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L664">        return this.key.status();</span>
+<span class="fc" id="L674">        return this.key.status();</span>
     }
 
     @Override
     @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L670">        return this.key.valueType();</span>
+<span class="fc" id="L680">        return this.key.valueType();</span>
     }
 
     public static void context(Class&lt;?&gt; clazz) {
-<span class="fc" id="L674">        COMMENT_CONTEXT.set(clazz);</span>
-<span class="fc" id="L675">    }</span>
+<span class="fc" id="L684">        COMMENT_CONTEXT.set(clazz);</span>
+<span class="fc" id="L685">    }</span>
 
     /**
      * scan for a comment with the specified reference key.
@@ -682,17 +692,17 @@ import nom.tam.fits.UndefinedData;
      * @return the comment for the reference key
      */
     public String getCommentByKey(String commentKey) {
-<span class="fc bfc" id="L685" title="All 2 branches covered.">        for (StandardCommentReplacement commentReplacement : commentReplacements) {</span>
-<span class="fc bfc" id="L686" title="All 2 branches covered.">            if (commentReplacement.getRef().equals(commentKey)) {</span>
-<span class="fc" id="L687">                String foundcommentReplacement = commentReplacement.getComment();</span>
-<span class="fc bfc" id="L688" title="All 2 branches covered.">                if (foundcommentReplacement == null) {</span>
-<span class="fc" id="L689">                    return comment();</span>
+<span class="fc bfc" id="L695" title="All 2 branches covered.">        for (StandardCommentReplacement commentReplacement : commentReplacements) {</span>
+<span class="fc bfc" id="L696" title="All 2 branches covered.">            if (commentReplacement.getRef().equals(commentKey)) {</span>
+<span class="fc" id="L697">                String foundcommentReplacement = commentReplacement.getComment();</span>
+<span class="fc bfc" id="L698" title="All 2 branches covered.">                if (foundcommentReplacement == null) {</span>
+<span class="fc" id="L699">                    return comment();</span>
                 } else {
-<span class="fc" id="L691">                    return foundcommentReplacement;</span>
+<span class="fc" id="L701">                    return foundcommentReplacement;</span>
                 }
             }
         }
-<span class="fc" id="L695">        return null;</span>
+<span class="fc" id="L705">        return null;</span>
     }
 
     /**
@@ -704,20 +714,20 @@ import nom.tam.fits.UndefinedData;
      *            the comment to set when the fits key is used.
      */
     public void setCommentByKey(String commentKey, String value) {
-<span class="fc bfc" id="L707" title="All 2 branches covered.">        for (StandardCommentReplacement commentReplacement : commentReplacements) {</span>
-<span class="fc bfc" id="L708" title="All 2 branches covered.">            if (commentReplacement.getRef().equals(commentKey)) {</span>
-<span class="fc" id="L709">                commentReplacement.setComment(value);</span>
-<span class="fc" id="L710">                return;</span>
+<span class="fc bfc" id="L717" title="All 2 branches covered.">        for (StandardCommentReplacement commentReplacement : commentReplacements) {</span>
+<span class="fc bfc" id="L718" title="All 2 branches covered.">            if (commentReplacement.getRef().equals(commentKey)) {</span>
+<span class="fc" id="L719">                commentReplacement.setComment(value);</span>
+<span class="fc" id="L720">                return;</span>
             }
         }
-<span class="fc" id="L713">    }</span>
+<span class="fc" id="L723">    }</span>
 
     private static StandardCommentReplacement replaceable(String string, Class&lt;?&gt; clazz) {
-<span class="fc" id="L716">        return new StandardCommentReplacement(string, clazz);</span>
+<span class="fc" id="L726">        return new StandardCommentReplacement(string, clazz);</span>
     }
 
     private static StandardCommentReplacement replaceable(String string, Class&lt;?&gt; clazz, String comment) {
-<span class="fc" id="L720">        return new StandardCommentReplacement(string, clazz, comment);</span>
+<span class="fc" id="L730">        return new StandardCommentReplacement(string, clazz, comment);</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

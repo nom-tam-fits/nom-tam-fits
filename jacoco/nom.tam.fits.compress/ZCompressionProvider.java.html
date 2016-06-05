@@ -45,11 +45,11 @@ import java.io.InputStream;
     @Override
     public InputStream decompress(InputStream in) throws IOException {
         try {
-<span class="nc" id="L48">            return CompressionLibLoaderProtection.createZStream(in);</span>
-<span class="nc" id="L49">        } catch (IOException e) {</span>
-<span class="nc" id="L50">            throw e;</span>
-<span class="nc" id="L51">        } catch (Exception e) {</span>
-<span class="nc" id="L52">            throw new IOException(e);</span>
+<span class="fc" id="L48">            return CompressionLibLoaderProtection.createZStream(in);</span>
+<span class="fc" id="L49">        } catch (IOException e) {</span>
+<span class="fc" id="L50">            throw e;</span>
+<span class="fc" id="L51">        } catch (Exception e) {</span>
+<span class="fc" id="L52">            throw new IOException(e);</span>
         }
     }
 
@@ -60,7 +60,7 @@ import java.io.InputStream;
 
     @Override
     public boolean provides(int mag1, int mag2) {
-<span class="pc bpc" id="L63" title="3 of 4 branches missed.">        return mag1 == Z_COMPRESS_MAGIC_BYTE1 &amp;&amp; mag2 == Z_COMPRESS_MAGIC_BYTE2;</span>
+<span class="pc bpc" id="L63" title="1 of 4 branches missed.">        return mag1 == Z_COMPRESS_MAGIC_BYTE1 &amp;&amp; mag2 == Z_COMPRESS_MAGIC_BYTE2;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

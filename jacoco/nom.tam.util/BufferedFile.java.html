@@ -100,10 +100,10 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
          */
         @Override
         protected int eofCheck(EOFException e, int start, int index, int length) throws EOFException {
-<span class="nc bnc" id="L103" title="All 2 branches missed.">            if (start == index) {</span>
-<span class="nc" id="L104">                throw e;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            if (start == index) {</span>
+<span class="fc" id="L104">                throw e;</span>
             } else {
-<span class="nc" id="L106">                return (index - start) * length;</span>
+<span class="fc" id="L106">                return (index - start) * length;</span>
             }
         }
     };
@@ -244,8 +244,8 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     private void checkBuffer(int needBytes) throws IOException {
 
         // Check if the dataBuffer.buffer has some pending output.
-<span class="pc bpc" id="L247" title="1 of 4 branches missed.">        if (!this.doingInput &amp;&amp; this.bufferPointer.bufferOffset &gt; 0) {</span>
-<span class="nc" id="L248">            flush();</span>
+<span class="fc bfc" id="L247" title="All 4 branches covered.">        if (!this.doingInput &amp;&amp; this.bufferPointer.bufferOffset &gt; 0) {</span>
+<span class="fc" id="L248">            flush();</span>
         }
 <span class="fc" id="L250">        this.doingInput = true;</span>
 
@@ -319,7 +319,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      * @return the file channel
      */
     public java.nio.channels.FileChannel getChannel() {
-<span class="nc" id="L322">        return this.randomAccessFile.getChannel();</span>
+<span class="fc" id="L322">        return this.randomAccessFile.getChannel();</span>
     }
 
     /**
@@ -355,13 +355,13 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     @Override
     public void mark(int readlimit) throws IOException {
 <span class="fc" id="L357">        this.bufferMarker = this.bufferPointer.bufferOffset;</span>
-<span class="pc bpc" id="L358" title="1 of 2 branches missed.">        if (this.bufferMarker + readlimit &gt; this.bufferPointer.bufferLength) {</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">        if (this.bufferMarker + readlimit &gt; this.bufferPointer.bufferLength) {</span>
             try {
 <span class="nc" id="L360">                checkBuffer(readlimit);</span>
-<span class="nc" id="L361">            } catch (EOFException e) {</span>
-<span class="nc" id="L362">                BufferedFile.LOG.log(Level.FINE, &quot;mark over file limit, so read as far as possible.&quot;, e);</span>
+<span class="fc" id="L361">            } catch (EOFException e) {</span>
+<span class="fc" id="L362">                BufferedFile.LOG.log(Level.FINE, &quot;mark over file limit, so read as far as possible.&quot;, e);</span>
 <span class="nc" id="L363">            }</span>
-<span class="nc" id="L364">            this.bufferMarker = this.bufferPointer.bufferOffset;</span>
+<span class="fc" id="L364">            this.bufferMarker = this.bufferPointer.bufferOffset;</span>
         }
 <span class="fc" id="L366">    }</span>
 
@@ -509,8 +509,8 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public void readFully(byte[] b, int off, int len) throws IOException {
-<span class="nc" id="L512">        this.dataDecoder.readFully(b, off, len);</span>
-<span class="nc" id="L513">    }</span>
+<span class="fc" id="L512">        this.dataDecoder.readFully(b, off, len);</span>
+<span class="fc" id="L513">    }</span>
 
     @Override
     public int readInt() throws IOException {
@@ -712,8 +712,8 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     @Override
     public void write(int buf) throws IOException {
-<span class="nc" id="L715">        this.dataEncoder.writeByte(buf);</span>
-<span class="nc" id="L716">    }</span>
+<span class="fc" id="L715">        this.dataEncoder.writeByte(buf);</span>
+<span class="fc" id="L716">    }</span>
 
     @Override
     public void write(int[] i) throws IOException {
@@ -817,4 +817,4 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 <span class="fc" id="L817">        this.fileOffset = this.randomAccessFile.getFilePointer();</span>
 <span class="fc" id="L818">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

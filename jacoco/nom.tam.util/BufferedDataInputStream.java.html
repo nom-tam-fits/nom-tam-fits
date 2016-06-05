@@ -180,7 +180,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 <span class="fc" id="L180">            int xlen = super.read(obuf, currentOffset, remainingToRead);</span>
 <span class="fc bfc" id="L181" title="All 2 branches covered.">            if (xlen &lt;= 0) {</span>
 <span class="fc bfc" id="L182" title="All 2 branches covered.">                if (total == 0) {</span>
-<span class="fc" id="L183">                    throw new EOFException(); // should not be possible</span>
+<span class="fc" id="L183">                    throw new EOFException();</span>
                 } else {
 <span class="fc" id="L185">                    return total;</span>
                 }
@@ -395,57 +395,61 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 <span class="fc bfc" id="L395" title="All 2 branches covered.">        while (need &gt; 0) {</span>
             try {
 <span class="fc" id="L397">                long got = skip(need);</span>
-<span class="pc bpc" id="L398" title="1 of 2 branches missed.">                if (got &gt; 0) {</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">                if (got &gt; 0) {</span>
 <span class="fc" id="L399">                    need -= got;</span>
                 } else {
-<span class="nc" id="L401">                    break;</span>
+<span class="fc" id="L401">                    break;</span>
                 }
 <span class="fc" id="L403">            } catch (IOException e) {</span>
-<span class="fc" id="L404">                need = handleExceptionInSkip(need, e);</span>
-<span class="fc" id="L405">            }</span>
+<span class="fc" id="L404">                long lastNeed = need;</span>
+<span class="fc" id="L405">                need = handleExceptionInSkip(need, e);</span>
+<span class="fc bfc" id="L406" title="All 2 branches covered.">                if (need &gt;= lastNeed) {</span>
+<span class="fc" id="L407">                    break;</span>
+                }
+<span class="fc" id="L409">            }</span>
         }
-<span class="pc bpc" id="L407" title="1 of 2 branches missed.">        if (need &gt; 0) {</span>
-<span class="nc" id="L408">            throw new EOFException();</span>
+<span class="fc bfc" id="L411" title="All 2 branches covered.">        if (need &gt; 0) {</span>
+<span class="fc" id="L412">            throw new EOFException();</span>
         }
-<span class="fc" id="L410">    }</span>
+<span class="fc" id="L414">    }</span>
 
     private long handleExceptionInSkip(long skip, IOException e) throws IOException {
-<span class="fc" id="L413">        LOG.log(Level.WARNING, &quot;Error while skipping bytes&quot;, e);</span>
+<span class="fc" id="L417">        LOG.log(Level.WARNING, &quot;Error while skipping bytes&quot;, e);</span>
         // Some input streams (process outputs) don't allow
         // skipping. The kludgy solution here is to
         // try to do a read when we get an error in the skip....
         // Real IO errors will presumably cause an error
         // in these reads too.
-<span class="pc bpc" id="L419" title="1 of 2 branches missed.">        if (this.skipBuf == null) {</span>
-<span class="fc" id="L420">            this.skipBuf = new byte[BufferedDataInputStream.SKIP_BUFFER_SIZE];</span>
+<span class="pc bpc" id="L423" title="1 of 2 branches missed.">        if (this.skipBuf == null) {</span>
+<span class="fc" id="L424">            this.skipBuf = new byte[BufferedDataInputStream.SKIP_BUFFER_SIZE];</span>
         }
-<span class="fc" id="L422">        long remainingToSkip = skip;</span>
-<span class="fc bfc" id="L423" title="All 2 branches covered.">        while (remainingToSkip &gt; BufferedDataInputStream.SKIP_BUFFER_SIZE) {</span>
-<span class="fc" id="L424">            int got = read(this.skipBuf, 0, BufferedDataInputStream.SKIP_BUFFER_SIZE);</span>
-<span class="pc bpc" id="L425" title="1 of 2 branches missed.">            if (got &lt;= 0) {</span>
-<span class="nc" id="L426">                break;</span>
+<span class="fc" id="L426">        long remainingToSkip = skip;</span>
+<span class="fc bfc" id="L427" title="All 2 branches covered.">        while (remainingToSkip &gt; BufferedDataInputStream.SKIP_BUFFER_SIZE) {</span>
+<span class="fc" id="L428">            int got = read(this.skipBuf, 0, BufferedDataInputStream.SKIP_BUFFER_SIZE);</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">            if (got &lt;= 0) {</span>
+<span class="fc" id="L430">                break;</span>
             }
-<span class="fc" id="L428">            remainingToSkip -= got;</span>
-<span class="fc" id="L429">        }</span>
-<span class="fc bfc" id="L430" title="All 2 branches covered.">        while (remainingToSkip &gt; 0) {</span>
-<span class="fc" id="L431">            int got = read(this.skipBuf, 0, (int) remainingToSkip);</span>
-<span class="pc bpc" id="L432" title="1 of 2 branches missed.">            if (got &lt;= 0) {</span>
-<span class="nc" id="L433">                break;</span>
+<span class="fc" id="L432">            remainingToSkip -= got;</span>
+<span class="fc" id="L433">        }</span>
+<span class="fc bfc" id="L434" title="All 2 branches covered.">        while (remainingToSkip &gt; 0) {</span>
+<span class="fc" id="L435">            int got = read(this.skipBuf, 0, (int) remainingToSkip);</span>
+<span class="fc bfc" id="L436" title="All 2 branches covered.">            if (got &lt;= 0) {</span>
+<span class="fc" id="L437">                break;</span>
             }
-<span class="fc" id="L435">            remainingToSkip -= got;</span>
-<span class="fc" id="L436">        }</span>
-<span class="fc" id="L437">        return remainingToSkip;</span>
+<span class="fc" id="L439">            remainingToSkip -= got;</span>
+<span class="fc" id="L440">        }</span>
+<span class="fc" id="L441">        return remainingToSkip;</span>
     }
 
     @Override
     public int skipBytes(int toSkip) throws IOException {
-<span class="fc" id="L442">        skipAllBytes(toSkip);</span>
-<span class="fc" id="L443">        return toSkip;</span>
+<span class="fc" id="L446">        skipAllBytes(toSkip);</span>
+<span class="fc" id="L447">        return toSkip;</span>
     }
 
     @Override
     public String toString() {
-<span class="fc" id="L448">        return super.toString() + &quot;[count=&quot; + this.count + &quot;,pos=&quot; + this.pos + &quot;]&quot;;</span>
+<span class="fc" id="L452">        return super.toString() + &quot;[count=&quot; + this.count + &quot;,pos=&quot; + this.pos + &quot;]&quot;;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

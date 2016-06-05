@@ -57,8 +57,8 @@ class ByteType extends PrimitiveTypeBase&lt;ByteBuffer&gt; {
     }
 
     @Override
-    public void getArray(ByteBuffer buffer, Object array, int length) {
-<span class="fc" id="L61">        buffer.get((byte[]) array, 0, length);</span>
+    public void getArray(ByteBuffer buffer, Object array, int offset, int length) {
+<span class="fc" id="L61">        buffer.get((byte[]) array, offset, length);</span>
 <span class="fc" id="L62">    }</span>
 
     @Override
@@ -81,4 +81,4 @@ class ByteType extends PrimitiveTypeBase&lt;ByteBuffer&gt; {
 <span class="fc" id="L81">        return ByteBuffer.wrap((byte[]) array);</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

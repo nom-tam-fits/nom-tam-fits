@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CompressedTableHDU.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.compression.hdu</a> &gt; <span class="el_source">CompressedTableHDU.java</span></div><h1>CompressedTableHDU.java</h1><pre class="source lang-java linenums">package nom.tam.image.compression.hdu;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2016 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import static nom.tam.fits.header.Compression.ZTABLE;
+import nom.tam.fits.BinaryTable;
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.header.Standard;
+import nom.tam.util.Cursor;
+import nom.tam.util.type.PrimitiveTypes;
+
+public class CompressedTableHDU extends BinaryTableHDU {
+
+    /**
+     * Prepare a compressed binary table hdu for the specified binary table. the
+     * tile row size that are specified with -1 are set to the corresponding
+     * roms of the table. The table will be compressed in &quot;rows&quot; that are
+     * defined by the tile size. Next step would be to set the compression
+     * options into the hdu and then compress it.
+     *
+     * @param binaryTableHDU
+     *            the binary table to compress
+     * @param tileRows
+     *            the number of rows that should be compressed per tile.
+     * @param columnCompressionAlgorithms
+     *            the compression algorithms to use for the columns (optional
+     *            default compression will be used if a column has no
+     *            compression specified)
+     * @return the prepared compressed binaary table hdu.
+     * @throws FitsException
+     *             if the binary table could not be used to create a compressed
+     *             binary table.
+     */
+    public static CompressedTableHDU fromBinaryTableHDU(BinaryTableHDU binaryTableHDU, int tileRows, String... columnCompressionAlgorithms) throws FitsException {
+<span class="fc" id="L67">        Header header = new Header();</span>
+<span class="fc" id="L68">        CompressedTableData compressedData = new CompressedTableData();</span>
+<span class="fc" id="L69">        compressedData.setRowsPerTile(binaryTableHDU.getData().getNRows());</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (tileRows &gt; 0) {</span>
+<span class="fc" id="L71">            compressedData.setRowsPerTile(tileRows);</span>
+        }
+<span class="fc" id="L73">        compressedData.fillHeader(header);</span>
+<span class="fc" id="L74">        Cursor&lt;String, HeaderCard&gt; iterator = header.iterator();</span>
+<span class="fc" id="L75">        Cursor&lt;String, HeaderCard&gt; imageIterator = binaryTableHDU.getHeader().iterator();</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        while (imageIterator.hasNext()) {</span>
+<span class="fc" id="L77">            HeaderCard card = imageIterator.next();</span>
+<span class="fc" id="L78">            BackupRestoreUnCompressedHeaderCard.restore(card, iterator);</span>
+<span class="fc" id="L79">        }</span>
+<span class="fc" id="L80">        CompressedTableHDU compressedImageHDU = new CompressedTableHDU(header, compressedData);</span>
+<span class="fc" id="L81">        compressedData.setColumnCompressionAlgorithms(columnCompressionAlgorithms);</span>
+<span class="fc" id="L82">        compressedData.prepareUncompressedData(binaryTableHDU.getData().getData(), binaryTableHDU.getHeader());</span>
+<span class="fc" id="L83">        return compressedImageHDU;</span>
+    }
+
+    /**
+     * Check that this HDU has a valid header for this type.
+     *
+     * @param hdr
+     *            header to check
+     * @return &lt;CODE&gt;true&lt;/CODE&gt; if this HDU has a valid header.
+     */
+    public static boolean isHeader(Header hdr) {
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        if (!System.getProperty(&quot;compressed.table.experimental&quot;, &quot;false&quot;).equals(&quot;true&quot;)) {</span>
+<span class="fc" id="L95">            return false;</span>
+        }
+<span class="fc" id="L97">        return hdr.getBooleanValue(ZTABLE, false);</span>
+    }
+
+    public static CompressedTableData manufactureData(Header hdr) throws FitsException {
+<span class="fc" id="L101">        return new CompressedTableData(hdr);</span>
+    }
+
+    public CompressedTableHDU(Header hdr, CompressedTableData datum) {
+<span class="fc" id="L105">        super(hdr, datum);</span>
+<span class="fc" id="L106">    }</span>
+
+    public BinaryTableHDU asBinaryTableHDU() throws FitsException {
+<span class="fc" id="L109">        Header header = new Header();</span>
+<span class="fc" id="L110">        header.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);</span>
+<span class="fc" id="L111">        header.addValue(Standard.BITPIX, PrimitiveTypes.BYTE.bitPix());</span>
+<span class="fc" id="L112">        header.addValue(Standard.NAXIS, 2);</span>
+<span class="fc" id="L113">        Cursor&lt;String, HeaderCard&gt; headerIterator = header.iterator();</span>
+<span class="fc" id="L114">        Cursor&lt;String, HeaderCard&gt; iterator = getHeader().iterator();</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        while (iterator.hasNext()) {</span>
+<span class="fc" id="L116">            HeaderCard card = iterator.next();</span>
+<span class="fc" id="L117">            BackupRestoreUnCompressedHeaderCard.backup(card, headerIterator);</span>
+<span class="fc" id="L118">        }</span>
+<span class="fc" id="L119">        BinaryTable data = BinaryTableHDU.manufactureData(header);</span>
+<span class="fc" id="L120">        BinaryTableHDU tableHDU = new BinaryTableHDU(header, data);</span>
+<span class="fc" id="L121">        getData().asBinaryTable(data, getHeader(), header);</span>
+<span class="fc" id="L122">        return tableHDU;</span>
+    }
+
+    public CompressedTableHDU compress() throws FitsException {
+<span class="fc" id="L126">        getData().compress(getHeader());</span>
+<span class="fc" id="L127">        return this;</span>
+    }
+
+    @Override
+    public CompressedTableData getData() {
+<span class="fc" id="L132">        return (CompressedTableData) super.getData();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

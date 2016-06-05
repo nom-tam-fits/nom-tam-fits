@@ -38,12 +38,20 @@
  */
 <span class="fc" id="L39">public enum Compression implements IFitsHeader {</span>
     /**
+     * (required keyword) This keyword must have the logical value T. The value
+     * field of this keyword shall be ’T’ to indicate that the FITS binary table
+     * extension contains a compressed BINTABLE, and that logically this
+     * extension should be interpreted as a tile-compressed binary table.
+     */
+<span class="fc" id="L46">    ZTABLE(HDU.ANY, VALUE.LOGICAL, &quot;&quot;),</span>
+
+    /**
      * (required keyword) This keyword must have the logical value T. It
      * indicates that the FITS binary table extension contains a compressed
      * image and that logically this extension should be interpreted as an image
      * and not as a table.
      */
-<span class="fc" id="L46">    ZIMAGE(HDU.ANY, VALUE.LOGICAL, &quot;&quot;),</span>
+<span class="fc" id="L54">    ZIMAGE(HDU.ANY, VALUE.LOGICAL, &quot;&quot;),</span>
 
     /**
      * (required keyword) The value field of this keyword shall contain a
@@ -53,28 +61,28 @@
      * are described in a later section of this document . The value RICE ONE is
      * also reserved as an alias for RICE 1 .
      */
-<span class="fc" id="L56">    ZCMPTYPE(HDU.ANY, VALUE.STRING, &quot;&quot;),</span>
+<span class="fc" id="L64">    ZCMPTYPE(HDU.ANY, VALUE.STRING, &quot;&quot;),</span>
 
     /**
      * (required keyword) The value field of this keyword shall contain an
      * integer that gives the value of the BITPIX keyword in the uncompressed
      * FITS image. 1
      */
-<span class="fc" id="L63">    ZBITPIX(HDU.ANY, VALUE.INTEGER, &quot;&quot;, Standard.BITPIX),</span>
+<span class="fc" id="L71">    ZBITPIX(HDU.ANY, VALUE.INTEGER, &quot;&quot;, Standard.BITPIX),</span>
 
     /**
      * (required keyword) The value field of this keyword shall contain an
      * integer that gives the value of the NAXIS keyword in the uncompressed
      * FITS image.
      */
-<span class="fc" id="L70">    ZNAXIS(HDU.ANY, VALUE.INTEGER, &quot;&quot;, Standard.NAXIS),</span>
+<span class="fc" id="L78">    ZNAXIS(HDU.ANY, VALUE.INTEGER, &quot;&quot;, Standard.NAXIS),</span>
 
     /**
      * (required keywords) The value field of these keywords shall contain a
      * positive integer that gives the value of the NAXISn keywords in the
      * uncompressed FITS image.
      */
-<span class="fc" id="L77">    ZNAXISn(HDU.ANY, VALUE.INTEGER, &quot;&quot;, Standard.NAXISn),</span>
+<span class="fc" id="L85">    ZNAXISn(HDU.ANY, VALUE.INTEGER, &quot;&quot;, Standard.NAXISn),</span>
     /**
      * (optional keywords) The value of these indexed keywords (where n ranges
      * from 1 to ZNAXIS ) shall contain a positive integer representing the
@@ -92,7 +100,7 @@
      * appears in the first row of the table, and the tile containing the last
      * pixel in the image appears in the last row of the binary table.
      */
-<span class="fc" id="L95">    ZTILEn(HDU.ANY, VALUE.INTEGER, &quot;&quot;),</span>
+<span class="fc" id="L103">    ZTILEn(HDU.ANY, VALUE.INTEGER, &quot;&quot;),</span>
 
     /**
      * (optional keywords) These pairs of optional array keywords (where n is an
@@ -103,7 +111,7 @@
      * significant, and may be defined as part of the description of the
      * specific decompression algorithm.
      */
-<span class="fc" id="L106">    ZNAMEn(HDU.ANY, VALUE.STRING, &quot;&quot;),</span>
+<span class="fc" id="L114">    ZNAMEn(HDU.ANY, VALUE.STRING, &quot;&quot;),</span>
     /**
      * (optional keywords) These pairs of optional array keywords (where n is an
      * integer index number starting with 1) supply the name and value,
@@ -113,14 +121,14 @@
      * significant, and may be defined as part of the description of the
      * specific decompression algorithm.
      */
-<span class="fc" id="L116">    ZVALn(HDU.ANY, VALUE.ANY, &quot;&quot;),</span>
+<span class="fc" id="L124">    ZVALn(HDU.ANY, VALUE.ANY, &quot;&quot;),</span>
     /**
      * (optional keyword) Used to record the name of the image compression
      * algorithm that was used to compress the optional null pixel data mask.
      * See the “Preserving undefined pixels with lossy compression” section for
      * more details.
      */
-<span class="fc" id="L123">    ZMASKCMP(HDU.ANY, VALUE.STRING, &quot;&quot;),</span>
+<span class="fc" id="L131">    ZMASKCMP(HDU.ANY, VALUE.STRING, &quot;&quot;),</span>
 
     /**
      *
@@ -132,11 +140,10 @@
      * the original uncompressed image was contained in the primary array of the
      * FITS file.
      */
-<span class="fc" id="L135">    ZSIMPLE(HDU.PRIMARY, VALUE.LOGICAL, &quot;&quot;, Standard.SIMPLE),</span>
+<span class="fc" id="L143">    ZSIMPLE(HDU.PRIMARY, VALUE.LOGICAL, &quot;&quot;, Standard.SIMPLE),</span>
 
     /**
-     *
-     The following optional keyword is defined to store a verbatim copy of the
+     * The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
      * identical copy o f the original FITS file when the image is
@@ -144,11 +151,10 @@
      * the original uncompressed image was contained in in IMAGE extension.
      */
 
-<span class="fc" id="L147">    ZTENSION(HDU.ANY, VALUE.STRING, &quot;&quot;, Standard.XTENSION),</span>
+<span class="fc" id="L154">    ZTENSION(HDU.ANY, VALUE.STRING, &quot;&quot;, Standard.XTENSION),</span>
 
     /**
-     *
-     The following optional keyword is defined to store a verbatim copy of the
+     * The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
      * identical copy of the original FITS file when the image is
@@ -156,11 +162,10 @@
      * the original uncompressed image was contained in the primary array of the
      * FITS file.
      */
-<span class="fc" id="L159">    ZEXTEND(HDU.PRIMARY, VALUE.LOGICAL, &quot;&quot;, Standard.EXTEND),</span>
+<span class="fc" id="L165">    ZEXTEND(HDU.PRIMARY, VALUE.LOGICAL, &quot;&quot;, Standard.EXTEND),</span>
 
     /**
-     *
-     The following optional keyword is defined to store a verbatim copy of the
+     * The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
      * identical copy o f the original FITS file when the image is
@@ -168,30 +173,28 @@
      * the original uncompressed image was contained in the primary array of the
      * FITS file,
      */
-<span class="fc" id="L171">    @Deprecated</span>
+<span class="fc" id="L176">    @Deprecated</span>
     ZBLOCKED(HDU.PRIMARY, VALUE.LOGICAL, &quot;&quot;, Standard.BLOCKED),
 
     /**
-     *
-     The following optional keyword is defined to store a verbatim copy of the
+     * The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
      * identical copy o f the original FITS file when the image is
      * uncompressed.preserves the original PCOUNT keyword.may only be used if
      * the original uncompressed image was contained in in IMAGE extension.
      */
-<span class="fc" id="L183">    ZPCOUNT(HDU.EXTENSION, VALUE.INTEGER, &quot;&quot;, Standard.PCOUNT),</span>
+<span class="fc" id="L187">    ZPCOUNT(HDU.EXTENSION, VALUE.INTEGER, &quot;&quot;, Standard.PCOUNT),</span>
 
     /**
-     *
-     The following optional keyword is defined to store a verbatim copy of the
+     * The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
      * identical copy o f the original FITS file when the image is
      * uncompressed.preserves the original GCOUNT keyword.may only be used if
      * the original uncompressed image was contained in in IMAGE extension.
      */
-<span class="fc" id="L194">    ZGCOUNT(HDU.EXTENSION, VALUE.INTEGER, &quot;&quot;, Standard.GCOUNT),</span>
+<span class="fc" id="L197">    ZGCOUNT(HDU.EXTENSION, VALUE.INTEGER, &quot;&quot;, Standard.GCOUNT),</span>
 
     /**
      *
@@ -201,7 +204,7 @@
      * identical copy o f the original FITS file when the image is
      * uncompressed.preserves the original CHECKSUM keyword.
      */
-<span class="fc" id="L204">    ZHECKSUM(HDU.ANY, VALUE.STRING, &quot;&quot;, Checksum.CHECKSUM),</span>
+<span class="fc" id="L207">    ZHECKSUM(HDU.ANY, VALUE.STRING, &quot;&quot;, Checksum.CHECKSUM),</span>
 
     /**
      *
@@ -211,14 +214,14 @@
      * identical copy o f the original FITS file when the image is
      * uncompressed.preserves the original DATASUM
      */
-<span class="fc" id="L214">    ZDATASUM(HDU.ANY, VALUE.STRING, &quot;&quot;, Checksum.DATASUM),</span>
+<span class="fc" id="L217">    ZDATASUM(HDU.ANY, VALUE.STRING, &quot;&quot;, Checksum.DATASUM),</span>
 
     /**
      * (optional keyword) This keyword records the name of the algorithm that
      * was used to quantize floating-point image pixels into integer values
      * which are then passed to the compression algorithm.
      */
-<span class="fc" id="L221">    ZQUANTIZ(HDU.ANY, VALUE.STRING, &quot;&quot;),</span>
+<span class="fc" id="L224">    ZQUANTIZ(HDU.ANY, VALUE.STRING, &quot;&quot;),</span>
 
     /**
      * (optional keyword) The value field of this keyword shall contain an
@@ -226,7 +229,7 @@
      * was used when quantizing the floating-point pixel values. The value may
      * range from 1 to 100.00, inclusive.
      */
-<span class="fc" id="L229">    ZDITHER0(HDU.ANY, VALUE.INTEGER, &quot;&quot;),</span>
+<span class="fc" id="L232">    ZDITHER0(HDU.ANY, VALUE.INTEGER, &quot;&quot;),</span>
 
     /**
      * When using the quantization method to compress floating-point images,
@@ -236,7 +239,33 @@
      * The recommended value for ZBLANK is -2147483648 (the largest negative
      * 32-bit integer).
      */
-<span class="fc" id="L239">    ZBLANK(HDU.ANY, VALUE.INTEGER, &quot;&quot;);</span>
+<span class="fc" id="L242">    ZBLANK(HDU.ANY, VALUE.INTEGER, &quot;&quot;),</span>
+
+    /**
+     * The value field of this keyword shall contain an integer representing the
+     * number of rows of data from the original binary table that are contained
+     * in each tile of the compressed table. The number of rows in the last tile
+     * may be less than in the previous tiles. Note that if the entire table is
+     * compressed as a single tile, then the compressed table will only contains
+     * a single row, and the ZTILELEN and ZNAXIS2 keywords will have the same
+     * value.
+     */
+<span class="fc" id="L253">    ZTILELEN(HDU.ANY, VALUE.INTEGER, &quot;&quot;),</span>
+
+    /**
+     * The value field of these keywords shall contain the character string
+     * values of the corresponding TFORMn keywords that defines the data type of
+     * column n in the original uncompressed FITS table.
+     */
+<span class="fc" id="L260">    ZFORMn(HDU.ANY, VALUE.STRING, &quot;&quot;, Standard.TFORMn),</span>
+
+    /**
+     * The value field of these keywords shall contain a charac- ter string
+     * giving the mnemonic name of the algorithm that was used to compress
+     * column n of the table. The current allowed values are GZIP_1, GZIP_2, and
+     * RICE_1, and the corresponding algorithms
+     */
+<span class="fc" id="L268">    ZCTYPn(HDU.ANY, VALUE.STRING, &quot;&quot;);</span>
 
     /**
      * This is the simplest option in which no dithering is performed. The
@@ -474,48 +503,48 @@
     private final IFitsHeader uncompressedKey;
 
     Compression(HDU hdu, VALUE valueType, String comment) {
-<span class="fc" id="L477">        this(hdu, valueType, comment, null);</span>
-<span class="fc" id="L478">    }</span>
+<span class="fc" id="L506">        this(hdu, valueType, comment, null);</span>
+<span class="fc" id="L507">    }</span>
 
-<span class="fc" id="L480">    Compression(HDU hdu, VALUE valueType, String comment, IFitsHeader uncompressedKey) {</span>
-<span class="fc" id="L481">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.HEASARC, hdu, valueType, comment);</span>
-<span class="fc" id="L482">        this.uncompressedKey = uncompressedKey;</span>
-<span class="fc" id="L483">    }</span>
+<span class="fc" id="L509">    Compression(HDU hdu, VALUE valueType, String comment, IFitsHeader uncompressedKey) {</span>
+<span class="fc" id="L510">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.HEASARC, hdu, valueType, comment);</span>
+<span class="fc" id="L511">        this.uncompressedKey = uncompressedKey;</span>
+<span class="fc" id="L512">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L487">        return this.key.comment();</span>
+<span class="fc" id="L516">        return this.key.comment();</span>
     }
 
     public IFitsHeader getUncompressedKey() {
-<span class="fc" id="L491">        return this.uncompressedKey;</span>
+<span class="fc" id="L520">        return this.uncompressedKey;</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L496">        return this.key.hdu();</span>
+<span class="fc" id="L525">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L501">        return this.key.key();</span>
+<span class="fc" id="L530">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L506">        return this.key.n(number);</span>
+<span class="fc" id="L535">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L511">        return this.key.status();</span>
+<span class="fc" id="L540">        return this.key.status();</span>
     }
 
     @Override
     @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L517">        return this.key.valueType();</span>
+<span class="fc" id="L546">        return this.key.valueType();</span>
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

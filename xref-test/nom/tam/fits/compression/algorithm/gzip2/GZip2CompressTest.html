@@ -50,7 +50,7 @@
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> java.nio.ShortBuffer;
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> java.util.zip.GZIPOutputStream;
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ByteGZip2Compress;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ByteGZip2Compressor;
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.IntGZip2Compressor;
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ShortGZip2Compressor;
@@ -66,7 +66,7 @@
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>      @Test(expected = IllegalStateException.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testByteCompressIOException() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">new</strong> ByteGZip2Compress() {
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">new</strong> ByteGZip2Compressor() {
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>              @Override
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>              <strong class="jxr_keyword">protected</strong> GZIPOutputStream createGZipOutputStream(<strong class="jxr_keyword">int</strong> length, ByteBuffer compressed) <strong class="jxr_keyword">throws</strong> IOException {
@@ -98,7 +98,7 @@
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>      @Test(expected = NullPointerException.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testByteNullVariantCompress() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">new</strong> ByteGZip2Compress() {
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">new</strong> ByteGZip2Compressor() {
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>              <strong class="jxr_keyword">protected</strong> java.util.zip.GZIPInputStream createGZipInputStream(ByteBuffer buffer) <strong class="jxr_keyword">throws</strong> java.io.IOException {
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>                  <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
@@ -113,7 +113,7 @@
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> 
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>     @Test(expected = NullPointerException.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L107" href="#L107">107</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testByteNullVariantDecompress() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L108" href="#L108">108</a>         <strong class="jxr_keyword">new</strong> ByteGZip2Compress() {
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>         <strong class="jxr_keyword">new</strong> ByteGZip2Compressor() {
 <a class="jxr_linenumber" name="L109" href="#L109">109</a> 
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>             <strong class="jxr_keyword">protected</strong> java.util.zip.GZIPInputStream createGZipInputStream(ByteBuffer buffer) <strong class="jxr_keyword">throws</strong> java.io.IOException {
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
@@ -129,13 +129,13 @@
 <a class="jxr_linenumber" name="L121" href="#L121">121</a>     @Test(expected = BufferOverflowException.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L122" href="#L122">122</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testByteGzipCompressFailures1() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>         byte[] byteArray = <strong class="jxr_keyword">new</strong> byte[100];
-<a class="jxr_linenumber" name="L124" href="#L124">124</a>         <strong class="jxr_keyword">new</strong> ByteGZip2Compress().compress(ByteBuffer.wrap(byteArray), ByteBuffer.wrap(<strong class="jxr_keyword">new</strong> byte[0]));
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>         <strong class="jxr_keyword">new</strong> ByteGZip2Compressor().compress(ByteBuffer.wrap(byteArray), ByteBuffer.wrap(<strong class="jxr_keyword">new</strong> byte[0]));
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>     }
 <a class="jxr_linenumber" name="L126" href="#L126">126</a> 
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>     @Test(expected = IllegalStateException.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testByteGzipCompressFailures2() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>         byte[] byteArray = <strong class="jxr_keyword">new</strong> byte[100];
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>         <strong class="jxr_keyword">new</strong> ByteGZip2Compress().decompress(ByteBuffer.wrap(<strong class="jxr_keyword">new</strong> byte[1]), ByteBuffer.wrap(byteArray));
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>         <strong class="jxr_keyword">new</strong> ByteGZip2Compressor().decompress(ByteBuffer.wrap(<strong class="jxr_keyword">new</strong> byte[1]), ByteBuffer.wrap(byteArray));
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>     }
 <a class="jxr_linenumber" name="L132" href="#L132">132</a> 
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>     @Test(expected = NullPointerException.<strong class="jxr_keyword">class</strong>)
@@ -234,7 +234,7 @@
 <a class="jxr_linenumber" name="L226" href="#L226">226</a> 
 <a class="jxr_linenumber" name="L227" href="#L227">227</a>             ByteBuffer compressed = ByteBuffer.wrap(<strong class="jxr_keyword">new</strong> byte[bytes.length]);
 <a class="jxr_linenumber" name="L228" href="#L228">228</a> 
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>             <strong class="jxr_keyword">new</strong> ByteGZip2Compress().compress(byteArray, compressed);
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>             <strong class="jxr_keyword">new</strong> ByteGZip2Compressor().compress(byteArray, compressed);
 <a class="jxr_linenumber" name="L230" href="#L230">230</a> 
 <a class="jxr_linenumber" name="L231" href="#L231">231</a>             byte[] compressedArray = <strong class="jxr_keyword">new</strong> byte[compressed.position()];
 <a class="jxr_linenumber" name="L232" href="#L232">232</a>             compressed.position(0);
@@ -243,12 +243,12 @@
 <a class="jxr_linenumber" name="L235" href="#L235">235</a> 
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>             byte[] decompressedBytes = <strong class="jxr_keyword">new</strong> byte[bytes.length];
 <a class="jxr_linenumber" name="L237" href="#L237">237</a>             ByteBuffer decompressedArray = ByteBuffer.wrap(decompressedBytes);
-<a class="jxr_linenumber" name="L238" href="#L238">238</a>             <strong class="jxr_keyword">new</strong> ByteGZip2Compress().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>             <strong class="jxr_keyword">new</strong> ByteGZip2Compressor().decompress(ByteBuffer.wrap(expectedBytes), decompressedArray);
 <a class="jxr_linenumber" name="L239" href="#L239">239</a>             Assert.assertArrayEquals(bytes, decompressedBytes);
 <a class="jxr_linenumber" name="L240" href="#L240">240</a> 
 <a class="jxr_linenumber" name="L241" href="#L241">241</a>             compressed.rewind();
 <a class="jxr_linenumber" name="L242" href="#L242">242</a>             decompressedArray.rewind();
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>             <strong class="jxr_keyword">new</strong> ByteGZip2Compress().decompress(compressed, decompressedArray);
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>             <strong class="jxr_keyword">new</strong> ByteGZip2Compressor().decompress(compressed, decompressedArray);
 <a class="jxr_linenumber" name="L244" href="#L244">244</a>             Assert.assertArrayEquals(bytes, decompressedBytes);
 <a class="jxr_linenumber" name="L245" href="#L245">245</a>         } <strong class="jxr_keyword">finally</strong> {
 <a class="jxr_linenumber" name="L246" href="#L246">246</a>             SaveClose.close(expected);

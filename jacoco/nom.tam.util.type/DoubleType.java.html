@@ -60,8 +60,8 @@ class DoubleType extends PrimitiveTypeBase&lt;DoubleBuffer&gt; {
     }
 
     @Override
-    public void getArray(DoubleBuffer buffer, Object array, int length) {
-<span class="fc" id="L64">        buffer.get((double[]) array, 0, length);</span>
+    public void getArray(DoubleBuffer buffer, Object array, int offset, int length) {
+<span class="fc" id="L64">        buffer.get((double[]) array, offset, length);</span>
 <span class="fc" id="L65">    }</span>
 
     @Override
@@ -84,4 +84,4 @@ class DoubleType extends PrimitiveTypeBase&lt;DoubleBuffer&gt; {
 <span class="fc" id="L84">        return DoubleBuffer.wrap((double[]) array);</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

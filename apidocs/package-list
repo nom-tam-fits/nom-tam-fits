@@ -19,6 +19,7 @@ nom.tam.fits.header.extra
 nom.tam.fits.header.hierarch
 nom.tam.fits.utilities
 nom.tam.image
+nom.tam.image.compression.bintable
 nom.tam.image.compression.hdu
 nom.tam.image.compression.tile
 nom.tam.image.compression.tile.mask

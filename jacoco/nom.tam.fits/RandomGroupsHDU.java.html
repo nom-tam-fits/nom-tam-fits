@@ -39,9 +39,9 @@ import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.XTENSION;
+import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 
 import java.io.PrintStream;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.util.ArrayFuncs;
@@ -60,10 +60,10 @@ public class RandomGroupsHDU extends BasicHDU&lt;RandomGroupsData&gt; {
 <span class="fc" id="L60">    private static final Logger LOG = Logger.getLogger(RandomGroupsHDU.class.getName());</span>
 
     public static RandomGroupsData encapsulate(Object o) throws FitsException {
-<span class="pc bpc" id="L63" title="1 of 2 branches missed.">        if (o instanceof Object[][]) {</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (o instanceof Object[][]) {</span>
 <span class="fc" id="L64">            return new RandomGroupsData((Object[][]) o);</span>
         } else {
-<span class="nc" id="L66">            throw new FitsException(&quot;Attempt to encapsulate invalid data in Random Group&quot;);</span>
+<span class="fc" id="L66">            throw new FitsException(&quot;Attempt to encapsulate invalid data in Random Group&quot;);</span>
         }
     }
 
@@ -76,7 +76,7 @@ public class RandomGroupsHDU extends BasicHDU&lt;RandomGroupsData&gt; {
 
         Class&lt;?&gt; baseClass;
 
-<span class="pc bpc" id="L79" title="1 of 7 branches missed.">        switch (bitpix) {</span>
+<span class="fc bfc" id="L79" title="All 7 branches covered.">        switch (bitpix) {</span>
             case BasicHDU.BITPIX_BYTE:
 <span class="fc" id="L81">                baseClass = Byte.TYPE;</span>
 <span class="fc" id="L82">                break;</span>
@@ -96,7 +96,7 @@ public class RandomGroupsHDU extends BasicHDU&lt;RandomGroupsData&gt; {
 <span class="fc" id="L96">                baseClass = Double.TYPE;</span>
 <span class="fc" id="L97">                break;</span>
             default:
-<span class="nc" id="L99">                throw new FitsException(&quot;Invalid BITPIX:&quot; + bitpix);</span>
+<span class="fc" id="L99">                throw new FitsException(&quot;Invalid BITPIX:&quot; + bitpix);</span>
         }
 
         // Note that we have to invert the order of the axes
@@ -106,8 +106,8 @@ public class RandomGroupsHDU extends BasicHDU&lt;RandomGroupsData&gt; {
 
 <span class="fc bfc" id="L107" title="All 2 branches covered.">        for (int i = 0; i &lt; ndim; i += 1) {</span>
 <span class="fc" id="L108">            long cdim = h.getIntValue(NAXISn.n(i + 2), 0);</span>
-<span class="pc bpc" id="L109" title="1 of 2 branches missed.">            if (cdim &lt; 0) {</span>
-<span class="nc" id="L110">                throw new FitsException(&quot;Invalid array dimension:&quot; + cdim);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            if (cdim &lt; 0) {</span>
+<span class="fc" id="L110">                throw new FitsException(&quot;Invalid array dimension:&quot; + cdim);</span>
             }
 <span class="fc" id="L112">            dims[ndim - i - 1] = (int) cdim;</span>
         }
@@ -156,8 +156,8 @@ public class RandomGroupsHDU extends BasicHDU&lt;RandomGroupsData&gt; {
 
 <span class="fc" id="L157">        String xtension = hdr.getStringValue(XTENSION);</span>
 <span class="fc bfc" id="L158" title="All 2 branches covered.">        xtension = xtension == null ? &quot;&quot; : xtension.trim();</span>
-<span class="pc bpc" id="L159" title="1 of 2 branches missed.">        if (&quot;IMAGE&quot;.equals(xtension)) {</span>
-<span class="nc" id="L160">            return hdr.getBooleanValue(GROUPS);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (XTENSION_IMAGE.equals(xtension)) {</span>
+<span class="fc" id="L160">            return hdr.getBooleanValue(GROUPS);</span>
         }
 
 <span class="fc" id="L163">        return false;</span>
@@ -170,22 +170,22 @@ public class RandomGroupsHDU extends BasicHDU&lt;RandomGroupsData&gt; {
      * @throws FitsException
      *             if the operation failed
      */
-    public static Data manufactureData(Header header) throws FitsException {
+    public static RandomGroupsData manufactureData(Header header) throws FitsException {
 
 <span class="fc" id="L175">        int gcount = header.getIntValue(GCOUNT, -1);</span>
 <span class="fc" id="L176">        int pcount = header.getIntValue(PCOUNT, -1);</span>
 
-<span class="pc bpc" id="L178" title="5 of 10 branches missed.">        if (!header.getBooleanValue(GROUPS) || header.getIntValue(NAXISn.n(1), -1) != 0 || gcount &lt; 0 || pcount &lt; 0 || header.getIntValue(NAXIS) &lt; 2) {</span>
-<span class="nc" id="L179">            throw new FitsException(&quot;Invalid Random Groups Parameters&quot;);</span>
+<span class="pc bpc" id="L178" title="4 of 10 branches missed.">        if (!header.getBooleanValue(GROUPS) || header.getIntValue(NAXISn.n(1), -1) != 0 || gcount &lt; 0 || pcount &lt; 0 || header.getIntValue(NAXIS) &lt; 2) {</span>
+<span class="fc" id="L179">            throw new FitsException(&quot;Invalid Random Groups Parameters&quot;);</span>
         }
 
         // Allocate the object.
         Object[][] dataArray;
 
-<span class="pc bpc" id="L185" title="1 of 2 branches missed.">        if (gcount &gt; 0) {</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">        if (gcount &gt; 0) {</span>
 <span class="fc" id="L186">            dataArray = new Object[gcount][2];</span>
         } else {
-<span class="nc" id="L188">            dataArray = new Object[0][];</span>
+<span class="fc" id="L188">            dataArray = new Object[0][];</span>
         }
 
 <span class="fc" id="L191">        Object[] sampleRow = generateSampleRow(header);</span>
@@ -206,8 +206,8 @@ public class RandomGroupsHDU extends BasicHDU&lt;RandomGroupsData&gt; {
      */
     static Header manufactureHeader(Data d) throws FitsException {
 
-<span class="pc bpc" id="L209" title="1 of 2 branches missed.">        if (d == null) {</span>
-<span class="nc" id="L210">            throw new FitsException(&quot;Attempt to create null Random Groups data&quot;);</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">        if (d == null) {</span>
+<span class="fc" id="L210">            throw new FitsException(&quot;Attempt to create null Random Groups data&quot;);</span>
         }
 <span class="fc" id="L212">        Header h = new Header();</span>
 <span class="fc" id="L213">        d.fillHeader(h);</span>
@@ -236,7 +236,7 @@ public class RandomGroupsHDU extends BasicHDU&lt;RandomGroupsData&gt; {
     public void info(PrintStream stream) {
 
 <span class="fc" id="L238">        stream.println(&quot;Random Groups HDU&quot;);</span>
-<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        if (this.myHeader != null) {</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        if (this.myHeader != null) {</span>
 <span class="fc" id="L240">            stream.println(&quot;   HeaderInformation:&quot;);</span>
 <span class="fc" id="L241">            stream.println(&quot;     Ngroups:&quot; + this.myHeader.getIntValue(GCOUNT));</span>
 <span class="fc" id="L242">            stream.println(&quot;     Npar:   &quot; + this.myHeader.getIntValue(PCOUNT));</span>
@@ -246,7 +246,7 @@ public class RandomGroupsHDU extends BasicHDU&lt;RandomGroupsData&gt; {
 <span class="fc" id="L246">                stream.println(&quot;      NAXIS&quot; + (i + 1) + &quot;= &quot; + this.myHeader.getIntValue(NAXISn.n(i + 1)));</span>
             }
         } else {
-<span class="nc" id="L249">            stream.println(&quot;    No Header Information&quot;);</span>
+<span class="fc" id="L249">            stream.println(&quot;    No Header Information&quot;);</span>
         }
 
 <span class="fc" id="L252">        Object[][] data = null;</span>
@@ -254,8 +254,8 @@ public class RandomGroupsHDU extends BasicHDU&lt;RandomGroupsData&gt; {
 <span class="fc" id="L254">            data = (Object[][]) this.myData.getData();</span>
         }
 
-<span class="pc bpc" id="L257" title="3 of 6 branches missed.">        if (data == null || data.length &lt; 1 || data[0].length != 2) {</span>
-<span class="nc" id="L258">            stream.println(&quot;    Invalid/unreadable data&quot;);</span>
+<span class="pc bpc" id="L257" title="2 of 6 branches missed.">        if (data == null || data.length &lt; 1 || data[0].length != 2) {</span>
+<span class="fc" id="L258">            stream.println(&quot;    Invalid/unreadable data&quot;);</span>
         } else {
 <span class="fc" id="L260">            stream.println(&quot;    Number of groups:&quot; + data.length);</span>
 <span class="fc" id="L261">            stream.println(&quot;    Parameters: &quot; + ArrayFuncs.arrayDescription(data[0][0]));</span>
@@ -269,7 +269,7 @@ public class RandomGroupsHDU extends BasicHDU&lt;RandomGroupsData&gt; {
      * @return &lt;CODE&gt;true&lt;/CODE&gt; if this HDU has a valid header.
      */
     public boolean isHeader() {
-<span class="nc" id="L272">        return isHeader(this.myHeader);</span>
+<span class="fc" id="L272">        return isHeader(this.myHeader);</span>
     }
 
     /**
@@ -281,17 +281,13 @@ public class RandomGroupsHDU extends BasicHDU&lt;RandomGroupsData&gt; {
      *            &lt;code&gt;true&lt;/code&gt; if the header should be primary
      */
     @Override
-    protected void setPrimaryHDU(boolean status) {
-        try {
-<span class="fc" id="L286">            super.setPrimaryHDU(status);</span>
-<span class="nc" id="L287">        } catch (FitsException e) {</span>
-<span class="nc" id="L288">            LOG.log(Level.SEVERE, &quot;Unreachable catch in RandomGroupsHDU&quot;, e);</span>
-<span class="fc" id="L289">        }</span>
-<span class="pc bpc" id="L290" title="1 of 2 branches missed.">        if (status) {</span>
-<span class="fc" id="L291">            this.myHeader.setSimple(true);</span>
+    protected void setPrimaryHDU(boolean status) throws FitsException {
+<span class="fc" id="L285">        super.setPrimaryHDU(status);</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">        if (status) {</span>
+<span class="fc" id="L287">            this.myHeader.setSimple(true);</span>
         } else {
-<span class="nc" id="L293">            this.myHeader.setXtension(&quot;IMAGE&quot;);</span>
+<span class="fc" id="L289">            this.myHeader.setXtension(XTENSION_IMAGE);</span>
         }
-<span class="fc" id="L295">    }</span>
+<span class="fc" id="L291">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

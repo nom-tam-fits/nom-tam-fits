@@ -44,6 +44,7 @@ import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.XTENSION;
+import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
 
 import java.io.EOFException;
@@ -95,7 +96,7 @@ public class Header implements FitsElement {
 
     private static final int MAX_CARDS_PER_HEADER = FitsFactory.FITS_BLOCK_SIZE / HeaderCard.FITS_HEADER_CARD_SIZE;
 
-<span class="fc" id="L98">    private static final Logger LOG = Logger.getLogger(Header.class.getName());</span>
+<span class="fc" id="L99">    private static final Logger LOG = Logger.getLogger(Header.class.getName());</span>
 
     /**
      * Create a header by reading the information from the input stream.
@@ -110,19 +111,19 @@ public class Header implements FitsElement {
      *             if the header could not be read.
      */
     public static Header readHeader(ArrayDataInput dis) throws TruncatedFileException, IOException {
-<span class="fc" id="L113">        Header myHeader = new Header();</span>
+<span class="fc" id="L114">        Header myHeader = new Header();</span>
         try {
-<span class="fc" id="L115">            myHeader.read(dis);</span>
-<span class="fc" id="L116">        } catch (EOFException e) {</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">            if (e.getCause() instanceof TruncatedFileException) {</span>
-<span class="fc" id="L118">                throw e;</span>
+<span class="fc" id="L116">            myHeader.read(dis);</span>
+<span class="fc" id="L117">        } catch (EOFException e) {</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            if (e.getCause() instanceof TruncatedFileException) {</span>
+<span class="fc" id="L119">                throw e;</span>
             }
             // An EOF exception is thrown only if the EOF was detected
             // when reading the first card. In this case we want
             // to return a null.
-<span class="fc" id="L123">            return null;</span>
-<span class="fc" id="L124">        }</span>
-<span class="fc" id="L125">        return myHeader;</span>
+<span class="fc" id="L124">            return null;</span>
+<span class="fc" id="L125">        }</span>
+<span class="fc" id="L126">        return myHeader;</span>
     }
 
     /**
@@ -133,21 +134,21 @@ public class Header implements FitsElement {
      */
     @Deprecated
     public static void setLongStringsEnabled(boolean flag) {
-<span class="fc" id="L136">        FitsFactory.setLongStringsEnabled(flag);</span>
-<span class="fc" id="L137">    }</span>
+<span class="fc" id="L137">        FitsFactory.setLongStringsEnabled(flag);</span>
+<span class="fc" id="L138">    }</span>
 
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
      */
-<span class="fc" id="L142">    private final HashedList&lt;HeaderCard&gt; cards = new HashedList&lt;HeaderCard&gt;();</span>
+<span class="fc" id="L143">    private final HashedList&lt;HeaderCard&gt; cards = new HashedList&lt;HeaderCard&gt;();</span>
 
     /**
      * This iterator allows one to run through the list.
      */
-<span class="fc" id="L147">    private Cursor&lt;String, HeaderCard&gt; iter = this.cards.iterator(0);</span>
+<span class="fc" id="L148">    private Cursor&lt;String, HeaderCard&gt; iter = this.cards.iterator(0);</span>
 
     /** Offset of this Header in the FITS file */
-<span class="fc" id="L150">    private long fileOffset = -1;</span>
+<span class="fc" id="L151">    private long fileOffset = -1;</span>
 
     private List&lt;HeaderCard&gt; duplicates;
 
@@ -160,12 +161,12 @@ public class Header implements FitsElement {
      * hash removes duplicate keys the internal size may be smaller. Added by
      * Booth Hartley (IPAC/Caltech).
      */
-<span class="fc" id="L163">    private int originalCardCount = 0; // RBH ADDED</span>
+<span class="fc" id="L164">    private int originalCardCount = 0; // RBH ADDED</span>
 
     /** Create an empty header */
     public Header() {
-<span class="fc" id="L167">        super();</span>
-<span class="fc" id="L168">    }</span>
+<span class="fc" id="L168">        super();</span>
+<span class="fc" id="L169">    }</span>
 
     /**
      * Create a header and populate it from the input stream
@@ -177,9 +178,9 @@ public class Header implements FitsElement {
      * @throws TruncatedFileException
      *             if the stream ended prematurely
      */
-<span class="fc" id="L180">    public Header(ArrayDataInput is) throws TruncatedFileException, IOException {</span>
-<span class="fc" id="L181">        read(is);</span>
-<span class="fc" id="L182">    }</span>
+<span class="fc" id="L181">    public Header(ArrayDataInput is) throws TruncatedFileException, IOException {</span>
+<span class="fc" id="L182">        read(is);</span>
+<span class="fc" id="L183">    }</span>
 
     /**
      * Create a header which points to the given data object.
@@ -189,9 +190,9 @@ public class Header implements FitsElement {
      * @throws FitsException
      *             if the data was not valid for this header.
      */
-<span class="fc" id="L192">    public Header(Data o) throws FitsException {</span>
-<span class="fc" id="L193">        o.fillHeader(this);</span>
-<span class="fc" id="L194">    }</span>
+<span class="fc" id="L193">    public Header(Data o) throws FitsException {</span>
+<span class="fc" id="L194">        o.fillHeader(this);</span>
+<span class="fc" id="L195">    }</span>
 
     /**
      * Create a header and initialize it with a vector of strings.
@@ -199,26 +200,26 @@ public class Header implements FitsElement {
      * @param newCards
      *            Card images to be placed in the header.
      */
-<span class="fc" id="L202">    public Header(String[] newCards) {</span>
-<span class="fc bfc" id="L203" title="All 2 branches covered.">        for (String newCard : newCards) {</span>
-<span class="fc" id="L204">            this.cards.add(HeaderCard.create(newCard));</span>
+<span class="fc" id="L203">    public Header(String[] newCards) {</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">        for (String newCard : newCards) {</span>
+<span class="fc" id="L205">            this.cards.add(HeaderCard.create(newCard));</span>
         }
-<span class="fc" id="L206">    }</span>
+<span class="fc" id="L207">    }</span>
 
     private void addDuplicate(HeaderCard dup) {
-<span class="fc bfc" id="L209" title="All 6 branches covered.">        if (!COMMENT.key().equals(dup.getKey()) &amp;&amp; !HISTORY.key().equals(dup.getKey()) &amp;&amp; !dup.getKey().trim().isEmpty()) {</span>
-<span class="fc" id="L210">            LOG.log(Level.WARNING, &quot;Multiple occurrences of key:&quot; + dup.getKey());</span>
-<span class="fc bfc" id="L211" title="All 2 branches covered.">            if (this.duplicates == null) {</span>
-<span class="fc" id="L212">                this.duplicates = new ArrayList&lt;HeaderCard&gt;();</span>
+<span class="fc bfc" id="L210" title="All 6 branches covered.">        if (!COMMENT.key().equals(dup.getKey()) &amp;&amp; !HISTORY.key().equals(dup.getKey()) &amp;&amp; !dup.getKey().trim().isEmpty()) {</span>
+<span class="fc" id="L211">            LOG.log(Level.WARNING, &quot;Multiple occurrences of key:&quot; + dup.getKey());</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">            if (this.duplicates == null) {</span>
+<span class="fc" id="L213">                this.duplicates = new ArrayList&lt;HeaderCard&gt;();</span>
             }
-<span class="fc" id="L214">            this.duplicates.add(dup);</span>
+<span class="fc" id="L215">            this.duplicates.add(dup);</span>
         }
-<span class="fc" id="L216">    }</span>
+<span class="fc" id="L217">    }</span>
 
     private void addHeaderCard(String key, HeaderCard card) {
-<span class="fc" id="L219">        deleteKey(key);</span>
-<span class="fc" id="L220">        this.iter.add(card);</span>
-<span class="fc" id="L221">    }</span>
+<span class="fc" id="L220">        deleteKey(key);</span>
+<span class="fc" id="L221">        this.iter.add(card);</span>
+<span class="fc" id="L222">    }</span>
 
     /**
      * Add a card image to the header.
@@ -227,10 +228,10 @@ public class Header implements FitsElement {
      *            The card to be added.
      */
     public void addLine(HeaderCard fcard) {
-<span class="pc bpc" id="L230" title="1 of 2 branches missed.">        if (fcard != null) {</span>
-<span class="fc" id="L231">            this.iter.add(fcard);</span>
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">        if (fcard != null) {</span>
+<span class="fc" id="L232">            this.iter.add(fcard);</span>
         }
-<span class="fc" id="L233">    }</span>
+<span class="fc" id="L234">    }</span>
 
     /**
      * Add or replace a key with the given boolean value and comment.
@@ -243,8 +244,8 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(IFitsHeader key, boolean val) throws HeaderCardException {
-<span class="fc" id="L246">        addValue(key.key(), val, key.comment());</span>
-<span class="fc" id="L247">    }</span>
+<span class="fc" id="L247">        addValue(key.key(), val, key.comment());</span>
+<span class="fc" id="L248">    }</span>
 
     /**
      * Add or replace a key with the given double value and comment. Note that
@@ -258,8 +259,8 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(IFitsHeader key, double val) throws HeaderCardException {
-<span class="fc" id="L261">        addValue(key.key(), val, key.comment());</span>
-<span class="fc" id="L262">    }</span>
+<span class="fc" id="L262">        addValue(key.key(), val, key.comment());</span>
+<span class="fc" id="L263">    }</span>
 
     /**
      * Add or replace a key with the given long value and comment. Note that
@@ -273,8 +274,8 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(IFitsHeader key, int val) throws HeaderCardException {
-<span class="fc" id="L276">        addValue(key.key(), val, key.comment());</span>
-<span class="fc" id="L277">    }</span>
+<span class="fc" id="L277">        addValue(key.key(), val, key.comment());</span>
+<span class="fc" id="L278">    }</span>
 
     /**
      * Add or replace a key with the given long value and comment. Note that
@@ -288,8 +289,8 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(IFitsHeader key, long val) throws HeaderCardException {
-<span class="fc" id="L291">        addValue(key.key(), val, key.comment());</span>
-<span class="fc" id="L292">    }</span>
+<span class="fc" id="L292">        addValue(key.key(), val, key.comment());</span>
+<span class="fc" id="L293">    }</span>
 
     /**
      * Add or replace a key with the given string value and comment.
@@ -302,8 +303,8 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(IFitsHeader key, String val) throws HeaderCardException {
-<span class="fc" id="L305">        addValue(key.key(), val, key.comment());</span>
-<span class="fc" id="L306">    }</span>
+<span class="fc" id="L306">        addValue(key.key(), val, key.comment());</span>
+<span class="fc" id="L307">    }</span>
 
     /**
      * Add or replace a key with the given bigdecimal value and comment. Note
@@ -319,8 +320,8 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, BigDecimal val, String comment) throws HeaderCardException {
-<span class="fc" id="L322">        addHeaderCard(key, new HeaderCard(key, val, comment));</span>
-<span class="fc" id="L323">    }</span>
+<span class="fc" id="L323">        addHeaderCard(key, new HeaderCard(key, val, comment));</span>
+<span class="fc" id="L324">    }</span>
 
     /**
      * Add or replace a key with the given BigInteger value and comment. Note
@@ -336,8 +337,8 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, BigInteger val, String comment) throws HeaderCardException {
-<span class="fc" id="L339">        addHeaderCard(key, new HeaderCard(key, val, comment));</span>
-<span class="fc" id="L340">    }</span>
+<span class="fc" id="L340">        addHeaderCard(key, new HeaderCard(key, val, comment));</span>
+<span class="fc" id="L341">    }</span>
 
     /**
      * Add or replace a key with the given boolean value and comment.
@@ -352,8 +353,8 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
-<span class="fc" id="L355">        addHeaderCard(key, new HeaderCard(key, val, comment));</span>
-<span class="fc" id="L356">    }</span>
+<span class="fc" id="L356">        addHeaderCard(key, new HeaderCard(key, val, comment));</span>
+<span class="fc" id="L357">    }</span>
 
     /**
      * Add or replace a key with the given double value and comment. Note that
@@ -369,8 +370,27 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, double val, String comment) throws HeaderCardException {
-<span class="fc" id="L372">        addHeaderCard(key, new HeaderCard(key, val, comment));</span>
-<span class="fc" id="L373">    }</span>
+<span class="fc" id="L373">        addHeaderCard(key, new HeaderCard(key, val, comment));</span>
+<span class="fc" id="L374">    }</span>
+
+    /**
+     * Add or replace a key with the given double value and comment. Note that
+     * float values will be promoted to doubles.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The double value.
+     * @param precision
+     *            The fixed number of decimal places to show.
+     * @param comment
+     *            A comment to append to the card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(String key, double val, int precision, String comment) throws HeaderCardException {
+<span class="fc" id="L392">        this.iter.add(new HeaderCard(key, val, precision, comment));</span>
+<span class="fc" id="L393">    }</span>
 
     /**
      * Add or replace a key with the given long value and comment. Note that
@@ -386,8 +406,8 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, long val, String comment) throws HeaderCardException {
-<span class="fc" id="L389">        addHeaderCard(key, new HeaderCard(key, val, comment));</span>
-<span class="fc" id="L390">    }</span>
+<span class="fc" id="L409">        addHeaderCard(key, new HeaderCard(key, val, comment));</span>
+<span class="fc" id="L410">    }</span>
 
     /**
      * Add or replace a key with the given string value and comment.
@@ -402,18 +422,18 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, String val, String comment) throws HeaderCardException {
-<span class="fc" id="L405">        addHeaderCard(key, new HeaderCard(key, val, comment));</span>
-<span class="fc" id="L406">    }</span>
+<span class="fc" id="L425">        addHeaderCard(key, new HeaderCard(key, val, comment));</span>
+<span class="fc" id="L426">    }</span>
 
     /**
      * Move after the EXTEND keyword in images. Used in bug fix noted by V.
      * Forchi
      */
     void afterExtend() {
-<span class="fc bfc" id="L413" title="All 2 branches covered.">        if (findCard(EXTEND) != null) {</span>
-<span class="fc" id="L414">            nextCard();</span>
+<span class="fc bfc" id="L433" title="All 2 branches covered.">        if (findCard(EXTEND) != null) {</span>
+<span class="fc" id="L434">            nextCard();</span>
         }
-<span class="fc" id="L416">    }</span>
+<span class="fc" id="L436">    }</span>
 
     /**
      * get a builder for filling the header cards using the builder pattern.
@@ -423,78 +443,78 @@ public class Header implements FitsElement {
      * @return the builder for header cards.
      */
     public HeaderCardBuilder card(IFitsHeader key) {
-<span class="fc" id="L426">        return new HeaderCardBuilder(this, key);</span>
+<span class="fc" id="L446">        return new HeaderCardBuilder(this, key);</span>
     }
 
     /**
      * Check if the given key is the next one available in the header.
      */
     private void cardCheck(IFitsHeader key) throws FitsException {
-<span class="fc" id="L433">        cardCheck(key.key());</span>
-<span class="fc" id="L434">    }</span>
+<span class="fc" id="L453">        cardCheck(key.key());</span>
+<span class="fc" id="L454">    }</span>
 
     /**
      * Check if the given key is the next one available in the header.
      */
     private void cardCheck(String key) throws FitsException {
 
-<span class="fc bfc" id="L441" title="All 2 branches covered.">        if (!this.iter.hasNext()) {</span>
-<span class="fc" id="L442">            throw new FitsException(&quot;Header terminates before &quot; + key);</span>
+<span class="fc bfc" id="L461" title="All 2 branches covered.">        if (!this.iter.hasNext()) {</span>
+<span class="fc" id="L462">            throw new FitsException(&quot;Header terminates before &quot; + key);</span>
         }
-<span class="fc" id="L444">        HeaderCard card = this.iter.next();</span>
-<span class="fc bfc" id="L445" title="All 2 branches covered.">        if (!card.getKey().equals(key)) {</span>
-<span class="fc" id="L446">            throw new FitsException(&quot;Key &quot; + key + &quot; not found where expected.&quot; + &quot;Found &quot; + card.getKey());</span>
+<span class="fc" id="L464">        HeaderCard card = this.iter.next();</span>
+<span class="fc bfc" id="L465" title="All 2 branches covered.">        if (!card.getKey().equals(key)) {</span>
+<span class="fc" id="L466">            throw new FitsException(&quot;Key &quot; + key + &quot; not found where expected.&quot; + &quot;Found &quot; + card.getKey());</span>
         }
-<span class="fc" id="L448">    }</span>
+<span class="fc" id="L468">    }</span>
 
     /**
      * Ensure that the header begins with a valid set of keywords. Note that we
      * do not check the values of these keywords.
      */
     void checkBeginning() throws FitsException {
-<span class="fc" id="L455">        this.iter = iterator();</span>
-<span class="fc bfc" id="L456" title="All 2 branches covered.">        if (!this.iter.hasNext()) {</span>
-<span class="fc" id="L457">            throw new FitsException(&quot;Empty Header&quot;);</span>
+<span class="fc" id="L475">        this.iter = iterator();</span>
+<span class="fc bfc" id="L476" title="All 2 branches covered.">        if (!this.iter.hasNext()) {</span>
+<span class="fc" id="L477">            throw new FitsException(&quot;Empty Header&quot;);</span>
         }
-<span class="fc" id="L459">        HeaderCard card = this.iter.next();</span>
-<span class="fc" id="L460">        String key = card.getKey();</span>
-<span class="fc bfc" id="L461" title="All 4 branches covered.">        if (!key.equals(SIMPLE.key()) &amp;&amp; !key.equals(XTENSION.key())) {</span>
-<span class="fc" id="L462">            throw new FitsException(&quot;No SIMPLE or XTENSION at beginning of Header&quot;);</span>
+<span class="fc" id="L479">        HeaderCard card = this.iter.next();</span>
+<span class="fc" id="L480">        String key = card.getKey();</span>
+<span class="fc bfc" id="L481" title="All 4 branches covered.">        if (!key.equals(SIMPLE.key()) &amp;&amp; !key.equals(XTENSION.key())) {</span>
+<span class="fc" id="L482">            throw new FitsException(&quot;No SIMPLE or XTENSION at beginning of Header&quot;);</span>
         }
-<span class="fc" id="L464">        boolean isTable = false;</span>
-<span class="fc" id="L465">        boolean isExtension = false;</span>
-<span class="fc bfc" id="L466" title="All 2 branches covered.">        if (key.equals(XTENSION.key())) {</span>
-<span class="fc" id="L467">            String value = card.getValue();</span>
-<span class="pc bpc" id="L468" title="1 of 4 branches missed.">            if (value == null || value.isEmpty()) {</span>
-<span class="fc" id="L469">                throw new FitsException(&quot;Empty XTENSION keyword&quot;);</span>
+<span class="fc" id="L484">        boolean isTable = false;</span>
+<span class="fc" id="L485">        boolean isExtension = false;</span>
+<span class="fc bfc" id="L486" title="All 2 branches covered.">        if (key.equals(XTENSION.key())) {</span>
+<span class="fc" id="L487">            String value = card.getValue();</span>
+<span class="pc bpc" id="L488" title="1 of 4 branches missed.">            if (value == null || value.isEmpty()) {</span>
+<span class="fc" id="L489">                throw new FitsException(&quot;Empty XTENSION keyword&quot;);</span>
             }
-<span class="fc" id="L471">            isExtension = true;</span>
-<span class="pc bpc" id="L472" title="1 of 6 branches missed.">            if (value.equals(&quot;BINTABLE&quot;) || value.equals(&quot;A3DTABLE&quot;) || value.equals(&quot;TABLE&quot;)) {</span>
-<span class="fc" id="L473">                isTable = true;</span>
+<span class="fc" id="L491">            isExtension = true;</span>
+<span class="pc bpc" id="L492" title="1 of 6 branches missed.">            if (value.equals(XTENSION_BINTABLE) || value.equals(&quot;A3DTABLE&quot;) || value.equals(&quot;TABLE&quot;)) {</span>
+<span class="fc" id="L493">                isTable = true;</span>
             }
         }
-<span class="fc" id="L476">        doCardChecks(isTable, isExtension);</span>
-<span class="fc" id="L477">    }</span>
+<span class="fc" id="L496">        doCardChecks(isTable, isExtension);</span>
+<span class="fc" id="L497">    }</span>
 
     private void doCardChecks(boolean isTable, boolean isExtension) throws FitsException {
-<span class="fc" id="L480">        cardCheck(BITPIX);</span>
-<span class="fc" id="L481">        cardCheck(NAXIS);</span>
-<span class="fc" id="L482">        int nax = getIntValue(NAXIS);</span>
-<span class="fc" id="L483">        this.iter.next();</span>
-<span class="fc bfc" id="L484" title="All 2 branches covered.">        for (int i = 1; i &lt;= nax; i += 1) {</span>
-<span class="fc" id="L485">            cardCheck(NAXISn.n(i));</span>
+<span class="fc" id="L500">        cardCheck(BITPIX);</span>
+<span class="fc" id="L501">        cardCheck(NAXIS);</span>
+<span class="fc" id="L502">        int nax = getIntValue(NAXIS);</span>
+<span class="fc" id="L503">        this.iter.next();</span>
+<span class="fc bfc" id="L504" title="All 2 branches covered.">        for (int i = 1; i &lt;= nax; i += 1) {</span>
+<span class="fc" id="L505">            cardCheck(NAXISn.n(i));</span>
         }
-<span class="fc bfc" id="L487" title="All 2 branches covered.">        if (isExtension) {</span>
-<span class="fc" id="L488">            cardCheck(PCOUNT);</span>
-<span class="fc" id="L489">            cardCheck(GCOUNT);</span>
-<span class="fc bfc" id="L490" title="All 2 branches covered.">            if (isTable) {</span>
-<span class="fc" id="L491">                cardCheck(TFIELDS);</span>
+<span class="fc bfc" id="L507" title="All 2 branches covered.">        if (isExtension) {</span>
+<span class="fc" id="L508">            cardCheck(PCOUNT);</span>
+<span class="fc" id="L509">            cardCheck(GCOUNT);</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">            if (isTable) {</span>
+<span class="fc" id="L511">                cardCheck(TFIELDS);</span>
             }
         }
         // This does not check for the EXTEND keyword which
         // if present in the primary array must immediately follow
         // the NAXISn.
-<span class="fc" id="L497">    }</span>
+<span class="fc" id="L517">    }</span>
 
     /**
      * Ensure that the header has exactly one END keyword in the appropriate
@@ -505,28 +525,28 @@ public class Header implements FitsElement {
         // Ensure we have an END card only at the end of the
         // header.
         //
-<span class="fc" id="L508">        this.iter = iterator();</span>
+<span class="fc" id="L528">        this.iter = iterator();</span>
         HeaderCard card;
 
-<span class="fc bfc" id="L511" title="All 2 branches covered.">        while (this.iter.hasNext()) {</span>
-<span class="fc" id="L512">            card = this.iter.next();</span>
-<span class="fc bfc" id="L513" title="All 4 branches covered.">            if (!card.isKeyValuePair() &amp;&amp; card.getKey().equals(END.key())) {</span>
-<span class="fc" id="L514">                this.iter.remove();</span>
+<span class="fc bfc" id="L531" title="All 2 branches covered.">        while (this.iter.hasNext()) {</span>
+<span class="fc" id="L532">            card = this.iter.next();</span>
+<span class="fc bfc" id="L533" title="All 4 branches covered.">            if (!card.isKeyValuePair() &amp;&amp; card.getKey().equals(END.key())) {</span>
+<span class="fc" id="L534">                this.iter.remove();</span>
             }
         }
         // End cannot have a comment
-<span class="fc" id="L518">        this.iter.add(HeaderCard.saveNewHeaderCard(END.key(), null, false));</span>
-<span class="fc" id="L519">    }</span>
+<span class="fc" id="L538">        this.iter.add(HeaderCard.saveNewHeaderCard(END.key(), null, false));</span>
+<span class="fc" id="L539">    }</span>
 
     private void checkFirstCard(String key) throws IOException {
-<span class="pc bpc" id="L522" title="1 of 6 branches missed.">        if (key == null || !key.equals(SIMPLE.key()) &amp;&amp; !key.equals(XTENSION.key())) {</span>
-<span class="pc bpc" id="L523" title="1 of 4 branches missed.">            if (this.fileOffset &gt; 0 &amp;&amp; FitsFactory.getAllowTerminalJunk()) {</span>
-<span class="fc" id="L524">                throw new EOFException(&quot;Not FITS format at &quot; + this.fileOffset + &quot;:&quot; + key);</span>
+<span class="pc bpc" id="L542" title="1 of 6 branches missed.">        if (key == null || !key.equals(SIMPLE.key()) &amp;&amp; !key.equals(XTENSION.key())) {</span>
+<span class="pc bpc" id="L543" title="1 of 4 branches missed.">            if (this.fileOffset &gt; 0 &amp;&amp; FitsFactory.getAllowTerminalJunk()) {</span>
+<span class="fc" id="L544">                throw new EOFException(&quot;Not FITS format at &quot; + this.fileOffset + &quot;:&quot; + key);</span>
             } else {
-<span class="fc" id="L526">                throw new IOException(&quot;Not FITS format at &quot; + this.fileOffset + &quot;:&quot; + key);</span>
+<span class="fc" id="L546">                throw new IOException(&quot;Not FITS format at &quot; + this.fileOffset + &quot;:&quot; + key);</span>
             }
         }
-<span class="fc" id="L529">    }</span>
+<span class="fc" id="L549">    }</span>
 
     /**
      * Tests if the specified keyword is present in this table.
@@ -537,7 +557,7 @@ public class Header implements FitsElement {
      *         table; &lt;code&gt;false&lt;/code&gt; otherwise.
      */
     public final boolean containsKey(IFitsHeader key) {
-<span class="fc" id="L540">        return this.cards.containsKey(key.key());</span>
+<span class="fc" id="L560">        return this.cards.containsKey(key.key());</span>
     }
 
     /**
@@ -549,7 +569,7 @@ public class Header implements FitsElement {
      *         table; &lt;code&gt;false&lt;/code&gt; otherwise.
      */
     public final boolean containsKey(String key) {
-<span class="fc" id="L552">        return this.cards.containsKey(key);</span>
+<span class="fc" id="L572">        return this.cards.containsKey(key);</span>
     }
 
     /**
@@ -560,8 +580,8 @@ public class Header implements FitsElement {
      *            The header key.
      */
     public void deleteKey(IFitsHeader key) {
-<span class="fc" id="L563">        deleteKey(key.key());</span>
-<span class="fc" id="L564">    }</span>
+<span class="fc" id="L583">        deleteKey(key.key());</span>
+<span class="fc" id="L584">    }</span>
 
     /**
      * Delete the card associated with the given key. Nothing occurs if the key
@@ -571,14 +591,14 @@ public class Header implements FitsElement {
      *            The header key.
      */
     public void deleteKey(String key) {
-<span class="fc bfc" id="L574" title="All 2 branches covered.">        if (containsKey(key)) {</span>
-<span class="fc" id="L575">            this.iter.setKey(key);</span>
-<span class="pc bpc" id="L576" title="1 of 2 branches missed.">            if (this.iter.hasNext()) {</span>
-<span class="fc" id="L577">                this.iter.next();</span>
-<span class="fc" id="L578">                this.iter.remove();</span>
+<span class="fc bfc" id="L594" title="All 2 branches covered.">        if (containsKey(key)) {</span>
+<span class="fc" id="L595">            this.iter.setKey(key);</span>
+<span class="pc bpc" id="L596" title="1 of 2 branches missed.">            if (this.iter.hasNext()) {</span>
+<span class="fc" id="L597">                this.iter.next();</span>
+<span class="fc" id="L598">                this.iter.remove();</span>
             }
         }
-<span class="fc" id="L581">    }</span>
+<span class="fc" id="L601">    }</span>
 
     /**
      * Print the header to a given stream.
@@ -587,11 +607,11 @@ public class Header implements FitsElement {
      *            the stream to which the card images are dumped.
      */
     public void dumpHeader(PrintStream ps) {
-<span class="fc" id="L590">        this.iter = iterator();</span>
-<span class="fc bfc" id="L591" title="All 2 branches covered.">        while (this.iter.hasNext()) {</span>
-<span class="fc" id="L592">            ps.println(this.iter.next());</span>
+<span class="fc" id="L610">        this.iter = iterator();</span>
+<span class="fc bfc" id="L611" title="All 2 branches covered.">        while (this.iter.hasNext()) {</span>
+<span class="fc" id="L612">            ps.println(this.iter.next());</span>
         }
-<span class="fc" id="L594">    }</span>
+<span class="fc" id="L614">    }</span>
 
     /**
      * Find the card associated with a given key. If found this sets the mark to
@@ -603,7 +623,7 @@ public class Header implements FitsElement {
      *         HeaderCard object otherwise.
      */
     public HeaderCard findCard(IFitsHeader key) {
-<span class="fc" id="L606">        return this.findCard(key.key());</span>
+<span class="fc" id="L626">        return this.findCard(key.key());</span>
     }
 
     /**
@@ -616,11 +636,11 @@ public class Header implements FitsElement {
      *         HeaderCard object otherwise.
      */
     public HeaderCard findCard(String key) {
-<span class="fc" id="L619">        HeaderCard card = this.cards.get(key);</span>
-<span class="fc bfc" id="L620" title="All 2 branches covered.">        if (card != null) {</span>
-<span class="fc" id="L621">            this.iter.setKey(key);</span>
+<span class="fc" id="L639">        HeaderCard card = this.cards.get(key);</span>
+<span class="fc bfc" id="L640" title="All 2 branches covered.">        if (card != null) {</span>
+<span class="fc" id="L641">            this.iter.setKey(key);</span>
         }
-<span class="fc" id="L623">        return card;</span>
+<span class="fc" id="L643">        return card;</span>
     }
 
     /**
@@ -632,11 +652,11 @@ public class Header implements FitsElement {
      *         card image otherwise.
      */
     public String findKey(String key) {
-<span class="fc" id="L635">        HeaderCard card = findCard(key);</span>
-<span class="fc bfc" id="L636" title="All 2 branches covered.">        if (card == null) {</span>
-<span class="fc" id="L637">            return null;</span>
+<span class="fc" id="L655">        HeaderCard card = findCard(key);</span>
+<span class="fc bfc" id="L656" title="All 2 branches covered.">        if (card == null) {</span>
+<span class="fc" id="L657">            return null;</span>
         } else {
-<span class="fc" id="L639">            return card.toString();</span>
+<span class="fc" id="L659">            return card.toString();</span>
         }
     }
 
@@ -648,7 +668,7 @@ public class Header implements FitsElement {
      * @return The associated value or 0.0 if not found.
      */
     public BigDecimal getBigDecimalValue(IFitsHeader key) {
-<span class="fc" id="L651">        return getBigDecimalValue(key.key());</span>
+<span class="fc" id="L671">        return getBigDecimalValue(key.key());</span>
     }
 
     /**
@@ -659,7 +679,7 @@ public class Header implements FitsElement {
      * @return The associated value or 0.0 if not found.
      */
     public BigDecimal getBigDecimalValue(String key) {
-<span class="fc" id="L662">        return getBigDecimalValue(key, BigDecimal.ZERO);</span>
+<span class="fc" id="L682">        return getBigDecimalValue(key, BigDecimal.ZERO);</span>
     }
 
     /**
@@ -672,11 +692,11 @@ public class Header implements FitsElement {
      * @return the associated value.
      */
     public BigDecimal getBigDecimalValue(String key, BigDecimal dft) {
-<span class="fc" id="L675">        HeaderCard fcard = findCard(key);</span>
-<span class="fc bfc" id="L676" title="All 2 branches covered.">        if (fcard == null) {</span>
-<span class="fc" id="L677">            return dft;</span>
+<span class="fc" id="L695">        HeaderCard fcard = findCard(key);</span>
+<span class="fc bfc" id="L696" title="All 2 branches covered.">        if (fcard == null) {</span>
+<span class="fc" id="L697">            return dft;</span>
         }
-<span class="fc" id="L679">        return fcard.getValue(BigDecimal.class, dft);</span>
+<span class="fc" id="L699">        return fcard.getValue(BigDecimal.class, dft);</span>
     }
 
     /**
@@ -689,7 +709,7 @@ public class Header implements FitsElement {
      * @return the associated value.
      */
     public BigInteger getBigIntegerValue(IFitsHeader key, BigInteger dft) {
-<span class="fc" id="L692">        return getBigIntegerValue(key.key(), dft);</span>
+<span class="fc" id="L712">        return getBigIntegerValue(key.key(), dft);</span>
     }
 
     /**
@@ -700,7 +720,7 @@ public class Header implements FitsElement {
      * @return The associated value or 0 if not found.
      */
     public BigInteger getBigIntegerValue(String key) {
-<span class="fc" id="L703">        return getBigIntegerValue(key, BigInteger.ZERO);</span>
+<span class="fc" id="L723">        return getBigIntegerValue(key, BigInteger.ZERO);</span>
     }
 
     /**
@@ -713,11 +733,11 @@ public class Header implements FitsElement {
      * @return the associated value.
      */
     public BigInteger getBigIntegerValue(String key, BigInteger dft) {
-<span class="fc" id="L716">        HeaderCard fcard = findCard(key);</span>
-<span class="fc bfc" id="L717" title="All 2 branches covered.">        if (fcard == null) {</span>
-<span class="fc" id="L718">            return dft;</span>
+<span class="fc" id="L736">        HeaderCard fcard = findCard(key);</span>
+<span class="fc bfc" id="L737" title="All 2 branches covered.">        if (fcard == null) {</span>
+<span class="fc" id="L738">            return dft;</span>
         }
-<span class="fc" id="L720">        return fcard.getValue(BigInteger.class, dft);</span>
+<span class="fc" id="L740">        return fcard.getValue(BigInteger.class, dft);</span>
     }
 
     /**
@@ -729,7 +749,7 @@ public class Header implements FitsElement {
      *         logical keyword.
      */
     public boolean getBooleanValue(IFitsHeader key) {
-<span class="fc" id="L732">        return getBooleanValue(key.key());</span>
+<span class="fc" id="L752">        return getBooleanValue(key.key());</span>
     }
 
     /**
@@ -743,7 +763,7 @@ public class Header implements FitsElement {
      * @return the associated value.
      */
     public boolean getBooleanValue(IFitsHeader key, boolean dft) {
-<span class="fc" id="L746">        return getBooleanValue(key.key(), dft);</span>
+<span class="fc" id="L766">        return getBooleanValue(key.key(), dft);</span>
     }
 
     /**
@@ -755,7 +775,7 @@ public class Header implements FitsElement {
      *         logical keyword.
      */
     public boolean getBooleanValue(String key) {
-<span class="fc" id="L758">        return getBooleanValue(key, false);</span>
+<span class="fc" id="L778">        return getBooleanValue(key, false);</span>
     }
 
     /**
@@ -769,11 +789,11 @@ public class Header implements FitsElement {
      * @return the associated value.
      */
     public boolean getBooleanValue(String key, boolean dft) {
-<span class="fc" id="L772">        HeaderCard fcard = findCard(key);</span>
-<span class="fc bfc" id="L773" title="All 2 branches covered.">        if (fcard == null) {</span>
-<span class="fc" id="L774">            return dft;</span>
+<span class="fc" id="L792">        HeaderCard fcard = findCard(key);</span>
+<span class="fc bfc" id="L793" title="All 2 branches covered.">        if (fcard == null) {</span>
+<span class="fc" id="L794">            return dft;</span>
         }
-<span class="fc" id="L776">        return fcard.getValue(Boolean.class, dft).booleanValue();</span>
+<span class="fc" id="L796">        return fcard.getValue(Boolean.class, dft).booleanValue();</span>
     }
 
     /**
@@ -789,10 +809,10 @@ public class Header implements FitsElement {
      */
     @Deprecated
     public String getCard(int n) {
-<span class="fc bfc" id="L792" title="All 4 branches covered.">        if (n &gt;= 0 &amp;&amp; n &lt; this.cards.size()) {</span>
-<span class="fc" id="L793">            return this.cards.get(n).toString();</span>
+<span class="fc bfc" id="L812" title="All 4 branches covered.">        if (n &gt;= 0 &amp;&amp; n &lt; this.cards.size()) {</span>
+<span class="fc" id="L813">            return this.cards.get(n).toString();</span>
         }
-<span class="fc" id="L795">        return null;</span>
+<span class="fc" id="L815">        return null;</span>
     }
 
     /**
@@ -801,7 +821,7 @@ public class Header implements FitsElement {
      * @return the data segment size including any needed padding.
      */
     public long getDataSize() {
-<span class="fc" id="L804">        return FitsUtil.addPadding(trueDataSize());</span>
+<span class="fc" id="L824">        return FitsUtil.addPadding(trueDataSize());</span>
     }
 
     /**
@@ -812,7 +832,7 @@ public class Header implements FitsElement {
      * @return The associated value or 0.0 if not found.
      */
     public double getDoubleValue(IFitsHeader key) {
-<span class="fc" id="L815">        return getDoubleValue(key.key());</span>
+<span class="fc" id="L835">        return getDoubleValue(key.key());</span>
     }
 
     /**
@@ -825,7 +845,7 @@ public class Header implements FitsElement {
      * @return the associated value.
      */
     public double getDoubleValue(IFitsHeader key, double dft) {
-<span class="fc" id="L828">        return getDoubleValue(key.key(), dft);</span>
+<span class="fc" id="L848">        return getDoubleValue(key.key(), dft);</span>
     }
 
     /**
@@ -836,7 +856,7 @@ public class Header implements FitsElement {
      * @return The associated value or 0.0 if not found.
      */
     public double getDoubleValue(String key) {
-<span class="fc" id="L839">        return getDoubleValue(key, 0.);</span>
+<span class="fc" id="L859">        return getDoubleValue(key, 0.);</span>
     }
 
     /**
@@ -849,11 +869,11 @@ public class Header implements FitsElement {
      * @return the associated value.
      */
     public double getDoubleValue(String key, double dft) {
-<span class="fc" id="L852">        HeaderCard fcard = findCard(key);</span>
-<span class="fc bfc" id="L853" title="All 2 branches covered.">        if (fcard == null) {</span>
-<span class="fc" id="L854">            return dft;</span>
+<span class="fc" id="L872">        HeaderCard fcard = findCard(key);</span>
+<span class="fc bfc" id="L873" title="All 2 branches covered.">        if (fcard == null) {</span>
+<span class="fc" id="L874">            return dft;</span>
         }
-<span class="fc" id="L856">        return fcard.getValue(Double.class, dft).doubleValue();</span>
+<span class="fc" id="L876">        return fcard.getValue(Double.class, dft).doubleValue();</span>
     }
 
     /**
@@ -865,7 +885,7 @@ public class Header implements FitsElement {
      *         keyword in this list.
      */
     public List&lt;HeaderCard&gt; getDuplicates() {
-<span class="fc" id="L868">        return this.duplicates;</span>
+<span class="fc" id="L888">        return this.duplicates;</span>
     }
 
     /**
@@ -873,7 +893,7 @@ public class Header implements FitsElement {
      */
     @Override
     public long getFileOffset() {
-<span class="fc" id="L876">        return this.fileOffset;</span>
+<span class="fc" id="L896">        return this.fileOffset;</span>
     }
 
     /**
@@ -884,7 +904,7 @@ public class Header implements FitsElement {
      * @return The associated value or 0.0 if not found.
      */
     public float getFloatValue(IFitsHeader key) {
-<span class="fc" id="L887">        return getFloatValue(key.key());</span>
+<span class="fc" id="L907">        return getFloatValue(key.key());</span>
 
     }
 
@@ -896,7 +916,7 @@ public class Header implements FitsElement {
      *            The value to be returned if the key is not found.
      */
     public float getFloatValue(IFitsHeader key, float dft) {
-<span class="fc" id="L899">        return (float) getDoubleValue(key, dft);</span>
+<span class="fc" id="L919">        return (float) getDoubleValue(key, dft);</span>
     }
 
     /**
@@ -907,7 +927,7 @@ public class Header implements FitsElement {
      * @return The associated value or 0.0 if not found.
      */
     public float getFloatValue(String key) {
-<span class="fc" id="L910">        return (float) getDoubleValue(key);</span>
+<span class="fc" id="L930">        return (float) getDoubleValue(key);</span>
     }
 
     /**
@@ -918,11 +938,11 @@ public class Header implements FitsElement {
      *            The value to be returned if the key is not found.
      */
     public float getFloatValue(String key, float dft) {
-<span class="fc" id="L921">        HeaderCard fcard = findCard(key);</span>
-<span class="fc bfc" id="L922" title="All 2 branches covered.">        if (fcard == null) {</span>
-<span class="fc" id="L923">            return dft;</span>
+<span class="fc" id="L941">        HeaderCard fcard = findCard(key);</span>
+<span class="fc bfc" id="L942" title="All 2 branches covered.">        if (fcard == null) {</span>
+<span class="fc" id="L943">            return dft;</span>
         }
-<span class="fc" id="L925">        return fcard.getValue(Float.class, dft).floatValue();</span>
+<span class="fc" id="L945">        return fcard.getValue(Float.class, dft).floatValue();</span>
     }
 
     /**
@@ -933,7 +953,7 @@ public class Header implements FitsElement {
      * @return The associated value or 0 if not found.
      */
     public int getIntValue(IFitsHeader key) {
-<span class="fc" id="L936">        return (int) getLongValue(key);</span>
+<span class="fc" id="L956">        return (int) getLongValue(key);</span>
     }
 
     /**
@@ -944,7 +964,7 @@ public class Header implements FitsElement {
      *            The value to be returned if the key is not found.
      */
     public int getIntValue(IFitsHeader key, int dft) {
-<span class="fc" id="L947">        return (int) getLongValue(key, dft);</span>
+<span class="fc" id="L967">        return (int) getLongValue(key, dft);</span>
     }
 
     /**
@@ -955,7 +975,7 @@ public class Header implements FitsElement {
      * @return The associated value or 0 if not found.
      */
     public int getIntValue(String key) {
-<span class="fc" id="L958">        return (int) getLongValue(key);</span>
+<span class="fc" id="L978">        return (int) getLongValue(key);</span>
     }
 
     /**
@@ -966,11 +986,11 @@ public class Header implements FitsElement {
      *            The value to be returned if the key is not found.
      */
     public int getIntValue(String key, int dft) {
-<span class="fc" id="L969">        HeaderCard fcard = findCard(key);</span>
-<span class="fc bfc" id="L970" title="All 2 branches covered.">        if (fcard == null) {</span>
-<span class="fc" id="L971">            return dft;</span>
+<span class="fc" id="L989">        HeaderCard fcard = findCard(key);</span>
+<span class="pc bpc" id="L990" title="1 of 2 branches missed.">        if (fcard == null) {</span>
+<span class="fc" id="L991">            return dft;</span>
         }
-<span class="fc" id="L973">        return fcard.getValue(Integer.class, dft).intValue();</span>
+<span class="nc" id="L993">        return fcard.getValue(Integer.class, dft).intValue();</span>
     }
 
     /**
@@ -986,10 +1006,10 @@ public class Header implements FitsElement {
      */
     @Deprecated
     public String getKey(int n) {
-<span class="pc bpc" id="L989" title="1 of 4 branches missed.">        if (n &gt;= 0 &amp;&amp; n &lt; this.cards.size()) {</span>
-<span class="fc" id="L990">            return this.cards.get(n).getKey();</span>
+<span class="pc bpc" id="L1009" title="1 of 4 branches missed.">        if (n &gt;= 0 &amp;&amp; n &lt; this.cards.size()) {</span>
+<span class="fc" id="L1010">            return this.cards.get(n).getKey();</span>
         }
-<span class="fc" id="L992">        return null;</span>
+<span class="fc" id="L1012">        return null;</span>
 
     }
 
@@ -1001,7 +1021,7 @@ public class Header implements FitsElement {
      * @return The associated value or 0 if not found.
      */
     public long getLongValue(IFitsHeader key) {
-<span class="fc" id="L1004">        return getLongValue(key.key());</span>
+<span class="fc" id="L1024">        return getLongValue(key.key());</span>
     }
 
     /**
@@ -1014,7 +1034,7 @@ public class Header implements FitsElement {
      * @return the associated value.
      */
     public long getLongValue(IFitsHeader key, long dft) {
-<span class="fc" id="L1017">        return getLongValue(key.key(), dft);</span>
+<span class="fc" id="L1037">        return getLongValue(key.key(), dft);</span>
     }
 
     /**
@@ -1025,7 +1045,7 @@ public class Header implements FitsElement {
      * @return The associated value or 0 if not found.
      */
     public long getLongValue(String key) {
-<span class="fc" id="L1028">        return getLongValue(key, 0L);</span>
+<span class="fc" id="L1048">        return getLongValue(key, 0L);</span>
     }
 
     /**
@@ -1038,36 +1058,36 @@ public class Header implements FitsElement {
      * @return the associated value.
      */
     public long getLongValue(String key, long dft) {
-<span class="fc" id="L1041">        HeaderCard fcard = findCard(key);</span>
-<span class="fc bfc" id="L1042" title="All 2 branches covered.">        if (fcard == null) {</span>
-<span class="fc" id="L1043">            return dft;</span>
+<span class="fc" id="L1061">        HeaderCard fcard = findCard(key);</span>
+<span class="fc bfc" id="L1062" title="All 2 branches covered.">        if (fcard == null) {</span>
+<span class="fc" id="L1063">            return dft;</span>
         }
-<span class="fc" id="L1045">        return fcard.getValue(Long.class, dft).longValue();</span>
+<span class="fc" id="L1065">        return fcard.getValue(Long.class, dft).longValue();</span>
     }
 
     /**
      * @return the number of cards in the header
      */
     public int getNumberOfCards() {
-<span class="fc" id="L1052">        return this.cards.size();</span>
+<span class="fc" id="L1072">        return this.cards.size();</span>
     }
 
     /**
      * @return the number of physical cards in the header.
      */
     public int getNumberOfPhysicalCards() {
-<span class="fc" id="L1059">        int count = 0;</span>
-<span class="fc bfc" id="L1060" title="All 2 branches covered.">        for (HeaderCard card : this.cards) {</span>
-<span class="fc" id="L1061">            count += card.cardSize();</span>
-<span class="fc" id="L1062">        }</span>
-<span class="fc" id="L1063">        return count;</span>
+<span class="fc" id="L1079">        int count = 0;</span>
+<span class="fc bfc" id="L1080" title="All 2 branches covered.">        for (HeaderCard card : this.cards) {</span>
+<span class="fc" id="L1081">            count += card.cardSize();</span>
+<span class="fc" id="L1082">        }</span>
+<span class="fc" id="L1083">        return count;</span>
     }
 
     /**
      * @return the size of the original header in bytes.
      */
     public long getOriginalSize() {
-<span class="fc" id="L1070">        return FitsUtil.addPadding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE);</span>
+<span class="fc" id="L1090">        return FitsUtil.addPadding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE);</span>
     }
 
     /**
@@ -1075,11 +1095,11 @@ public class Header implements FitsElement {
      */
     @Override
     public long getSize() {
-<span class="fc" id="L1078">        return headerSize();</span>
+<span class="fc" id="L1098">        return headerSize();</span>
     }
 
     public String getStringValue(IFitsHeader header) {
-<span class="fc" id="L1082">        return getStringValue(header.key());</span>
+<span class="fc" id="L1102">        return getStringValue(header.key());</span>
     }
 
     /**
@@ -1092,17 +1112,17 @@ public class Header implements FitsElement {
      */
     public String getStringValue(String key) {
 
-<span class="fc" id="L1095">        HeaderCard fcard = findCard(key);</span>
-<span class="pc bpc" id="L1096" title="1 of 4 branches missed.">        if (fcard == null || !fcard.isStringValue()) {</span>
-<span class="fc" id="L1097">            return null;</span>
+<span class="fc" id="L1115">        HeaderCard fcard = findCard(key);</span>
+<span class="fc bfc" id="L1116" title="All 4 branches covered.">        if (fcard == null || !fcard.isStringValue()) {</span>
+<span class="fc" id="L1117">            return null;</span>
         }
 
-<span class="fc" id="L1100">        return fcard.getValue();</span>
+<span class="fc" id="L1120">        return fcard.getValue();</span>
     }
 
     /** @return Were duplicate header keys found when this record was read in? */
     public boolean hadDuplicates() {
-<span class="fc bfc" id="L1105" title="All 2 branches covered.">        return this.duplicates != null;</span>
+<span class="fc bfc" id="L1125" title="All 2 branches covered.">        return this.duplicates != null;</span>
     }
 
     /**
@@ -1112,11 +1132,11 @@ public class Header implements FitsElement {
      */
     int headerSize() {
 
-<span class="fc bfc" id="L1115" title="All 2 branches covered.">        if (!isValidHeader()) {</span>
-<span class="fc" id="L1116">            return 0;</span>
+<span class="fc bfc" id="L1135" title="All 2 branches covered.">        if (!isValidHeader()) {</span>
+<span class="fc" id="L1136">            return 0;</span>
         }
 
-<span class="fc" id="L1119">        return FitsUtil.addPadding(getNumberOfPhysicalCards() * HeaderCard.FITS_HEADER_CARD_SIZE);</span>
+<span class="fc" id="L1139">        return FitsUtil.addPadding(getNumberOfPhysicalCards() * HeaderCard.FITS_HEADER_CARD_SIZE);</span>
     }
 
     /**
@@ -1128,8 +1148,8 @@ public class Header implements FitsElement {
      *                If the parameter is not a valid FITS comment.
      */
     public void insertComment(String value) throws HeaderCardException {
-<span class="fc" id="L1131">        insertCommentStyle(COMMENT.key(), value);</span>
-<span class="fc" id="L1132">    }</span>
+<span class="fc" id="L1151">        insertCommentStyle(COMMENT.key(), value);</span>
+<span class="fc" id="L1152">    }</span>
 
     /**
      * Add a line to the header using the COMMENT style, i.e., no '=' in column
@@ -1141,8 +1161,8 @@ public class Header implements FitsElement {
      *            A string to follow the header.
      */
     public void insertCommentStyle(String header, String value) {
-<span class="fc" id="L1144">        this.iter.add(HeaderCard.saveNewHeaderCard(header, value, false));</span>
-<span class="fc" id="L1145">    }</span>
+<span class="fc" id="L1164">        this.iter.add(HeaderCard.saveNewHeaderCard(header, value, false));</span>
+<span class="fc" id="L1165">    }</span>
 
     /**
      * Add a HISTORY line.
@@ -1153,8 +1173,8 @@ public class Header implements FitsElement {
      *                If the parameter is not a valid FITS comment.
      */
     public void insertHistory(String value) throws HeaderCardException {
-<span class="fc" id="L1156">        insertCommentStyle(HISTORY.key(), value);</span>
-<span class="fc" id="L1157">    }</span>
+<span class="fc" id="L1176">        insertCommentStyle(HISTORY.key(), value);</span>
+<span class="fc" id="L1177">    }</span>
 
     /**
      * Is this a valid header.
@@ -1163,32 +1183,32 @@ public class Header implements FitsElement {
      *         otherwise.
      */
     boolean isValidHeader() {
-<span class="fc bfc" id="L1166" title="All 2 branches covered.">        if (getNumberOfCards() &lt; MIN_NUMBER_OF_CARDS_FOR_VALID_HEADER) {</span>
-<span class="fc" id="L1167">            return false;</span>
+<span class="fc bfc" id="L1186" title="All 2 branches covered.">        if (getNumberOfCards() &lt; MIN_NUMBER_OF_CARDS_FOR_VALID_HEADER) {</span>
+<span class="fc" id="L1187">            return false;</span>
         }
-<span class="fc" id="L1169">        this.iter = iterator();</span>
-<span class="fc" id="L1170">        String key = this.iter.next().getKey();</span>
-<span class="fc bfc" id="L1171" title="All 4 branches covered.">        if (!key.equals(SIMPLE.key()) &amp;&amp; !key.equals(XTENSION.key())) {</span>
-<span class="fc" id="L1172">            return false;</span>
+<span class="fc" id="L1189">        this.iter = iterator();</span>
+<span class="fc" id="L1190">        String key = this.iter.next().getKey();</span>
+<span class="fc bfc" id="L1191" title="All 4 branches covered.">        if (!key.equals(SIMPLE.key()) &amp;&amp; !key.equals(XTENSION.key())) {</span>
+<span class="fc" id="L1192">            return false;</span>
         }
-<span class="fc" id="L1174">        key = this.iter.next().getKey();</span>
-<span class="fc bfc" id="L1175" title="All 2 branches covered.">        if (!key.equals(BITPIX.key())) {</span>
-<span class="fc" id="L1176">            return false;</span>
+<span class="fc" id="L1194">        key = this.iter.next().getKey();</span>
+<span class="fc bfc" id="L1195" title="All 2 branches covered.">        if (!key.equals(BITPIX.key())) {</span>
+<span class="fc" id="L1196">            return false;</span>
         }
-<span class="fc" id="L1178">        key = this.iter.next().getKey();</span>
-<span class="fc bfc" id="L1179" title="All 2 branches covered.">        if (!key.equals(NAXIS.key())) {</span>
-<span class="fc" id="L1180">            return false;</span>
+<span class="fc" id="L1198">        key = this.iter.next().getKey();</span>
+<span class="fc bfc" id="L1199" title="All 2 branches covered.">        if (!key.equals(NAXIS.key())) {</span>
+<span class="fc" id="L1200">            return false;</span>
         }
-<span class="fc bfc" id="L1182" title="All 2 branches covered.">        while (this.iter.hasNext()) {</span>
-<span class="fc" id="L1183">            key = this.iter.next().getKey();</span>
+<span class="fc bfc" id="L1202" title="All 2 branches covered.">        while (this.iter.hasNext()) {</span>
+<span class="fc" id="L1203">            key = this.iter.next().getKey();</span>
         }
-<span class="fc" id="L1185">        return key.equals(END.key());</span>
+<span class="fc" id="L1205">        return key.equals(END.key());</span>
 
     }
 
     /** @return an iterator over the header cards */
     public Cursor&lt;String, HeaderCard&gt; iterator() {
-<span class="fc" id="L1191">        return this.cards.iterator(0);</span>
+<span class="fc" id="L1211">        return this.cards.iterator(0);</span>
     }
 
     /**
@@ -1197,7 +1217,7 @@ public class Header implements FitsElement {
      *            the card index to start the iterator
      */
     public Cursor&lt;String, HeaderCard&gt; iterator(int index) {
-<span class="fc" id="L1200">        return this.cards.iterator(index);</span>
+<span class="fc" id="L1220">        return this.cards.iterator(index);</span>
     }
 
     /**
@@ -1207,17 +1227,17 @@ public class Header implements FitsElement {
      *             the type of the data
      */
     public Data makeData() throws FitsException {
-<span class="fc" id="L1210">        return FitsFactory.dataFactory(this);</span>
+<span class="fc" id="L1230">        return FitsFactory.dataFactory(this);</span>
     }
 
     /**
      * @return the next card in the Header using the current iterator
      */
     public HeaderCard nextCard() {
-<span class="fc bfc" id="L1217" title="All 2 branches covered.">        if (this.iter.hasNext()) {</span>
-<span class="fc" id="L1218">            return this.iter.next();</span>
+<span class="fc bfc" id="L1237" title="All 2 branches covered.">        if (this.iter.hasNext()) {</span>
+<span class="fc" id="L1238">            return this.iter.next();</span>
         } else {
-<span class="fc" id="L1220">            return null;</span>
+<span class="fc" id="L1240">            return null;</span>
         }
     }
 
@@ -1225,16 +1245,12 @@ public class Header implements FitsElement {
      * Create a header for a null image.
      */
     void nullImage() {
-<span class="fc" id="L1228">        this.iter = iterator();</span>
-        try {
-<span class="fc" id="L1230">            addValue(SIMPLE, true);</span>
-<span class="fc" id="L1231">            addValue(BITPIX, BasicHDU.BITPIX_BYTE);</span>
-<span class="fc" id="L1232">            addValue(NAXIS, 0);</span>
-<span class="fc" id="L1233">            addValue(EXTEND, true);</span>
-<span class="nc" id="L1234">        } catch (HeaderCardException e) {</span>
-<span class="nc" id="L1235">            LOG.log(Level.SEVERE, &quot;could not create null image, should not be possible&quot;, e);</span>
-<span class="fc" id="L1236">        }</span>
-<span class="fc" id="L1237">    }</span>
+<span class="fc" id="L1248">        this.iter = iterator();</span>
+<span class="fc" id="L1249">        this.iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), SIMPLE.comment(), false).setValue(true));</span>
+<span class="fc" id="L1250">        this.iter.add(HeaderCard.saveNewHeaderCard(BITPIX.key(), BITPIX.comment(), false).setValue(BasicHDU.BITPIX_BYTE));</span>
+<span class="fc" id="L1251">        this.iter.add(HeaderCard.saveNewHeaderCard(NAXIS.key(), NAXIS.comment(), false).setValue(0));</span>
+<span class="fc" id="L1252">        this.iter.add(HeaderCard.saveNewHeaderCard(EXTEND.key(), EXTEND.comment(), false).setValue(true));</span>
+<span class="fc" id="L1253">    }</span>
 
     /**
      * Create a header which points to the given data object.
@@ -1247,8 +1263,8 @@ public class Header implements FitsElement {
      */
     @Deprecated
     public void pointToData(Data o) throws FitsException {
-<span class="fc" id="L1250">        o.fillHeader(this);</span>
-<span class="fc" id="L1251">    }</span>
+<span class="fc" id="L1266">        o.fillHeader(this);</span>
+<span class="fc" id="L1267">    }</span>
 
     /**
      * Find the end of a set of keywords describing a column or axis (or
@@ -1258,23 +1274,23 @@ public class Header implements FitsElement {
      * guaranteed to be present.
      */
     Cursor&lt;String, HeaderCard&gt; positionAfterIndex(IFitsHeader prefix, int col) {
-<span class="fc" id="L1261">        String colnum = String.valueOf(col);</span>
-<span class="fc" id="L1262">        this.iter.setKey(prefix.n(col).key());</span>
-<span class="fc bfc" id="L1263" title="All 2 branches covered.">        if (this.iter.hasNext()) {</span>
+<span class="fc" id="L1277">        String colnum = String.valueOf(col);</span>
+<span class="fc" id="L1278">        this.iter.setKey(prefix.n(col).key());</span>
+<span class="fc bfc" id="L1279" title="All 2 branches covered.">        if (this.iter.hasNext()) {</span>
             // Bug fix (references to forward) here by Laurent Borges
-<span class="fc" id="L1265">            boolean toFar = false;</span>
-<span class="fc bfc" id="L1266" title="All 2 branches covered.">            while (this.iter.hasNext()) {</span>
-<span class="fc" id="L1267">                String key = this.iter.next().getKey().trim();</span>
-<span class="pc bpc" id="L1268" title="2 of 6 branches missed.">                if (key == null || key.length() &lt;= colnum.length() || !key.substring(key.length() - colnum.length()).equals(colnum)) {</span>
-<span class="fc" id="L1269">                    toFar = true;</span>
-<span class="fc" id="L1270">                    break;</span>
+<span class="fc" id="L1281">            boolean toFar = false;</span>
+<span class="fc bfc" id="L1282" title="All 2 branches covered.">            while (this.iter.hasNext()) {</span>
+<span class="fc" id="L1283">                String key = this.iter.next().getKey().trim();</span>
+<span class="pc bpc" id="L1284" title="2 of 6 branches missed.">                if (key == null || key.length() &lt;= colnum.length() || !key.substring(key.length() - colnum.length()).equals(colnum)) {</span>
+<span class="fc" id="L1285">                    toFar = true;</span>
+<span class="fc" id="L1286">                    break;</span>
                 }
-<span class="fc" id="L1272">            }</span>
-<span class="fc bfc" id="L1273" title="All 2 branches covered.">            if (toFar) {</span>
-<span class="fc" id="L1274">                this.iter.prev(); // Gone one too far, so skip back an element.</span>
+<span class="fc" id="L1288">            }</span>
+<span class="fc bfc" id="L1289" title="All 2 branches covered.">            if (toFar) {</span>
+<span class="fc" id="L1290">                this.iter.prev(); // Gone one too far, so skip back an element.</span>
             }
         }
-<span class="fc" id="L1277">        return this.iter;</span>
+<span class="fc" id="L1293">        return this.iter;</span>
     }
 
     /**
@@ -1289,68 +1305,68 @@ public class Header implements FitsElement {
      */
     @Override
     public void read(ArrayDataInput dis) throws TruncatedFileException, IOException {
-<span class="fc bfc" id="L1292" title="All 2 branches covered.">        if (dis instanceof RandomAccess) {</span>
-<span class="fc" id="L1293">            this.fileOffset = FitsUtil.findOffset(dis);</span>
+<span class="fc bfc" id="L1308" title="All 2 branches covered.">        if (dis instanceof RandomAccess) {</span>
+<span class="fc" id="L1309">            this.fileOffset = FitsUtil.findOffset(dis);</span>
         } else {
-<span class="fc" id="L1295">            this.fileOffset = -1;</span>
+<span class="fc" id="L1311">            this.fileOffset = -1;</span>
         }
 
-<span class="fc" id="L1298">        boolean firstCard = true;</span>
-<span class="fc" id="L1299">        HeaderCardCountingArrayDataInput cardCountingArray = new HeaderCardCountingArrayDataInput(dis);</span>
+<span class="fc" id="L1314">        boolean firstCard = true;</span>
+<span class="fc" id="L1315">        HeaderCardCountingArrayDataInput cardCountingArray = new HeaderCardCountingArrayDataInput(dis);</span>
         try {
             while (true) {
-<span class="fc" id="L1302">                HeaderCard fcard = new HeaderCard(cardCountingArray);</span>
-<span class="fc" id="L1303">                String key = fcard.getKey();</span>
-<span class="fc bfc" id="L1304" title="All 2 branches covered.">                if (firstCard) {</span>
-<span class="fc" id="L1305">                    checkFirstCard(key);</span>
-<span class="fc" id="L1306">                    firstCard = false;</span>
+<span class="fc" id="L1318">                HeaderCard fcard = new HeaderCard(cardCountingArray);</span>
+<span class="fc" id="L1319">                String key = fcard.getKey();</span>
+<span class="fc bfc" id="L1320" title="All 2 branches covered.">                if (firstCard) {</span>
+<span class="fc" id="L1321">                    checkFirstCard(key);</span>
+<span class="fc" id="L1322">                    firstCard = false;</span>
                 }
 
-<span class="pc bpc" id="L1309" title="1 of 4 branches missed.">                if (key != null &amp;&amp; this.cards.containsKey(key)) {</span>
-<span class="fc" id="L1310">                    addDuplicate(this.cards.get(key));</span>
+<span class="pc bpc" id="L1325" title="1 of 4 branches missed.">                if (key != null &amp;&amp; this.cards.containsKey(key)) {</span>
+<span class="fc" id="L1326">                    addDuplicate(this.cards.get(key));</span>
                 }
 
                 // We don't check the value here. If the user
                 // wants to be sure that long strings are disabled,
                 // they can call setLongStringsEnabled(false) after
                 // reading the header.
-<span class="fc bfc" id="L1317" title="All 2 branches covered.">                if (LONGSTRN.key().equals(key)) {</span>
-<span class="fc" id="L1318">                    FitsFactory.setLongStringsEnabled(true);</span>
+<span class="fc bfc" id="L1333" title="All 2 branches covered.">                if (LONGSTRN.key().equals(key)) {</span>
+<span class="fc" id="L1334">                    FitsFactory.setLongStringsEnabled(true);</span>
                 }
                 // save card
-<span class="fc" id="L1321">                addLine(fcard);</span>
-<span class="fc bfc" id="L1322" title="All 2 branches covered.">                if (END.key().equals(key)) {</span>
-<span class="fc" id="L1323">                    break; // Out of reading the header.</span>
+<span class="fc" id="L1337">                addLine(fcard);</span>
+<span class="fc bfc" id="L1338" title="All 2 branches covered.">                if (END.key().equals(key)) {</span>
+<span class="fc" id="L1339">                    break; // Out of reading the header.</span>
                 }
-<span class="fc" id="L1325">            }</span>
-<span class="fc" id="L1326">        } catch (EOFException e) {</span>
-<span class="pc bpc" id="L1327" title="1 of 2 branches missed.">            if (!firstCard) {</span>
-<span class="nc" id="L1328">                throw new IOException(&quot;Invalid FITS Header:&quot;, new TruncatedFileException(e.getMessage()));</span>
+<span class="fc" id="L1341">            }</span>
+<span class="fc" id="L1342">        } catch (EOFException e) {</span>
+<span class="fc bfc" id="L1343" title="All 2 branches covered.">            if (!firstCard) {</span>
+<span class="fc" id="L1344">                throw new IOException(&quot;Invalid FITS Header:&quot;, new TruncatedFileException(e.getMessage()));</span>
             }
-<span class="fc" id="L1330">            throw e;</span>
+<span class="fc" id="L1346">            throw e;</span>
 
-<span class="fc" id="L1332">        } catch (TruncatedFileException e) {</span>
-<span class="pc bpc" id="L1333" title="1 of 4 branches missed.">            if (firstCard &amp;&amp; FitsFactory.getAllowTerminalJunk()) {</span>
-<span class="fc" id="L1334">                EOFException eofException = new EOFException(&quot;First card truncated&quot;);</span>
-<span class="fc" id="L1335">                eofException.initCause(e);</span>
-<span class="fc" id="L1336">                throw eofException;</span>
+<span class="fc" id="L1348">        } catch (TruncatedFileException e) {</span>
+<span class="pc bpc" id="L1349" title="1 of 4 branches missed.">            if (firstCard &amp;&amp; FitsFactory.getAllowTerminalJunk()) {</span>
+<span class="fc" id="L1350">                EOFException eofException = new EOFException(&quot;First card truncated&quot;);</span>
+<span class="fc" id="L1351">                eofException.initCause(e);</span>
+<span class="fc" id="L1352">                throw eofException;</span>
             }
-<span class="fc" id="L1338">            throw new IOException(&quot;Invalid FITS Header:&quot;, new TruncatedFileException(e.getMessage()));</span>
-<span class="fc" id="L1339">        } catch (Exception e) {</span>
-<span class="fc" id="L1340">            throw new IOException(&quot;Invalid FITS Header&quot;, e);</span>
-<span class="fc" id="L1341">        }</span>
-<span class="fc bfc" id="L1342" title="All 2 branches covered.">        if (this.fileOffset &gt;= 0) {</span>
-<span class="fc" id="L1343">            this.input = dis;</span>
+<span class="fc" id="L1354">            throw new IOException(&quot;Invalid FITS Header:&quot;, new TruncatedFileException(e.getMessage()));</span>
+<span class="fc" id="L1355">        } catch (Exception e) {</span>
+<span class="fc" id="L1356">            throw new IOException(&quot;Invalid FITS Header&quot;, e);</span>
+<span class="fc" id="L1357">        }</span>
+<span class="fc bfc" id="L1358" title="All 2 branches covered.">        if (this.fileOffset &gt;= 0) {</span>
+<span class="fc" id="L1359">            this.input = dis;</span>
         }
-<span class="fc" id="L1345">        this.originalCardCount = cardCountingArray.getPhysicalCardsRead();</span>
+<span class="fc" id="L1361">        this.originalCardCount = cardCountingArray.getPhysicalCardsRead();</span>
         // Read to the end of the current FITS block.
         //
         try {
-<span class="fc" id="L1349">            dis.skipAllBytes(FitsUtil.padding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE));</span>
-<span class="fc" id="L1350">        } catch (IOException e) {</span>
-<span class="fc" id="L1351">            throw new TruncatedFileException(&quot;Failed to skip &quot; + FitsUtil.padding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE) + &quot; bytes&quot;, e);</span>
-<span class="fc" id="L1352">        }</span>
-<span class="fc" id="L1353">    }</span>
+<span class="fc" id="L1365">            dis.skipAllBytes(FitsUtil.padding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE));</span>
+<span class="fc" id="L1366">        } catch (IOException e) {</span>
+<span class="fc" id="L1367">            throw new TruncatedFileException(&quot;Failed to skip &quot; + FitsUtil.padding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE) + &quot; bytes&quot;, e);</span>
+<span class="fc" id="L1368">        }</span>
+<span class="fc" id="L1369">    }</span>
 
     /**
      * Delete a key.
@@ -1363,8 +1379,8 @@ public class Header implements FitsElement {
      */
     @Deprecated
     public void removeCard(String key) throws HeaderCardException {
-<span class="fc" id="L1366">        deleteKey(key);</span>
-<span class="fc" id="L1367">    }</span>
+<span class="fc" id="L1382">        deleteKey(key);</span>
+<span class="fc" id="L1383">    }</span>
 
     /**
      * Replace the key with a new key. Typically this is used when deleting or
@@ -1379,7 +1395,7 @@ public class Header implements FitsElement {
      *                If &lt;CODE&gt;newKey&lt;/CODE&gt; is not a valid FITS keyword.
      */
     boolean replaceKey(IFitsHeader oldKey, IFitsHeader newKey) throws HeaderCardException {
-<span class="fc" id="L1382">        return replaceKey(oldKey.key(), newKey.key());</span>
+<span class="fc" id="L1398">        return replaceKey(oldKey.key(), newKey.key());</span>
     }
 
     /**
@@ -1395,26 +1411,26 @@ public class Header implements FitsElement {
      *                If &lt;CODE&gt;newKey&lt;/CODE&gt; is not a valid FITS keyword.
      */
     boolean replaceKey(String oldKey, String newKey) throws HeaderCardException {
-<span class="fc" id="L1398">        HeaderCard oldCard = findCard(oldKey);</span>
-<span class="pc bpc" id="L1399" title="1 of 2 branches missed.">        if (oldCard == null) {</span>
-<span class="nc" id="L1400">            return false;</span>
+<span class="fc" id="L1414">        HeaderCard oldCard = findCard(oldKey);</span>
+<span class="fc bfc" id="L1415" title="All 2 branches covered.">        if (oldCard == null) {</span>
+<span class="fc" id="L1416">            return false;</span>
         }
-<span class="pc bpc" id="L1402" title="1 of 2 branches missed.">        if (!this.cards.replaceKey(oldKey, newKey)) {</span>
-<span class="nc" id="L1403">            throw new HeaderCardException(&quot;Duplicate key in replace&quot;);</span>
+<span class="fc bfc" id="L1418" title="All 2 branches covered.">        if (!this.cards.replaceKey(oldKey, newKey)) {</span>
+<span class="fc" id="L1419">            throw new HeaderCardException(&quot;Duplicate key in replace&quot;);</span>
         }
-<span class="fc" id="L1405">        oldCard.setKey(newKey);</span>
-<span class="fc" id="L1406">        return true;</span>
+<span class="fc" id="L1421">        oldCard.setKey(newKey);</span>
+<span class="fc" id="L1422">        return true;</span>
     }
 
     /** Reset the file pointer to the beginning of the header */
     @Override
     public boolean reset() {
         try {
-<span class="fc" id="L1413">            FitsUtil.reposition(this.input, this.fileOffset);</span>
-<span class="fc" id="L1414">            return true;</span>
-<span class="nc" id="L1415">        } catch (Exception e) {</span>
-<span class="nc" id="L1416">            LOG.log(Level.WARNING, &quot;Exception while repositioning &quot; + input, e);</span>
-<span class="nc" id="L1417">            return false;</span>
+<span class="fc" id="L1429">            FitsUtil.reposition(this.input, this.fileOffset);</span>
+<span class="fc" id="L1430">            return true;</span>
+<span class="fc" id="L1431">        } catch (Exception e) {</span>
+<span class="fc" id="L1432">            LOG.log(Level.WARNING, &quot;Exception while repositioning &quot; + input, e);</span>
+<span class="fc" id="L1433">            return false;</span>
         }
     }
 
@@ -1425,27 +1441,27 @@ public class Header implements FitsElement {
      * method unless the underlying data has actually been updated.
      */
     public void resetOriginalSize() {
-<span class="fc" id="L1428">        this.originalCardCount = getNumberOfPhysicalCards();</span>
-<span class="fc" id="L1429">    }</span>
+<span class="fc" id="L1444">        this.originalCardCount = getNumberOfPhysicalCards();</span>
+<span class="fc" id="L1445">    }</span>
 
     /** Rewrite the header. */
     @Override
     public void rewrite() throws FitsException, IOException {
 
-<span class="fc" id="L1435">        ArrayDataOutput dos = (ArrayDataOutput) this.input;</span>
+<span class="fc" id="L1451">        ArrayDataOutput dos = (ArrayDataOutput) this.input;</span>
 
-<span class="pc bpc" id="L1437" title="1 of 2 branches missed.">        if (rewriteable()) {</span>
-<span class="fc" id="L1438">            FitsUtil.reposition(dos, this.fileOffset);</span>
-<span class="fc" id="L1439">            write(dos);</span>
-<span class="fc" id="L1440">            dos.flush();</span>
+<span class="fc bfc" id="L1453" title="All 2 branches covered.">        if (rewriteable()) {</span>
+<span class="fc" id="L1454">            FitsUtil.reposition(dos, this.fileOffset);</span>
+<span class="fc" id="L1455">            write(dos);</span>
+<span class="fc" id="L1456">            dos.flush();</span>
         } else {
-<span class="nc" id="L1442">            throw new FitsException(&quot;Invalid attempt to rewrite Header.&quot;);</span>
+<span class="fc" id="L1458">            throw new FitsException(&quot;Invalid attempt to rewrite Header.&quot;);</span>
         }
-<span class="fc" id="L1444">    }</span>
+<span class="fc" id="L1460">    }</span>
 
     @Override
     public boolean rewriteable() {
-<span class="pc bpc" id="L1448" title="2 of 6 branches missed.">        return this.fileOffset &gt;= 0 &amp;&amp; this.input instanceof ArrayDataOutput &amp;&amp; //</span>
+<span class="pc bpc" id="L1464" title="1 of 6 branches missed.">        return this.fileOffset &gt;= 0 &amp;&amp; this.input instanceof ArrayDataOutput &amp;&amp; //</span>
                 (getNumberOfPhysicalCards() + (MAX_CARDS_PER_HEADER - 1)) / MAX_CARDS_PER_HEADER == //
                 (this.originalCardCount + (MAX_CARDS_PER_HEADER - 1)) / MAX_CARDS_PER_HEADER;
     }
@@ -1466,10 +1482,10 @@ public class Header implements FitsElement {
      *            The value set by the user.
      */
     public void setBitpix(int val) {
-<span class="fc" id="L1469">        this.iter = iterator();</span>
-<span class="fc" id="L1470">        this.iter.next();</span>
-<span class="fc" id="L1471">        this.iter.add(HeaderCard.saveNewHeaderCard(BITPIX.key(), BITPIX.comment(), false).setValue(val));</span>
-<span class="fc" id="L1472">    }</span>
+<span class="fc" id="L1485">        this.iter = iterator();</span>
+<span class="fc" id="L1486">        this.iter.next();</span>
+<span class="fc" id="L1487">        this.iter.add(HeaderCard.saveNewHeaderCard(BITPIX.key(), BITPIX.comment(), false).setValue(val));</span>
+<span class="fc" id="L1488">    }</span>
 
     /**
      * Set the value of the NAXIS keyword
@@ -1478,12 +1494,12 @@ public class Header implements FitsElement {
      *            The dimensionality of the data.
      */
     public void setNaxes(int val) {
-<span class="fc" id="L1481">        this.iter.setKey(BITPIX.key());</span>
-<span class="pc bpc" id="L1482" title="1 of 2 branches missed.">        if (this.iter.hasNext()) {</span>
-<span class="fc" id="L1483">            this.iter.next();</span>
+<span class="fc" id="L1497">        this.iter.setKey(BITPIX.key());</span>
+<span class="fc bfc" id="L1498" title="All 2 branches covered.">        if (this.iter.hasNext()) {</span>
+<span class="fc" id="L1499">            this.iter.next();</span>
         }
-<span class="fc" id="L1485">        this.iter.add(HeaderCard.saveNewHeaderCard(NAXIS.key(), NAXIS.comment(), false).setValue(val));</span>
-<span class="fc" id="L1486">    }</span>
+<span class="fc" id="L1501">        this.iter.add(HeaderCard.saveNewHeaderCard(NAXIS.key(), NAXIS.comment(), false).setValue(val));</span>
+<span class="fc" id="L1502">    }</span>
 
     /**
      * Set the dimension for a given axis.
@@ -1495,21 +1511,21 @@ public class Header implements FitsElement {
      */
     public void setNaxis(int axis, int dim) {
 
-<span class="fc bfc" id="L1498" title="All 2 branches covered.">        if (axis &lt;= 0) {</span>
-<span class="fc" id="L1499">            LOG.warning(&quot;setNaxis ignored because axis less than 0&quot;);</span>
-<span class="fc" id="L1500">            return;</span>
+<span class="fc bfc" id="L1514" title="All 2 branches covered.">        if (axis &lt;= 0) {</span>
+<span class="fc" id="L1515">            LOG.warning(&quot;setNaxis ignored because axis less than 0&quot;);</span>
+<span class="fc" id="L1516">            return;</span>
         }
-<span class="fc bfc" id="L1502" title="All 2 branches covered.">        if (axis == 1) {</span>
-<span class="fc" id="L1503">            this.iter.setKey(NAXIS.key());</span>
-<span class="pc bpc" id="L1504" title="1 of 2 branches missed.">        } else if (axis &gt; 1) {</span>
-<span class="fc" id="L1505">            this.iter.setKey(NAXISn.n(axis - 1).key());</span>
+<span class="fc bfc" id="L1518" title="All 2 branches covered.">        if (axis == 1) {</span>
+<span class="fc" id="L1519">            this.iter.setKey(NAXIS.key());</span>
+<span class="pc bpc" id="L1520" title="1 of 2 branches missed.">        } else if (axis &gt; 1) {</span>
+<span class="fc" id="L1521">            this.iter.setKey(NAXISn.n(axis - 1).key());</span>
         }
-<span class="pc bpc" id="L1507" title="1 of 2 branches missed.">        if (this.iter.hasNext()) {</span>
-<span class="fc" id="L1508">            this.iter.next();</span>
+<span class="pc bpc" id="L1523" title="1 of 2 branches missed.">        if (this.iter.hasNext()) {</span>
+<span class="fc" id="L1524">            this.iter.next();</span>
         }
-<span class="fc" id="L1510">        IFitsHeader naxisKey = NAXISn.n(axis);</span>
-<span class="fc" id="L1511">        this.iter.add(HeaderCard.saveNewHeaderCard(naxisKey.key(), naxisKey.comment(), false).setValue(dim));</span>
-<span class="fc" id="L1512">    }</span>
+<span class="fc" id="L1526">        IFitsHeader naxisKey = NAXISn.n(axis);</span>
+<span class="fc" id="L1527">        this.iter.add(HeaderCard.saveNewHeaderCard(naxisKey.key(), naxisKey.comment(), false).setValue(dim));</span>
+<span class="fc" id="L1528">    }</span>
 
     /**
      * Set the SIMPLE keyword to the given value.
@@ -1518,46 +1534,41 @@ public class Header implements FitsElement {
      *            The boolean value -- Should be true for FITS data.
      */
     public void setSimple(boolean val) {
-<span class="fc" id="L1521">        deleteKey(SIMPLE);</span>
-<span class="fc" id="L1522">        deleteKey(XTENSION);</span>
+<span class="fc" id="L1537">        deleteKey(SIMPLE);</span>
+<span class="fc" id="L1538">        deleteKey(XTENSION);</span>
 
         // If we're flipping back to and from the primary header
         // we need to add in the EXTEND keyword whenever we become
         // a primary, because it's not permitted in the extensions
         // (at least not where it needs to be in the primary array).
-<span class="fc bfc" id="L1528" title="All 2 branches covered.">        if (findCard(NAXIS) != null) {</span>
-<span class="fc" id="L1529">            int nax = getIntValue(NAXIS);</span>
+<span class="fc bfc" id="L1544" title="All 2 branches covered.">        if (findCard(NAXIS) != null) {</span>
+<span class="fc" id="L1545">            int nax = getIntValue(NAXIS);</span>
 
-<span class="fc" id="L1531">            this.iter = iterator();</span>
+<span class="fc" id="L1547">            this.iter = iterator();</span>
 
-<span class="fc bfc" id="L1533" title="All 2 branches covered.">            if (findCard(NAXISn.n(nax)) != null) {</span>
-<span class="fc" id="L1534">                this.iter.next();</span>
-                try {
-<span class="fc" id="L1536">                    deleteKey(&quot;EXTEND&quot;);</span>
-<span class="fc" id="L1537">                    this.iter.add(new HeaderCard(EXTEND.key(), true, EXTEND.comment()));</span>
-<span class="nc" id="L1538">                } catch (Exception e) {</span>
-<span class="nc" id="L1539">                    LOG.log(Level.FINE, &quot;exception ignored in setSimple&quot;, e);</span>
-<span class="fc" id="L1540">                }</span>
+<span class="fc bfc" id="L1549" title="All 2 branches covered.">            if (findCard(NAXISn.n(nax)) != null) {</span>
+<span class="fc" id="L1550">                this.iter.next();</span>
+<span class="fc" id="L1551">                deleteKey(EXTEND);</span>
+<span class="fc" id="L1552">                this.iter.add(HeaderCard.saveNewHeaderCard(EXTEND.key(), EXTEND.comment(), false).setValue(true));</span>
             }
         }
-<span class="fc" id="L1543">        this.iter = iterator();</span>
-<span class="fc" id="L1544">        this.iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), SIMPLE.comment(), false).setValue(val));</span>
-<span class="fc" id="L1545">    }</span>
+<span class="fc" id="L1555">        this.iter = iterator();</span>
+<span class="fc" id="L1556">        this.iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), SIMPLE.comment(), false).setValue(val));</span>
+<span class="fc" id="L1557">    }</span>
 
     /**
      * Set the XTENSION keyword to the given value.
      * 
      * @param val
-     *            The name of the extension. &quot;IMAGE&quot; and &quot;BINTABLE&quot; are
-     *            supported.
+     *            The name of the extension.
      */
     public void setXtension(String val) {
-<span class="fc" id="L1555">        deleteKey(SIMPLE);</span>
-<span class="fc" id="L1556">        deleteKey(XTENSION);</span>
-<span class="fc" id="L1557">        deleteKey(EXTEND);</span>
-<span class="fc" id="L1558">        this.iter = iterator();</span>
-<span class="fc" id="L1559">        this.iter.add(HeaderCard.saveNewHeaderCard(XTENSION.key(), XTENSION.comment(), true).setValue(val));</span>
-<span class="fc" id="L1560">    }</span>
+<span class="fc" id="L1566">        deleteKey(SIMPLE);</span>
+<span class="fc" id="L1567">        deleteKey(XTENSION);</span>
+<span class="fc" id="L1568">        deleteKey(EXTEND);</span>
+<span class="fc" id="L1569">        this.iter = iterator();</span>
+<span class="fc" id="L1570">        this.iter.add(HeaderCard.saveNewHeaderCard(XTENSION.key(), XTENSION.comment(), true).setValue(val));</span>
+<span class="fc" id="L1571">    }</span>
 
     /**
      * @return the number of cards in the header
@@ -1566,7 +1577,7 @@ public class Header implements FitsElement {
      */
     @Deprecated
     public int size() {
-<span class="fc" id="L1569">        return this.cards.size();</span>
+<span class="fc" id="L1580">        return this.cards.size();</span>
     }
 
     /**
@@ -1577,49 +1588,49 @@ public class Header implements FitsElement {
      */
     long trueDataSize() {
 
-<span class="pc bpc" id="L1580" title="1 of 2 branches missed.">        if (!isValidHeader()) {</span>
-<span class="nc" id="L1581">            return 0L;</span>
+<span class="fc bfc" id="L1591" title="All 2 branches covered.">        if (!isValidHeader()) {</span>
+<span class="fc" id="L1592">            return 0L;</span>
         }
 
-<span class="fc" id="L1584">        int naxis = getIntValue(NAXIS, 0);</span>
+<span class="fc" id="L1595">        int naxis = getIntValue(NAXIS, 0);</span>
 
         // If there are no axes then there is no data.
-<span class="pc bpc" id="L1587" title="1 of 2 branches missed.">        if (naxis == 0) {</span>
-<span class="nc" id="L1588">            return 0L;</span>
+<span class="fc bfc" id="L1598" title="All 2 branches covered.">        if (naxis == 0) {</span>
+<span class="fc" id="L1599">            return 0L;</span>
         }
 
-<span class="fc" id="L1591">        getIntValue(BITPIX);</span>
+<span class="fc" id="L1602">        getIntValue(BITPIX);</span>
 
-<span class="fc" id="L1593">        int[] axes = new int[naxis];</span>
+<span class="fc" id="L1604">        int[] axes = new int[naxis];</span>
 
-<span class="fc bfc" id="L1595" title="All 2 branches covered.">        for (int axis = 1; axis &lt;= naxis; axis += 1) {</span>
-<span class="fc" id="L1596">            axes[axis - 1] = getIntValue(NAXISn.n(axis), 0);</span>
+<span class="fc bfc" id="L1606" title="All 2 branches covered.">        for (int axis = 1; axis &lt;= naxis; axis += 1) {</span>
+<span class="fc" id="L1607">            axes[axis - 1] = getIntValue(NAXISn.n(axis), 0);</span>
         }
 
-<span class="fc" id="L1599">        boolean isGroup = getBooleanValue(GROUPS, false);</span>
+<span class="fc" id="L1610">        boolean isGroup = getBooleanValue(GROUPS, false);</span>
 
-<span class="fc" id="L1601">        int pcount = getIntValue(PCOUNT, 0);</span>
-<span class="fc" id="L1602">        int gcount = getIntValue(GCOUNT, 1);</span>
+<span class="fc" id="L1612">        int pcount = getIntValue(PCOUNT, 0);</span>
+<span class="fc" id="L1613">        int gcount = getIntValue(GCOUNT, 1);</span>
 
-<span class="fc" id="L1604">        int startAxis = 0;</span>
+<span class="fc" id="L1615">        int startAxis = 0;</span>
 
-<span class="pc bpc" id="L1606" title="5 of 6 branches missed.">        if (isGroup &amp;&amp; naxis &gt; 1 &amp;&amp; axes[0] == 0) {</span>
-<span class="nc" id="L1607">            startAxis = 1;</span>
+<span class="pc bpc" id="L1617" title="2 of 6 branches missed.">        if (isGroup &amp;&amp; naxis &gt; 1 &amp;&amp; axes[0] == 0) {</span>
+<span class="fc" id="L1618">            startAxis = 1;</span>
         }
 
-<span class="fc" id="L1610">        long size = 1;</span>
-<span class="fc bfc" id="L1611" title="All 2 branches covered.">        for (int i = startAxis; i &lt; naxis; i += 1) {</span>
-<span class="fc" id="L1612">            size *= axes[i];</span>
+<span class="fc" id="L1621">        long size = 1;</span>
+<span class="fc bfc" id="L1622" title="All 2 branches covered.">        for (int i = startAxis; i &lt; naxis; i += 1) {</span>
+<span class="fc" id="L1623">            size *= axes[i];</span>
         }
 
-<span class="fc" id="L1615">        size += pcount;</span>
-<span class="fc" id="L1616">        size *= gcount;</span>
+<span class="fc" id="L1626">        size += pcount;</span>
+<span class="fc" id="L1627">        size *= gcount;</span>
 
         // Now multiply by the number of bits per pixel and
         // convert to bytes.
-<span class="fc" id="L1620">        size *= Math.abs(getIntValue(BITPIX, 0)) / FitsIO.BITS_OF_1_BYTE;</span>
+<span class="fc" id="L1631">        size *= Math.abs(getIntValue(BITPIX, 0)) / FitsIO.BITS_OF_1_BYTE;</span>
 
-<span class="fc" id="L1622">        return size;</span>
+<span class="fc" id="L1633">        return size;</span>
     }
 
     /**
@@ -1633,9 +1644,9 @@ public class Header implements FitsElement {
      *             if the operation failed
      */
     public void updateLine(IFitsHeader key, HeaderCard card) throws HeaderCardException {
-<span class="fc" id="L1636">        deleteKey(key);</span>
-<span class="fc" id="L1637">        this.iter.add(card);</span>
-<span class="fc" id="L1638">    }</span>
+<span class="fc" id="L1647">        deleteKey(key);</span>
+<span class="fc" id="L1648">        this.iter.add(card);</span>
+<span class="fc" id="L1649">    }</span>
 
     /**
      * Update a line in the header
@@ -1648,8 +1659,8 @@ public class Header implements FitsElement {
      *             if the operation failed
      */
     public void updateLine(String key, HeaderCard card) throws HeaderCardException {
-<span class="fc" id="L1651">        addHeaderCard(key, card);</span>
-<span class="fc" id="L1652">    }</span>
+<span class="fc" id="L1662">        addHeaderCard(key, card);</span>
+<span class="fc" id="L1663">    }</span>
 
     /**
      * Overwrite the lines in the header. Add the new PHDU header to the current
@@ -1662,21 +1673,21 @@ public class Header implements FitsElement {
      *             if the operation failed
      */
     public void updateLines(final Header newHdr) throws HeaderCardException {
-<span class="fc" id="L1665">        Cursor&lt;String, HeaderCard&gt; j = newHdr.iterator();</span>
+<span class="fc" id="L1676">        Cursor&lt;String, HeaderCard&gt; j = newHdr.iterator();</span>
 
-<span class="fc bfc" id="L1667" title="All 2 branches covered.">        while (j.hasNext()) {</span>
-<span class="fc" id="L1668">            HeaderCard nextHCard = j.next();</span>
+<span class="fc bfc" id="L1678" title="All 2 branches covered.">        while (j.hasNext()) {</span>
+<span class="fc" id="L1679">            HeaderCard nextHCard = j.next();</span>
             // updateLine() doesn't work with COMMENT and HISTORYs because
             // this would allow only one COMMENT in total in each header
-<span class="fc bfc" id="L1671" title="All 2 branches covered.">            if (nextHCard.getKey().equals(COMMENT.key())) {</span>
-<span class="fc" id="L1672">                insertComment(nextHCard.getComment());</span>
-<span class="fc bfc" id="L1673" title="All 2 branches covered.">            } else if (nextHCard.getKey().equals(HISTORY.key())) {</span>
-<span class="fc" id="L1674">                insertHistory(nextHCard.getComment());</span>
+<span class="fc bfc" id="L1682" title="All 2 branches covered.">            if (nextHCard.getKey().equals(COMMENT.key())) {</span>
+<span class="fc" id="L1683">                insertComment(nextHCard.getComment());</span>
+<span class="fc bfc" id="L1684" title="All 2 branches covered.">            } else if (nextHCard.getKey().equals(HISTORY.key())) {</span>
+<span class="fc" id="L1685">                insertHistory(nextHCard.getComment());</span>
             } else {
-<span class="fc" id="L1676">                updateLine(nextHCard.getKey(), nextHCard);</span>
+<span class="fc" id="L1687">                updateLine(nextHCard.getKey(), nextHCard);</span>
             }
-<span class="fc" id="L1678">        }</span>
-<span class="fc" id="L1679">    }</span>
+<span class="fc" id="L1689">        }</span>
+<span class="fc" id="L1690">    }</span>
 
     /**
      * Write the current header (including any needed padding) to the output
@@ -1689,23 +1700,23 @@ public class Header implements FitsElement {
      */
     @Override
     public void write(ArrayDataOutput dos) throws FitsException {
-<span class="fc" id="L1692">        this.fileOffset = FitsUtil.findOffset(dos);</span>
+<span class="fc" id="L1703">        this.fileOffset = FitsUtil.findOffset(dos);</span>
         // Ensure that all cards are in the proper order.
-<span class="fc" id="L1694">        this.cards.sort(new HeaderOrder());</span>
-<span class="fc" id="L1695">        checkBeginning();</span>
-<span class="fc" id="L1696">        checkEnd();</span>
-<span class="fc" id="L1697">        Cursor&lt;String, HeaderCard&gt; writeIterator = this.cards.iterator(0);</span>
+<span class="fc" id="L1705">        this.cards.sort(new HeaderOrder());</span>
+<span class="fc" id="L1706">        checkBeginning();</span>
+<span class="fc" id="L1707">        checkEnd();</span>
+<span class="fc" id="L1708">        Cursor&lt;String, HeaderCard&gt; writeIterator = this.cards.iterator(0);</span>
         try {
-<span class="fc bfc" id="L1699" title="All 2 branches covered.">            while (writeIterator.hasNext()) {</span>
-<span class="fc" id="L1700">                HeaderCard card = writeIterator.next();</span>
-<span class="fc" id="L1701">                byte[] b = AsciiFuncs.getBytes(card.toString());</span>
-<span class="fc" id="L1702">                dos.write(b);</span>
-<span class="fc" id="L1703">            }</span>
-<span class="fc" id="L1704">            FitsUtil.pad(dos, getNumberOfPhysicalCards() * HeaderCard.FITS_HEADER_CARD_SIZE, (byte) ' ');</span>
-<span class="fc" id="L1705">            dos.flush();</span>
-<span class="fc" id="L1706">        } catch (IOException e) {</span>
-<span class="fc" id="L1707">            throw new FitsException(&quot;IO Error writing header: &quot; + e);</span>
-<span class="fc" id="L1708">        }</span>
-<span class="fc" id="L1709">    }</span>
+<span class="fc bfc" id="L1710" title="All 2 branches covered.">            while (writeIterator.hasNext()) {</span>
+<span class="fc" id="L1711">                HeaderCard card = writeIterator.next();</span>
+<span class="fc" id="L1712">                byte[] b = AsciiFuncs.getBytes(card.toString());</span>
+<span class="fc" id="L1713">                dos.write(b);</span>
+<span class="fc" id="L1714">            }</span>
+<span class="fc" id="L1715">            FitsUtil.pad(dos, getNumberOfPhysicalCards() * HeaderCard.FITS_HEADER_CARD_SIZE, (byte) ' ');</span>
+<span class="fc" id="L1716">            dos.flush();</span>
+<span class="fc" id="L1717">        } catch (IOException e) {</span>
+<span class="fc" id="L1718">            throw new FitsException(&quot;IO Error writing header: &quot; + e);</span>
+<span class="fc" id="L1719">        }</span>
+<span class="fc" id="L1720">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

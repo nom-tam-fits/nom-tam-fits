@@ -151,8 +151,8 @@ public class AsciiTable extends AbstractTableData {
 <span class="fc bfc" id="L151" title="All 2 branches covered.">        for (int i = 0; i &lt; this.nFields; i += 1) {</span>
 <span class="fc" id="L152">            this.offsets[i] = hdr.getIntValue(TBCOLn.n(i + 1)) - 1;</span>
 <span class="fc" id="L153">            String s = hdr.getStringValue(TFORMn.n(i + 1));</span>
-<span class="pc bpc" id="L154" title="2 of 4 branches missed.">            if (this.offsets[i] &lt; 0 || s == null) {</span>
-<span class="nc" id="L155">                throw new FitsException(&quot;Invalid Specification for column:&quot; + (i + 1));</span>
+<span class="pc bpc" id="L154" title="1 of 4 branches missed.">            if (this.offsets[i] &lt; 0 || s == null) {</span>
+<span class="fc" id="L155">                throw new FitsException(&quot;Invalid Specification for column:&quot; + (i + 1));</span>
             }
 <span class="fc" id="L157">            s = s.trim();</span>
 <span class="fc" id="L158">            char c = s.charAt(0);</span>
@@ -162,7 +162,7 @@ public class AsciiTable extends AbstractTableData {
             }
 <span class="fc" id="L163">            this.lengths[i] = Integer.parseInt(s);</span>
 
-<span class="pc bpc" id="L165" title="1 of 5 branches missed.">            switch (c) {</span>
+<span class="fc bfc" id="L165" title="All 5 branches covered.">            switch (c) {</span>
                 case 'A':
 <span class="fc" id="L167">                    this.types[i] = String.class;</span>
 <span class="fc" id="L168">                    break;</span>
@@ -181,7 +181,7 @@ public class AsciiTable extends AbstractTableData {
 <span class="fc" id="L181">                    this.types[i] = double.class;</span>
 <span class="fc" id="L182">                    break;</span>
                 default:
-<span class="nc" id="L184">                    throw new FitsException(&quot;could not parse column type of ascii table&quot;);</span>
+<span class="fc" id="L184">                    throw new FitsException(&quot;could not parse column type of ascii table&quot;);</span>
             }
 
 <span class="fc" id="L187">            this.nulls[i] = hdr.getStringValue(TNULLn.n(i + 1));</span>
@@ -500,8 +500,8 @@ public class AsciiTable extends AbstractTableData {
             } else {
 <span class="nc" id="L501">                throw new FitsException(&quot;Invalid type for ASCII table conversion:&quot; + array[col]);</span>
             }
-<span class="nc" id="L503">        } catch (FormatException e) {</span>
-<span class="nc" id="L504">            throw new FitsException(&quot;Error parsing data at row,col:&quot; + row + &quot;,&quot; + col + &quot;  &quot; + e);</span>
+<span class="fc" id="L503">        } catch (FormatException e) {</span>
+<span class="fc" id="L504">            throw new FitsException(&quot;Error parsing data at row,col:&quot; + row + &quot;,&quot; + col + &quot;  &quot; + e);</span>
 <span class="fc" id="L505">        }</span>
 <span class="fc" id="L506">        return true;</span>
     }
@@ -737,9 +737,9 @@ public class AsciiTable extends AbstractTableData {
 <span class="fc" id="L737">        Object[] res = new Object[1];</span>
         try {
 <span class="fc" id="L739">            getBuffer(this.lengths[col], this.fileOffset + (long) row * (long) this.rowLen + this.offsets[col]);</span>
-<span class="nc" id="L740">        } catch (IOException e) {</span>
-<span class="nc" id="L741">            this.buffer = null;</span>
-<span class="nc" id="L742">            throw new FitsException(&quot;Unable to read element&quot;, e);</span>
+<span class="fc" id="L740">        } catch (IOException e) {</span>
+<span class="fc" id="L741">            this.buffer = null;</span>
+<span class="fc" id="L742">            throw new FitsException(&quot;Unable to read element&quot;, e);</span>
 <span class="fc" id="L743">        }</span>
 <span class="fc" id="L744">        res[0] = ArrayFuncs.newInstance(this.types[col], 1);</span>
 
@@ -767,8 +767,8 @@ public class AsciiTable extends AbstractTableData {
 
         try {
 <span class="fc" id="L769">            getBuffer(this.rowLen, this.fileOffset + (long) row * (long) this.rowLen);</span>
-<span class="nc" id="L770">        } catch (IOException e) {</span>
-<span class="nc" id="L771">            throw new FitsException(&quot;Unable to read row&quot;, e);</span>
+<span class="fc" id="L770">        } catch (IOException e) {</span>
+<span class="fc" id="L771">            throw new FitsException(&quot;Unable to read row&quot;, e);</span>
 <span class="fc" id="L772">        }</span>
 
 <span class="fc bfc" id="L774" title="All 2 branches covered.">        for (int i = 0; i &lt; this.nFields; i += 1) {</span>
@@ -801,16 +801,16 @@ public class AsciiTable extends AbstractTableData {
 <span class="fc bfc" id="L801" title="All 2 branches covered.">            if (str instanceof RandomAccess) {</span>
 <span class="fc" id="L802">                str.skipAllBytes((long) this.nRows * this.rowLen);</span>
             } else {
-<span class="pc bpc" id="L804" title="1 of 2 branches missed.">                if ((long) this.rowLen * this.nRows &gt; Integer.MAX_VALUE) {</span>
-<span class="nc" id="L805">                    throw new FitsException(&quot;Cannot read ASCII table &gt; 2 GB&quot;);</span>
+<span class="fc bfc" id="L804" title="All 2 branches covered.">                if ((long) this.rowLen * this.nRows &gt; Integer.MAX_VALUE) {</span>
+<span class="fc" id="L805">                    throw new FitsException(&quot;Cannot read ASCII table &gt; 2 GB&quot;);</span>
                 }
 <span class="fc" id="L807">                getBuffer(this.rowLen * this.nRows, 0);</span>
             }
 <span class="fc" id="L809">            str.skipAllBytes(FitsUtil.padding(this.nRows * this.rowLen));</span>
-<span class="nc" id="L810">        } catch (EOFException e) {</span>
-<span class="nc" id="L811">            throw new PaddingException(&quot;EOF skipping padding after ASCII Table&quot;, this, e);</span>
-<span class="nc" id="L812">        } catch (IOException e) {</span>
-<span class="nc" id="L813">            throw new FitsException(&quot;Error skipping padding after ASCII Table&quot;, e);</span>
+<span class="fc" id="L810">        } catch (EOFException e) {</span>
+<span class="fc" id="L811">            throw new PaddingException(&quot;EOF skipping padding after ASCII Table&quot;, this, e);</span>
+<span class="fc" id="L812">        } catch (IOException e) {</span>
+<span class="fc" id="L813">            throw new FitsException(&quot;Error skipping padding after ASCII Table&quot;, e);</span>
 <span class="fc" id="L814">        }</span>
 <span class="fc" id="L815">    }</span>
 
@@ -918,15 +918,15 @@ public class AsciiTable extends AbstractTableData {
 
     @Override
     public void setRow(int row, Object[] newData) throws FitsException {
-<span class="pc bpc" id="L921" title="2 of 4 branches missed.">        if (row &lt; 0 || row &gt; this.nRows) {</span>
-<span class="nc" id="L922">            throw new FitsException(&quot;Invalid row in setRow&quot;);</span>
+<span class="pc bpc" id="L921" title="1 of 4 branches missed.">        if (row &lt; 0 || row &gt; this.nRows) {</span>
+<span class="fc" id="L922">            throw new FitsException(&quot;Invalid row in setRow&quot;);</span>
         }
 <span class="fc" id="L924">        ensureData();</span>
 <span class="fc bfc" id="L925" title="All 2 branches covered.">        for (int i = 0; i &lt; this.nFields; i += 1) {</span>
             try {
 <span class="fc" id="L927">                System.arraycopy(newData[i], 0, this.data[i], row, 1);</span>
-<span class="nc" id="L928">            } catch (Exception e) {</span>
-<span class="nc" id="L929">                throw new FitsException(&quot;Unable to modify row: incompatible data:&quot; + row, e);</span>
+<span class="fc" id="L928">            } catch (Exception e) {</span>
+<span class="fc" id="L929">                throw new FitsException(&quot;Unable to modify row: incompatible data:&quot; + row, e);</span>
 <span class="fc" id="L930">            }</span>
 <span class="fc" id="L931">            setNull(row, i, false);</span>
         }
@@ -1011,12 +1011,12 @@ public class AsciiTable extends AbstractTableData {
 
 <span class="fc bfc" id="L1012" title="All 2 branches covered.">        if (this.buffer == null) {</span>
 
-<span class="pc bpc" id="L1014" title="1 of 2 branches missed.">            if (this.data == null) {</span>
-<span class="nc" id="L1015">                throw new FitsException(&quot;Attempt to write undefined ASCII Table&quot;);</span>
+<span class="fc bfc" id="L1014" title="All 2 branches covered.">            if (this.data == null) {</span>
+<span class="fc" id="L1015">                throw new FitsException(&quot;Attempt to write undefined ASCII Table&quot;);</span>
             }
 
-<span class="pc bpc" id="L1018" title="1 of 2 branches missed.">            if ((long) this.nRows * this.rowLen &gt; Integer.MAX_VALUE) {</span>
-<span class="nc" id="L1019">                throw new FitsException(&quot;Cannot write ASCII table &gt; 2 GB&quot;);</span>
+<span class="fc bfc" id="L1018" title="All 2 branches covered.">            if ((long) this.nRows * this.rowLen &gt; Integer.MAX_VALUE) {</span>
+<span class="fc" id="L1019">                throw new FitsException(&quot;Cannot write ASCII table &gt; 2 GB&quot;);</span>
             }
 
 <span class="fc" id="L1022">            this.buffer = new byte[this.nRows * this.rowLen];</span>
@@ -1064,9 +1064,9 @@ public class AsciiTable extends AbstractTableData {
         try {
 <span class="fc" id="L1065">            str.write(this.buffer);</span>
 <span class="fc" id="L1066">            FitsUtil.pad(str, this.buffer.length, (byte) ' ');</span>
-<span class="nc" id="L1067">        } catch (IOException e) {</span>
-<span class="nc" id="L1068">            throw new FitsException(&quot;Error writing ASCII Table data&quot;, e);</span>
+<span class="fc" id="L1067">        } catch (IOException e) {</span>
+<span class="fc" id="L1068">            throw new FitsException(&quot;Error writing ASCII Table data&quot;, e);</span>
 <span class="fc" id="L1069">        }</span>
 <span class="fc" id="L1070">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

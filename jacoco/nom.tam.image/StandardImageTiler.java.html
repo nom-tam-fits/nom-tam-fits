@@ -149,10 +149,10 @@ public abstract class StandardImageTiler implements ImageTiler {
 <span class="fc" id="L149">            this.randomAccessFile.read((double[]) output, outputOffset, segment);</span>
 <span class="fc bfc" id="L150" title="All 2 branches covered.">        } else if (this.base == byte.class) {</span>
 <span class="fc" id="L151">            this.randomAccessFile.read((byte[]) output, outputOffset, segment);</span>
-<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        } else if (this.base == long.class) {</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        } else if (this.base == long.class) {</span>
 <span class="fc" id="L153">            this.randomAccessFile.read((long[]) output, outputOffset, segment);</span>
         } else {
-<span class="nc" id="L155">            throw new IOException(&quot;Invalid type for tile array&quot;);</span>
+<span class="fc" id="L155">            throw new IOException(&quot;Invalid type for tile array&quot;);</span>
         }
 <span class="fc" id="L157">    }</span>
 
@@ -189,13 +189,13 @@ public abstract class StandardImageTiler implements ImageTiler {
 <span class="fc" id="L189">            int startTo = outputOffset;</span>
 <span class="fc" id="L190">            int copyLength = length;</span>
 
-<span class="pc bpc" id="L192" title="1 of 2 branches missed.">            if (posits[dim] &lt; 0) {</span>
-<span class="nc" id="L193">                startFrom -= posits[dim];</span>
-<span class="nc" id="L194">                startTo -= posits[dim];</span>
-<span class="nc" id="L195">                copyLength += posits[dim];</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">            if (posits[dim] &lt; 0) {</span>
+<span class="fc" id="L193">                startFrom -= posits[dim];</span>
+<span class="fc" id="L194">                startTo -= posits[dim];</span>
+<span class="fc" id="L195">                copyLength += posits[dim];</span>
             }
-<span class="pc bpc" id="L197" title="1 of 2 branches missed.">            if (posits[dim] + length &gt; this.dims[dim]) {</span>
-<span class="nc" id="L198">                copyLength -= posits[dim] + length - this.dims[dim];</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">            if (posits[dim] + length &gt; this.dims[dim]) {</span>
+<span class="fc" id="L198">                copyLength -= posits[dim] + length - this.dims[dim];</span>
             }
 
 <span class="fc" id="L201">            System.arraycopy(data, startFrom, output, startTo, copyLength);</span>
@@ -250,9 +250,9 @@ public abstract class StandardImageTiler implements ImageTiler {
 
 <span class="fc bfc" id="L251" title="All 2 branches covered.">            if (validSegment) {</span>
 <span class="fc bfc" id="L252" title="All 2 branches covered.">                for (int i = 0; i &lt; mx; i += 1) {</span>
-<span class="pc bpc" id="L253" title="2 of 4 branches missed.">                    if (posits[i] &lt; 0 || posits[i] &gt;= newDims[i]) {</span>
-<span class="nc" id="L254">                        validSegment = false;</span>
-<span class="nc" id="L255">                        break;</span>
+<span class="fc bfc" id="L253" title="All 4 branches covered.">                    if (posits[i] &lt; 0 || posits[i] &gt;= newDims[i]) {</span>
+<span class="fc" id="L254">                        validSegment = false;</span>
+<span class="fc" id="L255">                        break;</span>
                     }
                 }
             }
@@ -268,13 +268,13 @@ public abstract class StandardImageTiler implements ImageTiler {
 <span class="fc" id="L268">                    int actualLen = segment;</span>
 <span class="fc" id="L269">                    int actualOffset = offset;</span>
 <span class="fc" id="L270">                    int actualOutput = outputOffset;</span>
-<span class="pc bpc" id="L271" title="1 of 2 branches missed.">                    if (posits[mx] &lt; 0) {</span>
-<span class="nc" id="L272">                        actualOffset -= posits[mx] * baseLength;</span>
-<span class="nc" id="L273">                        actualOutput -= posits[mx];</span>
-<span class="nc" id="L274">                        actualLen += posits[mx];</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">                    if (posits[mx] &lt; 0) {</span>
+<span class="fc" id="L272">                        actualOffset -= posits[mx] * baseLength;</span>
+<span class="fc" id="L273">                        actualOutput -= posits[mx];</span>
+<span class="fc" id="L274">                        actualLen += posits[mx];</span>
                     }
-<span class="pc bpc" id="L276" title="1 of 2 branches missed.">                    if (posits[mx] + segment &gt; newDims[mx]) {</span>
-<span class="nc" id="L277">                        actualLen -= posits[mx] + segment - newDims[mx];</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">                    if (posits[mx] + segment &gt; newDims[mx]) {</span>
+<span class="fc" id="L277">                        actualLen -= posits[mx] + segment - newDims[mx];</span>
                     }
 <span class="fc" id="L279">                    fillFileData(o, actualOffset, actualOutput, actualLen);</span>
                 }
@@ -296,8 +296,8 @@ public abstract class StandardImageTiler implements ImageTiler {
     @Override
     public Object getCompleteImage() throws IOException {
 
-<span class="pc bpc" id="L299" title="1 of 2 branches missed.">        if (this.randomAccessFile == null) {</span>
-<span class="nc" id="L300">            throw new IOException(&quot;Attempt to read from null file&quot;);</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">        if (this.randomAccessFile == null) {</span>
+<span class="fc" id="L300">            throw new IOException(&quot;Attempt to read from null file&quot;);</span>
         }
 <span class="fc" id="L302">        long currentOffset = this.randomAccessFile.getFilePointer();</span>
 <span class="fc" id="L303">        Object o = ArrayFuncs.newInstance(this.base, this.dims);</span>
@@ -370,10 +370,10 @@ public abstract class StandardImageTiler implements ImageTiler {
 
 <span class="fc" id="L371">        Object data = getMemoryImage();</span>
 
-<span class="pc bpc" id="L373" title="1 of 4 branches missed.">        if (data == null &amp;&amp; this.randomAccessFile == null) {</span>
-<span class="nc" id="L374">            throw new IOException(&quot;No data source for tile subset&quot;);</span>
+<span class="fc bfc" id="L373" title="All 4 branches covered.">        if (data == null &amp;&amp; this.randomAccessFile == null) {</span>
+<span class="fc" id="L374">            throw new IOException(&quot;No data source for tile subset&quot;);</span>
         }
 <span class="fc" id="L376">        fillTile(data, outArray, this.dims, corners, lengths);</span>
 <span class="fc" id="L377">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

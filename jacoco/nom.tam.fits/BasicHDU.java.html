@@ -63,6 +63,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 
@@ -74,7 +75,7 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
 
     private static final int MAX_NAXIS_ALLOWED = 999;
 
-<span class="fc" id="L77">    private static final Logger LOG = getLogger(BasicHDU.class);</span>
+<span class="fc" id="L78">    private static final Logger LOG = getLogger(BasicHDU.class);</span>
 
     public static final int BITPIX_BYTE = 8;
 
@@ -94,11 +95,11 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
     public static BasicHDU&lt;?&gt; getDummyHDU() {
         try {
             // Update suggested by Laurent Bourges
-<span class="fc" id="L97">            ImageData img = new ImageData((Object) null);</span>
-<span class="fc" id="L98">            return FitsFactory.hduFactory(ImageHDU.manufactureHeader(img), img);</span>
-<span class="nc" id="L99">        } catch (FitsException e) {</span>
-<span class="nc" id="L100">            LOG.log(Level.SEVERE, &quot;Impossible exception in getDummyHDU&quot;, e);</span>
-<span class="nc" id="L101">            return null;</span>
+<span class="fc" id="L98">            ImageData img = new ImageData((Object) null);</span>
+<span class="fc" id="L99">            return FitsFactory.hduFactory(ImageHDU.manufactureHeader(img), img);</span>
+<span class="nc" id="L100">        } catch (FitsException e) {</span>
+<span class="nc" id="L101">            LOG.log(Level.SEVERE, &quot;Impossible exception in getDummyHDU&quot;, e);</span>
+<span class="nc" id="L102">            return null;</span>
         }
     }
 
@@ -112,7 +113,7 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      * @return &lt;CODE&gt;true&lt;/CODE&gt; if this is a valid header.
      */
     public static boolean isHeader(Header header) {
-<span class="fc" id="L115">        return false;</span>
+<span class="fc" id="L116">        return false;</span>
     }
 
     /**
@@ -124,22 +125,22 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      *            The Object being tested.
      */
     public static boolean isData(Object o) {
-<span class="fc" id="L127">        return false;</span>
+<span class="fc" id="L128">        return false;</span>
     }
 
     /** The associated header. */
-<span class="fc" id="L131">    protected Header myHeader = null;</span>
+<span class="fc" id="L132">    protected Header myHeader = null;</span>
 
     /** The associated data unit. */
-<span class="fc" id="L134">    protected DataClass myData = null;</span>
+<span class="fc" id="L135">    protected DataClass myData = null;</span>
 
     /** Is this the first HDU in a FITS file? */
-<span class="fc" id="L137">    protected boolean isPrimary = false;</span>
+<span class="fc" id="L138">    protected boolean isPrimary = false;</span>
 
-<span class="fc" id="L139">    protected BasicHDU(Header myHeader, DataClass myData) {</span>
-<span class="fc" id="L140">        this.myHeader = myHeader;</span>
-<span class="fc" id="L141">        this.myData = myData;</span>
-<span class="fc" id="L142">    }</span>
+<span class="fc" id="L140">    protected BasicHDU(Header myHeader, DataClass myData) {</span>
+<span class="fc" id="L141">        this.myHeader = myHeader;</span>
+<span class="fc" id="L142">        this.myData = myData;</span>
+<span class="fc" id="L143">    }</span>
 
     /**
      * Safely replace a card in the header, knowing that no exception will
@@ -153,27 +154,27 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      *            the String representation of the value
      */
     protected void saveReplaceCard(String key, boolean isString, String value) {
-<span class="fc" id="L156">        HeaderCard card = HeaderCard.saveNewHeaderCard(key, null, isString);</span>
-<span class="fc" id="L157">        card.setValue(value);</span>
-<span class="fc" id="L158">        this.myHeader.deleteKey(card.getKey());</span>
-<span class="fc" id="L159">        this.myHeader.addLine(card);</span>
-<span class="fc" id="L160">    }</span>
+<span class="fc" id="L157">        HeaderCard card = HeaderCard.saveNewHeaderCard(key, null, isString);</span>
+<span class="fc" id="L158">        card.setValue(value);</span>
+<span class="fc" id="L159">        this.myHeader.deleteKey(card.getKey());</span>
+<span class="fc" id="L160">        this.myHeader.addLine(card);</span>
+<span class="fc" id="L161">    }</span>
 
     public void addValue(IFitsHeader key, boolean val) throws HeaderCardException {
-<span class="fc" id="L163">        this.myHeader.addValue(key.key(), val, key.comment());</span>
-<span class="fc" id="L164">    }</span>
+<span class="fc" id="L164">        this.myHeader.addValue(key.key(), val, key.comment());</span>
+<span class="fc" id="L165">    }</span>
 
     public void addValue(IFitsHeader key, double val) throws HeaderCardException {
-<span class="fc" id="L167">        this.myHeader.addValue(key.key(), val, key.comment());</span>
-<span class="fc" id="L168">    }</span>
+<span class="fc" id="L168">        this.myHeader.addValue(key.key(), val, key.comment());</span>
+<span class="fc" id="L169">    }</span>
 
     public void addValue(IFitsHeader key, int val) throws HeaderCardException {
-<span class="fc" id="L171">        this.myHeader.addValue(key.key(), val, key.comment());</span>
-<span class="fc" id="L172">    }</span>
+<span class="fc" id="L172">        this.myHeader.addValue(key.key(), val, key.comment());</span>
+<span class="fc" id="L173">    }</span>
 
     public void addValue(IFitsHeader key, String val) throws HeaderCardException {
-<span class="fc" id="L175">        this.myHeader.addValue(key.key(), val, key.comment());</span>
-<span class="fc" id="L176">    }</span>
+<span class="fc" id="L176">        this.myHeader.addValue(key.key(), val, key.comment());</span>
+<span class="fc" id="L177">    }</span>
 
     /**
      * Add information to the header.
@@ -188,20 +189,20 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      *             if the card does not follow the specification
      */
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
-<span class="fc" id="L191">        this.myHeader.addValue(key, val, comment);</span>
-<span class="fc" id="L192">    }</span>
+<span class="fc" id="L192">        this.myHeader.addValue(key, val, comment);</span>
+<span class="fc" id="L193">    }</span>
 
     public void addValue(String key, double val, String comment) throws HeaderCardException {
-<span class="fc" id="L195">        this.myHeader.addValue(key, val, comment);</span>
-<span class="fc" id="L196">    }</span>
+<span class="fc" id="L196">        this.myHeader.addValue(key, val, comment);</span>
+<span class="fc" id="L197">    }</span>
 
     public void addValue(String key, int val, String comment) throws HeaderCardException {
-<span class="fc" id="L199">        this.myHeader.addValue(key, val, comment);</span>
-<span class="fc" id="L200">    }</span>
+<span class="fc" id="L200">        this.myHeader.addValue(key, val, comment);</span>
+<span class="fc" id="L201">    }</span>
 
     public void addValue(String key, String val, String comment) throws HeaderCardException {
-<span class="fc" id="L203">        this.myHeader.addValue(key, val, comment);</span>
-<span class="fc" id="L204">    }</span>
+<span class="fc" id="L204">        this.myHeader.addValue(key, val, comment);</span>
+<span class="fc" id="L205">    }</span>
 
     /**
      * @return Indicate whether HDU can be primary HDU. This method must be
@@ -209,7 +210,7 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      *         FITS file.
      */
     boolean canBePrimary() {
-<span class="fc" id="L212">        return false;</span>
+<span class="fc" id="L213">        return false;</span>
     }
 
     /**
@@ -219,7 +220,7 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      * @return either &lt;CODE&gt;null&lt;/CODE&gt; or a String object
      */
     public String getAuthor() {
-<span class="fc" id="L222">        return getTrimmedString(AUTHOR);</span>
+<span class="fc" id="L223">        return getTrimmedString(AUTHOR);</span>
     }
 
     /**
@@ -245,59 +246,60 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      *             if the axis are configured wrong.
      */
     public int[] getAxes() throws FitsException {
-<span class="fc" id="L248">        int nAxis = this.myHeader.getIntValue(NAXIS, 0);</span>
-<span class="pc bpc" id="L249" title="1 of 2 branches missed.">        if (nAxis &lt; 0) {</span>
-<span class="nc" id="L250">            throw new FitsException(&quot;Negative NAXIS value &quot; + nAxis);</span>
+<span class="fc" id="L249">        int nAxis = this.myHeader.getIntValue(NAXIS, 0);</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">        if (nAxis &lt; 0) {</span>
+<span class="fc" id="L251">            throw new FitsException(&quot;Negative NAXIS value &quot; + nAxis);</span>
         }
-<span class="pc bpc" id="L252" title="1 of 2 branches missed.">        if (nAxis &gt; MAX_NAXIS_ALLOWED) {</span>
-<span class="nc" id="L253">            throw new FitsException(&quot;NAXIS value &quot; + nAxis + &quot; too large&quot;);</span>
-        }
-
-<span class="fc bfc" id="L256" title="All 2 branches covered.">        if (nAxis == 0) {</span>
-<span class="fc" id="L257">            return null;</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">        if (nAxis &gt; MAX_NAXIS_ALLOWED) {</span>
+<span class="fc" id="L254">            throw new FitsException(&quot;NAXIS value &quot; + nAxis + &quot; too large&quot;);</span>
         }
 
-<span class="fc" id="L260">        int[] axes = new int[nAxis];</span>
-<span class="fc bfc" id="L261" title="All 2 branches covered.">        for (int i = 1; i &lt;= nAxis; i++) {</span>
-<span class="fc" id="L262">            axes[nAxis - i] = this.myHeader.getIntValue(NAXISn.n(i), 0);</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">        if (nAxis == 0) {</span>
+<span class="fc" id="L258">            return null;</span>
         }
 
-<span class="fc" id="L265">        return axes;</span>
+<span class="fc" id="L261">        int[] axes = new int[nAxis];</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">        for (int i = 1; i &lt;= nAxis; i++) {</span>
+<span class="fc" id="L263">            axes[nAxis - i] = this.myHeader.getIntValue(NAXISn.n(i), 0);</span>
+        }
+
+<span class="fc" id="L266">        return axes;</span>
     }
 
     public int getBitPix() throws FitsException {
-<span class="fc" id="L269">        int bitpix = this.myHeader.getIntValue(&quot;BITPIX&quot;, -1);</span>
-<span class="pc bpc" id="L270" title="1 of 2 branches missed.">        switch (bitpix) {</span>
+<span class="fc" id="L270">        int bitpix = this.myHeader.getIntValue(Standard.BITPIX, -1);</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">        switch (bitpix) {</span>
             case BITPIX_BYTE:
             case BITPIX_SHORT:
             case BITPIX_INT:
+            case BITPIX_LONG:
             case BITPIX_FLOAT:
             case BITPIX_DOUBLE:
-<span class="fc" id="L276">                break;</span>
+<span class="fc" id="L278">                break;</span>
             default:
-<span class="nc" id="L278">                throw new FitsException(&quot;Unknown BITPIX type &quot; + bitpix);</span>
+<span class="fc" id="L280">                throw new FitsException(&quot;Unknown BITPIX type &quot; + bitpix);</span>
         }
 
-<span class="fc" id="L281">        return bitpix;</span>
+<span class="fc" id="L283">        return bitpix;</span>
     }
 
     public long getBlankValue() throws FitsException {
-<span class="pc bpc" id="L285" title="1 of 2 branches missed.">        if (!this.myHeader.containsKey(BLANK.key())) {</span>
-<span class="nc" id="L286">            throw new FitsException(&quot;BLANK undefined&quot;);</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">        if (!this.myHeader.containsKey(BLANK.key())) {</span>
+<span class="fc" id="L288">            throw new FitsException(&quot;BLANK undefined&quot;);</span>
         }
-<span class="fc" id="L288">        return this.myHeader.getLongValue(BLANK);</span>
+<span class="fc" id="L290">        return this.myHeader.getLongValue(BLANK);</span>
     }
 
     public double getBScale() {
-<span class="fc" id="L292">        return this.myHeader.getDoubleValue(BSCALE, 1.0);</span>
+<span class="fc" id="L294">        return this.myHeader.getDoubleValue(BSCALE, 1.0);</span>
     }
 
     public String getBUnit() {
-<span class="fc" id="L296">        return getTrimmedString(BUNIT);</span>
+<span class="fc" id="L298">        return getTrimmedString(BUNIT);</span>
     }
 
     public double getBZero() {
-<span class="fc" id="L300">        return this.myHeader.getDoubleValue(BZERO, 0.0);</span>
+<span class="fc" id="L302">        return this.myHeader.getDoubleValue(BZERO, 0.0);</span>
     }
 
     /**
@@ -307,10 +309,10 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      */
     public Date getCreationDate() {
         try {
-<span class="fc" id="L310">            return new FitsDate(this.myHeader.getStringValue(DATE)).toDate();</span>
-<span class="nc" id="L311">        } catch (FitsException e) {</span>
-<span class="nc" id="L312">            LOG.log(Level.SEVERE, &quot;Unable to convert string to FITS date&quot;, e);</span>
-<span class="nc" id="L313">            return null;</span>
+<span class="fc" id="L312">            return new FitsDate(this.myHeader.getStringValue(DATE)).toDate();</span>
+<span class="fc" id="L313">        } catch (FitsException e) {</span>
+<span class="fc" id="L314">            LOG.log(Level.SEVERE, &quot;Unable to convert string to FITS date&quot;, e);</span>
+<span class="fc" id="L315">            return null;</span>
         }
     }
 
@@ -318,7 +320,7 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      * @return the associated Data object
      */
     public DataClass getData() {
-<span class="fc" id="L321">        return this.myData;</span>
+<span class="fc" id="L323">        return this.myData;</span>
     }
 
     /**
@@ -330,7 +332,7 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      */
     @Deprecated
     public double getEpoch() {
-<span class="fc" id="L333">        return this.myHeader.getDoubleValue(EPOCH, -1.0);</span>
+<span class="fc" id="L335">        return this.myHeader.getDoubleValue(EPOCH, -1.0);</span>
     }
 
     /**
@@ -340,24 +342,24 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      * @return either &lt;CODE&gt;null&lt;/CODE&gt; or a String object
      */
     public double getEquinox() {
-<span class="fc" id="L343">        return this.myHeader.getDoubleValue(EQUINOX, -1.0);</span>
+<span class="fc" id="L345">        return this.myHeader.getDoubleValue(EQUINOX, -1.0);</span>
     }
 
     /** Get the starting offset of the HDU */
     @Override
     public long getFileOffset() {
-<span class="nc" id="L349">        return this.myHeader.getFileOffset();</span>
+<span class="fc" id="L351">        return this.myHeader.getFileOffset();</span>
     }
 
     public int getGroupCount() {
-<span class="fc" id="L353">        return this.myHeader.getIntValue(GCOUNT, 1);</span>
+<span class="fc" id="L355">        return this.myHeader.getIntValue(GCOUNT, 1);</span>
     }
 
     /**
      * @return the associated header
      */
     public Header getHeader() {
-<span class="fc" id="L360">        return this.myHeader;</span>
+<span class="fc" id="L362">        return this.myHeader;</span>
     }
 
     /**
@@ -368,7 +370,7 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      * @return the builder for header cards.
      */
     public HeaderCardBuilder card(IFitsHeader key) {
-<span class="fc" id="L371">        return this.myHeader.card(key);</span>
+<span class="fc" id="L373">        return this.myHeader.card(key);</span>
     }
 
     /**
@@ -378,7 +380,7 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      * @return either &lt;CODE&gt;null&lt;/CODE&gt; or a String object
      */
     public String getInstrument() {
-<span class="fc" id="L381">        return getTrimmedString(INSTRUME);</span>
+<span class="fc" id="L383">        return getTrimmedString(INSTRUME);</span>
     }
 
     /**
@@ -386,10 +388,10 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      */
     public Object getKernel() {
         try {
-<span class="fc" id="L389">            return this.myData.getKernel();</span>
-<span class="nc" id="L390">        } catch (FitsException e) {</span>
-<span class="nc" id="L391">            LOG.log(Level.SEVERE, &quot;Unable to get kernel data&quot;, e);</span>
-<span class="nc" id="L392">            return null;</span>
+<span class="fc" id="L391">            return this.myData.getKernel();</span>
+<span class="fc" id="L392">        } catch (FitsException e) {</span>
+<span class="fc" id="L393">            LOG.log(Level.SEVERE, &quot;Unable to get kernel data&quot;, e);</span>
+<span class="fc" id="L394">            return null;</span>
         }
     }
 
@@ -399,7 +401,7 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      * @return minimum value.
      */
     public double getMaximumValue() {
-<span class="fc" id="L402">        return this.myHeader.getDoubleValue(DATAMAX);</span>
+<span class="fc" id="L404">        return this.myHeader.getDoubleValue(DATAMAX);</span>
     }
 
     /**
@@ -408,7 +410,7 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      * @return minimum value.
      */
     public double getMinimumValue() {
-<span class="fc" id="L411">        return this.myHeader.getDoubleValue(DATAMIN);</span>
+<span class="fc" id="L413">        return this.myHeader.getDoubleValue(DATAMIN);</span>
     }
 
     /**
@@ -417,7 +419,7 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      * @return either &lt;CODE&gt;null&lt;/CODE&gt; or a String object
      */
     public String getObject() {
-<span class="fc" id="L420">        return getTrimmedString(OBJECT);</span>
+<span class="fc" id="L422">        return getTrimmedString(OBJECT);</span>
     }
 
     /**
@@ -427,10 +429,10 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      */
     public Date getObservationDate() {
         try {
-<span class="fc" id="L430">            return new FitsDate(this.myHeader.getStringValue(DATE_OBS)).toDate();</span>
-<span class="nc" id="L431">        } catch (FitsException e) {</span>
-<span class="nc" id="L432">            LOG.log(Level.SEVERE, &quot;Unable to convert string to FITS observation date&quot;, e);</span>
-<span class="nc" id="L433">            return null;</span>
+<span class="fc" id="L432">            return new FitsDate(this.myHeader.getStringValue(DATE_OBS)).toDate();</span>
+<span class="fc" id="L433">        } catch (FitsException e) {</span>
+<span class="fc" id="L434">            LOG.log(Level.SEVERE, &quot;Unable to convert string to FITS observation date&quot;, e);</span>
+<span class="fc" id="L435">            return null;</span>
         }
     }
 
@@ -440,7 +442,7 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      * @return either &lt;CODE&gt;null&lt;/CODE&gt; or a String object
      */
     public String getObserver() {
-<span class="fc" id="L443">        return getTrimmedString(OBSERVER);</span>
+<span class="fc" id="L445">        return getTrimmedString(OBSERVER);</span>
     }
 
     /**
@@ -449,11 +451,11 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      * @return either &lt;CODE&gt;null&lt;/CODE&gt; or a String object
      */
     public String getOrigin() {
-<span class="fc" id="L452">        return getTrimmedString(ORIGIN);</span>
+<span class="fc" id="L454">        return getTrimmedString(ORIGIN);</span>
     }
 
     public int getParameterCount() {
-<span class="fc" id="L456">        return this.myHeader.getIntValue(PCOUNT, 0);</span>
+<span class="fc" id="L458">        return this.myHeader.getIntValue(PCOUNT, 0);</span>
     }
 
     /**
@@ -463,20 +465,20 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      * @return either &lt;CODE&gt;null&lt;/CODE&gt; or a String object
      */
     public String getReference() {
-<span class="fc" id="L466">        return getTrimmedString(REFERENC);</span>
+<span class="fc" id="L468">        return getTrimmedString(REFERENC);</span>
     }
 
     @Override
     public long getSize() {
-<span class="fc" id="L471">        int size = 0;</span>
+<span class="fc" id="L473">        int size = 0;</span>
 
-<span class="pc bpc" id="L473" title="1 of 2 branches missed.">        if (this.myHeader != null) {</span>
-<span class="fc" id="L474">            size += this.myHeader.getSize();</span>
+<span class="pc bpc" id="L475" title="1 of 2 branches missed.">        if (this.myHeader != null) {</span>
+<span class="fc" id="L476">            size += this.myHeader.getSize();</span>
         }
-<span class="pc bpc" id="L476" title="1 of 2 branches missed.">        if (this.myData != null) {</span>
-<span class="fc" id="L477">            size += this.myData.getSize();</span>
+<span class="pc bpc" id="L478" title="1 of 2 branches missed.">        if (this.myData != null) {</span>
+<span class="fc" id="L479">            size += this.myData.getSize();</span>
         }
-<span class="fc" id="L479">        return size;</span>
+<span class="fc" id="L481">        return size;</span>
     }
 
     /**
@@ -486,7 +488,7 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      * @return either &lt;CODE&gt;null&lt;/CODE&gt; or a String object
      */
     public String getTelescope() {
-<span class="fc" id="L489">        return getTrimmedString(TELESCOP);</span>
+<span class="fc" id="L491">        return getTrimmedString(TELESCOP);</span>
     }
 
     /**
@@ -498,11 +500,11 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      *         stripped.
      */
     public String getTrimmedString(String keyword) {
-<span class="fc" id="L501">        String s = this.myHeader.getStringValue(keyword);</span>
-<span class="pc bpc" id="L502" title="1 of 2 branches missed.">        if (s != null) {</span>
-<span class="fc" id="L503">            s = s.trim();</span>
+<span class="fc" id="L503">        String s = this.myHeader.getStringValue(keyword);</span>
+<span class="pc bpc" id="L504" title="1 of 2 branches missed.">        if (s != null) {</span>
+<span class="fc" id="L505">            s = s.trim();</span>
         }
-<span class="fc" id="L505">        return s;</span>
+<span class="fc" id="L507">        return s;</span>
     }
 
     /**
@@ -514,11 +516,11 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      *         stripped.
      */
     public String getTrimmedString(IFitsHeader keyword) {
-<span class="fc" id="L517">        String s = this.myHeader.getStringValue(keyword);</span>
-<span class="pc bpc" id="L518" title="1 of 2 branches missed.">        if (s != null) {</span>
-<span class="fc" id="L519">            s = s.trim();</span>
+<span class="fc" id="L519">        String s = this.myHeader.getStringValue(keyword);</span>
+<span class="pc bpc" id="L520" title="1 of 2 branches missed.">        if (s != null) {</span>
+<span class="fc" id="L521">            s = s.trim();</span>
         }
-<span class="fc" id="L521">        return s;</span>
+<span class="fc" id="L523">        return s;</span>
     }
 
     /**
@@ -532,30 +534,30 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
     @SuppressWarnings(&quot;unchecked&quot;)
     @Override
     public void read(ArrayDataInput stream) throws FitsException, IOException {
-<span class="fc" id="L535">        this.myHeader = Header.readHeader(stream);</span>
-<span class="fc" id="L536">        this.myData = (DataClass) this.myHeader.makeData();</span>
-<span class="fc" id="L537">        this.myData.read(stream);</span>
-<span class="fc" id="L538">    }</span>
+<span class="fc" id="L537">        this.myHeader = Header.readHeader(stream);</span>
+<span class="fc" id="L538">        this.myData = (DataClass) this.myHeader.makeData();</span>
+<span class="fc" id="L539">        this.myData.read(stream);</span>
+<span class="fc" id="L540">    }</span>
 
     @Override
     public boolean reset() {
-<span class="fc" id="L542">        return this.myHeader.reset();</span>
+<span class="fc" id="L544">        return this.myHeader.reset();</span>
     }
 
     @Override
     public void rewrite() throws FitsException, IOException {
 
-<span class="pc bpc" id="L548" title="1 of 2 branches missed.">        if (rewriteable()) {</span>
-<span class="fc" id="L549">            this.myHeader.rewrite();</span>
-<span class="fc" id="L550">            this.myData.rewrite();</span>
+<span class="fc bfc" id="L550" title="All 2 branches covered.">        if (rewriteable()) {</span>
+<span class="fc" id="L551">            this.myHeader.rewrite();</span>
+<span class="fc" id="L552">            this.myData.rewrite();</span>
         } else {
-<span class="nc" id="L552">            throw new FitsException(&quot;Invalid attempt to rewrite HDU&quot;);</span>
+<span class="fc" id="L554">            throw new FitsException(&quot;Invalid attempt to rewrite HDU&quot;);</span>
         }
-<span class="fc" id="L554">    }</span>
+<span class="fc" id="L556">    }</span>
 
     @Override
     public boolean rewriteable() {
-<span class="pc bpc" id="L558" title="2 of 4 branches missed.">        return this.myHeader.rewriteable() &amp;&amp; this.myData.rewriteable();</span>
+<span class="pc bpc" id="L560" title="1 of 4 branches missed.">        return this.myHeader.rewriteable() &amp;&amp; this.myData.rewriteable();</span>
     }
 
     /**
@@ -568,66 +570,66 @@ public abstract class BasicHDU&lt;DataClass extends Data&gt; implements FitsElem
      */
     void setPrimaryHDU(boolean newPrimary) throws FitsException {
 
-<span class="pc bpc" id="L571" title="1 of 4 branches missed.">        if (newPrimary &amp;&amp; !canBePrimary()) {</span>
-<span class="nc" id="L572">            throw new FitsException(&quot;Invalid attempt to make HDU of type:&quot; + this.getClass().getName() + &quot; primary.&quot;);</span>
+<span class="fc bfc" id="L573" title="All 4 branches covered.">        if (newPrimary &amp;&amp; !canBePrimary()) {</span>
+<span class="fc" id="L574">            throw new FitsException(&quot;Invalid attempt to make HDU of type:&quot; + this.getClass().getName() + &quot; primary.&quot;);</span>
         } else {
-<span class="fc" id="L574">            this.isPrimary = newPrimary;</span>
+<span class="fc" id="L576">            this.isPrimary = newPrimary;</span>
         }
 
         // Some FITS readers don't like the PCOUNT and GCOUNT keywords
         // in a primary array or they EXTEND keyword in extensions.
 
-<span class="fc bfc" id="L580" title="All 4 branches covered.">        if (this.isPrimary &amp;&amp; !this.myHeader.getBooleanValue(GROUPS, false)) {</span>
-<span class="fc" id="L581">            this.myHeader.deleteKey(PCOUNT);</span>
-<span class="fc" id="L582">            this.myHeader.deleteKey(GCOUNT);</span>
+<span class="fc bfc" id="L582" title="All 4 branches covered.">        if (this.isPrimary &amp;&amp; !this.myHeader.getBooleanValue(GROUPS, false)) {</span>
+<span class="fc" id="L583">            this.myHeader.deleteKey(PCOUNT);</span>
+<span class="fc" id="L584">            this.myHeader.deleteKey(GCOUNT);</span>
         }
 
-<span class="fc bfc" id="L585" title="All 2 branches covered.">        if (this.isPrimary) {</span>
-<span class="fc" id="L586">            HeaderCard card = this.myHeader.findCard(EXTEND);</span>
-<span class="fc bfc" id="L587" title="All 2 branches covered.">            if (card == null) {</span>
-<span class="fc" id="L588">                getAxes(); // Leaves the iterator pointing to the last NAXISn</span>
+<span class="fc bfc" id="L587" title="All 2 branches covered.">        if (this.isPrimary) {</span>
+<span class="fc" id="L588">            HeaderCard card = this.myHeader.findCard(EXTEND);</span>
+<span class="fc bfc" id="L589" title="All 2 branches covered.">            if (card == null) {</span>
+<span class="fc" id="L590">                getAxes(); // Leaves the iterator pointing to the last NAXISn</span>
                            // card.
-<span class="fc" id="L590">                this.myHeader.nextCard();</span>
-<span class="fc" id="L591">                this.myHeader.addValue(EXTEND, true);</span>
+<span class="fc" id="L592">                this.myHeader.nextCard();</span>
+<span class="fc" id="L593">                this.myHeader.addValue(EXTEND, true);</span>
             }
         }
 
-<span class="fc bfc" id="L595" title="All 2 branches covered.">        if (!this.isPrimary) {</span>
+<span class="fc bfc" id="L597" title="All 2 branches covered.">        if (!this.isPrimary) {</span>
 
-<span class="fc" id="L597">            this.myHeader.iterator();</span>
+<span class="fc" id="L599">            this.myHeader.iterator();</span>
 
-<span class="fc" id="L599">            int pcount = this.myHeader.getIntValue(PCOUNT, 0);</span>
-<span class="fc" id="L600">            int gcount = this.myHeader.getIntValue(GCOUNT, 1);</span>
-<span class="fc" id="L601">            int naxis = this.myHeader.getIntValue(NAXIS, 0);</span>
-<span class="fc" id="L602">            this.myHeader.deleteKey(EXTEND);</span>
-<span class="fc" id="L603">            HeaderCard pcard = this.myHeader.findCard(PCOUNT);</span>
-<span class="fc" id="L604">            HeaderCard gcard = this.myHeader.findCard(GCOUNT);</span>
+<span class="fc" id="L601">            int pcount = this.myHeader.getIntValue(PCOUNT, 0);</span>
+<span class="fc" id="L602">            int gcount = this.myHeader.getIntValue(GCOUNT, 1);</span>
+<span class="fc" id="L603">            int naxis = this.myHeader.getIntValue(NAXIS, 0);</span>
+<span class="fc" id="L604">            this.myHeader.deleteKey(EXTEND);</span>
+<span class="fc" id="L605">            HeaderCard pcard = this.myHeader.findCard(PCOUNT);</span>
+<span class="fc" id="L606">            HeaderCard gcard = this.myHeader.findCard(GCOUNT);</span>
 
-<span class="fc" id="L606">            this.myHeader.getCard(2 + naxis);</span>
-<span class="fc bfc" id="L607" title="All 2 branches covered.">            if (pcard == null) {</span>
-<span class="fc" id="L608">                this.myHeader.addValue(PCOUNT, pcount);</span>
+<span class="fc" id="L608">            this.myHeader.getCard(2 + naxis);</span>
+<span class="fc bfc" id="L609" title="All 2 branches covered.">            if (pcard == null) {</span>
+<span class="fc" id="L610">                this.myHeader.addValue(PCOUNT, pcount);</span>
             }
-<span class="fc bfc" id="L610" title="All 2 branches covered.">            if (gcard == null) {</span>
-<span class="fc" id="L611">                this.myHeader.addValue(GCOUNT, gcount);</span>
+<span class="fc bfc" id="L612" title="All 2 branches covered.">            if (gcard == null) {</span>
+<span class="fc" id="L613">                this.myHeader.addValue(GCOUNT, gcount);</span>
             }
-<span class="fc" id="L613">            this.myHeader.iterator();</span>
+<span class="fc" id="L615">            this.myHeader.iterator();</span>
         }
 
-<span class="fc" id="L616">    }</span>
+<span class="fc" id="L618">    }</span>
 
     @Override
     public void write(ArrayDataOutput stream) throws FitsException {
-<span class="pc bpc" id="L620" title="1 of 2 branches missed.">        if (this.myHeader != null) {</span>
-<span class="fc" id="L621">            this.myHeader.write(stream);</span>
+<span class="pc bpc" id="L622" title="1 of 2 branches missed.">        if (this.myHeader != null) {</span>
+<span class="fc" id="L623">            this.myHeader.write(stream);</span>
         }
-<span class="pc bpc" id="L623" title="1 of 2 branches missed.">        if (this.myData != null) {</span>
-<span class="fc" id="L624">            this.myData.write(stream);</span>
+<span class="pc bpc" id="L625" title="1 of 2 branches missed.">        if (this.myData != null) {</span>
+<span class="fc" id="L626">            this.myData.write(stream);</span>
         }
         try {
-<span class="fc" id="L627">            stream.flush();</span>
-<span class="nc" id="L628">        } catch (IOException e) {</span>
-<span class="nc" id="L629">            throw new FitsException(&quot;Error flushing at end of HDU&quot;, e);</span>
-<span class="fc" id="L630">        }</span>
-<span class="fc" id="L631">    }</span>
+<span class="fc" id="L629">            stream.flush();</span>
+<span class="fc" id="L630">        } catch (IOException e) {</span>
+<span class="fc" id="L631">            throw new FitsException(&quot;Error flushing at end of HDU&quot;, e);</span>
+<span class="fc" id="L632">        }</span>
+<span class="fc" id="L633">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

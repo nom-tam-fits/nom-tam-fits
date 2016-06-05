@@ -68,8 +68,8 @@
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>      }
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>      @Override
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> getArray(IntBuffer buffer, Object array, <strong class="jxr_keyword">int</strong> length) {
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          buffer.get((<strong class="jxr_keyword">int</strong>[]) array, 0, length);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> getArray(IntBuffer buffer, Object array, <strong class="jxr_keyword">int</strong> offset, <strong class="jxr_keyword">int</strong> length) {
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          buffer.get((<strong class="jxr_keyword">int</strong>[]) array, offset, length);
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>      }
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>      @Override

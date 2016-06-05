@@ -8,6 +8,8 @@ import nom.tam.fits.header.hierarch.IHierarchKeyFormatter;
 import nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter;
 import nom.tam.image.compression.hdu.CompressedImageData;
 import nom.tam.image.compression.hdu.CompressedImageHDU;
+import nom.tam.image.compression.hdu.CompressedTableData;
+import nom.tam.image.compression.hdu.CompressedTableHDU;
 
 /*
  * #%L
@@ -50,47 +52,47 @@ import nom.tam.image.compression.hdu.CompressedImageHDU;
  */
 public final class FitsFactory {
 
-<span class="fc" id="L53">    private static class FitsSettings {</span>
+<span class="fc" id="L55">    private static class FitsSettings {</span>
 
-<span class="fc" id="L55">        private boolean useAsciiTables = true;</span>
+<span class="fc" id="L57">        private boolean useAsciiTables = true;</span>
 
-<span class="fc" id="L57">        private boolean useHierarch = false;</span>
+<span class="fc" id="L59">        private boolean useHierarch = false;</span>
 
-<span class="fc" id="L59">        private boolean checkAsciiStrings = false;</span>
+<span class="fc" id="L61">        private boolean checkAsciiStrings = false;</span>
 
-<span class="fc" id="L61">        private boolean allowTerminalJunk = false;</span>
+<span class="fc" id="L63">        private boolean allowTerminalJunk = false;</span>
 
-<span class="fc" id="L63">        private boolean longStringsEnabled = false;</span>
+<span class="fc" id="L65">        private boolean longStringsEnabled = false;</span>
 
-<span class="fc" id="L65">        private IHierarchKeyFormatter hierarchKeyFormatter = new StandardIHierarchKeyFormatter();</span>
+<span class="fc" id="L67">        private IHierarchKeyFormatter hierarchKeyFormatter = new StandardIHierarchKeyFormatter();</span>
 
         private FitsSettings copy() {
-<span class="fc" id="L68">            FitsSettings settings = new FitsSettings();</span>
-<span class="fc" id="L69">            settings.useAsciiTables = this.useAsciiTables;</span>
-<span class="fc" id="L70">            settings.useHierarch = this.useHierarch;</span>
-<span class="fc" id="L71">            settings.checkAsciiStrings = this.checkAsciiStrings;</span>
-<span class="fc" id="L72">            settings.allowTerminalJunk = this.allowTerminalJunk;</span>
-<span class="fc" id="L73">            settings.longStringsEnabled = this.longStringsEnabled;</span>
-<span class="fc" id="L74">            settings.hierarchKeyFormatter = this.hierarchKeyFormatter;</span>
-<span class="fc" id="L75">            return settings;</span>
+<span class="fc" id="L70">            FitsSettings settings = new FitsSettings();</span>
+<span class="fc" id="L71">            settings.useAsciiTables = this.useAsciiTables;</span>
+<span class="fc" id="L72">            settings.useHierarch = this.useHierarch;</span>
+<span class="fc" id="L73">            settings.checkAsciiStrings = this.checkAsciiStrings;</span>
+<span class="fc" id="L74">            settings.allowTerminalJunk = this.allowTerminalJunk;</span>
+<span class="fc" id="L75">            settings.longStringsEnabled = this.longStringsEnabled;</span>
+<span class="fc" id="L76">            settings.hierarchKeyFormatter = this.hierarchKeyFormatter;</span>
+<span class="fc" id="L77">            return settings;</span>
         }
 
     }
 
-<span class="fc" id="L80">    private static final FitsSettings GLOBAL_SETTINGS = new FitsSettings();</span>
+<span class="fc" id="L82">    private static final FitsSettings GLOBAL_SETTINGS = new FitsSettings();</span>
 
-<span class="fc" id="L82">    private static final ThreadLocal&lt;FitsSettings&gt; LOCAL_SETTINGS = new ThreadLocal&lt;FitsSettings&gt;();</span>
+<span class="fc" id="L84">    private static final ThreadLocal&lt;FitsSettings&gt; LOCAL_SETTINGS = new ThreadLocal&lt;FitsSettings&gt;();</span>
 
     private static ExecutorService threadPool;
 
     public static final int FITS_BLOCK_SIZE = 2880;
 
     private static FitsSettings current() {
-<span class="fc" id="L89">        FitsSettings settings = LOCAL_SETTINGS.get();</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (settings == null) {</span>
-<span class="fc" id="L91">            return GLOBAL_SETTINGS;</span>
+<span class="fc" id="L91">        FitsSettings settings = LOCAL_SETTINGS.get();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (settings == null) {</span>
+<span class="fc" id="L93">            return GLOBAL_SETTINGS;</span>
         } else {
-<span class="fc" id="L93">            return settings;</span>
+<span class="fc" id="L95">            return settings;</span>
         }
     }
 
@@ -104,22 +106,24 @@ public final class FitsFactory {
      */
     public static Data dataFactory(Header hdr) throws FitsException {
 
-<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (ImageHDU.isHeader(hdr)) {</span>
-<span class="fc" id="L108">            Data d = ImageHDU.manufactureData(hdr);</span>
-<span class="fc" id="L109">            hdr.afterExtend(); // Fix for positioning error noted by V. Forchi</span>
-<span class="fc" id="L110">            return d;</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">        } else if (RandomGroupsHDU.isHeader(hdr)) {</span>
-<span class="fc" id="L112">            return RandomGroupsHDU.manufactureData(hdr);</span>
-<span class="fc bfc" id="L113" title="All 4 branches covered.">        } else if (current().useAsciiTables &amp;&amp; AsciiTableHDU.isHeader(hdr)) {</span>
-<span class="fc" id="L114">            return AsciiTableHDU.manufactureData(hdr);</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">        } else if (CompressedImageHDU.isHeader(hdr)) {</span>
-<span class="fc" id="L116">            return CompressedImageHDU.manufactureData(hdr);</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">        } else if (BinaryTableHDU.isHeader(hdr)) {</span>
-<span class="fc" id="L118">            return BinaryTableHDU.manufactureData(hdr);</span>
-<span class="fc bfc" id="L119" title="All 2 branches covered.">        } else if (UndefinedHDU.isHeader(hdr)) {</span>
-<span class="fc" id="L120">            return UndefinedHDU.manufactureData(hdr);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        if (ImageHDU.isHeader(hdr)) {</span>
+<span class="fc" id="L110">            Data d = ImageHDU.manufactureData(hdr);</span>
+<span class="fc" id="L111">            hdr.afterExtend(); // Fix for positioning error noted by V. Forchi</span>
+<span class="fc" id="L112">            return d;</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        } else if (RandomGroupsHDU.isHeader(hdr)) {</span>
+<span class="fc" id="L114">            return RandomGroupsHDU.manufactureData(hdr);</span>
+<span class="fc bfc" id="L115" title="All 4 branches covered.">        } else if (current().useAsciiTables &amp;&amp; AsciiTableHDU.isHeader(hdr)) {</span>
+<span class="fc" id="L116">            return AsciiTableHDU.manufactureData(hdr);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        } else if (CompressedImageHDU.isHeader(hdr)) {</span>
+<span class="fc" id="L118">            return CompressedImageHDU.manufactureData(hdr);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        } else if (CompressedTableHDU.isHeader(hdr)) {</span>
+<span class="fc" id="L120">            return CompressedTableHDU.manufactureData(hdr);</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        } else if (BinaryTableHDU.isHeader(hdr)) {</span>
+<span class="fc" id="L122">            return BinaryTableHDU.manufactureData(hdr);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        } else if (UndefinedHDU.isHeader(hdr)) {</span>
+<span class="fc" id="L124">            return UndefinedHDU.manufactureData(hdr);</span>
         } else {
-<span class="fc" id="L122">            throw new FitsException(&quot;Unrecognizable header in dataFactory&quot;);</span>
+<span class="fc" id="L126">            throw new FitsException(&quot;Unrecognizable header in dataFactory&quot;);</span>
         }
 
     }
@@ -129,21 +133,21 @@ public final class FitsFactory {
      *         allowed.
      */
     public static boolean getAllowTerminalJunk() {
-<span class="fc" id="L132">        return current().allowTerminalJunk;</span>
+<span class="fc" id="L136">        return current().allowTerminalJunk;</span>
     }
 
     /**
      * @return Get the current status for string checking.
      */
     static boolean getCheckAsciiStrings() {
-<span class="fc" id="L139">        return current().checkAsciiStrings;</span>
+<span class="fc" id="L143">        return current().checkAsciiStrings;</span>
     }
 
     /**
      * @return &lt;code&gt;true&lt;/code&gt; if we are processing HIERARCH style keywords
      */
     public static boolean getUseHierarch() {
-<span class="fc" id="L146">        return current().useHierarch;</span>
+<span class="fc" id="L150">        return current().useHierarch;</span>
     }
 
     /**
@@ -159,20 +163,22 @@ public final class FitsFactory {
      */
     @SuppressWarnings(&quot;unchecked&quot;)
     public static &lt;DataClass extends Data&gt; BasicHDU&lt;DataClass&gt; hduFactory(Header hdr, DataClass d) throws FitsException {
-<span class="fc bfc" id="L162" title="All 2 branches covered.">        if (d instanceof ImageData) {</span>
-<span class="fc" id="L163">            return (BasicHDU&lt;DataClass&gt;) new ImageHDU(hdr, (ImageData) d);</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">        } else if (d instanceof CompressedImageData) {</span>
-<span class="fc" id="L165">            return (BasicHDU&lt;DataClass&gt;) new CompressedImageHDU(hdr, (CompressedImageData) d);</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">        } else if (d instanceof RandomGroupsData) {</span>
-<span class="fc" id="L167">            return (BasicHDU&lt;DataClass&gt;) new RandomGroupsHDU(hdr, (RandomGroupsData) d);</span>
-<span class="fc bfc" id="L168" title="All 4 branches covered.">        } else if (current().useAsciiTables &amp;&amp; d instanceof AsciiTable) {</span>
-<span class="fc" id="L169">            return (BasicHDU&lt;DataClass&gt;) new AsciiTableHDU(hdr, (AsciiTable) d);</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">        } else if (d instanceof BinaryTable) {</span>
-<span class="fc" id="L171">            return (BasicHDU&lt;DataClass&gt;) new BinaryTableHDU(hdr, (BinaryTable) d);</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">        } else if (d instanceof UndefinedData) {</span>
-<span class="fc" id="L173">            return (BasicHDU&lt;DataClass&gt;) new UndefinedHDU(hdr, (UndefinedData) d);</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">        if (d instanceof ImageData) {</span>
+<span class="fc" id="L167">            return (BasicHDU&lt;DataClass&gt;) new ImageHDU(hdr, (ImageData) d);</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        } else if (d instanceof CompressedImageData) {</span>
+<span class="fc" id="L169">            return (BasicHDU&lt;DataClass&gt;) new CompressedImageHDU(hdr, (CompressedImageData) d);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        } else if (d instanceof RandomGroupsData) {</span>
+<span class="fc" id="L171">            return (BasicHDU&lt;DataClass&gt;) new RandomGroupsHDU(hdr, (RandomGroupsData) d);</span>
+<span class="fc bfc" id="L172" title="All 4 branches covered.">        } else if (current().useAsciiTables &amp;&amp; d instanceof AsciiTable) {</span>
+<span class="fc" id="L173">            return (BasicHDU&lt;DataClass&gt;) new AsciiTableHDU(hdr, (AsciiTable) d);</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">        } else if (d instanceof CompressedTableData) {</span>
+<span class="fc" id="L175">            return (BasicHDU&lt;DataClass&gt;) new CompressedTableHDU(hdr, (CompressedTableData) d);</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        } else if (d instanceof BinaryTable) {</span>
+<span class="fc" id="L177">            return (BasicHDU&lt;DataClass&gt;) new BinaryTableHDU(hdr, (BinaryTable) d);</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        } else if (d instanceof UndefinedData) {</span>
+<span class="fc" id="L179">            return (BasicHDU&lt;DataClass&gt;) new UndefinedHDU(hdr, (UndefinedData) d);</span>
         }
-<span class="fc" id="L175">        return null;</span>
+<span class="fc" id="L181">        return null;</span>
     }
 
     /**
@@ -187,29 +193,29 @@ public final class FitsFactory {
         Data d;
         Header h;
 
-<span class="fc bfc" id="L190" title="All 2 branches covered.">        if (o instanceof Header) {</span>
-<span class="fc" id="L191">            h = (Header) o;</span>
-<span class="fc" id="L192">            d = dataFactory(h);</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">        } else if (ImageHDU.isData(o)) {</span>
-<span class="fc" id="L194">            d = ImageHDU.encapsulate(o);</span>
-<span class="fc" id="L195">            h = ImageHDU.manufactureHeader(d);</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">        } else if (RandomGroupsHDU.isData(o)) {</span>
-<span class="fc" id="L197">            d = RandomGroupsHDU.encapsulate(o);</span>
-<span class="fc" id="L198">            h = RandomGroupsHDU.manufactureHeader(d);</span>
-<span class="fc bfc" id="L199" title="All 4 branches covered.">        } else if (current().useAsciiTables &amp;&amp; AsciiTableHDU.isData(o)) {</span>
-<span class="fc" id="L200">            d = AsciiTableHDU.encapsulate(o);</span>
-<span class="fc" id="L201">            h = AsciiTableHDU.manufactureHeader(d);</span>
-<span class="fc bfc" id="L202" title="All 2 branches covered.">        } else if (BinaryTableHDU.isData(o)) {</span>
-<span class="fc" id="L203">            d = BinaryTableHDU.encapsulate(o);</span>
-<span class="fc" id="L204">            h = BinaryTableHDU.manufactureHeader(d);</span>
-<span class="pc bpc" id="L205" title="1 of 2 branches missed.">        } else if (UndefinedHDU.isData(o)) {</span>
-<span class="nc" id="L206">            d = UndefinedHDU.encapsulate(o);</span>
-<span class="nc" id="L207">            h = UndefinedHDU.manufactureHeader(d);</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">        if (o instanceof Header) {</span>
+<span class="fc" id="L197">            h = (Header) o;</span>
+<span class="fc" id="L198">            d = dataFactory(h);</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">        } else if (ImageHDU.isData(o)) {</span>
+<span class="fc" id="L200">            d = ImageHDU.encapsulate(o);</span>
+<span class="fc" id="L201">            h = ImageHDU.manufactureHeader(d);</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">        } else if (RandomGroupsHDU.isData(o)) {</span>
+<span class="fc" id="L203">            d = RandomGroupsHDU.encapsulate(o);</span>
+<span class="fc" id="L204">            h = RandomGroupsHDU.manufactureHeader(d);</span>
+<span class="fc bfc" id="L205" title="All 4 branches covered.">        } else if (current().useAsciiTables &amp;&amp; AsciiTableHDU.isData(o)) {</span>
+<span class="fc" id="L206">            d = AsciiTableHDU.encapsulate(o);</span>
+<span class="fc" id="L207">            h = AsciiTableHDU.manufactureHeader(d);</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">        } else if (BinaryTableHDU.isData(o)) {</span>
+<span class="fc" id="L209">            d = BinaryTableHDU.encapsulate(o);</span>
+<span class="fc" id="L210">            h = BinaryTableHDU.manufactureHeader(d);</span>
+<span class="pc bpc" id="L211" title="1 of 2 branches missed.">        } else if (UndefinedHDU.isData(o)) {</span>
+<span class="nc" id="L212">            d = UndefinedHDU.encapsulate(o);</span>
+<span class="nc" id="L213">            h = UndefinedHDU.manufactureHeader(d);</span>
         } else {
-<span class="fc" id="L209">            throw new FitsException(&quot;Invalid data presented to HDUFactory&quot;);</span>
+<span class="fc" id="L215">            throw new FitsException(&quot;Invalid data presented to HDUFactory&quot;);</span>
         }
 
-<span class="fc" id="L212">        return hduFactory(h, d);</span>
+<span class="fc" id="L218">        return hduFactory(h, d);</span>
     }
 
     // CHECKSTYLE:OFF
@@ -227,7 +233,7 @@ public final class FitsFactory {
      */
     @Deprecated
     public static &lt;DataClass extends Data&gt; BasicHDU&lt;DataClass&gt; HDUFactory(Header hdr, DataClass d) throws FitsException {
-<span class="fc" id="L230">        return hduFactory(hdr, d);</span>
+<span class="fc" id="L236">        return hduFactory(hdr, d);</span>
     }
 
     // CHECKSTYLE:ON
@@ -244,34 +250,34 @@ public final class FitsFactory {
      */
     @Deprecated
     public static BasicHDU&lt;?&gt; HDUFactory(Object o) throws FitsException {
-<span class="fc" id="L247">        return hduFactory(o);</span>
+<span class="fc" id="L253">        return hduFactory(o);</span>
     }
 
     // CHECKSTYLE:ON
 
     private static void initializeThreadPool() {
-<span class="fc" id="L253">        synchronized (GLOBAL_SETTINGS) {</span>
-<span class="pc bpc" id="L254" title="1 of 2 branches missed.">            if (threadPool == null) {</span>
+<span class="fc" id="L259">        synchronized (GLOBAL_SETTINGS) {</span>
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">            if (threadPool == null) {</span>
                 // 1.5 thread per core
-<span class="fc" id="L256">                threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, //</span>
-<span class="fc" id="L257">                        new ThreadFactory() {</span>
+<span class="fc" id="L262">                threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, //</span>
+<span class="fc" id="L263">                        new ThreadFactory() {</span>
 
-<span class="fc" id="L259">                            private int counter = 1;</span>
+<span class="fc" id="L265">                            private int counter = 1;</span>
 
                             @Override
                             public Thread newThread(Runnable r) {
-<span class="fc" id="L263">                                return new Thread(r, &quot;nom-tam-fits worker &quot; + this.counter++);</span>
+<span class="fc" id="L269">                                return new Thread(r, &quot;nom-tam-fits worker &quot; + this.counter++);</span>
                             }
                         });
             }
-<span class="pc" id="L267">        }</span>
-<span class="fc" id="L268">    }</span>
+<span class="pc" id="L273">        }</span>
+<span class="fc" id="L274">    }</span>
 
     /**
      * @return &lt;code&gt;true&lt;/code&gt; If long string support is enabled.
      */
     public static boolean isLongStringsEnabled() {
-<span class="fc" id="L274">        return current().longStringsEnabled;</span>
+<span class="fc" id="L280">        return current().longStringsEnabled;</span>
     }
 
     /**
@@ -281,8 +287,8 @@ public final class FitsFactory {
      *            value to set
      */
     public static void setAllowTerminalJunk(boolean allowTerminalJunk) {
-<span class="fc" id="L284">        current().allowTerminalJunk = allowTerminalJunk;</span>
-<span class="fc" id="L285">    }</span>
+<span class="fc" id="L290">        current().allowTerminalJunk = allowTerminalJunk;</span>
+<span class="fc" id="L291">    }</span>
 
     /**
      * Enable/Disable checking of strings values used in tables to ensure that
@@ -294,8 +300,8 @@ public final class FitsFactory {
      *            value to set
      */
     public static void setCheckAsciiStrings(boolean checkAsciiStrings) {
-<span class="fc" id="L297">        current().checkAsciiStrings = checkAsciiStrings;</span>
-<span class="fc" id="L298">    }</span>
+<span class="fc" id="L303">        current().checkAsciiStrings = checkAsciiStrings;</span>
+<span class="fc" id="L304">    }</span>
 
     /**
      * Enable/Disable longstring support.
@@ -304,8 +310,8 @@ public final class FitsFactory {
      *            value to set
      */
     public static void setLongStringsEnabled(boolean longStringsEnabled) {
-<span class="fc" id="L307">        current().longStringsEnabled = longStringsEnabled;</span>
-<span class="fc" id="L308">    }</span>
+<span class="fc" id="L313">        current().longStringsEnabled = longStringsEnabled;</span>
+<span class="fc" id="L314">    }</span>
 
     /**
      * Indicate whether ASCII tables should be used where feasible.
@@ -314,8 +320,8 @@ public final class FitsFactory {
      *            value to set
      */
     public static void setUseAsciiTables(boolean useAsciiTables) {
-<span class="fc" id="L317">        current().useAsciiTables = useAsciiTables;</span>
-<span class="fc" id="L318">    }</span>
+<span class="fc" id="L323">        current().useAsciiTables = useAsciiTables;</span>
+<span class="fc" id="L324">    }</span>
 
     /**
      * There is not a real standard how to write hierarch keys, default we use
@@ -326,14 +332,14 @@ public final class FitsFactory {
      *            the hierarch key formatter.
      */
     public static void setHierarchFormater(IHierarchKeyFormatter formatter) {
-<span class="fc" id="L329">        current().hierarchKeyFormatter = formatter;</span>
-<span class="fc" id="L330">    }</span>
+<span class="fc" id="L335">        current().hierarchKeyFormatter = formatter;</span>
+<span class="fc" id="L336">    }</span>
 
     /**
      * @return the formatter to use for hierarch keys.
      */
     public static IHierarchKeyFormatter getHierarchFormater() {
-<span class="fc" id="L336">        return current().hierarchKeyFormatter;</span>
+<span class="fc" id="L342">        return current().hierarchKeyFormatter;</span>
     }
 
     /**
@@ -343,14 +349,14 @@ public final class FitsFactory {
      *            value to set
      */
     public static void setUseHierarch(boolean useHierarch) {
-<span class="fc" id="L346">        current().useHierarch = useHierarch;</span>
-<span class="fc" id="L347">    }</span>
+<span class="fc" id="L352">        current().useHierarch = useHierarch;</span>
+<span class="fc" id="L353">    }</span>
 
     public static ExecutorService threadPool() {
-<span class="fc bfc" id="L350" title="All 2 branches covered.">        if (threadPool == null) {</span>
-<span class="fc" id="L351">            initializeThreadPool();</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">        if (threadPool == null) {</span>
+<span class="fc" id="L357">            initializeThreadPool();</span>
         }
-<span class="fc" id="L353">        return threadPool;</span>
+<span class="fc" id="L359">        return threadPool;</span>
     }
 
     /**
@@ -362,14 +368,14 @@ public final class FitsFactory {
      *            true if the thread should not share the global settings.
      */
     public static void useThreadLocalSettings(boolean useThreadSettings) {
-<span class="fc bfc" id="L365" title="All 2 branches covered.">        if (useThreadSettings) {</span>
-<span class="fc" id="L366">            LOCAL_SETTINGS.set(GLOBAL_SETTINGS.copy());</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">        if (useThreadSettings) {</span>
+<span class="fc" id="L372">            LOCAL_SETTINGS.set(GLOBAL_SETTINGS.copy());</span>
         } else {
-<span class="fc" id="L368">            LOCAL_SETTINGS.remove();</span>
+<span class="fc" id="L374">            LOCAL_SETTINGS.remove();</span>
         }
-<span class="fc" id="L370">    }</span>
+<span class="fc" id="L376">    }</span>
 
-<span class="fc" id="L372">    private FitsFactory() {</span>
-<span class="fc" id="L373">    }</span>
+<span class="fc" id="L378">    private FitsFactory() {</span>
+<span class="fc" id="L379">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
