@@ -1,5 +1,16 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
+		<release version="1.14.3" date="2016-06-05" description="Maintenance release with minor bug fixess.">
+			<action type="update">
+				Maintenance release with bug fixes.
+			</action>
+			<action type="update" dev="ritchieGitHub" issue="92">
+				 Removal of redundent attribute "rowSize". Attention here the public api has a minor change, the deletColumns in the ColumnTable does not return an int anymore.
+			</action>
+			<action type="update" dev="ritchieGitHub" issue="91">
+				 Fix for a bug in encurling the multim arrays of the BinaryTable with variable length columns.
+			</action>
+	    </release>
 		<release version="1.14.2" date="2016-03-11" description="Maintenance release with minor bug fixes and enhancements.">
 			<action type="update">
 				Maintenance release with important bug fixes and the restoration of java 6 support.
