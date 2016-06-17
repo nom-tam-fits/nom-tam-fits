@@ -273,10 +273,11 @@ public class UserProvidedTest {
         FitsFactory.setUseHierarch(true);
         FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
 
-        FileInputStream stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("16913-1.fits"));
+        FileInputStream stream = null;
         BasicHDU<?> bhduMain = null;
         Fits fitsSrc = null;
         try {
+            stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("16913-1.fits"));
             fitsSrc = new Fits(stream);
             bhduMain = fitsSrc.readHDU(); // Product
             Cursor<String, HeaderCard> iterator = bhduMain.getHeader().iterator();
@@ -292,6 +293,12 @@ public class UserProvidedTest {
 
         } finally {
             SaveClose.close(fitsSrc);
+            if(stream!=null){
+                try {
+                    stream.close();
+                }
+                catch(IOException ex){}
+            }
         }
     }
 
@@ -301,13 +308,21 @@ public class UserProvidedTest {
         FitsFactory.setUseHierarch(true);
         FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
 
-        FileInputStream stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("16913-1.fits"));
+        FileInputStream stream = null;
         BasicHDU<?> bhduMain = null;
         Fits fitsSrc = null;
         try {
+            stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("16913-1.fits"));
             fitsSrc = new Fits(stream);
             bhduMain = fitsSrc.readHDU(); // Product
         } finally {
+            if(stream!=null){
+                try {
+                    stream.close();
+                }
+                catch(IOException ex){}
+            }
+
             SaveClose.close(fitsSrc);
         }
 
@@ -329,10 +344,11 @@ public class UserProvidedTest {
         FitsFactory.setLongStringsEnabled(true);
         FitsFactory.setUseHierarch(true);
 
-        FileInputStream stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("varlen-bintable.fits"));
+        FileInputStream stream = null;
         BinaryTableHDU bhduMain = null;
         Fits fitsSrc = null;
         try {
+            stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("varlen-bintable.fits"));
             fitsSrc = new Fits(stream);
             fitsSrc.readHDU(); // skip the image
             bhduMain = (BinaryTableHDU) fitsSrc.readHDU(); // theres the table
@@ -346,6 +362,12 @@ public class UserProvidedTest {
             bhduMain = (BinaryTableHDU) fitsSrc.readHDU(); // theres the table
             assertCurledHdu(bhduMain);
         } finally {
+            if(stream!=null){
+                try {
+                    stream.close();
+                }
+                catch(IOException ex){}
+            }
             SaveClose.close(fitsSrc);
         }
     }

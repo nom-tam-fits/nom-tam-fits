@@ -693,33 +693,18 @@ public class BufferedFileTest {
     public void standardFileTest(String filename, int iter, int[] in, int[] in2) throws Exception {
         System.out.println("Standard I/O library: java.io.RandomAccessFile");
 
-        RandomAccessFile f = new RandomAccessFile(filename, "rw");
-        int dim = in.length;
-        resetTime();
-        f.seek(0);
-        for (int j = 0; j < iter; j += 1) {
-            for (int i = 0; i < dim; i += 1) {
-                f.writeInt(in[i]);
-            }
-        }
-        System.out.println("  RAF Int write: " + 4 * dim * iter / (1000 * deltaTime()));
-        f.seek(0);
-        resetTime();
-        for (int j = 0; j < iter; j += 1) {
-            for (int i = 0; i < dim; i += 1) {
-                in2[i] = f.readInt();
-            }
-        }
-        System.out.println("  RAF Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
-
-        synchronized (f) {
+        RandomAccessFile f = null;
+        try {
+            f = new RandomAccessFile(filename, "rw");
+            int dim = in.length;
+            resetTime();
             f.seek(0);
             for (int j = 0; j < iter; j += 1) {
                 for (int i = 0; i < dim; i += 1) {
                     f.writeInt(in[i]);
                 }
             }
-            System.out.println("  SyncRAF Int write: " + 4 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  RAF Int write: " + 4 * dim * iter / (1000 * deltaTime()));
             f.seek(0);
             resetTime();
             for (int j = 0; j < iter; j += 1) {
@@ -727,8 +712,33 @@ public class BufferedFileTest {
                     in2[i] = f.readInt();
                 }
             }
+            System.out.println("  RAF Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
+
+            synchronized (f) {
+                f.seek(0);
+                for (int j = 0; j < iter; j += 1) {
+                    for (int i = 0; i < dim; i += 1) {
+                        f.writeInt(in[i]);
+                    }
+                }
+                System.out.println("  SyncRAF Int write: " + 4 * dim * iter / (1000 * deltaTime()));
+                f.seek(0);
+                resetTime();
+                for (int j = 0; j < iter; j += 1) {
+                    for (int i = 0; i < dim; i += 1) {
+                        in2[i] = f.readInt();
+                    }
+                }
+            }
+            System.out.println("  SyncRAF Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
+        } finally {
+            if(f!=null){
+                try {
+                    f.close();
+                }
+                catch(IOException ex){}
+            }
         }
-        System.out.println("  SyncRAF Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
     }
 
     public void standardStreamTest(String filename, int iter, int[] in, int[] in2) throws Exception {
@@ -746,38 +756,63 @@ public class BufferedFileTest {
         f.flush();
         f.close();
         System.out.println("  DIS Int write: " + 4 * dim * iter / (1000 * deltaTime()));
-
-        DataInputStream is = new DataInputStream(new BufferedInputStream(new FileInputStream(filename), 32768));
-        resetTime();
-        for (int j = 0; j < iter; j += 1) {
-            for (int i = 0; i < dim; i += 1) {
-                in2[i] = is.readInt();
-            }
-        }
-        System.out.println("  DIS Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
-
-        f = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename), 32768));
-        resetTime();
-        dim = in.length;
-        synchronized (f) {
-            for (int j = 0; j < iter; j += 1) {
-                for (int i = 0; i < dim; i += 1) {
-                    f.writeInt(in[i]);
-                }
-            }
-            f.flush();
-            f.close();
-            System.out.println("  DIS Int write: " + 4 * dim * iter / (1000 * deltaTime()));
-
-            is = new DataInputStream(new BufferedInputStream(new FileInputStream(filename), 32768));
+        DataInputStream is = null;
+        FileInputStream fileInputStream = null;
+        try{
+            fileInputStream = new FileInputStream(filename);
+            is = new DataInputStream(new BufferedInputStream(fileInputStream, 32768));
             resetTime();
             for (int j = 0; j < iter; j += 1) {
                 for (int i = 0; i < dim; i += 1) {
                     in2[i] = is.readInt();
                 }
             }
+            System.out.println("  DIS Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
         }
-        System.out.println("  DIS Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
+        finally
+        {
+            if(fileInputStream!=null){
+                try {
+                    fileInputStream.close();
+                }
+                catch(IOException ex) {}
+            }
+        }
+
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(filename);
+            f = new DataOutputStream(new BufferedOutputStream(fileOutputStream, 32768));
+            resetTime();
+            dim = in.length;
+            synchronized (f) {
+                for (int j = 0; j < iter; j += 1) {
+                    for (int i = 0; i < dim; i += 1) {
+                        f.writeInt(in[i]);
+                    }
+                }
+                f.flush();
+                f.close();
+                System.out.println("  DIS Int write: " + 4 * dim * iter / (1000 * deltaTime()));
+
+                is = new DataInputStream(new BufferedInputStream(new FileInputStream(filename), 32768));
+                resetTime();
+                for (int j = 0; j < iter; j += 1) {
+                    for (int i = 0; i < dim; i += 1) {
+                        in2[i] = is.readInt();
+                    }
+                }
+            }
+            System.out.println("  DIS Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
+        }
+        finally{
+            if(fileOutputStream!=null){
+                try{
+                    fileOutputStream.close();
+                }
+                catch(IOException ex){}
+            }
+        }
     }
 
     void testArray(ArrayDataInput bf, String label, Object array) throws Exception {
