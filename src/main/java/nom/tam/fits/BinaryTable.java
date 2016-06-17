@@ -1527,7 +1527,7 @@ public class BinaryTable extends AbstractTableData {
             }
         }
         colDesc.isComplex = type == 'C' || type == 'M';
-        Class<?> colBase = null;
+        Class<?> colBase;
         switch (type) {
             case 'A':
                 colBase = byte.class;

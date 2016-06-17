@@ -262,7 +262,6 @@ public final class ByteFormatter {
         }
         if (val < 0) {
             minSize++;
-            maxSize++;
         }
 
         // Can the number fit?

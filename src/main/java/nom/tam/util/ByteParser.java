@@ -236,7 +236,7 @@ public class ByteParser {
     public double getDouble(int length) throws FormatException {
         int startOffset = this.offset;
         boolean error = true;
-        double number = 0;
+        double number;
         // Skip initial blanks.
         length -= skipWhite(length);
         if (length == 0) {

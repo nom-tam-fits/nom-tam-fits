@@ -323,7 +323,6 @@ public class AsciiTableTest {
         double[] dx = (double[]) kern[3];
         String[] sx = (String[]) kern[4];
 
-        float[] fy = (float[]) samp[0];
         int[] iy = (int[]) samp[1];
         long[] ly = (long[]) samp[2];
         double[] dy = (double[]) samp[3];
@@ -643,7 +642,6 @@ public class AsciiTableTest {
         // Create a table row by row .
         Fits f = new Fits();
         AsciiTable data = new AsciiTable();
-        Object[] row = new Object[4];
 
         for (int i = 0; i < 50; i += 1) {
             data.addRow(getRow(i));
@@ -908,7 +906,6 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataInput str = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
         FitsException actual = null;
         try {
             new AsciiTable(hdr).getElement(0, 0);
@@ -927,7 +924,6 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataInput str = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
         FitsException actual = null;
         try {
             new AsciiTable(hdr).getRow(0);

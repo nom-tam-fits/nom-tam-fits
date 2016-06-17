@@ -309,12 +309,10 @@ public class BinaryTableTest {
         Fits f = new Fits("target/bt2.fits");
         f.read();
         BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
-        Header hdr = bhdu.getHeader();
         BinaryTable btab = bhdu.getData();
         for (int i = 0; i < NROWS; i += 1) {
 
             Object[] row = btab.getRow(i);
-            float[] qx = (float[]) row[1];
             float[][] p = (float[][]) row[0];
             p[0][0] = (float) (i * Math.sin(i));
             btab.addRow(row);
@@ -385,12 +383,10 @@ public class BinaryTableTest {
         Fits f = new Fits("target/bt2.fits");
         f.read();
         BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
-        Header hdr = bhdu.getHeader();
         BinaryTable btab = bhdu.getData();
         for (int i = 0; i < NROWS; i += 1) {
 
             Object[] row = btab.getRow(i);
-            float[] qx = (float[]) row[1];
             float[][] p = (float[][]) row[0];
             p[0][0] = (float) (i * Math.sin(i));
             btab.addRow(row);
@@ -1007,11 +1003,8 @@ public class BinaryTableTest {
         Fits f = new Fits("target/bt2.fits");
         f.read();
         BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
-        Header hdr = bhdu.getHeader();
-
         // Check the various set methods on variable length data.
-        float[] dta = (float[]) bhdu.getElement(4, 1);
-        dta = new float[]{
+        float[] dta = new float[]{
             22,
             21,
             20
@@ -1154,9 +1147,7 @@ public class BinaryTableTest {
 
             assertEquals("NHDUc", 2, f.getNumberOfHDUs());
 
-            BinaryTableHDU thdu = null;
-            thdu = (BinaryTableHDU) f.getHDU(1);
-            Header hdr = thdu.getHeader();
+            BinaryTableHDU thdu = (BinaryTableHDU) f.getHDU(1);
 
             for (int i = 0; i < data.length; i += 1) {
 
@@ -1168,7 +1159,6 @@ public class BinaryTableTest {
                         st[j] = st[j].trim();
                     }
                 }
-                int n = Array.getLength(data[i]);
 
                 assertEquals("DataC" + i, true, TestArrayFuncs.arrayEquals(data[i], col));
             }

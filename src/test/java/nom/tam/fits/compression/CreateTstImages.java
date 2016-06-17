@@ -119,7 +119,7 @@ public class CreateTstImages {
                 continue;
             }
             Fits fits = new Fits(fitsFile);
-            BasicHDU<?> hdu1 = fits.readHDU();
+            BasicHDU<?> hdu1;
             BinaryTableHDU hdu2 = (BinaryTableHDU) fits.readHDU();
             Object element = hdu2.getData().getElement(0, 0);
 
