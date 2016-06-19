@@ -34,6 +34,8 @@ package nom.tam.fits.compression.algorithm.gzip2;
 import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
@@ -42,6 +44,7 @@ import java.util.zip.GZIPOutputStream;
 
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor;
 import nom.tam.util.SaveClose;
+import nom.tam.util.type.PrimitiveTypes;
 
 public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T> {
 
@@ -50,10 +53,8 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
 
     public static class IntGZip2Compressor extends GZip2Compressor<IntBuffer> {
 
-        protected static final int BYTE_SIZE_OF_INT = 4;
-
         public IntGZip2Compressor() {
-            super(BYTE_SIZE_OF_INT);
+            super(PrimitiveTypes.INT.size());
         }
 
         @Override
@@ -68,12 +69,28 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         }
     }
 
+    public static class FloatGZip2Compressor extends GZip2Compressor<FloatBuffer> {
+
+        public FloatGZip2Compressor() {
+            super(PrimitiveTypes.FLOAT.size());
+        }
+
+        @Override
+        protected void getPixel(FloatBuffer pixelData, byte[] pixelBytes) {
+            FloatBuffer pixelBuffer = ByteBuffer.wrap(pixelBytes).asFloatBuffer();
+            pixelBuffer.put(pixelData);
+        }
+
+        @Override
+        protected void setPixel(FloatBuffer pixelData, byte[] pixelBytes) {
+            pixelData.put(ByteBuffer.wrap(pixelBytes).asFloatBuffer());
+        }
+    }
+
     public static class LongGZip2Compressor extends GZip2Compressor<LongBuffer> {
 
-        protected static final int BYTE_SIZE_OF_LONG = 8;
-
         public LongGZip2Compressor() {
-            super(BYTE_SIZE_OF_LONG);
+            super(PrimitiveTypes.LONG.size());
         }
 
         @Override
@@ -88,12 +105,28 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         }
     }
 
+    public static class DoubleGZip2Compressor extends GZip2Compressor<DoubleBuffer> {
+
+        public DoubleGZip2Compressor() {
+            super(PrimitiveTypes.DOUBLE.size());
+        }
+
+        @Override
+        protected void getPixel(DoubleBuffer pixelData, byte[] pixelBytes) {
+            DoubleBuffer pixelBuffer = ByteBuffer.wrap(pixelBytes).asDoubleBuffer();
+            pixelBuffer.put(pixelData);
+        }
+
+        @Override
+        protected void setPixel(DoubleBuffer pixelData, byte[] pixelBytes) {
+            pixelData.put(ByteBuffer.wrap(pixelBytes).asDoubleBuffer());
+        }
+    }
+
     public static class ShortGZip2Compressor extends GZip2Compressor<ShortBuffer> {
 
-        protected static final int BYTE_SIZE_OF_SHORT = 2;
-
         public ShortGZip2Compressor() {
-            super(BYTE_SIZE_OF_SHORT);
+            super(PrimitiveTypes.SHORT.size());
         }
 
         @Override

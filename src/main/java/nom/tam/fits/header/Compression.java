@@ -131,8 +131,7 @@ public enum Compression implements IFitsHeader {
     ZMASKCMP(HDU.ANY, VALUE.STRING, ""),
 
     /**
-     *
-     The following optional keyword is defined to store a verbatim copy of the
+     * The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
      * identical copy of the original FITS file when the image is
@@ -173,8 +172,7 @@ public enum Compression implements IFitsHeader {
      * the original uncompressed image was contained in the primary array of the
      * FITS file,
      */
-    @Deprecated
-    ZBLOCKED(HDU.PRIMARY, VALUE.LOGICAL, "", Standard.BLOCKED),
+    @Deprecated ZBLOCKED(HDU.PRIMARY, VALUE.LOGICAL, "", Standard.BLOCKED),
 
     /**
      * The following optional keyword is defined to store a verbatim copy of the
@@ -197,8 +195,7 @@ public enum Compression implements IFitsHeader {
     ZGCOUNT(HDU.EXTENSION, VALUE.INTEGER, "", Standard.GCOUNT),
 
     /**
-     *
-     The following optional keyword is defined to store a verbatim copy of the
+     * The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
      * identical copy o f the original FITS file when the image is
@@ -207,8 +204,7 @@ public enum Compression implements IFitsHeader {
     ZHECKSUM(HDU.ANY, VALUE.STRING, "", Checksum.CHECKSUM),
 
     /**
-     *
-     The following optional keyword is defined to store a verbatim copy of the
+     * The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
      * identical copy o f the original FITS file when the image is
@@ -379,6 +375,11 @@ public enum Compression implements IFitsHeader {
      * alternative name for 'RICE 1'
      */
     public static final String ZCMPTYPE_RICE_ONE = "RICE_ONE";
+
+    /**
+     * compression algorithm that specifies that the data is uncompressed.
+     */
+    public static final String ZCMPTYPE_NOCOMPRESS = "NOCOMPRESS";
 
     /**
      * Each row of this variable-length column contains the byte st ream that is

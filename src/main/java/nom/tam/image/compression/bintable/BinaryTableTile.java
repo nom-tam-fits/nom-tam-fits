@@ -60,7 +60,7 @@ public abstract class BinaryTableTile implements Runnable {
 
     protected final int column;
 
-    protected final String compressionAlgorithm;
+    protected String compressionAlgorithm;
 
     protected final PrimitiveType<Buffer> type;
 
@@ -102,7 +102,7 @@ public abstract class BinaryTableTile implements Runnable {
     }
 
     protected ICompressorControl getCompressorControl() {
-        return CompressorProvider.findCompressorControl(null, this.compressionAlgorithm, byte.class);
+        return CompressorProvider.findCompressorControl(null, this.compressionAlgorithm, type.primitiveClass());
     }
 
     protected int getUncompressedSizeInBytes() {

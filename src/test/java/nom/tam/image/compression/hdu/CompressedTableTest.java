@@ -33,8 +33,17 @@ package nom.tam.image.compression.hdu;
 
 import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.Random;
+import java.util.zip.GZIPInputStream;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
@@ -44,11 +53,7 @@ import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.Cursor;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import nom.tam.util.SaveClose;
 
 public class CompressedTableTest {
 
@@ -123,7 +128,7 @@ public class CompressedTableTest {
         assertIntCard(Standard.NAXIS, 2, iter.next());
         assertIntCard(Standard.NAXISn.n(1), 16, iter.next());
         assertIntCard(Standard.NAXISn.n(2), 5, iter.next());
-        assertIntCard(Standard.PCOUNT, 1380, iter.next());
+        assertIntCard(Standard.PCOUNT, 18168, iter.next());
         assertIntCard(Standard.GCOUNT, 1, iter.next());
         assertIntCard(Standard.TFIELDS, 1, iter.next());
         // the order of the next two fields is not fix
@@ -180,5 +185,107 @@ public class CompressedTableTest {
     private void assertStringCard(IFitsHeader expectedKey, String expectedValue, HeaderCard card) {
         Assert.assertEquals(expectedKey.key(), card.getKey());
         Assert.assertEquals(expectedValue, card.getValue());
+    }
+
+    @Test
+    public void testB12TableDecompress() throws Exception {
+        Fits fitsComp = null;
+        Fits fitsOrg = null;
+        try {
+            fitsOrg = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+            fitsComp = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits.fz");
+            CompressedTableHDU cfitsioTable = (CompressedTableHDU) fitsComp.getHDU(1);
+            BinaryTableHDU orgTable = (BinaryTableHDU) fitsOrg.getHDU(1);
+            BinaryTableHDU decompressedTable = cfitsioTable.asBinaryTableHDU();
+
+            for (int row = 0; row < 50; row++) {
+                Object decompressedElement = decompressedTable.getElement(row, 0);
+                Object orgElement = orgTable.getElement(row, 0);
+                Assert.assertEquals((String) orgElement, (String) decompressedElement);
+                decompressedElement = decompressedTable.getElement(row, 1);
+                orgElement = orgTable.getElement(row, 1);
+                Assert.assertArrayEquals((short[]) orgElement, (short[]) decompressedElement);
+                decompressedElement = decompressedTable.getElement(row, 2);
+                orgElement = orgTable.getElement(row, 2);
+                Assert.assertArrayEquals((float[][]) orgElement, (float[][]) decompressedElement);
+                decompressedElement = decompressedTable.getElement(row, 3);
+                orgElement = orgTable.getElement(row, 3);
+                Assert.assertArrayEquals((double[]) orgElement, (double[]) decompressedElement, 0.000000001d);
+                decompressedElement = decompressedTable.getElement(row, 4);
+                orgElement = orgTable.getElement(row, 4);
+                Assert.assertArrayEquals((String[]) orgElement, (String[]) decompressedElement);
+            }
+
+        } finally {
+            SaveClose.close(fitsComp);
+        }
+    }
+
+    @Test
+    public void testB12TableCompress() throws Exception {
+        Fits fitsComp = null;
+        Fits fitsUncompressed = null;
+        Fits fitsOrg = null;
+        try {
+            fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+
+            CompressedTableHDU compressedTable = CompressedTableHDU.fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), 0).compress();
+            compressedTable.compress();
+
+            fitsOrg = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits.fz");
+            BinaryTableHDU orgTable = (BinaryTableHDU) fitsOrg.getHDU(1);
+
+            for (int column = 0; column < 5; column++) {
+                Object decompressedElement = compressedTable.getElement(0, column);
+                Object orgElement = orgTable.getElement(0, column);
+                byte[] decompressed = decompress(decompressedElement);
+                byte[] org = decompress(orgElement);
+                if (column == 3) {
+                    org = unshuffle(org, 8);
+                }
+                Assert.assertArrayEquals("compaire column " + column, org, decompressed);
+            }
+
+        } finally {
+            SaveClose.close(fitsComp);
+        }
+    }
+
+    private int[] calculateOffsets(byte[] byteArray, int primitiveSize) {
+        int[] offset = new int[primitiveSize];
+        offset[0] = 0;
+        for (int primitivIndex = 1; primitivIndex < primitiveSize; primitivIndex++) {
+            offset[primitivIndex] = offset[primitivIndex - 1] + byteArray.length / primitiveSize;
+        }
+        return offset;
+    }
+
+    public byte[] unshuffle(byte[] byteArray, int primitiveSize) {
+        byte[] result = new byte[byteArray.length];
+        int resultIndex = 0;
+        int[] offset = calculateOffsets(byteArray, primitiveSize);
+        for (int index = 0; index < byteArray.length; index += primitiveSize) {
+            for (int primitiveIndex = 0; primitiveIndex < primitiveSize; primitiveIndex++) {
+                result[index + primitiveIndex] = byteArray[resultIndex + offset[primitiveIndex]];
+            }
+            resultIndex++;
+        }
+        return result;
+    }
+
+    private byte[] decompress(Object decompressedElement) throws IOException {
+        if (decompressedElement instanceof byte[]) {
+            if (((byte[]) decompressedElement)[0] != 31 && ((byte[]) decompressedElement)[1] != -117) {
+                return (byte[]) decompressedElement;
+            }
+        }
+        ByteArrayOutputStream decompressed = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream((byte[]) decompressedElement));
+        int count;
+        while ((count = gzipInputStream.read(buffer)) >= 0) {
+            decompressed.write(buffer, 0, count);
+        }
+        return decompressed.toByteArray();
     }
 }

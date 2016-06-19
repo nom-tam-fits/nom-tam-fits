@@ -56,7 +56,7 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
     public void run() {
         if (this.is == null) {
             ByteBuffer unCompressedBytes = ByteBuffer.wrap(new byte[getUncompressedSizeInBytes()]);
-            getCompressorControl().decompress(this.compressedBytes, unCompressedBytes, null);
+            getCompressorControl().decompress(this.compressedBytes, type.asTypedBuffer(unCompressedBytes), null);
             this.is = new BufferedDataInputStream(new ByteArrayInputStream(unCompressedBytes.array()));
         }
         try {

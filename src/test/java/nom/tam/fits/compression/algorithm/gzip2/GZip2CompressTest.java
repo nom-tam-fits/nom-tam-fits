@@ -37,12 +37,20 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
+import java.util.Random;
 import java.util.zip.GZIPOutputStream;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ByteGZip2Compressor;
+import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.DoubleGZip2Compressor;
+import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.FloatGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.IntGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ShortGZip2Compressor;
@@ -50,9 +58,6 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ByteBufferInputStream;
 import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.SaveClose;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 public class GZip2CompressTest {
 
@@ -324,6 +329,52 @@ public class GZip2CompressTest {
             SaveClose.close(expected);
             SaveClose.close(file);
         }
+    }
+
+    @Test
+    public void testGzipCompressFloat() throws Exception {
+        float[] floats = new float[1000];
+        Random random = new Random();
+        for (int index = 0; index < floats.length; index++) {
+            floats[index] = random.nextFloat();
+        }
+        FloatBuffer floatArray = FloatBuffer.wrap(floats);
+
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[floats.length * 4]);
+
+        new FloatGZip2Compressor().compress(floatArray, compressed);
+
+        byte[] compressedArray = new byte[compressed.position()];
+        Assert.assertTrue(compressedArray.length < compressed.capacity());
+        compressed.position(0);
+        compressed.get(compressedArray, 0, compressedArray.length);
+
+        FloatBuffer decompressedArray = FloatBuffer.wrap(new float[floats.length]);
+        new FloatGZip2Compressor().decompress(ByteBuffer.wrap(compressedArray), decompressedArray);
+        Assert.assertArrayEquals(floats, decompressedArray.array(), 0.000001f);
+    }
+
+    @Test
+    public void testGzipCompressDouble() throws Exception {
+        double[] doubles = new double[1000];
+        Random random = new Random();
+        for (int index = 0; index < doubles.length; index++) {
+            doubles[index] = random.nextDouble();
+        }
+        DoubleBuffer doubleArray = DoubleBuffer.wrap(doubles);
+
+        ByteBuffer compressed = ByteBuffer.wrap(new byte[doubles.length * 8]);
+
+        new DoubleGZip2Compressor().compress(doubleArray, compressed);
+
+        byte[] compressedArray = new byte[compressed.position()];
+        Assert.assertTrue(compressedArray.length < compressed.capacity());
+        compressed.position(0);
+        compressed.get(compressedArray, 0, compressedArray.length);
+
+        DoubleBuffer decompressedArray = DoubleBuffer.wrap(new double[doubles.length]);
+        new DoubleGZip2Compressor().decompress(ByteBuffer.wrap(compressedArray), decompressedArray);
+        Assert.assertArrayEquals(doubles, decompressedArray.array(), 0.000001d);
     }
 
     @Test

@@ -78,6 +78,8 @@ public class CompressorControlNameComputer {
             return "GZip2";
         } else if (Compression.ZCMPTYPE_GZIP_1.equalsIgnoreCase(compressionAlgorithm)) {
             return "GZip";
+        } else if (Compression.ZCMPTYPE_NOCOMPRESS.equalsIgnoreCase(compressionAlgorithm)) {
+            return "NoCompress";
         }
         return "Unknown";
     }

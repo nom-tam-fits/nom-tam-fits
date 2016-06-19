@@ -1626,10 +1626,8 @@ public class BinaryTable extends AbstractTableData {
         added.isString = false;
         added.model = new long[2];
         this.rowLen += FitsIO.BYTES_IN_LONG * 2;
-        added.column = new long[0];
-        if (this.table != null) {
-            this.table.addColumn(added.column, added.size);
-        }
+        added.column = new long[this.table.getNRows() * 2];
+        this.table.addColumn(added.column, added.size);
     }
 
     protected ColumnTable<SaveState> createColumnTable(Object[] arrCol, int[] sizes) throws TableException {

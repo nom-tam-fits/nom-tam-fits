@@ -52,6 +52,8 @@ import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.IntGZipCompressor;
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.LongGZipCompressor;
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.ShortGZipCompressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ByteGZip2Compressor;
+import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.DoubleGZip2Compressor;
+import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.FloatGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.IntGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ShortGZip2Compressor;
@@ -68,6 +70,12 @@ import nom.tam.fits.compression.algorithm.rice.RiceCompressor.DoubleRiceCompress
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.FloatRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.IntRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompressor;
+import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.ByteNoCompressCompressor;
+import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.DoubleNoCompressCompressor;
+import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.FloatNoCompressCompressor;
+import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.IntNoCompressCompressor;
+import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.LongNoCompressCompressor;
+import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.ShortNoCompressCompressor;
 import nom.tam.fits.compression.provider.api.ICompressorProvider;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
@@ -242,6 +250,8 @@ public class CompressorProvider implements ICompressorProvider {
         {ByteGZip2Compressor.class},
         {ShortGZip2Compressor.class},
         {IntGZip2Compressor.class},
+        {FloatGZip2Compressor.class},
+        {DoubleGZip2Compressor.class},        
         {LongGZip2Compressor.class},
         {ByteGZipCompressor.class},
         {ShortGZipCompressor.class},
@@ -249,6 +259,12 @@ public class CompressorProvider implements ICompressorProvider {
         {LongGZipCompressor.class},
         {FloatGZipCompressor.class},
         {DoubleGZipCompressor.class},
+        {ByteNoCompressCompressor.class},
+        {ShortNoCompressCompressor.class},
+        {IntNoCompressCompressor.class},
+        {LongNoCompressCompressor.class},
+        {FloatNoCompressCompressor.class},
+        {DoubleNoCompressCompressor.class},
     };
     // @formatter:on
 

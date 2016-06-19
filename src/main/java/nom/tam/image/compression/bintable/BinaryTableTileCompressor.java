@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nom.tam.fits.FitsException;
+import nom.tam.fits.header.Compression;
 import nom.tam.image.compression.hdu.CompressedTableData;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.BufferedDataOutputStream;
@@ -62,7 +63,11 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
         }
         buffer.rewind();
         ByteBuffer compressedBuffer = ByteBuffer.wrap(new byte[getUncompressedSizeInBytes()]);
-        getCompressorControl().compress(buffer, compressedBuffer, null);
+        if (!getCompressorControl().compress(type.asTypedBuffer(buffer), compressedBuffer, null)) {
+            this.compressionAlgorithm = Compression.ZCMPTYPE_NOCOMPRESS;
+            compressedBuffer.rewind();
+            getCompressorControl().compress(type.asTypedBuffer(buffer), compressedBuffer, null);
+        }
         byte[] compressedBytes = new byte[compressedBuffer.position()];
         compressedBuffer.rewind();
         compressedBuffer.get(compressedBytes);
