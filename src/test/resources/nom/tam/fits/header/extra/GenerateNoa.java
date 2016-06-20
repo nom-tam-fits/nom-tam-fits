@@ -34,6 +34,7 @@ package nom.tam.fits.header.extra;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -77,32 +78,42 @@ public class GenerateNoa {
     };
 
     public static void main(String[] args) throws Exception {
-        BufferedReader file = new BufferedReader(new FileReader(new File("src/main/resources/nom/tam/fits/header/extra/NOAOExt.java")));
+        BufferedReader file = null;
         String line;
         String lastAttribute = "";
         Map<String, String> element = new HashMap<>();
         boolean firstLine = true;
-        while ((line = file.readLine()) != null) {
-            firstLine = false;
-            line = line.trim();
-            for (String att : attributes) {
-                if (line.startsWith(att)) {
-                    lastAttribute = att;
-                    line = line.substring(line.indexOf(':') + 1).trim();
-                    firstLine = true;
+        try {
+            file = new BufferedReader(new FileReader(new File("src/main/resources/nom/tam/fits/header/extra/NOAOExt.java")));
+            while ((line = file.readLine()) != null) {
+                firstLine = false;
+                line = line.trim();
+                for (String att : attributes) {
+                    if (line.startsWith(att)) {
+                        lastAttribute = att;
+                        line = line.substring(line.indexOf(':') + 1).trim();
+                        firstLine = true;
+                    }
                 }
-            }
-            if (firstLine && lastAttribute.equals(NAME)) {
-                if (!element.isEmpty()) {
-                    newElement(element);
+                if (firstLine && lastAttribute.equals(NAME)) {
+                    if (!element.isEmpty()) {
+                        newElement(element);
+                    }
+                    element = new HashMap<>();
                 }
-                element = new HashMap<>();
+                String oldValue = element.get(lastAttribute);
+                if (oldValue == null) {
+                    oldValue = "";
+                }
+                element.put(lastAttribute, oldValue + " " + line);
             }
-            String oldValue = element.get(lastAttribute);
-            if (oldValue == null) {
-                oldValue = "";
+        } finally {
+            if(file!=null){
+                try{
+                    file.close();
+                }
+                catch(IOException ex){}
             }
-            element.put(lastAttribute, oldValue + " " + line);
         }
         newElement(element);
     }

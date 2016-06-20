@@ -271,16 +271,18 @@ public class StreamTest {
     @Test(expected = EOFException.class)
     public void testSkipBytesWithException1() throws Exception {
         int total = 256;
-        InputStream input = new ByteArrayInputStream(new byte[total]) {
-
-            @Override
-            public synchronized long skip(long n) {
-                ThrowAnyException.throwIOException("all is broken");
-                return 0L;
-            }
-        };
+        InputStream input = null;
         BufferedDataInputStream myIn = null;
         try {
+            input = new ByteArrayInputStream(new byte[total]) {
+
+                @Override
+                public synchronized long skip(long n) {
+                    ThrowAnyException.throwIOException("all is broken");
+                    return 0L;
+                }
+            };
+
             myIn = new BufferedDataInputStream(input) {
 
                 @Override
@@ -291,22 +293,28 @@ public class StreamTest {
             myIn.skipAllBytes(100L);
         } finally {
             SaveClose.close(myIn);
+            if(input!=null){
+                try{
+                    input.close();
+                } catch(IOException ex){}
+            }
         }
     }
 
     @Test(expected = EOFException.class)
     public void testSkipBytesWithException2() throws Exception {
         int total = 8192 + 256;
-        InputStream input = new ByteArrayInputStream(new byte[total]) {
-
-            @Override
-            public synchronized long skip(long n) {
-                ThrowAnyException.throwIOException("all is broken");
-                return 0L;
-            }
-        };
+        InputStream input = null;
         BufferedDataInputStream myIn = null;
         try {
+            input = new ByteArrayInputStream(new byte[total]) {
+
+                @Override
+                public synchronized long skip(long n) {
+                    ThrowAnyException.throwIOException("all is broken");
+                    return 0L;
+                }
+            };
             myIn = new BufferedDataInputStream(input) {
 
                 @Override
@@ -316,6 +324,12 @@ public class StreamTest {
             };
             myIn.skipAllBytes(total - 100L);
         } finally {
+            if(input!=null){
+                try{
+                    input.close();
+                }
+                catch(IOException ex){}
+            }
             SaveClose.close(myIn);
         }
     }

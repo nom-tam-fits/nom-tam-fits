@@ -35,6 +35,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -78,6 +79,17 @@ public class CompressWihtoutDependenciesTest {
         assertEquals(assertions.get(0), "ok");
         assertTrue(assertions.get(1) instanceof InvocationTargetException);
         assertTrue(((InvocationTargetException) assertions.get(1)).getCause() instanceof NoClassDefFoundError);
+
+        try{
+            in1.close();
+        }
+        catch(IOException ex){}
+
+
+        try{
+            in2.close();
+        }
+        catch(IOException ex){}
     }
 
 }
