@@ -39,16 +39,16 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.SaveClose;
-
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 public class StreamTest {
 
@@ -254,33 +254,41 @@ public class StreamTest {
     @Test
     public void testSkipManyBytes() throws Exception {
         int total = 8192 * 2;
-        InputStream input = new ByteArrayInputStream(new byte[total]) {
+        BufferedDataInputStream myIn = null;
+        InputStream input = null;
+        try {
+            input = new ByteArrayInputStream(new byte[total]) {
 
-            @Override
-            public synchronized long skip(long n) {
-                ThrowAnyException.throwIOException("all is broken");
-                return 0L;
-            }
-        };
-        BufferedDataInputStream myIn = new BufferedDataInputStream(input);
-        myIn.skipAllBytes(10000L);
-        myIn.readFully(new byte[total - 10000]);
-        Assert.assertEquals(0, myIn.available());
+                @Override
+                public synchronized long skip(long n) {
+                    ThrowAnyException.throwIOException("all is broken");
+                    return 0L;
+                }
+            };
+            myIn = new BufferedDataInputStream(input);
+            myIn.skipAllBytes(10000L);
+            myIn.readFully(new byte[total - 10000]);
+            Assert.assertEquals(0, myIn.available());
+        } finally {
+            SaveClose.close(myIn);
+            SaveClose.close(input);
+        }
     }
 
     @Test(expected = EOFException.class)
     public void testSkipBytesWithException1() throws Exception {
         int total = 256;
-        InputStream input = new ByteArrayInputStream(new byte[total]) {
-
-            @Override
-            public synchronized long skip(long n) {
-                ThrowAnyException.throwIOException("all is broken");
-                return 0L;
-            }
-        };
         BufferedDataInputStream myIn = null;
+        InputStream input = null;
         try {
+            input = new ByteArrayInputStream(new byte[total]) {
+
+                @Override
+                public synchronized long skip(long n) {
+                    ThrowAnyException.throwIOException("all is broken");
+                    return 0L;
+                }
+            };
             myIn = new BufferedDataInputStream(input) {
 
                 @Override
@@ -290,6 +298,7 @@ public class StreamTest {
             };
             myIn.skipAllBytes(100L);
         } finally {
+            SaveClose.close(input);
             SaveClose.close(myIn);
         }
     }

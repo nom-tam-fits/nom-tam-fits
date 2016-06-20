@@ -38,6 +38,11 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
@@ -52,11 +57,6 @@ import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.SaveClose;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class UserProvidedTest {
 
@@ -201,43 +201,42 @@ public class UserProvidedTest {
             for (int i = 0; i < data.getNCols(); i++) {
                 printArray(data.getColumn(i), 0, builder);
             }
-            Assert.assertEquals(
-                    "StringColumns:\n"//
-                            + "[2]\n"//
-                            + "[2]\n"//
-                            + "[S2]\n"//
-                            + "[S2]\n"//
-                            + "[2]\n"//
-                            + "[2]\n"//
-                            + "[2]\n"//
-                            + "[2]\n"//
-                            + "[2]\n"//
-                            + "[2]\n"//
-                            + "[2]\n"//
-                            + "[2]\n"//
-                            + "[\n"//
-                            + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
-                            + "]\n"//
-                            + "[\n"//
-                            + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
-                            + "]\n"//
-                            + "[\n"//
-                            + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
-                            + "]\n"//
-                            + "[\n"//
-                            + "[S3, S3, S3, S3]\n"//
-                            + "]\n"//
-                            + "[\n"//
-                            + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
-                            + "]\n"//
-                            + "[\n"//
-                            + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
-                            + "]\n"//
-                            + "[\n"//
-                            + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
-                            + "]\n"//
-                            + "[S2]\n"//
-                            + "[S2]\n", builder.toString());
+            Assert.assertEquals("StringColumns:\n"//
+                    + "[2]\n"//
+                    + "[2]\n"//
+                    + "[S2]\n"//
+                    + "[S2]\n"//
+                    + "[2]\n"//
+                    + "[2]\n"//
+                    + "[2]\n"//
+                    + "[2]\n"//
+                    + "[2]\n"//
+                    + "[2]\n"//
+                    + "[2]\n"//
+                    + "[2]\n"//
+                    + "[\n"//
+                    + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
+                    + "]\n"//
+                    + "[\n"//
+                    + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
+                    + "]\n"//
+                    + "[\n"//
+                    + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
+                    + "]\n"//
+                    + "[\n"//
+                    + "[S3, S3, S3, S3]\n"//
+                    + "]\n"//
+                    + "[\n"//
+                    + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
+                    + "]\n"//
+                    + "[\n"//
+                    + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
+                    + "]\n"//
+                    + "[\n"//
+                    + "[S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3, S3]\n"//
+                    + "]\n"//
+                    + "[S2]\n"//
+                    + "[S2]\n", builder.toString());
 
         } finally {
             SaveClose.close(fits);
@@ -272,11 +271,12 @@ public class UserProvidedTest {
         FitsFactory.setLongStringsEnabled(true);
         FitsFactory.setUseHierarch(true);
         FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
-
-        FileInputStream stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("16913-1.fits"));
-        BasicHDU<?> bhduMain = null;
         Fits fitsSrc = null;
+        FileInputStream stream = null;
         try {
+            stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("16913-1.fits"));
+            BasicHDU<?> bhduMain = null;
+
             fitsSrc = new Fits(stream);
             bhduMain = fitsSrc.readHDU(); // Product
             Cursor<String, HeaderCard> iterator = bhduMain.getHeader().iterator();
@@ -292,6 +292,7 @@ public class UserProvidedTest {
 
         } finally {
             SaveClose.close(fitsSrc);
+            SaveClose.close(stream);
         }
     }
 
@@ -301,14 +302,16 @@ public class UserProvidedTest {
         FitsFactory.setUseHierarch(true);
         FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
 
-        FileInputStream stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("16913-1.fits"));
-        BasicHDU<?> bhduMain = null;
         Fits fitsSrc = null;
+        FileInputStream stream = null;
+        BasicHDU<?> bhduMain = null;
         try {
+            stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("16913-1.fits"));
             fitsSrc = new Fits(stream);
             bhduMain = fitsSrc.readHDU(); // Product
         } finally {
             SaveClose.close(fitsSrc);
+            SaveClose.close(stream);
         }
 
         BasicHDU<?> bhduMainAgain = null;
@@ -329,10 +332,11 @@ public class UserProvidedTest {
         FitsFactory.setLongStringsEnabled(true);
         FitsFactory.setUseHierarch(true);
 
-        FileInputStream stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("varlen-bintable.fits"));
+        FileInputStream stream = null;
         BinaryTableHDU bhduMain = null;
         Fits fitsSrc = null;
         try {
+            stream = new FileInputStream(BlackBoxImages.getBlackBoxImage("varlen-bintable.fits"));
             fitsSrc = new Fits(stream);
             fitsSrc.readHDU(); // skip the image
             bhduMain = (BinaryTableHDU) fitsSrc.readHDU(); // theres the table
@@ -347,6 +351,7 @@ public class UserProvidedTest {
             assertCurledHdu(bhduMain);
         } finally {
             SaveClose.close(fitsSrc);
+            SaveClose.close(stream);
         }
     }
 

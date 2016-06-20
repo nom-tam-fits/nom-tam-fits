@@ -460,7 +460,7 @@
 						<id>default-test</id>
 						<configuration>
 							<excludes>
-								<exclude>nom.tam.fits.test.CompressWihtoutDependenciesTest</exclude>
+								<exclude>nom.tam.fits.test.CompressWithoutDependenciesTest</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -472,7 +472,7 @@
 						<phase>test</phase>
 						<configuration>
 							<includes>
-								<include>nom.tam.fits.test.CompressWihtoutDependenciesTest</include>
+								<include>nom.tam.fits.test.CompressWithoutDependenciesTest</include>
 							</includes>
 							<classpathDependencyExcludes>
 								<classpathDependencyExclude>org.apache.commons:commons-compress</classpathDependencyExclude>
