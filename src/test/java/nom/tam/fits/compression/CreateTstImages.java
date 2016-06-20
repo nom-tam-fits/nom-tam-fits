@@ -14,9 +14,9 @@ import java.util.List;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.ImageHDU;
-import nom.tam.fits.FitsException;
 import nom.tam.util.BufferedFile;
 
 /*
@@ -56,8 +56,8 @@ public class CreateTstImages {
 
     private static final String FUNPACK = "/home/nir/ws/cfitsio/funpack";
 
-    private static void createCompressedData(int edge, String nr, List<String> types, File fitsFile, File compressedFile, String[] options, String type) throws Exception,
-            IOException {
+    private static void createCompressedData(int edge, String nr, List<String> types, File fitsFile, File compressedFile, String[] options, String type)
+            throws Exception, IOException {
         compressedFile.delete();
         String[] cmdarray = new String[options.length + 3];
         cmdarray[0] = FPACK;
@@ -119,7 +119,8 @@ public class CreateTstImages {
                 continue;
             }
             Fits fits = new Fits(fitsFile);
-            BasicHDU<?> hdu1 = fits.readHDU();
+            fits.readHDU();
+
             BinaryTableHDU hdu2 = (BinaryTableHDU) fits.readHDU();
             Object element = hdu2.getData().getElement(0, 0);
 
@@ -144,6 +145,7 @@ public class CreateTstImages {
             ByteBuffer dataBuffer = getByteData(dataOrg);
             writeBinData(edge, nr, dataBuffer);
             {// check uncompressed differes
+                BasicHDU<?> hdu1;
                 File uncompressed = new File("target/compress/test" + edge + "Data" + type + nr + ".fits.uncompressed");
                 if (uncompressed.exists()) {
                     fits = new Fits(uncompressed);
