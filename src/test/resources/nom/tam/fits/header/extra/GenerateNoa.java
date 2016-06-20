@@ -81,7 +81,7 @@ public class GenerateNoa {
         String line;
         String lastAttribute = "";
         Map<String, String> element = new HashMap<>();
-        boolean firstLine = true;
+        boolean firstLine;
         while ((line = file.readLine()) != null) {
             firstLine = false;
             line = line.trim();
@@ -120,7 +120,6 @@ public class GenerateNoa {
                 keyword = keyword.replaceAll("%4d", "nnn");
                 String hdu = element.get(HDU).trim().toUpperCase();
                 String value = element.get(VALUE).trim().toUpperCase();
-                String nameValue = element.get(NAME).trim().toUpperCase();
                 String decription = element.get(DESCRIPTION).trim();
 
                 String defaultValue = element.get(DEFAULT).trim();

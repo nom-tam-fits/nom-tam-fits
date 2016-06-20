@@ -357,10 +357,6 @@ public class ByteFormatParseTest {
 
         this.bp.setOffset(0);
         for (int i = 0; i < 100; i += 1) {
-            int ind = i % 27;
-            if (ind > 13) {
-                ind = 13;
-            }
             String want = bigStr.substring(i % 27);
             if (want.length() > 13) {
                 want = want.substring(0, 13);

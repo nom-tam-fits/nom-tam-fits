@@ -584,7 +584,7 @@ public class HeaderTest {
     @Test
     public void testStringLengthProblems() throws HeaderCardException {
         FitsFactory.setLongStringsEnabled(false);
-        HeaderCard card = null;
+        HeaderCard card;
         try {
             new HeaderCard("TESTKEY", "random value just for testing purpose - random value just for testing", "");
             fail("must trow an value too long exception");

@@ -844,9 +844,9 @@ public class HCompress {
 
         int i;
         long[] p1, p2, pt;
-        int p1Offset = 0;
-        int ptOffset = 0;
-        int p2Offset = 0;
+        int p1Offset;
+        int ptOffset;
+        int p2Offset;
         /*
          * copy odd elements to tmp
          */

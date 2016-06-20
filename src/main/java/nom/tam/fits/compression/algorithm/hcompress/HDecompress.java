@@ -453,7 +453,6 @@ public class HDecompress {
                 }
             }
             // divide all the masks and rounding values by 2
-            bit2 = bit1;
             bit1 = bit0;
             bit0 = bit0 >> 1;
             mask1 = mask0;

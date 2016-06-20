@@ -338,7 +338,7 @@ public final class FitsUtil {
     public static byte[] stringsToByteArray(String[] stringArray, int maxLen) {
         byte[] res = new byte[stringArray.length * maxLen];
         for (int i = 0; i < stringArray.length; i += 1) {
-            byte[] bstr = null;
+            byte[] bstr;
             if (stringArray[i] == null) {
                 bstr = new byte[0];
             } else {

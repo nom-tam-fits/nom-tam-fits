@@ -54,7 +54,6 @@ public class GenerateReleaseNote {
         Element release = (Element) doc.getElementsByTagName("release").item(0);
 
         String version = release.getAttribute("version");
-        String date = release.getAttribute("date");
         String description = release.getAttribute("description");
 
         String fileName = "NOTE.v" + version.substring(0, version.indexOf('.')) + version.substring(version.indexOf('.') + 1);
