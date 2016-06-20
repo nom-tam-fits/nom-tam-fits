@@ -115,9 +115,7 @@ public class ImageTest {
             assertEquals("fint3 image", true, TestArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
             assertEquals("fdouble1 image", true, TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
         } finally {
-            if(f!=null) {
-                f.close();
-            }
+            SaveClose.close(f);
         }
     }
 
