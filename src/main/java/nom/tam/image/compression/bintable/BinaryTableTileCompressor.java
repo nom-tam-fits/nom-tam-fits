@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import nom.tam.fits.FitsException;
-import nom.tam.fits.header.Compression;
 import nom.tam.image.compression.hdu.CompressedTableData;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.BufferedDataOutputStream;
@@ -43,6 +42,14 @@ import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.ColumnTable;
 
 public class BinaryTableTileCompressor extends BinaryTableTile {
+
+    private static final int FACTOR_15 = 15;
+
+    private static final int FACTOR_10 = 10;
+
+    private static final int FACTOR_11 = 11;
+
+    private static final int MINIMUM_EXTRA_SPACE = 1024;
 
     private final CompressedTableData binData;
 
@@ -62,11 +69,17 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
             throw new IllegalStateException("could not write compressed data", e);
         }
         buffer.rewind();
-        ByteBuffer compressedBuffer = ByteBuffer.wrap(new byte[getUncompressedSizeInBytes()]);
+        int spaceForCompression = getUncompressedSizeInBytes();
+        // give the compression 10% more space and a minimum of 1024 bytes
+        spaceForCompression = Math.max(spaceForCompression * FACTOR_11 / FACTOR_10, spaceForCompression + MINIMUM_EXTRA_SPACE);
+        ByteBuffer compressedBuffer = ByteBuffer.wrap(new byte[spaceForCompression]);
         if (!getCompressorControl().compress(type.asTypedBuffer(buffer), compressedBuffer, null)) {
-            this.compressionAlgorithm = Compression.ZCMPTYPE_NOCOMPRESS;
-            compressedBuffer.rewind();
-            getCompressorControl().compress(type.asTypedBuffer(buffer), compressedBuffer, null);
+            // very bad case lets try again with 50% more space
+            spaceForCompression = spaceForCompression * FACTOR_15 / FACTOR_10;
+            compressedBuffer = ByteBuffer.wrap(new byte[spaceForCompression]);
+            if (!getCompressorControl().compress(type.asTypedBuffer(buffer), compressedBuffer, null)) {
+                throw new IllegalStateException("could not compress the tile with the requested algorithem!");
+            }
         }
         byte[] compressedBytes = new byte[compressedBuffer.position()];
         compressedBuffer.rewind();

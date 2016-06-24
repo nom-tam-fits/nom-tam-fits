@@ -242,6 +242,7 @@ public class CompressedTableTest {
                 byte[] org = decompress(orgElement);
                 if (column == 3) {
                     org = unshuffle(org, 8);
+                    decompressed = unshuffle(decompressed, 8);
                 }
                 Assert.assertArrayEquals("compaire column " + column, org, decompressed);
             }
