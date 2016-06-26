@@ -89,6 +89,21 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     public static final int BITPIX_DOUBLE = -64;
 
+
+    /** The associated header. */
+    protected Header myHeader = null;
+
+    /** The associated data unit. */
+    protected DataClass myData = null;
+
+    /** Is this the first HDU in a FITS file? */
+    protected boolean isPrimary = false;
+
+    protected BasicHDU(Header myHeader, DataClass myData) {
+        this.myHeader = myHeader;
+        this.myData = myData;
+    }
+
     /**
      * @return an HDU without content
      */
@@ -128,19 +143,6 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         return false;
     }
 
-    /** The associated header. */
-    protected Header myHeader = null;
-
-    /** The associated data unit. */
-    protected DataClass myData = null;
-
-    /** Is this the first HDU in a FITS file? */
-    protected boolean isPrimary = false;
-
-    protected BasicHDU(Header myHeader, DataClass myData) {
-        this.myHeader = myHeader;
-        this.myData = myData;
-    }
 
     /**
      * Safely replace a card in the header, knowing that no exception will

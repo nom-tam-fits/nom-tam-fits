@@ -69,6 +69,11 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         TDIMn
     };
 
+
+    public BinaryTableHDU(Header hdr, BinaryTable datum) {
+        super(hdr, datum);
+    }
+
     /**
      * @return Encapsulate data in a BinaryTable data type
      * @param o
@@ -137,10 +142,6 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         Header hdr = new Header();
         data.fillHeader(hdr);
         return hdr;
-    }
-
-    public BinaryTableHDU(Header hdr, BinaryTable datum) {
-        super(hdr, datum);
     }
 
     @Override
