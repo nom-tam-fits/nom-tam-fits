@@ -38,6 +38,8 @@ import nom.tam.fits.HeaderCardException;
 
 public class ThrowAnyException {
 
+    private ThrowAnyException(){}
+
     public static <E extends Throwable> void throwAny(Throwable e) throws E {
         throw (E) e;
     }

@@ -45,6 +45,8 @@ import nom.tam.util.SaveClose;
 
 public class BlackBoxImages {
 
+    private BlackBoxImages(){}
+
     public static String getBlackBoxImage(final String fileName) {
         if (new File("../blackbox-images/" + fileName).exists()) {
             return "../blackbox-images/" + fileName;
