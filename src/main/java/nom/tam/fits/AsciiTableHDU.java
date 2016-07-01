@@ -70,6 +70,20 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         TUNITn
     };
 
+
+
+    /**
+     * Create an ASCII table header/data unit.
+     *
+     * @param h
+     *            the template specifying the ASCII table.
+     * @param d
+     *            the FITS data structure containing the table data.
+     */
+    public AsciiTableHDU(Header h, AsciiTable d) {
+        super(h, d);
+    }
+
     /**
      * @return a ASCII table data structure from an array of objects
      *         representing the columns.
@@ -152,18 +166,6 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         d.fillHeader(hdr);
         hdr.iterator();
         return hdr;
-    }
-
-    /**
-     * Create an ASCII table header/data unit.
-     *
-     * @param h
-     *            the template specifying the ASCII table.
-     * @param d
-     *            the FITS data structure containing the table data.
-     */
-    public AsciiTableHDU(Header h, AsciiTable d) {
-        super(h, d);
     }
 
     @Override

@@ -237,6 +237,128 @@ public class BinaryTable extends AbstractTableData {
      */
     private ArrayDataInput currInput;
 
+
+    /**
+     * Create a null binary table data segment.
+     */
+    public BinaryTable() {
+        try {
+            this.table = createColumnTable(new Object[0], new int[0]);
+        } catch (TableException e) {
+            throw new IllegalStateException("Impossible exception in BinaryTable() constructor", e);
+        }
+        this.heap = new FitsHeap(0);
+        saveExtraState();
+        this.nRow = 0;
+        this.rowLen = 0;
+    }
+
+    /**
+     * Create a binary table from an existing ColumnTable
+     *
+     * @param tabIn
+     *            the column table to create the binary table from
+     */
+    public BinaryTable(ColumnTable<?> tabIn) {
+        @SuppressWarnings("unchecked")
+        ColumnTable<SaveState> tab = (ColumnTable<SaveState>) tabIn;
+        // This will throw an error if this isn't the correct type.
+        SaveState extra = tab.getExtraState();
+        this.columnList = new ArrayList<ColumnDesc>();
+        for (ColumnDesc col : extra.columns) {
+            ColumnDesc copy = (ColumnDesc) col.clone();
+            copy.column = null;
+            this.columnList.add(copy);
+        }
+        try {
+            this.table = tab.copy();
+        } catch (Exception e) {
+            throw new IllegalStateException("Unexpected Exception", e);
+        }
+        this.heap = extra.heap.copy();
+        this.nRow = tab.getNRows();
+        saveExtraState();
+    }
+
+
+    /**
+     * Create a binary table from given header information.
+     *
+     * @param myHeader
+     *            A header describing what the binary table should look like.
+     * @throws FitsException
+     *             if the specified header is not usable for a binary table
+     */
+    public BinaryTable(Header myHeader) throws FitsException {
+        long heapSizeL = myHeader.getLongValue(PCOUNT);
+        long heapOffsetL = myHeader.getLongValue(THEAP);
+        if (heapOffsetL > MAX_INTEGER_VALUE) {
+            throw new FitsException("Heap Offset > 2GB");
+        }
+        if (heapSizeL > MAX_INTEGER_VALUE) {
+            throw new FitsException("Heap size > 2 GB");
+        }
+        if (heapSizeL - heapOffsetL > MAX_INTEGER_VALUE) {
+            throw new FitsException("Unable to allocate heap > 2GB");
+        }
+        this.heapOffset = (int) heapOffsetL;
+        int heapSize = (int) heapSizeL;
+        int rwsz = myHeader.getIntValue(NAXIS1);
+        this.nRow = myHeader.getIntValue(NAXIS2);
+
+        // Subtract out the size of the regular table from
+        // the heap offset.
+        if (this.heapOffset > 0) {
+            this.heapOffset -= this.nRow * rwsz;
+        }
+
+        if (this.heapOffset < 0 || this.heapOffset > heapSize) {
+            throw new FitsException("Inconsistent THEAP and PCOUNT");
+        }
+
+        this.heap = new FitsHeap(heapSize - this.heapOffset);
+        int nCol = myHeader.getIntValue(TFIELDS);
+        this.rowLen = 0;
+        for (int col = 0; col < nCol; col++) {
+            this.rowLen += processCol(myHeader, col);
+        }
+        HeaderCard card = myHeader.findCard(NAXIS1);
+        card.setValue(String.valueOf(this.rowLen));
+        myHeader.updateLine(NAXIS1, card);
+
+    }
+
+    /**
+     * Create a binary table from existing data in column order.
+     *
+     * @param o
+     *            array of columns
+     * @throws FitsException
+     *             if the data for the columns could not be used as coulumns
+     */
+    public BinaryTable(Object[] o) throws FitsException {
+
+        this.heap = new FitsHeap(0);
+
+        for (Object element : o) {
+            addColumn(element);
+        }
+        createTable();
+    }
+
+    /**
+     * Create a binary table from existing data in row order.
+     *
+     * @param data
+     *            The data used to initialize the binary table.
+     * @throws FitsException
+     *             if the data could not be converted to a binary table
+     */
+    public BinaryTable(Object[][] data) throws FitsException {
+        this(convertToColumns(data));
+    }
+
+
     /**
      * TODO: this is only for internal access!
      *
@@ -321,125 +443,6 @@ public class BinaryTable extends AbstractTableData {
             }
         }
         return results;
-    }
-
-    /**
-     * Create a null binary table data segment.
-     */
-    public BinaryTable() {
-        try {
-            this.table = createColumnTable(new Object[0], new int[0]);
-        } catch (TableException e) {
-            throw new IllegalStateException("Impossible exception in BinaryTable() constructor", e);
-        }
-        this.heap = new FitsHeap(0);
-        saveExtraState();
-        this.nRow = 0;
-        this.rowLen = 0;
-    }
-
-    /**
-     * Create a binary table from an existing ColumnTable
-     *
-     * @param tabIn
-     *            the column table to create the binary table from
-     */
-    public BinaryTable(ColumnTable<?> tabIn) {
-        @SuppressWarnings("unchecked")
-        ColumnTable<SaveState> tab = (ColumnTable<SaveState>) tabIn;
-        // This will throw an error if this isn't the correct type.
-        SaveState extra = tab.getExtraState();
-        this.columnList = new ArrayList<ColumnDesc>();
-        for (ColumnDesc col : extra.columns) {
-            ColumnDesc copy = (ColumnDesc) col.clone();
-            copy.column = null;
-            this.columnList.add(copy);
-        }
-        try {
-            this.table = tab.copy();
-        } catch (Exception e) {
-            throw new IllegalStateException("Unexpected Exception", e);
-        }
-        this.heap = extra.heap.copy();
-        this.nRow = tab.getNRows();
-        saveExtraState();
-    }
-
-    /**
-     * Create a binary table from given header information.
-     *
-     * @param myHeader
-     *            A header describing what the binary table should look like.
-     * @throws FitsException
-     *             if the specified header is not usable for a binary table
-     */
-    public BinaryTable(Header myHeader) throws FitsException {
-        long heapSizeL = myHeader.getLongValue(PCOUNT);
-        long heapOffsetL = myHeader.getLongValue(THEAP);
-        if (heapOffsetL > MAX_INTEGER_VALUE) {
-            throw new FitsException("Heap Offset > 2GB");
-        }
-        if (heapSizeL > MAX_INTEGER_VALUE) {
-            throw new FitsException("Heap size > 2 GB");
-        }
-        if (heapSizeL - heapOffsetL > MAX_INTEGER_VALUE) {
-            throw new FitsException("Unable to allocate heap > 2GB");
-        }
-        this.heapOffset = (int) heapOffsetL;
-        int heapSize = (int) heapSizeL;
-        int rwsz = myHeader.getIntValue(NAXIS1);
-        this.nRow = myHeader.getIntValue(NAXIS2);
-
-        // Subtract out the size of the regular table from
-        // the heap offset.
-        if (this.heapOffset > 0) {
-            this.heapOffset -= this.nRow * rwsz;
-        }
-
-        if (this.heapOffset < 0 || this.heapOffset > heapSize) {
-            throw new FitsException("Inconsistent THEAP and PCOUNT");
-        }
-
-        this.heap = new FitsHeap(heapSize - this.heapOffset);
-        int nCol = myHeader.getIntValue(TFIELDS);
-        this.rowLen = 0;
-        for (int col = 0; col < nCol; col++) {
-            this.rowLen += processCol(myHeader, col);
-        }
-        HeaderCard card = myHeader.findCard(NAXIS1);
-        card.setValue(String.valueOf(this.rowLen));
-        myHeader.updateLine(NAXIS1, card);
-
-    }
-
-    /**
-     * Create a binary table from existing data in column order.
-     *
-     * @param o
-     *            array of columns
-     * @throws FitsException
-     *             if the data for the columns could not be used as coulumns
-     */
-    public BinaryTable(Object[] o) throws FitsException {
-
-        this.heap = new FitsHeap(0);
-
-        for (Object element : o) {
-            addColumn(element);
-        }
-        createTable();
-    }
-
-    /**
-     * Create a binary table from existing data in row order.
-     *
-     * @param data
-     *            The data used to initialize the binary table.
-     * @throws FitsException
-     *             if the data could not be converted to a binary table
-     */
-    public BinaryTable(Object[][] data) throws FitsException {
-        this(convertToColumns(data));
     }
 
     @Override
