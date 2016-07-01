@@ -35,6 +35,8 @@ import java.util.Arrays;
 
 public class TestArrayFuncs {
 
+    private TestArrayFuncs(){}
+
     /** Compare two double arrays using a given tolerance */
     public static boolean doubleArrayEquals(double[] x, double[] y, double tol) {
 
