@@ -91,9 +91,6 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @return <CODE>true</CODE> if this HDU has a valid header.
      */
     public static boolean isHeader(Header hdr) {
-        if (!System.getProperty("compressed.table.experimental", "false").equals("true")) {
-            return false;
-        }
         return hdr.getBooleanValue(ZTABLE, false);
     }
 

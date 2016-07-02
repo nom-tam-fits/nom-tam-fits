@@ -71,17 +71,6 @@ public class CompressedTableTest {
         }
     }
 
-    @Before
-    public void setup() {
-        System.setProperty("compressed.table.experimental", "true");
-
-    }
-
-    @After
-    public void teardown() {
-        System.clearProperty("compressed.table.experimental");
-    }
-
     @Test
     public void testBasicBinaryTable() throws Exception {
 
