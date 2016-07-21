@@ -237,7 +237,6 @@ public class BinaryTable extends AbstractTableData {
      */
     private ArrayDataInput currInput;
 
-
     /**
      * Create a null binary table data segment.
      */
@@ -279,7 +278,6 @@ public class BinaryTable extends AbstractTableData {
         this.nRow = tab.getNRows();
         saveExtraState();
     }
-
 
     /**
      * Create a binary table from given header information.
@@ -357,7 +355,6 @@ public class BinaryTable extends AbstractTableData {
     public BinaryTable(Object[][] data) throws FitsException {
         this(convertToColumns(data));
     }
-
 
     /**
      * TODO: this is only for internal access!
@@ -675,7 +672,7 @@ public class BinaryTable extends AbstractTableData {
     public Object getElement(int i, int j) throws FitsException {
 
         if (!validRow(i) || !validColumn(j)) {
-            throw new FitsException("No such element");
+            throw new FitsException("No such element (" + i + "," + j + ")");
         }
 
         ColumnDesc colDesc = this.columnList.get(j);
