@@ -1,5 +1,7 @@
 package nom.tam.image.compression.hdu;
 
+import java.io.File;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -53,8 +55,39 @@ public class CompressedTableBlackBoxTest {
         uncompressTableAndAssert("bintable/mddtsapcln.fits.fz", "bintable/mddtsapcln.fits");
     }
 
+    private void compressThenUncompressTableAndAssert(String originalFileName) throws FitsException, IOException {
+        String tableOrgFile = BlackBoxImages.getBlackBoxImage(originalFileName);
+        Fits fitsOrg = null;
+        String compressedfileName;
+        try {
+            fitsOrg = new Fits(tableOrgFile);
+            fitsOrg.readHDU(); // skip image
+
+            File file = new File("target/" + originalFileName + ".fz");
+            if (file.exists()) {
+                file.delete();
+            }
+            file.getParentFile().mkdirs();
+            Fits fitsCompressed = new Fits();
+            fitsCompressed.addHDU(//
+                    CompressedTableHDU.fromBinaryTableHDU((BinaryTableHDU) fitsOrg.readHDU(), 0)//
+                            .compress());
+            fitsCompressed.write(file);
+            compressedfileName = file.getAbsolutePath();
+        } finally {
+            SaveClose.close(fitsOrg);
+        }
+
+        uncompressTableAndAssert(compressedfileName, originalFileName);
+    }
+
     private void uncompressTableAndAssert(String compressedfileName, String originalFileName) throws FitsException, IOException {
-        String tableFile = BlackBoxImages.getBlackBoxImage(compressedfileName);
+        String tableFile;
+        if (new File(compressedfileName).exists()) {
+            tableFile = compressedfileName;
+        } else {
+            tableFile = BlackBoxImages.getBlackBoxImage(compressedfileName);
+        }
         Fits fitsComp = null;
         String tableOrgFile = BlackBoxImages.getBlackBoxImage(originalFileName);
         Fits fitsOrg = null;
@@ -119,13 +152,13 @@ public class CompressedTableBlackBoxTest {
     }
 
     @Test
-    @Ignore // TODO fix this
+    @Ignore // TODO also cfitsio can not uncompress this, mail to bill 22.7.2016
     public void testUncompress_tst0010() throws FitsException, IOException {
         uncompressTableAndAssert("bintable/tst0010.fits.fz", "bintable/tst0010.fits");
     }
 
     @Test
-    @Ignore // TODO fix this
+    @Ignore // TODO also cfitsio can not uncompress this, mail to bill 22.7.2016
     public void testUncompress_tst0012() throws FitsException, IOException {
         uncompressTableAndAssert("bintable/tst0012.fits.fz", "bintable/tst0012.fits");
     }
@@ -140,26 +173,32 @@ public class CompressedTableBlackBoxTest {
     }
 
     @Test
-    public void testCompressAndUncompress_mddtsapcln() {
+    public void testCompressAndUncompress_mddtsapcln() throws FitsException, IOException {
+        compressThenUncompressTableAndAssert("bintable/mddtsapcln.fits");
     }
 
     @Test
-    public void testCompressAndUncompress_swp06542llg() {
+    public void testCompressAndUncompress_swp06542llg() throws FitsException, IOException {
+        compressThenUncompressTableAndAssert("bintable/swp06542llg.fits");
     }
 
     @Test
-    public void testCompressAndUncompress_testdata() {
+    public void testCompressAndUncompress_testdata() throws FitsException, IOException {
+        compressThenUncompressTableAndAssert("bintable/testdata.fits");
     }
 
     @Test
-    public void testCompressAndUncompress_tst0010() {
+    public void testCompressAndUncompress_tst0010() throws FitsException, IOException {
+        compressThenUncompressTableAndAssert("bintable/tst0010.fits");
     }
 
     @Test
-    public void testCompressAndUncompress_tst0012() {
+    public void testCompressAndUncompress_tst0012() throws FitsException, IOException {
+        compressThenUncompressTableAndAssert("bintable/tst0012.fits");
     }
 
     @Test
-    public void testCompressAndUncompress_tst0014() {
+    public void testCompressAndUncompress_tst0014() throws FitsException, IOException {
+        compressThenUncompressTableAndAssert("bintable/tst0014.fits");
     }
 }

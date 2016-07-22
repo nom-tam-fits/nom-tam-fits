@@ -32,6 +32,7 @@ package nom.tam.fits.compression.provider.param.base;
  */
 
 import static nom.tam.fits.header.Standard.TTYPEn;
+
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;

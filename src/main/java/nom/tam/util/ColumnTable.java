@@ -38,10 +38,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 import nom.tam.util.type.PrimitiveTypes;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * A data table is conventionally considered to consist of rows and columns,

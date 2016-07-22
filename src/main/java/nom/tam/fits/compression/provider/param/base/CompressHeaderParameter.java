@@ -33,6 +33,7 @@ package nom.tam.fits.compression.provider.param.base;
 
 import static nom.tam.fits.header.Compression.ZNAMEn;
 import static nom.tam.fits.header.Compression.ZVALn;
+
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.api.IHeaderAccess;

@@ -212,6 +212,8 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
     private static final int DEFAULT_GZIP_BUFFER_SIZE = 65536;
 
+    private static final int MINIMAL_GZIP_BUFFER_SIZE = 65536;
+
     protected final int primitiveSize;
 
     protected byte[] buffer = new byte[DEFAULT_GZIP_BUFFER_SIZE];
@@ -306,7 +308,7 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
     }
 
     protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
-        return new GZIPOutputStream(new ByteBufferOutputStream(compressed), Math.min(length * 2, DEFAULT_GZIP_BUFFER_SIZE));
+        return new GZIPOutputStream(new ByteBufferOutputStream(compressed), Math.min(Math.max(length * 2, MINIMAL_GZIP_BUFFER_SIZE), DEFAULT_GZIP_BUFFER_SIZE));
     }
 
     protected abstract void getPixel(T pixelData, byte[] pixelBytes);

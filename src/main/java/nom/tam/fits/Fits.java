@@ -47,6 +47,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.fits.compress.CompressionManager;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
@@ -56,7 +57,6 @@ import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.SaveClose;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class provides access to routines to allow users to read and write FITS

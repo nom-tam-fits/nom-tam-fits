@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
@@ -59,7 +60,6 @@ import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.TableException;
 import nom.tam.util.type.PrimitiveTypeHandler;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class defines the methods for accessing FITS binary table data.

@@ -32,6 +32,7 @@ package nom.tam.image.compression.hdu;
  */
 
 import static nom.tam.fits.header.Compression.ZTABLE;
+
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
@@ -71,6 +72,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
             compressedData.setRowsPerTile(tileRows);
         }
         compressedData.fillHeader(header);
+
         Cursor<String, HeaderCard> iterator = header.iterator();
         Cursor<String, HeaderCard> imageIterator = binaryTableHDU.getHeader().iterator();
         while (imageIterator.hasNext()) {

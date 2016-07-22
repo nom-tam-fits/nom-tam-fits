@@ -63,6 +63,7 @@ import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.fits.header.Standard.TFORMn;
+import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.Standard.XTENSION;
 
 import java.util.Map;
@@ -139,6 +140,16 @@ enum BackupRestoreUnCompressedHeaderCard {
     MAP_ZTABLE(ZTABLE),
     MAP_ZNAMEn(ZNAMEn),
     MAP_ZNAXIS(ZNAXIS),
+    MAP_THEAP(THEAP) {
+
+        @Override
+        protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+        }
+
+        @Override
+        protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+        }
+    },
     MAP_ZNAXISn(ZNAXISn) {
 
         @Override

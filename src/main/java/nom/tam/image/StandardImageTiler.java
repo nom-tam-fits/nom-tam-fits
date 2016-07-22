@@ -33,9 +33,9 @@ package nom.tam.image;
 
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.RandomAccess;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class provides a subset of an N-dimensional image. Modified May 2, 2000

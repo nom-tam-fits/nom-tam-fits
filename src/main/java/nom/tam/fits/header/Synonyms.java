@@ -1,9 +1,9 @@
 package nom.tam.fits.header;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.fits.header.extra.NOAOExt;
 import nom.tam.fits.header.extra.SBFitsExt;
 import nom.tam.fits.header.extra.STScIExt;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /*
  * #%L
