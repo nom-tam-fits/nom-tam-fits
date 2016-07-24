@@ -48,7 +48,7 @@ import nom.tam.fits.FitsException;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 public class StreamTest {
 
@@ -270,8 +270,8 @@ public class StreamTest {
             myIn.readFully(new byte[total - 10000]);
             Assert.assertEquals(0, myIn.available());
         } finally {
-            SaveClose.close(myIn);
-            SaveClose.close(input);
+            SafeClose.close(myIn);
+            SafeClose.close(input);
         }
     }
 
@@ -298,8 +298,8 @@ public class StreamTest {
             };
             myIn.skipAllBytes(100L);
         } finally {
-            SaveClose.close(input);
-            SaveClose.close(myIn);
+            SafeClose.close(input);
+            SafeClose.close(myIn);
         }
     }
 
@@ -325,7 +325,7 @@ public class StreamTest {
             };
             myIn.skipAllBytes(total - 100L);
         } finally {
-            SaveClose.close(myIn);
+            SafeClose.close(myIn);
         }
     }
 
@@ -622,7 +622,7 @@ public class StreamTest {
             out = new BufferedDataOutputStream(o);
             out.writeBytes("bla bla\n");
         } finally {
-            SaveClose.close(out);
+            SafeClose.close(out);
         }
         BufferedDataInputStream input = null;
         try {
@@ -630,7 +630,7 @@ public class StreamTest {
             String line = input.readLine();
             Assert.assertEquals("bla bla", line);
         } finally {
-            SaveClose.close(input);
+            SafeClose.close(input);
         }
     }
 
@@ -643,7 +643,7 @@ public class StreamTest {
             out.writePrimitiveArray(3);
             out.flush();
         } finally {
-            SaveClose.close(out);
+            SafeClose.close(out);
         }
     }
 
@@ -676,7 +676,7 @@ public class StreamTest {
         };
         // the exception should cause nothing ;-) so the test is successfull if
         // there is no exception.
-        SaveClose.close(io);
+        SafeClose.close(io);
     }
 
     @Test

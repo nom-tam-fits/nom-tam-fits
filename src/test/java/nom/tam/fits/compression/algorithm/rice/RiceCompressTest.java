@@ -45,7 +45,7 @@ import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompresso
 import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
 import nom.tam.fits.header.Compression;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 import nom.tam.util.type.PrimitiveTypes;
 
 import org.junit.Assert;
@@ -113,8 +113,8 @@ public class RiceCompressTest {
             compressor.decompress(compressed, ByteBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(bytes, decompressedArray);
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -147,8 +147,8 @@ public class RiceCompressTest {
             compressor.decompress(compressed, IntBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(intArray, decompressedArray);
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -181,8 +181,8 @@ public class RiceCompressTest {
             compressor.decompress(compressed, ShortBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(shortArray, decompressedArray);
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -236,7 +236,7 @@ public class RiceCompressTest {
             ByteRiceCompressor compressor = new ByteRiceCompressor(option.setBytePix(PrimitiveTypes.BYTE.size()));
             compressor.decompress(compressed, ByteBuffer.wrap(decompressedArray));
         } finally {
-            SaveClose.close(compressedFile);
+            SafeClose.close(compressedFile);
         }
 
     }

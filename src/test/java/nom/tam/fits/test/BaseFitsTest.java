@@ -82,7 +82,7 @@ import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.LoggerHelper;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.Assert;
@@ -163,7 +163,7 @@ public class BaseFitsTest {
             fits1.deleteHDU(2);
             writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
         } finally {
-            SaveClose.close(fits1);
+            SafeClose.close(fits1);
         }
 
         fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
@@ -432,7 +432,7 @@ public class BaseFitsTest {
         } catch (FitsException io) {
             e = io;
         } finally {
-            SaveClose.close(os);
+            SafeClose.close(os);
         }
         Assert.assertNotNull(e);
 
@@ -451,7 +451,7 @@ public class BaseFitsTest {
         } catch (FitsException io) {
             e = io;
         } finally {
-            SaveClose.close(os);
+            SafeClose.close(os);
         }
         Assert.assertNotNull(e);
 
@@ -470,7 +470,7 @@ public class BaseFitsTest {
         } catch (FitsException io) {
             e = io;
         } finally {
-            SaveClose.close(os);
+            SafeClose.close(os);
         }
         Assert.assertNotNull(e);
         Assert.assertTrue(e.getCause() instanceof IOException);
@@ -490,7 +490,7 @@ public class BaseFitsTest {
         } catch (FitsException io) {
             e = io;
         } finally {
-            SaveClose.close(os);
+            SafeClose.close(os);
         }
         Assert.assertNotNull(e);
         Assert.assertTrue(e.getCause() instanceof EOFException);
@@ -714,13 +714,13 @@ public class BaseFitsTest {
             Assert.assertNotNull(fits.readHDU());
             Assert.assertEquals(1, fits.currentSize());
         } finally {
-            SaveClose.close(fits);
+            SafeClose.close(fits);
         }
         try {
             fits = new Fits(FILE + new File("src/test/resources/nom/tam/fits/test/test.fits").getAbsolutePath(), false);
             Assert.assertNotNull(fits.readHDU());
         } finally {
-            SaveClose.close(fits);
+            SafeClose.close(fits);
         }
         actual = null;
         try {
@@ -740,7 +740,7 @@ public class BaseFitsTest {
             fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits", false);
             Assert.assertNotNull(fits.readHDU());
         } finally {
-            SaveClose.close(fits);
+            SafeClose.close(fits);
         }
     }
 
@@ -776,7 +776,7 @@ public class BaseFitsTest {
 
     @Test
     public void testSaveClosePrivate() throws Exception {
-        Constructor<?>[] constrs = SaveClose.class.getDeclaredConstructors();
+        Constructor<?>[] constrs = SafeClose.class.getDeclaredConstructors();
         assertEquals(constrs.length, 1);
         assertFalse(constrs[0].isAccessible());
         constrs[0].setAccessible(true);
@@ -1075,8 +1075,8 @@ public class BaseFitsTest {
             Assert.assertEquals(1, f.size());
             f.skipHDU(); // should do nothing at all -)
         } finally {
-            SaveClose.close(f);
-            SaveClose.close(in);
+            SafeClose.close(f);
+            SafeClose.close(in);
         }
     }
 
@@ -1095,7 +1095,7 @@ public class BaseFitsTest {
             Assert.assertTrue(e.getMessage().contains("Unable"));
             throw e;
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -1110,8 +1110,8 @@ public class BaseFitsTest {
             Assert.assertEquals(1, f.size());
             f.skipHDU(); // should do nothing at all -)
         } finally {
-            SaveClose.close(f);
-            SaveClose.close(in);
+            SafeClose.close(f);
+            SafeClose.close(in);
         }
     }
 
@@ -1130,7 +1130,7 @@ public class BaseFitsTest {
             Assert.assertTrue(e.getMessage().contains("detect"));
             throw e;
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -1149,7 +1149,7 @@ public class BaseFitsTest {
             Assert.assertTrue(e.getMessage().contains("detect"));
             throw e;
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 

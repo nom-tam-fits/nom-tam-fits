@@ -45,7 +45,7 @@ import nom.tam.fits.RandomGroupsHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -93,7 +93,7 @@ public class RandomGroupsTest {
 
             bf.flush();
         } finally {
-            SaveClose.close(bf);
+            SafeClose.close(bf);
         }
 
         // Read back the data.
@@ -116,7 +116,7 @@ public class RandomGroupsTest {
                 }
             }
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
 
         // Now do it in one fell swoop -- but we have to have
@@ -130,8 +130,8 @@ public class RandomGroupsTest {
 
             bf.flush();
         } finally {
-            SaveClose.close(bf);
-            SaveClose.close(f);
+            SafeClose.close(bf);
+            SafeClose.close(f);
         }
 
         try {
@@ -159,7 +159,7 @@ public class RandomGroupsTest {
             Assert.assertTrue(groupInfo.indexOf("Parameters: float[3]") >= 0);
             Assert.assertTrue(groupInfo.indexOf("Data:float[20, 20]") >= 0);
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -193,7 +193,7 @@ public class RandomGroupsTest {
             bf.writeLong(1);
             groups.write(bf);
         } finally {
-            SaveClose.close(bf);
+            SafeClose.close(bf);
         }
 
         // ok now test it
@@ -208,7 +208,7 @@ public class RandomGroupsTest {
             groups.reset();
             Assert.assertEquals(8, bf.getFilePointer());
         } finally {
-            SaveClose.close(bf);
+            SafeClose.close(bf);
         }
     }
 

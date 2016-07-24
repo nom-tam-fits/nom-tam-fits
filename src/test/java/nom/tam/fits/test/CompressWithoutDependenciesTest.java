@@ -44,7 +44,7 @@ import java.util.List;
 import org.junit.Test;
 
 import nom.tam.fits.compress.CompressionManager;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 /**
  * Test reading .Z and .gz compressed files.
@@ -78,8 +78,8 @@ public class CompressWithoutDependenciesTest {
                 assertions.add(e);
             }
         } finally {
-            SaveClose.close(in1);
-            SaveClose.close(in2);
+            SafeClose.close(in1);
+            SafeClose.close(in2);
         }
         assertEquals(assertions.get(0), "ok");
         assertTrue(assertions.get(1) instanceof InvocationTargetException);

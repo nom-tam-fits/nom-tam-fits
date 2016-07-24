@@ -17,7 +17,7 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ByteBufferInputStream;
 import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.FitsIO;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 import nom.tam.util.type.PrimitiveTypes;
@@ -246,7 +246,7 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
         } catch (IOException e) {
             throw new IllegalStateException("could not gzip data", e);
         } finally {
-            SaveClose.close(zip);
+            SafeClose.close(zip);
         }
         compressed.limit(compressed.position());
         return true;
@@ -271,7 +271,7 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
         } catch (IOException e) {
             throw new IllegalStateException("could not gunzip data", e);
         } finally {
-            SaveClose.close(zip);
+            SafeClose.close(zip);
         }
     }
 

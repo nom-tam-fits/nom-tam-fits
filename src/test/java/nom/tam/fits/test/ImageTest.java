@@ -60,7 +60,7 @@ import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 import nom.tam.util.TestArrayFuncs;
 import nom.tam.util.test.ThrowAnyException;
 
@@ -115,7 +115,7 @@ public class ImageTest {
             assertEquals("fint3 image", true, TestArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
             assertEquals("fdouble1 image", true, TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -175,10 +175,10 @@ public class ImageTest {
                 f.write(bf);
                 bf.flush();
             } finally {
-                SaveClose.close(bf);
+                SafeClose.close(bf);
             }
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
 
         BufferedFile bf = null;
@@ -233,8 +233,8 @@ public class ImageTest {
 
             Assert.assertArrayEquals(new byte[0], (byte[]) new ImageData().getData());
         } finally {
-            SaveClose.close(f);
-            SaveClose.close(bf);
+            SafeClose.close(f);
+            SafeClose.close(bf);
         }
     }
 

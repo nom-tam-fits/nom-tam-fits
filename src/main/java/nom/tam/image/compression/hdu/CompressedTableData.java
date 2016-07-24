@@ -80,14 +80,11 @@ public class CompressedTableData extends BinaryTable {
         super.fillHeader(h);
         h.setNaxis(2, getData().getNRows());
         h.addValue(Compression.ZTABLE.key(), true, "this is a compressed table");
-        if (this.rowsPerTile > 0) {
-            h.addValue(Compression.ZTILELEN.key(), this.rowsPerTile, "number of rows in each tile");
-        } else {
-            h.addValue(Compression.ZTILELEN.key(), h.getIntValue(Standard.NAXIS2), "number of rows in each tile");
-        }
+        long ztilelenValue = this.rowsPerTile > 0 ? this.rowsPerTile : h.getIntValue(Standard.NAXIS2);
+        h.addValue(Compression.ZTILELEN.key(), ztilelenValue, "number of rows in each tile");
     }
 
-    public void prepareUncompressedData(ColumnTable<SaveState> data, Header header) throws FitsException {
+    public void prepareUncompressedData(ColumnTable<SaveState> data) throws FitsException {
         int nrows = data.getNRows();
         int ncols = data.getNCols();
         if (this.rowsPerTile <= 0) {
@@ -106,9 +103,9 @@ public class CompressedTableData extends BinaryTable {
                         tile()//
                                 .rowStart(rowStart)//
                                 .rowEnd(rowStart + this.rowsPerTile)//
-                                .compressionAlgorithm(this.columnCompressionAlgorithms[column])//
+                                .column(column)//
                                 .tileIndex(tileIndex++)//
-                                .column(column)));
+                                .compressionAlgorithm(this.columnCompressionAlgorithms[column])));
             }
         }
     }

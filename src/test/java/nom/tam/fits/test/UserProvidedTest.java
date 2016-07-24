@@ -56,7 +56,7 @@ import nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter;
 import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 public class UserProvidedTest {
 
@@ -110,7 +110,7 @@ public class UserProvidedTest {
                 readHDU = f.readHDU();
             }
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
         return list;
     }
@@ -139,10 +139,10 @@ public class UserProvidedTest {
                 bf = new BufferedFile("target/testCommentStyleInput.fits", "rw");
                 f.write(bf);
             } finally {
-                SaveClose.close(bf);
+                SafeClose.close(bf);
             }
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
         try {
             f = new Fits("target/testCommentStyleInput.fits");
@@ -163,7 +163,7 @@ public class UserProvidedTest {
             }
             Assert.assertEquals(2, foundComments);
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -185,7 +185,7 @@ public class UserProvidedTest {
             }
             Assert.assertEquals(10, hierarchKeys);
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -239,7 +239,7 @@ public class UserProvidedTest {
                     + "[S2]\n", builder.toString());
 
         } finally {
-            SaveClose.close(fits);
+            SafeClose.close(fits);
         }
     }
 
@@ -291,8 +291,8 @@ public class UserProvidedTest {
             }
 
         } finally {
-            SaveClose.close(fitsSrc);
-            SaveClose.close(stream);
+            SafeClose.close(fitsSrc);
+            SafeClose.close(stream);
         }
     }
 
@@ -310,8 +310,8 @@ public class UserProvidedTest {
             fitsSrc = new Fits(stream);
             bhduMain = fitsSrc.readHDU(); // Product
         } finally {
-            SaveClose.close(fitsSrc);
-            SaveClose.close(stream);
+            SafeClose.close(fitsSrc);
+            SafeClose.close(stream);
         }
 
         BasicHDU<?> bhduMainAgain = null;
@@ -321,7 +321,7 @@ public class UserProvidedTest {
             fitsEmpty.addHDU(bhduMain);
             bhduMainAgain = fitsEmpty.getHDU(fitsEmpty.getNumberOfHDUs() - 1);
         } finally {
-            SaveClose.close(fitsEmpty);
+            SafeClose.close(fitsEmpty);
         }
 
         Assert.assertSame(bhduMainAgain, bhduMain);
@@ -350,8 +350,8 @@ public class UserProvidedTest {
             bhduMain = (BinaryTableHDU) fitsSrc.readHDU(); // theres the table
             assertCurledHdu(bhduMain);
         } finally {
-            SaveClose.close(fitsSrc);
-            SaveClose.close(stream);
+            SafeClose.close(fitsSrc);
+            SafeClose.close(stream);
         }
     }
 

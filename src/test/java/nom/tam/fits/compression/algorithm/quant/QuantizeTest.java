@@ -53,7 +53,7 @@ import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.quant.QuantizeParameters;
 import nom.tam.fits.header.Compression;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -688,7 +688,7 @@ public class QuantizeTest {
             Assert.assertEquals(0, option.getIntMinValue());
             Assert.assertEquals(1911354, option.getIntMaxValue());
         } finally {
-            SaveClose.close(file);
+            SafeClose.close(file);
         }
     }
 
@@ -732,7 +732,7 @@ public class QuantizeTest {
             Assert.assertEquals(1907849, option.getIntMaxValue());
 
         } finally {
-            SaveClose.close(file);
+            SafeClose.close(file);
         }
     }
 

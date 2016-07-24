@@ -53,7 +53,7 @@ import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.Cursor;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 public class CompressedTableTest {
 
@@ -206,7 +206,7 @@ public class CompressedTableTest {
             }
 
         } finally {
-            SaveClose.close(fitsComp);
+            SafeClose.close(fitsComp);
         }
     }
 
@@ -237,7 +237,7 @@ public class CompressedTableTest {
             }
 
         } finally {
-            SaveClose.close(fitsComp);
+            SafeClose.close(fitsComp);
         }
     }
 

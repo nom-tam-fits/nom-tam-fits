@@ -56,7 +56,7 @@ import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.RandomAccess;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 /**
  * This class provides access to routines to allow users to read and write FITS
@@ -394,7 +394,7 @@ public class Fits implements Closeable {
      *            the input stream to close.
      */
     public static void saveClose(InputStream in) {
-        SaveClose.close(in);
+        SafeClose.close(in);
     }
 
 
@@ -849,7 +849,7 @@ public class Fits implements Closeable {
             bf = new BufferedFile(file, "rw");
             write(bf);
         } finally {
-            SaveClose.close(bf);
+            SafeClose.close(bf);
         }
     }
 

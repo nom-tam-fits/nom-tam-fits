@@ -79,7 +79,7 @@ import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.After;
@@ -106,7 +106,7 @@ public class HeaderTest {
             f.addHDU(hdu);
             f.write(new File("target/ht1.fits"));
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -198,7 +198,7 @@ public class HeaderTest {
             hc = (HeaderCard) c.next();
             assertEquals("AftDel3", "Comment after flt2", hc.getComment());
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -212,7 +212,7 @@ public class HeaderTest {
             h.addValue("TESTKEY", "TESTVAL", "TESTCOMM");
             h.rewrite();
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
         try {
             f = new Fits("target/ht1.fits");
@@ -231,7 +231,7 @@ public class HeaderTest {
             assertEquals("E7", c.next().getKey(), "TESTKEY2");
             assertEquals("E8", c.next().getKey(), "TESTKEY");
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -268,7 +268,7 @@ public class HeaderTest {
                 bf = new BufferedFile("target/ht4.hdr", "rw");
                 hdr.write(bf);
             } finally {
-                SaveClose.close(bf);
+                SafeClose.close(bf);
             }
             String val = hdr.getStringValue("LONG1");
             assertEquals("LongT1", val, lng);
@@ -316,10 +316,10 @@ public class HeaderTest {
                 assertEquals("deltest2", pcnt - 8, hdr.getNumberOfPhysicalCards());
                 assertEquals("deltest2", cnt - 2, hdr.getNumberOfCards());
             } finally {
-                SaveClose.close(bf);
+                SafeClose.close(bf);
             }
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -455,7 +455,7 @@ public class HeaderTest {
             hc = c.next();
             assertEquals("NAXIS2_5", NAXISn.n(2).key(), hc.getKey());
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -481,7 +481,7 @@ public class HeaderTest {
             }
             assertEquals("BITPIX delete", true, thrown);
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -501,10 +501,10 @@ public class HeaderTest {
                 bf = new BufferedFile("target/testHeaderCommentsDrift.fits", "rw");
                 f.write(bf);
             } finally {
-                SaveClose.close(bf);
+                SafeClose.close(bf);
             }
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
         try {
             f = new Fits("target/testHeaderCommentsDrift.fits");
@@ -512,14 +512,14 @@ public class HeaderTest {
             f.read();
             f.write(bf);
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
         try {
             f = new Fits("target/testHeaderCommentsDrift.fits");
             f.read();
             assertEquals("COMMENT", f.getHDU(0).getHeader().findCard("KEY").getComment());
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -577,7 +577,7 @@ public class HeaderTest {
                 c.add(new HeaderCard("DUMMY" + hdr.getNumberOfCards(), (String) null, null));
             }
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -612,8 +612,8 @@ public class HeaderTest {
             f.addHDU(FitsFactory.hduFactory(z));
             f.write(bf);
         } finally {
-            SaveClose.close(bf);
-            SaveClose.close(f);
+            SafeClose.close(bf);
+            SafeClose.close(f);
         }
         try {
             f = new Fits("target/hx1.fits");
@@ -625,7 +625,7 @@ public class HeaderTest {
             HeaderCommentsMap.updateComment("header:bitpix:1", "A byte tiledImageOperation");
             HeaderCommentsMap.deleteComment("header:simple:1");
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
         try {
             f = new Fits();
@@ -633,8 +633,8 @@ public class HeaderTest {
             f.addHDU(FitsFactory.hduFactory(z));
             f.write(bf);
         } finally {
-            SaveClose.close(bf);
-            SaveClose.close(f);
+            SafeClose.close(bf);
+            SafeClose.close(f);
         }
         try {
             f = new Fits("target/hx2.fits");
@@ -643,7 +643,7 @@ public class HeaderTest {
             c1 = f.getHDU(0).getHeader().findCard(BITPIX.key());
             assertEquals("tuhc2", c1.getComment(), "A byte tiledImageOperation");
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -703,8 +703,8 @@ public class HeaderTest {
             assertEquals(hdr.getBigIntegerValue(CTYPE2.name(), BigInteger.valueOf(-1)), BigInteger.valueOf(5));
             assertEquals(hdr.getBigIntegerValue(CTYPE2, BigInteger.valueOf(-1)), BigInteger.valueOf(5));
         } finally {
-            SaveClose.close(in);
-            SaveClose.close(fits);
+            SafeClose.close(in);
+            SafeClose.close(fits);
         }
     }
 
@@ -728,7 +728,7 @@ public class HeaderTest {
             assertEquals(7, hdr.size());
             assertEquals(362880, hdu.getSize());
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -750,7 +750,7 @@ public class HeaderTest {
             Assert.assertEquals(BigInteger.valueOf(-100), hdr.getBigIntegerValue("BBBB", BigInteger.valueOf(-100)));
             Assert.assertEquals(-100f, hdr.getFloatValue("BBBB", -100f), 0.00001);
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -899,10 +899,10 @@ public class HeaderTest {
                     bf = new BufferedFile(filename, "rw");
                     f.write(bf);
                 } finally {
-                    SaveClose.close(bf);
+                    SafeClose.close(bf);
                 }
             } finally {
-                SaveClose.close(f);
+                SafeClose.close(f);
             }
 
             /*
@@ -924,7 +924,7 @@ public class HeaderTest {
                     }
                 }
             } finally {
-                SaveClose.close(f);
+                SafeClose.close(f);
             }
         } finally {
             FitsFactory.setUseHierarch(useHierarch);
@@ -973,8 +973,8 @@ public class HeaderTest {
             int count = f.read(buffer);
             out.write(buffer, 0, count);
         } finally {
-            SaveClose.close(out);
-            SaveClose.close(f);
+            SafeClose.close(out);
+            SafeClose.close(f);
         }
         Fits fits = null;
         try {
@@ -982,7 +982,7 @@ public class HeaderTest {
             ImageHDU hdu = (ImageHDU) fits.getHDU(0);
             Header hdr = hdu.getHeader();
         } finally {
-            SaveClose.close(fits);
+            SafeClose.close(fits);
         }
     }
 

@@ -45,11 +45,11 @@ import nom.tam.util.type.PrimitiveTypes;
 public class CompressedTableHDU extends BinaryTableHDU {
 
     /**
-     * Prepare a compressed binary table hdu for the specified binary table. the
-     * tile row size that are specified with -1 are set to the corresponding
-     * roms of the table. The table will be compressed in "rows" that are
-     * defined by the tile size. Next step would be to set the compression
-     * options into the hdu and then compress it.
+     * Prepare a compressed binary table HDU for the specified binary table.
+     * When the tile row size is specified with -1, the value will be set ti the
+     * number of rows in the table. The table will be compressed in "rows" that
+     * are defined by the tile size. Next step would be to set the compression
+     * options into the HDU and then compress it.
      *
      * @param binaryTableHDU
      *            the binary table to compress
@@ -59,7 +59,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      *            the compression algorithms to use for the columns (optional
      *            default compression will be used if a column has no
      *            compression specified)
-     * @return the prepared compressed binaary table hdu.
+     * @return the prepared compressed binary table HDU.
      * @throws FitsException
      *             if the binary table could not be used to create a compressed
      *             binary table.
@@ -67,21 +67,20 @@ public class CompressedTableHDU extends BinaryTableHDU {
     public static CompressedTableHDU fromBinaryTableHDU(BinaryTableHDU binaryTableHDU, int tileRows, String... columnCompressionAlgorithms) throws FitsException {
         Header header = new Header();
         CompressedTableData compressedData = new CompressedTableData();
-        compressedData.setRowsPerTile(binaryTableHDU.getData().getNRows());
-        if (tileRows > 0) {
-            compressedData.setRowsPerTile(tileRows);
-        }
+
+        int rowsPerTile = tileRows > 0 ? tileRows : binaryTableHDU.getData().getNRows();
+        compressedData.setRowsPerTile(rowsPerTile);
         compressedData.fillHeader(header);
 
-        Cursor<String, HeaderCard> iterator = header.iterator();
+        Cursor<String, HeaderCard> headerIterator = header.iterator();
         Cursor<String, HeaderCard> imageIterator = binaryTableHDU.getHeader().iterator();
         while (imageIterator.hasNext()) {
             HeaderCard card = imageIterator.next();
-            BackupRestoreUnCompressedHeaderCard.restore(card, iterator);
+            BackupRestoreUnCompressedHeaderCard.restore(card, headerIterator);
         }
         CompressedTableHDU compressedImageHDU = new CompressedTableHDU(header, compressedData);
         compressedData.setColumnCompressionAlgorithms(columnCompressionAlgorithms);
-        compressedData.prepareUncompressedData(binaryTableHDU.getData().getData(), binaryTableHDU.getHeader());
+        compressedData.prepareUncompressedData(binaryTableHDU.getData().getData());
         return compressedImageHDU;
     }
 

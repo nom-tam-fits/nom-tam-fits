@@ -38,7 +38,7 @@ import java.util.Arrays;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.RandomAccess;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -95,7 +95,7 @@ public class StandardImageTilerTest {
 
     @After
     public void close() {
-        SaveClose.close(file);
+        SafeClose.close(file);
     }
 
     @Test

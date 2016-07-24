@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.BufferedFile;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 import org.junit.Test;
 
@@ -56,7 +56,7 @@ public class JunkTest {
         } catch (Exception e) {
             return false;
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -83,7 +83,7 @@ public class JunkTest {
                 f.write(bfx);
                 bfx.flush();
             } finally {
-                SaveClose.close(bfx);
+                SafeClose.close(bfx);
             }
 
             // Invalid junk with no valid FITS.
@@ -105,7 +105,7 @@ public class JunkTest {
             }
             bf.close();
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
 
         int pos = 0;
@@ -115,7 +115,7 @@ public class JunkTest {
         } catch (Exception e) {
             pos = 1;
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
         assertTrue("Junk Test: Valid File OK,Dft", readSuccess("target/j1.fits"));
         assertTrue("Junk Test: Invalid File Fails, Dft", !readSuccess("target/j2.fits"));

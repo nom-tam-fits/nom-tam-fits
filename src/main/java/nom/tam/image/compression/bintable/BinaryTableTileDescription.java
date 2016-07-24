@@ -50,7 +50,7 @@ public final class BinaryTableTileDescription {
     }
 
     private BinaryTableTileDescription() {
-        // use the static method to instanciate this class.
+        // use the static method to instantiate this class.
     }
 
     public BinaryTableTileDescription column(int value) {

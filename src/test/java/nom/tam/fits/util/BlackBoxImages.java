@@ -41,7 +41,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.zip.GZIPInputStream;
 
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 public class BlackBoxImages {
 
@@ -106,7 +106,7 @@ public class BlackBoxImages {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            SaveClose.close(out);
+            SafeClose.close(out);
         }
     }
 

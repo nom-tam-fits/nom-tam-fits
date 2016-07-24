@@ -43,7 +43,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 import nom.tam.util.type.PrimitiveTypes;
 
 public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T> {
@@ -167,7 +167,7 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         } catch (IOException e) {
             throw new IllegalStateException("could not gzip data", e);
         } finally {
-            SaveClose.close(zip);
+            SafeClose.close(zip);
         }
         return true;
     }
@@ -190,7 +190,7 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         } catch (IOException e) {
             throw new IllegalStateException("could not gunzip data", e);
         } finally {
-            SaveClose.close(zip);
+            SafeClose.close(zip);
         }
         pixelBytes = unshuffle(pixelBytes);
         setPixel(pixelData, pixelBytes);

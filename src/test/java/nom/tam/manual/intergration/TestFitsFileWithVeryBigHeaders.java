@@ -37,7 +37,7 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.util.BlackBoxImages;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class TestFitsFileWithVeryBigHeaders {
                 count = count + this.hdu.getHeader().getSize();
             }
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
         return count;
     }

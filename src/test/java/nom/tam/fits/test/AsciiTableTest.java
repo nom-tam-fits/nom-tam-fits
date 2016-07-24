@@ -65,7 +65,7 @@ import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 import nom.tam.util.TestArrayFuncs;
 import nom.tam.util.test.ThrowAnyException;
 
@@ -99,7 +99,7 @@ public class AsciiTableTest {
             hdu = (AsciiTableHDU) f2.getHDU(1);
             checkByColumn(hdu);
         } finally {
-            SaveClose.close(f2);
+            SafeClose.close(f2);
         }
 
     }
@@ -144,7 +144,7 @@ public class AsciiTableTest {
             // lets trigger the read over a stream and test again
             checkByRow(f2);
         } finally {
-            SaveClose.close(f2);
+            SafeClose.close(f2);
         }
     }
 
@@ -414,7 +414,7 @@ public class AsciiTableTest {
             f.addHDU(ahdu);
             f.write(bf);
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
         bf.close();
 
@@ -423,7 +423,7 @@ public class AsciiTableTest {
             f = new Fits("target/at3.fits");
             bhdu = f.getHDU(1);
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
         Header hdr = bhdu.getHeader();
         assertEquals(hdr.getStringValue("TFORM1"), "A1");
@@ -455,7 +455,7 @@ public class AsciiTableTest {
                 assertEquals("Ascii Columns:" + j, true, TestArrayFuncs.arrayEquals(cols[j], col, 1.e-6, 1.e-14));
             }
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 

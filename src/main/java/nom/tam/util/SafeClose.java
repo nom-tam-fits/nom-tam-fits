@@ -36,11 +36,11 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public final class SaveClose {
+public final class SafeClose {
 
-    private static final Logger LOG = LoggerHelper.getLogger(SaveClose.class);
+    private static final Logger LOG = LoggerHelper.getLogger(SafeClose.class);
 
-    private SaveClose() {
+    private SafeClose() {
         // Not needed
     }
 

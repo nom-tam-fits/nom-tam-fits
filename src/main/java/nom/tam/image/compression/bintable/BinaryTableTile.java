@@ -54,7 +54,7 @@ public abstract class BinaryTableTile implements Runnable {
     protected final int rowStart;
 
     /**
-     * last row (exlcusive)
+     * last row (exclusive)
      */
     protected final int rowEnd;
 

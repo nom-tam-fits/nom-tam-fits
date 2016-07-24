@@ -40,7 +40,7 @@ import static nom.tam.fits.header.Standard.NAXIS;
 import java.io.IOException;
 
 import nom.tam.util.BufferedFile;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.Assert;
@@ -115,7 +115,7 @@ public class BasicHduFailureTest {
             out = new BufferedFile("target/BasicHduFailureTeststestDefaultFileOffset", "rw");
             dummyHDU.write(out);
         } finally {
-            SaveClose.close(out);
+            SafeClose.close(out);
         }
         Assert.assertEquals(0, dummyHDU.getFileOffset());
         FitsException actual = null;
@@ -140,7 +140,7 @@ public class BasicHduFailureTest {
         } catch (FitsException e) {
             actual = e;
         } finally {
-            SaveClose.close(out);
+            SafeClose.close(out);
         }
 
         Assert.assertNotNull(actual);

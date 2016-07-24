@@ -42,7 +42,7 @@ import nom.tam.fits.ImageHDU;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -200,8 +200,8 @@ public class TilerTest {
             f.addHDU(Fits.makeHDU(data));
             f.write(bf);
         } finally {
-            SaveClose.close(bf);
-            SaveClose.close(f);
+            SafeClose.close(bf);
+            SafeClose.close(f);
         }
 
         try {
@@ -244,7 +244,7 @@ public class TilerTest {
             Assert.assertNotNull(expected);
             Assert.assertTrue(expected.getMessage().contains("Inconsistent"));
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 }

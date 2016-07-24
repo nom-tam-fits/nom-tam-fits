@@ -40,7 +40,7 @@ import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -65,13 +65,13 @@ public class VeryBigFileTest {
             f.write(bf);
             System.out.println(Arrays.toString(ArrayFuncs.getDimensions(f.getHDU(0).getData().getData())));
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
         try {
             f = new Fits("target/big.fits");
             System.out.println(Arrays.toString(ArrayFuncs.getDimensions(f.getHDU(0).getData().getData())));
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 }

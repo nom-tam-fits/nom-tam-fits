@@ -40,6 +40,7 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.ColumnTable;
+import nom.tam.util.SafeClose;
 
 public class BinaryTableTileCompressor extends BinaryTableTile {
 
@@ -64,9 +65,10 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
         ArrayDataOutput os = new BufferedDataOutputStream(new ByteBufferOutputStream(buffer));
         try {
             this.data.write(os, this.rowStart, this.rowEnd, this.column);
-            os.close();
         } catch (IOException e) {
             throw new IllegalStateException("could not write compressed data", e);
+        } finally {
+            SafeClose.close(os);
         }
         buffer.rewind();
         int spaceForCompression = getUncompressedSizeInBytes();

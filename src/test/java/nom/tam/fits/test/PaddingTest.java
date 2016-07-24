@@ -41,7 +41,7 @@ import nom.tam.fits.ImageHDU;
 import nom.tam.fits.PaddingException;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 import org.junit.Test;
 
@@ -73,8 +73,8 @@ public class PaddingTest {
             bf.writeArray(bimg); // The data but no following padding.
             bf.flush();
         } finally {
-            SaveClose.close(bf);
-            SaveClose.close(f);
+            SafeClose.close(bf);
+            SafeClose.close(f);
         }
 
         // Now try reading this back.
@@ -126,7 +126,7 @@ public class PaddingTest {
             assertEquals("tilet4:", data[2] + 0, 5);
             assertEquals("tilet5:", data[3] + 0, 6);
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -174,7 +174,7 @@ public class PaddingTest {
             bf.flush();
             bf.close();
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
 
         // Now try reading this back.
@@ -206,7 +206,7 @@ public class PaddingTest {
             assertEquals("PadMiss2:", miss, 0);
             assertEquals("PadMatch2:", match, 400);
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 }

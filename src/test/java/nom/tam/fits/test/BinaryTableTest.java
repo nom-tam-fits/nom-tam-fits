@@ -69,7 +69,7 @@ import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.ColumnTable;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 import nom.tam.util.TableException;
 import nom.tam.util.TestArrayFuncs;
 import nom.tam.util.test.ThrowAnyException;
@@ -256,7 +256,7 @@ public class BinaryTableTest {
             f.addHDU(hdu);
             f.write(bf);
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
         System.out.println("Wrote file bt12.fits");
 
@@ -297,7 +297,7 @@ public class BinaryTableTest {
                 }
             }
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
         // Cleanup...
         strings[0] = oldString;
@@ -1792,8 +1792,8 @@ public class BinaryTableTest {
         Fits f = new Fits();
         f.addHDU(tableHdu);
         f.write(os);
-        SaveClose.close(f);
-        SaveClose.close(os);
+        SafeClose.close(f);
+        SafeClose.close(os);
 
         f = new Fits();
         f.read(new BufferedDataInputStream(new ByteArrayInputStream(out.toByteArray())));
@@ -1831,8 +1831,8 @@ public class BinaryTableTest {
         Fits f = new Fits();
         f.addHDU(tableHdu);
         f.write(os);
-        SaveClose.close(f);
-        SaveClose.close(os);
+        SafeClose.close(f);
+        SafeClose.close(os);
 
         f = new Fits();
         f.read(new BufferedDataInputStream(new ByteArrayInputStream(out.toByteArray())));

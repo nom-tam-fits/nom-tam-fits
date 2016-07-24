@@ -49,7 +49,7 @@ import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.header.Compression;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -87,8 +87,8 @@ public class HCompressTest {
             byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(byteArray, decompressedArray);
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -123,8 +123,8 @@ public class HCompressTest {
             byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(byteArray, decompressedArray);
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -159,8 +159,8 @@ public class HCompressTest {
             byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(byteArray, decompressedArray);
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -197,7 +197,7 @@ public class HCompressTest {
             doubleHCompress.decompress(ByteBuffer.wrap(compressedArray), DoubleBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(doubleArray, decompressedArray, quant.getBScale() * 1.5);
         } finally {
-            SaveClose.close(file);
+            SafeClose.close(file);
         }
     }
 
@@ -235,7 +235,7 @@ public class HCompressTest {
             floatHCompress.decompress(ByteBuffer.wrap(compressedArray), FloatBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(floatArray, decompressedArray, (float) (quant.getBScale() * 1.5));
         } finally {
-            SaveClose.close(file);
+            SafeClose.close(file);
         }
     }
 
@@ -270,8 +270,8 @@ public class HCompressTest {
             intHCompress.decompress(ByteBuffer.wrap(expectedBytes), IntBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(intArray, decompressedArray);
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -307,8 +307,8 @@ public class HCompressTest {
             Assert.assertArrayEquals(intArray, decompressedArray);
 
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -363,9 +363,9 @@ public class HCompressTest {
             }
             Assert.assertEquals(sum1 / intArray.length, sum2 / intArray.length, 0.5d);
         } finally {
-            SaveClose.close(expectedUncompressed);
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expectedUncompressed);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -400,8 +400,8 @@ public class HCompressTest {
             shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(shortArray, decompressedArray);
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -436,8 +436,8 @@ public class HCompressTest {
             shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(shortArray, decompressedArray);
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -472,8 +472,8 @@ public class HCompressTest {
             shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
             Assert.assertArrayEquals(shortArray, decompressedArray);
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 

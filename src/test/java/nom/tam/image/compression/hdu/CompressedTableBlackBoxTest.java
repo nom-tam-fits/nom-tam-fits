@@ -46,7 +46,7 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.Cursor;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 public class CompressedTableBlackBoxTest {
 
@@ -75,7 +75,7 @@ public class CompressedTableBlackBoxTest {
             fitsCompressed.write(file);
             compressedfileName = file.getAbsolutePath();
         } finally {
-            SaveClose.close(fitsOrg);
+            SafeClose.close(fitsOrg);
         }
 
         uncompressTableAndAssert(compressedfileName, originalFileName);
@@ -103,8 +103,8 @@ public class CompressedTableBlackBoxTest {
 
             assertEquals(orgTable, uncompressedTable);
         } finally {
-            SaveClose.close(fitsComp);
-            SaveClose.close(fitsOrg);
+            SafeClose.close(fitsComp);
+            SafeClose.close(fitsOrg);
         }
     }
 

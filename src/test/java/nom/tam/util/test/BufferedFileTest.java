@@ -59,7 +59,7 @@ import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 import nom.tam.util.TestArrayFuncs;
 
 /**
@@ -733,7 +733,7 @@ public class BufferedFileTest {
             }
             System.out.println("  SyncRAF Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 
@@ -789,8 +789,8 @@ public class BufferedFileTest {
             }
             System.out.println("  DIS Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
         } finally {
-            SaveClose.close(f);
-            SaveClose.close(is);
+            SafeClose.close(f);
+            SafeClose.close(is);
         }
     }
 

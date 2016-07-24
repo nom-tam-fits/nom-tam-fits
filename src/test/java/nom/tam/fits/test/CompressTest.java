@@ -55,7 +55,7 @@ import nom.tam.fits.compress.CompressionLibLoaderProtection;
 import nom.tam.fits.compress.CompressionManager;
 import nom.tam.fits.compress.ExternalBZip2CompressionProvider;
 import nom.tam.fits.compress.ZCompressionProvider;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.AfterClass;
@@ -457,7 +457,7 @@ public class CompressTest {
             f = new Fits(new ZCompressionProvider().decompress(in));
             Assert.assertNotNull(f.readHDU());
         } finally {
-            SaveClose.close(f);
+            SafeClose.close(f);
         }
     }
 

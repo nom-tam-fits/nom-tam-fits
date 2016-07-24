@@ -57,7 +57,7 @@ import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ShortGZip2Compre
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ByteBufferInputStream;
 import nom.tam.util.ByteBufferOutputStream;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 public class GZip2CompressTest {
 
@@ -199,7 +199,7 @@ public class GZip2CompressTest {
             out.write(expected, 1, 9);
             Assert.assertArrayEquals(expected, array);
         } finally {
-            SaveClose.close(out);
+            SafeClose.close(out);
         }
         InputStream in = null;
         try {
@@ -210,7 +210,7 @@ public class GZip2CompressTest {
             Assert.assertEquals(-1, in.read());
             Assert.assertEquals(-1, in.read(array, 1, 9));
         } finally {
-            SaveClose.close(in);
+            SafeClose.close(in);
         }
     }
 
@@ -248,8 +248,8 @@ public class GZip2CompressTest {
             new ByteGZip2Compressor().decompress(compressed, decompressedArray);
             Assert.assertArrayEquals(bytes, decompressedBytes);
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -287,8 +287,8 @@ public class GZip2CompressTest {
             new ShortGZip2Compressor().decompress(compressed, decompressedArray);
             Assert.assertArrayEquals(bytes, decompressedBytes);
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -326,8 +326,8 @@ public class GZip2CompressTest {
             new IntGZip2Compressor().decompress(compressed, decompressedArray);
             Assert.assertArrayEquals(bytes, decompressedBytes);
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -403,7 +403,7 @@ public class GZip2CompressTest {
             new LongGZip2Compressor().decompress(compressed, decompressedArray);
             Assert.assertArrayEquals(longArray, decompressedArray.array());
         } finally {
-            SaveClose.close(file);
+            SafeClose.close(file);
         }
     }
 }

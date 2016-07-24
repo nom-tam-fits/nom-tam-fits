@@ -40,7 +40,7 @@ import java.util.Arrays;
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.BytePLIOCompressor;
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.IntPLIOCompressor;
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.ShortPLIOCompressor;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -75,7 +75,7 @@ public class PLIOCompressTest {
 
             Assert.assertArrayEquals(intArray, px_dst.array());
         } finally {
-            SaveClose.close(file);
+            SafeClose.close(file);
         }
     }
 
@@ -153,8 +153,8 @@ public class PLIOCompressTest {
             new ShortPLIOCompressor().decompress(wrap, px_dst);
             Assert.assertArrayEquals(shortArray, px_dst.array());
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -184,8 +184,8 @@ public class PLIOCompressTest {
 
             Assert.assertArrayEquals(bytes, px_dst.array());
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 
@@ -215,8 +215,8 @@ public class PLIOCompressTest {
 
             Assert.assertArrayEquals(bytes, px_dst.array());
         } finally {
-            SaveClose.close(expected);
-            SaveClose.close(file);
+            SafeClose.close(expected);
+            SafeClose.close(file);
         }
     }
 }
