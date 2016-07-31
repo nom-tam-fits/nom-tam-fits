@@ -1,5 +1,7 @@
 # Compression support
 
+## Image compression
+
 Image compression and tiling are now fully supported by nom-tam-fits. A 100% Java implementation of the compression libraries available in cfitsio was implemented. An API for easy handling of compressed images is now provided. Support for binary table compression and the NULL_PIXEL_MASK features is anticipated in the next release.
 
 When [de]compressing all available CPU's are automatically utilized.
@@ -102,3 +104,23 @@ All information required for image decompression are stored in the header of the
         }
 
 Please read the original fits documentation for further information on the different compression options and their possible values.
+
+## Table compression
+
+Table compression is also supported in nom-tam-fits from version 1.15.0. The compression alögorithms are the same as the ones profided for image compression. Default compression is GZIP_2 but every column can use a different algorithm. Tile size is the same for every column. To compress
+an existig binary table useing a tile size of 10 rows:
+
+        CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(binaryTable, 10).compress();
+        compressed.compress();
+        
+Per vararg the compression algorithms can be specified on a per column basis.
+
+To decompress the table again, just do:
+
+         BinaryTableHDU binaryTable = compressed.asBinaryTableHDU();
+         
+In both cases all available CPU's will be used to compress the table.
+
+Because there is no place to store the compression option in the header only compression algorithms can be used that do not need options.
+
+ 
