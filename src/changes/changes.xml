@@ -1,5 +1,19 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
+		<release version="1.15.0" date="2016-08-07" description="Table compression activated.">
+			<action type="update">
+				Binary table compression and tiling are now fully supported by nom-tam-fits. An API for easy handling of compressed tables is now provided.
+			</action>
+			<action type="add" dev="ritchieGitHub" issue="61">
+				Binary table compression now fully supported.
+			</action>
+			<action type="add" dev="ritchieGitHub" issue="70">
+				The dummy compression algorithm NOCOMPRESS is now supported.
+			</action>
+			<action type="update" issue="96">
+				Multiple code quality fixes, provided by various developers.
+			</action>
+		</release>
 		<release version="1.14.3" date="2016-06-05" description="Maintenance release with minor bug fixess.">
 			<action type="update">
 				Maintenance release with bug fixes.
