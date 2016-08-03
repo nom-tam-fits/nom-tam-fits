@@ -1,8 +1,10 @@
 # Compression support
 
+Starting with version 1.15.0 compression of both images and tables is fully supported.  A 100% Java implementation of the compression libraries available in cfitsio was implemented and can be used through the Java API.
+
 ## Image compression
 
-Image compression and tiling are now fully supported by nom-tam-fits. A 100% Java implementation of the compression libraries available in cfitsio was implemented. An API for easy handling of compressed images is now provided. Support for binary table compression and the NULL_PIXEL_MASK features is anticipated in the next release.
+Image compression and tiling are now fully supported by nom-tam-fits.  
 
 When [de]compressing all available CPU's are automatically utilized.
 
@@ -107,20 +109,22 @@ Please read the original fits documentation for further information on the diffe
 
 ## Table compression
 
-Table compression is also supported in nom-tam-fits from version 1.15.0. The compression alögorithms are the same as the ones profided for image compression. Default compression is GZIP_2 but every column can use a different algorithm. Tile size is the same for every column. To compress
-an existig binary table useing a tile size of 10 rows:
+Table compression is also supported in nom-tam-fits from version 1.15.0. When a table is compressed the effect is that within each column we compress 'tiles' that are sets of contiguous rows.  E.g., if we use a 'tile' size of 10, then for the first column we concatenate the data from the first 10 rows and compress the resulting sequence of bytes.  The result of this compression will be stored in the heap area of the FITS file since its length will likely vary from tile to tile.  We then do the same for the first 10 rows of the second column and every other column in the table. After we finish we are ready to write the first row of the compressed table.  We then repeat for sets of 10 rows until we reach the end of the input table.  The result is a new binary table with the same number of columns but with the number of rows decreased by ~10 (in our example). Thus, just as with images, we can get the ability to efficiently compress the data without losing the ability to retrieve only the rows we are interested in when we are reading from a large table.
+
+The compression alögorithms are the same as the ones provided for image compression. Default compression is GZIP_2 but every column can use a different algorithm. The tile size is the same for every column.  To compress
+an existing binary table using a tile size of 10 rows:
 
         CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(binaryTable, 10).compress();
         compressed.compress();
         
-Per vararg the compression algorithms can be specified on a per column basis.
+Using varargs the compression algorithm can be specified on a per column basis.
 
-To decompress the table again, just do:
+To decompress the table just do:
 
          BinaryTableHDU binaryTable = compressed.asBinaryTableHDU();
          
-In both cases all available CPU's will be used to compress the table.
+All available CPU's will be used to [de]compress the table.
 
-Because there is no place to store the compression option in the header only compression algorithms can be used that do not need options.
+Because there is no place to store the compression options in the header, only compression algorithms which do not need options can be used.
 
  
