@@ -44,11 +44,11 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class provides a simple holder for data which is not handled by other

@@ -48,7 +48,7 @@
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.ImageHDU;
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayFuncs;
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.BufferedFile;
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SaveClose;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SafeClose;
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> org.junit.Ignore;
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
@@ -73,13 +73,13 @@
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>              f.write(bf);
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>              System.out.println(Arrays.toString(ArrayFuncs.getDimensions(f.getHDU(0).getData().getData())));
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>          } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>              SaveClose.close(f);
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>              SafeClose.close(f);
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>          }
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>          <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>              f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/big.fits"</span>);
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>              System.out.println(Arrays.toString(ArrayFuncs.getDimensions(f.getHDU(0).getData().getData())));
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>          } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>              SaveClose.close(f);
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>              SafeClose.close(f);
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>          }
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>      }
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>  }

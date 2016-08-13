@@ -38,10 +38,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 import nom.tam.util.type.PrimitiveTypes;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * A data table is conventionally considered to consist of rows and columns,
@@ -933,7 +933,7 @@ public class ColumnTable&lt;T&gt; implements DataTable {
 <span class="fc" id="L933">                    int size = this.sizes[col];</span>
 
 <span class="fc" id="L935">                    char colType = this.types[col];</span>
-<span class="pc bpc" id="L936" title="1 of 2 branches missed.">                    if (columnNr == col) {</span>
+<span class="fc bfc" id="L936" title="All 2 branches covered.">                    if (columnNr == col) {</span>
 <span class="fc" id="L937">                        POINTER_ACCESSORS_BY_TYPE[colType].write(this, os, columnIndex[colType], arrOffset, size);</span>
                     }
 <span class="fc" id="L939">                    columnIndex[colType] += 1;</span>
@@ -967,7 +967,7 @@ public class ColumnTable&lt;T&gt; implements DataTable {
 <span class="fc" id="L967">                    int arrOffset = this.sizes[col] * row;</span>
 <span class="fc" id="L968">                    int size = this.sizes[col];</span>
 <span class="fc" id="L969">                    char colType = this.types[col];</span>
-<span class="pc bpc" id="L970" title="1 of 2 branches missed.">                    if (col == columnNr) {</span>
+<span class="fc bfc" id="L970" title="All 2 branches covered.">                    if (col == columnNr) {</span>
 <span class="fc" id="L971">                        POINTER_ACCESSORS_BY_TYPE[colType].read(this, is, columnIndex[colType], arrOffset, size);</span>
                     }
 <span class="fc" id="L973">                    columnIndex[colType] += 1;</span>

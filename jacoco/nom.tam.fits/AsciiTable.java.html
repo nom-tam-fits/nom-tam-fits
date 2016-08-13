@@ -46,6 +46,7 @@ import java.lang.reflect.Array;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
@@ -56,7 +57,6 @@ import nom.tam.util.ByteParser;
 import nom.tam.util.Cursor;
 import nom.tam.util.FormatException;
 import nom.tam.util.RandomAccess;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class represents the data in an ASCII table

@@ -61,7 +61,7 @@
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.quant.QuantizeParameters;
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.Compression;
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayFuncs;
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SaveClose;
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SafeClose;
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">import</strong> org.junit.Assert;
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
@@ -696,7 +696,7 @@
 <a class="jxr_linenumber" name="L688" href="#L688">688</a>             Assert.assertEquals(0, option.getIntMinValue());
 <a class="jxr_linenumber" name="L689" href="#L689">689</a>             Assert.assertEquals(1911354, option.getIntMaxValue());
 <a class="jxr_linenumber" name="L690" href="#L690">690</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L691" href="#L691">691</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L691" href="#L691">691</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L692" href="#L692">692</a>         }
 <a class="jxr_linenumber" name="L693" href="#L693">693</a>     }
 <a class="jxr_linenumber" name="L694" href="#L694">694</a> 
@@ -740,7 +740,7 @@
 <a class="jxr_linenumber" name="L732" href="#L732">732</a>             Assert.assertEquals(1907849, option.getIntMaxValue());
 <a class="jxr_linenumber" name="L733" href="#L733">733</a> 
 <a class="jxr_linenumber" name="L734" href="#L734">734</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L735" href="#L735">735</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L735" href="#L735">735</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L736" href="#L736">736</a>         }
 <a class="jxr_linenumber" name="L737" href="#L737">737</a>     }
 <a class="jxr_linenumber" name="L738" href="#L738">738</a> 

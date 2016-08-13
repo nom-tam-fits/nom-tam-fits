@@ -43,7 +43,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.FitsException;
-import nom.tam.util.SaveClose;
+import nom.tam.util.SafeClose;
 
 public final class CompressionManager {
 
@@ -121,7 +121,7 @@ public final class CompressionManager {
             // This is probably a prelude to failure...
 <span class="fc" id="L122">            return false;</span>
         } finally {
-<span class="pc" id="L124">            SaveClose.close(fis);</span>
+<span class="pc" id="L124">            SafeClose.close(fis);</span>
 <span class="fc" id="L125">        }</span>
 <span class="fc" id="L126">        return false;</span>
     }

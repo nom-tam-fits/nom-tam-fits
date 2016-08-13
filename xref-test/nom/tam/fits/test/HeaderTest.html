@@ -87,7 +87,7 @@
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.BufferedDataOutputStream;
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.BufferedFile;
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.Cursor;
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SaveClose;
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SafeClose;
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.test.ThrowAnyException;
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  <strong class="jxr_keyword">import</strong> org.junit.After;
@@ -114,7 +114,7 @@
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>             f.addHDU(hdu);
 <a class="jxr_linenumber" name="L107" href="#L107">107</a>             f.write(<strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"target/ht1.fits"</span>));
 <a class="jxr_linenumber" name="L108" href="#L108">108</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>         }
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>     }
 <a class="jxr_linenumber" name="L112" href="#L112">112</a> 
@@ -206,7 +206,7 @@
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>             hc = (HeaderCard) c.next();
 <a class="jxr_linenumber" name="L199" href="#L199">199</a>             assertEquals(<span class="jxr_string">"AftDel3"</span>, <span class="jxr_string">"Comment after flt2"</span>, hc.getComment());
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>         }
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>     }
 <a class="jxr_linenumber" name="L204" href="#L204">204</a> 
@@ -220,7 +220,7 @@
 <a class="jxr_linenumber" name="L212" href="#L212">212</a>             h.addValue(<span class="jxr_string">"TESTKEY"</span>, <span class="jxr_string">"TESTVAL"</span>, <span class="jxr_string">"TESTCOMM"</span>);
 <a class="jxr_linenumber" name="L213" href="#L213">213</a>             h.rewrite();
 <a class="jxr_linenumber" name="L214" href="#L214">214</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L216" href="#L216">216</a>         }
 <a class="jxr_linenumber" name="L217" href="#L217">217</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L218" href="#L218">218</a>             f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/ht1.fits"</span>);
@@ -239,7 +239,7 @@
 <a class="jxr_linenumber" name="L231" href="#L231">231</a>             assertEquals(<span class="jxr_string">"E7"</span>, c.next().getKey(), <span class="jxr_string">"TESTKEY2"</span>);
 <a class="jxr_linenumber" name="L232" href="#L232">232</a>             assertEquals(<span class="jxr_string">"E8"</span>, c.next().getKey(), <span class="jxr_string">"TESTKEY"</span>);
 <a class="jxr_linenumber" name="L233" href="#L233">233</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L235" href="#L235">235</a>         }
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>     }
 <a class="jxr_linenumber" name="L237" href="#L237">237</a> 
@@ -276,7 +276,7 @@
 <a class="jxr_linenumber" name="L268" href="#L268">268</a>                 bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/ht4.hdr"</span>, <span class="jxr_string">"rw"</span>);
 <a class="jxr_linenumber" name="L269" href="#L269">269</a>                 hdr.write(bf);
 <a class="jxr_linenumber" name="L270" href="#L270">270</a>             } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L271" href="#L271">271</a>                 SaveClose.close(bf);
+<a class="jxr_linenumber" name="L271" href="#L271">271</a>                 SafeClose.close(bf);
 <a class="jxr_linenumber" name="L272" href="#L272">272</a>             }
 <a class="jxr_linenumber" name="L273" href="#L273">273</a>             String val = hdr.getStringValue(<span class="jxr_string">"LONG1"</span>);
 <a class="jxr_linenumber" name="L274" href="#L274">274</a>             assertEquals(<span class="jxr_string">"LongT1"</span>, val, lng);
@@ -324,10 +324,10 @@
 <a class="jxr_linenumber" name="L316" href="#L316">316</a>                 assertEquals(<span class="jxr_string">"deltest2"</span>, pcnt - 8, hdr.getNumberOfPhysicalCards());
 <a class="jxr_linenumber" name="L317" href="#L317">317</a>                 assertEquals(<span class="jxr_string">"deltest2"</span>, cnt - 2, hdr.getNumberOfCards());
 <a class="jxr_linenumber" name="L318" href="#L318">318</a>             } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>                 SaveClose.close(bf);
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>                 SafeClose.close(bf);
 <a class="jxr_linenumber" name="L320" href="#L320">320</a>             }
 <a class="jxr_linenumber" name="L321" href="#L321">321</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L322" href="#L322">322</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L323" href="#L323">323</a>         }
 <a class="jxr_linenumber" name="L324" href="#L324">324</a>     }
 <a class="jxr_linenumber" name="L325" href="#L325">325</a> 
@@ -463,7 +463,7 @@
 <a class="jxr_linenumber" name="L455" href="#L455">455</a>             hc = c.next();
 <a class="jxr_linenumber" name="L456" href="#L456">456</a>             assertEquals(<span class="jxr_string">"NAXIS2_5"</span>, NAXISn.n(2).key(), hc.getKey());
 <a class="jxr_linenumber" name="L457" href="#L457">457</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L459" href="#L459">459</a>         }
 <a class="jxr_linenumber" name="L460" href="#L460">460</a>     }
 <a class="jxr_linenumber" name="L461" href="#L461">461</a> 
@@ -489,7 +489,7 @@
 <a class="jxr_linenumber" name="L481" href="#L481">481</a>             }
 <a class="jxr_linenumber" name="L482" href="#L482">482</a>             assertEquals(<span class="jxr_string">"BITPIX delete"</span>, <strong class="jxr_keyword">true</strong>, thrown);
 <a class="jxr_linenumber" name="L483" href="#L483">483</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L485" href="#L485">485</a>         }
 <a class="jxr_linenumber" name="L486" href="#L486">486</a>     }
 <a class="jxr_linenumber" name="L487" href="#L487">487</a> 
@@ -509,10 +509,10 @@
 <a class="jxr_linenumber" name="L501" href="#L501">501</a>                 bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/testHeaderCommentsDrift.fits"</span>, <span class="jxr_string">"rw"</span>);
 <a class="jxr_linenumber" name="L502" href="#L502">502</a>                 f.write(bf);
 <a class="jxr_linenumber" name="L503" href="#L503">503</a>             } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>                 SaveClose.close(bf);
+<a class="jxr_linenumber" name="L504" href="#L504">504</a>                 SafeClose.close(bf);
 <a class="jxr_linenumber" name="L505" href="#L505">505</a>             }
 <a class="jxr_linenumber" name="L506" href="#L506">506</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L507" href="#L507">507</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L507" href="#L507">507</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L508" href="#L508">508</a>         }
 <a class="jxr_linenumber" name="L509" href="#L509">509</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L510" href="#L510">510</a>             f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/testHeaderCommentsDrift.fits"</span>);
@@ -520,14 +520,14 @@
 <a class="jxr_linenumber" name="L512" href="#L512">512</a>             f.read();
 <a class="jxr_linenumber" name="L513" href="#L513">513</a>             f.write(bf);
 <a class="jxr_linenumber" name="L514" href="#L514">514</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L515" href="#L515">515</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L515" href="#L515">515</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L516" href="#L516">516</a>         }
 <a class="jxr_linenumber" name="L517" href="#L517">517</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L518" href="#L518">518</a>             f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/testHeaderCommentsDrift.fits"</span>);
 <a class="jxr_linenumber" name="L519" href="#L519">519</a>             f.read();
 <a class="jxr_linenumber" name="L520" href="#L520">520</a>             assertEquals(<span class="jxr_string">"COMMENT"</span>, f.getHDU(0).getHeader().findCard(<span class="jxr_string">"KEY"</span>).getComment());
 <a class="jxr_linenumber" name="L521" href="#L521">521</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L522" href="#L522">522</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L523" href="#L523">523</a>         }
 <a class="jxr_linenumber" name="L524" href="#L524">524</a>     }
 <a class="jxr_linenumber" name="L525" href="#L525">525</a> 
@@ -585,14 +585,14 @@
 <a class="jxr_linenumber" name="L577" href="#L577">577</a>                 c.add(<strong class="jxr_keyword">new</strong> HeaderCard(<span class="jxr_string">"DUMMY"</span> + hdr.getNumberOfCards(), (String) <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>));
 <a class="jxr_linenumber" name="L578" href="#L578">578</a>             }
 <a class="jxr_linenumber" name="L579" href="#L579">579</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L580" href="#L580">580</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L580" href="#L580">580</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L581" href="#L581">581</a>         }
 <a class="jxr_linenumber" name="L582" href="#L582">582</a>     }
 <a class="jxr_linenumber" name="L583" href="#L583">583</a> 
 <a class="jxr_linenumber" name="L584" href="#L584">584</a>     @Test
 <a class="jxr_linenumber" name="L585" href="#L585">585</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testStringLengthProblems() <strong class="jxr_keyword">throws</strong> HeaderCardException {
 <a class="jxr_linenumber" name="L586" href="#L586">586</a>         FitsFactory.setLongStringsEnabled(false);
-<a class="jxr_linenumber" name="L587" href="#L587">587</a>         HeaderCard card = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L587" href="#L587">587</a>         HeaderCard card;
 <a class="jxr_linenumber" name="L588" href="#L588">588</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L589" href="#L589">589</a>             <strong class="jxr_keyword">new</strong> HeaderCard(<span class="jxr_string">"TESTKEY"</span>, <span class="jxr_string">"random value just for testing purpose - random value just for testing"</span>, <span class="jxr_string">""</span>);
 <a class="jxr_linenumber" name="L590" href="#L590">590</a>             fail(<span class="jxr_string">"must trow an value too long exception"</span>);
@@ -620,8 +620,8 @@
 <a class="jxr_linenumber" name="L612" href="#L612">612</a>             f.addHDU(FitsFactory.hduFactory(z));
 <a class="jxr_linenumber" name="L613" href="#L613">613</a>             f.write(bf);
 <a class="jxr_linenumber" name="L614" href="#L614">614</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L615" href="#L615">615</a>             SaveClose.close(bf);
-<a class="jxr_linenumber" name="L616" href="#L616">616</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L615" href="#L615">615</a>             SafeClose.close(bf);
+<a class="jxr_linenumber" name="L616" href="#L616">616</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L617" href="#L617">617</a>         }
 <a class="jxr_linenumber" name="L618" href="#L618">618</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L619" href="#L619">619</a>             f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/hx1.fits"</span>);
@@ -633,7 +633,7 @@
 <a class="jxr_linenumber" name="L625" href="#L625">625</a>             HeaderCommentsMap.updateComment(<span class="jxr_string">"header:bitpix:1"</span>, <span class="jxr_string">"A byte tiledImageOperation"</span>);
 <a class="jxr_linenumber" name="L626" href="#L626">626</a>             HeaderCommentsMap.deleteComment(<span class="jxr_string">"header:simple:1"</span>);
 <a class="jxr_linenumber" name="L627" href="#L627">627</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L628" href="#L628">628</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L628" href="#L628">628</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L629" href="#L629">629</a>         }
 <a class="jxr_linenumber" name="L630" href="#L630">630</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L631" href="#L631">631</a>             f = <strong class="jxr_keyword">new</strong> Fits();
@@ -641,8 +641,8 @@
 <a class="jxr_linenumber" name="L633" href="#L633">633</a>             f.addHDU(FitsFactory.hduFactory(z));
 <a class="jxr_linenumber" name="L634" href="#L634">634</a>             f.write(bf);
 <a class="jxr_linenumber" name="L635" href="#L635">635</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L636" href="#L636">636</a>             SaveClose.close(bf);
-<a class="jxr_linenumber" name="L637" href="#L637">637</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L636" href="#L636">636</a>             SafeClose.close(bf);
+<a class="jxr_linenumber" name="L637" href="#L637">637</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L638" href="#L638">638</a>         }
 <a class="jxr_linenumber" name="L639" href="#L639">639</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L640" href="#L640">640</a>             f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/hx2.fits"</span>);
@@ -651,7 +651,7 @@
 <a class="jxr_linenumber" name="L643" href="#L643">643</a>             c1 = f.getHDU(0).getHeader().findCard(BITPIX.key());
 <a class="jxr_linenumber" name="L644" href="#L644">644</a>             assertEquals(<span class="jxr_string">"tuhc2"</span>, c1.getComment(), <span class="jxr_string">"A byte tiledImageOperation"</span>);
 <a class="jxr_linenumber" name="L645" href="#L645">645</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L646" href="#L646">646</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L646" href="#L646">646</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L647" href="#L647">647</a>         }
 <a class="jxr_linenumber" name="L648" href="#L648">648</a>     }
 <a class="jxr_linenumber" name="L649" href="#L649">649</a> 
@@ -711,8 +711,8 @@
 <a class="jxr_linenumber" name="L703" href="#L703">703</a>             assertEquals(hdr.getBigIntegerValue(CTYPE2.name(), BigInteger.valueOf(-1)), BigInteger.valueOf(5));
 <a class="jxr_linenumber" name="L704" href="#L704">704</a>             assertEquals(hdr.getBigIntegerValue(CTYPE2, BigInteger.valueOf(-1)), BigInteger.valueOf(5));
 <a class="jxr_linenumber" name="L705" href="#L705">705</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L706" href="#L706">706</a>             SaveClose.close(in);
-<a class="jxr_linenumber" name="L707" href="#L707">707</a>             SaveClose.close(fits);
+<a class="jxr_linenumber" name="L706" href="#L706">706</a>             SafeClose.close(in);
+<a class="jxr_linenumber" name="L707" href="#L707">707</a>             SafeClose.close(fits);
 <a class="jxr_linenumber" name="L708" href="#L708">708</a>         }
 <a class="jxr_linenumber" name="L709" href="#L709">709</a>     }
 <a class="jxr_linenumber" name="L710" href="#L710">710</a> 
@@ -736,7 +736,7 @@
 <a class="jxr_linenumber" name="L728" href="#L728">728</a>             assertEquals(7, hdr.size());
 <a class="jxr_linenumber" name="L729" href="#L729">729</a>             assertEquals(362880, hdu.getSize());
 <a class="jxr_linenumber" name="L730" href="#L730">730</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L731" href="#L731">731</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L731" href="#L731">731</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L732" href="#L732">732</a>         }
 <a class="jxr_linenumber" name="L733" href="#L733">733</a>     }
 <a class="jxr_linenumber" name="L734" href="#L734">734</a> 
@@ -758,7 +758,7 @@
 <a class="jxr_linenumber" name="L750" href="#L750">750</a>             Assert.assertEquals(BigInteger.valueOf(-100), hdr.getBigIntegerValue(<span class="jxr_string">"BBBB"</span>, BigInteger.valueOf(-100)));
 <a class="jxr_linenumber" name="L751" href="#L751">751</a>             Assert.assertEquals(-100f, hdr.getFloatValue(<span class="jxr_string">"BBBB"</span>, -100f), 0.00001);
 <a class="jxr_linenumber" name="L752" href="#L752">752</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L753" href="#L753">753</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L753" href="#L753">753</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L754" href="#L754">754</a>         }
 <a class="jxr_linenumber" name="L755" href="#L755">755</a>     }
 <a class="jxr_linenumber" name="L756" href="#L756">756</a> 
@@ -907,10 +907,10 @@
 <a class="jxr_linenumber" name="L899" href="#L899">899</a>                     bf = <strong class="jxr_keyword">new</strong> BufferedFile(filename, <span class="jxr_string">"rw"</span>);
 <a class="jxr_linenumber" name="L900" href="#L900">900</a>                     f.write(bf);
 <a class="jxr_linenumber" name="L901" href="#L901">901</a>                 } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L902" href="#L902">902</a>                     SaveClose.close(bf);
+<a class="jxr_linenumber" name="L902" href="#L902">902</a>                     SafeClose.close(bf);
 <a class="jxr_linenumber" name="L903" href="#L903">903</a>                 }
 <a class="jxr_linenumber" name="L904" href="#L904">904</a>             } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L905" href="#L905">905</a>                 SaveClose.close(f);
+<a class="jxr_linenumber" name="L905" href="#L905">905</a>                 SafeClose.close(f);
 <a class="jxr_linenumber" name="L906" href="#L906">906</a>             }
 <a class="jxr_linenumber" name="L907" href="#L907">907</a> 
 <a class="jxr_linenumber" name="L908" href="#L908">908</a>             <em class="jxr_comment">/*</em>
@@ -932,7 +932,7 @@
 <a class="jxr_linenumber" name="L924" href="#L924">924</a>                     }
 <a class="jxr_linenumber" name="L925" href="#L925">925</a>                 }
 <a class="jxr_linenumber" name="L926" href="#L926">926</a>             } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L927" href="#L927">927</a>                 SaveClose.close(f);
+<a class="jxr_linenumber" name="L927" href="#L927">927</a>                 SafeClose.close(f);
 <a class="jxr_linenumber" name="L928" href="#L928">928</a>             }
 <a class="jxr_linenumber" name="L929" href="#L929">929</a>         } <strong class="jxr_keyword">finally</strong> {
 <a class="jxr_linenumber" name="L930" href="#L930">930</a>             FitsFactory.setUseHierarch(useHierarch);
@@ -981,8 +981,8 @@
 <a class="jxr_linenumber" name="L973" href="#L973">973</a>             <strong class="jxr_keyword">int</strong> count = f.read(buffer);
 <a class="jxr_linenumber" name="L974" href="#L974">974</a>             out.write(buffer, 0, count);
 <a class="jxr_linenumber" name="L975" href="#L975">975</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L976" href="#L976">976</a>             SaveClose.close(out);
-<a class="jxr_linenumber" name="L977" href="#L977">977</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L976" href="#L976">976</a>             SafeClose.close(out);
+<a class="jxr_linenumber" name="L977" href="#L977">977</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L978" href="#L978">978</a>         }
 <a class="jxr_linenumber" name="L979" href="#L979">979</a>         Fits fits = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L980" href="#L980">980</a>         <strong class="jxr_keyword">try</strong> {
@@ -990,7 +990,7 @@
 <a class="jxr_linenumber" name="L982" href="#L982">982</a>             ImageHDU hdu = (ImageHDU) fits.getHDU(0);
 <a class="jxr_linenumber" name="L983" href="#L983">983</a>             Header hdr = hdu.getHeader();
 <a class="jxr_linenumber" name="L984" href="#L984">984</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L985" href="#L985">985</a>             SaveClose.close(fits);
+<a class="jxr_linenumber" name="L985" href="#L985">985</a>             SafeClose.close(fits);
 <a class="jxr_linenumber" name="L986" href="#L986">986</a>         }
 <a class="jxr_linenumber" name="L987" href="#L987">987</a>     }
 <a class="jxr_linenumber" name="L988" href="#L988">988</a> 

@@ -338,7 +338,7 @@ public final class FitsUtil {
     public static byte[] stringsToByteArray(String[] stringArray, int maxLen) {
 <span class="fc" id="L339">        byte[] res = new byte[stringArray.length * maxLen];</span>
 <span class="fc bfc" id="L340" title="All 2 branches covered.">        for (int i = 0; i &lt; stringArray.length; i += 1) {</span>
-<span class="fc" id="L341">            byte[] bstr = null;</span>
+            byte[] bstr;
 <span class="fc bfc" id="L342" title="All 2 branches covered.">            if (stringArray[i] == null) {</span>
 <span class="fc" id="L343">                bstr = new byte[0];</span>
             } else {

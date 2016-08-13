@@ -63,7 +63,7 @@
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compress.CompressionManager;
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compress.ExternalBZip2CompressionProvider;
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compress.ZCompressionProvider;
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SaveClose;
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SafeClose;
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.test.ThrowAnyException;
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  <strong class="jxr_keyword">import</strong> org.junit.AfterClass;
@@ -465,7 +465,7 @@
 <a class="jxr_linenumber" name="L457" href="#L457">457</a>             f = <strong class="jxr_keyword">new</strong> Fits(<strong class="jxr_keyword">new</strong> ZCompressionProvider().decompress(in));
 <a class="jxr_linenumber" name="L458" href="#L458">458</a>             Assert.assertNotNull(f.readHDU());
 <a class="jxr_linenumber" name="L459" href="#L459">459</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L460" href="#L460">460</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L461" href="#L461">461</a>         }
 <a class="jxr_linenumber" name="L462" href="#L462">462</a>     }
 <a class="jxr_linenumber" name="L463" href="#L463">463</a> 

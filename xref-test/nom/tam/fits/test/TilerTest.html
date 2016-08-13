@@ -50,7 +50,7 @@
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.StandardImageTiler;
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayFuncs;
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.BufferedFile;
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SaveClose;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SafeClose;
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> org.junit.Assert;
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
@@ -208,8 +208,8 @@
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>             f.addHDU(Fits.makeHDU(data));
 <a class="jxr_linenumber" name="L201" href="#L201">201</a>             f.write(bf);
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>             SaveClose.close(bf);
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>             SafeClose.close(bf);
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L205" href="#L205">205</a>         }
 <a class="jxr_linenumber" name="L206" href="#L206">206</a> 
 <a class="jxr_linenumber" name="L207" href="#L207">207</a>         <strong class="jxr_keyword">try</strong> {
@@ -252,7 +252,7 @@
 <a class="jxr_linenumber" name="L244" href="#L244">244</a>             Assert.assertNotNull(expected);
 <a class="jxr_linenumber" name="L245" href="#L245">245</a>             Assert.assertTrue(expected.getMessage().contains(<span class="jxr_string">"Inconsistent"</span>));
 <a class="jxr_linenumber" name="L246" href="#L246">246</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L248" href="#L248">248</a>         }
 <a class="jxr_linenumber" name="L249" href="#L249">249</a>     }
 <a class="jxr_linenumber" name="L250" href="#L250">250</a> }

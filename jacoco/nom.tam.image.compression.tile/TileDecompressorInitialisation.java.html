@@ -34,6 +34,7 @@
 import static nom.tam.image.compression.tile.TileCompressionType.COMPRESSED;
 import static nom.tam.image.compression.tile.TileCompressionType.GZIP_COMPRESSED;
 import static nom.tam.image.compression.tile.TileCompressionType.UNCOMPRESSED;
+
 import nom.tam.fits.FitsException;
 import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.image.tile.operation.ITileOperationInitialisation;
@@ -51,35 +52,35 @@ final class TileDecompressorInitialisation implements ITileOperationInitialisati
 
     private final TiledImageCompressionOperation imageTilesOperation;
 
-<span class="fc" id="L54">    private int compressedOffset = 0;</span>
+<span class="fc" id="L55">    private int compressedOffset = 0;</span>
 
     protected TileDecompressorInitialisation(TiledImageCompressionOperation imageTilesOperation, Object[] uncompressed, Object[] compressed, Object[] gzipCompressed,
-<span class="fc" id="L57">            IHeaderAccess header) {</span>
-<span class="fc" id="L58">        this.imageTilesOperation = imageTilesOperation;</span>
-<span class="fc" id="L59">        this.uncompressed = uncompressed;</span>
-<span class="fc" id="L60">        this.compressed = compressed;</span>
-<span class="fc" id="L61">        this.gzipCompressed = gzipCompressed;</span>
-<span class="fc" id="L62">        this.header = header;</span>
-<span class="fc" id="L63">    }</span>
+<span class="fc" id="L58">            IHeaderAccess header) {</span>
+<span class="fc" id="L59">        this.imageTilesOperation = imageTilesOperation;</span>
+<span class="fc" id="L60">        this.uncompressed = uncompressed;</span>
+<span class="fc" id="L61">        this.compressed = compressed;</span>
+<span class="fc" id="L62">        this.gzipCompressed = gzipCompressed;</span>
+<span class="fc" id="L63">        this.header = header;</span>
+<span class="fc" id="L64">    }</span>
 
     @Override
     public TileCompressionOperation createTileOperation(int tileIndex, TileArea area) {
-<span class="fc" id="L67">        return new TileDecompressor(this.imageTilesOperation, tileIndex, area);</span>
+<span class="fc" id="L68">        return new TileDecompressor(this.imageTilesOperation, tileIndex, area);</span>
     }
 
     @Override
     public void init(TileCompressionOperation tileOperation) {
-<span class="fc bfc" id="L72" title="All 6 branches covered.">        tileOperation.setCompressedOffset(this.compressedOffset)//</span>
+<span class="fc bfc" id="L73" title="All 6 branches covered.">        tileOperation.setCompressedOffset(this.compressedOffset)//</span>
                 .setCompressed(this.compressed != null ? this.compressed[tileOperation.getTileIndex()] : null, COMPRESSED)//
                 .setCompressed(this.uncompressed != null ? this.uncompressed[tileOperation.getTileIndex()] : null, UNCOMPRESSED)//
                 .setCompressed(this.gzipCompressed != null ? this.gzipCompressed[tileOperation.getTileIndex()] : null, GZIP_COMPRESSED);
-<span class="fc" id="L76">        tileOperation.createImageNullPixelMask(this.imageTilesOperation.getImageNullPixelMask());</span>
-<span class="fc" id="L77">        this.compressedOffset += tileOperation.getPixelSize();</span>
-<span class="fc" id="L78">    }</span>
+<span class="fc" id="L77">        tileOperation.createImageNullPixelMask(this.imageTilesOperation.getImageNullPixelMask());</span>
+<span class="fc" id="L78">        this.compressedOffset += tileOperation.getPixelSize();</span>
+<span class="fc" id="L79">    }</span>
 
     @Override
     public void tileCount(int tileCount) throws FitsException {
-<span class="fc" id="L82">        this.imageTilesOperation.compressOptions().getCompressionParameters().initializeColumns(this.header, this.imageTilesOperation.getBinaryTable(), tileCount);</span>
-<span class="fc" id="L83">    }</span>
+<span class="fc" id="L83">        this.imageTilesOperation.compressOptions().getCompressionParameters().initializeColumns(this.header, this.imageTilesOperation.getBinaryTable(), tileCount);</span>
+<span class="fc" id="L84">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

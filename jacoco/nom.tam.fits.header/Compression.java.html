@@ -131,8 +131,7 @@
 <span class="fc" id="L131">    ZMASKCMP(HDU.ANY, VALUE.STRING, &quot;&quot;),</span>
 
     /**
-     *
-     The following optional keyword is defined to store a verbatim copy of the
+     * The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
      * identical copy of the original FITS file when the image is
@@ -140,7 +139,7 @@
      * the original uncompressed image was contained in the primary array of the
      * FITS file.
      */
-<span class="fc" id="L143">    ZSIMPLE(HDU.PRIMARY, VALUE.LOGICAL, &quot;&quot;, Standard.SIMPLE),</span>
+<span class="fc" id="L142">    ZSIMPLE(HDU.PRIMARY, VALUE.LOGICAL, &quot;&quot;, Standard.SIMPLE),</span>
 
     /**
      * The following optional keyword is defined to store a verbatim copy of the
@@ -151,7 +150,7 @@
      * the original uncompressed image was contained in in IMAGE extension.
      */
 
-<span class="fc" id="L154">    ZTENSION(HDU.ANY, VALUE.STRING, &quot;&quot;, Standard.XTENSION),</span>
+<span class="fc" id="L153">    ZTENSION(HDU.ANY, VALUE.STRING, &quot;&quot;, Standard.XTENSION),</span>
 
     /**
      * The following optional keyword is defined to store a verbatim copy of the
@@ -162,7 +161,7 @@
      * the original uncompressed image was contained in the primary array of the
      * FITS file.
      */
-<span class="fc" id="L165">    ZEXTEND(HDU.PRIMARY, VALUE.LOGICAL, &quot;&quot;, Standard.EXTEND),</span>
+<span class="fc" id="L164">    ZEXTEND(HDU.PRIMARY, VALUE.LOGICAL, &quot;&quot;, Standard.EXTEND),</span>
 
     /**
      * The following optional keyword is defined to store a verbatim copy of the
@@ -173,8 +172,7 @@
      * the original uncompressed image was contained in the primary array of the
      * FITS file,
      */
-<span class="fc" id="L176">    @Deprecated</span>
-    ZBLOCKED(HDU.PRIMARY, VALUE.LOGICAL, &quot;&quot;, Standard.BLOCKED),
+<span class="fc" id="L175">    @Deprecated ZBLOCKED(HDU.PRIMARY, VALUE.LOGICAL, &quot;&quot;, Standard.BLOCKED),</span>
 
     /**
      * The following optional keyword is defined to store a verbatim copy of the
@@ -184,7 +182,7 @@
      * uncompressed.preserves the original PCOUNT keyword.may only be used if
      * the original uncompressed image was contained in in IMAGE extension.
      */
-<span class="fc" id="L187">    ZPCOUNT(HDU.EXTENSION, VALUE.INTEGER, &quot;&quot;, Standard.PCOUNT),</span>
+<span class="fc" id="L185">    ZPCOUNT(HDU.EXTENSION, VALUE.INTEGER, &quot;&quot;, Standard.PCOUNT),</span>
 
     /**
      * The following optional keyword is defined to store a verbatim copy of the
@@ -194,34 +192,32 @@
      * uncompressed.preserves the original GCOUNT keyword.may only be used if
      * the original uncompressed image was contained in in IMAGE extension.
      */
-<span class="fc" id="L197">    ZGCOUNT(HDU.EXTENSION, VALUE.INTEGER, &quot;&quot;, Standard.GCOUNT),</span>
+<span class="fc" id="L195">    ZGCOUNT(HDU.EXTENSION, VALUE.INTEGER, &quot;&quot;, Standard.GCOUNT),</span>
 
     /**
-     *
-     The following optional keyword is defined to store a verbatim copy of the
+     * The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
      * identical copy o f the original FITS file when the image is
      * uncompressed.preserves the original CHECKSUM keyword.
      */
-<span class="fc" id="L207">    ZHECKSUM(HDU.ANY, VALUE.STRING, &quot;&quot;, Checksum.CHECKSUM),</span>
+<span class="fc" id="L204">    ZHECKSUM(HDU.ANY, VALUE.STRING, &quot;&quot;, Checksum.CHECKSUM),</span>
 
     /**
-     *
-     The following optional keyword is defined to store a verbatim copy of the
+     * The following optional keyword is defined to store a verbatim copy of the
      * the value and comment field of the corresponding keyword in the original
      * uncompressed FITS image. These keywords can be used to reconstruct an
      * identical copy o f the original FITS file when the image is
      * uncompressed.preserves the original DATASUM
      */
-<span class="fc" id="L217">    ZDATASUM(HDU.ANY, VALUE.STRING, &quot;&quot;, Checksum.DATASUM),</span>
+<span class="fc" id="L213">    ZDATASUM(HDU.ANY, VALUE.STRING, &quot;&quot;, Checksum.DATASUM),</span>
 
     /**
      * (optional keyword) This keyword records the name of the algorithm that
      * was used to quantize floating-point image pixels into integer values
      * which are then passed to the compression algorithm.
      */
-<span class="fc" id="L224">    ZQUANTIZ(HDU.ANY, VALUE.STRING, &quot;&quot;),</span>
+<span class="fc" id="L220">    ZQUANTIZ(HDU.ANY, VALUE.STRING, &quot;&quot;),</span>
 
     /**
      * (optional keyword) The value field of this keyword shall contain an
@@ -229,7 +225,7 @@
      * was used when quantizing the floating-point pixel values. The value may
      * range from 1 to 100.00, inclusive.
      */
-<span class="fc" id="L232">    ZDITHER0(HDU.ANY, VALUE.INTEGER, &quot;&quot;),</span>
+<span class="fc" id="L228">    ZDITHER0(HDU.ANY, VALUE.INTEGER, &quot;&quot;),</span>
 
     /**
      * When using the quantization method to compress floating-point images,
@@ -239,7 +235,7 @@
      * The recommended value for ZBLANK is -2147483648 (the largest negative
      * 32-bit integer).
      */
-<span class="fc" id="L242">    ZBLANK(HDU.ANY, VALUE.INTEGER, &quot;&quot;),</span>
+<span class="fc" id="L238">    ZBLANK(HDU.ANY, VALUE.INTEGER, &quot;&quot;),</span>
 
     /**
      * The value field of this keyword shall contain an integer representing the
@@ -250,14 +246,14 @@
      * a single row, and the ZTILELEN and ZNAXIS2 keywords will have the same
      * value.
      */
-<span class="fc" id="L253">    ZTILELEN(HDU.ANY, VALUE.INTEGER, &quot;&quot;),</span>
+<span class="fc" id="L249">    ZTILELEN(HDU.ANY, VALUE.INTEGER, &quot;&quot;),</span>
 
     /**
      * The value field of these keywords shall contain the character string
      * values of the corresponding TFORMn keywords that defines the data type of
      * column n in the original uncompressed FITS table.
      */
-<span class="fc" id="L260">    ZFORMn(HDU.ANY, VALUE.STRING, &quot;&quot;, Standard.TFORMn),</span>
+<span class="fc" id="L256">    ZFORMn(HDU.ANY, VALUE.STRING, &quot;&quot;, Standard.TFORMn),</span>
 
     /**
      * The value field of these keywords shall contain a charac- ter string
@@ -265,7 +261,7 @@
      * column n of the table. The current allowed values are GZIP_1, GZIP_2, and
      * RICE_1, and the corresponding algorithms
      */
-<span class="fc" id="L268">    ZCTYPn(HDU.ANY, VALUE.STRING, &quot;&quot;);</span>
+<span class="fc" id="L264">    ZCTYPn(HDU.ANY, VALUE.STRING, &quot;&quot;);</span>
 
     /**
      * This is the simplest option in which no dithering is performed. The
@@ -379,6 +375,11 @@
      * alternative name for 'RICE 1'
      */
     public static final String ZCMPTYPE_RICE_ONE = &quot;RICE_ONE&quot;;
+
+    /**
+     * compression algorithm that specifies that the data is uncompressed.
+     */
+    public static final String ZCMPTYPE_NOCOMPRESS = &quot;NOCOMPRESS&quot;;
 
     /**
      * Each row of this variable-length column contains the byte st ream that is
@@ -503,47 +504,47 @@
     private final IFitsHeader uncompressedKey;
 
     Compression(HDU hdu, VALUE valueType, String comment) {
-<span class="fc" id="L506">        this(hdu, valueType, comment, null);</span>
-<span class="fc" id="L507">    }</span>
+<span class="fc" id="L507">        this(hdu, valueType, comment, null);</span>
+<span class="fc" id="L508">    }</span>
 
-<span class="fc" id="L509">    Compression(HDU hdu, VALUE valueType, String comment, IFitsHeader uncompressedKey) {</span>
-<span class="fc" id="L510">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.HEASARC, hdu, valueType, comment);</span>
-<span class="fc" id="L511">        this.uncompressedKey = uncompressedKey;</span>
-<span class="fc" id="L512">    }</span>
+<span class="fc" id="L510">    Compression(HDU hdu, VALUE valueType, String comment, IFitsHeader uncompressedKey) {</span>
+<span class="fc" id="L511">        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.HEASARC, hdu, valueType, comment);</span>
+<span class="fc" id="L512">        this.uncompressedKey = uncompressedKey;</span>
+<span class="fc" id="L513">    }</span>
 
     @Override
     public String comment() {
-<span class="fc" id="L516">        return this.key.comment();</span>
+<span class="fc" id="L517">        return this.key.comment();</span>
     }
 
     public IFitsHeader getUncompressedKey() {
-<span class="fc" id="L520">        return this.uncompressedKey;</span>
+<span class="fc" id="L521">        return this.uncompressedKey;</span>
     }
 
     @Override
     public HDU hdu() {
-<span class="fc" id="L525">        return this.key.hdu();</span>
+<span class="fc" id="L526">        return this.key.hdu();</span>
     }
 
     @Override
     public String key() {
-<span class="fc" id="L530">        return this.key.key();</span>
+<span class="fc" id="L531">        return this.key.key();</span>
     }
 
     @Override
     public IFitsHeader n(int... number) {
-<span class="fc" id="L535">        return this.key.n(number);</span>
+<span class="fc" id="L536">        return this.key.n(number);</span>
     }
 
     @Override
     public SOURCE status() {
-<span class="fc" id="L540">        return this.key.status();</span>
+<span class="fc" id="L541">        return this.key.status();</span>
     }
 
     @Override
     @SuppressWarnings(&quot;CPD-END&quot;)
     public VALUE valueType() {
-<span class="fc" id="L546">        return this.key.valueType();</span>
+<span class="fc" id="L547">        return this.key.valueType();</span>
     }
 
 }

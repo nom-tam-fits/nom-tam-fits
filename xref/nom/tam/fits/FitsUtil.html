@@ -346,7 +346,7 @@
 <a class="jxr_linenumber" name="L338" href="#L338">338</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> byte[] stringsToByteArray(String[] stringArray, <strong class="jxr_keyword">int</strong> maxLen) {
 <a class="jxr_linenumber" name="L339" href="#L339">339</a>         byte[] res = <strong class="jxr_keyword">new</strong> byte[stringArray.length * maxLen];
 <a class="jxr_linenumber" name="L340" href="#L340">340</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; stringArray.length; i += 1) {
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>             byte[] bstr = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>             byte[] bstr;
 <a class="jxr_linenumber" name="L342" href="#L342">342</a>             <strong class="jxr_keyword">if</strong> (stringArray[i] == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L343" href="#L343">343</a>                 bstr = <strong class="jxr_keyword">new</strong> byte[0];
 <a class="jxr_linenumber" name="L344" href="#L344">344</a>             } <strong class="jxr_keyword">else</strong> {

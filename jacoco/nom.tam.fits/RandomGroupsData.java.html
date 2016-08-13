@@ -39,11 +39,11 @@ import static nom.tam.fits.header.Standard.PCOUNT;
 import java.io.EOFException;
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class instantiates FITS Random Groups data. Random groups are

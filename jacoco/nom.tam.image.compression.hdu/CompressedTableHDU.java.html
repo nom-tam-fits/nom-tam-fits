@@ -32,6 +32,7 @@
  */
 
 import static nom.tam.fits.header.Compression.ZTABLE;
+
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
@@ -44,11 +45,11 @@ import nom.tam.util.type.PrimitiveTypes;
 public class CompressedTableHDU extends BinaryTableHDU {
 
     /**
-     * Prepare a compressed binary table hdu for the specified binary table. the
-     * tile row size that are specified with -1 are set to the corresponding
-     * roms of the table. The table will be compressed in &quot;rows&quot; that are
-     * defined by the tile size. Next step would be to set the compression
-     * options into the hdu and then compress it.
+     * Prepare a compressed binary table HDU for the specified binary table.
+     * When the tile row size is specified with -1, the value will be set ti the
+     * number of rows in the table. The table will be compressed in &quot;rows&quot; that
+     * are defined by the tile size. Next step would be to set the compression
+     * options into the HDU and then compress it.
      *
      * @param binaryTableHDU
      *            the binary table to compress
@@ -58,29 +59,29 @@ public class CompressedTableHDU extends BinaryTableHDU {
      *            the compression algorithms to use for the columns (optional
      *            default compression will be used if a column has no
      *            compression specified)
-     * @return the prepared compressed binaary table hdu.
+     * @return the prepared compressed binary table HDU.
      * @throws FitsException
      *             if the binary table could not be used to create a compressed
      *             binary table.
      */
     public static CompressedTableHDU fromBinaryTableHDU(BinaryTableHDU binaryTableHDU, int tileRows, String... columnCompressionAlgorithms) throws FitsException {
-<span class="fc" id="L67">        Header header = new Header();</span>
-<span class="fc" id="L68">        CompressedTableData compressedData = new CompressedTableData();</span>
-<span class="fc" id="L69">        compressedData.setRowsPerTile(binaryTableHDU.getData().getNRows());</span>
-<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (tileRows &gt; 0) {</span>
-<span class="fc" id="L71">            compressedData.setRowsPerTile(tileRows);</span>
-        }
+<span class="fc" id="L68">        Header header = new Header();</span>
+<span class="fc" id="L69">        CompressedTableData compressedData = new CompressedTableData();</span>
+
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        int rowsPerTile = tileRows &gt; 0 ? tileRows : binaryTableHDU.getData().getNRows();</span>
+<span class="fc" id="L72">        compressedData.setRowsPerTile(rowsPerTile);</span>
 <span class="fc" id="L73">        compressedData.fillHeader(header);</span>
-<span class="fc" id="L74">        Cursor&lt;String, HeaderCard&gt; iterator = header.iterator();</span>
-<span class="fc" id="L75">        Cursor&lt;String, HeaderCard&gt; imageIterator = binaryTableHDU.getHeader().iterator();</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">        while (imageIterator.hasNext()) {</span>
-<span class="fc" id="L77">            HeaderCard card = imageIterator.next();</span>
-<span class="fc" id="L78">            BackupRestoreUnCompressedHeaderCard.restore(card, iterator);</span>
-<span class="fc" id="L79">        }</span>
-<span class="fc" id="L80">        CompressedTableHDU compressedImageHDU = new CompressedTableHDU(header, compressedData);</span>
-<span class="fc" id="L81">        compressedData.setColumnCompressionAlgorithms(columnCompressionAlgorithms);</span>
-<span class="fc" id="L82">        compressedData.prepareUncompressedData(binaryTableHDU.getData().getData(), binaryTableHDU.getHeader());</span>
-<span class="fc" id="L83">        return compressedImageHDU;</span>
+
+<span class="fc" id="L75">        Cursor&lt;String, HeaderCard&gt; headerIterator = header.iterator();</span>
+<span class="fc" id="L76">        Cursor&lt;String, HeaderCard&gt; imageIterator = binaryTableHDU.getHeader().iterator();</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        while (imageIterator.hasNext()) {</span>
+<span class="fc" id="L78">            HeaderCard card = imageIterator.next();</span>
+<span class="fc" id="L79">            BackupRestoreUnCompressedHeaderCard.restore(card, headerIterator);</span>
+<span class="fc" id="L80">        }</span>
+<span class="fc" id="L81">        CompressedTableHDU compressedImageHDU = new CompressedTableHDU(header, compressedData);</span>
+<span class="fc" id="L82">        compressedData.setColumnCompressionAlgorithms(columnCompressionAlgorithms);</span>
+<span class="fc" id="L83">        compressedData.prepareUncompressedData(binaryTableHDU.getData().getData());</span>
+<span class="fc" id="L84">        return compressedImageHDU;</span>
     }
 
     /**
@@ -91,45 +92,42 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @return &lt;CODE&gt;true&lt;/CODE&gt; if this HDU has a valid header.
      */
     public static boolean isHeader(Header hdr) {
-<span class="fc bfc" id="L94" title="All 2 branches covered.">        if (!System.getProperty(&quot;compressed.table.experimental&quot;, &quot;false&quot;).equals(&quot;true&quot;)) {</span>
-<span class="fc" id="L95">            return false;</span>
-        }
-<span class="fc" id="L97">        return hdr.getBooleanValue(ZTABLE, false);</span>
+<span class="fc" id="L95">        return hdr.getBooleanValue(ZTABLE, false);</span>
     }
 
     public static CompressedTableData manufactureData(Header hdr) throws FitsException {
-<span class="fc" id="L101">        return new CompressedTableData(hdr);</span>
+<span class="fc" id="L99">        return new CompressedTableData(hdr);</span>
     }
 
     public CompressedTableHDU(Header hdr, CompressedTableData datum) {
-<span class="fc" id="L105">        super(hdr, datum);</span>
-<span class="fc" id="L106">    }</span>
+<span class="fc" id="L103">        super(hdr, datum);</span>
+<span class="fc" id="L104">    }</span>
 
     public BinaryTableHDU asBinaryTableHDU() throws FitsException {
-<span class="fc" id="L109">        Header header = new Header();</span>
-<span class="fc" id="L110">        header.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);</span>
-<span class="fc" id="L111">        header.addValue(Standard.BITPIX, PrimitiveTypes.BYTE.bitPix());</span>
-<span class="fc" id="L112">        header.addValue(Standard.NAXIS, 2);</span>
-<span class="fc" id="L113">        Cursor&lt;String, HeaderCard&gt; headerIterator = header.iterator();</span>
-<span class="fc" id="L114">        Cursor&lt;String, HeaderCard&gt; iterator = getHeader().iterator();</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">        while (iterator.hasNext()) {</span>
-<span class="fc" id="L116">            HeaderCard card = iterator.next();</span>
-<span class="fc" id="L117">            BackupRestoreUnCompressedHeaderCard.backup(card, headerIterator);</span>
-<span class="fc" id="L118">        }</span>
-<span class="fc" id="L119">        BinaryTable data = BinaryTableHDU.manufactureData(header);</span>
-<span class="fc" id="L120">        BinaryTableHDU tableHDU = new BinaryTableHDU(header, data);</span>
-<span class="fc" id="L121">        getData().asBinaryTable(data, getHeader(), header);</span>
-<span class="fc" id="L122">        return tableHDU;</span>
+<span class="fc" id="L107">        Header header = new Header();</span>
+<span class="fc" id="L108">        header.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);</span>
+<span class="fc" id="L109">        header.addValue(Standard.BITPIX, PrimitiveTypes.BYTE.bitPix());</span>
+<span class="fc" id="L110">        header.addValue(Standard.NAXIS, 2);</span>
+<span class="fc" id="L111">        Cursor&lt;String, HeaderCard&gt; headerIterator = header.iterator();</span>
+<span class="fc" id="L112">        Cursor&lt;String, HeaderCard&gt; iterator = getHeader().iterator();</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        while (iterator.hasNext()) {</span>
+<span class="fc" id="L114">            HeaderCard card = iterator.next();</span>
+<span class="fc" id="L115">            BackupRestoreUnCompressedHeaderCard.backup(card, headerIterator);</span>
+<span class="fc" id="L116">        }</span>
+<span class="fc" id="L117">        BinaryTable data = BinaryTableHDU.manufactureData(header);</span>
+<span class="fc" id="L118">        BinaryTableHDU tableHDU = new BinaryTableHDU(header, data);</span>
+<span class="fc" id="L119">        getData().asBinaryTable(data, getHeader(), header);</span>
+<span class="fc" id="L120">        return tableHDU;</span>
     }
 
     public CompressedTableHDU compress() throws FitsException {
-<span class="fc" id="L126">        getData().compress(getHeader());</span>
-<span class="fc" id="L127">        return this;</span>
+<span class="fc" id="L124">        getData().compress(getHeader());</span>
+<span class="fc" id="L125">        return this;</span>
     }
 
     @Override
     public CompressedTableData getData() {
-<span class="fc" id="L132">        return (CompressedTableData) super.getData();</span>
+<span class="fc" id="L130">        return (CompressedTableData) super.getData();</span>
     }
 
 }

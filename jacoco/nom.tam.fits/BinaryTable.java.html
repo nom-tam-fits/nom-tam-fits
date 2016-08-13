@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
@@ -59,7 +60,6 @@ import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.TableException;
 import nom.tam.util.type.PrimitiveTypeHandler;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class defines the methods for accessing FITS binary table data.
@@ -238,6 +238,125 @@ public class BinaryTable extends AbstractTableData {
     private ArrayDataInput currInput;
 
     /**
+     * Create a null binary table data segment.
+     */
+<span class="fc" id="L243">    public BinaryTable() {</span>
+        try {
+<span class="fc" id="L245">            this.table = createColumnTable(new Object[0], new int[0]);</span>
+<span class="fc" id="L246">        } catch (TableException e) {</span>
+<span class="fc" id="L247">            throw new IllegalStateException(&quot;Impossible exception in BinaryTable() constructor&quot;, e);</span>
+<span class="fc" id="L248">        }</span>
+<span class="fc" id="L249">        this.heap = new FitsHeap(0);</span>
+<span class="fc" id="L250">        saveExtraState();</span>
+<span class="fc" id="L251">        this.nRow = 0;</span>
+<span class="fc" id="L252">        this.rowLen = 0;</span>
+<span class="fc" id="L253">    }</span>
+
+    /**
+     * Create a binary table from an existing ColumnTable
+     *
+     * @param tabIn
+     *            the column table to create the binary table from
+     */
+<span class="fc" id="L261">    public BinaryTable(ColumnTable&lt;?&gt; tabIn) {</span>
+        @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L263">        ColumnTable&lt;SaveState&gt; tab = (ColumnTable&lt;SaveState&gt;) tabIn;</span>
+        // This will throw an error if this isn't the correct type.
+<span class="fc" id="L265">        SaveState extra = tab.getExtraState();</span>
+<span class="fc" id="L266">        this.columnList = new ArrayList&lt;ColumnDesc&gt;();</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">        for (ColumnDesc col : extra.columns) {</span>
+<span class="fc" id="L268">            ColumnDesc copy = (ColumnDesc) col.clone();</span>
+<span class="fc" id="L269">            copy.column = null;</span>
+<span class="fc" id="L270">            this.columnList.add(copy);</span>
+<span class="fc" id="L271">        }</span>
+        try {
+<span class="fc" id="L273">            this.table = tab.copy();</span>
+<span class="fc" id="L274">        } catch (Exception e) {</span>
+<span class="fc" id="L275">            throw new IllegalStateException(&quot;Unexpected Exception&quot;, e);</span>
+<span class="fc" id="L276">        }</span>
+<span class="fc" id="L277">        this.heap = extra.heap.copy();</span>
+<span class="fc" id="L278">        this.nRow = tab.getNRows();</span>
+<span class="fc" id="L279">        saveExtraState();</span>
+<span class="fc" id="L280">    }</span>
+
+    /**
+     * Create a binary table from given header information.
+     *
+     * @param myHeader
+     *            A header describing what the binary table should look like.
+     * @throws FitsException
+     *             if the specified header is not usable for a binary table
+     */
+<span class="fc" id="L290">    public BinaryTable(Header myHeader) throws FitsException {</span>
+<span class="fc" id="L291">        long heapSizeL = myHeader.getLongValue(PCOUNT);</span>
+<span class="fc" id="L292">        long heapOffsetL = myHeader.getLongValue(THEAP);</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">        if (heapOffsetL &gt; MAX_INTEGER_VALUE) {</span>
+<span class="fc" id="L294">            throw new FitsException(&quot;Heap Offset &gt; 2GB&quot;);</span>
+        }
+<span class="fc bfc" id="L296" title="All 2 branches covered.">        if (heapSizeL &gt; MAX_INTEGER_VALUE) {</span>
+<span class="fc" id="L297">            throw new FitsException(&quot;Heap size &gt; 2 GB&quot;);</span>
+        }
+<span class="fc bfc" id="L299" title="All 2 branches covered.">        if (heapSizeL - heapOffsetL &gt; MAX_INTEGER_VALUE) {</span>
+<span class="fc" id="L300">            throw new FitsException(&quot;Unable to allocate heap &gt; 2GB&quot;);</span>
+        }
+<span class="fc" id="L302">        this.heapOffset = (int) heapOffsetL;</span>
+<span class="fc" id="L303">        int heapSize = (int) heapSizeL;</span>
+<span class="fc" id="L304">        int rwsz = myHeader.getIntValue(NAXIS1);</span>
+<span class="fc" id="L305">        this.nRow = myHeader.getIntValue(NAXIS2);</span>
+
+        // Subtract out the size of the regular table from
+        // the heap offset.
+<span class="fc bfc" id="L309" title="All 2 branches covered.">        if (this.heapOffset &gt; 0) {</span>
+<span class="fc" id="L310">            this.heapOffset -= this.nRow * rwsz;</span>
+        }
+
+<span class="pc bpc" id="L313" title="1 of 4 branches missed.">        if (this.heapOffset &lt; 0 || this.heapOffset &gt; heapSize) {</span>
+<span class="fc" id="L314">            throw new FitsException(&quot;Inconsistent THEAP and PCOUNT&quot;);</span>
+        }
+
+<span class="fc" id="L317">        this.heap = new FitsHeap(heapSize - this.heapOffset);</span>
+<span class="fc" id="L318">        int nCol = myHeader.getIntValue(TFIELDS);</span>
+<span class="fc" id="L319">        this.rowLen = 0;</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">        for (int col = 0; col &lt; nCol; col++) {</span>
+<span class="fc" id="L321">            this.rowLen += processCol(myHeader, col);</span>
+        }
+<span class="fc" id="L323">        HeaderCard card = myHeader.findCard(NAXIS1);</span>
+<span class="fc" id="L324">        card.setValue(String.valueOf(this.rowLen));</span>
+<span class="fc" id="L325">        myHeader.updateLine(NAXIS1, card);</span>
+
+<span class="fc" id="L327">    }</span>
+
+    /**
+     * Create a binary table from existing data in column order.
+     *
+     * @param o
+     *            array of columns
+     * @throws FitsException
+     *             if the data for the columns could not be used as coulumns
+     */
+<span class="fc" id="L337">    public BinaryTable(Object[] o) throws FitsException {</span>
+
+<span class="fc" id="L339">        this.heap = new FitsHeap(0);</span>
+
+<span class="fc bfc" id="L341" title="All 2 branches covered.">        for (Object element : o) {</span>
+<span class="fc" id="L342">            addColumn(element);</span>
+        }
+<span class="fc" id="L344">        createTable();</span>
+<span class="fc" id="L345">    }</span>
+
+    /**
+     * Create a binary table from existing data in row order.
+     *
+     * @param data
+     *            The data used to initialize the binary table.
+     * @throws FitsException
+     *             if the data could not be converted to a binary table
+     */
+    public BinaryTable(Object[][] data) throws FitsException {
+<span class="fc" id="L356">        this(convertToColumns(data));</span>
+<span class="fc" id="L357">    }</span>
+
+    /**
      * TODO: this is only for internal access!
      *
      * @param table
@@ -246,8 +365,8 @@ public class BinaryTable extends AbstractTableData {
      *             if the data could not be created.
      */
     public static void createColumnDataFor(BinaryTable table) throws FitsException {
-<span class="fc" id="L249">        table.createTable();</span>
-<span class="fc" id="L250">    }</span>
+<span class="fc" id="L368">        table.createTable();</span>
+<span class="fc" id="L369">    }</span>
 
     /**
      * Parse the TDIMS value. If the TDIMS value cannot be deciphered a one-d
@@ -261,23 +380,23 @@ public class BinaryTable extends AbstractTableData {
     public static int[] getTDims(String tdims) {
 
         // The TDIMs value should be of the form: &quot;(iiii,jjjj,kkk,...)&quot;
-<span class="fc" id="L264">        int[] dims = null;</span>
-<span class="fc" id="L265">        int first = tdims.indexOf('(');</span>
-<span class="fc" id="L266">        int last = tdims.lastIndexOf(')');</span>
-<span class="pc bpc" id="L267" title="2 of 4 branches missed.">        if (first &gt;= 0 &amp;&amp; last &gt; first) {</span>
+<span class="fc" id="L383">        int[] dims = null;</span>
+<span class="fc" id="L384">        int first = tdims.indexOf('(');</span>
+<span class="fc" id="L385">        int last = tdims.lastIndexOf(')');</span>
+<span class="pc bpc" id="L386" title="2 of 4 branches missed.">        if (first &gt;= 0 &amp;&amp; last &gt; first) {</span>
 
-<span class="fc" id="L269">            tdims = tdims.substring(first + 1, last - first);</span>
+<span class="fc" id="L388">            tdims = tdims.substring(first + 1, last - first);</span>
 
-<span class="fc" id="L271">            java.util.StringTokenizer st = new java.util.StringTokenizer(tdims, &quot;,&quot;);</span>
-<span class="fc" id="L272">            int dim = st.countTokens();</span>
-<span class="pc bpc" id="L273" title="1 of 2 branches missed.">            if (dim &gt; 0) {</span>
-<span class="fc" id="L274">                dims = new int[dim];</span>
-<span class="fc bfc" id="L275" title="All 2 branches covered.">                for (int i = dim - 1; i &gt;= 0; i -= 1) {</span>
-<span class="fc" id="L276">                    dims[i] = Integer.parseInt(st.nextToken().trim());</span>
+<span class="fc" id="L390">            java.util.StringTokenizer st = new java.util.StringTokenizer(tdims, &quot;,&quot;);</span>
+<span class="fc" id="L391">            int dim = st.countTokens();</span>
+<span class="pc bpc" id="L392" title="1 of 2 branches missed.">            if (dim &gt; 0) {</span>
+<span class="fc" id="L393">                dims = new int[dim];</span>
+<span class="fc bfc" id="L394" title="All 2 branches covered.">                for (int i = dim - 1; i &gt;= 0; i -= 1) {</span>
+<span class="fc" id="L395">                    dims[i] = Integer.parseInt(st.nextToken().trim());</span>
                 }
             }
         }
-<span class="fc" id="L280">        return dims;</span>
+<span class="fc" id="L399">        return dims;</span>
     }
 
     /**
@@ -287,160 +406,41 @@ public class BinaryTable extends AbstractTableData {
      * row order to a table with objects in column order.
      */
     private static Object[] convertToColumns(Object[][] data) {
-<span class="fc" id="L290">        Object[] row = data[0];</span>
-<span class="fc" id="L291">        int nrow = data.length;</span>
-<span class="fc" id="L292">        Object[] results = new Object[row.length];</span>
-<span class="fc bfc" id="L293" title="All 2 branches covered.">        for (int col = 0; col &lt; row.length; col++) {</span>
-<span class="fc bfc" id="L294" title="All 2 branches covered.">            if (row[col] instanceof String) {</span>
-<span class="fc" id="L295">                String[] sa = new String[nrow];</span>
-<span class="fc bfc" id="L296" title="All 2 branches covered.">                for (int irow = 0; irow &lt; nrow; irow++) {</span>
-<span class="fc" id="L297">                    sa[irow] = (String) data[irow][col];</span>
+<span class="fc" id="L409">        Object[] row = data[0];</span>
+<span class="fc" id="L410">        int nrow = data.length;</span>
+<span class="fc" id="L411">        Object[] results = new Object[row.length];</span>
+<span class="fc bfc" id="L412" title="All 2 branches covered.">        for (int col = 0; col &lt; row.length; col++) {</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">            if (row[col] instanceof String) {</span>
+<span class="fc" id="L414">                String[] sa = new String[nrow];</span>
+<span class="fc bfc" id="L415" title="All 2 branches covered.">                for (int irow = 0; irow &lt; nrow; irow++) {</span>
+<span class="fc" id="L416">                    sa[irow] = (String) data[irow][col];</span>
                 }
-<span class="fc" id="L299">                results[col] = sa;</span>
-<span class="fc" id="L300">            } else {</span>
-<span class="fc" id="L301">                Class&lt;?&gt; base = ArrayFuncs.getBaseClass(row[col]);</span>
-<span class="fc" id="L302">                int[] dims = ArrayFuncs.getDimensions(row[col]);</span>
+<span class="fc" id="L418">                results[col] = sa;</span>
+<span class="fc" id="L419">            } else {</span>
+<span class="fc" id="L420">                Class&lt;?&gt; base = ArrayFuncs.getBaseClass(row[col]);</span>
+<span class="fc" id="L421">                int[] dims = ArrayFuncs.getDimensions(row[col]);</span>
 
-<span class="fc bfc" id="L304" title="All 4 branches covered.">                if (dims.length &gt; 1 || dims[0] &gt; 1) {</span>
-<span class="fc" id="L305">                    int[] xdims = new int[dims.length + 1];</span>
-<span class="fc" id="L306">                    xdims[0] = nrow;</span>
+<span class="fc bfc" id="L423" title="All 4 branches covered.">                if (dims.length &gt; 1 || dims[0] &gt; 1) {</span>
+<span class="fc" id="L424">                    int[] xdims = new int[dims.length + 1];</span>
+<span class="fc" id="L425">                    xdims[0] = nrow;</span>
 
-<span class="fc" id="L308">                    Object[] arr = (Object[]) ArrayFuncs.newInstance(base, xdims);</span>
-<span class="fc bfc" id="L309" title="All 2 branches covered.">                    for (int irow = 0; irow &lt; nrow; irow++) {</span>
-<span class="fc" id="L310">                        arr[irow] = data[irow][col];</span>
+<span class="fc" id="L427">                    Object[] arr = (Object[]) ArrayFuncs.newInstance(base, xdims);</span>
+<span class="fc bfc" id="L428" title="All 2 branches covered.">                    for (int irow = 0; irow &lt; nrow; irow++) {</span>
+<span class="fc" id="L429">                        arr[irow] = data[irow][col];</span>
                     }
-<span class="fc" id="L312">                    results[col] = arr;</span>
-<span class="fc" id="L313">                } else {</span>
-<span class="fc" id="L314">                    Object arr = ArrayFuncs.newInstance(base, nrow);</span>
-<span class="fc bfc" id="L315" title="All 2 branches covered.">                    for (int irow = 0; irow &lt; nrow; irow++) {</span>
-<span class="fc" id="L316">                        System.arraycopy(data[irow][col], 0, arr, irow, 1);</span>
+<span class="fc" id="L431">                    results[col] = arr;</span>
+<span class="fc" id="L432">                } else {</span>
+<span class="fc" id="L433">                    Object arr = ArrayFuncs.newInstance(base, nrow);</span>
+<span class="fc bfc" id="L434" title="All 2 branches covered.">                    for (int irow = 0; irow &lt; nrow; irow++) {</span>
+<span class="fc" id="L435">                        System.arraycopy(data[irow][col], 0, arr, irow, 1);</span>
                     }
-<span class="fc" id="L318">                    results[col] = arr;</span>
+<span class="fc" id="L437">                    results[col] = arr;</span>
                 }
 
             }
         }
-<span class="fc" id="L323">        return results;</span>
+<span class="fc" id="L442">        return results;</span>
     }
-
-    /**
-     * Create a null binary table data segment.
-     */
-<span class="fc" id="L329">    public BinaryTable() {</span>
-        try {
-<span class="fc" id="L331">            this.table = createColumnTable(new Object[0], new int[0]);</span>
-<span class="fc" id="L332">        } catch (TableException e) {</span>
-<span class="fc" id="L333">            throw new IllegalStateException(&quot;Impossible exception in BinaryTable() constructor&quot;, e);</span>
-<span class="fc" id="L334">        }</span>
-<span class="fc" id="L335">        this.heap = new FitsHeap(0);</span>
-<span class="fc" id="L336">        saveExtraState();</span>
-<span class="fc" id="L337">        this.nRow = 0;</span>
-<span class="fc" id="L338">        this.rowLen = 0;</span>
-<span class="fc" id="L339">    }</span>
-
-    /**
-     * Create a binary table from an existing ColumnTable
-     *
-     * @param tabIn
-     *            the column table to create the binary table from
-     */
-<span class="fc" id="L347">    public BinaryTable(ColumnTable&lt;?&gt; tabIn) {</span>
-        @SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L349">        ColumnTable&lt;SaveState&gt; tab = (ColumnTable&lt;SaveState&gt;) tabIn;</span>
-        // This will throw an error if this isn't the correct type.
-<span class="fc" id="L351">        SaveState extra = tab.getExtraState();</span>
-<span class="fc" id="L352">        this.columnList = new ArrayList&lt;ColumnDesc&gt;();</span>
-<span class="fc bfc" id="L353" title="All 2 branches covered.">        for (ColumnDesc col : extra.columns) {</span>
-<span class="fc" id="L354">            ColumnDesc copy = (ColumnDesc) col.clone();</span>
-<span class="fc" id="L355">            copy.column = null;</span>
-<span class="fc" id="L356">            this.columnList.add(copy);</span>
-<span class="fc" id="L357">        }</span>
-        try {
-<span class="fc" id="L359">            this.table = tab.copy();</span>
-<span class="fc" id="L360">        } catch (Exception e) {</span>
-<span class="fc" id="L361">            throw new IllegalStateException(&quot;Unexpected Exception&quot;, e);</span>
-<span class="fc" id="L362">        }</span>
-<span class="fc" id="L363">        this.heap = extra.heap.copy();</span>
-<span class="fc" id="L364">        this.nRow = tab.getNRows();</span>
-<span class="fc" id="L365">        saveExtraState();</span>
-<span class="fc" id="L366">    }</span>
-
-    /**
-     * Create a binary table from given header information.
-     *
-     * @param myHeader
-     *            A header describing what the binary table should look like.
-     * @throws FitsException
-     *             if the specified header is not usable for a binary table
-     */
-<span class="fc" id="L376">    public BinaryTable(Header myHeader) throws FitsException {</span>
-<span class="fc" id="L377">        long heapSizeL = myHeader.getLongValue(PCOUNT);</span>
-<span class="fc" id="L378">        long heapOffsetL = myHeader.getLongValue(THEAP);</span>
-<span class="fc bfc" id="L379" title="All 2 branches covered.">        if (heapOffsetL &gt; MAX_INTEGER_VALUE) {</span>
-<span class="fc" id="L380">            throw new FitsException(&quot;Heap Offset &gt; 2GB&quot;);</span>
-        }
-<span class="fc bfc" id="L382" title="All 2 branches covered.">        if (heapSizeL &gt; MAX_INTEGER_VALUE) {</span>
-<span class="fc" id="L383">            throw new FitsException(&quot;Heap size &gt; 2 GB&quot;);</span>
-        }
-<span class="fc bfc" id="L385" title="All 2 branches covered.">        if (heapSizeL - heapOffsetL &gt; MAX_INTEGER_VALUE) {</span>
-<span class="fc" id="L386">            throw new FitsException(&quot;Unable to allocate heap &gt; 2GB&quot;);</span>
-        }
-<span class="fc" id="L388">        this.heapOffset = (int) heapOffsetL;</span>
-<span class="fc" id="L389">        int heapSize = (int) heapSizeL;</span>
-<span class="fc" id="L390">        int rwsz = myHeader.getIntValue(NAXIS1);</span>
-<span class="fc" id="L391">        this.nRow = myHeader.getIntValue(NAXIS2);</span>
-
-        // Subtract out the size of the regular table from
-        // the heap offset.
-<span class="fc bfc" id="L395" title="All 2 branches covered.">        if (this.heapOffset &gt; 0) {</span>
-<span class="fc" id="L396">            this.heapOffset -= this.nRow * rwsz;</span>
-        }
-
-<span class="pc bpc" id="L399" title="1 of 4 branches missed.">        if (this.heapOffset &lt; 0 || this.heapOffset &gt; heapSize) {</span>
-<span class="fc" id="L400">            throw new FitsException(&quot;Inconsistent THEAP and PCOUNT&quot;);</span>
-        }
-
-<span class="fc" id="L403">        this.heap = new FitsHeap(heapSize - this.heapOffset);</span>
-<span class="fc" id="L404">        int nCol = myHeader.getIntValue(TFIELDS);</span>
-<span class="fc" id="L405">        this.rowLen = 0;</span>
-<span class="fc bfc" id="L406" title="All 2 branches covered.">        for (int col = 0; col &lt; nCol; col++) {</span>
-<span class="fc" id="L407">            this.rowLen += processCol(myHeader, col);</span>
-        }
-<span class="fc" id="L409">        HeaderCard card = myHeader.findCard(NAXIS1);</span>
-<span class="fc" id="L410">        card.setValue(String.valueOf(this.rowLen));</span>
-<span class="fc" id="L411">        myHeader.updateLine(NAXIS1, card);</span>
-
-<span class="fc" id="L413">    }</span>
-
-    /**
-     * Create a binary table from existing data in column order.
-     *
-     * @param o
-     *            array of columns
-     * @throws FitsException
-     *             if the data for the columns could not be used as coulumns
-     */
-<span class="fc" id="L423">    public BinaryTable(Object[] o) throws FitsException {</span>
-
-<span class="fc" id="L425">        this.heap = new FitsHeap(0);</span>
-
-<span class="fc bfc" id="L427" title="All 2 branches covered.">        for (Object element : o) {</span>
-<span class="fc" id="L428">            addColumn(element);</span>
-        }
-<span class="fc" id="L430">        createTable();</span>
-<span class="fc" id="L431">    }</span>
-
-    /**
-     * Create a binary table from existing data in row order.
-     *
-     * @param data
-     *            The data used to initialize the binary table.
-     * @throws FitsException
-     *             if the data could not be converted to a binary table
-     */
-    public BinaryTable(Object[][] data) throws FitsException {
-<span class="fc" id="L442">        this(convertToColumns(data));</span>
-<span class="fc" id="L443">    }</span>
 
     @Override
     public int addColumn(Object o) throws FitsException {
@@ -672,7 +672,7 @@ public class BinaryTable extends AbstractTableData {
     public Object getElement(int i, int j) throws FitsException {
 
 <span class="pc bpc" id="L674" title="1 of 4 branches missed.">        if (!validRow(i) || !validColumn(j)) {</span>
-<span class="fc" id="L675">            throw new FitsException(&quot;No such element&quot;);</span>
+<span class="fc" id="L675">            throw new FitsException(&quot;No such element (&quot; + i + &quot;,&quot; + j + &quot;)&quot;);</span>
         }
 
 <span class="fc" id="L678">        ColumnDesc colDesc = this.columnList.get(j);</span>
@@ -1187,7 +1187,7 @@ public class BinaryTable extends AbstractTableData {
             int[] descrip;
 <span class="fc bfc" id="L1188" title="All 2 branches covered.">            if (colDesc.isLongVary) {</span>
                 // Convert longs to int's. This is dangerous.
-<span class="pc bpc" id="L1190" title="1 of 2 branches missed.">                if (!this.warnedOnVariableConversion) {</span>
+<span class="fc bfc" id="L1190" title="All 2 branches covered.">                if (!this.warnedOnVariableConversion) {</span>
 <span class="fc" id="L1191">                    LOG.log(Level.WARNING, &quot;Warning: converting long variable array pointers to int's&quot;);</span>
 <span class="fc" id="L1192">                    this.warnedOnVariableConversion = true;</span>
 
@@ -1502,8 +1502,8 @@ public class BinaryTable extends AbstractTableData {
         // Handle the special size cases.
         //
         // Bit arrays (8 bits fit in a byte)
-<span class="pc bpc" id="L1505" title="1 of 2 branches missed.">        if (type == 'X') {</span>
-<span class="nc" id="L1506">            size = (size + FitsIO.BITS_OF_1_BYTE - 1) / FitsIO.BITS_OF_1_BYTE;</span>
+<span class="fc bfc" id="L1505" title="All 2 branches covered.">        if (type == 'X') {</span>
+<span class="fc" id="L1506">            size = (size + FitsIO.BITS_OF_1_BYTE - 1) / FitsIO.BITS_OF_1_BYTE;</span>
             // Variable length arrays always have a two-element pointer (offset
             // and size)
 <span class="fc bfc" id="L1509" title="All 2 branches covered.">        } else if (colDesc.isVarying) {</span>
@@ -1527,7 +1527,7 @@ public class BinaryTable extends AbstractTableData {
             }
         }
 <span class="fc bfc" id="L1529" title="All 4 branches covered.">        colDesc.isComplex = type == 'C' || type == 'M';</span>
-<span class="fc" id="L1530">        Class&lt;?&gt; colBase = null;</span>
+        Class&lt;?&gt; colBase;
 <span class="pc bpc" id="L1531" title="1 of 9 branches missed.">        switch (type) {</span>
             case 'A':
 <span class="fc" id="L1533">                colBase = byte.class;</span>
@@ -1626,14 +1626,12 @@ public class BinaryTable extends AbstractTableData {
 <span class="fc" id="L1626">        added.isString = false;</span>
 <span class="fc" id="L1627">        added.model = new long[2];</span>
 <span class="fc" id="L1628">        this.rowLen += FitsIO.BYTES_IN_LONG * 2;</span>
-<span class="fc" id="L1629">        added.column = new long[0];</span>
-<span class="pc bpc" id="L1630" title="1 of 2 branches missed.">        if (this.table != null) {</span>
-<span class="fc" id="L1631">            this.table.addColumn(added.column, added.size);</span>
-        }
-<span class="fc" id="L1633">    }</span>
+<span class="fc" id="L1629">        added.column = new long[this.table.getNRows() * 2];</span>
+<span class="fc" id="L1630">        this.table.addColumn(added.column, added.size);</span>
+<span class="fc" id="L1631">    }</span>
 
     protected ColumnTable&lt;SaveState&gt; createColumnTable(Object[] arrCol, int[] sizes) throws TableException {
-<span class="fc" id="L1636">        return new ColumnTable&lt;SaveState&gt;(arrCol, sizes);</span>
+<span class="fc" id="L1634">        return new ColumnTable&lt;SaveState&gt;(arrCol, sizes);</span>
     }
 
     /**
@@ -1648,10 +1646,10 @@ public class BinaryTable extends AbstractTableData {
      *             if the heap could not be read from the stream
      */
     protected void readHeap(ArrayDataInput input) throws FitsException {
-<span class="fc" id="L1651">        FitsUtil.reposition(input, this.fileOffset + this.nRow * this.rowLen + this.heapOffset);</span>
-<span class="fc" id="L1652">        this.heap.read(input);</span>
-<span class="fc" id="L1653">        this.heapReadFromStream = true;</span>
-<span class="fc" id="L1654">    }</span>
+<span class="fc" id="L1649">        FitsUtil.reposition(input, this.fileOffset + this.nRow * this.rowLen + this.heapOffset);</span>
+<span class="fc" id="L1650">        this.heap.read(input);</span>
+<span class="fc" id="L1651">        this.heapReadFromStream = true;</span>
+<span class="fc" id="L1652">    }</span>
 
     /**
      * Read table, heap and padding
@@ -1663,22 +1661,22 @@ public class BinaryTable extends AbstractTableData {
      */
     protected void readTrueData(ArrayDataInput i) throws FitsException {
         try {
-<span class="fc" id="L1666">            this.table.read(i);</span>
-<span class="fc" id="L1667">            i.skipAllBytes(this.heapOffset);</span>
-<span class="fc" id="L1668">            this.heap.read(i);</span>
-<span class="fc" id="L1669">            this.heapReadFromStream = true;</span>
+<span class="fc" id="L1664">            this.table.read(i);</span>
+<span class="fc" id="L1665">            i.skipAllBytes(this.heapOffset);</span>
+<span class="fc" id="L1666">            this.heap.read(i);</span>
+<span class="fc" id="L1667">            this.heapReadFromStream = true;</span>
 
-<span class="fc" id="L1671">        } catch (IOException e) {</span>
-<span class="fc" id="L1672">            throw new FitsException(&quot;Error reading binary table data:&quot; + e, e);</span>
-<span class="fc" id="L1673">        }</span>
+<span class="fc" id="L1669">        } catch (IOException e) {</span>
+<span class="fc" id="L1670">            throw new FitsException(&quot;Error reading binary table data:&quot; + e, e);</span>
+<span class="fc" id="L1671">        }</span>
         try {
-<span class="fc" id="L1675">            i.skipAllBytes(FitsUtil.padding(getTrueSize()));</span>
-<span class="fc" id="L1676">        } catch (EOFException e) {</span>
-<span class="fc" id="L1677">            throw new PaddingException(&quot;Error skipping padding after binary table&quot;, this, e);</span>
-<span class="fc" id="L1678">        } catch (IOException e) {</span>
-<span class="fc" id="L1679">            throw new FitsException(&quot;Error reading binary table data padding&quot;, e);</span>
-<span class="fc" id="L1680">        }</span>
-<span class="fc" id="L1681">    }</span>
+<span class="fc" id="L1673">            i.skipAllBytes(FitsUtil.padding(getTrueSize()));</span>
+<span class="fc" id="L1674">        } catch (EOFException e) {</span>
+<span class="fc" id="L1675">            throw new PaddingException(&quot;Error skipping padding after binary table&quot;, this, e);</span>
+<span class="fc" id="L1676">        } catch (IOException e) {</span>
+<span class="fc" id="L1677">            throw new FitsException(&quot;Error reading binary table data padding&quot;, e);</span>
+<span class="fc" id="L1678">        }</span>
+<span class="fc" id="L1679">    }</span>
 
     /**
      * Check if the column number is valid.
@@ -1688,7 +1686,7 @@ public class BinaryTable extends AbstractTableData {
      * @return &lt;code&gt;true&lt;/code&gt; if the column is valid
      */
     protected boolean validColumn(int j) {
-<span class="pc bpc" id="L1691" title="1 of 4 branches missed.">        return j &gt;= 0 &amp;&amp; j &lt; getNCols();</span>
+<span class="pc bpc" id="L1689" title="1 of 4 branches missed.">        return j &gt;= 0 &amp;&amp; j &lt; getNCols();</span>
     }
 
     /**
@@ -1699,7 +1697,7 @@ public class BinaryTable extends AbstractTableData {
      * @return &lt;code&gt;true&lt;/code&gt; if the row is valid
      */
     protected boolean validRow(int i) {
-<span class="pc bpc" id="L1702" title="2 of 6 branches missed.">        return getNRows() &gt; 0 &amp;&amp; i &gt;= 0 &amp;&amp; i &lt; getNRows();</span>
+<span class="pc bpc" id="L1700" title="2 of 6 branches missed.">        return getNRows() &gt; 0 &amp;&amp; i &gt;= 0 &amp;&amp; i &lt; getNRows();</span>
     }
 
     /**
@@ -1719,45 +1717,45 @@ public class BinaryTable extends AbstractTableData {
     int addFlattenedColumn(Object o, int[] dims, boolean allocated) throws FitsException {
 
         ColumnDesc added;
-<span class="fc bfc" id="L1722" title="All 2 branches covered.">        if (!allocated) {</span>
-<span class="fc" id="L1723">            added = new ColumnDesc();</span>
-<span class="fc" id="L1724">            added.dimens = dims;</span>
+<span class="fc bfc" id="L1720" title="All 2 branches covered.">        if (!allocated) {</span>
+<span class="fc" id="L1721">            added = new ColumnDesc();</span>
+<span class="fc" id="L1722">            added.dimens = dims;</span>
         } else {
-<span class="fc" id="L1726">            added = this.columnList.get(this.columnList.size() - 1);</span>
+<span class="fc" id="L1724">            added = this.columnList.get(this.columnList.size() - 1);</span>
         }
-<span class="fc" id="L1728">        added.base = ArrayFuncs.getBaseClass(o);</span>
-<span class="fc bfc" id="L1729" title="All 2 branches covered.">        added.isBoolean = added.base == boolean.class;</span>
-<span class="fc bfc" id="L1730" title="All 2 branches covered.">        added.isString = added.base == String.class;</span>
+<span class="fc" id="L1726">        added.base = ArrayFuncs.getBaseClass(o);</span>
+<span class="fc bfc" id="L1727" title="All 2 branches covered.">        added.isBoolean = added.base == boolean.class;</span>
+<span class="fc bfc" id="L1728" title="All 2 branches covered.">        added.isString = added.base == String.class;</span>
 
         // Convert to column first in case
         // this is a String or variable length array.
-<span class="fc" id="L1734">        o = arrayToColumn(added, o);</span>
+<span class="fc" id="L1732">        o = arrayToColumn(added, o);</span>
 
-<span class="fc" id="L1736">        int size = 1;</span>
+<span class="fc" id="L1734">        int size = 1;</span>
 
-<span class="fc bfc" id="L1738" title="All 2 branches covered.">        for (int dim2 : dims) {</span>
-<span class="fc" id="L1739">            size *= dim2;</span>
+<span class="fc bfc" id="L1736" title="All 2 branches covered.">        for (int dim2 : dims) {</span>
+<span class="fc" id="L1737">            size *= dim2;</span>
         }
-<span class="fc" id="L1741">        added.size = size;</span>
+<span class="fc" id="L1739">        added.size = size;</span>
 
         // Check that the number of rows is consistent.
-<span class="fc bfc" id="L1744" title="All 4 branches covered.">        if (size != 0 &amp;&amp; this.columnList.size() &gt; 1) {</span>
-<span class="fc" id="L1745">            int xRow = Array.getLength(o) / size;</span>
-<span class="pc bpc" id="L1746" title="1 of 4 branches missed.">            if (xRow &gt; 0 &amp;&amp; xRow != this.nRow) {</span>
-<span class="fc" id="L1747">                throw new FitsException(&quot;Added column does not have correct row count&quot;);</span>
+<span class="fc bfc" id="L1742" title="All 4 branches covered.">        if (size != 0 &amp;&amp; this.columnList.size() &gt; 1) {</span>
+<span class="fc" id="L1743">            int xRow = Array.getLength(o) / size;</span>
+<span class="pc bpc" id="L1744" title="1 of 4 branches missed.">            if (xRow &gt; 0 &amp;&amp; xRow != this.nRow) {</span>
+<span class="fc" id="L1745">                throw new FitsException(&quot;Added column does not have correct row count&quot;);</span>
             }
         }
 
-<span class="fc bfc" id="L1751" title="All 2 branches covered.">        if (!added.isVarying) {</span>
-<span class="fc" id="L1752">            added.model = ArrayFuncs.newInstance(ArrayFuncs.getBaseClass(o), dims);</span>
-<span class="fc" id="L1753">            this.rowLen += size * ArrayFuncs.getBaseLength(o);</span>
+<span class="fc bfc" id="L1749" title="All 2 branches covered.">        if (!added.isVarying) {</span>
+<span class="fc" id="L1750">            added.model = ArrayFuncs.newInstance(ArrayFuncs.getBaseClass(o), dims);</span>
+<span class="fc" id="L1751">            this.rowLen += size * ArrayFuncs.getBaseLength(o);</span>
         } else {
-<span class="pc bpc" id="L1755" title="1 of 2 branches missed.">            if (added.isLongVary) {</span>
-<span class="nc" id="L1756">                added.model = new long[2];</span>
-<span class="nc" id="L1757">                this.rowLen += FitsIO.BYTES_IN_LONG * 2;</span>
+<span class="pc bpc" id="L1753" title="1 of 2 branches missed.">            if (added.isLongVary) {</span>
+<span class="nc" id="L1754">                added.model = new long[2];</span>
+<span class="nc" id="L1755">                this.rowLen += FitsIO.BYTES_IN_LONG * 2;</span>
             } else {
-<span class="fc" id="L1759">                added.model = new int[2];</span>
-<span class="fc" id="L1760">                this.rowLen += FitsIO.BYTES_IN_INTEGER * 2;</span>
+<span class="fc" id="L1757">                added.model = new int[2];</span>
+<span class="fc" id="L1758">                this.rowLen += FitsIO.BYTES_IN_INTEGER * 2;</span>
             }
         }
 
@@ -1766,14 +1764,14 @@ public class BinaryTable extends AbstractTableData {
         // This way if we allocate a bunch of columns at the beginning
         // we only create the column table after we have all the columns
         // ready.
-<span class="fc" id="L1769">        added.column = o;</span>
-<span class="fc bfc" id="L1770" title="All 2 branches covered.">        if (this.table != null) {</span>
-<span class="fc" id="L1771">            this.table.addColumn(o, added.size);</span>
+<span class="fc" id="L1767">        added.column = o;</span>
+<span class="fc bfc" id="L1768" title="All 2 branches covered.">        if (this.table != null) {</span>
+<span class="fc" id="L1769">            this.table.addColumn(o, added.size);</span>
         }
-<span class="fc bfc" id="L1773" title="All 2 branches covered.">        if (!this.columnList.contains(added)) {</span>
-<span class="fc" id="L1774">            this.columnList.add(added);</span>
+<span class="fc bfc" id="L1771" title="All 2 branches covered.">        if (!this.columnList.contains(added)) {</span>
+<span class="fc" id="L1772">            this.columnList.add(added);</span>
         }
-<span class="fc" id="L1776">        return this.columnList.size();</span>
+<span class="fc" id="L1774">        return this.columnList.size();</span>
     }
 
     /**
@@ -1781,65 +1779,65 @@ public class BinaryTable extends AbstractTableData {
      * FitsException if the operation failed
      */
     void fillForColumn(Header h, int col, Cursor&lt;String, HeaderCard&gt; iter) throws FitsException {
-<span class="fc" id="L1784">        ColumnDesc colDesc = this.columnList.get(col);</span>
+<span class="fc" id="L1782">        ColumnDesc colDesc = this.columnList.get(col);</span>
 
         String tform;
-<span class="fc bfc" id="L1787" title="All 2 branches covered.">        if (colDesc.isVarying) {</span>
-<span class="fc bfc" id="L1788" title="All 2 branches covered.">            if (colDesc.isLongVary) {</span>
-<span class="fc" id="L1789">                tform = &quot;1Q&quot;;</span>
+<span class="fc bfc" id="L1785" title="All 2 branches covered.">        if (colDesc.isVarying) {</span>
+<span class="fc bfc" id="L1786" title="All 2 branches covered.">            if (colDesc.isLongVary) {</span>
+<span class="fc" id="L1787">                tform = &quot;1Q&quot;;</span>
             } else {
-<span class="fc" id="L1791">                tform = &quot;1P&quot;;</span>
+<span class="fc" id="L1789">                tform = &quot;1P&quot;;</span>
             }
         } else {
-<span class="fc" id="L1794">            tform = Integer.toString(colDesc.size);</span>
+<span class="fc" id="L1792">            tform = Integer.toString(colDesc.size);</span>
         }
-<span class="fc bfc" id="L1796" title="All 2 branches covered.">        if (colDesc.base == int.class) {</span>
-<span class="fc" id="L1797">            tform += &quot;J&quot;;</span>
-<span class="fc bfc" id="L1798" title="All 4 branches covered.">        } else if (colDesc.base == short.class || colDesc.base == char.class) {</span>
-<span class="fc" id="L1799">            tform += &quot;I&quot;;</span>
-<span class="fc bfc" id="L1800" title="All 2 branches covered.">        } else if (colDesc.base == byte.class) {</span>
-<span class="fc" id="L1801">            tform += &quot;B&quot;;</span>
-<span class="fc bfc" id="L1802" title="All 2 branches covered.">        } else if (colDesc.base == float.class) {</span>
-<span class="fc bfc" id="L1803" title="All 2 branches covered.">            if (colDesc.isComplex) {</span>
-<span class="fc" id="L1804">                tform += &quot;C&quot;;</span>
+<span class="fc bfc" id="L1794" title="All 2 branches covered.">        if (colDesc.base == int.class) {</span>
+<span class="fc" id="L1795">            tform += &quot;J&quot;;</span>
+<span class="fc bfc" id="L1796" title="All 4 branches covered.">        } else if (colDesc.base == short.class || colDesc.base == char.class) {</span>
+<span class="fc" id="L1797">            tform += &quot;I&quot;;</span>
+<span class="fc bfc" id="L1798" title="All 2 branches covered.">        } else if (colDesc.base == byte.class) {</span>
+<span class="fc" id="L1799">            tform += &quot;B&quot;;</span>
+<span class="fc bfc" id="L1800" title="All 2 branches covered.">        } else if (colDesc.base == float.class) {</span>
+<span class="fc bfc" id="L1801" title="All 2 branches covered.">            if (colDesc.isComplex) {</span>
+<span class="fc" id="L1802">                tform += &quot;C&quot;;</span>
             } else {
-<span class="fc" id="L1806">                tform += &quot;E&quot;;</span>
+<span class="fc" id="L1804">                tform += &quot;E&quot;;</span>
             }
-<span class="fc bfc" id="L1808" title="All 2 branches covered.">        } else if (colDesc.base == double.class) {</span>
-<span class="fc bfc" id="L1809" title="All 2 branches covered.">            if (colDesc.isComplex) {</span>
-<span class="fc" id="L1810">                tform += &quot;M&quot;;</span>
+<span class="fc bfc" id="L1806" title="All 2 branches covered.">        } else if (colDesc.base == double.class) {</span>
+<span class="fc bfc" id="L1807" title="All 2 branches covered.">            if (colDesc.isComplex) {</span>
+<span class="fc" id="L1808">                tform += &quot;M&quot;;</span>
             } else {
-<span class="fc" id="L1812">                tform += &quot;D&quot;;</span>
+<span class="fc" id="L1810">                tform += &quot;D&quot;;</span>
             }
-<span class="fc bfc" id="L1814" title="All 2 branches covered.">        } else if (colDesc.base == long.class) {</span>
-<span class="fc" id="L1815">            tform += &quot;K&quot;;</span>
-<span class="fc bfc" id="L1816" title="All 2 branches covered.">        } else if (colDesc.base == boolean.class) {</span>
-<span class="fc" id="L1817">            tform += &quot;L&quot;;</span>
-<span class="pc bpc" id="L1818" title="1 of 2 branches missed.">        } else if (colDesc.base == String.class) {</span>
-<span class="fc" id="L1819">            tform += &quot;A&quot;;</span>
+<span class="fc bfc" id="L1812" title="All 2 branches covered.">        } else if (colDesc.base == long.class) {</span>
+<span class="fc" id="L1813">            tform += &quot;K&quot;;</span>
+<span class="fc bfc" id="L1814" title="All 2 branches covered.">        } else if (colDesc.base == boolean.class) {</span>
+<span class="fc" id="L1815">            tform += &quot;L&quot;;</span>
+<span class="pc bpc" id="L1816" title="1 of 2 branches missed.">        } else if (colDesc.base == String.class) {</span>
+<span class="fc" id="L1817">            tform += &quot;A&quot;;</span>
         } else {
-<span class="nc" id="L1821">            throw new FitsException(&quot;Invalid column data class:&quot; + colDesc.base);</span>
+<span class="nc" id="L1819">            throw new FitsException(&quot;Invalid column data class:&quot; + colDesc.base);</span>
         }
-<span class="fc" id="L1823">        IFitsHeader key = TFORMn.n(col + 1);</span>
-<span class="fc" id="L1824">        iter.add(new HeaderCard(key.key(), tform, key.comment()));</span>
+<span class="fc" id="L1821">        IFitsHeader key = TFORMn.n(col + 1);</span>
+<span class="fc" id="L1822">        iter.add(new HeaderCard(key.key(), tform, key.comment()));</span>
 
-<span class="fc bfc" id="L1826" title="All 4 branches covered.">        if (colDesc.dimens.length &gt; 0 &amp;&amp; !colDesc.isVarying) {</span>
+<span class="fc bfc" id="L1824" title="All 4 branches covered.">        if (colDesc.dimens.length &gt; 0 &amp;&amp; !colDesc.isVarying) {</span>
 
-<span class="fc" id="L1828">            StringBuffer tdim = new StringBuffer();</span>
-<span class="fc" id="L1829">            char comma = '(';</span>
-<span class="fc bfc" id="L1830" title="All 2 branches covered.">            for (int i = colDesc.dimens.length - 1; i &gt;= 0; i -= 1) {</span>
-<span class="fc" id="L1831">                tdim.append(comma);</span>
-<span class="fc" id="L1832">                tdim.append(colDesc.dimens[i]);</span>
-<span class="fc" id="L1833">                comma = ',';</span>
+<span class="fc" id="L1826">            StringBuffer tdim = new StringBuffer();</span>
+<span class="fc" id="L1827">            char comma = '(';</span>
+<span class="fc bfc" id="L1828" title="All 2 branches covered.">            for (int i = colDesc.dimens.length - 1; i &gt;= 0; i -= 1) {</span>
+<span class="fc" id="L1829">                tdim.append(comma);</span>
+<span class="fc" id="L1830">                tdim.append(colDesc.dimens[i]);</span>
+<span class="fc" id="L1831">                comma = ',';</span>
             }
-<span class="fc" id="L1835">            tdim.append(')');</span>
-<span class="fc" id="L1836">            key = TDIMn.n(col + 1);</span>
-<span class="fc" id="L1837">            iter.add(new HeaderCard(key.key(), tdim.toString(), key.comment()));</span>
+<span class="fc" id="L1833">            tdim.append(')');</span>
+<span class="fc" id="L1834">            key = TDIMn.n(col + 1);</span>
+<span class="fc" id="L1835">            iter.add(new HeaderCard(key.key(), tdim.toString(), key.comment()));</span>
         }
-<span class="fc" id="L1839">    }</span>
+<span class="fc" id="L1837">    }</span>
 
     ColumnDesc getDescriptor(int column) {
-<span class="fc" id="L1842">        return this.columnList.get(column);</span>
+<span class="fc" id="L1840">        return this.columnList.get(column);</span>
     }
 
     /**
@@ -1847,13 +1845,13 @@ public class BinaryTable extends AbstractTableData {
      */
     int getTFORMLength(String tform) {
 
-<span class="fc" id="L1850">        tform = tform.trim();</span>
+<span class="fc" id="L1848">        tform = tform.trim();</span>
 
-<span class="fc bfc" id="L1852" title="All 2 branches covered.">        if (Character.isDigit(tform.charAt(0))) {</span>
-<span class="fc" id="L1853">            return initialNumber(tform);</span>
+<span class="fc bfc" id="L1850" title="All 2 branches covered.">        if (Character.isDigit(tform.charAt(0))) {</span>
+<span class="fc" id="L1851">            return initialNumber(tform);</span>
 
         } else {
-<span class="fc" id="L1856">            return 1;</span>
+<span class="fc" id="L1854">            return 1;</span>
         }
     }
 
@@ -1862,12 +1860,12 @@ public class BinaryTable extends AbstractTableData {
      */
     char getTFORMType(String tform) {
 
-<span class="pc bpc" id="L1865" title="1 of 2 branches missed.">        for (int i = 0; i &lt; tform.length(); i++) {</span>
-<span class="fc bfc" id="L1866" title="All 2 branches covered.">            if (!Character.isDigit(tform.charAt(i))) {</span>
-<span class="fc" id="L1867">                return tform.charAt(i);</span>
+<span class="pc bpc" id="L1863" title="1 of 2 branches missed.">        for (int i = 0; i &lt; tform.length(); i++) {</span>
+<span class="fc bfc" id="L1864" title="All 2 branches covered.">            if (!Character.isDigit(tform.charAt(i))) {</span>
+<span class="fc" id="L1865">                return tform.charAt(i);</span>
             }
         }
-<span class="nc" id="L1870">        return 0;</span>
+<span class="nc" id="L1868">        return 0;</span>
     }
 
     /**
@@ -1875,15 +1873,15 @@ public class BinaryTable extends AbstractTableData {
      */
     char getTFORMVarType(String tform) {
 
-<span class="fc" id="L1878">        int ind = tform.indexOf(&quot;P&quot;);</span>
-<span class="fc bfc" id="L1879" title="All 2 branches covered.">        if (ind &lt; 0) {</span>
-<span class="fc" id="L1880">            ind = tform.indexOf(&quot;Q&quot;);</span>
+<span class="fc" id="L1876">        int ind = tform.indexOf(&quot;P&quot;);</span>
+<span class="fc bfc" id="L1877" title="All 2 branches covered.">        if (ind &lt; 0) {</span>
+<span class="fc" id="L1878">            ind = tform.indexOf(&quot;Q&quot;);</span>
         }
 
-<span class="pc bpc" id="L1883" title="1 of 2 branches missed.">        if (tform.length() &gt; ind + 1) {</span>
-<span class="fc" id="L1884">            return tform.charAt(ind + 1);</span>
+<span class="pc bpc" id="L1881" title="1 of 2 branches missed.">        if (tform.length() &gt; ind + 1) {</span>
+<span class="fc" id="L1882">            return tform.charAt(ind + 1);</span>
         } else {
-<span class="nc" id="L1886">            return 0;</span>
+<span class="nc" id="L1884">            return 0;</span>
         }
     }
 
@@ -1893,12 +1891,12 @@ public class BinaryTable extends AbstractTableData {
      * FitsException if the operation failed
      */
     void pointToColumn(int col, Header hdr) throws FitsException {
-<span class="fc" id="L1896">        Cursor&lt;String, HeaderCard&gt; iter = hdr.iterator();</span>
-<span class="fc bfc" id="L1897" title="All 2 branches covered.">        if (col &gt; 0) {</span>
-<span class="fc" id="L1898">            hdr.positionAfterIndex(TFORMn, col);</span>
+<span class="fc" id="L1894">        Cursor&lt;String, HeaderCard&gt; iter = hdr.iterator();</span>
+<span class="fc bfc" id="L1895" title="All 2 branches covered.">        if (col &gt; 0) {</span>
+<span class="fc" id="L1896">            hdr.positionAfterIndex(TFORMn, col);</span>
         }
-<span class="fc" id="L1900">        fillForColumn(hdr, col, iter);</span>
-<span class="fc" id="L1901">    }</span>
+<span class="fc" id="L1898">        fillForColumn(hdr, col, iter);</span>
+<span class="fc" id="L1899">    }</span>
 
     /**
      * Convert a column from float/double to float complex/double complex. This
@@ -1920,43 +1918,43 @@ public class BinaryTable extends AbstractTableData {
         // Check that the index is valid,
         // the data type is float or double
         // the most rapidly changing index in the array has dimension 2.
-<span class="pc bpc" id="L1923" title="2 of 4 branches missed.">        if (index &gt;= 0 &amp;&amp; index &lt; this.columnList.size()) {</span>
-<span class="fc" id="L1924">            ColumnDesc colDesc = this.columnList.get(index);</span>
-<span class="fc bfc" id="L1925" title="All 2 branches covered.">            if (colDesc.isComplex) {</span>
-<span class="fc" id="L1926">                return true;</span>
+<span class="pc bpc" id="L1921" title="2 of 4 branches missed.">        if (index &gt;= 0 &amp;&amp; index &lt; this.columnList.size()) {</span>
+<span class="fc" id="L1922">            ColumnDesc colDesc = this.columnList.get(index);</span>
+<span class="fc bfc" id="L1923" title="All 2 branches covered.">            if (colDesc.isComplex) {</span>
+<span class="fc" id="L1924">                return true;</span>
             }
 
-<span class="pc bpc" id="L1929" title="1 of 6 branches missed.">            if ((colDesc.base == float.class || colDesc.base == double.class) &amp;&amp; colDesc.dimens[colDesc.dimens.length - 1] == 2) {</span>
+<span class="pc bpc" id="L1927" title="1 of 6 branches missed.">            if ((colDesc.base == float.class || colDesc.base == double.class) &amp;&amp; colDesc.dimens[colDesc.dimens.length - 1] == 2) {</span>
 
-<span class="pc bpc" id="L1931" title="1 of 2 branches missed.">                if (colDesc.isVarying) {</span>
+<span class="pc bpc" id="L1929" title="1 of 2 branches missed.">                if (colDesc.isVarying) {</span>
 
                     // We need to make sure that for every row, there are
                     // an even number of elements so that we can
                     // convert to an integral number of complex numbers.
-<span class="nc" id="L1936">                    Object col = getFlattenedColumn(index);</span>
-<span class="nc bnc" id="L1937" title="All 2 branches missed.">                    if (col instanceof int[]) {</span>
-<span class="nc" id="L1938">                        int[] ptrs = (int[]) col;</span>
-<span class="nc bnc" id="L1939" title="All 2 branches missed.">                        for (int i = 1; i &lt; ptrs.length; i += 2) {</span>
-<span class="nc bnc" id="L1940" title="All 2 branches missed.">                            if (ptrs[i] % 2 != 0) {</span>
-<span class="nc" id="L1941">                                return false;</span>
+<span class="nc" id="L1934">                    Object col = getFlattenedColumn(index);</span>
+<span class="nc bnc" id="L1935" title="All 2 branches missed.">                    if (col instanceof int[]) {</span>
+<span class="nc" id="L1936">                        int[] ptrs = (int[]) col;</span>
+<span class="nc bnc" id="L1937" title="All 2 branches missed.">                        for (int i = 1; i &lt; ptrs.length; i += 2) {</span>
+<span class="nc bnc" id="L1938" title="All 2 branches missed.">                            if (ptrs[i] % 2 != 0) {</span>
+<span class="nc" id="L1939">                                return false;</span>
                             }
                         }
-<span class="nc" id="L1944">                    } else {</span>
-<span class="nc" id="L1945">                        long[] ptrs = (long[]) col;</span>
-<span class="nc bnc" id="L1946" title="All 2 branches missed.">                        for (int i = 1; i &lt; ptrs.length; i++) {</span>
-<span class="nc bnc" id="L1947" title="All 2 branches missed.">                            if (ptrs[i] % 2 != 0) {</span>
-<span class="nc" id="L1948">                                return false;</span>
+<span class="nc" id="L1942">                    } else {</span>
+<span class="nc" id="L1943">                        long[] ptrs = (long[]) col;</span>
+<span class="nc bnc" id="L1944" title="All 2 branches missed.">                        for (int i = 1; i &lt; ptrs.length; i++) {</span>
+<span class="nc bnc" id="L1945" title="All 2 branches missed.">                            if (ptrs[i] % 2 != 0) {</span>
+<span class="nc" id="L1946">                                return false;</span>
                             }
                         }
                     }
                 }
                 // Set the column to complex
-<span class="fc" id="L1954">                colDesc.isComplex = true;</span>
+<span class="fc" id="L1952">                colDesc.isComplex = true;</span>
 
-<span class="fc" id="L1956">                return true;</span>
+<span class="fc" id="L1954">                return true;</span>
             }
         }
-<span class="fc" id="L1959">        return false;</span>
+<span class="fc" id="L1957">        return false;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

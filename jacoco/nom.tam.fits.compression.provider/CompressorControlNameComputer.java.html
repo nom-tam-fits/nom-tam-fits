@@ -78,37 +78,39 @@ public class CompressorControlNameComputer {
 <span class="fc" id="L78">            return &quot;GZip2&quot;;</span>
 <span class="fc bfc" id="L79" title="All 2 branches covered.">        } else if (Compression.ZCMPTYPE_GZIP_1.equalsIgnoreCase(compressionAlgorithm)) {</span>
 <span class="fc" id="L80">            return &quot;GZip&quot;;</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        } else if (Compression.ZCMPTYPE_NOCOMPRESS.equalsIgnoreCase(compressionAlgorithm)) {</span>
+<span class="nc" id="L82">            return &quot;NoCompress&quot;;</span>
         }
-<span class="fc" id="L82">        return &quot;Unknown&quot;;</span>
+<span class="fc" id="L84">        return &quot;Unknown&quot;;</span>
     }
 
     private static String standardizeQuantAlgorithm(String quantAlgorithm) {
-<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (quantAlgorithm != null) {</span>
-<span class="pc bpc" id="L87" title="1 of 6 branches missed.">            if (Compression.ZQUANTIZ_NO_DITHER.equalsIgnoreCase(quantAlgorithm) || //</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        if (quantAlgorithm != null) {</span>
+<span class="pc bpc" id="L89" title="1 of 6 branches missed.">            if (Compression.ZQUANTIZ_NO_DITHER.equalsIgnoreCase(quantAlgorithm) || //</span>
                     Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equalsIgnoreCase(quantAlgorithm) || //
                     Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equalsIgnoreCase(quantAlgorithm)) {
-<span class="fc" id="L90">                return &quot;Quant&quot;;</span>
+<span class="fc" id="L92">                return &quot;Quant&quot;;</span>
             } else {
-<span class="fc" id="L92">                return &quot;Unknown&quot;;</span>
+<span class="fc" id="L94">                return &quot;Unknown&quot;;</span>
             }
         }
-<span class="fc" id="L95">        return &quot;&quot;;</span>
+<span class="fc" id="L97">        return &quot;&quot;;</span>
     }
 
     public CompressorControlNameComputer() {
-<span class="fc" id="L99">        super();</span>
-<span class="fc" id="L100">    }</span>
+<span class="fc" id="L101">        super();</span>
+<span class="fc" id="L102">    }</span>
 
     public String createCompressorClassName(String quantAlgorithm, String compressionAlgorithm, Class&lt;?&gt; baseType) {
-<span class="fc" id="L103">        StringBuilder className = new StringBuilder();</span>
-<span class="fc" id="L104">        className.append(standardizeBaseType(baseType.getSimpleName()));</span>
-<span class="fc bfc" id="L105" title="All 4 branches covered.">        if (className.indexOf(Float.class.getSimpleName()) == 0 || className.indexOf(Double.class.getSimpleName()) == 0) {</span>
-<span class="fc" id="L106">            quantAlgorithm = null; // default so not in the className</span>
+<span class="fc" id="L105">        StringBuilder className = new StringBuilder();</span>
+<span class="fc" id="L106">        className.append(standardizeBaseType(baseType.getSimpleName()));</span>
+<span class="fc bfc" id="L107" title="All 4 branches covered.">        if (className.indexOf(Float.class.getSimpleName()) == 0 || className.indexOf(Double.class.getSimpleName()) == 0) {</span>
+<span class="fc" id="L108">            quantAlgorithm = null; // default so not in the className</span>
         }
-<span class="fc" id="L108">        className.append(standardizeQuantAlgorithm(quantAlgorithm));</span>
-<span class="fc" id="L109">        className.append(standardizeCompressionAlgorithm(compressionAlgorithm));</span>
-<span class="fc" id="L110">        className.append(COMPRESSOR_CLASS_SUFFIX);</span>
-<span class="fc" id="L111">        return className.toString();</span>
+<span class="fc" id="L110">        className.append(standardizeQuantAlgorithm(quantAlgorithm));</span>
+<span class="fc" id="L111">        className.append(standardizeCompressionAlgorithm(compressionAlgorithm));</span>
+<span class="fc" id="L112">        className.append(COMPRESSOR_CLASS_SUFFIX);</span>
+<span class="fc" id="L113">        return className.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

@@ -236,7 +236,7 @@ public class ByteParser {
     public double getDouble(int length) throws FormatException {
 <span class="fc" id="L237">        int startOffset = this.offset;</span>
 <span class="fc" id="L238">        boolean error = true;</span>
-<span class="fc" id="L239">        double number = 0;</span>
+        double number;
         // Skip initial blanks.
 <span class="fc" id="L241">        length -= skipWhite(length);</span>
 <span class="fc bfc" id="L242" title="All 2 branches covered.">        if (length == 0) {</span>

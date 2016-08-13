@@ -112,11 +112,13 @@ public final class GenericKey {
     public static int getN(String card) {
 <span class="fc" id="L113">        int index = card.length() - 1;</span>
 <span class="fc" id="L114">        int n = 0;</span>
-<span class="pc bpc" id="L115" title="1 of 4 branches missed.">        while (index &gt;= 0 &amp;&amp; Character.isDigit(card.charAt(index))) {</span>
-<span class="fc" id="L116">            n = n * NUMBER_BASE + card.charAt(index) - '0';</span>
-<span class="fc" id="L117">            index--;</span>
+<span class="fc" id="L115">        int numberBase = 1;</span>
+<span class="pc bpc" id="L116" title="1 of 4 branches missed.">        while (index &gt;= 0 &amp;&amp; Character.isDigit(card.charAt(index))) {</span>
+<span class="fc" id="L117">            n = n + (card.charAt(index) - '0') * numberBase;</span>
+<span class="fc" id="L118">            numberBase *= NUMBER_BASE;</span>
+<span class="fc" id="L119">            index--;</span>
         }
-<span class="fc" id="L119">        return n;</span>
+<span class="fc" id="L121">        return n;</span>
     }
 
     /**
@@ -127,28 +129,28 @@ public final class GenericKey {
      * @return the found fits key or null
      */
     public static IFitsHeader lookup(String key) {
-<span class="fc" id="L130">        int keyLength = key.length();</span>
-<span class="fc bfc" id="L131" title="All 4 branches covered.">        if (keyLength &gt; 0 &amp;&amp; Character.isDigit(key.charAt(keyLength - 1))) {</span>
-<span class="fc" id="L132">            StringBuilder builder = new StringBuilder();</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">            for (int index = 0; index &lt; keyLength; index++) {</span>
-<span class="fc" id="L134">                char character = key.charAt(index);</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">                if (Character.isDigit(character)) {</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">                    if (builder.charAt(builder.length() - 1) != 'n') {</span>
-<span class="fc" id="L137">                        builder.append('n');</span>
+<span class="fc" id="L132">        int keyLength = key.length();</span>
+<span class="fc bfc" id="L133" title="All 4 branches covered.">        if (keyLength &gt; 0 &amp;&amp; Character.isDigit(key.charAt(keyLength - 1))) {</span>
+<span class="fc" id="L134">            StringBuilder builder = new StringBuilder();</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">            for (int index = 0; index &lt; keyLength; index++) {</span>
+<span class="fc" id="L136">                char character = key.charAt(index);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">                if (Character.isDigit(character)) {</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">                    if (builder.charAt(builder.length() - 1) != 'n') {</span>
+<span class="fc" id="L139">                        builder.append('n');</span>
                     }
                 } else {
-<span class="fc" id="L140">                    builder.append(character);</span>
+<span class="fc" id="L142">                    builder.append(character);</span>
                 }
             }
-<span class="fc" id="L143">            return STANDARD_KEYS.get(builder.toString());</span>
+<span class="fc" id="L145">            return STANDARD_KEYS.get(builder.toString());</span>
         }
-<span class="fc" id="L145">        return STANDARD_KEYS.get(key);</span>
+<span class="fc" id="L147">        return STANDARD_KEYS.get(key);</span>
     }
 
     /**
      * utility class do not instanciate it.
      */
-<span class="fc" id="L151">    private GenericKey() {</span>
-<span class="fc" id="L152">    }</span>
+<span class="fc" id="L153">    private GenericKey() {</span>
+<span class="fc" id="L154">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

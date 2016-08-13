@@ -52,6 +52,8 @@ import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.IntGZipCompressor;
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.LongGZipCompressor;
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor.ShortGZipCompressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ByteGZip2Compressor;
+import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.DoubleGZip2Compressor;
+import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.FloatGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.IntGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ShortGZip2Compressor;
@@ -68,6 +70,12 @@ import nom.tam.fits.compression.algorithm.rice.RiceCompressor.DoubleRiceCompress
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.FloatRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.IntRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompressor;
+import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.ByteNoCompressCompressor;
+import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.DoubleNoCompressCompressor;
+import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.FloatNoCompressCompressor;
+import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.IntNoCompressCompressor;
+import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.LongNoCompressCompressor;
+import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.ShortNoCompressCompressor;
 import nom.tam.fits.compression.provider.api.ICompressorProvider;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
@@ -79,13 +87,13 @@ import nom.tam.fits.compression.provider.param.rice.RiceQuantizeCompressParamete
 /**
  * Standard implementation of the {@code ICompressorProvider} interface.
  */
-<span class="fc" id="L82">public class CompressorProvider implements ICompressorProvider {</span>
+<span class="fc" id="L90">public class CompressorProvider implements ICompressorProvider {</span>
 
     /**
      * private implementation of the tile compression provider, all is based on
      * the option based constructor of the compressors.
      */
-<span class="fc" id="L88">    protected static class TileCompressorControl implements ICompressorControl {</span>
+<span class="fc" id="L96">    protected static class TileCompressorControl implements ICompressorControl {</span>
 
         private final Constructor&lt;ICompressor&lt;Buffer&gt;&gt; constructor;
 
@@ -94,137 +102,137 @@ import nom.tam.fits.compression.provider.param.rice.RiceQuantizeCompressParamete
         private final Constructor&lt;ICompressParameters&gt; parametersConstructor;
 
         protected TileCompressorControl(Class&lt;?&gt; compressorClass) {
-<span class="fc" id="L97">            this(compressorClass, null);</span>
-<span class="fc" id="L98">        }</span>
+<span class="fc" id="L105">            this(compressorClass, null);</span>
+<span class="fc" id="L106">        }</span>
 
         @SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L101">        protected TileCompressorControl(Class&lt;?&gt; compressorClass, Class&lt;?&gt; parametersClass) {</span>
-<span class="fc" id="L102">            this.constructor = (Constructor&lt;ICompressor&lt;Buffer&gt;&gt;) compressorClass.getConstructors()[0];</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">            this.optionClass = (Class&lt;? extends ICompressOption&gt;) (this.constructor.getParameterTypes().length == 0 ? null : this.constructor.getParameterTypes()[0]);</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">            if (parametersClass != null) {</span>
-<span class="fc" id="L105">                this.parametersConstructor = (Constructor&lt;ICompressParameters&gt;) parametersClass.getConstructors()[0];</span>
+<span class="fc" id="L109">        protected TileCompressorControl(Class&lt;?&gt; compressorClass, Class&lt;?&gt; parametersClass) {</span>
+<span class="fc" id="L110">            this.constructor = (Constructor&lt;ICompressor&lt;Buffer&gt;&gt;) compressorClass.getConstructors()[0];</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">            this.optionClass = (Class&lt;? extends ICompressOption&gt;) (this.constructor.getParameterTypes().length == 0 ? null : this.constructor.getParameterTypes()[0]);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">            if (parametersClass != null) {</span>
+<span class="fc" id="L113">                this.parametersConstructor = (Constructor&lt;ICompressParameters&gt;) parametersClass.getConstructors()[0];</span>
             } else {
-<span class="fc" id="L107">                this.parametersConstructor = null;</span>
+<span class="fc" id="L115">                this.parametersConstructor = null;</span>
             }
-<span class="fc" id="L109">        }</span>
+<span class="fc" id="L117">        }</span>
 
         @Override
         public boolean compress(Buffer in, ByteBuffer out, ICompressOption option) {
             try {
-<span class="fc" id="L114">                return newCompressor(option).compress(in, out);</span>
-<span class="fc" id="L115">            } catch (Exception e) {</span>
-<span class="fc" id="L116">                LOG.log(Level.FINE, &quot;could not compress using &quot; + this.constructor + &quot; must fallback to other compression method&quot;, e);</span>
-<span class="fc" id="L117">                return false;</span>
+<span class="fc" id="L122">                return newCompressor(option).compress(in, out);</span>
+<span class="fc" id="L123">            } catch (Exception e) {</span>
+<span class="fc" id="L124">                LOG.log(Level.FINE, &quot;could not compress using &quot; + this.constructor + &quot; must fallback to other compression method&quot;, e);</span>
+<span class="fc" id="L125">                return false;</span>
             }
         }
 
         @Override
         public void decompress(ByteBuffer in, Buffer out, ICompressOption option) {
             try {
-<span class="fc" id="L124">                newCompressor(option).decompress(in, out);</span>
-<span class="fc" id="L125">            } catch (Exception e) {</span>
-<span class="fc" id="L126">                throw new IllegalStateException(&quot;could not decompress &quot; + this.constructor, e);</span>
-<span class="fc" id="L127">            }</span>
-<span class="fc" id="L128">        }</span>
+<span class="fc" id="L132">                newCompressor(option).decompress(in, out);</span>
+<span class="fc" id="L133">            } catch (Exception e) {</span>
+<span class="fc" id="L134">                throw new IllegalStateException(&quot;could not decompress &quot; + this.constructor, e);</span>
+<span class="fc" id="L135">            }</span>
+<span class="fc" id="L136">        }</span>
 
         @Override
         public ICompressOption option() {
-<span class="fc bfc" id="L132" title="All 2 branches covered.">            if (this.optionClass != null) {</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            if (this.optionClass != null) {</span>
                 try {
-<span class="fc" id="L134">                    ICompressOption option = this.optionClass.newInstance();</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">                    if (this.parametersConstructor != null) {</span>
-<span class="fc" id="L136">                        option.setParameters(this.parametersConstructor.newInstance(option));</span>
+<span class="fc" id="L142">                    ICompressOption option = this.optionClass.newInstance();</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">                    if (this.parametersConstructor != null) {</span>
+<span class="fc" id="L144">                        option.setParameters(this.parametersConstructor.newInstance(option));</span>
                     } else {
-<span class="fc" id="L138">                        option.setParameters(NULL_PARAMETERS);</span>
+<span class="fc" id="L146">                        option.setParameters(NULL_PARAMETERS);</span>
                     }
-<span class="fc" id="L140">                    return option;</span>
-<span class="fc" id="L141">                } catch (Exception e) {</span>
-<span class="fc" id="L142">                    throw new IllegalStateException(&quot;could not instantiate option class for &quot; + this.constructor, e);</span>
+<span class="fc" id="L148">                    return option;</span>
+<span class="fc" id="L149">                } catch (Exception e) {</span>
+<span class="fc" id="L150">                    throw new IllegalStateException(&quot;could not instantiate option class for &quot; + this.constructor, e);</span>
                 }
             }
-<span class="fc" id="L145">            return NULL_OPTION;</span>
+<span class="fc" id="L153">            return NULL_OPTION;</span>
         }
 
         private ICompressor&lt;Buffer&gt; newCompressor(ICompressOption option) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-<span class="fc bfc" id="L149" title="All 2 branches covered.">            return this.constructor.getParameterTypes().length == 0 ? this.constructor.newInstance() : this.constructor.newInstance(option);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">            return this.constructor.getParameterTypes().length == 0 ? this.constructor.newInstance() : this.constructor.newInstance(option);</span>
         }
     }
 
-<span class="fc" id="L153">    private static final ICompressOption NULL_OPTION = new ICompressOption() {</span>
+<span class="fc" id="L161">    private static final ICompressOption NULL_OPTION = new ICompressOption() {</span>
 
         @Override
         public ICompressOption copy() {
-<span class="fc" id="L157">            return this;</span>
+<span class="fc" id="L165">            return this;</span>
         }
 
         @Override
         public ICompressParameters getCompressionParameters() {
-<span class="fc" id="L162">            return NULL_PARAMETERS;</span>
+<span class="fc" id="L170">            return NULL_PARAMETERS;</span>
         }
 
         @Override
         public boolean isLossyCompression() {
-<span class="fc" id="L167">            return false;</span>
+<span class="fc" id="L175">            return false;</span>
         }
 
         @Override
         public void setParameters(ICompressParameters parameters) {
-<span class="fc" id="L172">        }</span>
+<span class="fc" id="L180">        }</span>
 
         @Override
         public ICompressOption setTileHeight(int value) {
-<span class="fc" id="L176">            return this;</span>
+<span class="fc" id="L184">            return this;</span>
         }
 
         @Override
         public ICompressOption setTileWidth(int value) {
-<span class="fc" id="L181">            return this;</span>
+<span class="fc" id="L189">            return this;</span>
         }
 
         @Override
         public &lt;T&gt; T unwrap(Class&lt;T&gt; clazz) {
-<span class="fc bfc" id="L186" title="All 2 branches covered.">            return clazz.isAssignableFrom(this.getClass()) ? clazz.cast(this) : null;</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">            return clazz.isAssignableFrom(this.getClass()) ? clazz.cast(this) : null;</span>
         }
     };
 
-<span class="fc" id="L190">    private static final ICompressParameters NULL_PARAMETERS = new ICompressParameters() {</span>
+<span class="fc" id="L198">    private static final ICompressParameters NULL_PARAMETERS = new ICompressParameters() {</span>
 
         @Override
         public void addColumnsToTable(BinaryTableHDU hdu) {
-<span class="fc" id="L194">        }</span>
+<span class="fc" id="L202">        }</span>
 
         @Override
         public ICompressParameters copy(ICompressOption clone) {
-<span class="fc" id="L198">            return this;</span>
+<span class="fc" id="L206">            return this;</span>
         }
 
         @Override
         public void getValuesFromColumn(int index) {
-<span class="fc" id="L203">        }</span>
-
-        @Override
-        public void getValuesFromHeader(IHeaderAccess header) {
-<span class="fc" id="L207">        }</span>
-
-        @Override
-        public void initializeColumns(IHeaderAccess header, BinaryTable binaryTable, int size) throws FitsException {
 <span class="fc" id="L211">        }</span>
 
         @Override
-        public void initializeColumns(int length) {
+        public void getValuesFromHeader(IHeaderAccess header) {
 <span class="fc" id="L215">        }</span>
 
         @Override
-        public void setValueFromColumn(int index) {
+        public void initializeColumns(IHeaderAccess header, BinaryTable binaryTable, int size) throws FitsException {
 <span class="fc" id="L219">        }</span>
 
         @Override
-        public void setValuesInHeader(IHeaderAccess header) {
+        public void initializeColumns(int length) {
 <span class="fc" id="L223">        }</span>
+
+        @Override
+        public void setValueFromColumn(int index) {
+<span class="fc" id="L227">        }</span>
+
+        @Override
+        public void setValuesInHeader(IHeaderAccess header) {
+<span class="fc" id="L231">        }</span>
     };
 
     // @formatter:off
-<span class="fc" id="L227">    private static final Class&lt;?&gt;[][] AVAILABLE_COMPRESSORS = {</span>
+<span class="fc" id="L235">    private static final Class&lt;?&gt;[][] AVAILABLE_COMPRESSORS = {</span>
         {ByteRiceCompressor.class, RiceCompressParameters.class},
         {ShortRiceCompressor.class, RiceCompressParameters.class},
         {IntRiceCompressor.class, RiceCompressParameters.class},
@@ -242,6 +250,8 @@ import nom.tam.fits.compression.provider.param.rice.RiceQuantizeCompressParamete
         {ByteGZip2Compressor.class},
         {ShortGZip2Compressor.class},
         {IntGZip2Compressor.class},
+        {FloatGZip2Compressor.class},
+        {DoubleGZip2Compressor.class},        
         {LongGZip2Compressor.class},
         {ByteGZipCompressor.class},
         {ShortGZipCompressor.class},
@@ -249,47 +259,53 @@ import nom.tam.fits.compression.provider.param.rice.RiceQuantizeCompressParamete
         {LongGZipCompressor.class},
         {FloatGZipCompressor.class},
         {DoubleGZipCompressor.class},
+        {ByteNoCompressCompressor.class},
+        {ShortNoCompressCompressor.class},
+        {IntNoCompressCompressor.class},
+        {LongNoCompressCompressor.class},
+        {FloatNoCompressCompressor.class},
+        {DoubleNoCompressCompressor.class},
     };
     // @formatter:on
 
-<span class="fc" id="L255">    private static final CompressorControlNameComputer NAME_COMPUTER = new CompressorControlNameComputer();</span>
+<span class="fc" id="L271">    private static final CompressorControlNameComputer NAME_COMPUTER = new CompressorControlNameComputer();</span>
 
     /**
      * logger to log to.
      */
-<span class="fc" id="L260">    private static final Logger LOG = Logger.getLogger(CompressorProvider.class.getName());</span>
+<span class="fc" id="L276">    private static final Logger LOG = Logger.getLogger(CompressorProvider.class.getName());</span>
 
     public static ICompressorControl findCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class&lt;?&gt; baseType) {
-<span class="fc" id="L263">        ICompressorProvider defaultProvider = null;</span>
-<span class="fc bfc" id="L264" title="All 2 branches covered.">        for (ICompressorProvider iTileCompressorProvider : ServiceLoader.load(ICompressorProvider.class, Thread.currentThread().getContextClassLoader())) {</span>
-<span class="fc bfc" id="L265" title="All 2 branches covered.">            if (iTileCompressorProvider instanceof CompressorProvider) {</span>
-<span class="fc" id="L266">                defaultProvider = iTileCompressorProvider;</span>
+<span class="fc" id="L279">        ICompressorProvider defaultProvider = null;</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">        for (ICompressorProvider iTileCompressorProvider : ServiceLoader.load(ICompressorProvider.class, Thread.currentThread().getContextClassLoader())) {</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">            if (iTileCompressorProvider instanceof CompressorProvider) {</span>
+<span class="fc" id="L282">                defaultProvider = iTileCompressorProvider;</span>
             } else {
-<span class="fc" id="L268">                ICompressorControl result = iTileCompressorProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);</span>
-<span class="fc bfc" id="L269" title="All 2 branches covered.">                if (result != null) {</span>
-<span class="fc" id="L270">                    return result;</span>
+<span class="fc" id="L284">                ICompressorControl result = iTileCompressorProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">                if (result != null) {</span>
+<span class="fc" id="L286">                    return result;</span>
                 }
             }
-<span class="fc" id="L273">        }</span>
-<span class="fc" id="L274">        return defaultProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);</span>
+<span class="fc" id="L289">        }</span>
+<span class="fc" id="L290">        return defaultProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);</span>
     }
 
     @Override
     public ICompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class&lt;?&gt; baseType) {
 
-<span class="fc" id="L280">        String className = NAME_COMPUTER.createCompressorClassName(quantAlgorithm, compressionAlgorithm, baseType);</span>
-<span class="fc bfc" id="L281" title="All 2 branches covered.">        for (Class&lt;?&gt;[] clazz : AVAILABLE_COMPRESSORS) {</span>
-<span class="fc" id="L282">            Class&lt;?&gt; compressorClass = clazz[0];</span>
-<span class="fc bfc" id="L283" title="All 2 branches covered.">            if (compressorClass.getSimpleName().equals(className)) {</span>
-<span class="fc bfc" id="L284" title="All 2 branches covered.">                if (clazz.length &gt; 1) {</span>
-<span class="fc" id="L285">                    Class&lt;?&gt; parametersClass = clazz[1];</span>
-<span class="fc" id="L286">                    return new TileCompressorControl(compressorClass, parametersClass);</span>
+<span class="fc" id="L296">        String className = NAME_COMPUTER.createCompressorClassName(quantAlgorithm, compressionAlgorithm, baseType);</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">        for (Class&lt;?&gt;[] clazz : AVAILABLE_COMPRESSORS) {</span>
+<span class="fc" id="L298">            Class&lt;?&gt; compressorClass = clazz[0];</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">            if (compressorClass.getSimpleName().equals(className)) {</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">                if (clazz.length &gt; 1) {</span>
+<span class="fc" id="L301">                    Class&lt;?&gt; parametersClass = clazz[1];</span>
+<span class="fc" id="L302">                    return new TileCompressorControl(compressorClass, parametersClass);</span>
                 } else {
-<span class="fc" id="L288">                    return new TileCompressorControl(compressorClass);</span>
+<span class="fc" id="L304">                    return new TileCompressorControl(compressorClass);</span>
                 }
             }
         }
-<span class="fc" id="L292">        return null;</span>
+<span class="fc" id="L308">        return null;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

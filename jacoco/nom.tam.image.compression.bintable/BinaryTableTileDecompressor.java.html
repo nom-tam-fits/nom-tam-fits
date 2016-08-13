@@ -56,7 +56,7 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
     public void run() {
 <span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if (this.is == null) {</span>
 <span class="fc" id="L58">            ByteBuffer unCompressedBytes = ByteBuffer.wrap(new byte[getUncompressedSizeInBytes()]);</span>
-<span class="fc" id="L59">            getCompressorControl().decompress(this.compressedBytes, unCompressedBytes, null);</span>
+<span class="fc" id="L59">            getCompressorControl().decompress(this.compressedBytes, type.asTypedBuffer(unCompressedBytes), null);</span>
 <span class="fc" id="L60">            this.is = new BufferedDataInputStream(new ByteArrayInputStream(unCompressedBytes.array()));</span>
         }
         try {

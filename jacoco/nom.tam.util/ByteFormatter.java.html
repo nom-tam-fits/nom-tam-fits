@@ -262,47 +262,46 @@
         }
 <span class="fc bfc" id="L263" title="All 2 branches covered.">        if (val &lt; 0) {</span>
 <span class="fc" id="L264">            minSize++;</span>
-<span class="fc" id="L265">            maxSize++;</span>
         }
 
         // Can the number fit?
-<span class="pc bpc" id="L269" title="1 of 4 branches missed.">        if (minSize &gt; len || minSize &gt; buf.length - off) {</span>
-<span class="fc" id="L270">            truncationFiller(buf, off, len);</span>
-<span class="fc" id="L271">            return off + len;</span>
+<span class="pc bpc" id="L268" title="1 of 4 branches missed.">        if (minSize &gt; len || minSize &gt; buf.length - off) {</span>
+<span class="fc" id="L269">            truncationFiller(buf, off, len);</span>
+<span class="fc" id="L270">            return off + len;</span>
         }
 
         // Now begin filling in the buffer.
-<span class="fc bfc" id="L275" title="All 2 branches covered.">        if (val &lt; 0) {</span>
-<span class="fc" id="L276">            buf[off] = (byte) '-';</span>
-<span class="fc" id="L277">            off++;</span>
-<span class="fc" id="L278">            len--;</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">        if (val &lt; 0) {</span>
+<span class="fc" id="L275">            buf[off] = (byte) '-';</span>
+<span class="fc" id="L276">            off++;</span>
+<span class="fc" id="L277">            len--;</span>
         }
 
-<span class="fc bfc" id="L281" title="All 2 branches covered.">        if (simple) {</span>
-<span class="fc" id="L282">            return Math.abs(mantissa(mant, lmant, exp, simple, buf, off, len));</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">        if (simple) {</span>
+<span class="fc" id="L281">            return Math.abs(mantissa(mant, lmant, exp, simple, buf, off, len));</span>
         } else {
-<span class="fc" id="L284">            off = mantissa(mant, lmant, 0, simple, buf, off, len - lexp - 1);</span>
-<span class="fc bfc" id="L285" title="All 2 branches covered.">            if (off &lt; 0) {</span>
-<span class="fc" id="L286">                off = -off;</span>
-<span class="fc" id="L287">                len -= off;</span>
+<span class="fc" id="L283">            off = mantissa(mant, lmant, 0, simple, buf, off, len - lexp - 1);</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">            if (off &lt; 0) {</span>
+<span class="fc" id="L285">                off = -off;</span>
+<span class="fc" id="L286">                len -= off;</span>
                 // Handle the expanded exponent by filling
-<span class="pc bpc" id="L289" title="1 of 4 branches missed.">                if (exp == MAXIMUM_SINGLE_DIGIT_INTEGER || exp == MAXIMUM_TWO_DIGIT_INTEGER) {</span>
+<span class="pc bpc" id="L288" title="1 of 4 branches missed.">                if (exp == MAXIMUM_SINGLE_DIGIT_INTEGER || exp == MAXIMUM_TWO_DIGIT_INTEGER) {</span>
                     // Cannot fit...
-<span class="fc bfc" id="L291" title="All 2 branches covered.">                    if (off + len == minSize) {</span>
-<span class="fc" id="L292">                        truncationFiller(buf, off, len);</span>
-<span class="fc" id="L293">                        return off + len;</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">                    if (off + len == minSize) {</span>
+<span class="fc" id="L291">                        truncationFiller(buf, off, len);</span>
+<span class="fc" id="L292">                        return off + len;</span>
                     } else {
                         // Steal a character from the mantissa.
-<span class="fc" id="L296">                        off--;</span>
+<span class="fc" id="L295">                        off--;</span>
                     }
                 }
-<span class="fc" id="L299">                exp++;</span>
-<span class="fc" id="L300">                lexp = format(exp, this.tbuf2, 0, ByteFormatter.TEMP_BUFFER_SIZE);</span>
+<span class="fc" id="L298">                exp++;</span>
+<span class="fc" id="L299">                lexp = format(exp, this.tbuf2, 0, ByteFormatter.TEMP_BUFFER_SIZE);</span>
             }
-<span class="fc" id="L302">            buf[off] = (byte) 'E';</span>
-<span class="fc" id="L303">            off++;</span>
-<span class="fc" id="L304">            System.arraycopy(this.tbuf2, 0, buf, off, lexp);</span>
-<span class="fc" id="L305">            return off + lexp;</span>
+<span class="fc" id="L301">            buf[off] = (byte) 'E';</span>
+<span class="fc" id="L302">            off++;</span>
+<span class="fc" id="L303">            System.arraycopy(this.tbuf2, 0, buf, off, lexp);</span>
+<span class="fc" id="L304">            return off + lexp;</span>
         }
     }
 
@@ -316,7 +315,7 @@
      * @return Offset of next available character in buffer.
      */
     public int format(boolean val, byte[] array) {
-<span class="fc" id="L319">        return format(val, array, 0, array.length);</span>
+<span class="fc" id="L318">        return format(val, array, 0, array.length);</span>
     }
 
     /**
@@ -334,15 +333,15 @@
      * @return Offset of next available character in buffer.
      */
     public int format(boolean val, byte[] array, int off, int len) {
-<span class="pc bpc" id="L337" title="1 of 2 branches missed.">        if (len &gt; 0) {</span>
-<span class="fc bfc" id="L338" title="All 2 branches covered.">            if (val) {</span>
-<span class="fc" id="L339">                array[off] = (byte) 'T';</span>
+<span class="pc bpc" id="L336" title="1 of 2 branches missed.">        if (len &gt; 0) {</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">            if (val) {</span>
+<span class="fc" id="L338">                array[off] = (byte) 'T';</span>
             } else {
-<span class="fc" id="L341">                array[off] = (byte) 'F';</span>
+<span class="fc" id="L340">                array[off] = (byte) 'F';</span>
             }
-<span class="fc" id="L343">            off++;</span>
+<span class="fc" id="L342">            off++;</span>
         }
-<span class="fc" id="L345">        return off;</span>
+<span class="fc" id="L344">        return off;</span>
     }
 
     /**
@@ -355,7 +354,7 @@
      * @return The number of characters used. @ * if the value was truncated
      */
     public int format(double val, byte[] array) {
-<span class="fc" id="L358">        return format(val, array, 0, array.length);</span>
+<span class="fc" id="L357">        return format(val, array, 0, array.length);</span>
     }
 
     /**
@@ -391,68 +390,68 @@
      */
     public int format(double val, byte[] buf, int off, int len) {
 
-<span class="fc" id="L394">        double pos = Math.abs(val);</span>
+<span class="fc" id="L393">        double pos = Math.abs(val);</span>
 
         // Special cases -- It is OK if these get truncated.
-<span class="fc bfc" id="L397" title="All 2 branches covered.">        if (pos == 0.) {</span>
-<span class="fc" id="L398">            return format(&quot;0.0&quot;, buf, off, len);</span>
-<span class="fc bfc" id="L399" title="All 2 branches covered.">        } else if (Double.isNaN(val)) {</span>
-<span class="fc" id="L400">            return format(NOT_A_NUMBER, buf, off, len);</span>
-<span class="fc bfc" id="L401" title="All 2 branches covered.">        } else if (Double.isInfinite(val)) {</span>
-<span class="fc bfc" id="L402" title="All 2 branches covered.">            if (val &gt; 0) {</span>
-<span class="fc" id="L403">                return format(INFINITY, buf, off, len);</span>
+<span class="fc bfc" id="L396" title="All 2 branches covered.">        if (pos == 0.) {</span>
+<span class="fc" id="L397">            return format(&quot;0.0&quot;, buf, off, len);</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        } else if (Double.isNaN(val)) {</span>
+<span class="fc" id="L399">            return format(NOT_A_NUMBER, buf, off, len);</span>
+<span class="fc bfc" id="L400" title="All 2 branches covered.">        } else if (Double.isInfinite(val)) {</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">            if (val &gt; 0) {</span>
+<span class="fc" id="L402">                return format(INFINITY, buf, off, len);</span>
             } else {
-<span class="fc" id="L405">                return format(NEGATIVE_INFINITY, buf, off, len);</span>
+<span class="fc" id="L404">                return format(NEGATIVE_INFINITY, buf, off, len);</span>
             }
         }
 
-<span class="fc" id="L409">        int power = (int) (Math.log(pos) * ByteFormatter.I_LOG_10);</span>
-<span class="fc" id="L410">        int shift = DOUBLE_SHIFT_BASE - power;</span>
+<span class="fc" id="L408">        int power = (int) (Math.log(pos) * ByteFormatter.I_LOG_10);</span>
+<span class="fc" id="L409">        int shift = DOUBLE_SHIFT_BASE - power;</span>
         double scale;
-<span class="fc" id="L412">        double scale2 = 1;</span>
+<span class="fc" id="L411">        double scale2 = 1;</span>
 
         // Scale the number so that we get a number ~ n x 10^17.
-<span class="fc bfc" id="L415" title="All 2 branches covered.">        if (shift &lt; DOUBLE_SHIFT_LIMIT) {</span>
-<span class="fc" id="L416">            scale = ByteFormatter.NUMBER_BASE_POWERS[shift + ByteFormatter.ZERO_POW];</span>
+<span class="fc bfc" id="L414" title="All 2 branches covered.">        if (shift &lt; DOUBLE_SHIFT_LIMIT) {</span>
+<span class="fc" id="L415">            scale = ByteFormatter.NUMBER_BASE_POWERS[shift + ByteFormatter.ZERO_POW];</span>
         } else {
             // Can get overflow if the original number is
             // very small, so we break out the shift
             // into two multipliers.
-<span class="fc" id="L421">            scale2 = ByteFormatter.NUMBER_BASE_POWERS[DOUBLE_SHIFT_LIMIT + ByteFormatter.ZERO_POW];</span>
-<span class="fc" id="L422">            scale = ByteFormatter.NUMBER_BASE_POWERS[shift - DOUBLE_SHIFT_LIMIT + ByteFormatter.ZERO_POW];</span>
+<span class="fc" id="L420">            scale2 = ByteFormatter.NUMBER_BASE_POWERS[DOUBLE_SHIFT_LIMIT + ByteFormatter.ZERO_POW];</span>
+<span class="fc" id="L421">            scale = ByteFormatter.NUMBER_BASE_POWERS[shift - DOUBLE_SHIFT_LIMIT + ByteFormatter.ZERO_POW];</span>
         }
 
-<span class="fc" id="L425">        pos = pos * scale * scale2;</span>
+<span class="fc" id="L424">        pos = pos * scale * scale2;</span>
 
         // Parse the double bits.
 
-<span class="fc" id="L429">        long bits = Double.doubleToLongBits(pos);</span>
+<span class="fc" id="L428">        long bits = Double.doubleToLongBits(pos);</span>
 
         // The exponent should be a little more than 52.
-<span class="fc" id="L432">        int exp = (int) (((bits &amp; DOUBLE_EXPONENT_BIT_MASK) &gt;&gt; DOUBLE_EXPONENT_EXCESS) + DOUBLE_MIN_EXPONENT);</span>
+<span class="fc" id="L431">        int exp = (int) (((bits &amp; DOUBLE_EXPONENT_BIT_MASK) &gt;&gt; DOUBLE_EXPONENT_EXCESS) + DOUBLE_MIN_EXPONENT);</span>
 
-<span class="fc" id="L434">        long numb = bits &amp; DOUBLE_VALUE_BIT_MASK;</span>
+<span class="fc" id="L433">        long numb = bits &amp; DOUBLE_VALUE_BIT_MASK;</span>
 
         // this can never be false because the min exponent of a double is -1022
         // but lets keep it if we need it for big decimals
-<span class="pc bpc" id="L438" title="1 of 2 branches missed.">        if (exp &gt; DOUBLE_MIN_EXPONENT) {</span>
+<span class="pc bpc" id="L437" title="1 of 2 branches missed.">        if (exp &gt; DOUBLE_MIN_EXPONENT) {</span>
             // Normalized....
-<span class="fc" id="L440">            numb |= DOUBLE_EXPONENT_NORMALIZE_BIT;</span>
+<span class="fc" id="L439">            numb |= DOUBLE_EXPONENT_NORMALIZE_BIT;</span>
         } else {
             // Denormalized
-<span class="nc" id="L443">            exp++;</span>
+<span class="nc" id="L442">            exp++;</span>
         }
 
         // Multiple this number by the excess of the exponent
         // over 52. This completes the conversion of double to long.
-<span class="fc" id="L448">        numb = numb &lt;&lt; exp - DOUBLE_EXPONENT_EXCESS;</span>
+<span class="fc" id="L447">        numb = numb &lt;&lt; exp - DOUBLE_EXPONENT_EXCESS;</span>
 
         // Get a decimal mantissa.
-<span class="fc" id="L451">        int ndig = format(numb, this.tbuf1, 0, ByteFormatter.TEMP_BUFFER_SIZE);</span>
+<span class="fc" id="L450">        int ndig = format(numb, this.tbuf1, 0, ByteFormatter.TEMP_BUFFER_SIZE);</span>
 
         // Now format the double.
 
-<span class="fc" id="L455">        return combineReal(val, buf, off, len, this.tbuf1, ndig, shift);</span>
+<span class="fc" id="L454">        return combineReal(val, buf, off, len, this.tbuf1, ndig, shift);</span>
     }
 
     /**
@@ -465,7 +464,7 @@
      * @return The number of characters used. @ * if the value was truncated
      */
     public int format(float val, byte[] array) {
-<span class="fc" id="L468">        return format(val, array, 0, array.length);</span>
+<span class="fc" id="L467">        return format(val, array, 0, array.length);</span>
     }
 
     /**
@@ -501,68 +500,68 @@
      */
     public int format(float val, byte[] buf, int off, int len) {
 
-<span class="fc" id="L504">        float pos = Math.abs(val);</span>
+<span class="fc" id="L503">        float pos = Math.abs(val);</span>
 
         // Special cases
-<span class="fc bfc" id="L507" title="All 2 branches covered.">        if (pos == 0.) {</span>
-<span class="fc" id="L508">            return format(&quot;0.0&quot;, buf, off, len);</span>
-<span class="fc bfc" id="L509" title="All 2 branches covered.">        } else if (Float.isNaN(val)) {</span>
-<span class="fc" id="L510">            return format(NOT_A_NUMBER, buf, off, len);</span>
-<span class="fc bfc" id="L511" title="All 2 branches covered.">        } else if (Float.isInfinite(val)) {</span>
-<span class="fc bfc" id="L512" title="All 2 branches covered.">            if (val &gt; 0) {</span>
-<span class="fc" id="L513">                return format(&quot;Infinity&quot;, buf, off, len);</span>
+<span class="fc bfc" id="L506" title="All 2 branches covered.">        if (pos == 0.) {</span>
+<span class="fc" id="L507">            return format(&quot;0.0&quot;, buf, off, len);</span>
+<span class="fc bfc" id="L508" title="All 2 branches covered.">        } else if (Float.isNaN(val)) {</span>
+<span class="fc" id="L509">            return format(NOT_A_NUMBER, buf, off, len);</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">        } else if (Float.isInfinite(val)) {</span>
+<span class="fc bfc" id="L511" title="All 2 branches covered.">            if (val &gt; 0) {</span>
+<span class="fc" id="L512">                return format(&quot;Infinity&quot;, buf, off, len);</span>
             } else {
-<span class="fc" id="L515">                return format(&quot;-Infinity&quot;, buf, off, len);</span>
+<span class="fc" id="L514">                return format(&quot;-Infinity&quot;, buf, off, len);</span>
             }
         }
 
-<span class="fc" id="L519">        int power = (int) Math.floor(Math.log(pos) * ByteFormatter.I_LOG_10);</span>
-<span class="fc" id="L520">        int shift = FLOAT_SHIFT_BASE - power;</span>
+<span class="fc" id="L518">        int power = (int) Math.floor(Math.log(pos) * ByteFormatter.I_LOG_10);</span>
+<span class="fc" id="L519">        int shift = FLOAT_SHIFT_BASE - power;</span>
         float scale;
-<span class="fc" id="L522">        float scale2 = 1;</span>
+<span class="fc" id="L521">        float scale2 = 1;</span>
 
         // Scale the number so that we get a number ~ n x 10^8.
-<span class="fc bfc" id="L525" title="All 2 branches covered.">        if (shift &lt; FLOAT_SHIFT_LIMIT) {</span>
-<span class="fc" id="L526">            scale = (float) ByteFormatter.NUMBER_BASE_POWERS[shift + ByteFormatter.ZERO_POW];</span>
+<span class="fc bfc" id="L524" title="All 2 branches covered.">        if (shift &lt; FLOAT_SHIFT_LIMIT) {</span>
+<span class="fc" id="L525">            scale = (float) ByteFormatter.NUMBER_BASE_POWERS[shift + ByteFormatter.ZERO_POW];</span>
         } else {
             // Can get overflow if the original number is
             // very small, so we break out the shift
             // into two multipliers.
-<span class="fc" id="L531">            scale2 = (float) ByteFormatter.NUMBER_BASE_POWERS[FLOAT_SHIFT_LIMIT + ByteFormatter.ZERO_POW];</span>
-<span class="fc" id="L532">            scale = (float) ByteFormatter.NUMBER_BASE_POWERS[shift - FLOAT_SHIFT_LIMIT + ByteFormatter.ZERO_POW];</span>
+<span class="fc" id="L530">            scale2 = (float) ByteFormatter.NUMBER_BASE_POWERS[FLOAT_SHIFT_LIMIT + ByteFormatter.ZERO_POW];</span>
+<span class="fc" id="L531">            scale = (float) ByteFormatter.NUMBER_BASE_POWERS[shift - FLOAT_SHIFT_LIMIT + ByteFormatter.ZERO_POW];</span>
         }
 
-<span class="fc" id="L535">        pos = pos * scale * scale2;</span>
+<span class="fc" id="L534">        pos = pos * scale * scale2;</span>
 
         // Parse the float bits.
 
-<span class="fc" id="L539">        int bits = Float.floatToIntBits(pos);</span>
+<span class="fc" id="L538">        int bits = Float.floatToIntBits(pos);</span>
 
         // The exponent should be a little more than 23
-<span class="fc" id="L542">        int exp = ((bits &amp; FLOAT_EXPONENT_BIT_MASK) &gt;&gt; FLOAT_EXPONENT_EXCESS) + FLOAT_MIN_EXPONENT;</span>
+<span class="fc" id="L541">        int exp = ((bits &amp; FLOAT_EXPONENT_BIT_MASK) &gt;&gt; FLOAT_EXPONENT_EXCESS) + FLOAT_MIN_EXPONENT;</span>
 
-<span class="fc" id="L544">        int numb = bits &amp; FLOAT_VALUE_BIT_MASK;</span>
+<span class="fc" id="L543">        int numb = bits &amp; FLOAT_VALUE_BIT_MASK;</span>
 
-<span class="pc bpc" id="L546" title="1 of 2 branches missed.">        if (exp &gt; FLOAT_MIN_EXPONENT) {</span>
+<span class="pc bpc" id="L545" title="1 of 2 branches missed.">        if (exp &gt; FLOAT_MIN_EXPONENT) {</span>
             // Normalized....
-<span class="fc" id="L548">            numb |= FLOAT_EXPONENT_NORMALIZE_BIT;</span>
+<span class="fc" id="L547">            numb |= FLOAT_EXPONENT_NORMALIZE_BIT;</span>
         } else {
             // Denormalized
-<span class="nc" id="L551">            exp++;</span>
+<span class="nc" id="L550">            exp++;</span>
         }
 
         // Multiple this number by the excess of the exponent
         // over 24. This completes the conversion of float to int
         // (&lt;&lt;= did not work on Alpha TruUnix)
 
-<span class="fc" id="L558">        numb = numb &lt;&lt; exp - FLOAT_EXPONENT_EXCESS;</span>
+<span class="fc" id="L557">        numb = numb &lt;&lt; exp - FLOAT_EXPONENT_EXCESS;</span>
 
         // Get a decimal mantissa.
-<span class="fc" id="L561">        int ndig = format(numb, this.tbuf1, 0, ByteFormatter.TEMP_BUFFER_SIZE);</span>
+<span class="fc" id="L560">        int ndig = format(numb, this.tbuf1, 0, ByteFormatter.TEMP_BUFFER_SIZE);</span>
 
         // Now format the float.
 
-<span class="fc" id="L565">        return combineReal(val, buf, off, len, this.tbuf1, ndig, shift);</span>
+<span class="fc" id="L564">        return combineReal(val, buf, off, len, this.tbuf1, ndig, shift);</span>
     }
 
     /**
@@ -575,7 +574,7 @@
      * @return The number of characters used. @ * if the value was truncated
      */
     public int format(int val, byte[] array) {
-<span class="fc" id="L578">        return format(val, array, 0, array.length);</span>
+<span class="fc" id="L577">        return format(val, array, 0, array.length);</span>
     }
 
     /**
@@ -594,55 +593,55 @@
     public int format(int val, byte[] buf, int off, int len) {
 
         // Special case
-<span class="fc bfc" id="L597" title="All 2 branches covered.">        if (val == Integer.MIN_VALUE) {</span>
-<span class="pc bpc" id="L598" title="1 of 2 branches missed.">            if (len &gt; ByteFormatter.NUMBER_BASE) {</span>
-<span class="fc" id="L599">                return format(&quot;-2147483648&quot;, buf, off, len);</span>
+<span class="fc bfc" id="L596" title="All 2 branches covered.">        if (val == Integer.MIN_VALUE) {</span>
+<span class="pc bpc" id="L597" title="1 of 2 branches missed.">            if (len &gt; ByteFormatter.NUMBER_BASE) {</span>
+<span class="fc" id="L598">                return format(&quot;-2147483648&quot;, buf, off, len);</span>
             } else {
-<span class="nc" id="L601">                truncationFiller(buf, off, len);</span>
-<span class="nc" id="L602">                return off + len;</span>
+<span class="nc" id="L600">                truncationFiller(buf, off, len);</span>
+<span class="nc" id="L601">                return off + len;</span>
             }
         }
 
-<span class="fc" id="L606">        int pos = Math.abs(val);</span>
+<span class="fc" id="L605">        int pos = Math.abs(val);</span>
 
         // First count the number of characters in the result.
         // Otherwise we need to use an intermediary buffer.
 
-<span class="fc" id="L611">        int ndig = 1;</span>
-<span class="fc" id="L612">        int dmax = ByteFormatter.NUMBER_BASE;</span>
+<span class="fc" id="L610">        int ndig = 1;</span>
+<span class="fc" id="L611">        int dmax = ByteFormatter.NUMBER_BASE;</span>
 
-<span class="fc bfc" id="L614" title="All 4 branches covered.">        while (ndig &lt; ByteFormatter.NUMBER_BASE &amp;&amp; pos &gt;= dmax) {</span>
-<span class="fc" id="L615">            ndig++;</span>
-<span class="fc" id="L616">            dmax *= ByteFormatter.NUMBER_BASE;</span>
+<span class="fc bfc" id="L613" title="All 4 branches covered.">        while (ndig &lt; ByteFormatter.NUMBER_BASE &amp;&amp; pos &gt;= dmax) {</span>
+<span class="fc" id="L614">            ndig++;</span>
+<span class="fc" id="L615">            dmax *= ByteFormatter.NUMBER_BASE;</span>
         }
 
-<span class="fc bfc" id="L619" title="All 2 branches covered.">        if (val &lt; 0) {</span>
-<span class="fc" id="L620">            ndig++;</span>
+<span class="fc bfc" id="L618" title="All 2 branches covered.">        if (val &lt; 0) {</span>
+<span class="fc" id="L619">            ndig++;</span>
         }
 
         // Truncate if necessary.
-<span class="pc bpc" id="L624" title="1 of 4 branches missed.">        if (ndig &gt; len || ndig &gt; buf.length - off) {</span>
-<span class="fc" id="L625">            truncationFiller(buf, off, len);</span>
-<span class="fc" id="L626">            return off + len;</span>
+<span class="pc bpc" id="L623" title="1 of 4 branches missed.">        if (ndig &gt; len || ndig &gt; buf.length - off) {</span>
+<span class="fc" id="L624">            truncationFiller(buf, off, len);</span>
+<span class="fc" id="L625">            return off + len;</span>
         }
 
         // Now insert the actual characters we want -- backwards
         // We use a do{} while() to handle the caByteFormatterse of 0.
 
-<span class="fc" id="L632">        off += ndig;</span>
+<span class="fc" id="L631">        off += ndig;</span>
 
-<span class="fc" id="L634">        int xoff = off - 1;</span>
+<span class="fc" id="L633">        int xoff = off - 1;</span>
         do {
-<span class="fc" id="L636">            buf[xoff] = ByteFormatter.DIGITS[pos % ByteFormatter.NUMBER_BASE];</span>
-<span class="fc" id="L637">            xoff--;</span>
-<span class="fc" id="L638">            pos /= ByteFormatter.NUMBER_BASE;</span>
-<span class="fc bfc" id="L639" title="All 2 branches covered.">        } while (pos &gt; 0);</span>
+<span class="fc" id="L635">            buf[xoff] = ByteFormatter.DIGITS[pos % ByteFormatter.NUMBER_BASE];</span>
+<span class="fc" id="L636">            xoff--;</span>
+<span class="fc" id="L637">            pos /= ByteFormatter.NUMBER_BASE;</span>
+<span class="fc bfc" id="L638" title="All 2 branches covered.">        } while (pos &gt; 0);</span>
 
-<span class="fc bfc" id="L641" title="All 2 branches covered.">        if (val &lt; 0) {</span>
-<span class="fc" id="L642">            buf[xoff] = (byte) '-';</span>
+<span class="fc bfc" id="L640" title="All 2 branches covered.">        if (val &lt; 0) {</span>
+<span class="fc" id="L641">            buf[xoff] = (byte) '-';</span>
         }
 
-<span class="fc" id="L645">        return off;</span>
+<span class="fc" id="L644">        return off;</span>
     }
 
     /**
@@ -655,7 +654,7 @@
      * @return The number of characters used. @ * if the value was truncated
      */
     public int format(long val, byte[] array) {
-<span class="fc" id="L658">        return format(val, array, 0, array.length);</span>
+<span class="fc" id="L657">        return format(val, array, 0, array.length);</span>
     }
 
     /**
@@ -674,58 +673,58 @@
      */
     public int format(long val, byte[] buf, int off, int len) {
         // Special case
-<span class="fc bfc" id="L677" title="All 2 branches covered.">        if (val == Long.MIN_VALUE) {</span>
-<span class="fc bfc" id="L678" title="All 2 branches covered.">            if (len &gt; MAX_LONG_LENGTH) {</span>
-<span class="fc" id="L679">                return format(&quot;-9223372036854775808&quot;, buf, off, len);</span>
+<span class="fc bfc" id="L676" title="All 2 branches covered.">        if (val == Long.MIN_VALUE) {</span>
+<span class="fc bfc" id="L677" title="All 2 branches covered.">            if (len &gt; MAX_LONG_LENGTH) {</span>
+<span class="fc" id="L678">                return format(&quot;-9223372036854775808&quot;, buf, off, len);</span>
             } else {
-<span class="fc" id="L681">                truncationFiller(buf, off, len);</span>
-<span class="fc" id="L682">                return off + len;</span>
+<span class="fc" id="L680">                truncationFiller(buf, off, len);</span>
+<span class="fc" id="L681">                return off + len;</span>
             }
         }
-<span class="fc" id="L685">        long pos = Math.abs(val);</span>
+<span class="fc" id="L684">        long pos = Math.abs(val);</span>
         // First count the number of characters in the result.
         // Otherwise we need to use an intermediary buffer.
-<span class="fc" id="L688">        int ndig = 1;</span>
-<span class="fc" id="L689">        long dmax = ByteFormatter.NUMBER_BASE;</span>
+<span class="fc" id="L687">        int ndig = 1;</span>
+<span class="fc" id="L688">        long dmax = ByteFormatter.NUMBER_BASE;</span>
         // Might be faster to try to do this partially in ints
-<span class="fc bfc" id="L691" title="All 4 branches covered.">        while (ndig &lt; MAX_LONG_LENGTH &amp;&amp; pos &gt;= dmax) {</span>
-<span class="fc" id="L692">            ndig++;</span>
-<span class="fc" id="L693">            dmax *= ByteFormatter.NUMBER_BASE;</span>
+<span class="fc bfc" id="L690" title="All 4 branches covered.">        while (ndig &lt; MAX_LONG_LENGTH &amp;&amp; pos &gt;= dmax) {</span>
+<span class="fc" id="L691">            ndig++;</span>
+<span class="fc" id="L692">            dmax *= ByteFormatter.NUMBER_BASE;</span>
         }
-<span class="fc bfc" id="L695" title="All 2 branches covered.">        if (val &lt; 0) {</span>
-<span class="fc" id="L696">            ndig++;</span>
+<span class="fc bfc" id="L694" title="All 2 branches covered.">        if (val &lt; 0) {</span>
+<span class="fc" id="L695">            ndig++;</span>
         }
         // Truncate if necessary.
-<span class="pc bpc" id="L699" title="1 of 4 branches missed.">        if (ndig &gt; len || ndig &gt; buf.length - off) {</span>
-<span class="fc" id="L700">            truncationFiller(buf, off, len);</span>
-<span class="fc" id="L701">            return off + len;</span>
+<span class="pc bpc" id="L698" title="1 of 4 branches missed.">        if (ndig &gt; len || ndig &gt; buf.length - off) {</span>
+<span class="fc" id="L699">            truncationFiller(buf, off, len);</span>
+<span class="fc" id="L700">            return off + len;</span>
         }
         // Now insert the actual characters we want -- backwards.
-<span class="fc" id="L704">        off += ndig;</span>
-<span class="fc" id="L705">        int xoff = off - 1;</span>
-<span class="fc" id="L706">        buf[xoff] = (byte) '0';</span>
-<span class="fc bfc" id="L707" title="All 2 branches covered.">        boolean last = pos == 0;</span>
-<span class="fc bfc" id="L708" title="All 2 branches covered.">        while (!last) {</span>
+<span class="fc" id="L703">        off += ndig;</span>
+<span class="fc" id="L704">        int xoff = off - 1;</span>
+<span class="fc" id="L705">        buf[xoff] = (byte) '0';</span>
+<span class="fc bfc" id="L706" title="All 2 branches covered.">        boolean last = pos == 0;</span>
+<span class="fc bfc" id="L707" title="All 2 branches covered.">        while (!last) {</span>
             // Work on ints rather than longs.
-<span class="fc" id="L710">            int giga = (int) (pos % LONG_TO_INT_MODULO);</span>
-<span class="fc" id="L711">            pos /= LONG_TO_INT_MODULO;</span>
-<span class="fc bfc" id="L712" title="All 2 branches covered.">            last = pos == 0;</span>
-<span class="fc bfc" id="L713" title="All 2 branches covered.">            for (int i = 0; i &lt; MAXIMUM_SINGLE_DIGIT_INTEGER; i++) {</span>
+<span class="fc" id="L709">            int giga = (int) (pos % LONG_TO_INT_MODULO);</span>
+<span class="fc" id="L710">            pos /= LONG_TO_INT_MODULO;</span>
+<span class="fc bfc" id="L711" title="All 2 branches covered.">            last = pos == 0;</span>
+<span class="fc bfc" id="L712" title="All 2 branches covered.">            for (int i = 0; i &lt; MAXIMUM_SINGLE_DIGIT_INTEGER; i++) {</span>
 
-<span class="fc" id="L715">                buf[xoff] = ByteFormatter.DIGITS[giga % ByteFormatter.NUMBER_BASE];</span>
-<span class="fc" id="L716">                xoff--;</span>
-<span class="fc" id="L717">                giga /= ByteFormatter.NUMBER_BASE;</span>
-<span class="fc bfc" id="L718" title="All 4 branches covered.">                if (last &amp;&amp; giga == 0) {</span>
-<span class="fc" id="L719">                    break;</span>
+<span class="fc" id="L714">                buf[xoff] = ByteFormatter.DIGITS[giga % ByteFormatter.NUMBER_BASE];</span>
+<span class="fc" id="L715">                xoff--;</span>
+<span class="fc" id="L716">                giga /= ByteFormatter.NUMBER_BASE;</span>
+<span class="fc bfc" id="L717" title="All 4 branches covered.">                if (last &amp;&amp; giga == 0) {</span>
+<span class="fc" id="L718">                    break;</span>
                 }
             }
-<span class="fc" id="L722">        }</span>
+<span class="fc" id="L721">        }</span>
 
-<span class="fc bfc" id="L724" title="All 2 branches covered.">        if (val &lt; 0) {</span>
-<span class="fc" id="L725">            buf[xoff] = (byte) '-';</span>
+<span class="fc bfc" id="L723" title="All 2 branches covered.">        if (val &lt; 0) {</span>
+<span class="fc" id="L724">            buf[xoff] = (byte) '-';</span>
         }
 
-<span class="fc" id="L728">        return off;</span>
+<span class="fc" id="L727">        return off;</span>
     }
 
     /**
@@ -740,7 +739,7 @@
      * @return Offset of next available character in buffer.
      */
     public int format(String val, byte[] array) {
-<span class="fc" id="L743">        return format(val, array, 0, array.length);</span>
+<span class="fc" id="L742">        return format(val, array, 0, array.length);</span>
     }
 
     /**
@@ -760,22 +759,22 @@
      */
     public int format(String val, byte[] array, int off, int len) {
 
-<span class="fc bfc" id="L763" title="All 2 branches covered.">        if (val == null) {</span>
-<span class="fc bfc" id="L764" title="All 2 branches covered.">            for (int i = 0; i &lt; len; i++) {</span>
-<span class="fc" id="L765">                array[off + i] = (byte) ' ';</span>
+<span class="fc bfc" id="L762" title="All 2 branches covered.">        if (val == null) {</span>
+<span class="fc bfc" id="L763" title="All 2 branches covered.">            for (int i = 0; i &lt; len; i++) {</span>
+<span class="fc" id="L764">                array[off + i] = (byte) ' ';</span>
             }
-<span class="fc" id="L767">            return off + len;</span>
+<span class="fc" id="L766">            return off + len;</span>
         }
 
-<span class="fc" id="L770">        int slen = val.length();</span>
+<span class="fc" id="L769">        int slen = val.length();</span>
 
-<span class="pc bpc" id="L772" title="1 of 4 branches missed.">        if (slen &gt; len || slen &gt; array.length - off) {</span>
-<span class="fc" id="L773">            val = val.substring(0, len);</span>
-<span class="fc" id="L774">            slen = len;</span>
+<span class="pc bpc" id="L771" title="1 of 4 branches missed.">        if (slen &gt; len || slen &gt; array.length - off) {</span>
+<span class="fc" id="L772">            val = val.substring(0, len);</span>
+<span class="fc" id="L773">            slen = len;</span>
         }
 
-<span class="fc" id="L777">        System.arraycopy(AsciiFuncs.getBytes(val), 0, array, off, slen);</span>
-<span class="fc" id="L778">        return off + slen;</span>
+<span class="fc" id="L776">        System.arraycopy(AsciiFuncs.getBytes(val), 0, array, off, slen);</span>
+<span class="fc" id="L777">        return off + slen;</span>
     }
 
     /**
@@ -785,77 +784,77 @@
     private int mantissa(byte[] mant, int lmant, int exp, boolean simple, byte[] buf, int off, int len) {
 
         // Save in case we need to extend the number.
-<span class="fc" id="L788">        int off0 = off;</span>
-<span class="fc" id="L789">        int pos = 0;</span>
+<span class="fc" id="L787">        int off0 = off;</span>
+<span class="fc" id="L788">        int pos = 0;</span>
 
-<span class="fc bfc" id="L791" title="All 2 branches covered.">        if (exp &lt; 0) {</span>
-<span class="fc" id="L792">            buf[off] = (byte) '0';</span>
-<span class="fc" id="L793">            len--;</span>
-<span class="fc" id="L794">            off++;</span>
-<span class="pc bpc" id="L795" title="1 of 2 branches missed.">            if (len &gt; 0) {</span>
-<span class="fc" id="L796">                buf[off] = (byte) '.';</span>
-<span class="fc" id="L797">                off++;</span>
-<span class="fc" id="L798">                len--;</span>
+<span class="fc bfc" id="L790" title="All 2 branches covered.">        if (exp &lt; 0) {</span>
+<span class="fc" id="L791">            buf[off] = (byte) '0';</span>
+<span class="fc" id="L792">            len--;</span>
+<span class="fc" id="L793">            off++;</span>
+<span class="pc bpc" id="L794" title="1 of 2 branches missed.">            if (len &gt; 0) {</span>
+<span class="fc" id="L795">                buf[off] = (byte) '.';</span>
+<span class="fc" id="L796">                off++;</span>
+<span class="fc" id="L797">                len--;</span>
             }
             // Leading 0s in small numbers.
-<span class="fc" id="L801">            int cexp = exp;</span>
-<span class="pc bpc" id="L802" title="1 of 4 branches missed.">            while (cexp &lt; -1 &amp;&amp; len &gt; 0) {</span>
-<span class="fc" id="L803">                buf[off] = (byte) '0';</span>
-<span class="fc" id="L804">                cexp++;</span>
-<span class="fc" id="L805">                off++;</span>
-<span class="fc" id="L806">                len--;</span>
+<span class="fc" id="L800">            int cexp = exp;</span>
+<span class="pc bpc" id="L801" title="1 of 4 branches missed.">            while (cexp &lt; -1 &amp;&amp; len &gt; 0) {</span>
+<span class="fc" id="L802">                buf[off] = (byte) '0';</span>
+<span class="fc" id="L803">                cexp++;</span>
+<span class="fc" id="L804">                off++;</span>
+<span class="fc" id="L805">                len--;</span>
             }
 
-<span class="fc" id="L809">        } else {</span>
+<span class="fc" id="L808">        } else {</span>
 
             // Print out all digits to the left of the decimal.
-<span class="pc bpc" id="L812" title="1 of 4 branches missed.">            while (exp &gt;= 0 &amp;&amp; pos &lt; lmant) {</span>
-<span class="fc" id="L813">                buf[off] = mant[pos];</span>
-<span class="fc" id="L814">                off++;</span>
-<span class="fc" id="L815">                pos++;</span>
-<span class="fc" id="L816">                len--;</span>
-<span class="fc" id="L817">                exp--;</span>
+<span class="pc bpc" id="L811" title="1 of 4 branches missed.">            while (exp &gt;= 0 &amp;&amp; pos &lt; lmant) {</span>
+<span class="fc" id="L812">                buf[off] = mant[pos];</span>
+<span class="fc" id="L813">                off++;</span>
+<span class="fc" id="L814">                pos++;</span>
+<span class="fc" id="L815">                len--;</span>
+<span class="fc" id="L816">                exp--;</span>
             }
             // Trust we have enough space for this.
-<span class="pc bpc" id="L820" title="1 of 2 branches missed.">            for (int i = 0; i &lt;= exp; i++) {</span>
-<span class="nc" id="L821">                buf[off] = (byte) '0';</span>
-<span class="nc" id="L822">                off++;</span>
-<span class="nc" id="L823">                len--;</span>
+<span class="pc bpc" id="L819" title="1 of 2 branches missed.">            for (int i = 0; i &lt;= exp; i++) {</span>
+<span class="nc" id="L820">                buf[off] = (byte) '0';</span>
+<span class="nc" id="L821">                off++;</span>
+<span class="nc" id="L822">                len--;</span>
             }
 
             // Add in a decimal if we have space.
-<span class="fc bfc" id="L827" title="All 2 branches covered.">            if (len &gt; 0) {</span>
-<span class="fc" id="L828">                buf[off] = (byte) '.';</span>
-<span class="fc" id="L829">                len--;</span>
-<span class="fc" id="L830">                off++;</span>
+<span class="fc bfc" id="L826" title="All 2 branches covered.">            if (len &gt; 0) {</span>
+<span class="fc" id="L827">                buf[off] = (byte) '.';</span>
+<span class="fc" id="L828">                len--;</span>
+<span class="fc" id="L829">                off++;</span>
             }
         }
 
         // Now handle the digits to the right of the decimal.
-<span class="fc bfc" id="L835" title="All 4 branches covered.">        while (len &gt; 0 &amp;&amp; pos &lt; lmant) {</span>
-<span class="fc" id="L836">            buf[off] = mant[pos];</span>
-<span class="fc" id="L837">            off++;</span>
-<span class="fc" id="L838">            exp--;</span>
-<span class="fc" id="L839">            len--;</span>
-<span class="fc" id="L840">            pos++;</span>
+<span class="fc bfc" id="L834" title="All 4 branches covered.">        while (len &gt; 0 &amp;&amp; pos &lt; lmant) {</span>
+<span class="fc" id="L835">            buf[off] = mant[pos];</span>
+<span class="fc" id="L836">            off++;</span>
+<span class="fc" id="L837">            exp--;</span>
+<span class="fc" id="L838">            len--;</span>
+<span class="fc" id="L839">            pos++;</span>
         }
 
         // Now handle rounding.
 
-<span class="fc bfc" id="L845" title="All 4 branches covered.">        if (pos &lt; lmant &amp;&amp; mant[pos] &gt;= (byte) '5') {</span>
+<span class="fc bfc" id="L844" title="All 4 branches covered.">        if (pos &lt; lmant &amp;&amp; mant[pos] &gt;= (byte) '5') {</span>
             int i;
 
             // Increment to the left until we find a non-9
-<span class="fc bfc" id="L849" title="All 2 branches covered.">            for (i = off - 1; i &gt;= off0; i--) {</span>
+<span class="fc bfc" id="L848" title="All 2 branches covered.">            for (i = off - 1; i &gt;= off0; i--) {</span>
 
-<span class="pc bpc" id="L851" title="1 of 4 branches missed.">                if (buf[i] == (byte) '.' || buf[i] == (byte) '-') {</span>
-<span class="nc" id="L852">                    continue;</span>
+<span class="pc bpc" id="L850" title="1 of 4 branches missed.">                if (buf[i] == (byte) '.' || buf[i] == (byte) '-') {</span>
+<span class="nc" id="L851">                    continue;</span>
                 }
-<span class="fc bfc" id="L854" title="All 2 branches covered.">                if (buf[i] == (byte) '9') {</span>
-<span class="fc" id="L855">                    buf[i] = (byte) '0';</span>
+<span class="fc bfc" id="L853" title="All 2 branches covered.">                if (buf[i] == (byte) '9') {</span>
+<span class="fc" id="L854">                    buf[i] = (byte) '0';</span>
                 } else {
-<span class="fc" id="L857">                    buf[i]++;</span>
-<span class="fc" id="L858">                    break;</span>
+<span class="fc" id="L856">                    buf[i]++;</span>
+<span class="fc" id="L857">                    break;</span>
                 }
             }
 
@@ -877,34 +876,34 @@
             // length, and we would have printed out the entire
             // mantissa (i.e., pos &gt;= lmant)
 
-<span class="fc bfc" id="L880" title="All 2 branches covered.">            if (i &lt; off0) {</span>
+<span class="fc bfc" id="L879" title="All 2 branches covered.">            if (i &lt; off0) {</span>
 
-<span class="fc" id="L882">                buf[off0] = (byte) '1';</span>
-<span class="fc" id="L883">                boolean foundDecimal = false;</span>
-<span class="pc bfc" id="L884" title="All 2 branches covered.">                for (i = off0 + 1; i &lt; off; i++) {</span>
-<span class="pc bpc" id="L885" title="1 of 2 branches missed.">                    if (buf[i] == (byte) '.') {</span>
-<span class="fc" id="L886">                        foundDecimal = true;</span>
-<span class="pc bpc" id="L887" title="1 of 2 branches missed.">                        if (simple) {</span>
-<span class="nc" id="L888">                            buf[i] = (byte) '0';</span>
-<span class="nc" id="L889">                            i++;</span>
-<span class="nc bnc" id="L890" title="All 2 branches missed.">                            if (i &lt; off) {</span>
-<span class="nc" id="L891">                                buf[i] = (byte) '.';</span>
+<span class="fc" id="L881">                buf[off0] = (byte) '1';</span>
+<span class="fc" id="L882">                boolean foundDecimal = false;</span>
+<span class="pc bfc" id="L883" title="All 2 branches covered.">                for (i = off0 + 1; i &lt; off; i++) {</span>
+<span class="pc bpc" id="L884" title="1 of 2 branches missed.">                    if (buf[i] == (byte) '.') {</span>
+<span class="fc" id="L885">                        foundDecimal = true;</span>
+<span class="pc bpc" id="L886" title="1 of 2 branches missed.">                        if (simple) {</span>
+<span class="nc" id="L887">                            buf[i] = (byte) '0';</span>
+<span class="nc" id="L888">                            i++;</span>
+<span class="nc bnc" id="L889" title="All 2 branches missed.">                            if (i &lt; off) {</span>
+<span class="nc" id="L890">                                buf[i] = (byte) '.';</span>
                             }
                         }
                         break;
                     }
                 }
-<span class="pc bpc" id="L897" title="3 of 4 branches missed.">                if (simple &amp;&amp; !foundDecimal) {</span>
-<span class="nc" id="L898">                    buf[off + 1] = (byte) '0'; // 99 went to 100</span>
-<span class="nc" id="L899">                    off++;</span>
+<span class="pc bpc" id="L896" title="3 of 4 branches missed.">                if (simple &amp;&amp; !foundDecimal) {</span>
+<span class="nc" id="L897">                    buf[off + 1] = (byte) '0'; // 99 went to 100</span>
+<span class="nc" id="L898">                    off++;</span>
                 }
 
-<span class="fc" id="L902">                off = -off; // Signal to change exponent if necessary.</span>
+<span class="fc" id="L901">                off = -off; // Signal to change exponent if necessary.</span>
             }
 
         }
 
-<span class="fc" id="L907">        return off;</span>
+<span class="fc" id="L906">        return off;</span>
     }
 
     /**
@@ -912,10 +911,10 @@
      * TruncationException will be thrown if the appropriate flag is set.
      */
     private void truncationFiller(byte[] buffer, int offset, int length) {
-<span class="fc bfc" id="L915" title="All 2 branches covered.">        for (int i = offset; i &lt; offset + length; i++) {</span>
-<span class="fc" id="L916">            buffer[i] = ByteFormatter.TRUNCATION_FILL;</span>
+<span class="fc bfc" id="L914" title="All 2 branches covered.">        for (int i = offset; i &lt; offset + length; i++) {</span>
+<span class="fc" id="L915">            buffer[i] = ByteFormatter.TRUNCATION_FILL;</span>
         }
-<span class="fc" id="L918">    }</span>
+<span class="fc" id="L917">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

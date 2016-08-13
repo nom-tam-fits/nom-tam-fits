@@ -7,6 +7,7 @@ nom.tam.fits.compression.algorithm.hcompress
 nom.tam.fits.compression.algorithm.plio
 nom.tam.fits.compression.algorithm.quant
 nom.tam.fits.compression.algorithm.rice
+nom.tam.fits.compression.algorithm.uncompressed
 nom.tam.fits.compression.provider
 nom.tam.fits.compression.provider.api
 nom.tam.fits.compression.provider.param.api

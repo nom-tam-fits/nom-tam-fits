@@ -57,7 +57,7 @@
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.Compression;
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayFuncs;
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SaveClose;
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SafeClose;
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  <strong class="jxr_keyword">import</strong> org.junit.Assert;
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
@@ -95,8 +95,8 @@
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>              byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>              Assert.assertArrayEquals(byteArray, decompressedArray);
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>          } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>              SaveClose.close(expected);
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>              SaveClose.close(file);
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>              SafeClose.close(expected);
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>              SafeClose.close(file);
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>          }
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>      }
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  
@@ -131,8 +131,8 @@
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>             byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
 <a class="jxr_linenumber" name="L124" href="#L124">124</a>             Assert.assertArrayEquals(byteArray, decompressedArray);
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>             SaveClose.close(expected);
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>             SafeClose.close(expected);
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>         }
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>     }
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> 
@@ -167,8 +167,8 @@
 <a class="jxr_linenumber" name="L159" href="#L159">159</a>             byteHCompress.decompress(ByteBuffer.wrap(expectedBytes), ByteBuffer.wrap(decompressedArray));
 <a class="jxr_linenumber" name="L160" href="#L160">160</a>             Assert.assertArrayEquals(byteArray, decompressedArray);
 <a class="jxr_linenumber" name="L161" href="#L161">161</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>             SaveClose.close(expected);
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>             SafeClose.close(expected);
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>         }
 <a class="jxr_linenumber" name="L165" href="#L165">165</a>     }
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> 
@@ -205,7 +205,7 @@
 <a class="jxr_linenumber" name="L197" href="#L197">197</a>             doubleHCompress.decompress(ByteBuffer.wrap(compressedArray), DoubleBuffer.wrap(decompressedArray));
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>             Assert.assertArrayEquals(doubleArray, decompressedArray, quant.getBScale() * 1.5);
 <a class="jxr_linenumber" name="L199" href="#L199">199</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L200" href="#L200">200</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L201" href="#L201">201</a>         }
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>     }
 <a class="jxr_linenumber" name="L203" href="#L203">203</a> 
@@ -243,7 +243,7 @@
 <a class="jxr_linenumber" name="L235" href="#L235">235</a>             floatHCompress.decompress(ByteBuffer.wrap(compressedArray), FloatBuffer.wrap(decompressedArray));
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>             Assert.assertArrayEquals(floatArray, decompressedArray, (<strong class="jxr_keyword">float</strong>) (quant.getBScale() * 1.5));
 <a class="jxr_linenumber" name="L237" href="#L237">237</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L238" href="#L238">238</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L239" href="#L239">239</a>         }
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>     }
 <a class="jxr_linenumber" name="L241" href="#L241">241</a> 
@@ -278,8 +278,8 @@
 <a class="jxr_linenumber" name="L270" href="#L270">270</a>             intHCompress.decompress(ByteBuffer.wrap(expectedBytes), IntBuffer.wrap(decompressedArray));
 <a class="jxr_linenumber" name="L271" href="#L271">271</a>             Assert.assertArrayEquals(intArray, decompressedArray);
 <a class="jxr_linenumber" name="L272" href="#L272">272</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L273" href="#L273">273</a>             SaveClose.close(expected);
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L273" href="#L273">273</a>             SafeClose.close(expected);
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L275" href="#L275">275</a>         }
 <a class="jxr_linenumber" name="L276" href="#L276">276</a>     }
 <a class="jxr_linenumber" name="L277" href="#L277">277</a> 
@@ -315,8 +315,8 @@
 <a class="jxr_linenumber" name="L307" href="#L307">307</a>             Assert.assertArrayEquals(intArray, decompressedArray);
 <a class="jxr_linenumber" name="L308" href="#L308">308</a> 
 <a class="jxr_linenumber" name="L309" href="#L309">309</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>             SaveClose.close(expected);
-<a class="jxr_linenumber" name="L311" href="#L311">311</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>             SafeClose.close(expected);
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L312" href="#L312">312</a>         }
 <a class="jxr_linenumber" name="L313" href="#L313">313</a>     }
 <a class="jxr_linenumber" name="L314" href="#L314">314</a> 
@@ -371,9 +371,9 @@
 <a class="jxr_linenumber" name="L363" href="#L363">363</a>             }
 <a class="jxr_linenumber" name="L364" href="#L364">364</a>             Assert.assertEquals(sum1 / intArray.length, sum2 / intArray.length, 0.5d);
 <a class="jxr_linenumber" name="L365" href="#L365">365</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L366" href="#L366">366</a>             SaveClose.close(expectedUncompressed);
-<a class="jxr_linenumber" name="L367" href="#L367">367</a>             SaveClose.close(expected);
-<a class="jxr_linenumber" name="L368" href="#L368">368</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>             SafeClose.close(expectedUncompressed);
+<a class="jxr_linenumber" name="L367" href="#L367">367</a>             SafeClose.close(expected);
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L369" href="#L369">369</a>         }
 <a class="jxr_linenumber" name="L370" href="#L370">370</a>     }
 <a class="jxr_linenumber" name="L371" href="#L371">371</a> 
@@ -408,8 +408,8 @@
 <a class="jxr_linenumber" name="L400" href="#L400">400</a>             shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
 <a class="jxr_linenumber" name="L401" href="#L401">401</a>             Assert.assertArrayEquals(shortArray, decompressedArray);
 <a class="jxr_linenumber" name="L402" href="#L402">402</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L403" href="#L403">403</a>             SaveClose.close(expected);
-<a class="jxr_linenumber" name="L404" href="#L404">404</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L403" href="#L403">403</a>             SafeClose.close(expected);
+<a class="jxr_linenumber" name="L404" href="#L404">404</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L405" href="#L405">405</a>         }
 <a class="jxr_linenumber" name="L406" href="#L406">406</a>     }
 <a class="jxr_linenumber" name="L407" href="#L407">407</a> 
@@ -444,8 +444,8 @@
 <a class="jxr_linenumber" name="L436" href="#L436">436</a>             shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
 <a class="jxr_linenumber" name="L437" href="#L437">437</a>             Assert.assertArrayEquals(shortArray, decompressedArray);
 <a class="jxr_linenumber" name="L438" href="#L438">438</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L439" href="#L439">439</a>             SaveClose.close(expected);
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L439" href="#L439">439</a>             SafeClose.close(expected);
+<a class="jxr_linenumber" name="L440" href="#L440">440</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L441" href="#L441">441</a>         }
 <a class="jxr_linenumber" name="L442" href="#L442">442</a>     }
 <a class="jxr_linenumber" name="L443" href="#L443">443</a> 
@@ -480,8 +480,8 @@
 <a class="jxr_linenumber" name="L472" href="#L472">472</a>             shortHCompress.decompress(ByteBuffer.wrap(expectedBytes), ShortBuffer.wrap(decompressedArray));
 <a class="jxr_linenumber" name="L473" href="#L473">473</a>             Assert.assertArrayEquals(shortArray, decompressedArray);
 <a class="jxr_linenumber" name="L474" href="#L474">474</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>             SaveClose.close(expected);
-<a class="jxr_linenumber" name="L476" href="#L476">476</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>             SafeClose.close(expected);
+<a class="jxr_linenumber" name="L476" href="#L476">476</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L477" href="#L477">477</a>         }
 <a class="jxr_linenumber" name="L478" href="#L478">478</a>     }
 <a class="jxr_linenumber" name="L479" href="#L479">479</a> 

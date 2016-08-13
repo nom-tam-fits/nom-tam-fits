@@ -90,7 +90,7 @@
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.BufferedFile;
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.Cursor;
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.LoggerHelper;
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SaveClose;
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SafeClose;
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.test.ThrowAnyException;
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  <strong class="jxr_keyword">import</strong> org.junit.Assert;
@@ -171,7 +171,7 @@
 <a class="jxr_linenumber" name="L163" href="#L163">163</a>             fits1.deleteHDU(2);
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>             writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
 <a class="jxr_linenumber" name="L165" href="#L165">165</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>             SaveClose.close(fits1);
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>             SafeClose.close(fits1);
 <a class="jxr_linenumber" name="L167" href="#L167">167</a>         }
 <a class="jxr_linenumber" name="L168" href="#L168">168</a> 
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>         fits1 = <strong class="jxr_keyword">new</strong> Fits(<strong class="jxr_keyword">new</strong> File(TARGET_BASIC_FITS_TEST_FITS));
@@ -440,7 +440,7 @@
 <a class="jxr_linenumber" name="L432" href="#L432">432</a>         } <strong class="jxr_keyword">catch</strong> (FitsException io) {
 <a class="jxr_linenumber" name="L433" href="#L433">433</a>             e = io;
 <a class="jxr_linenumber" name="L434" href="#L434">434</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>             SaveClose.close(os);
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>             SafeClose.close(os);
 <a class="jxr_linenumber" name="L436" href="#L436">436</a>         }
 <a class="jxr_linenumber" name="L437" href="#L437">437</a>         Assert.assertNotNull(e);
 <a class="jxr_linenumber" name="L438" href="#L438">438</a> 
@@ -459,7 +459,7 @@
 <a class="jxr_linenumber" name="L451" href="#L451">451</a>         } <strong class="jxr_keyword">catch</strong> (FitsException io) {
 <a class="jxr_linenumber" name="L452" href="#L452">452</a>             e = io;
 <a class="jxr_linenumber" name="L453" href="#L453">453</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>             SaveClose.close(os);
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>             SafeClose.close(os);
 <a class="jxr_linenumber" name="L455" href="#L455">455</a>         }
 <a class="jxr_linenumber" name="L456" href="#L456">456</a>         Assert.assertNotNull(e);
 <a class="jxr_linenumber" name="L457" href="#L457">457</a> 
@@ -478,7 +478,7 @@
 <a class="jxr_linenumber" name="L470" href="#L470">470</a>         } <strong class="jxr_keyword">catch</strong> (FitsException io) {
 <a class="jxr_linenumber" name="L471" href="#L471">471</a>             e = io;
 <a class="jxr_linenumber" name="L472" href="#L472">472</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>             SaveClose.close(os);
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>             SafeClose.close(os);
 <a class="jxr_linenumber" name="L474" href="#L474">474</a>         }
 <a class="jxr_linenumber" name="L475" href="#L475">475</a>         Assert.assertNotNull(e);
 <a class="jxr_linenumber" name="L476" href="#L476">476</a>         Assert.assertTrue(e.getCause() instanceof IOException);
@@ -498,7 +498,7 @@
 <a class="jxr_linenumber" name="L490" href="#L490">490</a>         } <strong class="jxr_keyword">catch</strong> (FitsException io) {
 <a class="jxr_linenumber" name="L491" href="#L491">491</a>             e = io;
 <a class="jxr_linenumber" name="L492" href="#L492">492</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>             SaveClose.close(os);
+<a class="jxr_linenumber" name="L493" href="#L493">493</a>             SafeClose.close(os);
 <a class="jxr_linenumber" name="L494" href="#L494">494</a>         }
 <a class="jxr_linenumber" name="L495" href="#L495">495</a>         Assert.assertNotNull(e);
 <a class="jxr_linenumber" name="L496" href="#L496">496</a>         Assert.assertTrue(e.getCause() instanceof EOFException);
@@ -722,13 +722,13 @@
 <a class="jxr_linenumber" name="L714" href="#L714">714</a>             Assert.assertNotNull(fits.readHDU());
 <a class="jxr_linenumber" name="L715" href="#L715">715</a>             Assert.assertEquals(1, fits.currentSize());
 <a class="jxr_linenumber" name="L716" href="#L716">716</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L717" href="#L717">717</a>             SaveClose.close(fits);
+<a class="jxr_linenumber" name="L717" href="#L717">717</a>             SafeClose.close(fits);
 <a class="jxr_linenumber" name="L718" href="#L718">718</a>         }
 <a class="jxr_linenumber" name="L719" href="#L719">719</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L720" href="#L720">720</a>             fits = <strong class="jxr_keyword">new</strong> Fits(FILE + <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"src/test/resources/nom/tam/fits/test/test.fits"</span>).getAbsolutePath(), false);
 <a class="jxr_linenumber" name="L721" href="#L721">721</a>             Assert.assertNotNull(fits.readHDU());
 <a class="jxr_linenumber" name="L722" href="#L722">722</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L723" href="#L723">723</a>             SaveClose.close(fits);
+<a class="jxr_linenumber" name="L723" href="#L723">723</a>             SafeClose.close(fits);
 <a class="jxr_linenumber" name="L724" href="#L724">724</a>         }
 <a class="jxr_linenumber" name="L725" href="#L725">725</a>         actual = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L726" href="#L726">726</a>         <strong class="jxr_keyword">try</strong> {
@@ -748,7 +748,7 @@
 <a class="jxr_linenumber" name="L740" href="#L740">740</a>             fits = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"src/test/resources/nom/tam/fits/test/test.fits"</span>, false);
 <a class="jxr_linenumber" name="L741" href="#L741">741</a>             Assert.assertNotNull(fits.readHDU());
 <a class="jxr_linenumber" name="L742" href="#L742">742</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L743" href="#L743">743</a>             SaveClose.close(fits);
+<a class="jxr_linenumber" name="L743" href="#L743">743</a>             SafeClose.close(fits);
 <a class="jxr_linenumber" name="L744" href="#L744">744</a>         }
 <a class="jxr_linenumber" name="L745" href="#L745">745</a>     }
 <a class="jxr_linenumber" name="L746" href="#L746">746</a> 
@@ -784,7 +784,7 @@
 <a class="jxr_linenumber" name="L776" href="#L776">776</a> 
 <a class="jxr_linenumber" name="L777" href="#L777">777</a>     @Test
 <a class="jxr_linenumber" name="L778" href="#L778">778</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSaveClosePrivate() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L779" href="#L779">779</a>         Constructor&lt;?&gt;[] constrs = SaveClose.<strong class="jxr_keyword">class</strong>.getDeclaredConstructors();
+<a class="jxr_linenumber" name="L779" href="#L779">779</a>         Constructor&lt;?&gt;[] constrs = SafeClose.<strong class="jxr_keyword">class</strong>.getDeclaredConstructors();
 <a class="jxr_linenumber" name="L780" href="#L780">780</a>         assertEquals(constrs.length, 1);
 <a class="jxr_linenumber" name="L781" href="#L781">781</a>         assertFalse(constrs[0].isAccessible());
 <a class="jxr_linenumber" name="L782" href="#L782">782</a>         constrs[0].setAccessible(<strong class="jxr_keyword">true</strong>);
@@ -1083,8 +1083,8 @@
 <a class="jxr_linenumber" name="L1075" href="#L1075">1075</a>             Assert.assertEquals(1, f.size());
 <a class="jxr_linenumber" name="L1076" href="#L1076">1076</a>             f.skipHDU(); <em class="jxr_comment">// should do nothing at all -)</em>
 <a class="jxr_linenumber" name="L1077" href="#L1077">1077</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L1078" href="#L1078">1078</a>             SaveClose.close(f);
-<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a>             SaveClose.close(in);
+<a class="jxr_linenumber" name="L1078" href="#L1078">1078</a>             SafeClose.close(f);
+<a class="jxr_linenumber" name="L1079" href="#L1079">1079</a>             SafeClose.close(in);
 <a class="jxr_linenumber" name="L1080" href="#L1080">1080</a>         }
 <a class="jxr_linenumber" name="L1081" href="#L1081">1081</a>     }
 <a class="jxr_linenumber" name="L1082" href="#L1082">1082</a> 
@@ -1103,7 +1103,7 @@
 <a class="jxr_linenumber" name="L1095" href="#L1095">1095</a>             Assert.assertTrue(e.getMessage().contains(<span class="jxr_string">"Unable"</span>));
 <a class="jxr_linenumber" name="L1096" href="#L1096">1096</a>             <strong class="jxr_keyword">throw</strong> e;
 <a class="jxr_linenumber" name="L1097" href="#L1097">1097</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L1098" href="#L1098">1098</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L1098" href="#L1098">1098</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L1099" href="#L1099">1099</a>         }
 <a class="jxr_linenumber" name="L1100" href="#L1100">1100</a>     }
 <a class="jxr_linenumber" name="L1101" href="#L1101">1101</a> 
@@ -1118,8 +1118,8 @@
 <a class="jxr_linenumber" name="L1110" href="#L1110">1110</a>             Assert.assertEquals(1, f.size());
 <a class="jxr_linenumber" name="L1111" href="#L1111">1111</a>             f.skipHDU(); <em class="jxr_comment">// should do nothing at all -)</em>
 <a class="jxr_linenumber" name="L1112" href="#L1112">1112</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L1113" href="#L1113">1113</a>             SaveClose.close(f);
-<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a>             SaveClose.close(in);
+<a class="jxr_linenumber" name="L1113" href="#L1113">1113</a>             SafeClose.close(f);
+<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a>             SafeClose.close(in);
 <a class="jxr_linenumber" name="L1115" href="#L1115">1115</a>         }
 <a class="jxr_linenumber" name="L1116" href="#L1116">1116</a>     }
 <a class="jxr_linenumber" name="L1117" href="#L1117">1117</a> 
@@ -1138,7 +1138,7 @@
 <a class="jxr_linenumber" name="L1130" href="#L1130">1130</a>             Assert.assertTrue(e.getMessage().contains(<span class="jxr_string">"detect"</span>));
 <a class="jxr_linenumber" name="L1131" href="#L1131">1131</a>             <strong class="jxr_keyword">throw</strong> e;
 <a class="jxr_linenumber" name="L1132" href="#L1132">1132</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L1134" href="#L1134">1134</a>         }
 <a class="jxr_linenumber" name="L1135" href="#L1135">1135</a>     }
 <a class="jxr_linenumber" name="L1136" href="#L1136">1136</a> 
@@ -1157,7 +1157,7 @@
 <a class="jxr_linenumber" name="L1149" href="#L1149">1149</a>             Assert.assertTrue(e.getMessage().contains(<span class="jxr_string">"detect"</span>));
 <a class="jxr_linenumber" name="L1150" href="#L1150">1150</a>             <strong class="jxr_keyword">throw</strong> e;
 <a class="jxr_linenumber" name="L1151" href="#L1151">1151</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L1153" href="#L1153">1153</a>         }
 <a class="jxr_linenumber" name="L1154" href="#L1154">1154</a>     }
 <a class="jxr_linenumber" name="L1155" href="#L1155">1155</a> 

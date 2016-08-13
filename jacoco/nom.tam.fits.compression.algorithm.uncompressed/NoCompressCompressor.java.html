@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NoCompressCompressor.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compression.algorithm.uncompressed</a> &gt; <span class="el_source">NoCompressCompressor.java</span></div><h1>NoCompressCompressor.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compression.algorithm.uncompressed;
+
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
+
+import nom.tam.fits.compression.algorithm.api.ICompressor;
+import nom.tam.util.type.PrimitiveTypes;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2015 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+/**
+ * This compression algorithm will just copy the input to the output and do
+ * nothing at all.
+ *
+ * @param &lt;T&gt;
+ *            the buffer type of the pixel data
+ */
+<span class="fc" id="L52">public abstract class NoCompressCompressor&lt;T extends Buffer&gt; implements ICompressor&lt;T&gt; {</span>
+
+<span class="fc" id="L54">    public static class ByteNoCompressCompressor extends NoCompressCompressor&lt;ByteBuffer&gt; {</span>
+
+        @Override
+        public boolean compress(ByteBuffer pixelData, ByteBuffer compressed) {
+<span class="fc" id="L58">            compressed.put(pixelData);</span>
+<span class="fc" id="L59">            return true;</span>
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, ByteBuffer pixelData) {
+<span class="fc" id="L64">            pixelData.put(compressed);</span>
+<span class="fc" id="L65">        }</span>
+    }
+
+<span class="fc" id="L68">    public static class DoubleNoCompressCompressor extends NoCompressCompressor&lt;DoubleBuffer&gt; {</span>
+
+        @Override
+        public boolean compress(DoubleBuffer pixelData, ByteBuffer compressed) {
+<span class="fc" id="L72">            int size = pixelData.remaining();</span>
+<span class="fc" id="L73">            compressed.asDoubleBuffer().put(pixelData);</span>
+<span class="fc" id="L74">            compressed.position(compressed.position() + size * PrimitiveTypes.DOUBLE.size());</span>
+<span class="fc" id="L75">            return true;</span>
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, DoubleBuffer pixelData) {
+<span class="fc" id="L80">            pixelData.put(compressed.asDoubleBuffer());</span>
+<span class="fc" id="L81">        }</span>
+    }
+
+<span class="fc" id="L84">    public static class FloatNoCompressCompressor extends NoCompressCompressor&lt;FloatBuffer&gt; {</span>
+
+        @Override
+        public boolean compress(FloatBuffer pixelData, ByteBuffer compressed) {
+<span class="fc" id="L88">            int size = pixelData.remaining();</span>
+<span class="fc" id="L89">            compressed.asFloatBuffer().put(pixelData);</span>
+<span class="fc" id="L90">            compressed.position(compressed.position() + size * PrimitiveTypes.FLOAT.size());</span>
+
+<span class="fc" id="L92">            return true;</span>
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, FloatBuffer pixelData) {
+<span class="fc" id="L97">            pixelData.put(compressed.asFloatBuffer());</span>
+<span class="fc" id="L98">        }</span>
+    }
+
+<span class="fc" id="L101">    public static class IntNoCompressCompressor extends NoCompressCompressor&lt;IntBuffer&gt; {</span>
+
+        @Override
+        public boolean compress(IntBuffer pixelData, ByteBuffer compressed) {
+<span class="fc" id="L105">            int size = pixelData.remaining();</span>
+<span class="fc" id="L106">            compressed.asIntBuffer().put(pixelData);</span>
+<span class="fc" id="L107">            compressed.position(compressed.position() + size * PrimitiveTypes.INT.size());</span>
+<span class="fc" id="L108">            return true;</span>
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, IntBuffer pixelData) {
+<span class="fc" id="L113">            pixelData.put(compressed.asIntBuffer());</span>
+<span class="fc" id="L114">        }</span>
+    }
+
+<span class="fc" id="L117">    public static class LongNoCompressCompressor extends NoCompressCompressor&lt;LongBuffer&gt; {</span>
+
+        @Override
+        public boolean compress(LongBuffer pixelData, ByteBuffer compressed) {
+<span class="fc" id="L121">            int size = pixelData.remaining();</span>
+<span class="fc" id="L122">            compressed.asLongBuffer().put(pixelData);</span>
+<span class="fc" id="L123">            compressed.position(compressed.position() + size * PrimitiveTypes.LONG.size());</span>
+<span class="fc" id="L124">            return true;</span>
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, LongBuffer pixelData) {
+<span class="fc" id="L129">            pixelData.put(compressed.asLongBuffer());</span>
+<span class="fc" id="L130">        }</span>
+    }
+
+<span class="fc" id="L133">    public static class ShortNoCompressCompressor extends NoCompressCompressor&lt;ShortBuffer&gt; {</span>
+
+        @Override
+        public boolean compress(ShortBuffer pixelData, ByteBuffer compressed) {
+<span class="fc" id="L137">            int size = pixelData.remaining();</span>
+<span class="fc" id="L138">            compressed.asShortBuffer().put(pixelData);</span>
+<span class="fc" id="L139">            compressed.position(compressed.position() + size * PrimitiveTypes.SHORT.size());</span>
+<span class="fc" id="L140">            return true;</span>
+        }
+
+        @Override
+        public void decompress(ByteBuffer compressed, ShortBuffer pixelData) {
+<span class="fc" id="L145">            pixelData.put(compressed.asShortBuffer());</span>
+<span class="fc" id="L146">        }</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

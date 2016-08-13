@@ -68,7 +68,7 @@
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.Standard;
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayFuncs;
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.BufferedFile;
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SaveClose;
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SafeClose;
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.TestArrayFuncs;
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.test.ThrowAnyException;
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  
@@ -123,7 +123,7 @@
 <a class="jxr_linenumber" name="L115" href="#L115">115</a>             assertEquals(<span class="jxr_string">"fint3 image"</span>, <strong class="jxr_keyword">true</strong>, TestArrayFuncs.arrayEquals(img3, hdus[6].getData().getKernel()));
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>             assertEquals(<span class="jxr_string">"fdouble1 image"</span>, <strong class="jxr_keyword">true</strong>, TestArrayFuncs.arrayEquals(img1, hdus[7].getData().getKernel()));
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>             f.close();
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L119" href="#L119">119</a>         }
 <a class="jxr_linenumber" name="L120" href="#L120">120</a>     }
 <a class="jxr_linenumber" name="L121" href="#L121">121</a> 
@@ -183,10 +183,10 @@
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>                 f.write(bf);
 <a class="jxr_linenumber" name="L176" href="#L176">176</a>                 bf.flush();
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>             } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>                 SaveClose.close(bf);
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>                 SafeClose.close(bf);
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>             }
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>             SaveClose.close(f);
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>             SafeClose.close(f);
 <a class="jxr_linenumber" name="L182" href="#L182">182</a>         }
 <a class="jxr_linenumber" name="L183" href="#L183">183</a> 
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>         BufferedFile bf = <strong class="jxr_keyword">null</strong>;
@@ -241,8 +241,8 @@
 <a class="jxr_linenumber" name="L233" href="#L233">233</a> 
 <a class="jxr_linenumber" name="L234" href="#L234">234</a>             Assert.assertArrayEquals(<strong class="jxr_keyword">new</strong> byte[0], (byte[]) <strong class="jxr_keyword">new</strong> ImageData().getData());
 <a class="jxr_linenumber" name="L235" href="#L235">235</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>             SaveClose.close(f);
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>             SaveClose.close(bf);
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>             SafeClose.close(f);
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>             SafeClose.close(bf);
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>         }
 <a class="jxr_linenumber" name="L239" href="#L239">239</a>     }
 <a class="jxr_linenumber" name="L240" href="#L240">240</a> 

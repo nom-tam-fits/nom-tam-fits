@@ -53,7 +53,7 @@
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.api.HeaderAccess;
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.Compression;
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SaveClose;
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SafeClose;
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.type.PrimitiveTypes;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> org.junit.Assert;
@@ -121,8 +121,8 @@
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>             compressor.decompress(compressed, ByteBuffer.wrap(decompressedArray));
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>             Assert.assertArrayEquals(bytes, decompressedArray);
 <a class="jxr_linenumber" name="L115" href="#L115">115</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>             SaveClose.close(expected);
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>             SafeClose.close(expected);
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>         }
 <a class="jxr_linenumber" name="L119" href="#L119">119</a>     }
 <a class="jxr_linenumber" name="L120" href="#L120">120</a> 
@@ -155,8 +155,8 @@
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>             compressor.decompress(compressed, IntBuffer.wrap(decompressedArray));
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>             Assert.assertArrayEquals(intArray, decompressedArray);
 <a class="jxr_linenumber" name="L149" href="#L149">149</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L150" href="#L150">150</a>             SaveClose.close(expected);
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>             SafeClose.close(expected);
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L152" href="#L152">152</a>         }
 <a class="jxr_linenumber" name="L153" href="#L153">153</a>     }
 <a class="jxr_linenumber" name="L154" href="#L154">154</a> 
@@ -189,8 +189,8 @@
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>             compressor.decompress(compressed, ShortBuffer.wrap(decompressedArray));
 <a class="jxr_linenumber" name="L182" href="#L182">182</a>             Assert.assertArrayEquals(shortArray, decompressedArray);
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>             SaveClose.close(expected);
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>             SaveClose.close(file);
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>             SafeClose.close(expected);
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>             SafeClose.close(file);
 <a class="jxr_linenumber" name="L186" href="#L186">186</a>         }
 <a class="jxr_linenumber" name="L187" href="#L187">187</a>     }
 <a class="jxr_linenumber" name="L188" href="#L188">188</a> 
@@ -244,7 +244,7 @@
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>             ByteRiceCompressor compressor = <strong class="jxr_keyword">new</strong> ByteRiceCompressor(option.setBytePix(PrimitiveTypes.BYTE.size()));
 <a class="jxr_linenumber" name="L237" href="#L237">237</a>             compressor.decompress(compressed, ByteBuffer.wrap(decompressedArray));
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>             SaveClose.close(compressedFile);
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>             SafeClose.close(compressedFile);
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>         }
 <a class="jxr_linenumber" name="L241" href="#L241">241</a> 
 <a class="jxr_linenumber" name="L242" href="#L242">242</a>     }

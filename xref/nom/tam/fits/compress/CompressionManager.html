@@ -51,7 +51,7 @@
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> java.util.logging.Logger;
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.FitsException;
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SaveClose;
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SafeClose;
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/compress/CompressionManager.html">CompressionManager</a> {
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  
@@ -129,7 +129,7 @@
 <a class="jxr_linenumber" name="L121" href="#L121">121</a>             <em class="jxr_comment">// This is probably a prelude to failure...</em>
 <a class="jxr_linenumber" name="L122" href="#L122">122</a>             <strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L124" href="#L124">124</a>             SaveClose.close(fis);
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>             SafeClose.close(fis);
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>         }
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>         <strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>     }
