@@ -1,103 +1,182 @@
 # An introduction to the nom.tam FITS library.
 
-[This is an early draft document.  Included code has not been checked and may be wrong in detail.  Nonetheless readers may find the overall discussion to be helpful.] 
+This document describes the nom.tam FITS library, a full-function Java library for reading and writing FITS files.
+Only a general introduction to how to use the library is given here.
+Detailed documention for the classes in given in their JavaDocs.
 
-This document describes the nom.tam FITS library, a full-function Java library for reading and writing FITS files.  Only a general introduction to how to use the library is given here.  Detailed documention for the classes in given in their JavaDocs.
-
-FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data.  This document assumes a general knowledge of FITS and Java but starts with a brief overview of FITS to set the context and terminology used.  
+FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data.
+This document assumes a general knowledge of FITS and Java but starts with a brief overview of FITS to set the context and terminology used.  
 
 ## FITS
-FITS is a binary format devised and primarily used for the storage of astronomical information.  A FITS file is composed of one or more Header-Data units (HDUs).  As their name suggests, each HDU has a header which can contain comments and a set of key-value pairs.  Most HDUs also have a data section which can store a (possibly multidimensional) array of data or a table of values.
+FITS is a binary format devised and primarily used for the storage of astronomical information.
+A FITS file is composed of one or more *Header-Data units* *(HDUs)*.
+As their name suggests, each *HDU* has a *header* which can contain comments and a set of key-value pairs.
+Most *HDUs* also have a *data* section which can store a (possibly multidimensional) array of data or a table of values.
+
 There are four basic types of HDU: 
 
-Image HDUs can store an array (the image) of 1-8 dimensions with a type corresponding to Java bytes, shorts, ints, longs, floats or double:  e.g., a one-dimensional time series where each bin in the array represents a constant interval, or a three-dimensional image cube with separate channels for different energies.   
+1. **Image HDUs** can store an array (the image) of 1-8 dimensions with a type corresponding to Java bytes, shorts, ints, longs, floats or double:  e.g., a one-dimensional time series where each bin in the array represents a constant interval, or a three-dimensional image cube with separate channels for different energies.   
 
-A random-groups HDU can contain a list of such ‘images’ where there is a header of parameters for each image.  The header comprises 0 or more elements of the same type as the image.  Each image in the random groups HDU has the same dimensionality.  A random-groups HDU might store a set of 2-D images each of which has a two-element header giving the center of the image.
+2. **Random-Groups HDUs** can contain a list of such ‘images’ where there is a header of parameters for each image.
+The header comprises 0 or more elements of the same type as the image.
+Each image in the random groups HDU has the same dimensionality.
+A random-groups HDU might store a set of 2-D images each of which has a two-element header giving the center of the image.
 
-ASCII tables can store floating point, string and integer scalars.  The data are stored as ASCII strings using a fixed format within the table for each column.  There are essentially no limits on the size and precision of the values to be represented.  In principle, ASCII tables can represent data that cannot be conveniently represented using Java primitive types.  In practice the source data are common computer types and the nom.tam library is able to accurately decode the table values.  An ASCII table might represent a catalog of sources.
+3. **ASCII Table HDUs** can store floating point, string and integer scalars.
+The data are stored as ASCII strings using a fixed format within the table for each column.
+There are essentially no limits on the size and precision of the values to be represented.
+In principle, ASCII tables can represent data that cannot be conveniently represented using Java primitive types.
+In practice the source data are common computer types and the nom.tam library is able to accurately decode the table values.
+An ASCII table might represent a catalog of sources.
 
-Binary table HDUs can store a table where each element of the table can be a scalar or an array of any dimensionality.  In addition to the types supported for image and random groups HDUs the elements of a binary table can be single and double precision complex values, booleans, and bit strings.   A column in a binary table can be of either fixed format or a variable length array.  Variable length arrays can be only one-dimensional but the length of the array can vary from row to row.  A binary table might be used to store the source characteristics of each source detected in an observation along with small image cutouts and spectra for each source.
-Any number of HDUs can be strung together in a FITS file.  The first HDU must be either an image or random-groups HDU.   Often a null-image is used: this is possible by requesting an image HDU with an image dimensionality 0 or where one of the dimensions is 0.
+4. **Binary table HDUs** can store a table where each element of the table can be a scalar or an array of any dimensionality.
+In addition to the types supported for *image* and *random groups* HDUs the elements of a binary table can be single and double precision complex values, booleans, and bit strings.
+A column in a binary table can be of either fixed format or a variable length array.
+Variable length arrays can be only one-dimensional but the length of the array can vary from row to row.
+A binary table might be used to store the source characteristics of each source detected in an observation along with small image cutouts and spectra for each source.
+Any number of HDUs can be strung together in a FITS file.
+The first HDU must be either an image or random-groups HDU.
+Often a null-image is used: this is possible by requesting an image HDU with an image dimensionality 0 or where one of the dimensions is 0.
 
 ## Special type issues
 
 ### Signed versus unsigned bytes.
 
-Java bytes are signed, but FITS bytes are not.  If any arithmetic processing is to be done on byte data, users may need to be careful of Java’s automated conversion of bytes to integers which includes sign extension.  E.g.
+Java bytes are signed, but FITS bytes are not.
+If any arithmetic processing is to be done on byte data,
+users may need to be careful of Java’s automated conversion of bytes to integers which includes sign extension.
 
-    byte[] bimg = …
-    for (int i=0; i<bimg.length; i += 1) {
-             bimg[i] = (byte)(bimg[i]&0xFF – offset);
-    }
+E.g.
+
+```{java}
+byte[] bimg = …
+for (int i=0; i<bimg.length; i += 1) {
+     bimg[i] = (byte)(bimg[i]&0xFF - offset);
+}
+```
     
 This idiom of ANDing the byte values with 0xFF is generally the way to prevent undesired sign extension of bytes.
 
 ### Complex data
 
-Java has no native complex data types, but FITS binary tables support both single and double precision complex.  These are represented as float[2] and double[2] arrays in the nom.tam library.
+Java has no native complex data types, but FITS binary tables support both single and double precision complex.
+These are represented as `float[2]` and `double[2]` arrays in the `nom.tam` library.
 
 ### Strings
 
-FITS generally represents character strings using byte arrays.  However the nom.tam library automatically converts between Java Strings and the internal FITS representations.  The nom.tam library never uses Java char types.
+FITS generally represents character strings using byte arrays.
+However the nom.tam library automatically converts between Java Strings and the internal FITS representations.
+The nom.tam library never uses Java char types.
 
 ## General philosophy
 
-The approach of the nom.tam FITS library is to try to hide as many of the details of the organization of the FITS data from the user as possible.  To write FITS data the user provides data in Java primitive and String arrays and these data are automatically organized images or tables and written to the output.  When reading data, the user can get Java primitive types and Strings from the HDUs only knowing the general characteristics of the table, not anything about how the data is stored in FITS.   Users who wish to delve into the intricacies of the FITS representation can generally do so using  methods in some of the classes that were intended primarily for internal use but which are made available to the general user.
+The approach of the nom.tam FITS library is to try to hide as many of the details of the organization of the FITS data from the user as possible.
+To write FITS data the user provides data in Java primitive and String arrays and these data are automatically organized images or tables and written to the output.
+When reading data, the user can get Java primitive types and Strings from the HDUs only knowing the general characteristics of the table, not anything about how the data is stored in FITS.
+Users who wish to delve into the intricacies of the FITS representation can generally do so using  methods in some of the classes that were intended primarily for internal use but which are made available to the general user.
 
-This library is concerned only with the structural issues for transforming between the internal Java and external FITS representations.  It knows nothing about the semantics of FITS files, including conventions ratified as FITS standards such as the FITS world coordinate systems. 
+This library is concerned only with the structural issues for transforming between the internal Java and external FITS representations. 
+It knows nothing about the semantics of FITS files, including conventions ratified as FITS standards such as the FITS world coordinate systems. 
 The nom.tam library was originally written in Java 1.0 and its design and implementation were strongly influenced by the limited functionality and efficiencies of early versions of Java.  
 
-## Reading FITS files.
+## Reading FITS Files.
 
-To read a FITS file the user typically might open a Fits object, get the appropriate HDU using the getHDU and then get the data using getKernel() access.  E.g., suppose we have a FITS file where the first and second HDUs are a count and exposure image for a region and we want to calculate intensity image.  The count image has short values, while the exposure using floats.  To get these data the user might try:
+To read a FITS file the user typically might open a `Fits` object, get the appropriate HDU using the `getHDU` method and then get the data using `getKernel()`.
 
-     Fits f = new Fits(“myfile.fits”);
-     short[][] counts = (short[][]) f.getHDU(0).getKernel();
-     float[][] expos  = (float[][]) f.getHDU(1).getKernel();
-     float[][] inten  = new float[counts.length][counts[0].length];
-     for (…) {
-           inten[i][j] = counts[i][j]/expos[i][j];
-     …
+### Reading Images
 
-The getKernel() method returns the basic internal format used for storage, which is a Java primitive array for images.  However the user will be responsible for casting this to an appropriate type if they want to use the data inside their program.  It is possible to build tools that will handle arbitrary array types, but it is not trivial.
+Suppose we have a FITS file where the first and second HDUs are a count and exposure image for a region and we want to calculate intensity image.
+The count image has short values, while the exposure using floats.
 
-When reading FITS data using the nom.tam library the user will often need to cast the results to the appropriate type.   Given that the FITS file may contain many different kinds of data and that Java provides us with no class that can point to different kinds of primitive arrays other than Object, this downcasting is inevitable if you want to use the data from the FITS files.
+To get these data the user might try:
 
-When reading image data users may not want to read an entire array especially if the data is very large.  An ImageTiler can be used to read in only a portion of an array.  The user can specify a box (or a sequence of boxes) within the image and extract the desired subsets.  Image tilers can be used for any image.  The library will try to only read the subsets requested if the FITS data is being read from an uncompressed file but in many cases it will need to read in the entire image before subsetting.  E.g., suppose the images we retrieve above are 2000x2000 pixel images but we only want to see the innermost 100x100 pixels.  For the first HDU we might try
+```{java}
+Fits f = new Fits(“myfile.fits”);
 
-      ImageHDU hdu = (ImageHDU) f.getHDU(0);
-      ImageTiler tiler  hdu.getTiler();
-      short[][] center = (short[][]) tiler.getTile(
-            new int[]{950,950}, new int[]{100,100});
+short[][] counts = (short[][]) f.getHDU(0).getKernel();
+float[][] exposures  = (float[][]) f.getHDU(1).getKernel();
+float[][] intensities  = new float[counts.length][counts[0].length];
 
-The tiler needs to know the corners and size of the tile we want.  Note that we can tile an image of any dimensionality.   Since tiling is only available for images, we needed to cast the HDU to the appropriate type to get access to this functionality.
+for (int i=0; i < counts.length; i++) {
+    for (int j=0; j < counts[0].length; j++) {
+        inten[i][j] = counts[i][j]/expos[i][j];
+    }
+}
+```
 
-When reading tabular data the user has a variety of ways to read the data.  The entire table can be read at once, or the data can be read in pieces, by row, column or individual element.  When an entire table is read at once, the user gets back an Object[] array.   Each element of this array points to a column from the FITS file.  Scalar values are represented as one dimensional arrays with the length of the array being the number of columns in the array.  Strings are typically also returned as an array of strings where the elements are trimmed of trailing blanks.  If a binary table has non-scalar columns of some dimensionality n, then the dimensionality of the corresponding array in the Object[] array is increased to n+1 to accommodate.  The first dimension is the row index.  If variable length elements are used, then the entry is normally a 2-D array which is not rectangular, i.e., the number of elements in each row will vary as requested by the user.  Since Java allows 0-length arrays, missing data is represented by such an array, not a null, for the corresponding row.
+The `getKernel()` method returns the basic internal format used for storage, which is a Java primitive array for images.
+However the user will be responsible for casting this to an appropriate type if they want to use the data inside their program.
+It is possible to build tools that will handle arbitrary array types, but it is not trivial.
 
-E.g., suppose we have a FITS table of sources with the name, RA and Dec of a set of sources and two additional columns with give a time series and spectrum for the source.
+When reading FITS data using the nom.tam library the user will often need to cast the results to the appropriate type.
+Given that the FITS file may contain many different kinds of data and that Java provides us with no class that can point to different kinds of primitive arrays other than Object, this downcasting is inevitable if you want to use the data from the FITS files.
 
-	Fits f = new Fits(“sourcetable.fits”);
-	Object[] cols = (Object[]) f.getHDU(1).getColumns();
-	String[] names = (String[]) cols[0];
-	double[] ra  = (double[]) cols[1];
-	double[] dec = (double[]) cols[2];
-	double[][] timeseries = (double[][]) cols[3];
-	double[][] spectra    = (double[][]) cols[4];
+When reading image data users may not want to read an entire array especially if the data is very large.
+An ImageTiler can be used to read in only a portion of an array.
+The user can specify a box (or a sequence of boxes) within the image and extract the desired subsets.
+Image tilers can be used for any image.
+The library will try to only read the subsets requested if the FITS data is being read from an uncompressed file but in many cases it will need to read in the entire image before subsetting.
 
-Now we have a set of arrays where the leading dimensions will all be the same, the number of rows in the table.  Note that we skipped the first HDU (indexed with 0).  Tables can never be the first HDU in a FITS file.  If there is no image data to be written, then typically a null image is written as the first HDU.  The header for this image may include metadata of interest but we just skip it here. 
+Suppose the images we retrieve above are 2000x2000 pixel images but we only want to see the innermost 100x100 pixels.
+For the first HDU we might try
 
-Often a table will have a large number of columns and we are only interested in a few.  After opening the Fits object we might try:
+```{java}
+ImageHDU hdu = (ImageHDU) f.getHDU(0);
+ImageTiler tiler = hdu.getTiler();
+short[] center = (short[]) tiler.getTile(new int[]{950,950}, new int[]{100,100});
+```
 
-    TableHDU tab = (TableHDU) f.getHDU(1);
-    double[] ra = (double[]) tab.getColumn(1);
-    double[] dec = (double[]) tab.getColumn(2);
-    double[][] spectra = (double[][]) tab.getColumn(4);
+The tiler needs to know the corners and size of the tile we want.
+Note that we can tile an image of any dimensionality.
+Since tiling is only available for images, we needed to cast the HDU to the appropriate type to get access to this functionality.
+`getTile` returns a one-dimensional array with the flattend image.
 
-FITS stores tables in row order.  The library will still need to read in the entire FITS file even if we only use a few columns.   We can read data by row if want to get results without reading the entire image.
-After getting the TableHDU, instead of getting columns we can get the first row.  E.g.,
+### Reading Tables
 
-	TableHDU tab = (TableHDU) f.getHDU(1);
-	(Object[]) row = table.getRow(0);
+When reading tabular data the user has a variety of ways to read the data.
+The entire table can be read at once, or the data can be read in pieces, by row, column or individual element.
+When an entire table is read at once, the user gets back an Object[] array.   Each element of this array points to a column from the FITS file.  Scalar values are represented as one dimensional arrays with the length of the array being the number of columns in the array.  Strings are typically also returned as an array of strings where the elements are trimmed of trailing blanks.  If a binary table has non-scalar columns of some dimensionality n, then the dimensionality of the corresponding array in the Object[] array is increased to n+1 to accommodate.  The first dimension is the row index.  If variable length elements are used, then the entry is normally a 2-D array which is not rectangular, i.e., the number of elements in each row will vary as requested by the user.  Since Java allows 0-length arrays, missing data is represented by such an array, not a null, for the corresponding row.
+
+Suppose we have a FITS table of sources with the name, RA and Dec of a set of sources and two additional columns with a time series and spectrum for the source.
+
+```{java}
+Fits f = new Fits(“sourcetable.fits”);
+
+Object[] cols = (Object[]) f.getHDU(1).getColumns();
+
+String[] names = (String[]) cols[0];
+double[] ra  = (double[]) cols[1];
+double[] dec = (double[]) cols[2];
+double[][] timeseries = (double[][]) cols[3];
+double[][] spectra    = (double[][]) cols[4];
+```
+
+Now we have a set of arrays where the leading dimensions will all be the same, the number of rows in the table.
+Note that we skipped the first HDU (indexed with 0).
+Tables can never be the first HDU in a FITS file.
+If there is no image data to be written, then typically a null image is written as the first HDU.
+The header for this image may include metadata of interest but we just skip it here. 
+
+Often a table will have a large number of columns and we are only interested in a few.
+After opening the Fits object we might try:
+
+```{java}
+TableHDU tab = (TableHDU) f.getHDU(1);
+double[] ra = (double[]) tab.getColumn(1);
+double[] dec = (double[]) tab.getColumn(2);
+double[][] spectra = (double[][]) tab.getColumn(4);
+```
+
+FITS stores tables in row order.
+The library will still need to read in the entire FITS file even if we only use a few columns.
+We can read data by row if want to get results without reading the entire file.
+
+After getting the TableHDU, instead of getting columns we can get the first row.
+
+```{java}
+TableHDU tab = (TableHDU) f.getHDU(1);
+(Object[]) row = table.getRow(0);
+```
 
 The content of row is similar to that for the cols array we got when we extracted the entire table.  However if a column has a scalar value, then an xxx[1] array will be returned for the row (since a primitive scalar cannot be returned as an Object).  If the column has a vector value, then the appropriate dimension vector for a single row’s entry will be returned, the dimensionality is one less than when we retrieve an entire column. E.g., we might continue
 
@@ -105,17 +184,22 @@ The content of row is similar to that for the cols array we got when we extracte
 	double[] dec  = (double[]) row[2];
 	double[] spectrum = (double[]) row[3];
 
-Here ra and dec will have length 1: they are scalars, but the library uses one element arrays to provide a mutable Object wrapper.  The spectrum may have any length, perhaps 0 if there was no spectrum for this source.
+Here ra and dec will have length 1: they are scalars, but the library uses one element arrays to provide a mutable Object wrapper.
+The spectrum may have any length, perhaps 0 if there was no spectrum for this source.
 A user can read rows in any order.
 
 ## Lower level  reads.
 
-A user can get access to the special stream that is used to read the FITS information and then process the data at a lower level using the nom.tam libraries special I/O objects.  This can be a bit more efficient for large datasets.
+A user can get access to the special stream that is used to read the FITS information and then process the data at a lower level using the nom.tam libraries special I/O objects.
+This can be a bit more efficient for large datasets.
 
-E.g., suppose we want to get the average value of a 100,000x20,000 pixel image.  If the pixels are ints, that’s  an 8 GB file.  We can do
+Suppose we want to get the average value of a 100,000x20,000 pixel image.
+If the pixels are ints, that’s  an 8 GB file.  We can do
 
     Fits f = new Fits(“bigimg.fits”);
+
     BasicHDU img = f.getHDU(0);
+
     if (img.getData().reset()) {
         int[] line = new int[100000];
         long sum   = 0;
@@ -133,8 +217,14 @@ E.g., suppose we want to get the average value of a 100,000x20,000 pixel image. 
          System.err.println(“Unable to seek to data”);
     }
     
-The reset() method causes the internal stream to seek to the beginning of the data area.  If that’s not possible it returns false. 
-We can process binary tables in a similar way if they have a fixed structure.  Since tables are stored row-by-row internally in FITS we need first get a model row and then we can read in each row in turn.   However this returns data essentially in the representation used by FITS without conversion to internal Java types for String and boolean values.  Strings are stored as an array of bytes.  Booleans are bytes with restricted values.  The easy way to get the model for a row is simply to use the getModelRow() method
+The reset() method causes the internal stream to seek to the beginning of the data area.
+If that’s not possible it returns false. 
+We can process binary tables in a similar way if they have a fixed structure.
+Since tables are stored row-by-row internally in FITS we need first get a model row and then we can read in each row in turn.
+However this returns data essentially in the representation used by FITS without conversion to internal Java types for String and boolean values.
+Strings are stored as an array of bytes.
+Booleans are bytes with restricted values.
+The easy way to get the model for a row is simply to use the `getModelRow()` method
 
      Fits f = new Fits(“bigtable.fits”);
      BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
@@ -147,7 +237,8 @@ We can process binary tables in a similar way if they have a fixed structure.  S
      }
      
 Of course the user can build up a template array directly if they know the structure of the table.
-This is not possible for ASCII tables, since the FITS and Java representations of the data are very different.  It is also harder to do if there are variable length records although something is are possible if the user is willing to deal directly with the FITS heap using the FitsHeap class.
+This is not possible for ASCII tables, since the FITS and Java representations of the data are very different.
+It is also harder to do if there are variable length records although something is are possible if the user is willing to deal directly with the FITS heap using the FitsHeap class.
 
 ## Writing data
 
