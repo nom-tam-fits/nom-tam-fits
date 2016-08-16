@@ -398,62 +398,131 @@ Some modifications may be made to the header but the number of header cards modu
 
 ## Lower level writes
 
-When a large table or image is to be written, the user may wish to stream the write.  This is possible but rather more difficult than in the case of reads.  There are two main issues.  The first is that the header for the HDU must written to show the size of the entire file when we are done.  Thus the user may need to modify the header data appropriately.  Second, after writing the data, a valid FITS file may need to be padded to an appropriate length.   It generally easy to address these, but the user needs some familiarity with the internals of the FITS representation.
+When a large table or image is to be written, the user may wish to stream the write.
+This is possible but rather more difficult than in the case of reads.
 
-We’ll want to customize a header, write it, then write the data in pieces and finally write the padding.   E.g., suppose we have a 16 GB image that we want to write.  It could be foolish to require all of that data to be held in-memory.   We’ll build up a header that’s almost what we want, fix it, write it and then write the data.
-The data is an array  of 2000 x 2000 pixel images in 1000 energy channels .  Each channel has a 4 byte integer.   The entire image might be specified as 
+There are two main issues:
+1. The header for the HDU must written to show the size of the entire file when we are done.
+Thus the user may need to modify the header data appropriately.
+2. After writing the data, a valid FITS file may need to be padded to an appropriate length.
 
-	int[1000][2000][2000] 
+It's not hard to address these, but the user needs some familiarity with the internals of the FITS representation.
 
-but we don’t want to keep all 16GB in memory simultaneously.  We’ll process a channel at  a time.
+### Images
+Suppose we have a 16 GB image that we want to write.
+It could be foolish to require all of that data to be held in-memory.
+We’ll build up a header that’s almost what we want, fix it, write it and then write the data.
+The data is an array  of 2000 x 2000 pixel images in 1000 energy channels.
+Each channel has a 4 byte integer.
+The entire image might be specified as 
 
-    int[][][] row = new int[1][2000][2000];
-    BasicHDU hdu  = FitsFactory.HDUFactory(row);
-    hdu.getHeader().addValue(“NAXIS3”, 1000, 
-            “Actual number of energy channels”);
+```{java}
+int[][][] image = new int[1000][2000][2000];
+```
 
-    BufferedFile bf = new BufferedFile(“bigimg.fits”, “rw”);
+but we don’t want to keep all 16GB in memory simultaneously.
+We’ll process one channel at a time.
 
-    hdu.getHeader().write(bf);
-    for (int i=0; i<1000; i += 1) {
-           … fill up row with one channels worth of data
-           bf.writeArray(row);
-    }
-    FitsUtil.pad(bf,  (long)2000*2000*1000*4) ;
-    bf.close();
+```{java}
+int[][][] row = new int[1][2000][2000];
+long rowSize = ArrayFuncs.computeLSize(row);
+int numRows = 1000;
 
-The first two statements create a FITS HDU appropriate for a 1x2000x2000 array.  We update the header for this HDU to reflect the FITS file we want to create.  Then we write it out to our new file.  Next we fill up each channel and write it directly.   Then we add in a little padding and close our connection to the file, which should flush and pending output.  
+BasicHDU hdu = FitsFactory.hduFactory(row);
+hdu.getHeader().setNaxis(3, numRows);  // set the actual number of rows, we are going to write
 
-Note that the order of axes in FITS is the inverse of how they are written in Java.  The first FITS axis varies most rapidly.  
-We can do something pretty similar for tables so long as we don’t have variable length columns, but it requires a little work.
-First we get a model row.  Since we’re going to use low level output, we probably should use the model row method in BinaryTable to get this so that we handle Strings properly.  We’ll have to convert string to byte arrays as we write out each row.
+BufferedFile bf = new BufferedFile("bigimg.fits", "rw");
+hdu.getHeader().write(bf);
 
-    String[] names = {“first entry   “};
-    Double[] ras  = {0.};
-    Double[] decs = {0.};
-    Object[] data = new Object[names, ras, decs];
+for (int i=0; i<numRows; i += 1) {
+   // fill up row with one channels worth of data
+   bf.writeArray(row);
+}
 
-    FitsFactory.setUseAsciiTables(false);
-    BinaryTableHDU hdu = (BinaryTableHDU) FitsFactory.HDUFactory(row);
-    Object[] row = hdu.getData().getModelRow();
+FitsUtil.pad(bf,  numRows * rowSize) ;
+bf.close();
+```
 
-    hdu.getHeader().addValue(“NAXIS2”, 100000000, 
-      “Actual number of objects”);
-    BufferedFile bf = new BufferedFile(“bigimg.fits”, “rw”);
-    Fits.getNullHDU().write(bf);   // Write the initial null
-    hdu.getHeader().write(bf);
-    for (int i=0; i<1000000000; i += 1) {
-           … update the row.  Make sure to convert string to
-           … byte[] arrays of proper length
-           bf.writeArray(row);
-    }
-    FitsUtil.pad(bf,(long)1000000000*ArrayFuncs.size(row));
-    bf.close();
+The first two statements create a FITS HDU appropriate for a 1x2000x2000 array.
+We update the header for this HDU to reflect the FITS file we want to create.
+Then we write it out to our new file.  Next we fill up each channel and write it directly.
+Then we add in a little padding and close our connection to the file, which should flush and pending output.  
 
-This merits a little study.  First we set up an Object[] array and create a BinaryTableHDU using information from a single sample row.  We needed to make sure that we got a binary rather than ASCII table.  We pad any strings out to the maximum length we want strings to be.   Then we create a BinaryTableHDU for this single row.  We update the header to reflect the number of rows we actually want and we get the model row for the table.  This will have converted Strings (and booleans if we have them) from the Java to the FITS representations that we can use with the ArrayDataOutput object.
+Note that the order of axes in FITS is the inverse of how they are written in Java.
+The first FITS axis varies most rapidly.  
 
-Next we create a BufferedFile that we can write FITS data to.  Since a Table cannot start a Fits file we write a null HDU and our updated Header.  Then we start processing rows writing them one at a time.  After we’re done, we make sure the Fits file is properly padded and close the buffered file.
-Since data with variable length records have each row written to at least two different places in the FITS files (the table main data and the table heap), streaming writes of these tables is harder.  The methods of FitsHeap can be used but unless there’s a real need it’s a lot easier just to use the higher level methods for writing these.
+
+### Tables
+We can do something pretty similar for tables so long as we don’t have variable length columns, but it requires a little more work.
+We will use a `ByteBuffer` to store the bytes we are going to write out for each row.
+
+```{java}
+BufferedFile bf = new BufferedFile("table.fits", "rw");
+
+BasicHDU.getDummyHDU().write(bf);  // Write an initial null HDU
+
+double[] ra = {0.};
+double[] dec = {0.};
+String[] name = {"          "}; // maximum length will be 10 characters
+
+Object[] row = {ra, dec, name};
+long rowSize = ArrayFuncs.computeLSize(row);
+
+BinaryTable table = new BinaryTable();
+
+table.addRow(row);
+
+Header header = new Header();
+table.fillHeader(header);
+
+BinaryTableHDU bhdu = new BinaryTableHDU(header, table);
+
+bhdu.setColumnName(0, "ra", null);
+bhdu.setColumnName(1, "dec", null);
+bhdu.setColumnName(2, "name", null);
+
+bhdu.getHeader().setNaxis(2, 1000);  // set the header to the actual number of rows we write
+bhdu.getHeader().write(bf);
+
+ByteBuffer buffer = ByteBuffer.allocate((int) rowSize);
+
+for (int event = 0; event < 1000; event ++){
+    buffer.clear();
+
+    // update ra, dec and name here
+
+    buffer.putDouble(ra[0]);
+    buffer.putDouble(dec[0]);
+    buffer.put(name[0].getBytes());
+
+    buffer.flip();
+    bf.write(buffer.array());
+}
+
+FitsUtil.pad(bf, rowSize * 1000);
+bf.close();
+```
+
+First we create a new `BufferedFile` and write the initial empty HDU.
+Than we initialize our first row and calculate its size.
+Note how we used 10 spaces to initialize the `String`, this will be the maximum size for
+each item in this column.
+
+We create a new `BinaryTable` and add our first row. 
+This row only initializes the table structure. It will not be written out!
+
+Next is the creation of a `Header` and a `BinaryTableHDU`. 
+We need to fill the `Header` with the information of the `BinaryTable` before we can 
+create the `BinaryTableHDU`.
+
+We can now update the header information. E.g. setting row names and 
+the correct number of rows and write out the header.
+
+Now we are ready to start writing data.
+We use a `ByteBuffer` to store the data of each row.
+After we updated the `ByteBuffer`, we write it to the `BufferedFile`.
+
+Last, we pad the fits file and close the open `BufferedFile`.
 
 ## Using the Header
 
