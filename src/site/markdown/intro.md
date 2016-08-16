@@ -297,11 +297,11 @@ f.write(bf);
 bf.close();
 ```
 
-## Writing tables
+### Writing tables
 Just as with reading, there are a variety of options for writing tables.
 
 
-### Using columns
+#### Using columns
 If the data is available as a set of columns, then we can simply replace data above with something like:
 
 ```{java}
@@ -332,7 +332,7 @@ After we’ve added all of the columns we add the HDU to the Fits object and wri
 Each time we add a column we change the structure of the HDU.
 However the number of rows in unchanged except when we add the first column to a table.
 
-### Using rows
+#### Using rows
 Finally, just as with reading, we can build up the HDU row by row.
 Each row needs to be an `Object[]` array and scalar values need to be wrapped into
 arrays of length `1`:
