@@ -526,31 +526,46 @@ Last, we pad the fits file and close the open `BufferedFile`.
 
 ## Using the Header
 
-The metadata that describes the FITS files contents is stored in the headers of each HDU.  There are two basic ways to access these data.  If you are not concerned with the internal organization of the header you can get values from the header using the getXXXValue methods.  To set values use the addValue method.  E.g.,  to find out the telescope used you might want to know the value of the TELESCOP key.
+The metadata that describes the FITS files contents is stored in the headers of each HDU.
+There are two basic ways to access these data.
+If you are not concerned with the internal organization of the header you can get values from the header using the `getXXXValue` methods.
+To set values use the `addValue` method.
 
-     String telescope =    
-        Fits.getHDU(0).getHeader().getStringValue(“TELESCOP”);
+To find out the telescope used you might want to know the value of the `TELESCOP` key.
+
+     Fits f = new Fits('img.fits')
+     Header header = f.getHDU(0).getHeader();
+     String telescope =  header.getStringValue(“TELESCOP”);
 
 Or if we want to know the RA of the center of the image:
 
-     double ra = hdr.getDoubleValue(“CRVAL1”); 
+     double ra = header.getDoubleValue(“CRVAL1”); 
 
-where hdr is a Header object.
-[The FITS WCS convention  is being used here.  For typical images the central coordinates are in the pair of keys, CRVAL1 and CRVAL2 and our example assumes an Equatorial coordinate system.]
+[The FITS WCS convention  is being used here.
+For typical images the central coordinates are in the pair of keys, CRVAL1 and CRVAL2 and our example assumes an Equatorial coordinate system.]
 
-Perhaps we have a FITS file where the RA was not originally known, or for which we’ve just found a correction.  To add or change the RA we use:
+Perhaps we have a FITS file where the RA was not originally known, or for which we’ve just found a correction.
 
-    hdr.addValue(“CRVAL1”, updatedRA, “Corrected RA”);
+To add or change the RA we use:
 
-The second argument is our new RA.  The third is a comment field that will also be written to that header.
+    header.addValue(“CRVAL1”, updatedRA, “Corrected RA”);
 
-If you are writing files, it’s often desirable to organize the header and include copious comments and history records.   This is most easily accomplished using a header Cursor and using the HeaderCard.
+The second argument is our new RA.
+The third is a comment field that will also be written to that header.
+
+If you are writing files, it’s often desirable to organize the header and include copious comments and history records.
+This is most easily accomplished using a header Cursor and using the HeaderCard.
 
      Cursor c = header.iterator();
 
-returns a cursor object that points to the first card of the header.  We have prev() and next() methods that allow us to move through the header, and add() and delete() methods to add new records.  The methods of HeaderCard allow us to manipulate the entire current card as a single string or broken down into keyword, value and comment components.  Comment and history header cards can be created and added to the header.
+returns a cursor object that points to the first card of the header.
+We have `prev()` and `next()` methods that allow us to move through the header,
+and `add()` and `delete()` methods to add new records.
+The methods of `HeaderCard` allow us to manipulate the entire current card as a single string or broken down into keyword, value and comment components.
+Comment and history header cards can be created and added to the header.
 
-For tables much of the metadata describes individual columns.  There are a set of setTableMeta() methods that can be used to help organize these as a user wishes.
+For tables much of the metadata describes individual columns.
+There are a set of `setTableMeta()` methods that can be used to help organize these as the user wishes.
 
 ## Special issues
 
@@ -575,126 +590,3 @@ For tables much of the metadata describes individual columns.  There are a set o
 *	Long header strings
 
 	The standard maximum length for string values in the header is 68 characters.  A long string convention supports string values that span multiple cards in the header.  This convention is turned on in any header that includes the LONGSTRN keyword and can also be enabled with Header.setLongStringsEnabled(true).
-
-## Appendix: Summary of packages and classes
-
-### Packages
-
-The nom.tam library comprises three packages:
-
-*	nom.tam.fits
-
-	contains all classes that relate directly to FITS data.
-
-*	nom.tam.util
-
-	contains a number of utility classes notably a set of I/O interfaces and classes that allow for easy and efficient I/O of arrays and other array utilities.
-
-*	nom.tam.image
-
-	contains the ImageTiler class.
-
-#### The nom.tam.fits package
-
-*	Fits
-
-	This is the main class for the library.  It has many constructors allowing Fits files to be input from a variety of sources, or created from scratch.  There are a number of methods to read and return HDU elements.  The user can also get access to the underlying ArrayDataInput object used when reading FITS data.
-	
-*	FitsFactory
-
-	This class contains a number of static methods that construct HDUs and the elements of HDUs from existing data structures or from FITS headers.  It also allows the user to set flags that define optional behaviors.
-	
-*	Header
-
-	This class allows a user to read and write the header elements of HDUs.
-	
-*	HeaderCard
-
-	This class allows detailed access to individual FITS header cards, the 80-byte records that have may keyword, value and comment fields.  
-
-*	BasicHDU
-
-	This is the root class for the FITS HDU objects.  It gives access to the header and data elements for each HDU.
-
-*	ImageHDU
-
-	This specializes BasicHDU and gives access to the ImageTiler.
-
-*	TableHDU
-
-	This abstract class specializes BasicHDU and supports a variety of table operations on both the data and header.
-
-*	AsciiTableHDU
-
-	Implement s the TableHDU for FITS ASCII tables.
-
-*	BinaryTableHDU
-
-	Implements the TableHDU for FITS binary tables.
-
-*	RandomGroupsHDU
-
-	Implements the TableHDU for random groups data.
-
-*	Data
-
-	This class is the root for the data section of the Header-Data units.   It provides for access to a kernel that is non-FITS representation of the data. 
-
-*	ImageData
-
-	This extends data and implements a kernel using Java primitive arrays that can be directly accessed by the user.
-
-*	AsciiTable
-
-	This implements Data for ASCII tables.  The kernel is an Object[] array where each element is a one dimensional array with the array index corresponding to the row.  This can be easily used by invokers to access the table.
-*	BinaryTable
-
-	This implements Data for binary tables.  The kernel is a ColumnTable object which provides for efficient I/O for the binary table.  It can be used by the invoker but it is rather complex.  Nor does the kernel include any heap information.   Users may find the getRow, getColumn and getElement methods (in either this class or the BinaryTableHDU) more friendly.
-
-*	FitsHeap
-
-	This manages the heap used to store variable length data in a binary table.
-
-*	RandomGroupsData
-
-	Implements Data for a random groups.
-
-#### The nom.tam.util package
-
-*	ArrayDataInput, ArrayDataOutput, DataIO, RandomAccess
-
-	Interfaces used as generic I/O types.
-
-*	BufferedDataInputStream, BufferedDataOuputStream
-
-	Extensions to the standard buffered streams with support for generic array input and output.
-
-*	BufferedFile
-
-	Extension to the standard RandomAccessFile with support for generic array input and output.
-
-*	ByteFormatter,ByteParser
-
-	Classes designed for efficient transformations of numbers to ASCII text.  Note that the algorithm used for floating point numbers is slightly different than the standard Java so that there may be errors in at the one ULP level.  These are used in AsciiTable.
-
-*	ColumnTable
-
-	A class designed to allow efficient I/O of tables written in row order where columns may be of various types.  Used as the kernel by for binary tables.
-
-*	HashedList, Cursor
-
-	An extension to the Vector and Iterator used to provide both keyed and ordered access to FITS headers. 
-
-*	ArrayFuncs
-
-	A set of static utilities that provide various functions on generic (i.e., any type and dimensionality) arrays.
-
-*	PrimitiveInfo
-
-	A collection of information about Java primitives.
-
-#### The nom.tam.image package.
-  
-*	Tiler
-
-	This class allows the user to extract a rectangular region from the an image (where rectangular is generalized to whatever dimensionality the image has).
