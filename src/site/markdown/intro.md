@@ -85,57 +85,71 @@ To read a FITS file the user typically might open a `Fits` object, get the appro
 
 ### Reading Images
 
-Suppose we have a FITS file where the first and second HDUs are a count and exposure image for a region and we want to calculate intensity image.
-The count image has short values, while the exposure using floats.
-
-To get these data the user might try:
+The simplest example of reading an image contained in the first HDU (zero based indexing)
+is given below:
 
 ```{java}
 Fits f = new Fits(“myfile.fits”);
 
-short[][] counts = (short[][]) f.getHDU(0).getKernel();
-float[][] exposures  = (float[][]) f.getHDU(1).getKernel();
-float[][] intensities  = new float[counts.length][counts[0].length];
-
-for (int i=0; i < counts.length; i++) {
-    for (int j=0; j < counts[0].length; j++) {
-        inten[i][j] = counts[i][j]/expos[i][j];
-    }
-}
+ImageHDU hdu = (ImageHDU) f.getHDU(0);
+int[][] image = (int[][]) hdu.getKernel();
 ```
 
-The `getKernel()` method returns the basic internal format used for storage, which is a Java primitive array for images.
+First we create a new instance of `Fits` with the filename as first and only argument.
+Then we can get first HDU using the `getHDU` method.
+Note the casting into an `ImageHDU`.
+
+Now we are ready to get the image data with the `getKernel` method of the hdu,
+which is actually a short hand for getting the data unit and the data within:
+
+```{java}
+ImageData imageData = (ImageData) hdu.getData();
+int[][] image = (int[][]) imageData.getData();
+```
+
 However the user will be responsible for casting this to an appropriate type if they want to use the data inside their program.
 It is possible to build tools that will handle arbitrary array types, but it is not trivial.
 
 When reading FITS data using the nom.tam library the user will often need to cast the results to the appropriate type.
 Given that the FITS file may contain many different kinds of data and that Java provides us with no class that can point to different kinds of primitive arrays other than Object, this downcasting is inevitable if you want to use the data from the FITS files.
 
+#### Reading only parts of an Image
+
 When reading image data users may not want to read an entire array especially if the data is very large.
-An ImageTiler can be used to read in only a portion of an array.
+An `ImageTiler` can be used to read in only a portion of an array.
 The user can specify a box (or a sequence of boxes) within the image and extract the desired subsets.
-Image tilers can be used for any image.
+`ImageTiler`s can be used for any image.
 The library will try to only read the subsets requested if the FITS data is being read from an uncompressed file but in many cases it will need to read in the entire image before subsetting.
 
-Suppose the images we retrieve above are 2000x2000 pixel images but we only want to see the innermost 100x100 pixels.
-For the first HDU we might try
+Suppose the image we retrieve above has 2000x2000 pixels, but we only want to see the innermost 100x100 pixels.
+This can be achieved with
 
 ```{java}
-ImageHDU hdu = (ImageHDU) f.getHDU(0);
 ImageTiler tiler = hdu.getTiler();
-short[] center = (short[]) tiler.getTile(new int[]{950,950}, new int[]{100,100});
+short[] center = (short[]) tiler.getTile({950, 950}, {100, 100});
 ```
 
 The tiler needs to know the corners and size of the tile we want.
 Note that we can tile an image of any dimensionality.
-Since tiling is only available for images, we needed to cast the HDU to the appropriate type to get access to this functionality.
 `getTile` returns a one-dimensional array with the flattend image.
 
 ### Reading Tables
 
 When reading tabular data the user has a variety of ways to read the data.
-The entire table can be read at once, or the data can be read in pieces, by row, column or individual element.
-When an entire table is read at once, the user gets back an Object[] array.   Each element of this array points to a column from the FITS file.  Scalar values are represented as one dimensional arrays with the length of the array being the number of columns in the array.  Strings are typically also returned as an array of strings where the elements are trimmed of trailing blanks.  If a binary table has non-scalar columns of some dimensionality n, then the dimensionality of the corresponding array in the Object[] array is increased to n+1 to accommodate.  The first dimension is the row index.  If variable length elements are used, then the entry is normally a 2-D array which is not rectangular, i.e., the number of elements in each row will vary as requested by the user.  Since Java allows 0-length arrays, missing data is represented by such an array, not a null, for the corresponding row.
+The entire table can be read at once, or the data can be read in pieces, by row, by column or just an individual element.
+
+#### Reading a complete table at once
+When an entire table is read at once, the user gets back an `Object[]` array.
+Each element of this array points to a column from the FITS file.
+Scalar values are represented as one dimensional arrays with the length of the array being the number of columns in the array. 
+Strings are typically also returned as `String[]` where the elements are trimmed of trailing blanks.
+If a binary table has non-scalar columns of some dimensionality n,
+then the dimensionality of the corresponding array in the `Object[]` array is increased to n+1 to accommodate.
+The first dimension is the row index.
+If variable length elements are used, 
+then the entry is normally a 2-D array which is not rectangular,
+i.e., the number of elements in each row will vary as requested by the user.
+Since Java allows 0-length arrays, missing data is represented by such an array, not a null, for the corresponding row.
 
 Suppose we have a FITS table of sources with the name, RA and Dec of a set of sources and two additional columns with a time series and spectrum for the source.
 
@@ -157,6 +171,8 @@ Tables can never be the first HDU in a FITS file.
 If there is no image data to be written, then typically a null image is written as the first HDU.
 The header for this image may include metadata of interest but we just skip it here. 
 
+
+#### Reading specific columns
 Often a table will have a large number of columns and we are only interested in a few.
 After opening the Fits object we might try:
 
@@ -167,25 +183,32 @@ double[] dec = (double[]) tab.getColumn(2);
 double[][] spectra = (double[][]) tab.getColumn(4);
 ```
 
-FITS stores tables in row order.
+**FITS stores tables in row order.**  
 The library will still need to read in the entire FITS file even if we only use a few columns.
 We can read data by row if want to get results without reading the entire file.
+
+
+#### Reading rows
 
 After getting the TableHDU, instead of getting columns we can get the first row.
 
 ```{java}
 TableHDU tab = (TableHDU) f.getHDU(1);
-(Object[]) row = table.getRow(0);
+Object[] row = (Object[]) table.getRow(0);
 ```
 
-The content of row is similar to that for the cols array we got when we extracted the entire table.  However if a column has a scalar value, then an xxx[1] array will be returned for the row (since a primitive scalar cannot be returned as an Object).  If the column has a vector value, then the appropriate dimension vector for a single row’s entry will be returned, the dimensionality is one less than when we retrieve an entire column. E.g., we might continue
+The content of row is similar to that for the cols array we got when we extracted the entire table.
+However if a column has a scalar value, then an array of length 1 will be returned for the row (since a primitive scalar cannot be returned as an Object).
+If the column has a vector value, then the appropriate dimension vector for a single row’s entry will be returned, the dimensionality is one less than when we retrieve an entire column.
 
-	double[] ra    = (double[]) row[1];
-	double[] dec  = (double[]) row[2];
-	double[] spectrum = (double[]) row[3];
+```{java}
+double[] ra = (double[]) row[1];
+double[] dec = (double[]) row[2];
+double[] spectrum = (double[]) row[3];
+```
 
-Here ra and dec will have length 1: they are scalars, but the library uses one element arrays to provide a mutable Object wrapper.
-The spectrum may have any length, perhaps 0 if there was no spectrum for this source.
+Here `ra` and `dec` will have length `1`: they are scalars, but the library uses one element arrays to provide a mutable Object wrapper.
+The spectrum may have any length, perhaps `0` if there was no spectrum for this source.
 A user can read rows in any order.
 
 ## Lower level  reads.
@@ -193,115 +216,185 @@ A user can read rows in any order.
 A user can get access to the special stream that is used to read the FITS information and then process the data at a lower level using the nom.tam libraries special I/O objects.
 This can be a bit more efficient for large datasets.
 
+### Images
 Suppose we want to get the average value of a 100,000x20,000 pixel image.
 If the pixels are ints, that’s  an 8 GB file.  We can do
 
-    Fits f = new Fits(“bigimg.fits”);
+```{java}
+Fits f = new Fits(“bigimg.fits”);
 
-    BasicHDU img = f.getHDU(0);
+BasicHDU img = f.getHDU(0);
 
-    if (img.getData().reset()) {
-        int[] line = new int[100000];
-        long sum   = 0;
-        long count = 0;
-         
-        ArrayDataInput adi = f.getStream();
-        while (adi.readArray(line) > 0) {
-            for (int i=0; i<line.length; I += 1) {
-                 sum   += line[i];
-                 count += 1;
-            }
+if (img.getData().reset()) {
+    int[] line = new int[100000];
+    long sum   = 0;
+    long count = 0;
+     
+    ArrayDataInput adi = f.getStream();
+    while (adi.readLArray(line) == line.length * 4) {  // int is 4 bytes
+        for (int i=0; i<line.length; i += 1) {
+    	 sum   += line[i];
+    	 count += 1;
         }
-        double avg = ((double)total)/count;
-     } else {
-         System.err.println(“Unable to seek to data”);
     }
+    double avg = ((double) sum)/count;
+} else {
+    System.err.println(“Unable to seek to data”);
+}
+```
     
-The reset() method causes the internal stream to seek to the beginning of the data area.
+The `reset()` method causes the internal stream to seek to the beginning of the data area.
 If that’s not possible it returns false. 
-We can process binary tables in a similar way if they have a fixed structure.
-Since tables are stored row-by-row internally in FITS we need first get a model row and then we can read in each row in turn.
+
+### Tables
+We can process binary tables in a similar way, if they have a fixed structure.
+Since tables are stored row-by-row internally in FITS we first need to get a model row and then we can read in each row in turn.
+
 However this returns data essentially in the representation used by FITS without conversion to internal Java types for String and boolean values.
 Strings are stored as an array of bytes.
 Booleans are bytes with restricted values.
-The easy way to get the model for a row is simply to use the `getModelRow()` method
 
-     Fits f = new Fits(“bigtable.fits”);
-     BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
-     Object[] modelRow = bhdu.getData().getModelRow();
-     if (bhdu.getData().reset()) {
-         ArrayDataInput adi = f.getStream();
-         while (adi.readArray(modelRow) > 0) {
-                   … process this row
-         }
-     }
+The easy way to get the model for a row is simply to use the `getModelRow()` method.
+Then we use the `nom.tam.utils.ArrayFuncs.computeLSize` method to get the size in bytes
+of each row.
+
+```{java}
+Fits f = new Fits(“bigtable.fits”);
+
+BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
+Object[] row = bhdu.getData().getModelRow();
+long rowSize = ArrayFuncs.computeLSize(row);
+
+if (bhdu.getData().reset()) {
+    ArrayDataInput adi = f.getStream();
+    while (adi.readLArray(row) == rowSize) {
+        // process this row
+    }
+}
+```
      
 Of course the user can build up a template array directly if they know the structure of the table.
 This is not possible for ASCII tables, since the FITS and Java representations of the data are very different.
-It is also harder to do if there are variable length records although something is are possible if the user is willing to deal directly with the FITS heap using the FitsHeap class.
+It is also harder to do if there are variable length records although something is are possible if the user is willing to deal directly with the FITS heap using the `FitsHeap` class.
 
 ## Writing data
 
-When we write FITS files we start with known data, so there are typically no casts required.  We use a factory method to convert our primitive data to a FITS HDU and then write the Fits object to a desired location.  The write methods of the Fits object take an ArrayDataOutput object which indicates where the Fits data is to be written.  The two primary classes that implement this interface are BufferedFile and BufferedDataOutputStream.
-E.g., suppose we have a   two-dimensional image and we want to write it to a Fits file:
 
-    float[][] data = ….
-    Fits f = new Fits();
-    f.addHDU(FitsFactory.HDUFactory(data));
-    BufferedFile bf = new BufferedFile(“img.fits”, “rw”);
-    f.write(bf);
-    bf.close();
+### Writing images
+When we write FITS files we start with known data, so there are typically no casts required.
+We use a factory method to convert our primitive data to a FITS HDU and then write the Fits object to a desired location.
+The `write` methods of the `Fits` object takes an `ArrayDataOutput` object which indicates where the Fits data is to be written.
+The two primary classes that implement this interface are `BufferedFile` and `BufferedDataOutputStream`.
 
-Just as with reading, there are a variety of options for writing tables.  If the data is available as a set of columns, then we can simply replace data above with something like:
+```{java}
+float[][] data = new float[512][512];
 
-      float[] ra = new float[n];
-      float[] dec= new float[n];
-      String[] names = new String[n];
-      double[][] spectrum = new double[n][];
-      for (int i=0; i<n; i += 1) {  
-          spectrum[i] = new double[i%10];
-         … fill in arrays
-      }
-      Object[] data = new Object[]{names,ra,dec,spectrum};
+Fits f = new Fits();
+f.addHDU(FitsFactory.hduFactory(data));
 
-and then create the HDU and write the FITS file exactly as above.  The library will add in a null initial HDU automatically.
+BufferedFile bf = new BufferedFile(“img.fits”, “rw”);
+f.write(bf);
+bf.close();
+```
+
+## Writing tables
+Just as with reading, there are a variety of options for writing tables.
+
+
+### Using columns
+If the data is available as a set of columns, then we can simply replace data above with something like:
+
+```{java}
+int numRows = 10;
+double[] x = new float[numRows];
+double[] y = new float[numRows];
+
+Random random = new Random();
+
+for (int i=0; i<n; i += 1) {  
+    x[i] = random.nextGaussian();
+    y[i] = random.nextGaussian();
+}
+Object[] data = {x, y};
+```
+and then create the HDU and write the FITS file exactly as for the image above.
+The library will add in a null initial HDU automatically.
+
 If we prefer we can build the HDU up by row or column:
 
-      BinaryTableHDU bhdu = new BinaryTableHDU();
-      bhdu.addColumn(names);
-      bhdu.addColumn(ra);
+```{java}
+BinaryTableHDU bhdu = new BinaryTableHDU();
+bhdu.addColumn(x);
+bhdu.addColumn(y);
+```
 
+After we’ve added all of the columns we add the HDU to the Fits object and write it out.
+Each time we add a column we change the structure of the HDU.
+However the number of rows in unchanged except when we add the first column to a table.
 
-After we’ve added all of the columns we add the HDU to the Fits object and write it out.  Each time we add a column we change the structure of the HDU.  However the number of rows in unchanged except when we add the first column to a table.
+### Using rows
+Finally, just as with reading, we can build up the HDU row by row.
+Each row needs to be an `Object[]` array and scalar values need to be wrapped into
+arrays of length `1`:
 
-Finally, just as with reading, we can build up the HDU row by row.  We need to create the row structure like the one we got when we did a getRow.  Then we can use
+```{java}
 
-    TableHDU.addRow(row) 
+Random random = new Random();
+BinaryTableHDU bhdu = new BinaryTableHDU();
 
-to add in rows one by one.    We can reuse the same model and just change the contents each time we add the row.  
+for (int i=0; i<n; i += 1) {  
+    double[] x = {random.nextGaussian()};
+    double[] y = {random.nextGaussian()};
+    Object[] row = {x, y}; 
+    bhdu.addRow(row);
+}
+```
 
-Normally addRow does not affect the structure of the HDU, it just adds another row.  However if the table is empty, the first addRow defines the structure of each of the columns.  If a column represents a string, then the length of that column is defined by the length of the string in first row.  Subsequent rows will be truncated if longer.  A user can add blanks to pad out the first row’s entries to a desired length.
+Normally `addRow` does not affect the structure of the HDU, it just adds another row.
+However if the table is empty, the first `addRow` defines the structure of each of the columns.
+If a column represents a string, then the length of that column is defined by the length of the string in first row.
+Subsequent rows will be truncated if longer.
+A user can add blanks to pad out the first row’s entries to a desired length.
 
-Note that while we can add rows to a table created with variable length arrays, you cannot currently build up a table from scratch with variable length arrays using addRow.  When the first row is read in, all of the column formats are defined, and at that point there is no indication that the column is variable length.  The library can’t see row to row variations since there is only a single row.
+Note that while we can add rows to a table created with variable length arrays, you cannot currently build up a table from scratch with variable length arrays using `addRow`.
+When the first row is read in, all of the column formats are defined, and at that point there is no indication that the column has variable length.
+The library can’t see row to row variations since there is only a single row.
 
 It is possible to mix these approaches: e.g., use addColumn to build up an initial set of rows and then add additional rows to the specified structure.
-Rewrites
 
-An existing FITS file can be modified in place in some circumstances.  The file must be an uncompressed file.  The user can then modify elements either by directly modifying the kernel object gotten for image data, or by using the setElement and similar method for tables.
-E.g.. suppose we have just a couple of specific elements we know we need to change in a given file:
 
-      Fits f = new Fits(“mod.fits”);
-      int[][] img = (int[][]) f.getHDU(0).getKernel();
-      for (int i=0; i<img.length; I += 1) {
-           for (int j=0; j<img[i].length; j += 1) {
-                if (img[i][j] < 0) img[i][j] = 0;
-           }
-      }
-      TableHDU tab = (TableHDU) f.getHDU(1);
-      Tab.setElement(3,0,”NewName”);
-      f.rewrite();  // Rewrites both HDUs
+### Modify existing files
+An existing FITS file can be modified in place in some circumstances.
+The file must be an uncompressed file.
+The user can then modify elements either by directly modifying the kernel object gotten for image data, or by using the `setElement` or similar methods for tables.
 
-This rewrites the FITS file in place.  Generally rewrites can be made so long as the only change is to the content of the data (and the FITS file meets the criteria mentioned above).  An exception will be thrown if the data has been added or deleted or too many changes have been made to the header.  Some modifications may be made to the header but the number of header cards modulo 36 must remain unchanged.
+Suppose we have just a couple of specific elements we know we need to change in a given file:
+
+```{java}
+Fits f = new Fits(“mod.fits”);
+
+ImageHDU ihdu = (ImageHDU) f.getHDU(0);
+int[][] img = (int[][]) ihdu.getKernel();
+
+for (int i=0; i<img.length; i += 1) {
+    for (int j=0; j<img[i].length; j += 1) {
+        if (img[i][j] < 0){
+            img[i][j] = 0;
+        }
+    }
+}
+
+ihdu.rewrite();
+
+TableHDU thdu = (TableHDU) f.getHDU(1);
+thdu.setElement(3, 0, ”NewName”);
+thdu.rewrite();
+```
+
+This rewrites the FITS file in place.
+Generally rewrites can be made as long as the only change is to the content of the data (and the FITS file meets the criteria mentioned above).
+An exception will be thrown if the data has been added or deleted or too many changes have been made to the header.
+Some modifications may be made to the header but the number of header cards modulo 36 must remain unchanged.
 
 ## Lower level writes
 
