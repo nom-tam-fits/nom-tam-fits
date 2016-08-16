@@ -185,7 +185,7 @@ double[][] spectra = (double[][]) tab.getColumn(4);
 
 **FITS stores tables in row order.**  
 The library will still need to read in the entire FITS file even if we only use a few columns.
-We can read data by row if want to get results without reading the entire file.
+We can read data by row if we want to get results without reading the entire file.
 
 
 #### Reading rows
