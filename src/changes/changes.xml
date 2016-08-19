@@ -4,10 +4,10 @@
 			<action type="update">
 				Maintenance release with bug fixes.
 			</action>
-			<action type="fix" dev="ritchieGitHub" issue=102>
+			<action type="fix" dev="ritchieGitHub" issue="102">
 				Comment type header cards where not protected against to long comments, that can result in corrupted headers. 
 			</action>
-			<action type="fix" dev="MaxNoe" issue=101>
+			<action type="fix" dev="MaxNoe" issue="101">
 				Introduction document verified and corrected kind thanks to Maximilian Nöthe. 
 			</action>
 		</release>
