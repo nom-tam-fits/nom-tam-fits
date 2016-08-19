@@ -629,45 +629,46 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
 <span class="fc" id="L629">                value = value.substring(1, value.length() - 1).trim();</span>
             }
             // Remember that quotes get doubled in the value...
-<span class="fc bfc" id="L632" title="All 6 branches covered.">            if (!FitsFactory.isLongStringsEnabled() &amp;&amp; value.replace(&quot;'&quot;, &quot;''&quot;).length() &gt; (this.isString ? HeaderCard.MAX_STRING_VALUE_LENGTH : HeaderCard.MAX_VALUE_LENGTH)) {</span>
-<span class="fc" id="L633">                throw new HeaderCardException(&quot;Value too long&quot;);</span>
+<span class="fc bfc" id="L632" title="All 6 branches covered.">            if (!FitsFactory.isLongStringsEnabled()</span>
+                    &amp;&amp; value.replace(&quot;'&quot;, &quot;''&quot;).length() &gt; (this.isString ? HeaderCard.MAX_STRING_VALUE_LENGTH : HeaderCard.MAX_VALUE_LENGTH)) {
+<span class="fc" id="L634">                throw new HeaderCardException(&quot;Value too long&quot;);</span>
             }
         }
 
-<span class="fc" id="L637">        this.key = key;</span>
-<span class="fc" id="L638">        this.value = value;</span>
-<span class="fc" id="L639">        this.comment = comment;</span>
-<span class="fc" id="L640">        this.nullable = nullable;</span>
-<span class="fc" id="L641">    }</span>
+<span class="fc" id="L638">        this.key = key;</span>
+<span class="fc" id="L639">        this.value = value;</span>
+<span class="fc" id="L640">        this.comment = comment;</span>
+<span class="fc" id="L641">        this.nullable = nullable;</span>
+<span class="fc" id="L642">    }</span>
 
     /**
      * @return the size of the card in blocks of 80 bytes. So normally every
      *         card will return 1. only long stings can return more than one.
      */
     public int cardSize() {
-<span class="fc bfc" id="L648" title="All 6 branches covered.">        if (this.isString &amp;&amp; this.value != null &amp;&amp; FitsFactory.isLongStringsEnabled()) {</span>
-<span class="fc" id="L649">            int maxStringValueLength = maxStringValueLength();</span>
-<span class="fc" id="L650">            String stringValue = this.value.replace(&quot;'&quot;, &quot;''&quot;);</span>
-<span class="fc bfc" id="L651" title="All 2 branches covered.">            if (stringValue.length() &gt; maxStringValueLength) {</span>
+<span class="fc bfc" id="L649" title="All 6 branches covered.">        if (this.isString &amp;&amp; this.value != null &amp;&amp; FitsFactory.isLongStringsEnabled()) {</span>
+<span class="fc" id="L650">            int maxStringValueLength = maxStringValueLength();</span>
+<span class="fc" id="L651">            String stringValue = this.value.replace(&quot;'&quot;, &quot;''&quot;);</span>
+<span class="fc bfc" id="L652" title="All 2 branches covered.">            if (stringValue.length() &gt; maxStringValueLength) {</span>
                 // this is very bad for performance but it is to difficult to
                 // keep the cardSize and the toString compatible at all times
-<span class="fc" id="L654">                return toString().length() / FITS_HEADER_CARD_SIZE;</span>
+<span class="fc" id="L655">                return toString().length() / FITS_HEADER_CARD_SIZE;</span>
             }
         }
-<span class="fc" id="L657">        return 1;</span>
+<span class="fc" id="L658">        return 1;</span>
     }
 
     public HeaderCard copy() throws HeaderCardException {
-<span class="fc" id="L661">        HeaderCard copy = new HeaderCard(this.key, null, this.comment, this.nullable, this.isString);</span>
-<span class="fc" id="L662">        copy.value = this.value;</span>
-<span class="fc" id="L663">        return copy;</span>
+<span class="fc" id="L662">        HeaderCard copy = new HeaderCard(this.key, null, this.comment, this.nullable, this.isString);</span>
+<span class="fc" id="L663">        copy.value = this.value;</span>
+<span class="fc" id="L664">        return copy;</span>
     }
 
     /**
      * @return the comment from this card
      */
     public String getComment() {
-<span class="fc" id="L670">        return this.comment;</span>
+<span class="fc" id="L671">        return this.comment;</span>
     }
 
     /**
@@ -675,14 +676,14 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      */
     @Override
     public String getKey() {
-<span class="fc" id="L678">        return this.key;</span>
+<span class="fc" id="L679">        return this.key;</span>
     }
 
     /**
      * @return the value from this card
      */
     public String getValue() {
-<span class="fc" id="L685">        return this.value;</span>
+<span class="fc" id="L686">        return this.value;</span>
     }
 
     /**
@@ -695,33 +696,33 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      * @return the value from this card as a specific type
      */
     public &lt;T&gt; T getValue(Class&lt;T&gt; clazz, T defaultValue) {
-<span class="fc bfc" id="L698" title="All 2 branches covered.">        if (String.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L699">            return clazz.cast(this.value);</span>
-<span class="pc bpc" id="L700" title="1 of 4 branches missed.">        } else if (this.value == null || this.value.isEmpty()) {</span>
-<span class="fc" id="L701">            return defaultValue;</span>
-<span class="fc bfc" id="L702" title="All 2 branches covered.">        } else if (Boolean.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L703">            return clazz.cast(getBooleanValue((Boolean) defaultValue));</span>
+<span class="fc bfc" id="L699" title="All 2 branches covered.">        if (String.class.isAssignableFrom(clazz)) {</span>
+<span class="fc" id="L700">            return clazz.cast(this.value);</span>
+<span class="pc bpc" id="L701" title="1 of 4 branches missed.">        } else if (this.value == null || this.value.isEmpty()) {</span>
+<span class="fc" id="L702">            return defaultValue;</span>
+<span class="fc bfc" id="L703" title="All 2 branches covered.">        } else if (Boolean.class.isAssignableFrom(clazz)) {</span>
+<span class="fc" id="L704">            return clazz.cast(getBooleanValue((Boolean) defaultValue));</span>
         }
         BigDecimal parsedValue;
         try {
-<span class="fc" id="L707">            parsedValue = new BigDecimal(this.value);</span>
-<span class="fc" id="L708">        } catch (NumberFormatException e) {</span>
-<span class="fc" id="L709">            return defaultValue;</span>
-<span class="fc" id="L710">        }</span>
-<span class="fc bfc" id="L711" title="All 2 branches covered.">        if (Integer.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L712">            return clazz.cast(parsedValue.intValueExact());</span>
-<span class="fc bfc" id="L713" title="All 2 branches covered.">        } else if (Long.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L714">            return clazz.cast(parsedValue.longValueExact());</span>
-<span class="fc bfc" id="L715" title="All 2 branches covered.">        } else if (Double.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L716">            return clazz.cast(parsedValue.doubleValue());</span>
-<span class="fc bfc" id="L717" title="All 2 branches covered.">        } else if (Float.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L718">            return clazz.cast(parsedValue.floatValue());</span>
-<span class="fc bfc" id="L719" title="All 2 branches covered.">        } else if (BigDecimal.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L720">            return clazz.cast(parsedValue);</span>
-<span class="fc bfc" id="L721" title="All 2 branches covered.">        } else if (BigInteger.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L722">            return clazz.cast(parsedValue.toBigIntegerExact());</span>
+<span class="fc" id="L708">            parsedValue = new BigDecimal(this.value);</span>
+<span class="fc" id="L709">        } catch (NumberFormatException e) {</span>
+<span class="fc" id="L710">            return defaultValue;</span>
+<span class="fc" id="L711">        }</span>
+<span class="fc bfc" id="L712" title="All 2 branches covered.">        if (Integer.class.isAssignableFrom(clazz)) {</span>
+<span class="fc" id="L713">            return clazz.cast(parsedValue.intValueExact());</span>
+<span class="fc bfc" id="L714" title="All 2 branches covered.">        } else if (Long.class.isAssignableFrom(clazz)) {</span>
+<span class="fc" id="L715">            return clazz.cast(parsedValue.longValueExact());</span>
+<span class="fc bfc" id="L716" title="All 2 branches covered.">        } else if (Double.class.isAssignableFrom(clazz)) {</span>
+<span class="fc" id="L717">            return clazz.cast(parsedValue.doubleValue());</span>
+<span class="fc bfc" id="L718" title="All 2 branches covered.">        } else if (Float.class.isAssignableFrom(clazz)) {</span>
+<span class="fc" id="L719">            return clazz.cast(parsedValue.floatValue());</span>
+<span class="fc bfc" id="L720" title="All 2 branches covered.">        } else if (BigDecimal.class.isAssignableFrom(clazz)) {</span>
+<span class="fc" id="L721">            return clazz.cast(parsedValue);</span>
+<span class="fc bfc" id="L722" title="All 2 branches covered.">        } else if (BigInteger.class.isAssignableFrom(clazz)) {</span>
+<span class="fc" id="L723">            return clazz.cast(parsedValue.toBigIntegerExact());</span>
         } else {
-<span class="fc" id="L724">            throw new IllegalArgumentException(&quot;unsupported class &quot; + clazz);</span>
+<span class="fc" id="L725">            throw new IllegalArgumentException(&quot;unsupported class &quot; + clazz);</span>
         }
     }
 
@@ -729,14 +730,14 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      * @return Is this a key/value card?
      */
     public boolean isKeyValuePair() {
-<span class="pc bpc" id="L732" title="1 of 4 branches missed.">        return this.key != null &amp;&amp; this.value != null;</span>
+<span class="pc bpc" id="L733" title="1 of 4 branches missed.">        return this.key != null &amp;&amp; this.value != null;</span>
     }
 
     /**
      * @return if this card contain does a string value?
      */
     public boolean isStringValue() {
-<span class="fc" id="L739">        return this.isString;</span>
+<span class="fc" id="L740">        return this.isString;</span>
     }
 
     /**
@@ -746,8 +747,8 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      *            the comment to set.
      */
     public void setComment(String comment) {
-<span class="fc" id="L749">        this.comment = comment;</span>
-<span class="fc" id="L750">    }</span>
+<span class="fc" id="L750">        this.comment = comment;</span>
+<span class="fc" id="L751">    }</span>
 
     /**
      * Set the value for this card.
@@ -757,8 +758,8 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(BigDecimal update) {
-<span class="fc" id="L760">        this.value = dblString(update, spaceAvailableForValue(this.key));</span>
-<span class="fc" id="L761">        return this;</span>
+<span class="fc" id="L761">        this.value = dblString(update, spaceAvailableForValue(this.key));</span>
+<span class="fc" id="L762">        return this;</span>
     }
 
     /**
@@ -769,8 +770,8 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(boolean update) {
-<span class="fc bfc" id="L772" title="All 2 branches covered.">        this.value = update ? &quot;T&quot; : &quot;F&quot;;</span>
-<span class="fc" id="L773">        return this;</span>
+<span class="fc bfc" id="L773" title="All 2 branches covered.">        this.value = update ? &quot;T&quot; : &quot;F&quot;;</span>
+<span class="fc" id="L774">        return this;</span>
     }
 
     /**
@@ -781,8 +782,8 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(double update) {
-<span class="fc" id="L784">        this.value = dblString(update, spaceAvailableForValue(this.key));</span>
-<span class="fc" id="L785">        return this;</span>
+<span class="fc" id="L785">        this.value = dblString(update, spaceAvailableForValue(this.key));</span>
+<span class="fc" id="L786">        return this;</span>
     }
 
     /**
@@ -795,8 +796,8 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(double update, int precision) {
-<span class="fc" id="L798">        this.value = dblString(update, precision, spaceAvailableForValue(this.key));</span>
-<span class="fc" id="L799">        return this;</span>
+<span class="fc" id="L799">        this.value = dblString(update, precision, spaceAvailableForValue(this.key));</span>
+<span class="fc" id="L800">        return this;</span>
     }
 
     /**
@@ -807,8 +808,8 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(float update) {
-<span class="fc" id="L810">        this.value = dblString(floatToBigDecimal(update), spaceAvailableForValue(this.key));</span>
-<span class="fc" id="L811">        return this;</span>
+<span class="fc" id="L811">        this.value = dblString(floatToBigDecimal(update), spaceAvailableForValue(this.key));</span>
+<span class="fc" id="L812">        return this;</span>
     }
 
     /**
@@ -821,8 +822,8 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(float update, int precision) {
-<span class="fc" id="L824">        this.value = dblString(floatToBigDecimal(update), precision, spaceAvailableForValue(this.key));</span>
-<span class="fc" id="L825">        return this;</span>
+<span class="fc" id="L825">        this.value = dblString(floatToBigDecimal(update), precision, spaceAvailableForValue(this.key));</span>
+<span class="fc" id="L826">        return this;</span>
     }
 
     /**
@@ -833,8 +834,8 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(int update) {
-<span class="fc" id="L836">        this.value = String.valueOf(update);</span>
-<span class="fc" id="L837">        return this;</span>
+<span class="fc" id="L837">        this.value = String.valueOf(update);</span>
+<span class="fc" id="L838">        return this;</span>
     }
 
     /**
@@ -845,8 +846,8 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(long update) {
-<span class="fc" id="L848">        this.value = String.valueOf(update);</span>
-<span class="fc" id="L849">        return this;</span>
+<span class="fc" id="L849">        this.value = String.valueOf(update);</span>
+<span class="fc" id="L850">        return this;</span>
     }
 
     /**
@@ -857,8 +858,8 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(String update) {
-<span class="fc" id="L860">        this.value = update;</span>
-<span class="fc" id="L861">        return this;</span>
+<span class="fc" id="L861">        this.value = update;</span>
+<span class="fc" id="L862">        return this;</span>
     }
 
     /**
@@ -869,110 +870,116 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      */
     @Override
     public String toString() {
-<span class="fc" id="L872">        int alignSmallString = NORMAL_SMALL_STRING_ALIGN_POSITION;</span>
-<span class="fc" id="L873">        int alignPosition = NORMAL_ALIGN_POSITION;</span>
-<span class="fc" id="L874">        FitsLineAppender buf = new FitsLineAppender();</span>
+<span class="fc" id="L873">        int alignSmallString = NORMAL_SMALL_STRING_ALIGN_POSITION;</span>
+<span class="fc" id="L874">        int alignPosition = NORMAL_ALIGN_POSITION;</span>
+<span class="fc" id="L875">        FitsLineAppender buf = new FitsLineAppender();</span>
         // start with the keyword, if there is one
-<span class="pc bpc" id="L876" title="1 of 2 branches missed.">        if (this.key != null) {</span>
-<span class="pc bpc" id="L877" title="1 of 4 branches missed.">            if (this.key.length() &gt; HIERARCH_WITH_BLANK_LENGTH &amp;&amp; this.key.startsWith(HIERARCH_WITH_DOT)) {</span>
-<span class="fc" id="L878">                FitsFactory.getHierarchFormater().append(this.key, buf);</span>
-<span class="fc" id="L879">                alignSmallString = buf.length();</span>
-<span class="fc" id="L880">                alignPosition = buf.length();</span>
+<span class="pc bpc" id="L877" title="1 of 2 branches missed.">        if (this.key != null) {</span>
+<span class="pc bpc" id="L878" title="1 of 4 branches missed.">            if (this.key.length() &gt; HIERARCH_WITH_BLANK_LENGTH &amp;&amp; this.key.startsWith(HIERARCH_WITH_DOT)) {</span>
+<span class="fc" id="L879">                FitsFactory.getHierarchFormater().append(this.key, buf);</span>
+<span class="fc" id="L880">                alignSmallString = buf.length();</span>
+<span class="fc" id="L881">                alignPosition = buf.length();</span>
             } else {
-<span class="fc" id="L882">                buf.append(this.key);</span>
-<span class="fc bfc" id="L883" title="All 2 branches covered.">                if (this.key.isEmpty()) {</span>
-<span class="fc" id="L884">                    buf.append(' ');</span>
+<span class="fc" id="L883">                buf.append(this.key);</span>
+<span class="fc bfc" id="L884" title="All 2 branches covered.">                if (this.key.isEmpty()) {</span>
+<span class="fc" id="L885">                    buf.append(' ');</span>
                 }
-<span class="fc" id="L886">                buf.appendSpacesTo(MAX_KEYWORD_LENGTH);</span>
+<span class="fc" id="L887">                buf.appendSpacesTo(MAX_KEYWORD_LENGTH);</span>
             }
         }
-<span class="fc" id="L889">        FitsSubString commentSubString = new FitsSubString(this.comment);</span>
-<span class="fc bfc" id="L890" title="All 2 branches covered.">        if (FITS_HEADER_CARD_SIZE - alignPosition - MAX_LONG_STRING_CONTINUE_OVERHEAD &lt; commentSubString.length()) {</span>
+<span class="fc" id="L890">        FitsSubString commentSubString = new FitsSubString(this.comment);</span>
+<span class="fc bfc" id="L891" title="All 2 branches covered.">        if (FITS_HEADER_CARD_SIZE - alignPosition - MAX_LONG_STRING_CONTINUE_OVERHEAD &lt; commentSubString.length()) {</span>
             // with alignment the comment would not fit so lets make more space
-<span class="fc" id="L892">            alignPosition = Math.max(buf.length(), FITS_HEADER_CARD_SIZE - MAX_LONG_STRING_CONTINUE_OVERHEAD - commentSubString.length());</span>
-<span class="fc" id="L893">            alignSmallString = buf.length();</span>
+<span class="fc" id="L893">            alignPosition = Math.max(buf.length(), FITS_HEADER_CARD_SIZE - MAX_LONG_STRING_CONTINUE_OVERHEAD - commentSubString.length());</span>
+<span class="fc" id="L894">            alignSmallString = buf.length();</span>
         }
-<span class="fc" id="L895">        boolean commentHandled = false;</span>
-<span class="fc bfc" id="L896" title="All 4 branches covered.">        if (this.value != null || this.nullable) {</span>
-<span class="fc" id="L897">            buf.append(&quot;= &quot;);</span>
+<span class="fc" id="L896">        boolean commentHandled = false;</span>
+<span class="fc bfc" id="L897" title="All 4 branches covered.">        if (this.value != null || this.nullable) {</span>
+<span class="fc" id="L898">            buf.append(&quot;= &quot;);</span>
 
-<span class="fc bfc" id="L899" title="All 2 branches covered.">            if (this.value != null) {</span>
+<span class="fc bfc" id="L900" title="All 2 branches covered.">            if (this.value != null) {</span>
 
-<span class="fc bfc" id="L901" title="All 2 branches covered.">                if (this.isString) {</span>
-<span class="fc" id="L902">                    commentHandled = stringValueToString(alignSmallString, alignPosition, buf, commentHandled);</span>
+<span class="fc bfc" id="L902" title="All 2 branches covered.">                if (this.isString) {</span>
+<span class="fc" id="L903">                    commentHandled = stringValueToString(alignSmallString, alignPosition, buf, commentHandled);</span>
                 } else {
-<span class="fc" id="L904">                    buf.appendSpacesTo(alignPosition - this.value.length());</span>
-<span class="fc" id="L905">                    buf.append(this.value);</span>
+<span class="fc" id="L905">                    buf.appendSpacesTo(alignPosition - this.value.length());</span>
+<span class="fc" id="L906">                    buf.append(this.value);</span>
                 }
             } else {
                 // Pad out a null value.
-<span class="fc" id="L909">                buf.appendSpacesTo(alignPosition);</span>
+<span class="fc" id="L910">                buf.appendSpacesTo(alignPosition);</span>
             }
             // is there space left for a comment?
-<span class="fc" id="L912">            int spaceLeft = FITS_HEADER_CARD_SIZE - buf.length();</span>
-<span class="fc" id="L913">            int spaceLeftInCard = spaceLeft % FITS_HEADER_CARD_SIZE;</span>
-<span class="fc" id="L914">            commentSubString.getAdjustedLength(spaceLeftInCard - MAX_LONG_STRING_CONTINUE_OVERHEAD);</span>
+<span class="fc" id="L913">            int spaceLeft = FITS_HEADER_CARD_SIZE - buf.length();</span>
+<span class="fc" id="L914">            int spaceLeftInCard = spaceLeft % FITS_HEADER_CARD_SIZE;</span>
+<span class="fc" id="L915">            commentSubString.getAdjustedLength(spaceLeftInCard - MAX_LONG_STRING_CONTINUE_OVERHEAD);</span>
             // if there is a comment, add a comment delimiter
-<span class="fc bfc" id="L916" title="All 4 branches covered.">            if (!commentHandled &amp;&amp; commentSubString.length() &gt; 0) {</span>
-<span class="fc" id="L917">                buf.append(&quot; / &quot;);</span>
+<span class="fc bfc" id="L917" title="All 4 branches covered.">            if (!commentHandled &amp;&amp; commentSubString.length() &gt; 0) {</span>
+<span class="fc" id="L918">                buf.append(&quot; / &quot;);</span>
             }
-<span class="fc bfc" id="L919" title="All 2 branches covered.">        } else if (commentSubString.startsWith(&quot;= &quot;)) {</span>
-<span class="fc" id="L920">            buf.append(&quot;  &quot;);</span>
+<span class="fc bfc" id="L920" title="All 2 branches covered.">        } else if (commentSubString.startsWith(&quot;= &quot;)) {</span>
+<span class="fc" id="L921">            buf.append(&quot;  &quot;);</span>
         }
 
         // finally, add any comment
-<span class="fc bfc" id="L924" title="All 4 branches covered.">        if (!commentHandled &amp;&amp; commentSubString.length() &gt; 0) {</span>
-<span class="fc bfc" id="L925" title="All 2 branches covered.">            if (commentSubString.startsWith(&quot; &quot;)) {</span>
-<span class="fc" id="L926">                commentSubString.skip(1);</span>
+<span class="fc bfc" id="L925" title="All 4 branches covered.">        if (!commentHandled &amp;&amp; commentSubString.length() &gt; 0) {</span>
+<span class="fc bfc" id="L926" title="All 2 branches covered.">            if (commentSubString.startsWith(&quot; &quot;)) {</span>
+<span class="fc" id="L927">                commentSubString.skip(1);</span>
             }
-<span class="fc" id="L928">            buf.append(commentSubString);</span>
+            // is there space left for a comment?
+<span class="fc" id="L930">            commentSubString.getAdjustedLength((FITS_HEADER_CARD_SIZE - buf.length()) % FITS_HEADER_CARD_SIZE);</span>
+<span class="fc" id="L931">            buf.append(commentSubString);</span>
+<span class="fc" id="L932">            commentSubString.rest();</span>
+<span class="fc bfc" id="L933" title="All 2 branches covered.">            if (commentSubString.length() &gt; 0) {</span>
+<span class="fc" id="L934">                LOG.log(Level.INFO, &quot;&quot; + this.key + &quot; was trimmed to fit&quot;);</span>
+            }
         }
-<span class="fc" id="L930">        buf.completeLine();</span>
-<span class="fc" id="L931">        return buf.toString();</span>
+<span class="fc" id="L937">        buf.completeLine();</span>
+<span class="fc" id="L938">        return buf.toString();</span>
     }
 
     /**
      * @return the type of the value.
      */
     public Class&lt;?&gt; valueType() {
-<span class="fc bfc" id="L938" title="All 2 branches covered.">        if (this.isString) {</span>
-<span class="fc" id="L939">            return String.class;</span>
-<span class="pc bpc" id="L940" title="1 of 2 branches missed.">        } else if (this.value != null) {</span>
-<span class="fc" id="L941">            String trimedValue = this.value.trim();</span>
-<span class="fc bfc" id="L942" title="All 4 branches covered.">            if (&quot;T&quot;.equals(trimedValue) || &quot;F&quot;.equals(trimedValue)) {</span>
-<span class="fc" id="L943">                return Boolean.class;</span>
-<span class="fc bfc" id="L944" title="All 2 branches covered.">            } else if (HeaderCard.LONG_REGEX.matcher(trimedValue).matches()) {</span>
-<span class="fc" id="L945">                return getIntegerNumberType(trimedValue);</span>
-<span class="fc bfc" id="L946" title="All 2 branches covered.">            } else if (HeaderCard.IEEE_REGEX.matcher(trimedValue).find()) {</span>
-<span class="fc" id="L947">                return getDecimalNumberType(trimedValue);</span>
+<span class="fc bfc" id="L945" title="All 2 branches covered.">        if (this.isString) {</span>
+<span class="fc" id="L946">            return String.class;</span>
+<span class="pc bpc" id="L947" title="1 of 2 branches missed.">        } else if (this.value != null) {</span>
+<span class="fc" id="L948">            String trimedValue = this.value.trim();</span>
+<span class="fc bfc" id="L949" title="All 4 branches covered.">            if (&quot;T&quot;.equals(trimedValue) || &quot;F&quot;.equals(trimedValue)) {</span>
+<span class="fc" id="L950">                return Boolean.class;</span>
+<span class="fc bfc" id="L951" title="All 2 branches covered.">            } else if (HeaderCard.LONG_REGEX.matcher(trimedValue).matches()) {</span>
+<span class="fc" id="L952">                return getIntegerNumberType(trimedValue);</span>
+<span class="fc bfc" id="L953" title="All 2 branches covered.">            } else if (HeaderCard.IEEE_REGEX.matcher(trimedValue).find()) {</span>
+<span class="fc" id="L954">                return getDecimalNumberType(trimedValue);</span>
             }
         }
-<span class="fc" id="L950">        return null;</span>
+<span class="fc" id="L957">        return null;</span>
     }
 
     private void extractValueCommentFromString(HeaderCardCountingArrayDataInput dis, String card) throws IOException, TruncatedFileException {
         // extract the value/comment part of the string
-<span class="fc" id="L955">        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);</span>
+<span class="fc" id="L962">        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);</span>
 
-<span class="fc bfc" id="L957" title="All 6 branches covered.">        if (FitsFactory.isLongStringsEnabled() &amp;&amp; parsedValue.isString() &amp;&amp; parsedValue.getValue().endsWith(&quot;&amp;&quot;)) {</span>
-<span class="fc" id="L958">            longStringCard(dis, parsedValue);</span>
+<span class="fc bfc" id="L964" title="All 6 branches covered.">        if (FitsFactory.isLongStringsEnabled() &amp;&amp; parsedValue.isString() &amp;&amp; parsedValue.getValue().endsWith(&quot;&amp;&quot;)) {</span>
+<span class="fc" id="L965">            longStringCard(dis, parsedValue);</span>
         } else {
-<span class="fc" id="L960">            this.value = parsedValue.getValue();</span>
-<span class="fc" id="L961">            this.isString = parsedValue.isString();</span>
-<span class="fc" id="L962">            this.comment = parsedValue.getComment();</span>
-<span class="fc bfc" id="L963" title="All 4 branches covered.">            if (!this.isString &amp;&amp; this.value.indexOf('\'') &gt;= 0) {</span>
-<span class="fc" id="L964">                throw new IllegalArgumentException(&quot;no single quotes allowed in values&quot;);</span>
+<span class="fc" id="L967">            this.value = parsedValue.getValue();</span>
+<span class="fc" id="L968">            this.isString = parsedValue.isString();</span>
+<span class="fc" id="L969">            this.comment = parsedValue.getComment();</span>
+<span class="fc bfc" id="L970" title="All 4 branches covered.">            if (!this.isString &amp;&amp; this.value.indexOf('\'') &gt;= 0) {</span>
+<span class="fc" id="L971">                throw new IllegalArgumentException(&quot;no single quotes allowed in values&quot;);</span>
             }
         }
-<span class="fc" id="L967">    }</span>
+<span class="fc" id="L974">    }</span>
 
     private Boolean getBooleanValue(Boolean defaultValue) {
-<span class="fc bfc" id="L970" title="All 2 branches covered.">        if (&quot;T&quot;.equals(this.value)) {</span>
-<span class="fc" id="L971">            return Boolean.TRUE;</span>
-<span class="fc bfc" id="L972" title="All 2 branches covered.">        } else if (&quot;F&quot;.equals(this.value)) {</span>
-<span class="fc" id="L973">            return Boolean.FALSE;</span>
+<span class="fc bfc" id="L977" title="All 2 branches covered.">        if (&quot;T&quot;.equals(this.value)) {</span>
+<span class="fc" id="L978">            return Boolean.TRUE;</span>
+<span class="fc bfc" id="L979" title="All 2 branches covered.">        } else if (&quot;F&quot;.equals(this.value)) {</span>
+<span class="fc" id="L980">            return Boolean.FALSE;</span>
         }
-<span class="fc" id="L975">        return defaultValue;</span>
+<span class="fc" id="L982">        return defaultValue;</span>
     }
 
     /**
@@ -983,136 +990,136 @@ public class HeaderCard implements CursorValue&lt;String&gt; {
      * @param dis
      */
     private void hierarchCard(String card, HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
-<span class="fc" id="L986">        this.key = FitsHeaderCardParser.parseCardKey(card);</span>
-<span class="fc" id="L987">        extractValueCommentFromString(dis, card);</span>
-<span class="fc" id="L988">    }</span>
+<span class="fc" id="L993">        this.key = FitsHeaderCardParser.parseCardKey(card);</span>
+<span class="fc" id="L994">        extractValueCommentFromString(dis, card);</span>
+<span class="fc" id="L995">    }</span>
 
     private void longStringCard(HeaderCardCountingArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException {
         // ok this is a longString now read over all continues.
-<span class="fc" id="L992">        StringBuilder longValue = new StringBuilder();</span>
-<span class="fc" id="L993">        StringBuilder longComment = null;</span>
-<span class="fc" id="L994">        ParsedValue continueCard = parsedValue;</span>
+<span class="fc" id="L999">        StringBuilder longValue = new StringBuilder();</span>
+<span class="fc" id="L1000">        StringBuilder longComment = null;</span>
+<span class="fc" id="L1001">        ParsedValue continueCard = parsedValue;</span>
         do {
-<span class="pc bpc" id="L996" title="1 of 2 branches missed.">            if (continueCard.getValue() != null) {</span>
-<span class="fc" id="L997">                longValue.append(continueCard.getValue());</span>
+<span class="pc bpc" id="L1003" title="1 of 2 branches missed.">            if (continueCard.getValue() != null) {</span>
+<span class="fc" id="L1004">                longValue.append(continueCard.getValue());</span>
             }
-<span class="fc bfc" id="L999" title="All 2 branches covered.">            if (continueCard.getComment() != null) {</span>
-<span class="fc bfc" id="L1000" title="All 2 branches covered.">                if (longComment == null) {</span>
-<span class="fc" id="L1001">                    longComment = new StringBuilder();</span>
+<span class="fc bfc" id="L1006" title="All 2 branches covered.">            if (continueCard.getComment() != null) {</span>
+<span class="fc bfc" id="L1007" title="All 2 branches covered.">                if (longComment == null) {</span>
+<span class="fc" id="L1008">                    longComment = new StringBuilder();</span>
                 } else {
-<span class="fc" id="L1003">                    longComment.append(' ');</span>
+<span class="fc" id="L1010">                    longComment.append(' ');</span>
                 }
-<span class="fc" id="L1005">                longComment.append(continueCard.getComment());</span>
+<span class="fc" id="L1012">                longComment.append(continueCard.getComment());</span>
             }
-<span class="fc" id="L1007">            continueCard = null;</span>
-<span class="fc bfc" id="L1008" title="All 4 branches covered.">            if (longValue.length() &gt; 0 &amp;&amp; longValue.charAt(longValue.length() - 1) == '&amp;') {</span>
-<span class="fc" id="L1009">                longValue.setLength(longValue.length() - 1);</span>
-<span class="fc" id="L1010">                dis.mark();</span>
-<span class="fc" id="L1011">                String card = readOneHeaderLine(dis);</span>
-<span class="fc bfc" id="L1012" title="All 2 branches covered.">                if (card.startsWith(CONTINUE.key())) {</span>
+<span class="fc" id="L1014">            continueCard = null;</span>
+<span class="fc bfc" id="L1015" title="All 4 branches covered.">            if (longValue.length() &gt; 0 &amp;&amp; longValue.charAt(longValue.length() - 1) == '&amp;') {</span>
+<span class="fc" id="L1016">                longValue.setLength(longValue.length() - 1);</span>
+<span class="fc" id="L1017">                dis.mark();</span>
+<span class="fc" id="L1018">                String card = readOneHeaderLine(dis);</span>
+<span class="fc bfc" id="L1019" title="All 2 branches covered.">                if (card.startsWith(CONTINUE.key())) {</span>
                     // extract the value/comment part of the string
-<span class="fc" id="L1014">                    continueCard = FitsHeaderCardParser.parseCardValue(card);</span>
+<span class="fc" id="L1021">                    continueCard = FitsHeaderCardParser.parseCardValue(card);</span>
                 } else {
                     // the &amp; was part of the string put it back.
-<span class="fc" id="L1017">                    longValue.append('&amp;');</span>
+<span class="fc" id="L1024">                    longValue.append('&amp;');</span>
                     // ok move the input stream one card back.
-<span class="fc" id="L1019">                    dis.reset();</span>
+<span class="fc" id="L1026">                    dis.reset();</span>
                 }
             }
-<span class="fc bfc" id="L1022" title="All 2 branches covered.">        } while (continueCard != null);</span>
-<span class="fc bfc" id="L1023" title="All 2 branches covered.">        this.comment = longComment == null ? null : longComment.toString();</span>
-<span class="fc" id="L1024">        this.value = longValue.toString();</span>
-<span class="fc" id="L1025">        this.isString = true;</span>
-<span class="fc" id="L1026">    }</span>
+<span class="fc bfc" id="L1029" title="All 2 branches covered.">        } while (continueCard != null);</span>
+<span class="fc bfc" id="L1030" title="All 2 branches covered.">        this.comment = longComment == null ? null : longComment.toString();</span>
+<span class="fc" id="L1031">        this.value = longValue.toString();</span>
+<span class="fc" id="L1032">        this.isString = true;</span>
+<span class="fc" id="L1033">    }</span>
 
     private int maxStringValueLength() {
-<span class="fc" id="L1029">        int maxStringValueLength = HeaderCard.MAX_STRING_VALUE_LENGTH;</span>
-<span class="fc bfc" id="L1030" title="All 4 branches covered.">        if (FitsFactory.getUseHierarch() &amp;&amp; getKey().length() &gt; MAX_KEYWORD_LENGTH) {</span>
-<span class="fc" id="L1031">            maxStringValueLength -= getKey().length() - MAX_KEYWORD_LENGTH;</span>
+<span class="fc" id="L1036">        int maxStringValueLength = HeaderCard.MAX_STRING_VALUE_LENGTH;</span>
+<span class="fc bfc" id="L1037" title="All 4 branches covered.">        if (FitsFactory.getUseHierarch() &amp;&amp; getKey().length() &gt; MAX_KEYWORD_LENGTH) {</span>
+<span class="fc" id="L1038">            maxStringValueLength -= getKey().length() - MAX_KEYWORD_LENGTH;</span>
         }
-<span class="fc" id="L1033">        return maxStringValueLength;</span>
+<span class="fc" id="L1040">        return maxStringValueLength;</span>
     }
 
     private boolean stringValueToString(int alignSmallString, int alignPosition, FitsLineAppender buf, boolean commentHandled) {
-<span class="fc" id="L1037">        String stringValue = this.value.replace(&quot;'&quot;, &quot;''&quot;);</span>
-<span class="fc bfc" id="L1038" title="All 4 branches covered.">        if (FitsFactory.isLongStringsEnabled() &amp;&amp; stringValue.length() &gt; maxStringValueLength()) {</span>
-<span class="fc" id="L1039">            writeLongStringValue(buf, stringValue);</span>
-<span class="fc" id="L1040">            commentHandled = true;</span>
+<span class="fc" id="L1044">        String stringValue = this.value.replace(&quot;'&quot;, &quot;''&quot;);</span>
+<span class="fc bfc" id="L1045" title="All 4 branches covered.">        if (FitsFactory.isLongStringsEnabled() &amp;&amp; stringValue.length() &gt; maxStringValueLength()) {</span>
+<span class="fc" id="L1046">            writeLongStringValue(buf, stringValue);</span>
+<span class="fc" id="L1047">            commentHandled = true;</span>
         } else {
             // left justify the string inside the quotes
-<span class="fc" id="L1043">            buf.append('\'');</span>
-<span class="fc" id="L1044">            buf.append(stringValue);</span>
-<span class="fc" id="L1045">            buf.appendSpacesTo(alignSmallString);</span>
-<span class="fc" id="L1046">            buf.append('\'');</span>
+<span class="fc" id="L1050">            buf.append('\'');</span>
+<span class="fc" id="L1051">            buf.append(stringValue);</span>
+<span class="fc" id="L1052">            buf.appendSpacesTo(alignSmallString);</span>
+<span class="fc" id="L1053">            buf.append('\'');</span>
             // Now add space to the comment area starting at column
             // 30
-<span class="fc" id="L1049">            buf.appendSpacesTo(alignPosition);</span>
+<span class="fc" id="L1056">            buf.appendSpacesTo(alignPosition);</span>
         }
-<span class="fc" id="L1051">        return commentHandled;</span>
+<span class="fc" id="L1058">        return commentHandled;</span>
     }
 
     private void writeLongStringValue(FitsLineAppender buf, String stringValueString) {
-<span class="fc" id="L1055">        FitsSubString stringValue = new FitsSubString(stringValueString);</span>
-<span class="fc" id="L1056">        FitsSubString commentValue = new FitsSubString(this.comment);</span>
+<span class="fc" id="L1062">        FitsSubString stringValue = new FitsSubString(stringValueString);</span>
+<span class="fc" id="L1063">        FitsSubString commentValue = new FitsSubString(this.comment);</span>
         // We assume that we've made the test so that
         // we need to write a long string.
         // We also need to be careful that single quotes don't
         // make the string too long and that we don't split
         // in the middle of a quote.
-<span class="fc" id="L1062">        stringValue.getAdjustedLength(FITS_HEADER_CARD_SIZE - buf.length() - MAX_LONG_STRING_CONTINUE_OVERHEAD);</span>
+<span class="fc" id="L1069">        stringValue.getAdjustedLength(FITS_HEADER_CARD_SIZE - buf.length() - MAX_LONG_STRING_CONTINUE_OVERHEAD);</span>
         // No comment here since we're using as much of the card
         // as we can
-<span class="fc" id="L1065">        buf.append('\'');</span>
-<span class="fc" id="L1066">        buf.append(stringValue);</span>
-<span class="fc" id="L1067">        buf.append(&quot;&amp;'&quot;);</span>
-<span class="fc" id="L1068">        buf.completeLine();</span>
-<span class="fc" id="L1069">        stringValue.rest();</span>
-<span class="fc bfc" id="L1070" title="All 2 branches covered.">        if (commentValue.startsWith(&quot; &quot;)) {</span>
-<span class="fc" id="L1071">            commentValue.skip(1);</span>
+<span class="fc" id="L1072">        buf.append('\'');</span>
+<span class="fc" id="L1073">        buf.append(stringValue);</span>
+<span class="fc" id="L1074">        buf.append(&quot;&amp;'&quot;);</span>
+<span class="fc" id="L1075">        buf.completeLine();</span>
+<span class="fc" id="L1076">        stringValue.rest();</span>
+<span class="fc bfc" id="L1077" title="All 2 branches covered.">        if (commentValue.startsWith(&quot; &quot;)) {</span>
+<span class="fc" id="L1078">            commentValue.skip(1);</span>
         }
-<span class="fc bfc" id="L1073" title="All 2 branches covered.">        while (stringValue.length() &gt; 0) {</span>
-<span class="fc" id="L1074">            stringValue.getAdjustedLength(MAX_LONG_STRING_VALUE_LENGTH);</span>
-<span class="fc bfc" id="L1075" title="All 2 branches covered.">            if (stringValue.fullLength() &gt; MAX_LONG_STRING_VALUE_LENGTH) {</span>
-<span class="fc" id="L1076">                buf.append(CONTINUE_CARD_PREFIX);</span>
-<span class="fc" id="L1077">                buf.append(stringValue);</span>
-<span class="fc" id="L1078">                buf.append(&quot;&amp;'&quot;);</span>
-<span class="fc" id="L1079">                stringValue.rest();</span>
+<span class="fc bfc" id="L1080" title="All 2 branches covered.">        while (stringValue.length() &gt; 0) {</span>
+<span class="fc" id="L1081">            stringValue.getAdjustedLength(MAX_LONG_STRING_VALUE_LENGTH);</span>
+<span class="fc bfc" id="L1082" title="All 2 branches covered.">            if (stringValue.fullLength() &gt; MAX_LONG_STRING_VALUE_LENGTH) {</span>
+<span class="fc" id="L1083">                buf.append(CONTINUE_CARD_PREFIX);</span>
+<span class="fc" id="L1084">                buf.append(stringValue);</span>
+<span class="fc" id="L1085">                buf.append(&quot;&amp;'&quot;);</span>
+<span class="fc" id="L1086">                stringValue.rest();</span>
             } else {
-<span class="fc bfc" id="L1081" title="All 2 branches covered.">                if (commentValue.length() &gt; MAX_LONG_STRING_VALUE_WITH_COMMENT_LENGTH - stringValue.length()) {</span>
+<span class="fc bfc" id="L1088" title="All 2 branches covered.">                if (commentValue.length() &gt; MAX_LONG_STRING_VALUE_WITH_COMMENT_LENGTH - stringValue.length()) {</span>
                     // ok comment does not fit lets give it a little more room
-<span class="fc" id="L1083">                    stringValue.getAdjustedLength(STRING_SPLIT_POSITION_FOR_EXTRA_COMMENT_SPACE);</span>
-<span class="fc bfc" id="L1084" title="All 2 branches covered.">                    if (stringValue.fullLength() &gt; stringValue.length()) {</span>
-<span class="fc" id="L1085">                        buf.append(CONTINUE_CARD_PREFIX);</span>
-<span class="fc" id="L1086">                        buf.append(stringValue);</span>
-<span class="fc" id="L1087">                        buf.append(&quot;&amp;'&quot;);</span>
+<span class="fc" id="L1090">                    stringValue.getAdjustedLength(STRING_SPLIT_POSITION_FOR_EXTRA_COMMENT_SPACE);</span>
+<span class="fc bfc" id="L1091" title="All 2 branches covered.">                    if (stringValue.fullLength() &gt; stringValue.length()) {</span>
+<span class="fc" id="L1092">                        buf.append(CONTINUE_CARD_PREFIX);</span>
+<span class="fc" id="L1093">                        buf.append(stringValue);</span>
+<span class="fc" id="L1094">                        buf.append(&quot;&amp;'&quot;);</span>
                     } else {
-<span class="fc" id="L1089">                        buf.append(CONTINUE_CARD_PREFIX);</span>
-<span class="fc" id="L1090">                        buf.append(stringValue);</span>
-<span class="fc" id="L1091">                        buf.append(&quot;'&quot;);</span>
+<span class="fc" id="L1096">                        buf.append(CONTINUE_CARD_PREFIX);</span>
+<span class="fc" id="L1097">                        buf.append(stringValue);</span>
+<span class="fc" id="L1098">                        buf.append(&quot;'&quot;);</span>
                     }
-<span class="fc" id="L1093">                    int spaceForComment = buf.spaceLeftInLine() - MAX_LONG_STRING_CONTINUE_OVERHEAD;</span>
-<span class="fc" id="L1094">                    commentValue.getAdjustedLength(spaceForComment);</span>
-<span class="fc" id="L1095">                } else {</span>
-<span class="fc" id="L1096">                    buf.append(CONTINUE_CARD_PREFIX);</span>
-<span class="fc" id="L1097">                    buf.append(stringValue);</span>
-<span class="fc" id="L1098">                    buf.append('\'');</span>
+<span class="fc" id="L1100">                    int spaceForComment = buf.spaceLeftInLine() - MAX_LONG_STRING_CONTINUE_OVERHEAD;</span>
+<span class="fc" id="L1101">                    commentValue.getAdjustedLength(spaceForComment);</span>
+<span class="fc" id="L1102">                } else {</span>
+<span class="fc" id="L1103">                    buf.append(CONTINUE_CARD_PREFIX);</span>
+<span class="fc" id="L1104">                    buf.append(stringValue);</span>
+<span class="fc" id="L1105">                    buf.append('\'');</span>
                 }
-<span class="fc bfc" id="L1100" title="All 2 branches covered.">                if (commentValue.length() &gt; 0) {</span>
-<span class="fc" id="L1101">                    buf.append(&quot; / &quot;);</span>
-<span class="fc" id="L1102">                    buf.append(commentValue);</span>
-<span class="fc" id="L1103">                    commentValue.rest();</span>
+<span class="fc bfc" id="L1107" title="All 2 branches covered.">                if (commentValue.length() &gt; 0) {</span>
+<span class="fc" id="L1108">                    buf.append(&quot; / &quot;);</span>
+<span class="fc" id="L1109">                    buf.append(commentValue);</span>
+<span class="fc" id="L1110">                    commentValue.rest();</span>
                 }
-<span class="fc" id="L1105">                buf.completeLine();</span>
-<span class="fc" id="L1106">                stringValue.rest();</span>
+<span class="fc" id="L1112">                buf.completeLine();</span>
+<span class="fc" id="L1113">                stringValue.rest();</span>
             }
         }
-<span class="fc" id="L1109">    }</span>
+<span class="fc" id="L1116">    }</span>
 
     /**
      * Set the key.
      */
     void setKey(String newKey) {
-<span class="fc" id="L1115">        this.key = newKey;</span>
-<span class="fc" id="L1116">    }</span>
+<span class="fc" id="L1122">        this.key = newKey;</span>
+<span class="fc" id="L1123">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>

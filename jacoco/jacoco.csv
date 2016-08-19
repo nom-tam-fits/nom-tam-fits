@@ -160,7 +160,7 @@ nom.tam FITS library,nom.tam.fits,BinaryTableHDU,20,637,5,47,3,96,5,35,0,14
 nom.tam FITS library,nom.tam.fits,HeaderCardException,0,4,0,0,0,2,0,1,0,1
 nom.tam FITS library,nom.tam.fits,FitsFactory.FitsSettings,0,53,0,0,0,15,0,2,0,2
 nom.tam FITS library,nom.tam.fits,BinaryTable.ColumnDesc,0,54,1,1,0,13,1,8,0,8
-nom.tam FITS library,nom.tam.fits,HeaderCard,0,1443,9,187,0,335,9,145,0,56
+nom.tam FITS library,nom.tam.fits,HeaderCard,0,1470,9,189,0,339,9,146,0,56
 nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip2,GZip2Compressor.ShortGZip2Compressor,0,21,0,0,0,7,0,3,0,3
 nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip2,GZip2Compressor.FloatGZip2Compressor,0,21,0,0,0,7,0,3,0,3
 nom.tam FITS library,nom.tam.fits.compression.algorithm.gzip2,GZip2Compressor.LongGZip2Compressor,0,21,0,0,0,7,0,3,0,3
