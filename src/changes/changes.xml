@@ -1,5 +1,16 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
+		<release version="1.15.1" date="2016-08-19" description="Maintenance release with bug fixes.">
+			<action type="update">
+				Maintenance release with bug fixes.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue=102>
+				Comment type header cards where not protected against to long comments, that can result in corrupted headers. 
+			</action>
+			<action type="fix" dev="MaxNoe" issue=101>
+				Introduction document verified and corrected kind thanks to Maximilian Nöthe. 
+			</action>
+		</release>
 		<release version="1.15.0" date="2016-08-07" description="Table compression activated.">
 			<action type="update">
 				Binary table compression and tiling are now fully supported by nom-tam-fits. An API for easy handling of compressed tables is now provided.
@@ -14,7 +25,7 @@
 				Multiple code quality fixes, provided by various developers.
 			</action>
 		</release>
-		<release version="1.14.3" date="2016-06-05" description="Maintenance release with minor bug fixess.">
+		<release version="1.14.3" date="2016-06-05" description="Maintenance release with minor bug fixes.">
 			<action type="update">
 				Maintenance release with bug fixes.
 			</action>
