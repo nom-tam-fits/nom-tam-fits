@@ -114,6 +114,7 @@ public class BlackBoxImages {
         try {
             URL website = new URL(url);
             ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+            new File(localFile).getParentFile().mkdirs();
             FileOutputStream fos = new FileOutputStream(localFile);
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             fos.close();
