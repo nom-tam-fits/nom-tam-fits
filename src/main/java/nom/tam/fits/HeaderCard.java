@@ -629,7 +629,8 @@ public class HeaderCard implements CursorValue<String> {
                 value = value.substring(1, value.length() - 1).trim();
             }
             // Remember that quotes get doubled in the value...
-            if (!FitsFactory.isLongStringsEnabled() && value.replace("'", "''").length() > (this.isString ? HeaderCard.MAX_STRING_VALUE_LENGTH : HeaderCard.MAX_VALUE_LENGTH)) {
+            if (!FitsFactory.isLongStringsEnabled()
+                    && value.replace("'", "''").length() > (this.isString ? HeaderCard.MAX_STRING_VALUE_LENGTH : HeaderCard.MAX_VALUE_LENGTH)) {
                 throw new HeaderCardException("Value too long");
             }
         }
@@ -925,7 +926,13 @@ public class HeaderCard implements CursorValue<String> {
             if (commentSubString.startsWith(" ")) {
                 commentSubString.skip(1);
             }
+            // is there space left for a comment?
+            commentSubString.getAdjustedLength((FITS_HEADER_CARD_SIZE - buf.length()) % FITS_HEADER_CARD_SIZE);
             buf.append(commentSubString);
+            commentSubString.rest();
+            if (commentSubString.length() > 0) {
+                LOG.log(Level.INFO, "" + this.key + " was trimmed to fit");
+            }
         }
         buf.completeLine();
         return buf.toString();
