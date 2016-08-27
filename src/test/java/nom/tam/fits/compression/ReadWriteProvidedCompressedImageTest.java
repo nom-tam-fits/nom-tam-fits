@@ -200,20 +200,21 @@ public class ReadWriteProvidedCompressedImageTest {
 
     private void assertIntImage(IntBuffer result, int[][] expected) {
         int[] real = new int[expected[0].length];
-        for (int[] expectedPart : expected) {
+        for (int index = 0; index < real.length; index++) {
+            int[] expectedPart = expected[index];
             result.get(real);
             Assert.assertEquals(expectedPart.length, real.length);
             for (int subindex = 0; subindex < expectedPart.length; subindex++) {
                 int expectedFloat = expectedPart[subindex];
                 int realFloat = real[subindex];
-                Assert.assertEquals(expectedFloat, realFloat);
+                Assert.assertEquals("pixel differes at " + subindex + "x" + index, expectedFloat, realFloat);
             }
         }
     }
 
     @Test
     public void blackboxTest_c4s_060126_182642_zri() throws Exception {
-        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("c4s_060126_182642_zri.fits.fz"),//
+        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("c4s_060126_182642_zri.fits.fz"), //
                 resolveLocalOrRemoteFileName("c4s_060126_182642_zri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
 
                     @Override
@@ -225,7 +226,7 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void blackboxTest_c4s_060127_070751_cri() throws Exception {
-        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits.fz"),//
+        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits.fz"), //
                 resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
 
                     @Override
@@ -237,7 +238,7 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void blackboxTest_kwi_041217_212603_fri() throws Exception {
-        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("kwi_041217_212603_fri.fits.fz"),//
+        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("kwi_041217_212603_fri.fits.fz"), //
                 resolveLocalOrRemoteFileName("kwi_041217_212603_fri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
 
                     @Override
@@ -249,7 +250,7 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void blackboxTest_kwi_041217_213100_fri() throws Exception {
-        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("kwi_041217_213100_fri.fits.fz"),//
+        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("kwi_041217_213100_fri.fits.fz"), //
                 resolveLocalOrRemoteFileName("kwi_041217_213100_fri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
 
                     @Override
@@ -261,7 +262,7 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void blackboxTest_psa_140305_191552_zri() throws Exception {
-        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("psa_140305_191552_zri.fits.fz"),//
+        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("psa_140305_191552_zri.fits.fz"), //
                 resolveLocalOrRemoteFileName("psa_140305_191552_zri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
 
                     @Override
@@ -273,7 +274,7 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void blackboxTest_psa_140305_194520_fri() throws Exception {
-        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits.fz"),//
+        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits.fz"), //
                 resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
 
                     @Override
@@ -285,7 +286,7 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void blackboxTest_tu1134529() throws Exception {
-        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("tu1134529.fits.fz"),//
+        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("tu1134529.fits.fz"), //
                 resolveLocalOrRemoteFileName("tu1134529.fits"), int[][].class, new IHDUAsserter<int[][]>() {
 
                     @Override
@@ -298,7 +299,7 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void blackboxTest_tu1134531() throws Exception {
-        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("tu1134531.fits.fz"),//
+        assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("tu1134531.fits.fz"), //
                 resolveLocalOrRemoteFileName("tu1134531.fits"), float[][].class, new IHDUAsserter<float[][]>() {
 
                     @Override
@@ -338,6 +339,15 @@ public class ReadWriteProvidedCompressedImageTest {
         float[][] expected = (float[][]) readAll(resolveLocalOrRemoteFileName("unpack_vlos_mag.fits"), 0);
         result.rewind();
         assertFloatImage(result, expected, 6500f);
+    }
+
+    @Test
+    public void blackboxTest3() throws Exception {
+        int lastpix=0;
+        byte bytevalue=(byte) 0x80;
+        lastpix=lastpix|(bytevalue<<24);
+
+        IntBuffer result=(IntBuffer)readAll(resolveLocalOrRemoteFileName("hmi.fits.fz"),1);int[][]expected=(int[][])readAll(resolveLocalOrRemoteFileName("hmi.fits"),1);result.rewind();assertIntImage(result,expected);
     }
 
     private void dispayImage(short[][] data) {
@@ -556,8 +566,7 @@ public class ReadWriteProvidedCompressedImageTest {
                     /**/.setScale(4);
             compressedHdu//
                     .getCompressOption(QuantizeOption.class)//
-                    /**/.setQlevel(1.0)
-                    /**/.setCheckNull(true);
+                    /**/.setQlevel(1.0)/**/.setCheckNull(true);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             f.write(bdos);
@@ -663,8 +672,7 @@ public class ReadWriteProvidedCompressedImageTest {
                     /**/.setScale(4);
             compressedHdu//
                     .getCompressOption(QuantizeOption.class)//
-                    /**/.setQlevel(1.0)
-                    /**/.setCheckNull(true);
+                    /**/.setQlevel(1.0)/**/.setCheckNull(true);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             f.write(bdos);
@@ -1058,8 +1066,7 @@ public class ReadWriteProvidedCompressedImageTest {
                     .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
                     .preserveNulls(Compression.ZCMPTYPE_RICE_1)//
                     .getCompressOption(QuantizeOption.class)//
-                    /**/.setQlevel(1.0)
-                    /**/.setCheckNull(true)//
+                    /**/.setQlevel(1.0)/**/.setCheckNull(true)//
                     .getCompressOption(HCompressorOption.class)//
                     /**/.setScale(4);
             compressedHdu.compress();
@@ -1123,4 +1130,5 @@ public class ReadWriteProvidedCompressedImageTest {
         }
         return data;
     }
+
 }

@@ -126,7 +126,11 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
 
         @Override
         protected int nextPixel() {
-            return this.pixelBuffer.get();
+            int pixel = this.pixelBuffer.get();
+            if (pixel == Integer.MIN_VALUE) {
+                return 0;
+            }
+            return pixel;
         }
 
         @Override
@@ -166,6 +170,21 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
             this.pixelBuffer.put((short) pixel);
         }
     }
+
+    /**
+     * mask to convert a "unsigned" byte to a long.
+     */
+    private static final long UNSIGNED_BYTE_MASK = 0xFFL;
+
+    /**
+     * mask to convert a "unsigned" short to a long.
+     */
+    private static final long UNSIGNED_SHORT_MASK = 0xFFFFL;
+
+    /**
+     * mask to convert a "unsigned" int to a long.
+     */
+    private static final long UNSIGNED_INTEGER_MASK = 0xFFFFFFFFL;
 
     /**
      * logger to log to.
@@ -248,6 +267,35 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
          * maximum value for FS BBITS = bits/pixel for direct coding
          */
         this.bBits = 1 << this.fsBits;
+    }
+
+    /**
+     * <p>
+     * undo mapping and differencing Note that some of these operations will
+     * overflow the unsigned int arithmetic -- that's OK, it all works out to
+     * give the right answers in the output file.
+     * </p>
+     * <p>
+     * In java this is more complicated because of the missing unsigned
+     * integers. trying to simulate the behavior
+     * </p>
+     *
+     * @param lastpix
+     *            the current last pix value
+     * @param diff
+     *            the difference to "add"
+     * @return return the new lastpiy value
+     */
+    private long undoMappingAndDifferencing(long lastpix, long diff) {
+        diff &= UNSIGNED_INTEGER_MASK;
+        if ((diff & 1) == 0) {
+            diff = diff >>> 1;
+        } else {
+            diff = diff >>> 1 ^ UNSIGNED_INTEGER_MASK;
+        }
+        lastpix = diff + lastpix & UNSIGNED_INTEGER_MASK;
+        nextPixel((int) lastpix);
+        return lastpix;
     }
 
     /**
@@ -388,15 +436,15 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
     protected void decompressBuffer(final ByteBuffer readBuffer, final int nx) {
         /* first x bytes of input buffer contain the value of the first */
         /* x byte integer value, without any encoding */
-        int lastpix = 0;
+        long lastpix = 0L;
         if (this.bitsPerPixel == PrimitiveTypes.BYTE.bitPix()) {
-            lastpix = readBuffer.get();
+            lastpix = readBuffer.get() & UNSIGNED_BYTE_MASK;
         } else if (this.bitsPerPixel == PrimitiveTypes.SHORT.bitPix()) {
-            lastpix = readBuffer.getShort();
+            lastpix = readBuffer.getShort() & UNSIGNED_SHORT_MASK;
         } else if (this.bitsPerPixel == PrimitiveTypes.INT.bitPix()) {
-            lastpix = readBuffer.getInt();
+            lastpix = readBuffer.getInt() & UNSIGNED_INTEGER_MASK;
         }
-        int b = readBuffer.get() & BYTE_MASK; /* bit buffer */
+        long b = readBuffer.get() & BYTE_MASK; /* bit buffer */
         int nbits = BITS_PER_BYTE; /* number of bits remaining in b */
         for (int i = 0; i < nx;) {
             /* get the FS value from first fsbits */
@@ -405,7 +453,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
                 b = b << BITS_PER_BYTE | readBuffer.get() & BYTE_MASK;
                 nbits += BITS_PER_BYTE;
             }
-            int fs = (b >> nbits) - 1;
+            long fs = (b >>> nbits) - 1L;
 
             b &= (1 << nbits) - 1;
             /* loop over the next block */
@@ -416,37 +464,25 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
             if (fs < 0) {
                 /* low-entropy case, all zero differences */
                 for (; i < imax; i++) {
-                    nextPixel(lastpix);
+                    nextPixel((int) lastpix);
                 }
             } else if (fs == this.fsMax) {
                 /* high-entropy case, directly coded pixel values */
                 for (; i < imax; i++) {
                     int k = this.bBits - nbits;
-                    int diff = b << k;
+                    long diff = b << k;
                     for (k -= BITS_PER_BYTE; k >= 0; k -= BITS_PER_BYTE) {
                         b = readBuffer.get() & BYTE_MASK;
                         diff |= b << k;
                     }
                     if (nbits > 0) {
                         b = readBuffer.get() & BYTE_MASK;
-                        diff |= b >> -k;
-                        b &= (1 << nbits) - 1;
+                        diff |= b >>> -k;
+                        b &= (1 << nbits) - 1L;
                     } else {
                         b = 0;
                     }
-                    /*
-                     * undo mapping and differencing Note that some of these
-                     * operations will overflow the unsigned int arithmetic --
-                     * that's OK, it all works out to give the right answers in
-                     * the output file.
-                     */
-                    if ((diff & 1) == 0) {
-                        diff = diff >> 1;
-                    } else {
-                        diff = ~(diff >> 1);
-                    }
-                    lastpix = diff + lastpix;
-                    nextPixel(lastpix);
+                    lastpix = undoMappingAndDifferencing(lastpix, diff);
                 }
             } else {
                 /* normal case, Rice coding */
@@ -456,7 +492,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
                         nbits += BITS_PER_BYTE;
                         b = readBuffer.get() & BYTE_MASK;
                     }
-                    int nzero = nbits - NONZERO_COUNT[b & BYTE_MASK];
+                    long nzero = nbits - NONZERO_COUNT[(int) (b & BYTE_MASK)];
                     nbits -= nzero + 1;
                     /* flip the leading one-bit */
                     b ^= 1 << nbits;
@@ -466,17 +502,10 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
                         b = b << BITS_PER_BYTE | readBuffer.get() & BYTE_MASK;
                         nbits += BITS_PER_BYTE;
                     }
-                    int diff = nzero << fs | b >> nbits;
-                    b &= (1 << nbits) - 1;
+                    long diff = nzero << fs | b >> nbits;
+                    b &= (1 << nbits) - 1L;
 
-                    /* undo mapping and differencing */
-                    if ((diff & 1) == 0) {
-                        diff = diff >> 1;
-                    } else {
-                        diff = ~(diff >> 1);
-                    }
-                    lastpix = diff + lastpix;
-                    nextPixel(lastpix);
+                    lastpix = undoMappingAndDifferencing(lastpix, diff);
                 }
             }
         }
