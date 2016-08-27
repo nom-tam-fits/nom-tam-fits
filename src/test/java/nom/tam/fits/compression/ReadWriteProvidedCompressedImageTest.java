@@ -48,6 +48,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
@@ -65,10 +69,6 @@ import nom.tam.image.compression.hdu.CompressedImageHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.SafeClose;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class ReadWriteProvidedCompressedImageTest {
 
@@ -343,11 +343,15 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void blackboxTest3() throws Exception {
-        int lastpix=0;
-        byte bytevalue=(byte) 0x80;
-        lastpix=lastpix|(bytevalue<<24);
+        int lastpix = 0;
+        byte bytevalue = (byte) 0x80;
+        lastpix = lastpix | (bytevalue << 24);
 
-        IntBuffer result=(IntBuffer)readAll(resolveLocalOrRemoteFileName("hmi.fits.fz"),1);int[][]expected=(int[][])readAll(resolveLocalOrRemoteFileName("hmi.fits"),1);result.rewind();assertIntImage(result,expected);
+        IntBuffer result = (IntBuffer) readAll(resolveLocalOrRemoteFileName("hmi.fits.fz"), 1);
+        int[][] expected = (int[][]) readAll(resolveLocalOrRemoteFileName("hmi.fits"), 1);
+        result.rewind();
+        assertIntImage(result, expected);
+
     }
 
     private void dispayImage(short[][] data) {
@@ -907,6 +911,49 @@ public class ReadWriteProvidedCompressedImageTest {
             Assert.assertEquals("2", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
             actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
             Assert.assertArrayEquals(this.m13_data, actualShortArray);
+        } finally {
+            SafeClose.close(f);
+        }
+    }
+
+    @Test
+    public void writeRiceSpeciaIntOverflow() throws Exception {
+        Fits f = null;
+        int[][] expectedIntData;
+        try {
+            f = new Fits(resolveLocalOrRemoteFileName("hmi.fits"));
+            ImageHDU uncompressed = (ImageHDU) f.getHDU(1);
+            expectedIntData = (int[][]) uncompressed.getData().getData();
+            f.close();
+            f = new Fits();
+            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(uncompressed, uncompressed.getAxes()[0], 4);
+            compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
+                    .setQuantAlgorithm((String) null)//
+                    .getCompressOption(RiceCompressOption.class)//
+                    /**/.setBlockSize(32)//
+                    /**/.setBytePix(4);
+            compressedHdu.compress();
+            f.addHDU(compressedHdu);
+            BufferedDataOutputStream bdos = null;
+            try {
+                bdos = new BufferedDataOutputStream(new FileOutputStream("target/hmi.fits.fz"));
+                f.write(bdos);
+            } finally {
+                SafeClose.close(bdos);
+            }
+        } finally {
+            SafeClose.close(f);
+        }
+        try {
+            f = new Fits("target/hmi.fits.fz");
+            f.readHDU();// the primary
+            CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
+            Assert.assertEquals("4", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
+            ImageHDU asImageHDU = hdu.asImageHDU();
+            int[][] actualIntArray = (int[][]) asImageHDU.getData().getData();
+
+            Assert.assertArrayEquals(expectedIntData, actualIntArray);
+
         } finally {
             SafeClose.close(f);
         }

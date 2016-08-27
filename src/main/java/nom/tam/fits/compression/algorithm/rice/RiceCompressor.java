@@ -126,11 +126,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
 
         @Override
         protected int nextPixel() {
-            int pixel = this.pixelBuffer.get();
-            if (pixel == Integer.MIN_VALUE) {
-                return 0;
-            }
-            return pixel;
+            return this.pixelBuffer.get();
         }
 
         @Override
@@ -313,7 +309,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         /* the first difference will always be zero */
         int lastpix = firstPixel;
         /* write out first int value to the first 4 bytes of the buffer */
-        buffer.putInt(lastpix, this.bitsPerPixel);
+        buffer.putInt(firstPixel, this.bitsPerPixel);
         int thisblock = this.blockSize;
         for (int i = 0; i < dataLength; i += this.blockSize) {
             /* last block may be shorter */
@@ -337,8 +333,8 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
              */
             for (int j = 0; j < thisblock; j++) {
                 nextpix = nextPixel();
-                long pdiff = nextpix - lastpix;
-                diff[j] = Math.abs(pdiff < 0 ? ~(pdiff << 1) : pdiff << 1);
+                long pdiff = (nextpix - lastpix);
+                diff[j] = (pdiff < 0 ? (pdiff << 1) ^ UNSIGNED_INTEGER_MASK : pdiff << 1) & UNSIGNED_INTEGER_MASK;
                 pixelsum += diff[j];
                 lastpix = nextpix;
             }
