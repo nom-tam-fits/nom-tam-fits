@@ -35,7 +35,10 @@ import static nom.tam.fits.header.Compression.ZIMAGE;
 import static nom.tam.fits.header.Standard.BLANK;
 
 import java.nio.Buffer;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import nom.tam.fits.BinaryTableHDU;
@@ -46,6 +49,7 @@ import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.header.Compression;
+import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.util.Cursor;
 
@@ -57,6 +61,12 @@ import nom.tam.util.Cursor;
  * in the tile.
  */
 public class CompressedImageHDU extends BinaryTableHDU {
+
+    /**
+     * keys that are only valid in tables and should not go into the
+     * uncompressed image.
+     */
+    static final List<IFitsHeader> TABLE_COLUMN_KEYS = Collections.unmodifiableList(Arrays.asList(binaryTableColumnKeyStems()));
 
     static final Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> COMPRESSED_HEADER_MAPPING = new HashMap<IFitsHeader, BackupRestoreUnCompressedHeaderCard>();
 
@@ -121,7 +131,9 @@ public class CompressedImageHDU extends BinaryTableHDU {
         Cursor<String, HeaderCard> iterator = getHeader().iterator();
         while (iterator.hasNext()) {
             HeaderCard card = iterator.next();
-            BackupRestoreUnCompressedHeaderCard.backup(card, imageIterator);
+            if (!TABLE_COLUMN_KEYS.contains(GenericKey.lookup(card.getKey()))) {
+                BackupRestoreUnCompressedHeaderCard.backup(card, imageIterator);
+            }
         }
         ImageData data = (ImageData) ImageHDU.manufactureData(header);
         ImageHDU imageHDU = new ImageHDU(header, data);

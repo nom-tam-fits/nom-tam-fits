@@ -69,7 +69,6 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         TDIMn
     };
 
-
     public BinaryTableHDU(Header hdr, BinaryTable datum) {
         super(hdr, datum);
     }
@@ -149,6 +148,10 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         this.myData.addColumn(data);
         this.myData.pointToColumn(getNCols() - 1, this.myHeader);
         return super.addColumn(data);
+    }
+
+    protected static IFitsHeader[] binaryTableColumnKeyStems() {
+        return KEY_STEMS;
     }
 
     /**

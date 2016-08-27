@@ -953,7 +953,8 @@ public class ReadWriteProvidedCompressedImageTest {
             int[][] actualIntArray = (int[][]) asImageHDU.getData().getData();
 
             Assert.assertArrayEquals(expectedIntData, actualIntArray);
-
+            Assert.assertNull(asImageHDU.getHeader().getStringValue(Standard.TFIELDS.key()));
+            Assert.assertNull(asImageHDU.getHeader().getStringValue(Standard.TTYPEn.n(1).key()));
         } finally {
             SafeClose.close(f);
         }

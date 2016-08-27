@@ -70,8 +70,6 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         TUNITn
     };
 
-
-
     /**
      * Create an ASCII table header/data unit.
      *
