@@ -266,7 +266,9 @@ public final class FitsFactory {
 
                             @Override
                             public Thread newThread(Runnable r) {
-                                return new Thread(r, "nom-tam-fits worker " + this.counter++);
+                                Thread thread = new Thread(r, "nom-tam-fits worker " + this.counter++);
+                                thread.setDaemon(true);
+                                return thread;
                             }
                         });
             }
