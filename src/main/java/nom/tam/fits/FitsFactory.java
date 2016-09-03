@@ -52,7 +52,7 @@ import nom.tam.image.compression.hdu.CompressedTableHDU;
  */
 public final class FitsFactory {
 
-    private static class FitsSettings {
+    protected static final class FitsSettings {
 
         private boolean useAsciiTables = true;
 
@@ -64,6 +64,8 @@ public final class FitsFactory {
 
         private boolean longStringsEnabled = false;
 
+        private boolean skipBlankAfterAssign = false;
+
         private IHierarchKeyFormatter hierarchKeyFormatter = new StandardIHierarchKeyFormatter();
 
         private FitsSettings copy() {
@@ -74,7 +76,36 @@ public final class FitsFactory {
             settings.allowTerminalJunk = this.allowTerminalJunk;
             settings.longStringsEnabled = this.longStringsEnabled;
             settings.hierarchKeyFormatter = this.hierarchKeyFormatter;
+            settings.skipBlankAfterAssign = this.skipBlankAfterAssign;
             return settings;
+        }
+
+        protected IHierarchKeyFormatter getHierarchKeyFormatter() {
+            return this.hierarchKeyFormatter;
+        }
+
+        protected boolean isAllowTerminalJunk() {
+            return this.allowTerminalJunk;
+        }
+
+        protected boolean isCheckAsciiStrings() {
+            return this.checkAsciiStrings;
+        }
+
+        protected boolean isLongStringsEnabled() {
+            return this.longStringsEnabled;
+        }
+
+        protected boolean isSkipBlankAfterAssign() {
+            return this.skipBlankAfterAssign;
+        }
+
+        protected boolean isUseAsciiTables() {
+            return this.useAsciiTables;
+        }
+
+        protected boolean isUseHierarch() {
+            return this.useHierarch;
         }
 
     }
@@ -86,15 +117,6 @@ public final class FitsFactory {
     private static ExecutorService threadPool;
 
     public static final int FITS_BLOCK_SIZE = 2880;
-
-    private static FitsSettings current() {
-        FitsSettings settings = LOCAL_SETTINGS.get();
-        if (settings == null) {
-            return GLOBAL_SETTINGS;
-        } else {
-            return settings;
-        }
-    }
 
     /**
      * @return Given a Header construct an appropriate data.
@@ -137,10 +159,10 @@ public final class FitsFactory {
     }
 
     /**
-     * @return Get the current status for string checking.
+     * @return the formatter to use for hierarch keys.
      */
-    static boolean getCheckAsciiStrings() {
-        return current().checkAsciiStrings;
+    public static IHierarchKeyFormatter getHierarchFormater() {
+        return current().hierarchKeyFormatter;
     }
 
     /**
@@ -236,8 +258,6 @@ public final class FitsFactory {
         return hduFactory(hdr, d);
     }
 
-    // CHECKSTYLE:ON
-
     // CHECKSTYLE:OFF
     /**
      * @return Given an object, create the appropriate FITS header to describe
@@ -255,31 +275,21 @@ public final class FitsFactory {
 
     // CHECKSTYLE:ON
 
-    private static void initializeThreadPool() {
-        synchronized (GLOBAL_SETTINGS) {
-            if (threadPool == null) {
-                // 1.5 thread per core
-                threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, //
-                        new ThreadFactory() {
-
-                            private int counter = 1;
-
-                            @Override
-                            public Thread newThread(Runnable r) {
-                                Thread thread = new Thread(r, "nom-tam-fits worker " + this.counter++);
-                                thread.setDaemon(true);
-                                return thread;
-                            }
-                        });
-            }
-        }
-    }
-
     /**
      * @return <code>true</code> If long string support is enabled.
      */
     public static boolean isLongStringsEnabled() {
         return current().longStringsEnabled;
+    }
+
+    // CHECKSTYLE:ON
+
+    /**
+     * @return <code>true</code> If blanks after the assign are ommitted in the
+     *         header.
+     */
+    public static boolean isSkipBlankAfterAssign() {
+        return current().skipBlankAfterAssign;
     }
 
     /**
@@ -306,6 +316,18 @@ public final class FitsFactory {
     }
 
     /**
+     * There is not a real standard how to write hierarch keys, default we use
+     * the one where every key is separated by a blank. If you want or need
+     * another format assing the formater here.
+     *
+     * @param formatter
+     *            the hierarch key formatter.
+     */
+    public static void setHierarchFormater(IHierarchKeyFormatter formatter) {
+        current().hierarchKeyFormatter = formatter;
+    }
+
+    /**
      * Enable/Disable longstring support.
      *
      * @param longStringsEnabled
@@ -316,6 +338,18 @@ public final class FitsFactory {
     }
 
     /**
+     * If set to true the blank after the assign in the header cards in not
+     * written. The blank is stronly recommendet but in some cases it is
+     * important that it can be ommitted.
+     *
+     * @param skipBlankAfterAssign
+     *            value to set
+     */
+    public static void setSkipBlankAfterAssign(boolean skipBlankAfterAssign) {
+        current().skipBlankAfterAssign = skipBlankAfterAssign;
+    }
+
+    /**
      * Indicate whether ASCII tables should be used where feasible.
      *
      * @param useAsciiTables
@@ -323,25 +357,6 @@ public final class FitsFactory {
      */
     public static void setUseAsciiTables(boolean useAsciiTables) {
         current().useAsciiTables = useAsciiTables;
-    }
-
-    /**
-     * There is not a real standard how to write hierarch keys, default we use
-     * the one where every key is separated by a blank. If you want or need
-     * another format assing the formater here.
-     * 
-     * @param formatter
-     *            the hierarch key formatter.
-     */
-    public static void setHierarchFormater(IHierarchKeyFormatter formatter) {
-        current().hierarchKeyFormatter = formatter;
-    }
-
-    /**
-     * @return the formatter to use for hierarch keys.
-     */
-    public static IHierarchKeyFormatter getHierarchFormater() {
-        return current().hierarchKeyFormatter;
     }
 
     /**
@@ -375,6 +390,42 @@ public final class FitsFactory {
         } else {
             LOCAL_SETTINGS.remove();
         }
+    }
+
+    private static void initializeThreadPool() {
+        synchronized (GLOBAL_SETTINGS) {
+            if (threadPool == null) {
+                // 1.5 thread per core
+                threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, //
+                        new ThreadFactory() {
+
+                            private int counter = 1;
+
+                            @Override
+                            public Thread newThread(Runnable r) {
+                                Thread thread = new Thread(r, "nom-tam-fits worker " + this.counter++);
+                                thread.setDaemon(true);
+                                return thread;
+                            }
+                        });
+            }
+        }
+    }
+
+    protected static FitsSettings current() {
+        FitsSettings settings = LOCAL_SETTINGS.get();
+        if (settings == null) {
+            return GLOBAL_SETTINGS;
+        } else {
+            return settings;
+        }
+    }
+
+    /**
+     * @return Get the current status for string checking.
+     */
+    static boolean getCheckAsciiStrings() {
+        return current().checkAsciiStrings;
     }
 
     private FitsFactory() {

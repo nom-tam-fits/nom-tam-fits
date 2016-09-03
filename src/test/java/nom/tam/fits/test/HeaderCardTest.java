@@ -63,14 +63,18 @@ public class HeaderCardTest {
 
     private boolean useHierarch;
 
+    private boolean skipBlanks;
+
     @Before
     public void before() {
+        skipBlanks = FitsFactory.isSkipBlankAfterAssign();
         longStringsEnabled = FitsFactory.isLongStringsEnabled();
         useHierarch = FitsFactory.getUseHierarch();
     }
 
     @After
     public void after() {
+        FitsFactory.setSkipBlankAfterAssign(skipBlanks);
         FitsFactory.setLongStringsEnabled(longStringsEnabled);
         FitsFactory.setUseHierarch(useHierarch);
         FitsFactory.setHierarchFormater(new StandardIHierarchKeyFormatter());
@@ -339,7 +343,20 @@ public class HeaderCardTest {
         assertEquals("HIERARCH TEST1 TEST2 INT= 'a verly long value that must be splitted over multi&'" + //
                 "CONTINUE  'ple lines to fit the card' / the comment is also not the smallest    ", hc.toString());
 
-        FitsFactory.setLongStringsEnabled(false);
+    }
+
+    @Test
+    public void testLongStringWithSkippedBlank() throws Exception {
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setLongStringsEnabled(true);
+        FitsFactory.setSkipBlankAfterAssign(true);
+        String key = "HIERARCH.TEST1.TEST2.INT";
+        
+        HeaderCard hc = new HeaderCard(key, "a verly long value that must be splitted over multiple lines to fit the card", "the comment is also not the smallest");
+
+        assertEquals("HIERARCH TEST1 TEST2 INT='a verly long value that must be splitted over multip&'" + //
+                "CONTINUE  'le lines to fit the card' / the comment is also not the smallest     ", hc.toString());
+
     }
 
     @Test
@@ -468,6 +485,48 @@ public class HeaderCardTest {
     public void testKeyWordNullability() throws Exception {
         assertEquals("TEST    = 'VALUE   '           / COMMENT                                        ", new HeaderCard("TEST", "VALUE", "COMMENT", true).toString());
         assertEquals("TEST    = 'VALUE   '           / COMMENT                                        ", new HeaderCard("TEST", "VALUE", "COMMENT", false).toString());
+        assertEquals("TEST    =                      / COMMENT                                        ", new HeaderCard("TEST", null, "COMMENT", true).toString());
+        assertEquals("TEST    COMMENT                                                                 ", new HeaderCard("TEST", null, "COMMENT", false).toString());
+        HeaderCardException actual = null;
+        try {
+            new HeaderCard(null, "VALUE", "COMMENT", true);
+        } catch (HeaderCardException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        assertEquals(true, new HeaderCard("TEST", "VALUE", "COMMENT", true).isKeyValuePair());
+        assertEquals(true, new HeaderCard("TEST", "VALUE", "COMMENT", false).isKeyValuePair());
+        assertEquals(false, new HeaderCard("TEST", null, "COMMENT", true).isKeyValuePair());
+        assertEquals(false, new HeaderCard("TEST", null, "COMMENT", false).isKeyValuePair());
+
+    }
+
+    @Test
+    public void testHierarchAlternativesWithSkippedBlank() throws Exception {
+        FitsFactory.setSkipBlankAfterAssign(true);
+        FitsFactory.setUseHierarch(true);
+        HeaderCard headerCard = new HeaderCard("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", "xy", null);
+        assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
+        assertEquals("HIERARCH TEST1 TEST2 TEST3 TEST4 TEST5 TEST6='xy'                               ", headerCard.toString());
+        assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", new HeaderCard(headerCardToStream(headerCard)).getKey());
+
+        FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(1));
+        assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
+        assertEquals("HIERARCH TEST1.TEST2.TEST3.TEST4.TEST5.TEST6='xy'                               ", headerCard.toString());
+        assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", new HeaderCard(headerCardToStream(headerCard)).getKey());
+
+        FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
+        assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
+        assertEquals("HIERARCH  TEST1.TEST2.TEST3.TEST4.TEST5.TEST6='xy'                              ", headerCard.toString());
+        assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", new HeaderCard(headerCardToStream(headerCard)).getKey());
+
+    }
+
+    @Test
+    public void testKeyWordNullabilityWithSkippedBlank() throws Exception {
+        FitsFactory.setSkipBlankAfterAssign(true);
+        assertEquals("TEST    ='VALUE    '           / COMMENT                                        ", new HeaderCard("TEST", "VALUE", "COMMENT", true).toString());
+        assertEquals("TEST    ='VALUE    '           / COMMENT                                        ", new HeaderCard("TEST", "VALUE", "COMMENT", false).toString());
         assertEquals("TEST    =                      / COMMENT                                        ", new HeaderCard("TEST", null, "COMMENT", true).toString());
         assertEquals("TEST    COMMENT                                                                 ", new HeaderCard("TEST", null, "COMMENT", false).toString());
         HeaderCardException actual = null;

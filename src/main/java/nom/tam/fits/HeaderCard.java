@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import nom.tam.fits.FitsFactory.FitsSettings;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.utilities.FitsHeaderCardParser;
 import nom.tam.fits.utilities.FitsHeaderCardParser.ParsedValue;
@@ -870,13 +871,24 @@ public class HeaderCard implements CursorValue<String> {
      */
     @Override
     public String toString() {
+        return toString(FitsFactory.current());
+    }
+
+    /**
+     * Same as {@link #toString()} just with a prefetched settings object
+     * 
+     * @param settings
+     *            the settings to use for writing the header card
+     * @return the string representing the card.
+     */
+    protected String toString(final FitsSettings settings) {
         int alignSmallString = NORMAL_SMALL_STRING_ALIGN_POSITION;
         int alignPosition = NORMAL_ALIGN_POSITION;
         FitsLineAppender buf = new FitsLineAppender();
         // start with the keyword, if there is one
         if (this.key != null) {
             if (this.key.length() > HIERARCH_WITH_BLANK_LENGTH && this.key.startsWith(HIERARCH_WITH_DOT)) {
-                FitsFactory.getHierarchFormater().append(this.key, buf);
+                settings.getHierarchKeyFormatter().append(this.key, buf);
                 alignSmallString = buf.length();
                 alignPosition = buf.length();
             } else {
@@ -895,8 +907,11 @@ public class HeaderCard implements CursorValue<String> {
         }
         boolean commentHandled = false;
         if (this.value != null || this.nullable) {
-            buf.append("= ");
-
+            if (settings.isSkipBlankAfterAssign()) {
+                buf.append('=');
+            } else {
+                buf.append("= ");
+            }
             if (this.value != null) {
 
                 if (this.isString) {
@@ -917,7 +932,7 @@ public class HeaderCard implements CursorValue<String> {
             if (!commentHandled && commentSubString.length() > 0) {
                 buf.append(" / ");
             }
-        } else if (commentSubString.startsWith("= ")) {
+        } else if (commentSubString.startsWith("=")) {
             buf.append("  ");
         }
 

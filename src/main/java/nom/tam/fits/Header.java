@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import nom.tam.fits.FitsFactory.FitsSettings;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -1120,7 +1121,9 @@ public class Header implements FitsElement {
         return fcard.getValue();
     }
 
-    /** @return Were duplicate header keys found when this record was read in? */
+    /**
+     * @return Were duplicate header keys found when this record was read in?
+     */
     public boolean hadDuplicates() {
         return this.duplicates != null;
     }
@@ -1700,6 +1703,7 @@ public class Header implements FitsElement {
      */
     @Override
     public void write(ArrayDataOutput dos) throws FitsException {
+        FitsSettings settings = FitsFactory.current();
         this.fileOffset = FitsUtil.findOffset(dos);
         // Ensure that all cards are in the proper order.
         this.cards.sort(new HeaderOrder());
@@ -1709,7 +1713,7 @@ public class Header implements FitsElement {
         try {
             while (writeIterator.hasNext()) {
                 HeaderCard card = writeIterator.next();
-                byte[] b = AsciiFuncs.getBytes(card.toString());
+                byte[] b = AsciiFuncs.getBytes(card.toString(settings));
                 dos.write(b);
             }
             FitsUtil.pad(dos, getNumberOfPhysicalCards() * HeaderCard.FITS_HEADER_CARD_SIZE, (byte) ' ');
