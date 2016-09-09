@@ -390,7 +390,7 @@ public class HeaderCard implements CursorValue<String> {
         }
 
         // Non-key/value pair lines are treated as keyed comments
-        if (this.key.equals(COMMENT.key()) || this.key.equals(HISTORY.key()) || !card.startsWith("= ", MAX_KEYWORD_LENGTH)) {
+        if (this.key.equals(COMMENT.key()) || this.key.equals(HISTORY.key()) || !card.startsWith("=", MAX_KEYWORD_LENGTH)) {
             this.comment = card.substring(MAX_KEYWORD_LENGTH).trim();
             return;
         }

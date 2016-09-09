@@ -351,7 +351,7 @@ public class HeaderCardTest {
         FitsFactory.setLongStringsEnabled(true);
         FitsFactory.setSkipBlankAfterAssign(true);
         String key = "HIERARCH.TEST1.TEST2.INT";
-        
+
         HeaderCard hc = new HeaderCard(key, "a verly long value that must be splitted over multiple lines to fit the card", "the comment is also not the smallest");
 
         assertEquals("HIERARCH TEST1 TEST2 INT='a verly long value that must be splitted over multip&'" + //
@@ -604,5 +604,21 @@ public class HeaderCardTest {
     @Test(expected = IllegalArgumentException.class)
     public void testHeaderCardCreate() throws Exception {
         HeaderCard.create("");
+    }
+
+    @Test()
+    public void testHeaderCardFormat() throws Exception {
+        HeaderCard card = HeaderCard.create("TIMESYS = 'UTC ' / All dates are in UTC time");
+        FitsFactory.setSkipBlankAfterAssign(true);
+        assertEquals("UTC", card.getValue());
+        assertEquals("All dates are in UTC time", card.getComment());
+        assertEquals("TIMESYS", card.getKey());
+        assertEquals("TIMESYS ='UTC      '           / All dates are in UTC time                      ", card.toString());
+
+        card = HeaderCard.create("TIMESYS ='UTC ' / All dates are in UTC time");
+        assertEquals("UTC", card.getValue());
+        assertEquals("All dates are in UTC time", card.getComment());
+        assertEquals("TIMESYS", card.getKey());
+        assertEquals("TIMESYS ='UTC      '           / All dates are in UTC time                      ", card.toString());
     }
 }
