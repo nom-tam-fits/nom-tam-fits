@@ -621,4 +621,22 @@ public class HeaderCardTest {
         assertEquals("TIMESYS", card.getKey());
         assertEquals("TIMESYS ='UTC      '           / All dates are in UTC time                      ", card.toString());
     }
+
+
+    @Test()
+    public void testHeaderCardFormatHierarch() throws Exception {
+        FitsFactory.setUseHierarch(true);
+        HeaderCard card = HeaderCard.create("HIERARCH TIMESYS.BBBB.CCCC = 'UTC ' / All dates are in UTC time");
+        FitsFactory.setSkipBlankAfterAssign(true);
+        assertEquals("UTC", card.getValue());
+        assertEquals("All dates are in UTC time", card.getComment());
+        assertEquals("HIERARCH.TIMESYS.BBBB.CCCC", card.getKey());
+        assertEquals("HIERARCH TIMESYS BBBB CCCC='UTC' / All dates are in UTC time                    ", card.toString());
+
+        card = HeaderCard.create("HIERARCH TIMESYS.BBBB.CCCC ='UTC ' / All dates are in UTC time");
+        assertEquals("UTC", card.getValue());
+        assertEquals("All dates are in UTC time", card.getComment());
+        assertEquals("HIERARCH.TIMESYS.BBBB.CCCC", card.getKey());
+        assertEquals("HIERARCH TIMESYS BBBB CCCC='UTC' / All dates are in UTC time                    ", card.toString());
+    }
 }
