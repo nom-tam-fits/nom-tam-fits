@@ -335,6 +335,7 @@ public class ImageData extends Data {
             primType.getArray(data, array);
             array = iterator.next();
         }
+        this.tiler = new ImageDataTiler(null, 0, this.dataDescription);
     }
 
     void setTiler(StandardImageTiler tiler) {
