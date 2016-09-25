@@ -1,5 +1,7 @@
 package nom.tam.fits.compression;
 
+import static org.junit.Assert.assertEquals;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -39,6 +41,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -65,6 +68,7 @@ import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.util.BlackBoxImages;
+import nom.tam.image.StandardImageTiler;
 import nom.tam.image.compression.hdu.CompressedImageHDU;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataOutputStream;
@@ -500,6 +504,34 @@ public class ReadWriteProvidedCompressedImageTest {
             dispayImage(data);
         }
         "to set a breakpoint ;-)".toString();
+        doTile("readRiceAsImageHDU", data, image.getTiler(), 0, 0, 20, 20);
+    }
+
+    private void doTile(String test, Object data, StandardImageTiler t, int x, int y, int nx, int ny) throws Exception {
+        Class<?> baseClass = ArrayFuncs.getBaseClass(data);
+        Object tile = Array.newInstance(baseClass, nx * ny);
+        t.getTile(tile, new int[]{
+            y,
+            x
+        }, new int[]{
+            ny,
+            nx
+        });
+
+        float sum0 = 0;
+        float sum1 = 0;
+        int length = Array.getLength(tile);
+        for (int i = 0; i < nx; i += 1) {
+            for (int j = 0; j < ny; j += 1) {
+                int tileOffset = i + j * nx;
+                if (tileOffset >= length) {
+                    Assert.fail("tile offset wrong");
+                }
+                sum0 += ((Number) Array.get(tile, tileOffset)).doubleValue();
+                sum1 += ((Number) Array.get(Array.get(data, j + y), i + x)).doubleValue();
+            }
+        }
+        assertEquals("Tiler" + test, sum0, sum1, 0);
     }
 
     private String resolveLocalOrRemoteFileName(String fileName) {
