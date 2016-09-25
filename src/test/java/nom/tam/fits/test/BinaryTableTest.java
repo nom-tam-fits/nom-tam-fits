@@ -43,7 +43,6 @@ import java.io.EOFException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -51,6 +50,10 @@ import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTable;
@@ -73,10 +76,6 @@ import nom.tam.util.SafeClose;
 import nom.tam.util.TableException;
 import nom.tam.util.TestArrayFuncs;
 import nom.tam.util.test.ThrowAnyException;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * This class tests the binary table classes for the Java FITS library, notably
@@ -116,7 +115,7 @@ public class BinaryTableTest {
             3d
         }
     };
-    
+
     private static final int NROWS = 50;
 
     byte[] bytes = new byte[NROWS];
@@ -158,7 +157,7 @@ public class BinaryTableTest {
     double[][][] dcomplex_arr = new double[NROWS][4][2];
 
     double[][][] vcomplex = new double[NROWS][][];
-    
+
     byte[][] vBytes = new byte[NROWS][];
 
     String[][] multiString = new String[NROWS][3];
@@ -970,7 +969,7 @@ public class BinaryTableTest {
 
         assertEquals("Del1", NROWS, thdu.getNRows());
         thdu.deleteRows(10, 20);
-        assertEquals("Del2", NROWS-20, thdu.getNRows());
+        assertEquals("Del2", NROWS - 20, thdu.getNRows());
 
         double[] dbl = (double[]) thdu.getColumn(6);
         assertEquals("del3", dbl[9], this.doubles[9], 0);
@@ -984,7 +983,7 @@ public class BinaryTableTest {
         f.read();
         thdu = (BinaryTableHDU) f.getHDU(1);
         dbl = (double[]) thdu.getColumn(6);
-        assertEquals("del5", NROWS-20, thdu.getNRows());
+        assertEquals("del5", NROWS - 20, thdu.getNRows());
         assertEquals("del6", 13, thdu.getNCols());
         assertEquals("del7", dbl[9], this.doubles[9], 0);
         assertEquals("del8", dbl[10], this.doubles[30], 0);
@@ -1802,7 +1801,13 @@ public class BinaryTableTest {
         assertEquals((int) 'T', ((byte[]) btab.getData().getColumn(0))[0]);
         assertEquals((int) 'F', ((byte[]) btab.getData().getColumn(0))[1]);
         assertEquals((int) 'T', ((byte[]) btab.getData().getColumn(0))[2]);
+
         assertEquals(1, btab.getData().getNCols());
+
+        boolean[][] xx = (boolean[][]) btab.getColumn(0);
+        assertEquals(((boolean[]) testRow[0])[0], xx[0][0]);
+        assertEquals(((boolean[]) testRow[0])[1], xx[0][1]);
+        assertEquals(((boolean[]) testRow[0])[2], xx[0][2]);
     }
 
     @Test
