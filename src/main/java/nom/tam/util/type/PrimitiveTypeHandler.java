@@ -48,11 +48,6 @@ public final class PrimitiveTypeHandler {
 
     private static Map<Class<?>, PrimitiveType<? extends Buffer>> byClass;
 
-    @SuppressWarnings("unchecked")
-    private static <B extends Buffer> PrimitiveType<B> cast(PrimitiveType<?> primitiveType) {
-        return (PrimitiveType<B>) primitiveType;
-    }
-
     static {
         byBitPix = new PrimitiveType[BIT_PIX_OFFSET * 2 + 1];
         byType = new PrimitiveType[MAX_TYPE_VALUE];
@@ -71,6 +66,27 @@ public final class PrimitiveTypeHandler {
         byClass = Collections.unmodifiableMap(initialByClass);
     }
 
+    public static <B extends Buffer> PrimitiveType<B> nearestValueOf(int bitPix) {
+        if (bitPix >= PrimitiveTypes.FLOAT.bitPix() && bitPix < 0) {
+            return (PrimitiveType<B>) PrimitiveTypes.FLOAT;
+        } else if (bitPix >= PrimitiveTypes.DOUBLE.bitPix() && bitPix < PrimitiveTypes.FLOAT.bitPix()) {
+            return (PrimitiveType<B>) PrimitiveTypes.DOUBLE;
+        } else if (bitPix > 0 && bitPix <= PrimitiveTypes.BYTE.bitPix()) {
+            return (PrimitiveType<B>) PrimitiveTypes.BYTE;
+        } else if (bitPix > PrimitiveTypes.BYTE.bitPix() && bitPix <= PrimitiveTypes.SHORT.bitPix()) {
+            return (PrimitiveType<B>) PrimitiveTypes.SHORT;
+        } else if (bitPix > PrimitiveTypes.SHORT.bitPix() && bitPix <= PrimitiveTypes.INT.bitPix()) {
+            return (PrimitiveType<B>) PrimitiveTypes.INT;
+        } else if (bitPix > PrimitiveTypes.INT.bitPix() && bitPix <= PrimitiveTypes.LONG.bitPix()) {
+            return (PrimitiveType<B>) PrimitiveTypes.LONG;
+        }
+        return (PrimitiveType<B>) PrimitiveTypes.UNKNOWN;
+    }
+
+    public static PrimitiveType<Buffer> valueOf(char type) {
+        return cast(byType[type]);
+    }
+
     public static <B extends Buffer> PrimitiveType<B> valueOf(Class<?> clazz) {
         PrimitiveType<?> primitiveType = byClass.get(clazz);
         if (primitiveType == null) {
@@ -83,6 +99,15 @@ public final class PrimitiveTypeHandler {
             return valueOf(clazz.getSuperclass());
         }
         return cast(primitiveType);
+    }
+
+    public static PrimitiveType<Buffer> valueOf(int bitPix) {
+        return cast(byBitPix[bitPix + BIT_PIX_OFFSET]);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <B extends Buffer> PrimitiveType<B> cast(PrimitiveType<?> primitiveType) {
+        return (PrimitiveType<B>) primitiveType;
     }
 
     private static PrimitiveType<?>[] values() {
@@ -101,13 +126,5 @@ public final class PrimitiveTypeHandler {
     }
 
     private PrimitiveTypeHandler() {
-    }
-
-    public static PrimitiveType<Buffer> valueOf(int bitPix) {
-        return cast(byBitPix[bitPix + BIT_PIX_OFFSET]);
-    }
-
-    public static PrimitiveType<Buffer> valueOf(char type) {
-        return cast(byType[type]);
     }
 }

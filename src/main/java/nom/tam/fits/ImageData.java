@@ -54,6 +54,7 @@ import nom.tam.util.RandomAccess;
 import nom.tam.util.array.MultiArrayIterator;
 import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
+import nom.tam.util.type.PrimitiveTypes;
 
 /**
  * This class instantiates FITS primary HDU and IMAGE extension data.
@@ -156,6 +157,119 @@ public class ImageData extends Data {
     }
 
     /**
+     * Return the actual data. Note that this may return a null when the data is
+     * not readable. It might be better to throw a FitsException, but this is a
+     * very commonly called method and we prefered not to change how users must
+     * invoke it.
+     */
+    @Override
+    public Object getData() {
+
+        if (this.dataArray == null && this.tiler != null) {
+            try {
+                this.dataArray = this.tiler.getCompleteImage();
+            } catch (Exception e) {
+                LOG.log(Level.SEVERE, "Unable to get complete image", e);
+                return null;
+            }
+        }
+
+        return this.dataArray;
+    }
+
+    public StandardImageTiler getTiler() {
+        return this.tiler;
+    }
+
+    @Override
+    public void read(ArrayDataInput i) throws FitsException {
+
+        // Don't need to read null data (noted by Jens Knudstrup)
+        if (this.byteSize == 0) {
+            return;
+        }
+        setFileOffset(i);
+
+        if (i instanceof RandomAccess) {
+            this.tiler = new ImageDataTiler((RandomAccess) i, ((RandomAccess) i).getFilePointer(), this.dataDescription);
+            try {
+                // Handle long skips.
+                i.skipAllBytes(this.byteSize);
+            } catch (IOException e) {
+                throw new FitsException("Unable to skip over image:" + e);
+            }
+
+        } else {
+            this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
+            try {
+                i.readLArray(this.dataArray);
+            } catch (IOException e) {
+                throw new FitsException("Unable to read image data:" + e);
+            }
+
+            this.tiler = new ImageDataTiler(null, 0, this.dataDescription);
+        }
+
+        int pad = FitsUtil.padding(getTrueSize());
+        try {
+            i.skipAllBytes(pad);
+        } catch (EOFException e) {
+            throw new PaddingException("Error skipping padding after image", this, e);
+        } catch (IOException e) {
+            throw new FitsException("Error skipping padding after image", e);
+        }
+    }
+
+    public void setBuffer(Buffer data) {
+        PrimitiveType<Buffer> primType = PrimitiveTypeHandler.valueOf(this.dataDescription.type);
+        this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
+        MultiArrayIterator iterator = new MultiArrayIterator(this.dataArray);
+        Object array = iterator.next();
+        while (array != null) {
+            primType.getArray(data, array);
+            array = iterator.next();
+        }
+        this.tiler = new ImageDataTiler(null, 0, this.dataDescription);
+    }
+
+    @Override
+    public void write(ArrayDataOutput o) throws FitsException {
+
+        // Don't need to write null data (noted by Jens Knudstrup)
+        if (this.byteSize == 0) {
+            return;
+        }
+
+        if (this.dataArray == null) {
+            if (this.tiler != null) {
+
+                // Need to read in the whole image first.
+                try {
+                    this.dataArray = this.tiler.getCompleteImage();
+                } catch (IOException e) {
+                    throw new FitsException("Error attempting to fill image", e);
+                }
+
+            } else if (this.dataArray == null && this.dataDescription != null) {
+                // Need to create an array to match a specified header.
+                this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
+
+            } else {
+                // This image isn't ready to be written!
+                throw new FitsException("Null image data");
+            }
+        }
+
+        try {
+            o.writeArray(this.dataArray);
+        } catch (IOException e) {
+            throw new FitsException("IO Error on image write" + e);
+        }
+
+        FitsUtil.pad(o, getTrueSize());
+    }
+
+    /**
      * Fill header with keywords that describe image data.
      *
      * @param head
@@ -225,31 +339,6 @@ public class ImageData extends Data {
         Standard.context(null);
     }
 
-    /**
-     * Return the actual data. Note that this may return a null when the data is
-     * not readable. It might be better to throw a FitsException, but this is a
-     * very commonly called method and we prefered not to change how users must
-     * invoke it.
-     */
-    @Override
-    public Object getData() {
-
-        if (this.dataArray == null && this.tiler != null) {
-            try {
-                this.dataArray = this.tiler.getCompleteImage();
-            } catch (Exception e) {
-                LOG.log(Level.SEVERE, "Unable to get complete image", e);
-                return null;
-            }
-        }
-
-        return this.dataArray;
-    }
-
-    public StandardImageTiler getTiler() {
-        return this.tiler;
-    }
-
     /** Get the size in bytes of the data */
     @Override
     protected long getTrueSize() {
@@ -264,6 +353,12 @@ public class ImageData extends Data {
         }
         int bitPix = h.getIntValue(BITPIX, 0);
         PrimitiveType<Buffer> primitivType = PrimitiveTypeHandler.valueOf(bitPix);
+        if (primitivType == null) {
+            primitivType = PrimitiveTypeHandler.nearestValueOf(bitPix);
+            if (primitivType == PrimitiveTypes.UNKNOWN) {
+                throw new FitsException("illegal bitpix value " + bitPix);
+            }
+        }
         Class<?> baseClass = primitivType.primitiveClass();
         int ndim = h.getIntValue(NAXIS, 0);
         int[] dims = new int[ndim];
@@ -287,95 +382,7 @@ public class ImageData extends Data {
         return new ArrayDesc(dims, baseClass);
     }
 
-    @Override
-    public void read(ArrayDataInput i) throws FitsException {
-
-        // Don't need to read null data (noted by Jens Knudstrup)
-        if (this.byteSize == 0) {
-            return;
-        }
-        setFileOffset(i);
-
-        if (i instanceof RandomAccess) {
-            this.tiler = new ImageDataTiler((RandomAccess) i, ((RandomAccess) i).getFilePointer(), this.dataDescription);
-            try {
-                // Handle long skips.
-                i.skipAllBytes(this.byteSize);
-            } catch (IOException e) {
-                throw new FitsException("Unable to skip over image:" + e);
-            }
-
-        } else {
-            this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
-            try {
-                i.readLArray(this.dataArray);
-            } catch (IOException e) {
-                throw new FitsException("Unable to read image data:" + e);
-            }
-
-            this.tiler = new ImageDataTiler(null, 0, this.dataDescription);
-        }
-
-        int pad = FitsUtil.padding(getTrueSize());
-        try {
-            i.skipAllBytes(pad);
-        } catch (EOFException e) {
-            throw new PaddingException("Error skipping padding after image", this, e);
-        } catch (IOException e) {
-            throw new FitsException("Error skipping padding after image", e);
-        }
-    }
-
-    public void setBuffer(Buffer data) {
-        PrimitiveType<Buffer> primType = PrimitiveTypeHandler.valueOf(this.dataDescription.type);
-        this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
-        MultiArrayIterator iterator = new MultiArrayIterator(this.dataArray);
-        Object array = iterator.next();
-        while (array != null) {
-            primType.getArray(data, array);
-            array = iterator.next();
-        }
-        this.tiler = new ImageDataTiler(null, 0, this.dataDescription);
-    }
-
     void setTiler(StandardImageTiler tiler) {
         this.tiler = tiler;
-    }
-
-    @Override
-    public void write(ArrayDataOutput o) throws FitsException {
-
-        // Don't need to write null data (noted by Jens Knudstrup)
-        if (this.byteSize == 0) {
-            return;
-        }
-
-        if (this.dataArray == null) {
-            if (this.tiler != null) {
-
-                // Need to read in the whole image first.
-                try {
-                    this.dataArray = this.tiler.getCompleteImage();
-                } catch (IOException e) {
-                    throw new FitsException("Error attempting to fill image", e);
-                }
-
-            } else if (this.dataArray == null && this.dataDescription != null) {
-                // Need to create an array to match a specified header.
-                this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
-
-            } else {
-                // This image isn't ready to be written!
-                throw new FitsException("Null image data");
-            }
-        }
-
-        try {
-            o.writeArray(this.dataArray);
-        } catch (IOException e) {
-            throw new FitsException("IO Error on image write" + e);
-        }
-
-        FitsUtil.pad(o, getTrueSize());
     }
 }

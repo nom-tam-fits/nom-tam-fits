@@ -157,7 +157,7 @@ public class PrimitiveTypeTest {
             expectedValue
         }).get());
         testGetPutArray(PrimitiveTypes.LONG, Long.valueOf(1), Long.valueOf(2));
-        
+
         testAppedBuffer(PrimitiveTypes.LONG, expectedValue);
     }
 
@@ -247,4 +247,16 @@ public class PrimitiveTypeTest {
         constrs[0].newInstance();
     }
 
+    @Test
+    public void testPrimitiveTypeNearest() throws Exception {
+        assertSame(PrimitiveTypes.BYTE, PrimitiveTypeHandler.nearestValueOf(2));
+        assertSame(PrimitiveTypes.FLOAT, PrimitiveTypeHandler.nearestValueOf(-2));
+        assertSame(PrimitiveTypes.FLOAT, PrimitiveTypeHandler.nearestValueOf(-17));
+        assertSame(PrimitiveTypes.DOUBLE, PrimitiveTypeHandler.nearestValueOf(-40));
+        assertSame(PrimitiveTypes.UNKNOWN, PrimitiveTypeHandler.nearestValueOf(-80));
+        assertSame(PrimitiveTypes.SHORT, PrimitiveTypeHandler.nearestValueOf(9));
+        assertSame(PrimitiveTypes.INT, PrimitiveTypeHandler.nearestValueOf(20));
+        assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.nearestValueOf(40));
+        assertSame(PrimitiveTypes.UNKNOWN, PrimitiveTypeHandler.nearestValueOf(80));
+    }
 }

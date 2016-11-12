@@ -69,7 +69,9 @@ import nom.tam.fits.compression.provider.param.api.HeaderCardAccess;
 import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
 import nom.tam.image.tile.operation.AbstractTiledImageOperation;
 import nom.tam.image.tile.operation.TileArea;
+import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
+import nom.tam.util.type.PrimitiveTypes;
 
 /**
  * This class represents a complete tiledImageOperation of tileOperations
@@ -298,7 +300,15 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
 
     private void readBaseType(Header header) {
         if (getBaseType() == null) {
-            setBaseType(PrimitiveTypeHandler.valueOf(header.getIntValue(ZBITPIX)));
+            int zBitPix = header.getIntValue(ZBITPIX);
+            PrimitiveType<Buffer> primitiveType = PrimitiveTypeHandler.valueOf(zBitPix);
+            if (primitiveType == null) {
+                primitiveType = PrimitiveTypeHandler.nearestValueOf(zBitPix);
+                if (primitiveType == PrimitiveTypes.UNKNOWN) {
+                    throw new IllegalArgumentException("illegal value for zbitpix " + zBitPix);
+                }
+            }
+            setBaseType(primitiveType);
         }
     }
 

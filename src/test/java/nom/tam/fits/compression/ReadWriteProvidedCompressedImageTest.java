@@ -37,10 +37,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -1211,4 +1214,31 @@ public class ReadWriteProvidedCompressedImageTest {
         return data;
     }
 
+    @Test
+    public void testImagePlusCompressedImage1() throws Exception {
+        testImagePlusCompressedImage(resolveLocalOrRemoteFileName("03h-80dec--C_CVT_2013-12-29-MW1-03h_Light_600SecISO200_000042.fit"));
+    }
+
+    @Test
+    public void testImagePlusCompressedImage2() throws Exception {
+        testImagePlusCompressedImage(resolveLocalOrRemoteFileName("17h-75dec--BINT_C_CVT_2014-06-25-MW1-17h_Light_600SecISO200_000031.fit"));
+    }
+
+    private void testImagePlusCompressedImage(String imageFile) throws Exception {
+        BasicHDU<?>[] fitsFileHDU = null;
+        InputStream fileStream = new BufferedInputStream(new FileInputStream(imageFile));
+        Fits fitsFile = new Fits(fileStream);
+        fitsFileHDU = fitsFile.read();
+        fitsFile.close();
+        fileStream.close();
+        for (int i = 0; i < fitsFileHDU.length; i++) {
+            if (fitsFileHDU[i].getHeader().containsKey("ZIMAGE")) {
+                if (fitsFileHDU[i].getHeader().getBooleanValue("ZIMAGE")) {
+                    CompressedImageHDU hdu = (CompressedImageHDU) fitsFileHDU[i];
+                    ImageHDU uncompressedImage = null;
+                    uncompressedImage = hdu.asImageHDU();
+                }
+            }
+        }
+    }
 }
