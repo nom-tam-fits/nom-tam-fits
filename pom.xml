@@ -453,6 +453,7 @@
 						<java.util.logging.config.file>
 							src/test/resources/logging.properties
 						</java.util.logging.config.file>
+						<skip.backbox.images>${skip.backbox.images}</skip.backbox.images>
 					</systemPropertyVariables>
 				</configuration>
 				<executions>
@@ -705,6 +706,12 @@
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>skipBlackBoxImages</id>
+			<properties>
+				<skip.backbox.images>true</skip.backbox.images>
+			</properties>
 		</profile>
 	</profiles>
 </project>
