@@ -50,10 +50,13 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.ImageData;
+import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter;
 import nom.tam.fits.util.BlackBoxImages;
+import nom.tam.image.ImageTiler;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
@@ -420,4 +423,47 @@ public class UserProvidedTest {
             }
         }
     }
+
+    @Test
+    public void testCorruptedImageTiller() throws Exception {
+        long maxMemory = Runtime.getRuntime().maxMemory();
+        long memoryUsageForTest = 1000L * 326136L * 8L * 2L;
+        if (maxMemory < memoryUsageForTest) {
+            return; // skip test
+        }
+        double[][] double_data = new double[1000][326136];
+        double value = 2.8784133518557868E-5d;
+        for (int index = 0; index < double_data.length; index++) {
+            for (int index2 = 0; index2 < double_data[index].length; index2++) {
+                double_data[index][index2] = value;
+                value += 2.8784133518557868E-7d;
+            }
+        }
+        ImageData imagedata = ImageHDU.encapsulate(double_data);
+        ImageHDU imageHDU = new ImageHDU(ImageHDU.manufactureHeader(imagedata), imagedata);
+        Fits fits = new Fits();
+        fits.addHDU(imageHDU);
+        File fitsFile = new File("target/testCorruptedImageTiller.fits");
+        fits.write(fitsFile);
+        fits.close();
+
+        Fits fits2 = new Fits(fitsFile);
+        try {
+            ImageHDU hdu = (ImageHDU) fits2.getHDU(0);
+            ImageTiler tiler = hdu.getTiler();
+            double[] values = (double[]) tiler.getTile(new int[]{
+                0,
+                231607
+            }, new int[]{
+                1000,
+                1
+            });
+            Assert.assertEquals(((double[][]) hdu.getKernel())[800][231607], values[800], 0.00000000001d);
+            Assert.assertEquals(((double[][]) hdu.getKernel())[850][231607], values[850], 0.00000000001d);
+        } finally {
+            fits2.close();
+        }
+        fitsFile.delete();
+    }
+
 }

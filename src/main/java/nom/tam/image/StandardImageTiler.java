@@ -50,9 +50,9 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param pos
      *            The index requested.
      */
-    public static int getOffset(int[] dims, int[] pos) {
+    public static long getOffset(int[] dims, int[] pos) {
 
-        int offset = 0;
+        long offset = 0;
         for (int i = 0; i < dims.length; i += 1) {
             if (i > 0) {
                 offset *= dims[i];
@@ -135,7 +135,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      *             if the underlying stream failed
      */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
-    protected void fillFileData(Object output, int delta, int outputOffset, int segment) throws IOException {
+    protected void fillFileData(Object output, long delta, int outputOffset, int segment) throws IOException {
 
         this.randomAccessFile.seek(this.fileOffset + delta);
 
@@ -261,12 +261,12 @@ public abstract class StandardImageTiler implements ImageTiler {
                 if (data != null) {
                     fillMemData(data, posits, segment, o, outputOffset, 0);
                 } else {
-                    int offset = getOffset(newDims, posits) * baseLength;
+                    long offset = getOffset(newDims, posits) * baseLength;
 
                     // Point to offset at real beginning
                     // of segment
                     int actualLen = segment;
-                    int actualOffset = offset;
+                    long actualOffset = offset;
                     int actualOutput = outputOffset;
                     if (posits[mx] < 0) {
                         actualOffset -= posits[mx] * baseLength;
