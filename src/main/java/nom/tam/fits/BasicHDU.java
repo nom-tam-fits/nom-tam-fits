@@ -262,7 +262,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
         int[] axes = new int[nAxis];
         for (int i = 1; i <= nAxis; i++) {
-            axes[nAxis - i] = this.myHeader.getIntValue(NAXISn.n(i), 0);
+            axes[i - 1] = this.myHeader.getIntValue(NAXISn.n(i), 0);
         }
 
         return axes;
