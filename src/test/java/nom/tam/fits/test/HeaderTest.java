@@ -35,8 +35,10 @@ import static nom.tam.fits.header.Standard.BITPIX;
 import static nom.tam.fits.header.Standard.END;
 import static nom.tam.fits.header.Standard.EXTEND;
 import static nom.tam.fits.header.Standard.NAXIS;
-import static nom.tam.fits.header.Standard.*;
+import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.SIMPLE;
+import static nom.tam.fits.header.Standard.XTENSION;
+import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 import static nom.tam.fits.header.extra.NOAOExt.CRPIX1;
 import static nom.tam.fits.header.extra.NOAOExt.CRPIX2;
 import static nom.tam.fits.header.extra.NOAOExt.CRVAL1;
@@ -61,6 +63,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
@@ -69,8 +76,10 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.HeaderCommentsMap;
+import nom.tam.fits.HeaderOrder;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.TruncatedFileException;
+import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsHeaderCardParser;
 import nom.tam.fits.utilities.FitsHeaderCardParser.ParsedValue;
 import nom.tam.util.ArrayDataOutput;
@@ -81,11 +90,6 @@ import nom.tam.util.BufferedFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class HeaderTest {
 
@@ -340,11 +344,9 @@ public class HeaderTest {
         assertEquals("This is a very long string keyword value that is continued over 2 keywords        &", card.getValue());
         assertEquals("Optional Comment", card.getComment());
 
-        card =
-                new HeaderCard(
-                        "LONGSTR",
-                        "This is very very very very very very very very very very very very very very very very very very very very very very very very very very very long string value of FITS card",
-                        "long longer longest comment");
+        card = new HeaderCard("LONGSTR",
+                "This is very very very very very very very very very very very very very very very very very very very very very very very very very very very long string value of FITS card",
+                "long longer longest comment");
         assertEquals("LONGSTR = 'This is very very very very very very very very very very very very&'" + //
                 "CONTINUE  ' very very very very very very very very very very very very very v&'" + //
                 "CONTINUE  'ery very long string value of FITS &' / long longer longest comment  " + //
@@ -364,7 +366,7 @@ public class HeaderTest {
         assertNull(card.getComment());
         assertFalse(new HeaderCard("STRKEY",
                 "This is a very long string keyword value that is continued over at least three keywords in the FITS header even if it has no comment.", null).toString()
-                .contains("/"));
+                        .contains("/"));
         FitsFactory.setLongStringsEnabled(false);
     }
 
@@ -994,7 +996,6 @@ public class HeaderTest {
         new Header().read(data);
     }
 
-
     @Test
     public void testFailedReset() throws Exception {
         Assert.assertFalse(new Header().reset());
@@ -1002,10 +1003,8 @@ public class HeaderTest {
 
     @Test(expected = FitsException.class)
     public void testFailedRewrite() throws Exception {
-      new Header().rewrite();
+        new Header().rewrite();
     }
-    
-
 
     @Test
     public void testSetSimpleWithAxis() throws Exception {
@@ -1013,7 +1012,99 @@ public class HeaderTest {
         header.setNaxes(1);
         header.setNaxis(1, 2);
         header.setSimple(true);
-        assertEquals("T",header.findCard(SIMPLE).getValue());
-        assertEquals("T",header.findCard(EXTEND).getValue());
+        assertEquals("T", header.findCard(SIMPLE).getValue());
+        assertEquals("T", header.findCard(EXTEND).getValue());
+    }
+
+    @Test
+    public void testSpecialHeaderOrder() throws Exception {
+        try {
+            Header hdr = new Header();
+            hdr.addValue("SIMPLE", true, "Standard FITS format");
+            hdr.addValue("BITPIX", 8, "Character data");
+            hdr.addValue("NAXIS", 1, "Text string");
+            hdr.addValue("NAXIS1", 1000, "Number of characters");
+            hdr.addValue("VOTMETA", true, "Table metadata in VOTable format");
+            hdr.addValue("EXTEND", true, "There are standard extensions");
+            // ...
+            BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream());
+            hdr.write(out);
+            int votMetaIndex = -1;
+            int extendIndex = -1;
+            Cursor<String, HeaderCard> iterator = hdr.iterator();
+            for (int index = 0; iterator.hasNext(); index++) {
+                HeaderCard card = iterator.next();
+                if (card.getKey().equals("VOTMETA")) {
+                    votMetaIndex = index;
+                }
+                if (card.getKey().equals("EXTEND")) {
+                    extendIndex = index;
+                }
+            }
+            Assert.assertTrue(votMetaIndex > extendIndex);
+            FitsFactory.setHeaderSorter(new HeaderOrder() {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public int compare(String c1, String c2) {
+                    int result = super.compare(c1, c2);
+                    if (c1.equals("VOTMETA")) {
+                        return c2.equals(Standard.EXTEND.key()) ? -1 : 1;
+                    } else if (c2.equals("VOTMETA")) {
+                        return c1.equals(Standard.EXTEND.key()) ? 1 : -1;
+                    }
+                    return result;
+                }
+            });
+            hdr.write(out);
+            votMetaIndex = -1;
+            extendIndex = -1;
+            iterator = hdr.iterator();
+            for (int index = 0; iterator.hasNext(); index++) {
+                HeaderCard card = iterator.next();
+                if (card.getKey().equals("VOTMETA")) {
+                    votMetaIndex = index;
+                }
+                if (card.getKey().equals("EXTEND")) {
+                    extendIndex = index;
+                }
+            }
+            Assert.assertTrue(votMetaIndex < extendIndex);
+        } finally {
+            FitsFactory.setHeaderSorter(new HeaderOrder());
+        }
+    }
+
+    @Test
+    public void testSpecialHeaderOrderNull() throws Exception {
+        try {
+            FitsFactory.setHeaderSorter(null);
+            Header hdr = new Header();
+            hdr.addValue("SIMPLE", true, "Standard FITS format");
+            hdr.addValue("BITPIX", 8, "Character data");
+            hdr.addValue("NAXIS", 1, "Text string");
+            hdr.addValue("NAXIS1", 1000, "Number of characters");
+            hdr.addValue("VOTMETA", true, "Table metadata in VOTable format");
+            hdr.addValue("EXTEND", true, "There are standard extensions");
+            // ...
+            BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream());
+            hdr.write(out);
+            int votMetaIndex = -1;
+            int extendIndex = -1;
+            Cursor<String, HeaderCard> iterator = hdr.iterator();
+            for (int index = 0; iterator.hasNext(); index++) {
+                HeaderCard card = iterator.next();
+                if (card.getKey().equals("VOTMETA")) {
+                    votMetaIndex = index;
+                }
+                if (card.getKey().equals("EXTEND")) {
+                    extendIndex = index;
+                }
+            }
+            Assert.assertTrue(votMetaIndex < extendIndex);
+        } finally {
+            FitsFactory.setHeaderSorter(new HeaderOrder());
+        }
     }
 }

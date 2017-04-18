@@ -53,6 +53,7 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -1706,7 +1707,10 @@ public class Header implements FitsElement {
         FitsSettings settings = FitsFactory.current();
         this.fileOffset = FitsUtil.findOffset(dos);
         // Ensure that all cards are in the proper order.
-        this.cards.sort(new HeaderOrder());
+        Comparator<String> headerSorter = settings.getHeaderSorter();
+        if (headerSorter != null) {
+            this.cards.sort(headerSorter);
+        }
         checkBeginning();
         checkEnd();
         Cursor<String, HeaderCard> writeIterator = this.cards.iterator(0);
