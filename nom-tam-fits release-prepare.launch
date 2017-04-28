@@ -6,7 +6,7 @@
 <booleanAttribute key="M2_OFFLINE" value="false"/>
 <stringAttribute key="M2_PROFILES" value=""/>
 <listAttribute key="M2_PROPERTIES"/>
-<stringAttribute key="M2_RUNTIME" value="apache-maven-3.3.3"/>
+<stringAttribute key="M2_RUNTIME" value="EMBEDDED"/>
 <booleanAttribute key="M2_SKIP_TESTS" value="false"/>
 <intAttribute key="M2_THREADS" value="1"/>
 <booleanAttribute key="M2_UPDATE_SNAPSHOTS" value="false"/>
@@ -16,5 +16,5 @@
 <mapEntry key="JAVA_HOME" value="/home/nir/java/jdk1.7.0_79"/>
 </mapAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dmaven.multiModuleProjectDirectory=/home/nir/java/apache-maven-3.3.3"/>
-<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="/home/nir/git/nom-tam-fits"/>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:/nom-tam-fits}"/>
 </launchConfiguration>
