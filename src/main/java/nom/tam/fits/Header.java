@@ -129,7 +129,7 @@ public class Header implements FitsElement {
     /**
      * the sorter used to sort the header cards defore writing the header.
      */
-    private Comparator<String> headerSorter = FitsFactory.current().getHeaderSorter();
+    private Comparator<String> headerSorter = new HeaderOrder();
 
     /**
      * Create a header by reading the information from the input stream.

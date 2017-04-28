@@ -1018,160 +1018,89 @@ public class HeaderTest {
 
     @Test
     public void testSpecialHeaderOrder() throws Exception {
-        try {
-            Header hdr = new Header();
-            hdr.addValue("SIMPLE", true, "Standard FITS format");
-            hdr.addValue("BITPIX", 8, "Character data");
-            hdr.addValue("NAXIS", 1, "Text string");
-            hdr.addValue("NAXIS1", 1000, "Number of characters");
-            hdr.addValue("VOTMETA", true, "Table metadata in VOTable format");
-            hdr.addValue("EXTEND", true, "There are standard extensions");
-            // ...
-            BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream());
-            hdr.write(out);
-            int votMetaIndex = -1;
-            int extendIndex = -1;
-            Cursor<String, HeaderCard> iterator = hdr.iterator();
-            for (int index = 0; iterator.hasNext(); index++) {
-                HeaderCard card = iterator.next();
-                if (card.getKey().equals("VOTMETA")) {
-                    votMetaIndex = index;
-                }
-                if (card.getKey().equals("EXTEND")) {
-                    extendIndex = index;
-                }
-            }
-            Assert.assertTrue(votMetaIndex > extendIndex);
-            hdr.setHeaderSorter(new HeaderOrder() {
 
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public int compare(String c1, String c2) {
-                    int result = super.compare(c1, c2);
-                    if (c1.equals("VOTMETA")) {
-                        return c2.equals(Standard.EXTEND.key()) ? -1 : 1;
-                    } else if (c2.equals("VOTMETA")) {
-                        return c1.equals(Standard.EXTEND.key()) ? 1 : -1;
-                    }
-                    return result;
-                }
-            });
-            hdr.write(out);
-            votMetaIndex = -1;
-            extendIndex = -1;
-            iterator = hdr.iterator();
-            for (int index = 0; iterator.hasNext(); index++) {
-                HeaderCard card = iterator.next();
-                if (card.getKey().equals("VOTMETA")) {
-                    votMetaIndex = index;
-                }
-                if (card.getKey().equals("EXTEND")) {
-                    extendIndex = index;
-                }
+        Header hdr = new Header();
+        hdr.addValue("SIMPLE", true, "Standard FITS format");
+        hdr.addValue("BITPIX", 8, "Character data");
+        hdr.addValue("NAXIS", 1, "Text string");
+        hdr.addValue("NAXIS1", 1000, "Number of characters");
+        hdr.addValue("VOTMETA", true, "Table metadata in VOTable format");
+        hdr.addValue("EXTEND", true, "There are standard extensions");
+        // ...
+        BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream());
+        hdr.write(out);
+        int votMetaIndex = -1;
+        int extendIndex = -1;
+        Cursor<String, HeaderCard> iterator = hdr.iterator();
+        for (int index = 0; iterator.hasNext(); index++) {
+            HeaderCard card = iterator.next();
+            if (card.getKey().equals("VOTMETA")) {
+                votMetaIndex = index;
             }
-            Assert.assertTrue(votMetaIndex < extendIndex);
-        } finally {
-            FitsFactory.setHeaderSorter(new HeaderOrder());
+            if (card.getKey().equals("EXTEND")) {
+                extendIndex = index;
+            }
         }
-    }
+        Assert.assertTrue(votMetaIndex > extendIndex);
+        hdr.setHeaderSorter(new HeaderOrder() {
 
-    @Test
-    public void testSpecialHeaderOrderGlobal() throws Exception {
-        try {
-            Header hdr = new Header();
-            hdr.addValue("SIMPLE", true, "Standard FITS format");
-            hdr.addValue("BITPIX", 8, "Character data");
-            hdr.addValue("NAXIS", 1, "Text string");
-            hdr.addValue("NAXIS1", 1000, "Number of characters");
-            hdr.addValue("VOTMETA", true, "Table metadata in VOTable format");
-            hdr.addValue("EXTEND", true, "There are standard extensions");
-            // ...
-            BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream());
-            hdr.write(out);
-            int votMetaIndex = -1;
-            int extendIndex = -1;
-            Cursor<String, HeaderCard> iterator = hdr.iterator();
-            for (int index = 0; iterator.hasNext(); index++) {
-                HeaderCard card = iterator.next();
-                if (card.getKey().equals("VOTMETA")) {
-                    votMetaIndex = index;
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public int compare(String c1, String c2) {
+                int result = super.compare(c1, c2);
+                if (c1.equals("VOTMETA")) {
+                    return c2.equals(Standard.EXTEND.key()) ? -1 : 1;
+                } else if (c2.equals("VOTMETA")) {
+                    return c1.equals(Standard.EXTEND.key()) ? 1 : -1;
                 }
-                if (card.getKey().equals("EXTEND")) {
-                    extendIndex = index;
-                }
+                return result;
             }
-            Assert.assertTrue(votMetaIndex > extendIndex);
-            FitsFactory.setHeaderSorter(new HeaderOrder() {
-
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public int compare(String c1, String c2) {
-                    int result = super.compare(c1, c2);
-                    if (c1.equals("VOTMETA")) {
-                        return c2.equals(Standard.EXTEND.key()) ? -1 : 1;
-                    } else if (c2.equals("VOTMETA")) {
-                        return c1.equals(Standard.EXTEND.key()) ? 1 : -1;
-                    }
-                    return result;
-                }
-            });
-            hdr = new Header();
-            hdr.addValue("SIMPLE", true, "Standard FITS format");
-            hdr.addValue("BITPIX", 8, "Character data");
-            hdr.addValue("NAXIS", 1, "Text string");
-            hdr.addValue("NAXIS1", 1000, "Number of characters");
-            hdr.addValue("VOTMETA", true, "Table metadata in VOTable format");
-            hdr.addValue("EXTEND", true, "There are standard extensions");
-            hdr.write(out);
-            votMetaIndex = -1;
-            extendIndex = -1;
-            iterator = hdr.iterator();
-            for (int index = 0; iterator.hasNext(); index++) {
-                HeaderCard card = iterator.next();
-                if (card.getKey().equals("VOTMETA")) {
-                    votMetaIndex = index;
-                }
-                if (card.getKey().equals("EXTEND")) {
-                    extendIndex = index;
-                }
+        });
+        hdr.write(out);
+        votMetaIndex = -1;
+        extendIndex = -1;
+        iterator = hdr.iterator();
+        for (int index = 0; iterator.hasNext(); index++) {
+            HeaderCard card = iterator.next();
+            if (card.getKey().equals("VOTMETA")) {
+                votMetaIndex = index;
             }
-            Assert.assertTrue(votMetaIndex < extendIndex);
-        } finally {
-            FitsFactory.setHeaderSorter(new HeaderOrder());
+            if (card.getKey().equals("EXTEND")) {
+                extendIndex = index;
+            }
         }
+        Assert.assertTrue(votMetaIndex < extendIndex);
+
     }
 
     @Test
     public void testSpecialHeaderOrderNull() throws Exception {
-        try {
-            FitsFactory.setHeaderSorter(null);
-            Header hdr = new Header();
-            hdr.addValue("SIMPLE", true, "Standard FITS format");
-            hdr.addValue("BITPIX", 8, "Character data");
-            hdr.addValue("NAXIS", 1, "Text string");
-            hdr.addValue("NAXIS1", 1000, "Number of characters");
-            hdr.addValue("VOTMETA", true, "Table metadata in VOTable format");
-            hdr.addValue("EXTEND", true, "There are standard extensions");
-            // ...
-            BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream());
-            hdr.write(out);
-            int votMetaIndex = -1;
-            int extendIndex = -1;
-            Cursor<String, HeaderCard> iterator = hdr.iterator();
-            for (int index = 0; iterator.hasNext(); index++) {
-                HeaderCard card = iterator.next();
-                if (card.getKey().equals("VOTMETA")) {
-                    votMetaIndex = index;
-                }
-                if (card.getKey().equals("EXTEND")) {
-                    extendIndex = index;
-                }
+
+        Header hdr = new Header();
+        hdr.setHeaderSorter(null);
+        hdr.addValue("SIMPLE", true, "Standard FITS format");
+        hdr.addValue("BITPIX", 8, "Character data");
+        hdr.addValue("NAXIS", 1, "Text string");
+        hdr.addValue("NAXIS1", 1000, "Number of characters");
+        hdr.addValue("VOTMETA", true, "Table metadata in VOTable format");
+        hdr.addValue("EXTEND", true, "There are standard extensions");
+        // ...
+        BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream());
+        hdr.write(out);
+        int votMetaIndex = -1;
+        int extendIndex = -1;
+        Cursor<String, HeaderCard> iterator = hdr.iterator();
+        for (int index = 0; iterator.hasNext(); index++) {
+            HeaderCard card = iterator.next();
+            if (card.getKey().equals("VOTMETA")) {
+                votMetaIndex = index;
             }
-            Assert.assertTrue(votMetaIndex < extendIndex);
-        } finally {
-            FitsFactory.setHeaderSorter(new HeaderOrder());
+            if (card.getKey().equals("EXTEND")) {
+                extendIndex = index;
+            }
         }
+        Assert.assertTrue(votMetaIndex < extendIndex);
+
     }
 }

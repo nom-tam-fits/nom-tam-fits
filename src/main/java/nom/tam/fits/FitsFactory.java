@@ -1,6 +1,5 @@
 package nom.tam.fits;
 
-import java.util.Comparator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -69,8 +68,6 @@ public final class FitsFactory {
 
         private IHierarchKeyFormatter hierarchKeyFormatter = new StandardIHierarchKeyFormatter();
 
-        private Comparator<String> headerSorter = new HeaderOrder();
-
         private FitsSettings copy() {
             FitsSettings settings = new FitsSettings();
             settings.useAsciiTables = this.useAsciiTables;
@@ -80,12 +77,7 @@ public final class FitsFactory {
             settings.longStringsEnabled = this.longStringsEnabled;
             settings.hierarchKeyFormatter = this.hierarchKeyFormatter;
             settings.skipBlankAfterAssign = this.skipBlankAfterAssign;
-            settings.headerSorter = this.headerSorter;
             return settings;
-        }
-
-        protected Comparator<String> getHeaderSorter() {
-            return this.headerSorter;
         }
 
         protected IHierarchKeyFormatter getHierarchKeyFormatter() {
@@ -164,13 +156,6 @@ public final class FitsFactory {
      */
     public static boolean getAllowTerminalJunk() {
         return current().allowTerminalJunk;
-    }
-
-    /**
-     * @return the currently active header sorter.
-     */
-    public static Comparator<String> getHeaderSorter() {
-        return current().getHeaderSorter();
     }
 
     /**
@@ -328,17 +313,6 @@ public final class FitsFactory {
      */
     public static void setCheckAsciiStrings(boolean checkAsciiStrings) {
         current().checkAsciiStrings = checkAsciiStrings;
-    }
-
-    /**
-     * Sort the header using the specified sorter or not if the sorter is null.
-     * Default is the {@link HeaderOrder} sorter.
-     *
-     * @param sorter
-     *            the sorter for the header keys.
-     */
-    public static void setHeaderSorter(Comparator<String> sorter) {
-        current().headerSorter = sorter;
     }
 
     /**
