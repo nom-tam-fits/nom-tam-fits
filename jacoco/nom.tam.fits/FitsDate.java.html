@@ -226,7 +226,7 @@ public class FitsDate {
 <span class="fc" id="L226">            cal.set(Calendar.YEAR, this.year);</span>
 <span class="fc" id="L227">            cal.set(Calendar.MONTH, this.month - 1);</span>
 <span class="fc" id="L228">            cal.set(Calendar.DAY_OF_MONTH, this.mday);</span>
-<span class="fc bfc" id="L229" title="All 2 branches covered.">            if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">            if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
 <span class="fc" id="L230">                FitsDate.LOG.log(Level.FINEST, &quot;At this point:&quot; + cal.getTime());</span>
             }
 
@@ -236,7 +236,7 @@ public class FitsDate {
 <span class="fc" id="L236">                cal.set(Calendar.MINUTE, 0);</span>
 <span class="fc" id="L237">                cal.set(Calendar.SECOND, 0);</span>
 <span class="fc" id="L238">                cal.set(Calendar.MILLISECOND, 0);</span>
-<span class="fc bfc" id="L239" title="All 2 branches covered.">                if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">                if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
 <span class="fc" id="L240">                    FitsDate.LOG.log(Level.FINEST, &quot;2At this point:&quot; + cal.getTime());</span>
                 }
             } else {
@@ -248,13 +248,13 @@ public class FitsDate {
                 } else {
 <span class="fc" id="L249">                    cal.set(Calendar.MILLISECOND, this.millisecond);</span>
                 }
-<span class="fc bfc" id="L251" title="All 2 branches covered.">                if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
+<span class="pc bpc" id="L251" title="1 of 2 branches missed.">                if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
 <span class="fc" id="L252">                    FitsDate.LOG.log(Level.FINEST, &quot;3At this point:&quot; + cal.getTime());</span>
                 }
             }
 <span class="fc" id="L255">            this.date = cal.getTime();</span>
         }
-<span class="fc bfc" id="L257" title="All 2 branches covered.">        if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
+<span class="pc bpc" id="L257" title="1 of 2 branches missed.">        if (FitsDate.LOG.isLoggable(Level.FINEST)) {</span>
 <span class="fc" id="L258">            FitsDate.LOG.log(Level.FINEST, &quot;  date:&quot; + this.date);</span>
 <span class="fc" id="L259">            FitsDate.LOG.log(Level.FINEST, &quot;  year:&quot; + this.year);</span>
 <span class="fc" id="L260">            FitsDate.LOG.log(Level.FINEST, &quot;  month:&quot; + this.month);</span>

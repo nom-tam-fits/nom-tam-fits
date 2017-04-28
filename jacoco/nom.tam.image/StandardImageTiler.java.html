@@ -50,9 +50,9 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param pos
      *            The index requested.
      */
-    public static int getOffset(int[] dims, int[] pos) {
+    public static long getOffset(int[] dims, int[] pos) {
 
-<span class="fc" id="L55">        int offset = 0;</span>
+<span class="fc" id="L55">        long offset = 0;</span>
 <span class="fc bfc" id="L56" title="All 2 branches covered.">        for (int i = 0; i &lt; dims.length; i += 1) {</span>
 <span class="fc bfc" id="L57" title="All 2 branches covered.">            if (i &gt; 0) {</span>
 <span class="fc" id="L58">                offset *= dims[i];</span>
@@ -135,7 +135,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      *             if the underlying stream failed
      */
     @SuppressFBWarnings(value = &quot;RR_NOT_CHECKED&quot;, justification = &quot;this read will never return less than the requested length&quot;)
-    protected void fillFileData(Object output, int delta, int outputOffset, int segment) throws IOException {
+    protected void fillFileData(Object output, long delta, int outputOffset, int segment) throws IOException {
 
 <span class="fc" id="L140">        this.randomAccessFile.seek(this.fileOffset + delta);</span>
 
@@ -261,12 +261,12 @@ public abstract class StandardImageTiler implements ImageTiler {
 <span class="fc bfc" id="L261" title="All 2 branches covered.">                if (data != null) {</span>
 <span class="fc" id="L262">                    fillMemData(data, posits, segment, o, outputOffset, 0);</span>
                 } else {
-<span class="fc" id="L264">                    int offset = getOffset(newDims, posits) * baseLength;</span>
+<span class="fc" id="L264">                    long offset = getOffset(newDims, posits) * baseLength;</span>
 
                     // Point to offset at real beginning
                     // of segment
 <span class="fc" id="L268">                    int actualLen = segment;</span>
-<span class="fc" id="L269">                    int actualOffset = offset;</span>
+<span class="fc" id="L269">                    long actualOffset = offset;</span>
 <span class="fc" id="L270">                    int actualOutput = outputOffset;</span>
 <span class="fc bfc" id="L271" title="All 2 branches covered.">                    if (posits[mx] &lt; 0) {</span>
 <span class="fc" id="L272">                        actualOffset -= posits[mx] * baseLength;</span>

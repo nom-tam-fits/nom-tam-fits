@@ -165,7 +165,7 @@
 <a class="jxr_linenumber" name="L157" href="#L157">157</a>             expectedValue
 <a class="jxr_linenumber" name="L158" href="#L158">158</a>         }).get());
 <a class="jxr_linenumber" name="L159" href="#L159">159</a>         testGetPutArray(PrimitiveTypes.LONG, Long.valueOf(1), Long.valueOf(2));
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>         
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> 
 <a class="jxr_linenumber" name="L161" href="#L161">161</a>         testAppedBuffer(PrimitiveTypes.LONG, expectedValue);
 <a class="jxr_linenumber" name="L162" href="#L162">162</a>     }
 <a class="jxr_linenumber" name="L163" href="#L163">163</a> 
@@ -255,9 +255,21 @@
 <a class="jxr_linenumber" name="L247" href="#L247">247</a>         constrs[0].newInstance();
 <a class="jxr_linenumber" name="L248" href="#L248">248</a>     }
 <a class="jxr_linenumber" name="L249" href="#L249">249</a> 
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> }
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>     @Test
+<a class="jxr_linenumber" name="L251" href="#L251">251</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testPrimitiveTypeNearest() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>         assertSame(PrimitiveTypes.BYTE, PrimitiveTypeHandler.nearestValueOf(2));
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>         assertSame(PrimitiveTypes.FLOAT, PrimitiveTypeHandler.nearestValueOf(-2));
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>         assertSame(PrimitiveTypes.FLOAT, PrimitiveTypeHandler.nearestValueOf(-17));
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>         assertSame(PrimitiveTypes.DOUBLE, PrimitiveTypeHandler.nearestValueOf(-40));
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>         assertSame(PrimitiveTypes.UNKNOWN, PrimitiveTypeHandler.nearestValueOf(-80));
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>         assertSame(PrimitiveTypes.SHORT, PrimitiveTypeHandler.nearestValueOf(9));
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>         assertSame(PrimitiveTypes.INT, PrimitiveTypeHandler.nearestValueOf(20));
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>         assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.nearestValueOf(40));
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>         assertSame(PrimitiveTypes.UNKNOWN, PrimitiveTypeHandler.nearestValueOf(80));
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>     }
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2016 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2017 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>
