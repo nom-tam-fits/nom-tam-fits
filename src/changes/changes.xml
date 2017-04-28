@@ -1,5 +1,37 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
+		<release version="1.15.2" date="2017-04-28" description="Maintenance release with bug fixes.">
+			<action type="update">
+				Maintenance release with bug fixes.
+			</action>
+			<action type="add" dev="ritchieGitHub" issue="113">
+				Header can be controlled to specify the header card order.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="112">
+				ImageHDU tiler corrupts values after 2GB worth of data bug fixed.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="108">
+				Non standard BITPIX allowed during de/compression. 
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="107">
+				Add tiler support for ImageHDU from uncompressing a CompressedImageHDU?
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="106">
+				Remove redundant spaces in HIERARCH keys .
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="105">
+				Fix integer overflow in case of negative values in combination with a defined blank value of Integer.MIN_VANUE.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="104">
+				make the worker threads deamons so they do not hold of a shutdown enhancement.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="98">
+				Update Outdated documentation in introduction enhancement, thanks to MaxNoe.
+			</action>
+			<action type="fix" dev="ritchieGitHub" issue="90">
+				Fix Reading boolean arrays with getColumn bug.
+			</action>
+		</release>
 		<release version="1.15.1" date="2016-08-19" description="Maintenance release with bug fixes.">
 			<action type="update">
 				Maintenance release with bug fixes.
