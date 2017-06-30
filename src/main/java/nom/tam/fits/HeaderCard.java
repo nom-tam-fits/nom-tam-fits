@@ -982,8 +982,17 @@ public class HeaderCard implements CursorValue<String> {
             this.value = parsedValue.getValue();
             this.isString = parsedValue.isString();
             this.comment = parsedValue.getComment();
-            if (!this.isString && this.value.indexOf('\'') >= 0) {
-                throw new IllegalArgumentException("no single quotes allowed in values");
+            int indexOfQuote = this.value.indexOf('\'');
+            if (!this.isString && indexOfQuote >= 0) {
+                if (indexOfQuote == 0 && FitsFactory.current().isAllowTerminalJunk()) {
+                    // ok error case, string without closing quote. lets try to
+                    // accept it
+                    this.value = this.value.substring(1);
+                    this.isString = true;
+                    this.comment = null;
+                } else {
+                    throw new IllegalArgumentException("no single quotes allowed in values");
+                }
             }
         }
     }

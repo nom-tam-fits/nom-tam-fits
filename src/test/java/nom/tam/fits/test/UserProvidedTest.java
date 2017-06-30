@@ -67,10 +67,13 @@ public class UserProvidedTest {
 
     private boolean useHierarch;
 
+    private boolean isAllowTerminalJunk;
+
     @Before
     public void before() {
         longStringsEnabled = FitsFactory.isLongStringsEnabled();
         useHierarch = FitsFactory.getUseHierarch();
+        isAllowTerminalJunk = FitsFactory.getAllowTerminalJunk();
         FitsFactory.setHierarchFormater(new StandardIHierarchKeyFormatter());
     }
 
@@ -78,6 +81,7 @@ public class UserProvidedTest {
     public void after() {
         FitsFactory.setLongStringsEnabled(longStringsEnabled);
         FitsFactory.setUseHierarch(useHierarch);
+        FitsFactory.setAllowTerminalJunk(isAllowTerminalJunk);
     }
 
     @Test
@@ -352,6 +356,49 @@ public class UserProvidedTest {
             fitsSrc.readHDU(); // skip the image
             bhduMain = (BinaryTableHDU) fitsSrc.readHDU(); // theres the table
             assertCurledHdu(bhduMain);
+        } finally {
+            SafeClose.close(fitsSrc);
+            SafeClose.close(stream);
+        }
+    }
+
+    @Test
+    public void tetestInvalidHeaderProblemstInvalidHeaderProblem() throws Exception {
+        FitsFactory.setLongStringsEnabled(true);
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setAllowTerminalJunk(true);
+
+        FileInputStream stream = null;
+        BinaryTableHDU bhduMain = null;
+        Fits fitsSrc = null;
+        try {
+
+            String file1 = BlackBoxImages.getBlackBoxImage("16bits-RGB-compressed-ScottRosen-450D-03h-80dec--C_CVT_2013-12-29-MW1-03h_Light_600SecISO200_000042.fit");
+            String file2 = BlackBoxImages.getBlackBoxImage("PetraVanDerMeijs-astroforum-sadr__001.fit");
+            String file3 = BlackBoxImages.getBlackBoxImage("16bits-RGB-M45_100mmF2_8_ISO200_300sSeries512 exp_007-Patrick Duis.fit");
+
+            String file4 = BlackBoxImages.getBlackBoxImage("16bit-mono-M34.fit");
+            String file5 = BlackBoxImages.getBlackBoxImage("8bit-mono-Convertjup_0_1_L_01.FIT");
+            String file6 = BlackBoxImages.getBlackBoxImage("A102rot-AndreVanDerHoeven-Nebulosity30.FIT");
+
+            fitsSrc = new Fits(new File(file1));
+            BasicHDU<?>[] image1 = fitsSrc.read();
+            Assert.assertEquals(4, image1.length);
+            fitsSrc = new Fits(new File(file2));
+            BasicHDU<?>[] image2 = fitsSrc.read();
+            Assert.assertEquals(1, image2.length);
+            fitsSrc = new Fits(new File(file3));
+            BasicHDU<?>[] image3 = fitsSrc.read();
+            Assert.assertEquals(1, image3.length);
+            fitsSrc = new Fits(new File(file4));
+            BasicHDU<?>[] image4 = fitsSrc.read();
+            Assert.assertEquals(1, image4.length);
+            fitsSrc = new Fits(new File(file5));
+            BasicHDU<?>[] image5 = fitsSrc.read();
+            Assert.assertEquals(1, image5.length);
+            fitsSrc = new Fits(new File(file6));
+            BasicHDU<?>[] image6 = fitsSrc.read();
+            Assert.assertEquals(1, image6.length);
         } finally {
             SafeClose.close(fitsSrc);
             SafeClose.close(stream);

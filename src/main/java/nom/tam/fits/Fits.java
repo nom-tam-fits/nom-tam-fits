@@ -133,7 +133,6 @@ public class Fits implements Closeable {
      */
     private static final Logger LOG = Logger.getLogger(Fits.class.getName());
 
-
     /**
      * The input stream associated with this Fits object.
      */
@@ -331,6 +330,7 @@ public class Fits implements Closeable {
         this(myURL);
         LOG.log(Level.INFO, "compression ignored, will be autodetected. was set to " + compressed);
     }
+
     /**
      * @return a newly created HDU from the given Data.
      * @param data
@@ -396,7 +396,6 @@ public class Fits implements Closeable {
     public static void saveClose(InputStream in) {
         SafeClose.close(in);
     }
-
 
     /**
      * Add an HDU to the Fits object. Users may intermix calls to functions
@@ -651,7 +650,9 @@ public class Fits implements Closeable {
             data.read(this.dataStr);
         } catch (PaddingException e) {
             e.updateHeader(hdr);
-            throw e;
+            if (!FitsFactory.getAllowTerminalJunk()) {
+                throw e;
+            }
         }
         this.lastFileOffset = FitsUtil.findOffset(this.dataStr);
         BasicHDU<Data> nextHDU = FitsFactory.hduFactory(hdr, data);
