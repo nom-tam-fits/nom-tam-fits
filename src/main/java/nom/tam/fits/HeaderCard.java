@@ -11,7 +11,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -84,6 +87,7 @@ public class HeaderCard implements CursorValue<String> {
      * regexp for IEEE floats
      */
     private static final Pattern IEEE_REGEX = Pattern.compile("[+-]?(?=\\d*[.eE])(?=\\.?\\d)\\d*\\.?\\d*(?:[eE][+-]?\\d+)?");
+    private static final Pattern DBLSCI_REGEX = Pattern.compile("[+-]?(?=\\d*[.dD])(?=\\.?\\d)\\d*\\.?\\d*(?:[dD][+-]?\\d+)?");
 
     private static final BigDecimal LONG_MAX_VALUE_AS_BIG_DECIMAL = BigDecimal.valueOf(Long.MAX_VALUE);
 
@@ -204,24 +208,73 @@ public class HeaderCard implements CursorValue<String> {
      * @return the string representing the value.
      */
     private static String dblString(BigDecimal decimalValue, int precision, int availableSpace) {
+        int curPrecision = precision;
         BigDecimal decimal = decimalValue;
         if (precision >= 0) {
             decimal = decimalValue.setScale(precision, RoundingMode.HALF_UP);
+        } else {
+            curPrecision = decimal.scale();
         }
-        double absInput = Math.abs(decimalValue.doubleValue());
-        if (absInput > 0d && absInput < MAX_DECIMAL_VALUE_TO_USE_PLAIN_STRING) {
-            String value = decimal.toPlainString();
-            if (value.length() < availableSpace) {
-                return value;
-            }
-        }
-        String value = decimalValue.toString();
+        String value = decimal.toString();
         while (value.length() > availableSpace) {
-            decimal = decimalValue.setScale(decimal.scale() - 1, BigDecimal.ROUND_HALF_UP);
+            curPrecision -= 1;
+            if (curPrecision < 0) {
+                return dblString(decimalValue, precision, false, availableSpace);
+            }
+            decimal = decimalValue.setScale(curPrecision, RoundingMode.HALF_UP);
             value = decimal.toString();
         }
         return value;
     }
+
+    /**
+     * Create a scientific notation string from a BigDecimal making sure that it's not longer than
+     * the available space.
+     *
+     * @param decimalValue
+     *            the decimal value to print
+     * @param precision
+     *            the precision to use
+     * @param useD
+     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     *            more precision than can be represented by a single precision 32-bit floating point.
+     * @param availableSpace
+     *            the space available for the value
+     * @return the string representing the value.
+     */
+    private static String dblString(BigDecimal decimalValue, int precision, boolean useD, int availableSpace) {
+        String value;
+
+        DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.US);
+
+        if (decimalValue.compareTo(BigDecimal.valueOf(1)) == 1 || decimalValue.compareTo(BigDecimal.valueOf(-1)) == -1) {
+            if (useD) {
+                symbols.setExponentSeparator("D+");
+            } else {
+                symbols.setExponentSeparator("E+");
+            }
+        } else {
+            if (useD) {
+                symbols.setExponentSeparator("D");
+            } else {
+                symbols.setExponentSeparator("E");
+            }
+        }
+        DecimalFormat format = new DecimalFormat("0.0E0", symbols);
+        format.setRoundingMode(RoundingMode.HALF_UP);
+        if (precision < 0) {
+            precision = availableSpace;
+        }
+        do {
+            format.setMinimumFractionDigits(precision);
+            format.setMaximumFractionDigits(precision);
+            value = format.format(decimalValue);
+            precision--;
+        } while (value.length() > availableSpace);
+        return value;
+    }
+
+
 
     /**
      * Create a string from a BigDecimal making sure that it's not longer than
@@ -242,11 +295,30 @@ public class HeaderCard implements CursorValue<String> {
      *            float value being converted
      * @param precision
      *            the number of decimal places to show
+     * @param availableSpace
+     *            the space available for the value
      * @return Create a fixed decimal string from a double with the specified
      *         precision.
      */
     private static String dblString(double input, int precision, int availableSpace) {
         return dblString(BigDecimal.valueOf(input), precision, availableSpace);
+    }
+
+    /**
+     * @param input
+     *            float value being converted
+     * @param precision
+     *            the number of decimal places to show
+     * @param useD
+     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     *            more precision than can be represented by a single precision 32-bit floating point.
+     * @param availableSpace
+     *            the space available for the value
+     * @return Create a fixed decimal string from a double with the specified
+     *         precision.
+     */
+    private static String dblString(double input, int precision, boolean useD, int availableSpace) {
+        return dblString(BigDecimal.valueOf(input), precision, useD, availableSpace);
     }
 
     /**
@@ -270,6 +342,13 @@ public class HeaderCard implements CursorValue<String> {
      * @return the type to fit the value
      */
     private static Class<?> getDecimalNumberType(String value) {
+
+        // Convert the Double Scientific Notation specified by FITS to pure IEEE.
+        if (HeaderCard.DBLSCI_REGEX.matcher(value).find()) {
+            value = value.replace('d', 'e');
+            value = value.replace('D', 'E');
+        }
+
         BigDecimal bigDecimal = new BigDecimal(value);
         if (bigDecimal.abs().compareTo(HeaderCard.LONG_MAX_VALUE_AS_BIG_DECIMAL) > 0 && bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
             return BigInteger.class;
@@ -420,6 +499,45 @@ public class HeaderCard implements CursorValue<String> {
      *            keyword (null for a comment)
      * @param value
      *            value (null for a comment or keyword without an '=')
+     * @param precision
+     *            Number of decimal places (fixed format).
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword
+     */
+    public HeaderCard(String key, BigDecimal value, int precision, String comment) throws HeaderCardException {
+        this(key, dblString(value, precision, spaceAvailableForValue(key)), comment, false, false);
+    }
+
+    /**
+     * Create a HeaderCard from its component parts
+     *
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
+     * @param precision
+     *            Number of decimal places (fixed format).
+     * @param useD
+     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     *            more precision than can be represented by a single precision 32-bit floating point.
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword
+     */
+    public HeaderCard(String key, BigDecimal value, int precision, boolean useD, String comment) throws HeaderCardException {
+        this(key, dblString(value, precision, useD, spaceAvailableForValue(key)), comment, false, false);
+    }
+
+    /**
+     * Create a HeaderCard from its component parts
+     *
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
      * @param comment
      *            comment
      * @exception HeaderCardException
@@ -470,6 +588,27 @@ public class HeaderCard implements CursorValue<String> {
      *            keyword (null for a comment)
      * @param value
      *            value (null for a comment or keyword without an '=')
+     * @param precision
+     *            Number of decimal places (fixed format).
+     * @param useD
+     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     *            more precision than can be represented by a single precision 32-bit floating point.
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword
+     */
+    public HeaderCard(String key, double value, int precision, boolean useD, String comment) throws HeaderCardException {
+        this(key, dblString(value, precision, useD, spaceAvailableForValue(key)), comment, false, false);
+    }
+
+    /**
+     * Create a HeaderCard from its component parts
+     *
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
      * @param comment
      *            comment
      * @exception HeaderCardException
@@ -495,6 +634,27 @@ public class HeaderCard implements CursorValue<String> {
      */
     public HeaderCard(String key, float value, int precision, String comment) throws HeaderCardException {
         this(key, dblString(floatToBigDecimal(value), precision, spaceAvailableForValue(key)), comment, false, false);
+    }
+
+    /**
+     * Create a HeaderCard from its component parts
+     *
+     * @param key
+     *            keyword (null for a comment)
+     * @param value
+     *            value (null for a comment or keyword without an '=')
+     * @param precision
+     *            Number of decimal places (fixed format).
+     * @param useD
+     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     *            more precision than can be represented by a single precision 32-bit floating point.
+     * @param comment
+     *            comment
+     * @exception HeaderCardException
+     *                for any invalid keyword
+     */
+    public HeaderCard(String key, float value, int precision, boolean useD, String comment) throws HeaderCardException {
+        this(key, dblString(floatToBigDecimal(value), precision, useD, spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
@@ -704,6 +864,13 @@ public class HeaderCard implements CursorValue<String> {
         } else if (Boolean.class.isAssignableFrom(clazz)) {
             return clazz.cast(getBooleanValue((Boolean) defaultValue));
         }
+
+        // Convert the Double Scientific Notation specified by FITS to pure IEEE.
+        if (HeaderCard.DBLSCI_REGEX.matcher(value).find()) {
+            value = value.replace('d', 'e');
+            value = value.replace('D', 'E');
+        }
+
         BigDecimal parsedValue;
         try {
             parsedValue = new BigDecimal(this.value);
@@ -768,6 +935,37 @@ public class HeaderCard implements CursorValue<String> {
      *
      * @param update
      *            the new value to set
+     * @param precision
+     *            the number of decimal places to show
+     * @return the HeaderCard itself
+     */
+    public HeaderCard setValue(BigDecimal update, int precision) {
+        this.value = dblString(update, precision, spaceAvailableForValue(this.key));
+        return this;
+    }
+
+    /**
+     * Set the value for this card.
+     *
+     * @param update
+     *            the new value to set
+     * @param precision
+     *            the number of decimal places to show
+     * @param useD
+     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     *            more precision than can be represented by a single precision 32-bit floating point.
+     * @return the HeaderCard itself
+     */
+    public HeaderCard setValue(BigDecimal update, int precision, boolean useD) {
+        this.value = dblString(update, precision, useD, spaceAvailableForValue(this.key));
+        return this;
+    }
+
+    /**
+     * Set the value for this card.
+     *
+     * @param update
+     *            the new value to set
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(boolean update) {
@@ -802,6 +1000,23 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
+     * Set the value for this card that uses scientific notation.
+     *
+     * @param update
+     *            the new value to set
+     * @param precision
+     *            the number of decimal places to show
+     * @param useD
+     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     *            more precision than can be represented by a single precision 32-bit floating point.
+     * @return the HeaderCard itself
+     */
+    public HeaderCard setValue(double update, int precision, boolean useD) {
+        this.value = dblString(update, precision, useD, spaceAvailableForValue(this.key));
+        return this;
+    }
+
+    /**
      * Set the value for this card.
      *
      * @param update
@@ -824,6 +1039,23 @@ public class HeaderCard implements CursorValue<String> {
      */
     public HeaderCard setValue(float update, int precision) {
         this.value = dblString(floatToBigDecimal(update), precision, spaceAvailableForValue(this.key));
+        return this;
+    }
+
+    /**
+     * Set the value for this card that uses scientific notation.
+     *
+     * @param update
+     *            the new value to set
+     * @param precision
+     *            the number of decimal places to show
+     * @param useD
+     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     *            more precision than can be represented by a single precision 32-bit floating point.
+     * @return the HeaderCard itself
+     */
+    public HeaderCard setValue(float update, int precision, boolean useD) {
+        this.value = dblString(floatToBigDecimal(update), precision, useD, spaceAvailableForValue(this.key));
         return this;
     }
 
@@ -965,7 +1197,7 @@ public class HeaderCard implements CursorValue<String> {
                 return Boolean.class;
             } else if (HeaderCard.LONG_REGEX.matcher(trimedValue).matches()) {
                 return getIntegerNumberType(trimedValue);
-            } else if (HeaderCard.IEEE_REGEX.matcher(trimedValue).find()) {
+            } else if (HeaderCard.IEEE_REGEX.matcher(trimedValue).find() || HeaderCard.DBLSCI_REGEX.matcher(trimedValue).find()) {
                 return getDecimalNumberType(trimedValue);
             }
         }
