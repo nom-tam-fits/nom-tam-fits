@@ -393,12 +393,146 @@ public class HeaderCardTest {
     }
 
     @Test
-    public void testFixedLongDoubles() throws Exception {
-        HeaderCard hc = new HeaderCard("TEST", -123456.78905, 4, "dummy");
+    public void testFixedFloats() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", -1234.567f, 4, "dummy");
+        String val = hc.getValue();
+        assertEquals("tld1", 10, val.length());
+        assertEquals(-1234.567f, hc.getValue(Float.class, null).floatValue(), 0.0001f);
+    }
+
+    @Test
+    public void testFixedDoubles() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", -123456.78905D, 4, "dummy");
         String val = hc.getValue();
         assertEquals("tld1", val.length(), 12);
-        assertEquals(Double.class, hc.valueType());
         assertEquals(-123456.7891d, hc.getValue(Double.class, null).doubleValue(), 0.0000000001d);
+    }
+
+    @Test
+    public void testFixedLongDoubles() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST",
+                new BigDecimal("123456789012345678901234567890123456789012345678901234567.8901234567890123456789012345678901234567890123456789012345678901234567890"),
+                6, "dummy");
+        String val = hc.getValue();
+        assertEquals("tld1", 64, val.length());
+        assertEquals(BigDecimal.class, hc.valueType());
+        assertEquals(new BigDecimal("123456789012345678901234567890123456789012345678901234567.890123"), hc.getValue(BigDecimal.class, null));
+    }
+
+    @Test
+    public void testScientificFloats_1() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", -1234.567f, 4, false, "dummy");
+        String val = hc.getValue();
+        assertEquals("tld1", 10, val.length());
+        assertEquals("-1.2346E+3", val);
+        assertEquals(-1.2346E+3f, hc.getValue(Float.class, null), 0.0000001f);
+    }
+
+    @Test
+    public void testScientificFloats_2() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", 1234.567f, 4, false, "dummy");
+        String val = hc.getValue();
+        assertEquals("tld1", 9, val.length());
+        assertEquals("1.2346E+3", val);
+        assertEquals(1.2346E+3f, hc.getValue(Float.class, null), 0.0000001f);
+    }
+
+    @Test
+    public void testScientificFloats_3() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", -0.0012345f, 4, false, "dummy");
+        String val = hc.getValue();
+        assertEquals("tld1", 10, val.length());
+        assertEquals("-1.2345E-3", val);
+        assertEquals(-1.2345E-3f, hc.getValue(Float.class, null), 0.0000001f);
+    }
+
+    @Test
+    public void testScientificFloats_4() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", 0.0012345f, 4, false, "dummy");
+        String val = hc.getValue();
+        assertEquals("tld1", 9, val.length());
+        assertEquals("1.2345E-3", val);
+        assertEquals(1.2345E-3f, hc.getValue(Float.class, null), 0.0000001f);
+    }
+
+    @Test
+    public void testScientificDoubles_1() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", -123456.78905D, 6, true, "dummy");
+        String val = hc.getValue();
+        assertEquals("tld1", val.length(), 12);
+        assertEquals("-1.234568D+5", val);
+        assertEquals(-1.234568E+5, hc.getValue(Double.class, null), 0.000000001d);
+    }
+
+    @Test
+    public void testScientificDoubles_2() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", 123456.78905D, 6, true, "dummy");
+        String val = hc.getValue();
+        assertEquals("tld1", val.length(), 11);
+        assertEquals("1.234568D+5", val);
+        assertEquals(1.234568E+5, hc.getValue(Double.class, null), 0.000000001d);
+    }
+
+    @Test
+    public void testScientificDoubles_3() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", -0.000012345678905D, 6, true, "dummy");
+        String val = hc.getValue();
+        assertEquals("tld1", val.length(), 12);
+        assertEquals("-1.234568D-5", val);
+        assertEquals(-1.234568E-5, hc.getValue(Double.class, null), 0.000000001d);
+    }
+
+    @Test
+    public void testScientificDoubles_4() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", 0.0012345678905D, 6, true, "dummy");
+        String val = hc.getValue();
+        assertEquals("tld1", val.length(), 11);
+        assertEquals("1.234568D-3", val);
+        assertEquals(1.234568E-3, hc.getValue(Double.class, null), 0.000000001d);
+    }
+
+    @Test
+    public void testScientificLongDoubles_1() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST",
+                new BigDecimal("123456789012345678901234567890123456789012345678901234567.8901234567890123456789012345678901234567890123456789012345678901234567890"),
+                9, true,"dummy");
+        String val = hc.getValue();
+        assertEquals("tld1", 15, val.length());
+        assertEquals("1.234567890D+56", val);
+        assertEquals(new BigDecimal("1.234567890E+56"), hc.getValue(BigDecimal.class, null));
+    }
+
+    @Test
+    public void testScientificLongDoubles_2() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST",
+                new BigDecimal("-123456789012345678901234567890123456789012345678901234567.8901234567890123456789012345678901234567890123456789012345678901234567890"),
+                9, true,"dummy");
+        String val = hc.getValue();
+        assertEquals("tld1", 16, val.length());
+        assertEquals("-1.234567890D+56", val);
+        assertEquals(new BigDecimal("-1.234567890E+56"), hc.getValue(BigDecimal.class, null));
+    }
+
+    @Test
+    public void testScientificLongDoubles_3() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST",
+                new BigDecimal("0.000000000000000000000000001234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"),
+                9, true,"dummy");
+        String val = hc.getValue();
+        assertEquals("tld1", 15, val.length());
+        assertEquals("1.234567890D-27", val);
+        assertEquals(new BigDecimal("1.234567890E-27"), hc.getValue(BigDecimal.class, null));
+    }
+
+    @Test
+    public void testScientificLongDoubles_4() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST",
+                new BigDecimal("-0.000000000000000000000000001234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"),
+                9, true,"dummy");
+        String val = hc.getValue();
+        assertEquals("tld1", 16, val.length());
+        assertEquals("-1.234567890D-27", val);
+        assertEquals(new BigDecimal("-1.234567890E-27"), hc.getValue(BigDecimal.class, null));
     }
 
     @Test
