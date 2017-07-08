@@ -316,6 +316,47 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Add or replace a key with the given bigdecimal value and comment. Note
+     * that float values will be promoted to doubles.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The bigDecimal value.
+     * @param precision
+     *            The fixed number of decimal places to show.
+     * @param comment
+     *            A comment to append to the card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(String key, BigDecimal val, int precision, String comment) throws HeaderCardException {
+        addHeaderCard(key, new HeaderCard(key, val, precision, comment));
+    }
+
+    /**
+     * Add or replace a key with the given bigdecimal value and comment. Note
+     * that float values will be promoted to doubles.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The bigDecimal value.
+     * @param precision
+     *            The fixed number of decimal places to show.
+     * @param useD
+     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     *            more precision than can be represented by a single precision 32-bit floating point.
+     * @param comment
+     *            A comment to append to the card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(String key, BigDecimal val, int precision, boolean useD, String comment) throws HeaderCardException {
+        addHeaderCard(key, new HeaderCard(key, val, precision, useD, comment));
+    }
+
+    /**
      * Add or replace a key with the given BigInteger value and comment. Note
      * that float values will be promoted to doubles.
      *
@@ -345,6 +386,23 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
+        addHeaderCard(key, new HeaderCard(key, val, comment));
+    }
+
+    /**
+     * Add or replace a key with the given double value and comment. Note that
+     * float values will be promoted to doubles.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The double value.
+     * @param comment
+     *            A comment to append to the card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(String key, double val, String comment) throws HeaderCardException {
         addHeaderCard(key, new HeaderCard(key, val, comment));
     }
 
@@ -387,23 +445,6 @@ public class Header implements FitsElement {
      */
     public void addValue(String key, double val, int precision, boolean useD, String comment) throws HeaderCardException {
         addHeaderCard(key, new HeaderCard(key, val, precision, useD, comment));
-    }
-
-    /**
-     * Add or replace a key with the given double value and comment. Note that
-     * float values will be promoted to doubles.
-     *
-     * @param key
-     *            The header key.
-     * @param val
-     *            The double value.
-     * @param comment
-     *            A comment to append to the card.
-     * @throws HeaderCardException
-     *             If the parameters cannot build a valid FITS card.
-     */
-    public void addValue(String key, double val, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, comment));
     }
 
     /**

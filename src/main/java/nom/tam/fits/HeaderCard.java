@@ -632,6 +632,7 @@ public class HeaderCard implements CursorValue<String> {
      * @exception HeaderCardException
      *                for any invalid keyword
      */
+    @Deprecated
     public HeaderCard(String key, float value, int precision, String comment) throws HeaderCardException {
         this(key, dblString(floatToBigDecimal(value), precision, spaceAvailableForValue(key)), comment, false, false);
     }
@@ -653,6 +654,7 @@ public class HeaderCard implements CursorValue<String> {
      * @exception HeaderCardException
      *                for any invalid keyword
      */
+    @Deprecated
     public HeaderCard(String key, float value, int precision, boolean useD, String comment) throws HeaderCardException {
         this(key, dblString(floatToBigDecimal(value), precision, useD, spaceAvailableForValue(key)), comment, false, false);
     }
@@ -669,6 +671,7 @@ public class HeaderCard implements CursorValue<String> {
      * @exception HeaderCardException
      *                for any invalid keyword
      */
+    @Deprecated
     public HeaderCard(String key, float value, String comment) throws HeaderCardException {
         this(key, dblString(floatToBigDecimal(value), spaceAvailableForValue(key)), comment, false, false);
     }
