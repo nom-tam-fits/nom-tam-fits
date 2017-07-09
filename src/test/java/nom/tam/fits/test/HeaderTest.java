@@ -434,6 +434,7 @@ public class HeaderTest {
             Header hdr = hdu.getHeader();
 
             assertEquals("NAXIS", 2, hdr.getIntValue(NAXIS));
+            assertEquals("NAXIS", 2, hdr.getIntValue("NAXIS", -1)); // Verify key found path
             assertEquals("NAXIS1", 300, hdr.getIntValue(NAXISn.n(1)));
             assertEquals("NAXIS2", 300, hdr.getIntValue(NAXISn.n(2)));
             assertEquals("NAXIS2a", 300, hdr.getIntValue(NAXISn.n(2), -1));
