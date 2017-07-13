@@ -1111,29 +1111,48 @@ public class HeaderTest {
         Header hdr = new Header();
 
         // Add new cards
-        hdr.addValue("SCI_D", 12345.6789, 4, true, "SciNotation with D");
-        hdr.addValue("BIGDEC", new BigDecimal("12345678901234567890.1234567890"), 10, false, "Big Desc Sci Note");
-        hdr.addValue( "SCI_E", 1234.12f, 2, false, "SciNotation with E");
+        hdr.addExpValue("SCI_D", 12345.6789, 4, true, "SciNotation with D");
+        hdr.addExpValue("BIGDEC", new BigDecimal("12345678901234567890.1234567890"), 10, true, "Big Desc Sci Note");
+        hdr.addExpValue( "SCI_E", 1234.12f, 2,"SciNotation with E");
+        hdr.addExpValue("BIGDEC2", new BigDecimal("-12345678901234567890.1234567890"), 8,"Another Big Desc Sci Note");
 
         assertEquals("1.2346D+4", hdr.findCard("SCI_D").getValue());
         assertEquals(12346.0f, hdr.getFloatValue("SCI_D"), 0.00001f);
-        assertEquals("1.2345678901E+19",hdr.findCard("BIGDEC").getValue());
+        assertEquals("1.2345678901D+19",hdr.findCard("BIGDEC").getValue());
         assertEquals(new BigDecimal("1.2345678901E19"), hdr.getBigDecimalValue("BIGDEC"));
         assertEquals("1.23E+3", hdr.findCard("SCI_E").getValue());
         assertEquals(1230.0, hdr.getDoubleValue("SCI_E"), 0.00001);
+        assertEquals("-1.23456789E+19",hdr.findCard("BIGDEC2").getValue());
+        assertEquals(new BigDecimal("-1.23456789E+19"), hdr.getBigDecimalValue("BIGDEC2"));
 
         // Update the cards
-        hdr.findCard("SCI_E").setValue(2468.123f, 1, false);
+        hdr.findCard("SCI_E").setExpValue(2468.123f, 1, false);
         assertEquals("2.5E+3", hdr.findCard("SCI_E").getValue());
         assertEquals(2500.0f, hdr.getFloatValue("SCI_E"), 0.00001f);
 
-        hdr.findCard("SCI_D").setValue(13456.76344, 3, true);
+        hdr.findCard("SCI_D").setExpValue(13456.76344, 3, true);
         assertEquals("1.346D+4", hdr.findCard("SCI_D").getValue());
         assertEquals(13460.0, hdr.getDoubleValue("SCI_D"), 0.00001);
 
-        hdr.findCard("BIGDEC").setValue(new BigDecimal("0.0000707703"), 4, false);
-        assertEquals("7.0770E-5", hdr.findCard("BIGDEC").getValue());
+        hdr.findCard("SCI_D").setExpValue(13456.76344, 3);
+        assertEquals("1.346E+4", hdr.findCard("SCI_D").getValue());
+        assertEquals(13460.0, hdr.getDoubleValue("SCI_D"), 0.00001);
+
+        hdr.findCard("BIGDEC").setExpValue(new BigDecimal("0.0000707703"), 4, true);
+        assertEquals("7.0770D-5", hdr.findCard("BIGDEC").getValue());
         assertEquals(new BigDecimal("0.000070770"), hdr.getBigDecimalValue("BIGDEC"));
+
+        hdr.findCard("BIGDEC2").setExpValue(new BigDecimal("-0.0000707703"), 4);
+        assertEquals("-7.0770E-5", hdr.findCard("BIGDEC2").getValue());
+        assertEquals(new BigDecimal("-0.000070770"), hdr.getBigDecimalValue("BIGDEC2"));
+
+        hdr.findCard("BIGDEC").setExpValue(new BigDecimal("0.0000707703"), 4, true);
+        assertEquals("7.0770D-5", hdr.findCard("BIGDEC").getValue());
+        assertEquals(new BigDecimal("0.000070770"), hdr.getBigDecimalValue("BIGDEC"));
+
+        hdr.findCard("BIGDEC2").setExpValue(new BigDecimal("-0.0000707703"), 4);
+        assertEquals("-7.0770E-5", hdr.findCard("BIGDEC2").getValue());
+        assertEquals(new BigDecimal("-0.000070770"), hdr.getBigDecimalValue("BIGDEC2"));
     }
 
     @Test

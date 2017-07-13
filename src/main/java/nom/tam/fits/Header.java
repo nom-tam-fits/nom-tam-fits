@@ -352,8 +352,27 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      */
-    public void addValue(String key, BigDecimal val, int precision, boolean useD, String comment) throws HeaderCardException {
+    public void addExpValue(String key, BigDecimal val, int precision, boolean useD, String comment) throws HeaderCardException {
         addHeaderCard(key, new HeaderCard(key, val, precision, useD, comment));
+    }
+
+    /**
+     * Add or replace a key with the given bigdecimal value and comment. Note
+     * that float values will be promoted to doubles.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The bigDecimal value.
+     * @param precision
+     *            The fixed number of decimal places to show.
+     * @param comment
+     *            A comment to append to the card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     */
+    public void addExpValue(String key, BigDecimal val, int precision, String comment) throws HeaderCardException {
+        addHeaderCard(key, new HeaderCard(key, val, precision, false, comment));
     }
 
     /**
@@ -443,8 +462,27 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      */
-    public void addValue(String key, double val, int precision, boolean useD, String comment) throws HeaderCardException {
+    public void addExpValue(String key, double val, int precision, boolean useD, String comment) throws HeaderCardException {
         addHeaderCard(key, new HeaderCard(key, val, precision, useD, comment));
+    }
+
+    /**
+     * Add or replace a key with the given double value and comment. Note that
+     * float values will be promoted to doubles. This will be in scientific notation using 'E' to indicated exponent.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The double value.
+     * @param precision
+     *            The fixed number of decimal places to show.
+     * @param comment
+     *            A comment to append to the card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     */
+    public void addExpValue(String key, double val, int precision, String comment) throws HeaderCardException {
+        addHeaderCard(key, new HeaderCard(key, val, precision, false, comment));
     }
 
     /**
