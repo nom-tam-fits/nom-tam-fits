@@ -213,6 +213,7 @@ public class Header implements FitsElement {
         }
     }
 
+    
     /**
      * Add a card image to the header.
      *
@@ -221,10 +222,23 @@ public class Header implements FitsElement {
      */
     public void addLine(HeaderCard fcard) {
         if (fcard != null) {
+            this.cards.add(fcard);
+        }
+    }
+
+    /**
+     * Add a card image to the header.
+     *
+     * @param fcard
+     *            The card to be added.
+     */
+    public void insertLine(HeaderCard fcard) {
+        if (fcard != null) {
             this.iter.add(fcard);
         }
     }
 
+    
     /**
      * Add or replace a key with the given boolean value and comment.
      *
