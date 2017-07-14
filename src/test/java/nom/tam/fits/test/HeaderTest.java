@@ -166,11 +166,11 @@ public class HeaderTest {
             assertEquals("CTYPE2_c", CTYPE2.key(), hc.getKey());
 
             hdr.findCard(CRPIX1.key());
-            hdr.addValue("INTVAL1", 1, "An integer value");
-            hdr.addValue("LOG1", true, "A true value");
-            hdr.addValue("LOGB1", false, "A false value");
-            hdr.addValue("FLT1", 1.34, "A float value");
-            hdr.addValue("FLT2", -1.234567890e-134, "A very long float");
+            hdr.insertLine(new HeaderCard("INTVAL1", 1, "An integer value"));
+            hdr.insertLine(new HeaderCard("LOG1", true, "A true value"));
+            hdr.insertLine(new HeaderCard("LOGB1", false, "A false value"));
+            hdr.insertLine(new HeaderCard("FLT1", 1.34, "A float value"));
+            hdr.insertLine(new HeaderCard("FLT2", -1.234567890e-134, "A very long float"));
             hdr.insertComment("Comment after flt2");
 
             c.setKey("INTVAL1");
@@ -223,7 +223,7 @@ public class HeaderTest {
             Header h = f.getHDU(0).getHeader();
 
             // We should be pointed after the EXTEND and before TESTKEY
-            h.addValue("TESTKEY2", "TESTVAL2", null); // Should precede TESTKEY
+            h.insertLine(new HeaderCard("TESTKEY2", "TESTVAL2", null)); // Should precede TESTKEY
 
             Cursor<String, HeaderCard> c = h.iterator();
             assertEquals("E1", c.next().getKey(), SIMPLE.key());
