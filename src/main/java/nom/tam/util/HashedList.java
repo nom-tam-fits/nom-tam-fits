@@ -181,8 +181,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
      * @param reference
      *            The element to add to the list.
      */
-    private void add(int pos, VALUE reference) {
-        VALUE entry = reference;
+    private void add(int pos, VALUE entry) {
         String key = entry.getKey();
         if (this.keyed.containsKey(key) && !unkeyedKey(key)) {
             int oldPos = indexOf(entry);
@@ -210,6 +209,26 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         return true;
     }
 
+    /**
+     * Similar to add(VALUE), except this replaces an existing card that matches the specified key in-situ.
+     * At the same time, new entries are added to the end of the list the same was as with add(VALUE).
+     * 
+     * @param key
+     *            The key of the existing card (if any) to be replaced).
+     * 
+     * @param reference
+     *            The element to add to the list.
+     */
+    public void update(String key, VALUE entry) {
+        if (this.keyed.containsKey(key) && !unkeyedKey(key)) {
+            int index = indexOf(get(key));
+            remove(index);
+            add(index, entry);
+        } else {
+            add(entry);
+        }
+    }
+    
     @Override
     public boolean addAll(Collection<? extends VALUE> c) {
         for (VALUE element : c) {
