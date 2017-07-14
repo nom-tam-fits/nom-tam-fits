@@ -215,7 +215,8 @@ public class Header implements FitsElement {
 
     
     /**
-     * Add a card image to the header.
+     * Add a card image to the end of the header, or else update and existing card. The current position
+     * (e.g. for insertions) will remain unchanged.
      *
      * @param fcard
      *            The card to be added.
@@ -227,10 +228,12 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Add a card image to the header.
+     *
+     * Insert a new header card at the current position, deleting any prior occurence of the same card
+     * while maintaining the current position to point to after the newly inserted card.
      *
      * @param fcard
-     *            The card to be added.
+     *            The card to be inserted.
      */
     public void insertLine(HeaderCard fcard) {
         if (fcard != null) {
@@ -326,7 +329,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, BigDecimal val, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, comment));
+        updateLine(key, new HeaderCard(key, val, comment));
     }
 
     /**
@@ -343,7 +346,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, BigInteger val, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, comment));
+        updateLine(key, new HeaderCard(key, val, comment));
     }
 
     /**
@@ -359,7 +362,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, comment));
+        updateLine(key, new HeaderCard(key, val, comment));
     }
 
     /**
@@ -378,7 +381,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, double val, int precision, String comment) throws HeaderCardException {
-        this.iter.add(new HeaderCard(key, val, precision, comment));
+        updateLine(key, new HeaderCard(key, val, precision, comment));
     }
 
     /**
@@ -395,7 +398,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, double val, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, comment));
+        updateLine(key, new HeaderCard(key, val, comment));
     }
 
     /**
@@ -412,7 +415,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, long val, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, comment));
+        updateLine(key, new HeaderCard(key, val, comment));
     }
 
     /**
@@ -428,7 +431,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, String val, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, comment));
+        updateLine(key, new HeaderCard(key, val, comment));
     }
 
     /**
@@ -1380,7 +1383,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Update a line in the header
+     * This is functionally identical to addLine(HeaderCard). Kept for backwards compatibility.
      *
      * @param key
      *            The key of the card to be replaced.
@@ -1389,9 +1392,10 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             if the operation failed
      */
-    public void updateLine(String key, HeaderCard card) throws HeaderCardException {
-        addHeaderCard(key, card);
+    public final void updateLine(String key, HeaderCard card) throws HeaderCardException {
+        addLine(card);
     }
+    
 
     /**
      * Overwrite the lines in the header. Add the new PHDU header to the current
@@ -1462,12 +1466,9 @@ public class Header implements FitsElement {
             this.duplicates.add(dup);
         }
     }
-
-    private void addHeaderCard(String key, HeaderCard card) {
-        deleteKey(key);
-        this.iter.add(card);
-    }
-
+  
+    
+    
     /**
      * Check if the given key is the next one available in the header.
      */
