@@ -83,16 +83,21 @@ public class HeaderOrderTest {
         // AK, we will insert BITPIX later, to test insertion...    
         //header.addValue(BITPIX, 1);
         // AK: Here we overwrite the prior occurence of THEAP to test a scenario of updating existing keys...
-        header.addValue(SIMPLE, true);
+        header.updateLine(SIMPLE.key(), new HeaderCard(SIMPLE.key(), true, ""));
         // AK: The above overwrite should not affect the order, so the next key should be added to the end...
         header.addValue(NAXIS, 0);
         // AK: Insert BITPIX before THEAP...
         header.findCard(THEAP);
-        header.insertLine(new HeaderCard(BITPIX.key(), 1, ""));
+        header.addValue(BITPIX, 1);
         // AK: Finally, add a value to the end.
-        header.addValue(END, true);
+        header.appendLine(new HeaderCard(END.key(), true, ""));
        
+        // Check that the order is what we expect...
+        Assert.assertEquals(SIMPLE.key(), header.iterator(1).next().getKey());
+        Assert.assertEquals(BITPIX.key(), header.iterator(2).next().getKey());
+        Assert.assertEquals(THEAP.key(), header.iterator(3).next().getKey());
         Assert.assertEquals(NAXIS.key(), header.iterator(4).next().getKey());
+        
         header.write(dos);
         Assert.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
         Assert.assertEquals(THEAP.key(), header.iterator(4).next().getKey());

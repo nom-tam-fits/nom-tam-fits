@@ -442,27 +442,27 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public void setColumnMeta(int index, IFitsHeader key, String value, String comment, boolean after) throws FitsException {
         setCurrentColumn(index, after);
-        this.myHeader.insertLine(new HeaderCard(key.n(index + 1).key(), value, comment));
+        this.myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));
     }
 
     public void setColumnMeta(int index, String key, boolean value, String comment, boolean after) throws FitsException {
         setCurrentColumn(index, after);
-        this.myHeader.insertLine(new HeaderCard(key + (index + 1), value, comment));
+        this.myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
     }
 
     public void setColumnMeta(int index, String key, double value, String comment, boolean after) throws FitsException {
         setCurrentColumn(index, after);
-        this.myHeader.insertLine(new HeaderCard(key + (index + 1), value, comment));
+        this.myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
     }
 
     public void setColumnMeta(int index, String key, double value, int precision, String comment, boolean after) throws FitsException {
         setCurrentColumn(index, after);
-        this.myHeader.insertLine(new HeaderCard(key + (index + 1), value, precision, comment));
+        this.myHeader.addLine(new HeaderCard(key + (index + 1), value, precision, comment));
     }
 
     public void setColumnMeta(int index, String key, long value, String comment, boolean after) throws FitsException {
         setCurrentColumn(index, after);
-        this.myHeader.insertLine(new HeaderCard(key + (index + 1), value, comment));
+        this.myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
     }
 
     public void setColumnMeta(int index, String key, String value, String comment) throws FitsException {
@@ -493,7 +493,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     @Deprecated
     public void setColumnMeta(int index, String key, String value, String comment, boolean after) throws FitsException {
         setCurrentColumn(index, after);
-        this.myHeader.insertLine(new HeaderCard(key + (index + 1), value, comment));
+        this.myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
     }
 
     public void setColumnName(int index, String name, String comment) throws FitsException {

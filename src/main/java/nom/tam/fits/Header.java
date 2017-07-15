@@ -221,7 +221,7 @@ public class Header implements FitsElement {
      * @param fcard
      *            The card to be added.
      */
-    public void addLine(HeaderCard fcard) {
+    public void appendLine(HeaderCard fcard) {
         if (fcard != null) {
             this.cards.add(fcard);
         }
@@ -235,7 +235,7 @@ public class Header implements FitsElement {
      * @param fcard
      *            The card to be inserted.
      */
-    public void insertLine(HeaderCard fcard) {
+    public void addLine(HeaderCard fcard) {
         if (fcard != null) {
             this.iter.add(fcard);
         }
@@ -1151,7 +1151,7 @@ public class Header implements FitsElement {
                     FitsFactory.setLongStringsEnabled(true);
                 }
                 // save card
-                addLine(fcard);
+                appendLine(fcard);
                 if (END.key().equals(key)) {
                     break; // Out of reading the header.
                 }
