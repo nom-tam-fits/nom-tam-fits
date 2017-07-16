@@ -147,7 +147,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         @Override
         public void remove() {
             if (this.current > 0 && this.current <= HashedList.this.ordered.size()) {
-                HashedList.this.remove(--this.current);
+                HashedList.this.remove(this.current--);
             }
         }
 
@@ -167,6 +167,12 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
 
     /** The key value pairs */
     private final HashMap<String, VALUE> keyed = new HashMap<String, VALUE>();
+    
+    /**
+     * This maintains a 'current' position in the list...
+     */
+    private HashedListIterator cursor = new HashedListIterator(0);
+
 
     /**
      * Add an element to the list at a specified position. If that element was
@@ -185,8 +191,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         String key = entry.getKey();
         if (this.keyed.containsKey(key) && !unkeyedKey(key)) {
             int oldPos = indexOf(entry);
-            this.keyed.remove(key);
-            this.ordered.remove(oldPos);
+            internalRemove(oldPos, entry);
             if (oldPos < pos) {
                 pos--;
             }
@@ -196,6 +201,12 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
             this.ordered.add(entry);
         } else {
             this.ordered.add(pos, entry);
+        }
+        
+        // AK: When inserting keys before the current position, increment the current
+        // position so it keeps pointing to the same location in the header...
+        if (pos < cursor.current) {
+            cursor.current++;
         }
     }
 
@@ -211,7 +222,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
 
     /**
      * Similar to add(VALUE), except this replaces an existing card that matches the specified key in-situ.
-     * At the same time, new entries are added to the end of the list the same was as with add(VALUE).
+     * At the same time, new entries are added at the current position.
      * 
      * @param key
      *            The key of the existing card (if any) to be replaced).
@@ -225,7 +236,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
             remove(index);
             add(index, entry);
         } else {
-            add(entry);
+            cursor.add(entry);
         }
     }
     
@@ -329,6 +340,19 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
             throw new NoSuchElementException("Invalid index for iterator:" + n);
         }
     }
+    
+    
+    /** Return the iterator that represents the current position in the header. This provides a connection
+     *  between editing headers through Header add/append/update methods, and via Cursors, which can be
+     *  used side-by-side while maintaining desired card ordering. For the reverse direction (
+     *  translating iterator position to current position in the header), we can just use findCard().
+     *  
+     *  @return the iterator representing the current position in the header.
+     *  
+     */
+    public Cursor<String, VALUE> cursor() {
+        return cursor;
+    }
 
     /**
      * @return an iterator over the list starting with the entry with a given
@@ -362,6 +386,13 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     private boolean internalRemove(int index, VALUE entry) {
         this.keyed.remove(entry.getKey());
         this.ordered.remove(index);
+        
+        // AK: if removing a key before the current position, update the current position to
+        //     keep pointing to te same location.
+        if (index < cursor.current) {
+            cursor.current--;
+        }
+        
         return true;
     }
 
@@ -396,9 +427,8 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     public boolean removeKey(Object key) {
         VALUE entry = this.keyed.get(key);
         if (entry != null) {
+            internalRemove(indexOf(entry), entry);
             int index = indexOf(entry);
-            this.keyed.remove(key);
-            this.ordered.remove(index);
             return true;
         }
         return false;
