@@ -865,11 +865,7 @@ public class Header implements FitsElement {
      *            The value to be returned if the key is not found.
      */
     public int getIntValue(String key, int dft) {
-        HeaderCard fcard = findCard(key);
-        if (fcard == null) {
-            return dft;
-        }
-        return fcard.getValue(Integer.class, dft).intValue();
+        return (int) getLongValue(key, dft);
     }
 
     /**

@@ -674,6 +674,7 @@ public class HeaderTest {
             hdu.addValue(CTYPE1.name(), 5, "bla");
             assertEquals(hdr.getIntValue(CTYPE1.name()), 5);
             assertEquals(hdr.getIntValue(CTYPE1), 5);
+            assertEquals(hdr.getIntValue(CTYPE1, -1), 5);
             assertEquals(hdr.getIntValue("ZZZ", -1), -1);
 
             hdu.addValue(CTYPE1.name(), "XX", "bla");
