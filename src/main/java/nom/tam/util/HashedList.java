@@ -98,7 +98,12 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
 
         @Override
         public void add(VALUE reference) {
-            HashedList.this.add(this.current++, reference);
+            HashedList.this.add(this.current, reference);
+            this.current++;
+        
+            if (this.current > HashedList.this.size()) {
+                this.current = HashedList.this.size();
+            }
         }
 
         @Override
@@ -147,7 +152,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         @Override
         public void remove() {
             if (this.current > 0 && this.current <= HashedList.this.ordered.size()) {
-                HashedList.this.remove(this.current--);
+                HashedList.this.remove(--this.current);
             }
         }
 
@@ -198,6 +203,16 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         }
         this.keyed.put(key, entry);
         if (pos >= this.ordered.size()) {
+            // AK: We are adding a card to the end of the header.
+            //     If the cursor points to the end of the header, we want to increment it.
+            //     We can do this by faking 'insertion' before the last position.
+            //     The cursor will then advance at the end of this method.
+            //     Note, that if the addition of the card was done through the cursor itself
+            //     then the cursor will be incremented twice, once here, and once by the
+            //     cursor itself by the HashedListIterator.add(call).
+            //     But, this is fine, since the end position is properly checked by 
+            //     HashedListIterator.add().
+            pos = this.ordered.size() - 1;
             this.ordered.add(entry);
         } else {
             this.ordered.add(pos, entry);
@@ -354,6 +369,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         return cursor;
     }
 
+    
     /**
      * @return an iterator over the list starting with the entry with a given
      *         key.
@@ -389,7 +405,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         
         // AK: if removing a key before the current position, update the current position to
         //     keep pointing to te same location.
-        if (index < cursor.current) {
+        if (index < (cursor.current - 1)) {
             cursor.current--;
         }
         
@@ -425,10 +441,9 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
      * @return <code>true</code> if the key was removed
      */
     public boolean removeKey(Object key) {
-        VALUE entry = this.keyed.get(key);
-        if (entry != null) {
+        VALUE entry = get(key);
+        if (entry != null) { 
             internalRemove(indexOf(entry), entry);
-            int index = indexOf(entry);
             return true;
         }
         return false;

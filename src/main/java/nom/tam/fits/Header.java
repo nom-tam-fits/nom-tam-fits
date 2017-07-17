@@ -54,7 +54,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -101,9 +100,6 @@ public class Header implements FitsElement {
 
     private static final Logger LOG = Logger.getLogger(Header.class.getName());
     
-    private static HashSet<String> mandatoryKeys;
-    
-   
 
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
@@ -215,19 +211,6 @@ public class Header implements FitsElement {
         }
     }
 
-    
-    /**
-     * Add a card image to the end of the header, or else update and existing card. The current position
-     * (e.g. for insertions) will remain unchanged.
-     *
-     * @param fcard
-     *            The card to be added.
-     */
-    private void appendLine(HeaderCard fcard) {
-        if (fcard != null) {
-            this.cards.add(fcard);
-        }
-    }
 
     /**
      *
@@ -1045,7 +1028,7 @@ public class Header implements FitsElement {
      *            A string to follow the header.
      */
     public void insertCommentStyle(String header, String value) {
-        this.cards.cursor().add(HeaderCard.saveNewHeaderCard(header, value, false));
+        cursor().add(HeaderCard.saveNewHeaderCard(header, value, false));
     }
 
     /**
@@ -1138,7 +1121,7 @@ public class Header implements FitsElement {
         } else {
             this.fileOffset = -1;
         }
-
+       
         boolean firstCard = true;
         HeaderCardCountingArrayDataInput cardCountingArray = new HeaderCardCountingArrayDataInput(dis);
         try {
@@ -1161,14 +1144,15 @@ public class Header implements FitsElement {
                 if (LONGSTRN.key().equals(key)) {
                     FitsFactory.setLongStringsEnabled(true);
                 }
-                // save card
-                appendLine(fcard);
+                
+                addLine(fcard);
+                
                 if (END.key().equals(key)) {
                     break; // Out of reading the header.
                 }
             }
         } catch (EOFException e) {
-            if (!firstCard) {
+            if (!firstCard) {                
                 throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage()));
             }
             throw e;
@@ -1335,6 +1319,8 @@ public class Header implements FitsElement {
     public void setSimple(boolean val) {
         deleteKey(SIMPLE);
         deleteKey(XTENSION);
+
+        Cursor<String, HeaderCard> iter = iterator();
         
         // If we're flipping back to and from the primary header
         // we need to add in the EXTEND keyword whenever we become
@@ -1343,16 +1329,13 @@ public class Header implements FitsElement {
         if (findCard(NAXIS) != null) {
             int nax = getIntValue(NAXIS);
 
-            Cursor<String, HeaderCard> iter = iterator();
-
             if (findCard(NAXISn.n(nax)) != null) {
                 iter.next();
                 deleteKey(EXTEND);
                 iter.add(HeaderCard.saveNewHeaderCard(EXTEND.key(), EXTEND.comment(), false).setValue(true));
             }
         }
-        
-        Cursor<String, HeaderCard> iter = iterator();
+       
         iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), SIMPLE.comment(), false).setValue(val));
     }
 
@@ -1409,7 +1392,7 @@ public class Header implements FitsElement {
     public final void updateLine(String key, HeaderCard card) throws HeaderCardException {
         // Remove an existing card with the matching 'key' (even if that key isn't the same
         // as the key of the card argument!)
-        this.cards.update(card.getKey(), card);
+        this.cards.update(key, card);
     }
     
 
@@ -1506,7 +1489,7 @@ public class Header implements FitsElement {
     }
 
     private void checkFirstCard(String key) throws IOException {
-        if (key == null || !key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {
+        if (key == null || !key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {              
             if (this.fileOffset > 0 && FitsFactory.getAllowTerminalJunk()) {
                 throw new EOFException("Not FITS format at " + this.fileOffset + ":" + key);
             } else {
@@ -1519,7 +1502,7 @@ public class Header implements FitsElement {
         cardCheck(iter, BITPIX);
         cardCheck(iter, NAXIS);
         int nax = getIntValue(NAXIS);
-        //iter.next();
+
         for (int i = 1; i <= nax; i += 1) {
             cardCheck(iter, NAXISn.n(i));
         }
