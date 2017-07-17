@@ -172,7 +172,7 @@ public class HeaderTest {
             hdr.addValue("FLT1", 1.34, "A float value");
             hdr.addValue("FLT2", -1.234567890e-134, "A very long float");
             hdr.insertComment("Comment after flt2");
-
+     
             c.setKey("INTVAL1");
             hc = (HeaderCard) c.next();
             assertEquals("INTVAL1", "INTVAL1", hc.getKey());
@@ -205,7 +205,8 @@ public class HeaderTest {
             SafeClose.close(f);
         }
     }
-
+    
+   
     /** Confirm initial location versus EXTEND keyword (V. Forchi). */
     @Test
     public void extendTest() throws Exception {
@@ -486,6 +487,7 @@ public class HeaderTest {
             SafeClose.close(f);
         }
     }
+    
 
     @Test
     public void testHeaderCommentsDrift() throws Exception {
@@ -672,38 +674,51 @@ public class HeaderTest {
             hdu.addValue(CTYPE1.name(), 5, "bla");
             assertEquals(hdr.getIntValue(CTYPE1.name()), 5);
             assertEquals(hdr.getIntValue(CTYPE1), 5);
+            assertEquals(hdr.getIntValue("ZZZ", -1), -1);
 
             hdu.addValue(CTYPE1.name(), "XX", "bla");
             assertEquals(hdr.getStringValue(CTYPE1.name()), "XX");
             assertEquals(hdr.getStringValue(CTYPE1), "XX");
+            assertEquals(hdr.getStringValue("ZZZ"), null);
 
             hdr.addValue(CTYPE2, true);
             assertEquals(hdr.getBooleanValue(CTYPE2.name()), true);
             assertEquals(hdr.getBooleanValue(CTYPE2), true);
+            assertEquals(hdr.getBooleanValue("ZZZ", true), true);
 
             hdr.addValue(CTYPE2, 5.0);
             assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
+            assertEquals(hdr.getDoubleValue("ZZZ", -1.0), -1.0, 0.000001);
 
+            hdr.addValue(CTYPE2.key(), 5.0, 6, "precision control.");
+            assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
+            assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
+            assertEquals(hdr.getDoubleValue("ZZZ", -1.0), -1.0, 0.000001);
+            
             hdr.addValue(CTYPE2.name(), BigDecimal.valueOf(5.0), "nothing special");
             assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue(CTYPE2, -1d), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
             assertEquals(hdr.getBigDecimalValue(CTYPE2.name()), BigDecimal.valueOf(5.0));
             assertEquals(hdr.getBigDecimalValue(CTYPE2), BigDecimal.valueOf(5.0));
+            assertEquals(hdr.getBigDecimalValue("ZZZ", BigDecimal.valueOf(-1.0)), BigDecimal.valueOf(-1.0));
 
             hdr.addValue(CTYPE2.name(), 5.0f, "nothing special");
             assertEquals(hdr.getFloatValue(CTYPE2.name()), 5.0f, 0.000001);
             assertEquals(hdr.getFloatValue(CTYPE2), 5.0f, 0.000001);
             assertEquals(hdr.getFloatValue(CTYPE2.name(), -1f), 5.0f, 0.000001);
             assertEquals(hdr.getFloatValue(CTYPE2, -1f), 5.0f, 0.000001);
+            assertEquals(hdr.getFloatValue("ZZZ", -1f), -1f, 0.000001);
 
             hdr.addValue(CTYPE2.name(), BigInteger.valueOf(5), "nothing special");
             assertEquals(hdr.getIntValue(CTYPE2.name()), 5);
             assertEquals(hdr.getIntValue(CTYPE2), 5);
+            assertEquals(hdr.getIntValue("ZZZ", 0), 0);
             assertEquals(hdr.getBigIntegerValue(CTYPE2.name()), BigInteger.valueOf(5));
             assertEquals(hdr.getBigIntegerValue(CTYPE2.name(), BigInteger.valueOf(-1)), BigInteger.valueOf(5));
             assertEquals(hdr.getBigIntegerValue(CTYPE2, BigInteger.valueOf(-1)), BigInteger.valueOf(5));
+            assertEquals(hdr.getBigIntegerValue("ZZZ", BigInteger.valueOf(-1)), BigInteger.valueOf(-1));
         } finally {
             SafeClose.close(in);
             SafeClose.close(fits);
@@ -812,6 +827,7 @@ public class HeaderTest {
         iterator.add(new HeaderCard(NAXIS.name(), 1, ""));
         Assert.assertEquals(0, header.getSize());
         header.addValue("END", "", "");
+         
         Assert.assertEquals(2880, header.getSize());
         return header;
     }
