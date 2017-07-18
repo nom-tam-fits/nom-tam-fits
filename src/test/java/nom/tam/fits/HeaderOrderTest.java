@@ -75,13 +75,45 @@ public class HeaderOrderTest {
     public void headerOrder() throws Exception {
         ArrayDataOutput dos = new BufferedDataOutputStream(new ByteArrayOutputStream(), 80);
         Header header = new Header();
+        
         header.addValue(BLOCKED, 1);
-        header.addValue(SIMPLE, true);
-        header.addValue(THEAP, 1);
-        header.addValue(BITPIX, 1);
-        header.addValue(NAXIS, 0);
+        // AK: Set SIMPLE to false initially, we will overwrite it below to 'correct' it...
+        header.addValue(SIMPLE, false);
+        header.addValue(THEAP, 1);  
+        // AK: Test update of non-existing key:
+        //     This should result in appending a new key to the end...
+        header.updateLine(NAXIS, new HeaderCard(NAXIS.key(), 1, ""));
+        // AK: Test appending a key to the end of the header.
+        //     (we will replace it later with a new card at the new end...)
         header.addValue(END, true);
+        // AK: Add a temporary key to the end, which we remove later...
+        header.addLine(new HeaderCard("TEMP", 0, ""));
+        // AK: Test in-situ updates, while maintaining the current position...
+        header.updateLine(SIMPLE.key(), new HeaderCard(SIMPLE.key(), true, ""));
+        // AK: Test, that the current position was unaffected by the above
+        // AK: Also test removal of existing key, without affecting position...
+        //     I.e., The the next key should be added at the current position, after THEAP,
+        //     and before END
+        header.addValue(NAXIS, 0);
+        // AK: Insert BITPIX before THEAP...
+        header.findCard(THEAP);
+        // AK: Test that deletions do not affect the current position...
+        //     After the deletion, BITPIX should still be inserted to before THEAP 
+        header.deleteKey("TEMP");
+        header.addValue(BITPIX, 1);
+        // AK: Test appending a card to the end, and removing existing prior occurrence...
+        header.addValue(END, true);
+
+        
+        /*
+        // Check that the order is what we expect...
+        Assert.assertEquals(SIMPLE.key(), header.iterator(1).next().getKey());
+        Assert.assertEquals(BITPIX.key(), header.iterator(2).next().getKey());
+        Assert.assertEquals(THEAP.key(), header.iterator(3).next().getKey());
         Assert.assertEquals(NAXIS.key(), header.iterator(4).next().getKey());
+        Assert.assertEquals(END.key(), header.iterator(5).next().getKey());
+        */
+        
         header.write(dos);
         Assert.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
         Assert.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
