@@ -105,11 +105,6 @@ public class Header implements FitsElement {
      */
     private final HashedList<HeaderCard> cards = new HashedList<HeaderCard>();
 
-    /**
-     * This iterator allows one to run through the list.
-     */
-    private Cursor<String, HeaderCard> iter = this.cards.iterator(0);
-
     /** Offset of this Header in the FITS file */
     private long fileOffset = -1;
 
@@ -214,14 +209,16 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Add a card image to the header.
+     * Insert a new header card at the current position, deleting any prior
+     * occurence of the same card while maintaining the current position to
+     * point to after the newly inserted card.
      *
      * @param fcard
-     *            The card to be added.
+     *            The card to be inserted.
      */
     public void addLine(HeaderCard fcard) {
         if (fcard != null) {
-            this.iter.add(fcard);
+            cursor().add(fcard);
         }
     }
 
@@ -312,7 +309,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, BigDecimal val, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, comment));
+        addLine(new HeaderCard(key, val, comment));
     }
 
     /**
@@ -331,7 +328,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, BigDecimal val, int precision, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, precision, comment));
+        addLine(new HeaderCard(key, val, precision, comment));
     }
 
     /**
@@ -345,15 +342,17 @@ public class Header implements FitsElement {
      * @param precision
      *            The fixed number of decimal places to show.
      * @param useD
-     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
-     *            more precision than can be represented by a single precision 32-bit floating point.
+     *            Use the letter 'D' instead of 'E' in the notation. This was
+     *            traditionally used to indicate value has more precision than
+     *            can be represented by a single precision 32-bit floating
+     *            point.
      * @param comment
      *            A comment to append to the card.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      */
     public void addExpValue(String key, BigDecimal val, int precision, boolean useD, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, precision, useD, comment));
+        addLine(new HeaderCard(key, val, precision, useD, comment));
     }
 
     /**
@@ -372,7 +371,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addExpValue(String key, BigDecimal val, int precision, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, precision, false, comment));
+        addLine(new HeaderCard(key, val, precision, false, comment));
     }
 
     /**
@@ -389,7 +388,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, BigInteger val, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, comment));
+        addLine(new HeaderCard(key, val, comment));
     }
 
     /**
@@ -405,7 +404,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, comment));
+        addLine(new HeaderCard(key, val, comment));
     }
 
     /**
@@ -422,7 +421,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, double val, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, comment));
+        addLine(new HeaderCard(key, val, comment));
     }
 
     /**
@@ -441,12 +440,13 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, double val, int precision, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, precision, comment));
+        addLine(new HeaderCard(key, val, precision, comment));
     }
 
     /**
      * Add or replace a key with the given double value and comment. Note that
-     * float values will be promoted to doubles. This will be in scientific notation.
+     * float values will be promoted to doubles. This will be in scientific
+     * notation.
      *
      * @param key
      *            The header key.
@@ -455,20 +455,23 @@ public class Header implements FitsElement {
      * @param precision
      *            The fixed number of decimal places to show.
      * @param useD
-     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
-     *            more precision than can be represented by a single precision 32-bit floating point.
+     *            Use the letter 'D' instead of 'E' in the notation. This was
+     *            traditionally used to indicate value has more precision than
+     *            can be represented by a single precision 32-bit floating
+     *            point.
      * @param comment
      *            A comment to append to the card.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      */
     public void addExpValue(String key, double val, int precision, boolean useD, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, precision, useD, comment));
+        addLine(new HeaderCard(key, val, precision, useD, comment));
     }
 
     /**
      * Add or replace a key with the given double value and comment. Note that
-     * float values will be promoted to doubles. This will be in scientific notation using 'E' to indicated exponent.
+     * float values will be promoted to doubles. This will be in scientific
+     * notation using 'E' to indicated exponent.
      *
      * @param key
      *            The header key.
@@ -482,7 +485,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addExpValue(String key, double val, int precision, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, precision, false, comment));
+        addLine(new HeaderCard(key, val, precision, false, comment));
     }
 
     /**
@@ -499,7 +502,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, long val, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, comment));
+        addLine(new HeaderCard(key, val, comment));
     }
 
     /**
@@ -515,7 +518,7 @@ public class Header implements FitsElement {
      *             If the parameters cannot build a valid FITS card.
      */
     public void addValue(String key, String val, String comment) throws HeaderCardException {
-        addHeaderCard(key, new HeaderCard(key, val, comment));
+        addLine(new HeaderCard(key, val, comment));
     }
 
     /**
@@ -572,12 +575,10 @@ public class Header implements FitsElement {
      *            The header key.
      */
     public void deleteKey(String key) {
+        // AK: This version will not move the current position to the deleted
+        // key
         if (containsKey(key)) {
-            this.iter.setKey(key);
-            if (this.iter.hasNext()) {
-                this.iter.next();
-                this.iter.remove();
-            }
+            this.cards.remove(this.cards.get(key));
         }
     }
 
@@ -588,9 +589,9 @@ public class Header implements FitsElement {
      *            the stream to which the card images are dumped.
      */
     public void dumpHeader(PrintStream ps) {
-        this.iter = iterator();
-        while (this.iter.hasNext()) {
-            ps.println(this.iter.next());
+        Cursor<String, HeaderCard> iter = iterator();
+        while (iter.hasNext()) {
+            ps.println(iter.next());
         }
     }
 
@@ -619,7 +620,7 @@ public class Header implements FitsElement {
     public HeaderCard findCard(String key) {
         HeaderCard card = this.cards.get(key);
         if (card != null) {
-            this.iter.setKey(key);
+            cursor().setKey(key);
         }
         return card;
     }
@@ -967,11 +968,7 @@ public class Header implements FitsElement {
      *            The value to be returned if the key is not found.
      */
     public int getIntValue(String key, int dft) {
-        HeaderCard fcard = findCard(key);
-        if (fcard == null) {
-            return dft;
-        }
-        return fcard.getValue(Integer.class, dft).intValue();
+        return (int) getLongValue(key, dft);
     }
 
     /**
@@ -1130,7 +1127,7 @@ public class Header implements FitsElement {
      *            A string to follow the header.
      */
     public void insertCommentStyle(String header, String value) {
-        this.iter.add(HeaderCard.saveNewHeaderCard(header, value, false));
+        cursor().add(HeaderCard.saveNewHeaderCard(header, value, false));
     }
 
     /**
@@ -1160,6 +1157,20 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Return the iterator that represents the current position in the header.
+     * This provides a connection between editing headers through Header
+     * add/append/update methods, and via Cursors, which can be used
+     * side-by-side while maintaining desired card ordering. For the reverse
+     * direction ( translating iterator position to current position in the
+     * header), we can just use findCard().
+     * 
+     * @return the iterator representing the current position in the header.
+     */
+    private Cursor<String, HeaderCard> cursor() {
+        return this.cards.cursor();
+    }
+
+    /**
      * @return Create the data element corresponding to the current header
      * @throws FitsException
      *             if the header did not contain enough information to detect
@@ -1173,8 +1184,8 @@ public class Header implements FitsElement {
      * @return the next card in the Header using the current iterator
      */
     public HeaderCard nextCard() {
-        if (this.iter.hasNext()) {
-            return this.iter.next();
+        if (cursor().hasNext()) {
+            return cursor().next();
         } else {
             return null;
         }
@@ -1234,8 +1245,9 @@ public class Header implements FitsElement {
                 if (LONGSTRN.key().equals(key)) {
                     FitsFactory.setLongStringsEnabled(true);
                 }
-                // save card
+
                 addLine(fcard);
+
                 if (END.key().equals(key)) {
                     break; // Out of reading the header.
                 }
@@ -1343,9 +1355,9 @@ public class Header implements FitsElement {
      *            The value set by the user.
      */
     public void setBitpix(int val) {
-        this.iter = iterator();
-        this.iter.next();
-        this.iter.add(HeaderCard.saveNewHeaderCard(BITPIX.key(), BITPIX.comment(), false).setValue(val));
+        Cursor<String, HeaderCard> iter = iterator();
+        iter.next();
+        iter.add(HeaderCard.saveNewHeaderCard(BITPIX.key(), BITPIX.comment(), false).setValue(val));
     }
 
     /**
@@ -1365,11 +1377,12 @@ public class Header implements FitsElement {
      *            The dimensionality of the data.
      */
     public void setNaxes(int val) {
-        this.iter.setKey(BITPIX.key());
-        if (this.iter.hasNext()) {
-            this.iter.next();
+        Cursor<String, HeaderCard> iter = iterator();
+        iter.setKey(BITPIX.key());
+        if (iter.hasNext()) {
+            iter.next();
         }
-        this.iter.add(HeaderCard.saveNewHeaderCard(NAXIS.key(), NAXIS.comment(), false).setValue(val));
+        iter.add(HeaderCard.saveNewHeaderCard(NAXIS.key(), NAXIS.comment(), false).setValue(val));
     }
 
     /**
@@ -1381,21 +1394,21 @@ public class Header implements FitsElement {
      *            The dimension
      */
     public void setNaxis(int axis, int dim) {
-
+        Cursor<String, HeaderCard> iter = iterator();
         if (axis <= 0) {
             LOG.warning("setNaxis ignored because axis less than 0");
             return;
         }
         if (axis == 1) {
-            this.iter.setKey(NAXIS.key());
+            iter.setKey(NAXIS.key());
         } else if (axis > 1) {
-            this.iter.setKey(NAXISn.n(axis - 1).key());
+            iter.setKey(NAXISn.n(axis - 1).key());
         }
-        if (this.iter.hasNext()) {
-            this.iter.next();
+        if (iter.hasNext()) {
+            iter.next();
         }
         IFitsHeader naxisKey = NAXISn.n(axis);
-        this.iter.add(HeaderCard.saveNewHeaderCard(naxisKey.key(), naxisKey.comment(), false).setValue(dim));
+        iter.add(HeaderCard.saveNewHeaderCard(naxisKey.key(), naxisKey.comment(), false).setValue(dim));
     }
 
     /**
@@ -1408,6 +1421,8 @@ public class Header implements FitsElement {
         deleteKey(SIMPLE);
         deleteKey(XTENSION);
 
+        Cursor<String, HeaderCard> iter = iterator();
+
         // If we're flipping back to and from the primary header
         // we need to add in the EXTEND keyword whenever we become
         // a primary, because it's not permitted in the extensions
@@ -1415,16 +1430,14 @@ public class Header implements FitsElement {
         if (findCard(NAXIS) != null) {
             int nax = getIntValue(NAXIS);
 
-            this.iter = iterator();
-
             if (findCard(NAXISn.n(nax)) != null) {
-                this.iter.next();
+                iter.next();
                 deleteKey(EXTEND);
-                this.iter.add(HeaderCard.saveNewHeaderCard(EXTEND.key(), EXTEND.comment(), false).setValue(true));
+                iter.add(HeaderCard.saveNewHeaderCard(EXTEND.key(), EXTEND.comment(), false).setValue(true));
             }
         }
-        this.iter = iterator();
-        this.iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), SIMPLE.comment(), false).setValue(val));
+
+        iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), SIMPLE.comment(), false).setValue(val));
     }
 
     /**
@@ -1437,8 +1450,8 @@ public class Header implements FitsElement {
         deleteKey(SIMPLE);
         deleteKey(XTENSION);
         deleteKey(EXTEND);
-        this.iter = iterator();
-        this.iter.add(HeaderCard.saveNewHeaderCard(XTENSION.key(), XTENSION.comment(), true).setValue(val));
+        Cursor<String, HeaderCard> iter = iterator();
+        iter.add(HeaderCard.saveNewHeaderCard(XTENSION.key(), XTENSION.comment(), true).setValue(val));
     }
 
     /**
@@ -1463,11 +1476,12 @@ public class Header implements FitsElement {
      */
     public void updateLine(IFitsHeader key, HeaderCard card) throws HeaderCardException {
         deleteKey(key);
-        this.iter.add(card);
+        cursor().add(card);
     }
 
     /**
-     * Update a line in the header
+     * Update an existing card in situ, without affecting the current position,
+     * or else add a new card at the current position.
      *
      * @param key
      *            The key of the card to be replaced.
@@ -1476,8 +1490,11 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             if the operation failed
      */
-    public void updateLine(String key, HeaderCard card) throws HeaderCardException {
-        addHeaderCard(key, card);
+    public final void updateLine(String key, HeaderCard card) throws HeaderCardException {
+        // Remove an existing card with the matching 'key' (even if that key
+        // isn't the same
+        // as the key of the card argument!)
+        this.cards.update(key, card);
     }
 
     /**
@@ -1550,27 +1567,21 @@ public class Header implements FitsElement {
         }
     }
 
-    private void addHeaderCard(String key, HeaderCard card) {
-        deleteKey(key);
-        this.iter.add(card);
+    /**
+     * Check if the given key is the next one available in the header.
+     */
+    private void cardCheck(Cursor<String, HeaderCard> iter, IFitsHeader key) throws FitsException {
+        cardCheck(iter, key.key());
     }
 
     /**
      * Check if the given key is the next one available in the header.
      */
-    private void cardCheck(IFitsHeader key) throws FitsException {
-        cardCheck(key.key());
-    }
-
-    /**
-     * Check if the given key is the next one available in the header.
-     */
-    private void cardCheck(String key) throws FitsException {
-
-        if (!this.iter.hasNext()) {
+    private void cardCheck(Cursor<String, HeaderCard> iter, String key) throws FitsException {
+        if (!iter.hasNext()) {
             throw new FitsException("Header terminates before " + key);
         }
-        HeaderCard card = this.iter.next();
+        HeaderCard card = iter.next();
         if (!card.getKey().equals(key)) {
             throw new FitsException("Key " + key + " not found where expected." + "Found " + card.getKey());
         }
@@ -1586,19 +1597,19 @@ public class Header implements FitsElement {
         }
     }
 
-    private void doCardChecks(boolean isTable, boolean isExtension) throws FitsException {
-        cardCheck(BITPIX);
-        cardCheck(NAXIS);
+    private void doCardChecks(Cursor<String, HeaderCard> iter, boolean isTable, boolean isExtension) throws FitsException {
+        cardCheck(iter, BITPIX);
+        cardCheck(iter, NAXIS);
         int nax = getIntValue(NAXIS);
-        this.iter.next();
+
         for (int i = 1; i <= nax; i += 1) {
-            cardCheck(NAXISn.n(i));
+            cardCheck(iter, NAXISn.n(i));
         }
         if (isExtension) {
-            cardCheck(PCOUNT);
-            cardCheck(GCOUNT);
+            cardCheck(iter, PCOUNT);
+            cardCheck(iter, GCOUNT);
             if (isTable) {
-                cardCheck(TFIELDS);
+                cardCheck(iter, TFIELDS);
             }
         }
         // This does not check for the EXTEND keyword which
@@ -1621,11 +1632,11 @@ public class Header implements FitsElement {
      * do not check the values of these keywords.
      */
     void checkBeginning() throws FitsException {
-        this.iter = iterator();
-        if (!this.iter.hasNext()) {
+        Cursor<String, HeaderCard> iter = iterator();
+        if (!iter.hasNext()) {
             throw new FitsException("Empty Header");
         }
-        HeaderCard card = this.iter.next();
+        HeaderCard card = iter.next();
         String key = card.getKey();
         if (!key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {
             throw new FitsException("No SIMPLE or XTENSION at beginning of Header");
@@ -1642,7 +1653,7 @@ public class Header implements FitsElement {
                 isTable = true;
             }
         }
-        doCardChecks(isTable, isExtension);
+        doCardChecks(iter, isTable, isExtension);
     }
 
     /**
@@ -1650,21 +1661,21 @@ public class Header implements FitsElement {
      * location.
      */
     void checkEnd() {
-
         // Ensure we have an END card only at the end of the
         // header.
         //
-        this.iter = iterator();
+        Cursor<String, HeaderCard> iter = iterator();
+
         HeaderCard card;
 
-        while (this.iter.hasNext()) {
-            card = this.iter.next();
+        while (iter.hasNext()) {
+            card = iter.next();
             if (!card.isKeyValuePair() && card.getKey().equals(END.key())) {
-                this.iter.remove();
+                iter.remove();
             }
         }
         // End cannot have a comment
-        this.iter.add(HeaderCard.saveNewHeaderCard(END.key(), null, false));
+        iter.add(HeaderCard.saveNewHeaderCard(END.key(), null, false));
     }
 
     /**
@@ -1691,35 +1702,34 @@ public class Header implements FitsElement {
         if (getNumberOfCards() < MIN_NUMBER_OF_CARDS_FOR_VALID_HEADER) {
             return false;
         }
-        this.iter = iterator();
-        String key = this.iter.next().getKey();
+        Cursor<String, HeaderCard> iter = iterator();
+        String key = iter.next().getKey();
         if (!key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {
             return false;
         }
-        key = this.iter.next().getKey();
+        key = iter.next().getKey();
         if (!key.equals(BITPIX.key())) {
             return false;
         }
-        key = this.iter.next().getKey();
+        key = iter.next().getKey();
         if (!key.equals(NAXIS.key())) {
             return false;
         }
-        while (this.iter.hasNext()) {
-            key = this.iter.next().getKey();
+        while (iter.hasNext()) {
+            key = iter.next().getKey();
         }
         return key.equals(END.key());
-
     }
 
     /**
      * Create a header for a null image.
      */
     void nullImage() {
-        this.iter = iterator();
-        this.iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), SIMPLE.comment(), false).setValue(true));
-        this.iter.add(HeaderCard.saveNewHeaderCard(BITPIX.key(), BITPIX.comment(), false).setValue(BasicHDU.BITPIX_BYTE));
-        this.iter.add(HeaderCard.saveNewHeaderCard(NAXIS.key(), NAXIS.comment(), false).setValue(0));
-        this.iter.add(HeaderCard.saveNewHeaderCard(EXTEND.key(), EXTEND.comment(), false).setValue(true));
+        Cursor<String, HeaderCard> iter = iterator();
+        iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), SIMPLE.comment(), false).setValue(true));
+        iter.add(HeaderCard.saveNewHeaderCard(BITPIX.key(), BITPIX.comment(), false).setValue(BasicHDU.BITPIX_BYTE));
+        iter.add(HeaderCard.saveNewHeaderCard(NAXIS.key(), NAXIS.comment(), false).setValue(0));
+        iter.add(HeaderCard.saveNewHeaderCard(EXTEND.key(), EXTEND.comment(), false).setValue(true));
     }
 
     /**
@@ -1731,22 +1741,22 @@ public class Header implements FitsElement {
      */
     Cursor<String, HeaderCard> positionAfterIndex(IFitsHeader prefix, int col) {
         String colnum = String.valueOf(col);
-        this.iter.setKey(prefix.n(col).key());
-        if (this.iter.hasNext()) {
+        cursor().setKey(prefix.n(col).key());
+        if (cursor().hasNext()) {
             // Bug fix (references to forward) here by Laurent Borges
             boolean toFar = false;
-            while (this.iter.hasNext()) {
-                String key = this.iter.next().getKey().trim();
+            while (cursor().hasNext()) {
+                String key = cursor().next().getKey().trim();
                 if (key == null || key.length() <= colnum.length() || !key.substring(key.length() - colnum.length()).equals(colnum)) {
                     toFar = true;
                     break;
                 }
             }
             if (toFar) {
-                this.iter.prev(); // Gone one too far, so skip back an element.
+                cursor().prev(); // Gone one too far, so skip back an element.
             }
         }
-        return this.iter;
+        return cursor();
     }
 
     /**
@@ -1797,7 +1807,15 @@ public class Header implements FitsElement {
      */
     long trueDataSize() {
 
-        if (!isValidHeader()) {
+        // AK: No need to be too strict here. We can get a data size even if the
+        // header isn't 100% to spec,
+        // as long as the necessary keys are present. So, just check for the
+        // required keys, and no more...
+        if (!containsKey(BITPIX.key())) {
+            return 0L;
+        }
+
+        if (!containsKey(NAXIS.key())) {
             return 0L;
         }
 
