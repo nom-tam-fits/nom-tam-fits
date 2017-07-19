@@ -674,6 +674,12 @@ public class HeaderTest {
         h.addValue("KEY3", 1, "");
         h.addValue("KEY4", 1, "");
         h.addValue("KEY5", 1, "");
+
+        
+        // Now do an in-place update and a deletion, which should not move
+        // the position.
+        h.updateLine("BLAH2", new HeaderCard("BLAH2A", 1, ""));
+        h.deleteKey("BLAH1");
         h.addValue("KEY6", 1, "");
         
         // Check to that the keys appear in the expected order...
@@ -684,12 +690,7 @@ public class HeaderTest {
             HeaderCard card = c.next();
             assertEquals("KEY" + i, card.getKey());
             assertEquals(1, (int) card.getValue(Integer.class, 0));
-        }
-        
-        
-        
-        
-        
+        }      
     }
 
     @Test
