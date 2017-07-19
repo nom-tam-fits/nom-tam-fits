@@ -99,7 +99,6 @@ public class Header implements FitsElement {
     private static final int MAX_CARDS_PER_HEADER = FitsFactory.FITS_BLOCK_SIZE / HeaderCard.FITS_HEADER_CARD_SIZE;
 
     private static final Logger LOG = Logger.getLogger(Header.class.getName());
-    
 
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
@@ -113,8 +112,6 @@ public class Header implements FitsElement {
 
     /** Input descriptor last time header was read */
     private ArrayDataInput input;
-    
-  
 
     /**
      * Number of cards in header before duplicates were removed. A user may want
@@ -211,11 +208,10 @@ public class Header implements FitsElement {
         }
     }
 
-
     /**
-     *
-     * Insert a new header card at the current position, deleting any prior occurence of the same card
-     * while maintaining the current position to point to after the newly inserted card.
+     * Insert a new header card at the current position, deleting any prior
+     * occurence of the same card while maintaining the current position to
+     * point to after the newly inserted card.
      *
      * @param fcard
      *            The card to be inserted.
@@ -226,7 +222,6 @@ public class Header implements FitsElement {
         }
     }
 
-    
     /**
      * Add or replace a key with the given boolean value and comment.
      *
@@ -318,6 +313,68 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Add or replace a key with the given bigdecimal value and comment. Note
+     * that float values will be promoted to doubles.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The bigDecimal value.
+     * @param precision
+     *            The fixed number of decimal places to show.
+     * @param comment
+     *            A comment to append to the card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(String key, BigDecimal val, int precision, String comment) throws HeaderCardException {
+        addLine(new HeaderCard(key, val, precision, comment));
+    }
+
+    /**
+     * Add or replace a key with the given bigdecimal value and comment. Note
+     * that float values will be promoted to doubles.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The bigDecimal value.
+     * @param precision
+     *            The fixed number of decimal places to show.
+     * @param useD
+     *            Use the letter 'D' instead of 'E' in the notation. This was
+     *            traditionally used to indicate value has more precision than
+     *            can be represented by a single precision 32-bit floating
+     *            point.
+     * @param comment
+     *            A comment to append to the card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     */
+    public void addExpValue(String key, BigDecimal val, int precision, boolean useD, String comment) throws HeaderCardException {
+        addLine(new HeaderCard(key, val, precision, useD, comment));
+    }
+
+    /**
+     * Add or replace a key with the given bigdecimal value and comment. Note
+     * that float values will be promoted to doubles.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The bigDecimal value.
+     * @param precision
+     *            The fixed number of decimal places to show.
+     * @param comment
+     *            A comment to append to the card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     */
+    public void addExpValue(String key, BigDecimal val, int precision, String comment) throws HeaderCardException {
+        addLine(new HeaderCard(key, val, precision, false, comment));
+    }
+
+    /**
      * Add or replace a key with the given BigInteger value and comment. Note
      * that float values will be promoted to doubles.
      *
@@ -358,6 +415,23 @@ public class Header implements FitsElement {
      *            The header key.
      * @param val
      *            The double value.
+     * @param comment
+     *            A comment to append to the card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     */
+    public void addValue(String key, double val, String comment) throws HeaderCardException {
+        addLine(new HeaderCard(key, val, comment));
+    }
+
+    /**
+     * Add or replace a key with the given double value and comment. Note that
+     * float values will be promoted to doubles.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The double value.
      * @param precision
      *            The fixed number of decimal places to show.
      * @param comment
@@ -371,19 +445,47 @@ public class Header implements FitsElement {
 
     /**
      * Add or replace a key with the given double value and comment. Note that
-     * float values will be promoted to doubles.
+     * float values will be promoted to doubles. This will be in scientific
+     * notation.
      *
      * @param key
      *            The header key.
      * @param val
      *            The double value.
+     * @param precision
+     *            The fixed number of decimal places to show.
+     * @param useD
+     *            Use the letter 'D' instead of 'E' in the notation. This was
+     *            traditionally used to indicate value has more precision than
+     *            can be represented by a single precision 32-bit floating
+     *            point.
      * @param comment
      *            A comment to append to the card.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      */
-    public void addValue(String key, double val, String comment) throws HeaderCardException {
-        addLine(new HeaderCard(key, val, comment));
+    public void addExpValue(String key, double val, int precision, boolean useD, String comment) throws HeaderCardException {
+        addLine(new HeaderCard(key, val, precision, useD, comment));
+    }
+
+    /**
+     * Add or replace a key with the given double value and comment. Note that
+     * float values will be promoted to doubles. This will be in scientific
+     * notation using 'E' to indicated exponent.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The double value.
+     * @param precision
+     *            The fixed number of decimal places to show.
+     * @param comment
+     *            A comment to append to the card.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     */
+    public void addExpValue(String key, double val, int precision, String comment) throws HeaderCardException {
+        addLine(new HeaderCard(key, val, precision, false, comment));
     }
 
     /**
@@ -473,7 +575,8 @@ public class Header implements FitsElement {
      *            The header key.
      */
     public void deleteKey(String key) {
-        // AK: This version will not move the current position to the deleted key
+        // AK: This version will not move the current position to the deleted
+        // key
         if (containsKey(key)) {
             this.cards.remove(this.cards.get(key));
         }
@@ -1053,18 +1156,20 @@ public class Header implements FitsElement {
         return this.cards.iterator(index);
     }
 
-    /** Return the iterator that represents the current position in the header. This provides a connection
-     *  between editing headers through Header add/append/update methods, and via Cursors, which can be
-     *  used side-by-side while maintaining desired card ordering. For the reverse direction (
-     *  translating iterator position to current position in the header), we can just use findCard().
-     *  
-     *  @return the iterator representing the current position in the header.
-     *  
+    /**
+     * Return the iterator that represents the current position in the header.
+     * This provides a connection between editing headers through Header
+     * add/append/update methods, and via Cursors, which can be used
+     * side-by-side while maintaining desired card ordering. For the reverse
+     * direction ( translating iterator position to current position in the
+     * header), we can just use findCard().
+     * 
+     * @return the iterator representing the current position in the header.
      */
     private Cursor<String, HeaderCard> cursor() {
         return this.cards.cursor();
     }
-    
+
     /**
      * @return Create the data element corresponding to the current header
      * @throws FitsException
@@ -1117,7 +1222,7 @@ public class Header implements FitsElement {
         } else {
             this.fileOffset = -1;
         }
-       
+
         boolean firstCard = true;
         HeaderCardCountingArrayDataInput cardCountingArray = new HeaderCardCountingArrayDataInput(dis);
         try {
@@ -1140,15 +1245,15 @@ public class Header implements FitsElement {
                 if (LONGSTRN.key().equals(key)) {
                     FitsFactory.setLongStringsEnabled(true);
                 }
-                
+
                 addLine(fcard);
-                
+
                 if (END.key().equals(key)) {
                     break; // Out of reading the header.
                 }
             }
         } catch (EOFException e) {
-            if (!firstCard) {                
+            if (!firstCard) {
                 throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage()));
             }
             throw e;
@@ -1317,7 +1422,7 @@ public class Header implements FitsElement {
         deleteKey(XTENSION);
 
         Cursor<String, HeaderCard> iter = iterator();
-        
+
         // If we're flipping back to and from the primary header
         // we need to add in the EXTEND keyword whenever we become
         // a primary, because it's not permitted in the extensions
@@ -1331,7 +1436,7 @@ public class Header implements FitsElement {
                 iter.add(HeaderCard.saveNewHeaderCard(EXTEND.key(), EXTEND.comment(), false).setValue(true));
             }
         }
-       
+
         iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), SIMPLE.comment(), false).setValue(val));
     }
 
@@ -1375,8 +1480,8 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Update an existing card in situ, without affecting the current position, or else add
-     * a new card at the current position.
+     * Update an existing card in situ, without affecting the current position,
+     * or else add a new card at the current position.
      *
      * @param key
      *            The key of the card to be replaced.
@@ -1386,11 +1491,11 @@ public class Header implements FitsElement {
      *             if the operation failed
      */
     public final void updateLine(String key, HeaderCard card) throws HeaderCardException {
-        // Remove an existing card with the matching 'key' (even if that key isn't the same
+        // Remove an existing card with the matching 'key' (even if that key
+        // isn't the same
         // as the key of the card argument!)
         this.cards.update(key, card);
     }
-    
 
     /**
      * Overwrite the lines in the header. Add the new PHDU header to the current
@@ -1461,9 +1566,7 @@ public class Header implements FitsElement {
             this.duplicates.add(dup);
         }
     }
-  
-    
-    
+
     /**
      * Check if the given key is the next one available in the header.
      */
@@ -1485,7 +1588,7 @@ public class Header implements FitsElement {
     }
 
     private void checkFirstCard(String key) throws IOException {
-        if (key == null || !key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {              
+        if (key == null || !key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {
             if (this.fileOffset > 0 && FitsFactory.getAllowTerminalJunk()) {
                 throw new EOFException("Not FITS format at " + this.fileOffset + ":" + key);
             } else {
@@ -1557,12 +1660,12 @@ public class Header implements FitsElement {
      * Ensure that the header has exactly one END keyword in the appropriate
      * location.
      */
-    void checkEnd() {    
+    void checkEnd() {
         // Ensure we have an END card only at the end of the
         // header.
         //
         Cursor<String, HeaderCard> iter = iterator();
-        
+
         HeaderCard card;
 
         while (iter.hasNext()) {
@@ -1704,16 +1807,18 @@ public class Header implements FitsElement {
      */
     long trueDataSize() {
 
-        // AK: No need to be too strict here. We can get a data size even if the header isn't 100% to spec,
-        // as long as the necessary keys are present. So, just check for the required keys, and no more...
+        // AK: No need to be too strict here. We can get a data size even if the
+        // header isn't 100% to spec,
+        // as long as the necessary keys are present. So, just check for the
+        // required keys, and no more...
         if (!containsKey(BITPIX.key())) {
             return 0L;
         }
-        
+
         if (!containsKey(NAXIS.key())) {
             return 0L;
         }
-        
+
         int naxis = getIntValue(NAXIS, 0);
 
         // If there are no axes then there is no data.

@@ -69,11 +69,14 @@ public class UserProvidedTest {
 
     private boolean isAllowTerminalJunk;
 
+    private boolean isAllowHeaderRepairs;
+
     @Before
     public void before() {
         longStringsEnabled = FitsFactory.isLongStringsEnabled();
         useHierarch = FitsFactory.getUseHierarch();
         isAllowTerminalJunk = FitsFactory.getAllowTerminalJunk();
+        isAllowHeaderRepairs = FitsFactory.isAllowHeaderRepairs();
         FitsFactory.setHierarchFormater(new StandardIHierarchKeyFormatter());
     }
 
@@ -366,6 +369,7 @@ public class UserProvidedTest {
     public void tetestInvalidHeaderProblemstInvalidHeaderProblem() throws Exception {
         FitsFactory.setLongStringsEnabled(true);
         FitsFactory.setUseHierarch(true);
+        FitsFactory.setAllowHeaderRepairs(true);
         FitsFactory.setAllowTerminalJunk(true);
 
         FileInputStream stream = null;

@@ -256,7 +256,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
      * @param key
      *            The key of the existing card (if any) to be replaced).
      * 
-     * @param reference
+     * @param entry
      *            The element to add to the list.
      */
     public void update(String key, VALUE entry) {
