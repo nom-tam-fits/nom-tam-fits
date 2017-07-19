@@ -98,11 +98,16 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
 
         @Override
         public void add(VALUE reference) {
-            HashedList.this.add(this.current, reference);
-            this.current++;
-        
-            if (this.current > HashedList.this.size()) {
-                this.current = HashedList.this.size();
+            // AK: Do not advance the iterator if the addition also removed an element
+            //     from before the current position.
+            if (HashedList.this.add(this.current, reference)) {
+                this.current++;
+                
+                // AK: Do not allow the iterator to exceed the header size
+                //     prev() requires this to work properly...
+                if (this.current > HashedList.this.size()) {
+                    this.current = HashedList.this.size();
+                }
             }
         }
 
@@ -191,14 +196,21 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
      *            put at the end of the list.
      * @param reference
      *            The element to add to the list.
+     *            
+     * @return false if the addition replaced a previous entry before 
+     *            the insertion point, true otherwise. (Iterators can use
+     *            this information to decide whether to advance or not).
      */
-    private void add(int pos, VALUE entry) {
+    private boolean add(int pos, VALUE entry) {
+        boolean advance = true;
+        
         String key = entry.getKey();
         if (this.keyed.containsKey(key) && !unkeyedKey(key)) {
             int oldPos = indexOf(entry);
             internalRemove(oldPos, entry);
             if (oldPos < pos) {
                 pos--;
+                advance = false;
             }
         }
         this.keyed.put(key, entry);
@@ -219,10 +231,12 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         }
         
         // AK: When inserting keys before the current position, increment the current
-        // position so it keeps pointing to the same location in the header...
+        //     position so it keeps pointing to the same location in the header...
         if (pos < cursor.current) {
             cursor.current++;
         }
+        
+        return advance;
     }
 
     private static boolean unkeyedKey(String key) {
@@ -399,13 +413,14 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         return false;
     }
 
+  
     private boolean internalRemove(int index, VALUE entry) {
         this.keyed.remove(entry.getKey());
         this.ordered.remove(index);
         
         // AK: if removing a key before the current position, update the current position to
-        //     keep pointing to te same location.
-        if (index < (cursor.current - 1)) {
+        //     keep pointing to the same location.
+        if (index < cursor.current) {
             cursor.current--;
         }
         
