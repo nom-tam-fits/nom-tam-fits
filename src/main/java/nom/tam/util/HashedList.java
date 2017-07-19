@@ -100,7 +100,9 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         public void add(VALUE reference) {
             HashedList.this.add(this.current, reference);
             this.current++;
-        
+                
+            // AK: Do not allow the iterator to exceed the header size
+            //     prev() requires this to work properly...
             if (this.current > HashedList.this.size()) {
                 this.current = HashedList.this.size();
             }
@@ -191,8 +193,9 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
      *            put at the end of the list.
      * @param reference
      *            The element to add to the list.
+     *            
      */
-    private void add(int pos, VALUE entry) {
+    private void add(int pos, VALUE entry) {     
         String key = entry.getKey();
         if (this.keyed.containsKey(key) && !unkeyedKey(key)) {
             int oldPos = indexOf(entry);
@@ -219,7 +222,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         }
         
         // AK: When inserting keys before the current position, increment the current
-        // position so it keeps pointing to the same location in the header...
+        //     position so it keeps pointing to the same location in the header...
         if (pos < cursor.current) {
             cursor.current++;
         }
@@ -399,13 +402,14 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         return false;
     }
 
+  
     private boolean internalRemove(int index, VALUE entry) {
         this.keyed.remove(entry.getKey());
         this.ordered.remove(index);
         
         // AK: if removing a key before the current position, update the current position to
-        //     keep pointing to te same location.
-        if (index < (cursor.current - 1)) {
+        //     keep pointing to the same location.
+        if (index < cursor.current) {
             cursor.current--;
         }
         
