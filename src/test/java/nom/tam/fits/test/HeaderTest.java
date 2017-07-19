@@ -652,6 +652,45 @@ public class HeaderTest {
             SafeClose.close(f);
         }
     }
+    
+    @Test
+    public void orderTest() throws Exception {
+        Header h = new Header();
+        
+        // Start with an 'existing' header
+        h.addValue("BLAH1", 0, "");
+        h.addValue("BLAH2", 0, "");
+        h.addValue("KEY4", 0, "");
+        h.addValue("BLAH3", 0, "");
+        h.addValue("MARKER", 0, "");
+        h.addValue("BLAH4", 0, "");
+        h.addValue("KEY2", 0, "");
+        
+        
+        // Now insert some keys before MARKER
+        h.findCard("MARKER");
+        h.addValue("KEY1", 1, "");
+        h.addValue("KEY2", 1, "");
+        h.addValue("KEY3", 1, "");
+        h.addValue("KEY4", 1, "");
+        h.addValue("KEY5", 1, "");
+        h.addValue("KEY6", 1, "");
+        
+        // Check to that the keys appear in the expected order...
+        Cursor<String, HeaderCard> c = h.iterator();
+        c.setKey("KEY1");
+        
+        for(int i=1; i<=6; i++) {
+            HeaderCard card = c.next();
+            assertEquals("KEY" + i, card.getKey());
+            assertEquals(1, (int) card.getValue(Integer.class, 0));
+        }
+        
+        
+        
+        
+        
+    }
 
     @Test
     public void addValueTests() throws Exception {
