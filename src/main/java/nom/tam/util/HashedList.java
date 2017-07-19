@@ -98,16 +98,13 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
 
         @Override
         public void add(VALUE reference) {
-            // AK: Do not advance the iterator if the addition also removed an element
-            //     from before the current position.
-            if (HashedList.this.add(this.current, reference)) {
-                this.current++;
+            HashedList.this.add(this.current, reference);
+            this.current++;
                 
-                // AK: Do not allow the iterator to exceed the header size
-                //     prev() requires this to work properly...
-                if (this.current > HashedList.this.size()) {
-                    this.current = HashedList.this.size();
-                }
+            // AK: Do not allow the iterator to exceed the header size
+            //     prev() requires this to work properly...
+            if (this.current > HashedList.this.size()) {
+                this.current = HashedList.this.size();
             }
         }
 
@@ -197,20 +194,14 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
      * @param reference
      *            The element to add to the list.
      *            
-     * @return false if the addition replaced a previous entry before 
-     *            the insertion point, true otherwise. (Iterators can use
-     *            this information to decide whether to advance or not).
      */
-    private boolean add(int pos, VALUE entry) {
-        boolean advance = true;
-        
+    private void add(int pos, VALUE entry) {     
         String key = entry.getKey();
         if (this.keyed.containsKey(key) && !unkeyedKey(key)) {
             int oldPos = indexOf(entry);
             internalRemove(oldPos, entry);
             if (oldPos < pos) {
                 pos--;
-                advance = false;
             }
         }
         this.keyed.put(key, entry);
@@ -235,8 +226,6 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         if (pos < cursor.current) {
             cursor.current++;
         }
-        
-        return advance;
     }
 
     private static boolean unkeyedKey(String key) {
