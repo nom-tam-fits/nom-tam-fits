@@ -62,6 +62,8 @@ public final class FitsFactory {
 
         private boolean allowTerminalJunk = false;
 
+        private boolean allowHeaderRepairs = false;
+
         private boolean longStringsEnabled = false;
 
         private boolean skipBlankAfterAssign = false;
@@ -77,6 +79,7 @@ public final class FitsFactory {
             settings.longStringsEnabled = this.longStringsEnabled;
             settings.hierarchKeyFormatter = this.hierarchKeyFormatter;
             settings.skipBlankAfterAssign = this.skipBlankAfterAssign;
+            settings.allowHeaderRepairs = this.allowHeaderRepairs;
             return settings;
         }
 
@@ -106,6 +109,10 @@ public final class FitsFactory {
 
         protected boolean isUseHierarch() {
             return this.useHierarch;
+        }
+
+        protected boolean isAllowHeaderRepairs() {
+            return this.allowHeaderRepairs;
         }
 
     }
@@ -155,7 +162,14 @@ public final class FitsFactory {
      *         allowed.
      */
     public static boolean getAllowTerminalJunk() {
-        return current().allowTerminalJunk;
+        return current().isAllowTerminalJunk();
+    }
+
+    /**
+     * @return Do we allow automatic header repairs, like missing end quotes?
+     */
+    public static boolean isAllowHeaderRepairs() {
+        return current().isAllowHeaderRepairs();
     }
 
     /**
@@ -300,6 +314,16 @@ public final class FitsFactory {
      */
     public static void setAllowTerminalJunk(boolean allowTerminalJunk) {
         current().allowTerminalJunk = allowTerminalJunk;
+    }
+
+    /**
+     * Do we allow automatic header repairs, like missing end quotes?
+     *
+     * @param allowHeaderRepairs
+     *            value to set
+     */
+    public static void setAllowHeaderRepairs(boolean allowHeaderRepairs) {
+        current().allowHeaderRepairs = allowHeaderRepairs;
     }
 
     /**

@@ -75,13 +75,23 @@ public class HeaderOrderTest {
     public void headerOrder() throws Exception {
         ArrayDataOutput dos = new BufferedDataOutputStream(new ByteArrayOutputStream(), 80);
         Header header = new Header();
+        
         header.addValue(BLOCKED, 1);
         header.addValue(SIMPLE, true);
-        header.addValue(THEAP, 1);
         header.addValue(BITPIX, 1);
+        header.addValue(THEAP, 1);  
         header.addValue(NAXIS, 0);
         header.addValue(END, true);
+       
+        
+        // Check that the order is what we expect...
+        Assert.assertEquals(SIMPLE.key(), header.iterator(1).next().getKey());
+        Assert.assertEquals(BITPIX.key(), header.iterator(2).next().getKey());
+        Assert.assertEquals(THEAP.key(), header.iterator(3).next().getKey());
         Assert.assertEquals(NAXIS.key(), header.iterator(4).next().getKey());
+        Assert.assertEquals(END.key(), header.iterator(5).next().getKey());
+        
+        
         header.write(dos);
         Assert.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
         Assert.assertEquals(THEAP.key(), header.iterator(4).next().getKey());

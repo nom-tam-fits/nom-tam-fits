@@ -65,11 +65,14 @@ public class HeaderCardTest {
 
     private boolean skipBlanks;
 
+    private boolean allowHeaderRepairs;
+
     @Before
     public void before() {
         skipBlanks = FitsFactory.isSkipBlankAfterAssign();
         longStringsEnabled = FitsFactory.isLongStringsEnabled();
         useHierarch = FitsFactory.getUseHierarch();
+        allowHeaderRepairs = FitsFactory.isAllowHeaderRepairs();
     }
 
     @After
@@ -77,6 +80,7 @@ public class HeaderCardTest {
         FitsFactory.setSkipBlankAfterAssign(skipBlanks);
         FitsFactory.setLongStringsEnabled(longStringsEnabled);
         FitsFactory.setUseHierarch(useHierarch);
+        FitsFactory.setAllowHeaderRepairs(allowHeaderRepairs);
         FitsFactory.setHierarchFormater(new StandardIHierarchKeyFormatter());
 
     }
@@ -106,7 +110,7 @@ public class HeaderCardTest {
         assertEquals("t9", "COMMENT", p.getKey());
         assertNull("t10", p.getValue());
         assertEquals("t11", lng, p.getComment());
-
+        FitsFactory.setAllowHeaderRepairs(false);
         boolean thrown = false;
         try {
             //
@@ -755,7 +759,6 @@ public class HeaderCardTest {
         assertEquals("TIMESYS", card.getKey());
         assertEquals("TIMESYS ='UTC      '           / All dates are in UTC time                      ", card.toString());
     }
-
 
     @Test()
     public void testHeaderCardFormatHierarch() throws Exception {

@@ -98,7 +98,14 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
 
         @Override
         public void add(VALUE reference) {
-            HashedList.this.add(this.current++, reference);
+            HashedList.this.add(this.current, reference);
+            this.current++;
+                
+            // AK: Do not allow the iterator to exceed the header size
+            //     prev() requires this to work properly...
+            if (this.current > HashedList.this.size()) {
+                this.current = HashedList.this.size();
+            }
         }
 
         @Override
@@ -167,6 +174,12 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
 
     /** The key value pairs */
     private final HashMap<String, VALUE> keyed = new HashMap<String, VALUE>();
+    
+    /**
+     * This maintains a 'current' position in the list...
+     */
+    private HashedListIterator cursor = new HashedListIterator(0);
+
 
     /**
      * Add an element to the list at a specified position. If that element was
@@ -180,23 +193,38 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
      *            put at the end of the list.
      * @param reference
      *            The element to add to the list.
+     *            
      */
-    private void add(int pos, VALUE reference) {
-        VALUE entry = reference;
+    private void add(int pos, VALUE entry) {     
         String key = entry.getKey();
         if (this.keyed.containsKey(key) && !unkeyedKey(key)) {
             int oldPos = indexOf(entry);
-            this.keyed.remove(key);
-            this.ordered.remove(oldPos);
+            internalRemove(oldPos, entry);
             if (oldPos < pos) {
                 pos--;
             }
         }
         this.keyed.put(key, entry);
         if (pos >= this.ordered.size()) {
+            // AK: We are adding a card to the end of the header.
+            //     If the cursor points to the end of the header, we want to increment it.
+            //     We can do this by faking 'insertion' before the last position.
+            //     The cursor will then advance at the end of this method.
+            //     Note, that if the addition of the card was done through the cursor itself
+            //     then the cursor will be incremented twice, once here, and once by the
+            //     cursor itself by the HashedListIterator.add(call).
+            //     But, this is fine, since the end position is properly checked by 
+            //     HashedListIterator.add().
+            pos = this.ordered.size() - 1;
             this.ordered.add(entry);
         } else {
             this.ordered.add(pos, entry);
+        }
+        
+        // AK: When inserting keys before the current position, increment the current
+        //     position so it keeps pointing to the same location in the header...
+        if (pos < cursor.current) {
+            cursor.current++;
         }
     }
 
@@ -210,6 +238,26 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         return true;
     }
 
+    /**
+     * Similar to add(VALUE), except this replaces an existing card that matches the specified key in-situ.
+     * At the same time, new entries are added at the current position.
+     * 
+     * @param key
+     *            The key of the existing card (if any) to be replaced).
+     * 
+     * @param entry
+     *            The element to add to the list.
+     */
+    public void update(String key, VALUE entry) {
+        if (this.keyed.containsKey(key) && !unkeyedKey(key)) {
+            int index = indexOf(get(key));
+            remove(index);
+            add(index, entry);
+        } else {
+            cursor.add(entry);
+        }
+    }
+    
     @Override
     public boolean addAll(Collection<? extends VALUE> c) {
         for (VALUE element : c) {
@@ -310,7 +358,21 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
             throw new NoSuchElementException("Invalid index for iterator:" + n);
         }
     }
+    
+    
+    /** Return the iterator that represents the current position in the header. This provides a connection
+     *  between editing headers through Header add/append/update methods, and via Cursors, which can be
+     *  used side-by-side while maintaining desired card ordering. For the reverse direction (
+     *  translating iterator position to current position in the header), we can just use findCard().
+     *  
+     *  @return the iterator representing the current position in the header.
+     *  
+     */
+    public Cursor<String, VALUE> cursor() {
+        return cursor;
+    }
 
+    
     /**
      * @return an iterator over the list starting with the entry with a given
      *         key.
@@ -340,9 +402,17 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         return false;
     }
 
+  
     private boolean internalRemove(int index, VALUE entry) {
         this.keyed.remove(entry.getKey());
         this.ordered.remove(index);
+        
+        // AK: if removing a key before the current position, update the current position to
+        //     keep pointing to the same location.
+        if (index < cursor.current) {
+            cursor.current--;
+        }
+        
         return true;
     }
 
@@ -375,11 +445,9 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
      * @return <code>true</code> if the key was removed
      */
     public boolean removeKey(Object key) {
-        VALUE entry = this.keyed.get(key);
-        if (entry != null) {
-            int index = indexOf(entry);
-            this.keyed.remove(key);
-            this.ordered.remove(index);
+        VALUE entry = get(key);
+        if (entry != null) { 
+            internalRemove(indexOf(entry), entry);
             return true;
         }
         return false;

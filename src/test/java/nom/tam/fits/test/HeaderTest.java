@@ -173,7 +173,7 @@ public class HeaderTest {
             hdr.addValue("FLT1", 1.34, "A float value");
             hdr.addValue("FLT2", -1.234567890e-134, "A very long float");
             hdr.insertComment("Comment after flt2");
-
+     
             c.setKey("INTVAL1");
             hc = (HeaderCard) c.next();
             assertEquals("INTVAL1", "INTVAL1", hc.getKey());
@@ -206,7 +206,8 @@ public class HeaderTest {
             SafeClose.close(f);
         }
     }
-
+    
+   
     /** Confirm initial location versus EXTEND keyword (V. Forchi). */
     @Test
     public void extendTest() throws Exception {
@@ -488,6 +489,7 @@ public class HeaderTest {
             SafeClose.close(f);
         }
     }
+    
 
     @Test
     public void testHeaderCommentsDrift() throws Exception {
@@ -650,6 +652,50 @@ public class HeaderTest {
             SafeClose.close(f);
         }
     }
+    
+    @Test
+    public void orderTest() throws Exception {
+        Header h = new Header();
+        
+        // Start with an 'existing' header
+        h.addValue("BLAH1", 0, "");
+        h.addValue("BLAH2", 0, "");
+        h.addValue("KEY4", 0, "");
+        h.addValue("BLAH3", 0, "");
+        h.addValue("MARKER", 0, "");
+        h.addValue("BLAH4", 0, "");
+        h.addValue("KEY2", 0, "");
+        
+        
+        // Now insert some keys before MARKER
+        h.findCard("MARKER");
+        h.addValue("KEY1", 1, "");
+        h.addValue("KEY2", 1, "");
+        h.addValue("KEY3", 1, "");
+        h.addValue("KEY4", 1, "");
+        h.addValue("KEY5", 1, "");
+
+        
+        // Now do an in-place update and a deletion, which should not affect
+        // the position. The position should remain before MARKER.
+        h.updateLine("BLAH2", new HeaderCard("BLAH2A", 1, ""));
+        h.deleteKey("BLAH1");
+        h.addValue("KEY6", 1, "");
+        
+        // Use updateLine for a non-existent key. This should result in
+        // adding a new card at the current position
+        h.updateLine("KEY7", new HeaderCard("KEY7", 1, ""));
+        
+        // Check to that the keys appear in the expected order...
+        Cursor<String, HeaderCard> c = h.iterator();
+        c.setKey("KEY1");
+        
+        for(int i=1; i<=7; i++) {
+            HeaderCard card = c.next();
+            assertEquals("KEY" + i, card.getKey());
+            assertEquals(1, (int) card.getValue(Integer.class, 0));
+        }      
+    }
 
     @Test
     public void addValueTests() throws Exception {
@@ -674,38 +720,52 @@ public class HeaderTest {
             hdu.addValue(CTYPE1.name(), 5, "bla");
             assertEquals(hdr.getIntValue(CTYPE1.name()), 5);
             assertEquals(hdr.getIntValue(CTYPE1), 5);
+            assertEquals(hdr.getIntValue(CTYPE1, -1), 5);
+            assertEquals(hdr.getIntValue("ZZZ", -1), -1);
 
             hdu.addValue(CTYPE1.name(), "XX", "bla");
             assertEquals(hdr.getStringValue(CTYPE1.name()), "XX");
             assertEquals(hdr.getStringValue(CTYPE1), "XX");
+            assertEquals(hdr.getStringValue("ZZZ"), null);
 
             hdr.addValue(CTYPE2, true);
             assertEquals(hdr.getBooleanValue(CTYPE2.name()), true);
             assertEquals(hdr.getBooleanValue(CTYPE2), true);
+            assertEquals(hdr.getBooleanValue("ZZZ", true), true);
 
             hdr.addValue(CTYPE2, 5.0);
             assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
+            assertEquals(hdr.getDoubleValue("ZZZ", -1.0), -1.0, 0.000001);
 
+            hdr.addValue(CTYPE2.key(), 5.0, 6, "precision control.");
+            assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
+            assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
+            assertEquals(hdr.getDoubleValue("ZZZ", -1.0), -1.0, 0.000001);
+            
             hdr.addValue(CTYPE2.name(), BigDecimal.valueOf(5.0), "nothing special");
             assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue(CTYPE2, -1d), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
             assertEquals(hdr.getBigDecimalValue(CTYPE2.name()), BigDecimal.valueOf(5.0));
             assertEquals(hdr.getBigDecimalValue(CTYPE2), BigDecimal.valueOf(5.0));
+            assertEquals(hdr.getBigDecimalValue("ZZZ", BigDecimal.valueOf(-1.0)), BigDecimal.valueOf(-1.0));
 
             hdr.addValue(CTYPE2.name(), 5.0f, "nothing special");
             assertEquals(hdr.getFloatValue(CTYPE2.name()), 5.0f, 0.000001);
             assertEquals(hdr.getFloatValue(CTYPE2), 5.0f, 0.000001);
             assertEquals(hdr.getFloatValue(CTYPE2.name(), -1f), 5.0f, 0.000001);
             assertEquals(hdr.getFloatValue(CTYPE2, -1f), 5.0f, 0.000001);
+            assertEquals(hdr.getFloatValue("ZZZ", -1f), -1f, 0.000001);
 
             hdr.addValue(CTYPE2.name(), BigInteger.valueOf(5), "nothing special");
             assertEquals(hdr.getIntValue(CTYPE2.name()), 5);
             assertEquals(hdr.getIntValue(CTYPE2), 5);
+            assertEquals(hdr.getIntValue("ZZZ", 0), 0);
             assertEquals(hdr.getBigIntegerValue(CTYPE2.name()), BigInteger.valueOf(5));
             assertEquals(hdr.getBigIntegerValue(CTYPE2.name(), BigInteger.valueOf(-1)), BigInteger.valueOf(5));
             assertEquals(hdr.getBigIntegerValue(CTYPE2, BigInteger.valueOf(-1)), BigInteger.valueOf(5));
+            assertEquals(hdr.getBigIntegerValue("ZZZ", BigInteger.valueOf(-1)), BigInteger.valueOf(-1));
         } finally {
             SafeClose.close(in);
             SafeClose.close(fits);
@@ -770,9 +830,9 @@ public class HeaderTest {
         header.setNaxis(-1, 3);
         Assert.assertEquals(1, header.getIntValue(NAXIS.name()));
 
-        header.addLine(new HeaderCard("COMMENT", (String) null, "bla bla"));
+        header.addValue("COMMENT", (String) null, "bla bla");
         header.insertComment("blu blu");
-        header.addLine(new HeaderCard("HISTORY", (String) null, "blab blab"));
+        header.addValue("HISTORY", (String) null, "blab blab");
         header.insertHistory("blub blub");
         Header header2 = new Header();
         boolean blaComment = false;
@@ -814,6 +874,7 @@ public class HeaderTest {
         iterator.add(new HeaderCard(NAXIS.name(), 1, ""));
         Assert.assertEquals(0, header.getSize());
         header.addValue("END", "", "");
+         
         Assert.assertEquals(2880, header.getSize());
         return header;
     }

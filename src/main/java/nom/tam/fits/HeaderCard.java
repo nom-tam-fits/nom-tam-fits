@@ -1238,12 +1238,13 @@ public class HeaderCard implements CursorValue<String> {
             this.comment = parsedValue.getComment();
             int indexOfQuote = this.value.indexOf('\'');
             if (!this.isString && indexOfQuote >= 0) {
-                if (indexOfQuote == 0 && FitsFactory.current().isAllowTerminalJunk()) {
+                if (indexOfQuote == 0 && FitsFactory.current().isAllowHeaderRepairs()) {
                     // ok error case, string without closing quote. lets try to
                     // accept it
                     this.value = this.value.substring(1);
                     this.isString = true;
                     this.comment = null;
+                    LOG.warning("Corrected header card " + this.key + " repaired missing end-quote in string value!");
                 } else {
                     throw new IllegalArgumentException("no single quotes allowed in values");
                 }
