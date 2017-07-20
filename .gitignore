@@ -20,3 +20,5 @@ release.properties
 /target/
 .idea
 nom-tam-fits.iml
+coverage
+javadoc
