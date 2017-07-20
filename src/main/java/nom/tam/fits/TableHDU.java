@@ -460,6 +460,11 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         this.myHeader.addLine(new HeaderCard(key + (index + 1), value, precision, comment));
     }
 
+    public void setColumnMeta(int index, String key, double value, int precision, boolean useD, String comment, boolean after) throws FitsException {
+        setCurrentColumn(index, after);
+        this.myHeader.addLine(new HeaderCard(key + (index + 1), value, precision, useD, comment));
+    }
+
     public void setColumnMeta(int index, String key, long value, String comment, boolean after) throws FitsException {
         setCurrentColumn(index, after);
         this.myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));

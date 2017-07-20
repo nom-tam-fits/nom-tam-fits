@@ -1177,26 +1177,26 @@ public class HeaderTest {
         hdr.addExpValue( "SCI_E", 1234.12f, 2,"SciNotation with E");
         hdr.addExpValue("BIGDEC2", new BigDecimal("-12345678901234567890.1234567890"), 8,"Another Big Desc Sci Note");
 
-        assertEquals("1.2346D+4", hdr.findCard("SCI_D").getValue());
+        assertEquals("1.2346D4", hdr.findCard("SCI_D").getValue());
         assertEquals(12346.0f, hdr.getFloatValue("SCI_D"), 0.00001f);
-        assertEquals("1.2345678901D+19",hdr.findCard("BIGDEC").getValue());
+        assertEquals("1.2345678901D19",hdr.findCard("BIGDEC").getValue());
         assertEquals(new BigDecimal("1.2345678901E19"), hdr.getBigDecimalValue("BIGDEC"));
-        assertEquals("1.23E+3", hdr.findCard("SCI_E").getValue());
+        assertEquals("1.23E3", hdr.findCard("SCI_E").getValue());
         assertEquals(1230.0, hdr.getDoubleValue("SCI_E"), 0.00001);
-        assertEquals("-1.23456789E+19",hdr.findCard("BIGDEC2").getValue());
+        assertEquals("-1.23456789E19",hdr.findCard("BIGDEC2").getValue());
         assertEquals(new BigDecimal("-1.23456789E+19"), hdr.getBigDecimalValue("BIGDEC2"));
 
         // Update the cards
         hdr.findCard("SCI_E").setExpValue(2468.123f, 1, false);
-        assertEquals("2.5E+3", hdr.findCard("SCI_E").getValue());
+        assertEquals("2.5E3", hdr.findCard("SCI_E").getValue());
         assertEquals(2500.0f, hdr.getFloatValue("SCI_E"), 0.00001f);
 
         hdr.findCard("SCI_D").setExpValue(13456.76344, 3, true);
-        assertEquals("1.346D+4", hdr.findCard("SCI_D").getValue());
+        assertEquals("1.346D4", hdr.findCard("SCI_D").getValue());
         assertEquals(13460.0, hdr.getDoubleValue("SCI_D"), 0.00001);
 
         hdr.findCard("SCI_D").setExpValue(13456.76344, 3);
-        assertEquals("1.346E+4", hdr.findCard("SCI_D").getValue());
+        assertEquals("1.346E4", hdr.findCard("SCI_D").getValue());
         assertEquals(13460.0, hdr.getDoubleValue("SCI_D"), 0.00001);
 
         hdr.findCard("BIGDEC").setExpValue(new BigDecimal("0.0000707703"), 4, true);
