@@ -309,6 +309,8 @@ public class HeaderCardTest {
         HeaderCard hc;
         String key = "HIERARCH.TEST1.TEST2.INT";
         boolean thrown = false;
+
+        FitsFactory.setUseHierarch(false);
         try {
             hc = new HeaderCard(key, 123, "Comment");
         } catch (Exception e) {
