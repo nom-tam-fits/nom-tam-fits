@@ -44,8 +44,9 @@ public class FitsDateTest {
         Assert.assertEquals(REF_TIME_MS+120, new FitsDate("2018-11-28T12:13:14.12").toDate().getTime());
         Assert.assertEquals(REF_TIME_MS+123, new FitsDate("2018-11-28T12:13:14.123").toDate().getTime());
         Assert.assertEquals(REF_TIME_MS+123, new FitsDate("2018-11-28T12:13:14.1234").toDate().getTime());
+        Assert.assertEquals(REF_TIME_MS+124, new FitsDate("2018-11-28T12:13:14.1236").toDate().getTime());
         Assert.assertEquals(REF_TIME_MS+123, new FitsDate("2018-11-28T12:13:14.12345").toDate().getTime());
-        Assert.assertEquals(REF_TIME_MS+123, new FitsDate("2018-11-28T12:13:14.123456").toDate().getTime());
+        Assert.assertEquals(REF_TIME_MS+124, new FitsDate("2018-11-28T12:13:14.123567").toDate().getTime());
         Assert.assertEquals(REF_TIME_MS+10, new FitsDate("2018-11-28T12:13:14.01").toDate().getTime());
         Assert.assertEquals(REF_TIME_MS+1, new FitsDate("2018-11-28T12:13:14.001").toDate().getTime());
         Assert.assertEquals(REF_TIME_MS, new FitsDate("2018-11-28T12:13:14.0001").toDate().getTime());

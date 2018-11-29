@@ -88,6 +88,8 @@ public class FitsDate {
     private static final int YEAR_OFFSET = 1900;
     
     private static final int NB_DIGITS_MILLIS = 3;
+    
+    private static final int POW_TEN = 10;
 
     /**
      * @return the current date in FITS date format
@@ -204,11 +206,12 @@ public class FitsDate {
     private static int getMilliseconds(Matcher match, int groupIndex) {
         String value = match.group(groupIndex);
         if (value != null) {
-            if (value.length() > NB_DIGITS_MILLIS) {
-                value = value.substring(0, NB_DIGITS_MILLIS);
-            }
             value = String.format("%-3s", value).replace(' ', '0');
-            return Integer.parseInt(value);
+            int num = Integer.parseInt(value);
+            if (value.length() > NB_DIGITS_MILLIS) {
+                num = (int) Math.round(num / Math.pow(POW_TEN, value.length() - NB_DIGITS_MILLIS));
+            }
+            return num;
         }
         return -1;
     }
