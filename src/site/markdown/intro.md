@@ -1,8 +1,8 @@
 # An introduction to the nom.tam FITS library.
 
 This document describes the nom.tam FITS library, a full-function Java library for reading and writing FITS files.
-Only a general introduction to how to use the library is given here.
-Detailed documention for the classes in given in their JavaDocs.
+Only a general introduction on how to use the library is given here.
+Detailed documentation for the classes is given in their JavaDocs.
 
 FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data.
 This document assumes a general knowledge of FITS and Java but starts with a brief overview of FITS to set the context and terminology used.  

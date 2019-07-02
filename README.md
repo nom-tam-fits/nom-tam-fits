@@ -9,7 +9,7 @@ Pure java Java library for reading and writing FITS files. FITS, the Flexible Im
 
 This is the original library from http://heasarc.gsfc.nasa.gov/docs/heasarc/fits/java/ ported to maven and published to the central repo by the original developers!
 
-Please feel free to fork us and report any found issues at our github pages (Pull request are very welcom):
+Please feel free to fork us and report any found issues at our github pages (Pull request are very welcome):
 
 [nom-tam-fits git repository](https://github.com/nom-tam-fits/nom-tam-fits "nom-tam-fits git repository")
 
