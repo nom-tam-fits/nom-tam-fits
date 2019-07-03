@@ -1,6 +1,6 @@
 language: java
 jdk:
-- oraclejdk7
+- openjdk7
 
 branches:
   except:
@@ -23,6 +23,7 @@ notifications:
     - richard.vannieuwenhoven@adesso.at
     - Tom.McGlynn@nasa.gov
     - erik.koerber@gmail.com
+    - th.koller@outlook.com
     
 env:
  global:
