@@ -63,7 +63,7 @@ import nom.tam.util.RandomAccess;
  */
 public class AsciiTable extends AbstractTableData {
 
-    private static final int MAX_INTEGER_LENGTH = 10;
+    private static final int MAX_INTEGER_LENGTH = 11;
 
     private static final int FLOAT_MAX_LENGTH = 16;
 
