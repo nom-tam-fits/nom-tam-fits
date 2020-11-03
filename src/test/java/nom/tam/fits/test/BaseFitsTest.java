@@ -35,17 +35,7 @@ import static nom.tam.fits.header.Standard.NAXISn;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -142,6 +132,57 @@ public class BaseFitsTest {
 
     }
 
+    /**
+     * Retrieve an HDU by its extension name and version.
+     * @throws Exception    Anything out of the ordinary.
+     */
+    @Test
+    public void testFitsGetHduByExtension() throws Exception {
+        Fits fits1 = null;
+        try {
+            fits1 = makeAsciiTable();
+            final BasicHDU<?> sciHDU = BasicHDU.getDummyHDU();
+            sciHDU.addValue(Standard.EXTNAME, "SCI");
+            fits1.addHDU(sciHDU);
+            writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
+
+            fits1 = new Fits(new FileInputStream(new File(TARGET_BASIC_FITS_TEST_FITS)));
+            BasicHDU<?> resultHDU = fits1.getHDU("SCI", null);
+            assertHeadersMatch(sciHDU.getHeader(), resultHDU.getHeader());
+
+            final BasicHDU<?> imgHDUVer3 = BasicHDU.getDummyHDU();
+            imgHDUVer3.addValue(Standard.EXTNAME, "IMG");
+            imgHDUVer3.addValue(Standard.EXTVER, "3");
+            fits1.addHDU(imgHDUVer3);
+
+            final BasicHDU<?> imgHDUVer2 = BasicHDU.getDummyHDU();
+            imgHDUVer2.addValue(Standard.EXTNAME, "IMG");
+            imgHDUVer2.addValue(Standard.EXTVER, "2");
+            fits1.addHDU(imgHDUVer2);
+
+            writeFile(fits1, TARGET_BASIC_FITS_TEST_FITS);
+
+            fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
+            resultHDU = fits1.getHDU("IMG", 1);
+            Assert.assertNull("HDU with EXTNAME 'IMG' and EXTVER 1 should not exist.", resultHDU);
+
+            fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
+            resultHDU = fits1.getHDU("GMI", 2);
+            Assert.assertNull("No such EXTNAME GMI with EXTVER 2", resultHDU);
+
+            fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
+            resultHDU = fits1.getHDU("IMG", 2);
+            Assert.assertNotNull("Should have EXNAME IMG with EXTVER 2", resultHDU);
+            assertHeadersMatch(imgHDUVer2.getHeader(), resultHDU.getHeader());
+
+            fits1 = new Fits(new File(TARGET_BASIC_FITS_TEST_FITS));
+            resultHDU = fits1.getHDU("IMG", 3);
+            assertHeadersMatch(imgHDUVer3.getHeader(), resultHDU.getHeader());
+        } finally {
+            SafeClose.close(fits1);
+        }
+    }
+
     @Test
     public void testFitsDeleteHdu() throws Exception {
         Fits fits1 = null;
@@ -217,6 +258,21 @@ public class BaseFitsTest {
         f.write(bf);
         bf.flush();
         bf.close();
+    }
+
+    private void assertHeadersMatch(final Header expected, final Header result) {
+        final ByteArrayOutputStream expectedOutputStream = new ByteArrayOutputStream();
+        final PrintStream expectedPrintStream = new PrintStream(expectedOutputStream);
+        expected.dumpHeader(expectedPrintStream);
+        final byte[] expectedBytes = expectedOutputStream.toByteArray();
+
+        final ByteArrayOutputStream resultOutputStream = new ByteArrayOutputStream();
+        final PrintStream resultPrintStream = new PrintStream(resultOutputStream);
+        result.dumpHeader(resultPrintStream);
+        final byte[] resultBytes = resultOutputStream.toByteArray();
+
+        Assert.assertArrayEquals("Headers do not print the same.\n\n" + new String(expectedBytes) + "\n\n"
+                                 + new String(resultBytes) + "\n\n", expectedBytes, resultBytes);
     }
 
     private Object[] getSampleCols(float base) {
