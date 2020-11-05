@@ -64,7 +64,6 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -124,7 +123,7 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     /**
      * The underlying access to the file system
      */
-    private final RandomAccessFile randomAccessFile;
+    private final RandomAccessDataObject randomAccessFile;
 
     /**
      * The offset of the beginning of the current dataBuffer.buffer
@@ -180,10 +179,26 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      *             if the file could not be opened
      */
     public BufferedFile(File file, String mode, int bufferSize) throws IOException {
-        this.randomAccessFile = new RandomAccessFile(file, mode);
+        this.randomAccessFile = new RandomAccessFileExt(file, mode);
         this.bufferPointer.init(bufferSize);
         this.fileOffset = 0;
 
+    }
+    
+    /**
+     * Create a buffered file from a random access data object.
+     * 
+     * @param src
+     * @throws IOException 
+     */
+    public BufferedFile(RandomAccessDataObject src) throws IOException {
+        this(src, BufferedFile.DEFAULT_BUFFER_SIZE);
+    }
+    
+    public BufferedFile(RandomAccessDataObject src, int bufferSize)  throws IOException {
+        this.randomAccessFile = src;
+        this.bufferPointer.init(bufferSize);
+        this.fileOffset = 0;
     }
 
     /**

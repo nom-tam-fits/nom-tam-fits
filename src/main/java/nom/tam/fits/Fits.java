@@ -57,6 +57,7 @@ import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.RandomAccess;
+import nom.tam.util.RandomAccessDataObject;
 import nom.tam.util.SafeClose;
 
 /**
@@ -192,6 +193,16 @@ public class Fits implements Closeable {
         fileInit(myFile, compressed);
     }
 
+    /**
+     * Associate the Fits object with a data source that supports random access.
+     * 
+     * @param src
+     * @throws FitsException 
+     */
+    public Fits(RandomAccessDataObject src) throws FitsException {
+        randomInit(src);
+    }
+    
     /**
      * Create a Fits object associated with the given data stream. Compression
      * is determined from the first few bytes of the stream.
@@ -630,6 +641,24 @@ public class Fits implements Closeable {
             ((BufferedFile) this.dataStr).seek(0);
         } catch (IOException e) {
             throw new FitsException("Unable to open file " + file.getPath(), e);
+        }
+    }
+    
+    /**
+     * Initialize using buffered random access. This implies that the data is
+     * uncompressed.
+     * 
+     * @param src 
+     *          the data object to access
+     * @throws FitsException 
+     * `        if the data is not readable
+     */
+    protected void randomInit(RandomAccessDataObject src) throws FitsException {
+        try {
+            this.dataStr = new BufferedFile(src);
+            ((BufferedFile) this.dataStr).seek(0);
+        } catch (IOException e) {
+            throw new FitsException("Unable to open data " + src, e);
         }
     }
 
