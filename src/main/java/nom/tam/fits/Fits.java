@@ -529,30 +529,46 @@ public class Fits implements Closeable {
      *             if the underlying buffer threw an error
      */
     public BasicHDU<?> getHDU(String extensionName, Integer extensionVersion) throws FitsException, IOException {
+        // Check the cache first.
+        int size = getNumberOfHDUs();
+        for (int i = 0; i <= size; i += 1) {
+            final BasicHDU<?> nextHDU = getHDU(i);
+            if (matchHDU(nextHDU, extensionName, extensionVersion)) {
+                return nextHDU;
+            }
+        }
+
+        // Read the rest of the HDUs next.
         BasicHDU<?> hdu;
         while ((hdu = readHDU()) != null) {
-            final String extName = hdu.getTrimmedString(Standard.EXTNAME);
-
-            // Only carry on if this HDU has an EXTNAME value.
-            if (extName != null) {
-                // FITS dictates the default EXTVER is 1 if not present.
-                // https://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html
-                //
-                final int extVer = hdu.getHeader().getIntValue(Standard.EXTVER, 1);
-
-                // Ensure the extension name matches as that's a requirement.  By default the extVer value will be 1,
-                // which will match if no extensionVersion was requested.  Otherwise, ensure the extVer matches the
-                // requested value.  Boxing extVer into a new Integer() alleviates a NullPointerException from possibly
-                // occurring.
-                if (extName.equalsIgnoreCase(extensionName)
-                    && (((extensionVersion == null) && (extVer == 1))
-                        || (Integer.valueOf(extVer).equals(extensionVersion)))) {
-                        return hdu;
-                }
+            if (matchHDU(hdu, extensionName, extensionVersion)) {
+                return hdu;
             }
         }
 
         return null;
+    }
+
+    private boolean matchHDU(final BasicHDU<?> hdu, String extensionName, Integer extensionVersion) {
+        final String extName = hdu.getTrimmedString(Standard.EXTNAME);
+
+        // Only carry on if this HDU has an EXTNAME value.
+        if (extName != null) {
+            // FITS dictates the default EXTVER is 1 if not present.
+            // https://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html
+            //
+            final int extVer = hdu.getHeader().getIntValue(Standard.EXTVER, 1);
+
+            // Ensure the extension name matches as that's a requirement.  By default the extVer value will be 1,
+            // which will match if no extensionVersion was requested.  Otherwise, ensure the extVer matches the
+            // requested value.  Boxing extVer into a new Integer() alleviates a NullPointerException from possibly
+            // occurring.
+            return extName.equalsIgnoreCase(extensionName)
+                   && (((extensionVersion == null) && (extVer == 1))
+                       || (Integer.valueOf(extVer).equals(extensionVersion)));
+        }
+
+        return false;
     }
 
     /**
