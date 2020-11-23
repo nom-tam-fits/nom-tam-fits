@@ -36,7 +36,8 @@ import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 
 /**
- * Simple extension so randomAccessFile implements internal RandomAccessDataObject.
+ * Simple extension so randomAccessFile implements internal
+ * RandomAccessDataObject.
  * 
  * @author pdowler
  */
