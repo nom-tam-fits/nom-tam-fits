@@ -32,7 +32,10 @@ package nom.tam.fits.doc;
  */
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,36 +67,44 @@ public final class GenerateReleaseNote {
         String description = release.getAttribute("description");
 
         String fileName = "NOTE.v" + version.substring(0, version.indexOf('.')) + version.substring(version.indexOf('.') + 1);
+        final OutputStream outputStream = new FileOutputStream(new File("target/" + fileName));
+        PrintStream out = null;
 
-        PrintStream out = new PrintStream(new File("target/" + fileName));
+        try {
+            out = new PrintStream(outputStream, false, StandardCharsets.UTF_8.name());
+            out.print("Release ");
+            out.println(version);
+            out.println();
+            println(out, limitString(description, STR_LIMIT));
+            out.println();
+            NodeList nodes = release.getElementsByTagName("action");
+            for (int index = 0; index < nodes.getLength(); index++) {
+                Element child = (Element) nodes.item(index);
+                String dev = child.getAttribute("dev");
+                String issue = child.getAttribute("issue");
+                if (isEmptyOrNull(dev) && isEmptyOrNull(issue)) {
+                    println(out, limitString(child.getTextContent().trim(), STR_LIMIT));
+                    out.println();
+                }
+            }
+            out.println("Other changes in this edition include:");
+            out.println();
 
-        out.print("Release ");
-        out.println(version);
-        out.println();
-        println(out, limitString(description, STR_LIMIT));
-        out.println();
-        NodeList nodes = release.getElementsByTagName("action");
-        for (int index = 0; index < nodes.getLength(); index++) {
-            Element child = (Element) nodes.item(index);
-            String dev = child.getAttribute("dev");
-            String issue = child.getAttribute("issue");
-            if (isEmptyOrNull(dev) && isEmptyOrNull(issue)) {
-                println(out, limitString(child.getTextContent().trim(), STR_LIMIT));
-                out.println();
+            for (int index = 0; index < nodes.getLength(); index++) {
+                Element child = (Element) nodes.item(index);
+                String dev = child.getAttribute("dev");
+                String issue = child.getAttribute("issue");
+                if (!isEmptyOrNull(dev) || !isEmptyOrNull(issue)) {
+                    println(out, "     - ", limitString(child.getTextContent().trim(), STR_LIMIT_INDENTED));
+                }
+            }
+//            out.close();
+        } finally {
+            if (out != null) {
+                out.flush();
+                out.close();
             }
         }
-        out.println("Other changes in this edition include:");
-        out.println();
-
-        for (int index = 0; index < nodes.getLength(); index++) {
-            Element child = (Element) nodes.item(index);
-            String dev = child.getAttribute("dev");
-            String issue = child.getAttribute("issue");
-            if (!isEmptyOrNull(dev) || !isEmptyOrNull(issue)) {
-                println(out, "     - ", limitString(child.getTextContent().trim(), STR_LIMIT_INDENTED));
-            }
-        }
-        out.close();
     }
     
     private static void println(PrintStream out, List<String> limitString) {
