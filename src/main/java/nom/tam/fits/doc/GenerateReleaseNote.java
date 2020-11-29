@@ -43,7 +43,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public class GenerateReleaseNote {
+public final class GenerateReleaseNote {
+
+    private static final int STR_LIMIT = 80;
+    private static final int STR_LIMIT_INDENTED = 72;
+    
+    private GenerateReleaseNote() {
+        
+    }
 
     public static void main(String[] args) throws Exception {
         File fXmlFile = new File("src/changes/changes.xml");
@@ -63,7 +70,7 @@ public class GenerateReleaseNote {
         out.print("Release ");
         out.println(version);
         out.println();
-        println(out, limitString(description, 80));
+        println(out, limitString(description, STR_LIMIT));
         out.println();
         NodeList nodes = release.getElementsByTagName("action");
         for (int index = 0; index < nodes.getLength(); index++) {
@@ -71,7 +78,7 @@ public class GenerateReleaseNote {
             String dev = child.getAttribute("dev");
             String issue = child.getAttribute("issue");
             if (isEmptyOrNull(dev) && isEmptyOrNull(issue)) {
-                println(out, limitString(child.getTextContent().trim(), 80));
+                println(out, limitString(child.getTextContent().trim(), STR_LIMIT));
                 out.println();
             }
         }
@@ -83,12 +90,12 @@ public class GenerateReleaseNote {
             String dev = child.getAttribute("dev");
             String issue = child.getAttribute("issue");
             if (!isEmptyOrNull(dev) || !isEmptyOrNull(issue)) {
-                println(out, "     - ", limitString(child.getTextContent().trim(), 72));
+                println(out, "     - ", limitString(child.getTextContent().trim(), STR_LIMIT_INDENTED));
             }
         }
         out.close();
     }
-
+    
     private static void println(PrintStream out, List<String> limitString) {
         println(out, "", limitString);
     }
@@ -108,8 +115,8 @@ public class GenerateReleaseNote {
     static List<String> limitString(String string, int size) {
         string = string.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').replace("  ", " ").replace("  ", " ").replace("  ", " ");
         List<String> result = new ArrayList<String>();
-        while (string.length() > 80) {
-            int split = 80;
+        while (string.length() > STR_LIMIT) {
+            int split = STR_LIMIT;
             while (!Character.isWhitespace(string.charAt(split))) {
                 split--;
             }
