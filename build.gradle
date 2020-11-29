@@ -11,9 +11,9 @@ repositories {
 
 sourceCompatibility = 1.8
 
-group = 'gov.nasa.gsfc.heasarc'
+group = 'org.opencadc'
 
-version = '1.15.3-pdowler'
+version = '1.16.0'
 
 dependencies {
     compile 'com.google.code.findbugs:annotations:[3.0,4.0)'
