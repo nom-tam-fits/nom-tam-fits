@@ -1,6 +1,6 @@
 # nom-tam-fits
 
-This is a fork of https://github.com/nom-tam-fits/non-tam.fits (see https://github.com/nom-tam-fits/nom-tam-fits/issues/147)
+This is a fork of https://github.com/nom-tam-fits/non-tam-fits (see https://github.com/nom-tam-fits/nom-tam-fits/issues/147)
 
 This version will be published as `org.opencadc:nom-tam-fits:{version}` as specified in the build.gradle file. Currently, 
 gradle is used to install (locally) and publish artifacts with the correct group and version.
