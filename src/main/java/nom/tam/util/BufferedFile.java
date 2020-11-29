@@ -185,16 +185,28 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
 
     }
     
-    /**
+     /**
      * Create a buffered file from a random access data object.
      * 
-     * @param src
+     * @param src 
+     *              source of random access data
      * @throws IOException 
+     *              if data could not be read
      */
     public BufferedFile(RandomAccessDataObject src) throws IOException {
         this(src, BufferedFile.DEFAULT_BUFFER_SIZE);
     }
     
+    /**
+     * Create a buffered file from a random access data object.
+     * 
+     * @param src 
+     *              source of random access data
+     * @param bufferSize
+     *              the dataBuffer.buffer size to use
+     * @throws IOException 
+     *              if data could not be read
+     */
     public BufferedFile(RandomAccessDataObject src, int bufferSize)  throws IOException {
         this.randomAccessFile = src;
         this.bufferPointer.init(bufferSize);

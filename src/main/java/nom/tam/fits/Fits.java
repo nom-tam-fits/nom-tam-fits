@@ -196,7 +196,9 @@ public class Fits implements Closeable {
      * Associate the Fits object with a data source that supports random access.
      * 
      * @param src
+     *              the random access data to read
      * @throws FitsException 
+     *              if the operation failed
      */
     public Fits(RandomAccessDataObject src) throws FitsException {
         randomInit(src);
