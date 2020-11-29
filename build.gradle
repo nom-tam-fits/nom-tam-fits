@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+    id 'maven'
+    id 'maven-publish'
+}
+
+repositories {
+    jcenter()
+    mavenLocal()
+}
+
+sourceCompatibility = 1.8
+
+group = 'org.opencadc'
+
+version = '1.16.0'
+
+dependencies {
+    compile 'com.google.code.findbugs:annotations:[3.0,4.0)'
+    compile 'org.apache.commons:commons-compress:1.18'
+
+    testCompile 'junit:junit:4.13'
+}
+
