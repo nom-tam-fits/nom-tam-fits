@@ -159,7 +159,7 @@ public class ImageData extends Data {
     /**
      * Return the actual data. Note that this may return a null when the data is
      * not readable. It might be better to throw a FitsException, but this is a
-     * very commonly called method and we prefered not to change how users must
+     * very commonly called method and we preferred not to change how users must
      * invoke it.
      */
     @Override

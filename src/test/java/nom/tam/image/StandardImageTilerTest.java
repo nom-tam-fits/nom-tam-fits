@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
+import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedFile;
 import nom.tam.util.RandomAccess;
@@ -104,13 +105,28 @@ public class StandardImageTilerTest {
         tiler.setFile(null);
         IOException actual = null;
         try {
-            tiler.getTile(null, new int[2], new int[2]);
+            tiler.getTile((Object[]) null, new int[2], new int[2]);
         } catch (IOException e) {
             actual = e;
         }
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual.getMessage().contains("No data"));
 
+    }
+
+    @Test
+    public void testFailedGetStreamTile() throws Exception {
+        dataArray = null;
+        tiler.setFile(null);
+        IOException actual = null;
+        try {
+            tiler.getTile((ArrayDataOutput) null, new int[2], new int[2]);
+        } catch (IOException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertTrue("Message was actually: " + actual.getMessage(),
+                          actual.getMessage().contains("Attempt to read from null data output"));
     }
 
     @Test

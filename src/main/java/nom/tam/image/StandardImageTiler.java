@@ -34,8 +34,12 @@ package nom.tam.image;
 import java.io.IOException;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.FitsUtil;
+import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.RandomAccess;
+import nom.tam.util.type.PrimitiveTypeHandler;
 
 /**
  * This class provides a subset of an N-dimensional image. Modified May 2, 2000
@@ -121,7 +125,7 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * File a tile segment from a file.
+     * Fill a tile segment from a file.
      * 
      * @param output
      *            The output tile.
@@ -224,7 +228,6 @@ public abstract class StandardImageTiler implements ImageTiler {
 
         int n = newDims.length;
         int[] posits = new int[n];
-        int baseLength = ArrayFuncs.getBaseLength(o);
         int segment = lengths[n - 1];
 
         System.arraycopy(corners, 0, posits, 0, n);
@@ -261,6 +264,7 @@ public abstract class StandardImageTiler implements ImageTiler {
                 if (data != null) {
                     fillMemData(data, posits, segment, o, outputOffset, 0);
                 } else {
+                    int baseLength = ArrayFuncs.getBaseLength(o);
                     long offset = getOffset(newDims, posits) * baseLength;
 
                     // Point to offset at real beginning
@@ -269,7 +273,7 @@ public abstract class StandardImageTiler implements ImageTiler {
                     long actualOffset = offset;
                     int actualOutput = outputOffset;
                     if (posits[mx] < 0) {
-                        actualOffset -= posits[mx] * baseLength;
+                        actualOffset -= (long) posits[mx] * baseLength;
                         actualOutput -= posits[mx];
                         actualLen += posits[mx];
                     }
@@ -285,6 +289,74 @@ public abstract class StandardImageTiler implements ImageTiler {
         if (data == null) {
             this.randomAccessFile.seek(currentOffset);
         }
+    }
+
+    /**
+     * Fill the subset.
+     *
+     * @param output
+     *            The stream to be written to.
+     * @param newDims
+     *            The dimensions of the full image.
+     * @param corners
+     *            The indices of the corner of the image.
+     * @param lengths
+     *            The dimensions of the subset.
+     * @throws IOException
+     *             if the underlying stream failed
+     */
+    protected void streamTile(ArrayDataOutput output, int[] newDims, int[] corners, int[] lengths) throws IOException {
+
+        int n = newDims.length;
+        int[] posits = new int[n];
+        int segment = lengths[n - 1];
+
+        System.arraycopy(corners, 0, posits, 0, n);
+
+        do {
+
+            // This implies there is some overlap
+            // in the last index (in conjunction
+            // with other tests)
+
+            int mx = newDims.length - 1;
+            boolean validSegment = posits[mx] + lengths[mx] >= 0 && posits[mx] < newDims[mx];
+
+            // Don't do anything for the current
+            // segment if anything but the
+            // last index is out of range.
+
+            if (validSegment) {
+                for (int i = 0; i < mx; i += 1) {
+                    if (posits[i] < 0 || posits[i] >= newDims[i]) {
+                        validSegment = false;
+                        break;
+                    }
+                }
+            }
+
+            if (validSegment) {
+                // Ask the base class for its proper size.
+                int baseLength = PrimitiveTypeHandler.valueOf(this.base).size();
+                long offset = getOffset(newDims, posits) * baseLength;
+
+                // Point to offset at real beginning of segment
+                int actualLen = segment;
+                long actualOffset = offset;
+
+                if (posits[mx] < 0) {
+                    actualOffset -= (long) posits[mx] * baseLength;
+                    actualLen += posits[mx];
+                }
+                if (posits[mx] + segment > newDims[mx]) {
+                    actualLen -= posits[mx] + segment - newDims[mx];
+                }
+
+                this.randomAccessFile.seek(this.fileOffset + actualOffset);
+                this.randomAccessFile.read(output, this.base, 0, actualLen);
+            }
+
+        } while (incrementPosition(corners, posits, lengths));
     }
 
     /**
@@ -314,6 +386,32 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @return the image data
      */
     protected abstract Object getMemoryImage();
+
+    @Override
+    public void getTile(ArrayDataOutput output, int[] corners, int[] lengths) throws FitsException, IOException {
+
+        if (corners.length != this.dims.length || lengths.length != this.dims.length) {
+            throw new IOException("Inconsistent sub-image request");
+        } else if (output == null) {
+            throw new IOException("Attempt to read from null data output");
+        }
+
+        streamTile(output, this.dims, corners, lengths);
+        output.flush();
+
+        int arraySize = 1;
+        for (int i = 0; i < this.dims.length; i += 1) {
+
+            if (corners[i] < 0 || lengths[i] < 0 || corners[i] + lengths[i] > this.dims[i]) {
+                throw new IOException("Sub-image not within image");
+            }
+
+            arraySize *= lengths[i];
+        }
+
+        // Pad the data at the end to match the expected byte length.
+        FitsUtil.pad(output, (long) arraySize * PrimitiveTypeHandler.valueOf(this.base).size());
+    }
 
     /**
      * Get a subset of the image. An image tile is returned as a one-dimensional

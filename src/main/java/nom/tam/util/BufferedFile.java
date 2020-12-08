@@ -418,6 +418,11 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     }
 
     @Override
+    public void read(ArrayDataOutput output, Class<?> type, int offset, int size) throws IOException {
+        this.dataDecoder.read(output, type, offset, size);
+    }
+
+    @Override
     public int read(boolean[] b) throws IOException {
         return read(b, 0, b.length);
     }

@@ -35,6 +35,9 @@ package nom.tam.image;
  * #L%
  */
 
+import nom.tam.fits.FitsException;
+import nom.tam.util.ArrayDataOutput;
+
 import java.io.IOException;
 
 /**
@@ -45,6 +48,8 @@ public interface ImageTiler {
     Object getCompleteImage() throws IOException;
 
     Object getTile(int[] corners, int[] lengths) throws IOException;
+
+    void getTile(ArrayDataOutput output, int[] corners, int[] lengths) throws FitsException, IOException;
 
     void getTile(Object array, int[] corners, int[] lengths) throws IOException;
 
