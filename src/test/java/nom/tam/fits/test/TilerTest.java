@@ -33,22 +33,16 @@ package nom.tam.fits.test;
 
 import static org.junit.Assert.assertEquals;
 
-import java.awt.*;
 import java.io.*;
 import java.lang.reflect.Array;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
-import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.*;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -241,7 +235,7 @@ public class TilerTest {
         doTest(data, "long");
     }
 
-    private void doTest(Object data, String suffix) throws IOException, FitsException, Exception {
+    private void doTest(Object data, String suffix) throws Exception {
         Fits f = null;
         BufferedFile bf = null;
         try {
@@ -284,6 +278,15 @@ public class TilerTest {
             }
             Assert.assertNotNull(expected);
             Assert.assertTrue(expected.getMessage().contains("within"));
+
+            expected = null;
+            try {
+                doTile3("t5", data, t, 500, 500, 72, 26);
+            } catch (IOException e) {
+                expected = e;
+            }
+            Assert.assertNotNull(expected);
+            Assert.assertTrue("Wrong exception message.", expected.getMessage().contains("within"));
 
             expected = null;
             try {

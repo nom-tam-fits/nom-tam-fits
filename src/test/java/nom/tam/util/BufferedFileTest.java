@@ -31,8 +31,10 @@ package nom.tam.util;
  * #L%
  */
 
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -131,6 +133,38 @@ public class BufferedFileTest {
                 -1,
                 -1
             }, fully);
+        } finally {
+            file.close();
+        }
+    }
+
+    /**
+     * Write out a random number of integers and stream them back.
+     * @throws Exception for any errors.
+     */
+    @Test
+    public void testReadStream() throws Exception {
+        final String fileName = "target/BufferedFileReadStream";
+        final String mode = "rw";
+        BufferedFile file = new BufferedFile(fileName, mode);
+        final Random random = new Random();
+        final int lowBound = 10;
+        final int highBound = 100;
+        final int byteCount = random.nextInt(highBound - lowBound) + lowBound;
+        final byte[] expectedData = new byte[byteCount];
+        for (int i = 0; i < byteCount; i++) {
+            expectedData[i] = (byte) 0xffffffff;
+        }
+        file.writeArray(expectedData);
+        file.close();
+
+        file = new BufferedFile(fileName, mode);
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        final ArrayDataOutput output = new BufferedDataOutputStream(byteArrayOutputStream);
+        try {
+            file.read(output, ArrayFuncs.getBaseClass(expectedData), 0, byteCount);
+            output.flush();
+            Assert.assertArrayEquals("Wrong data array.", expectedData, byteArrayOutputStream.toByteArray());
         } finally {
             file.close();
         }
