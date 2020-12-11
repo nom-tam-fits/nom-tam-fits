@@ -31,6 +31,7 @@ package nom.tam.util;
  * #L%
  */
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -139,12 +140,12 @@ public class BufferedFileTest {
     }
 
     /**
-     * Write out a random number of integers and stream them back.
+     * Write out a random number of bytes and stream them back.
      * @throws Exception for any errors.
      */
     @Test
-    public void testReadStream() throws Exception {
-        final String fileName = "target/BufferedFileReadStream";
+    public void testReadByteStream() throws Exception {
+        final String fileName = "target/BufferedFileTestStreamByte";
         final String mode = "rw";
         BufferedFile file = new BufferedFile(fileName, mode);
         final Random random = new Random();
@@ -165,6 +166,86 @@ public class BufferedFileTest {
             file.read(output, ArrayFuncs.getBaseClass(expectedData), 0, byteCount);
             output.flush();
             Assert.assertArrayEquals("Wrong data array.", expectedData, byteArrayOutputStream.toByteArray());
+        } finally {
+            file.close();
+        }
+    }
+
+    /**
+     * Write out a random number of floats and stream them back.
+     * @throws Exception for any errors.
+     */
+    @Test
+    public void testReadFloatStream() throws Exception {
+        final String fileName = "target/BufferedFileTestStreamFloat";
+        final String mode = "rw";
+        BufferedFile file = new BufferedFile(fileName, mode);
+        final Random random = new Random();
+        final int lowBound = 10;
+        final int highBound = 100;
+        final int floatCount = random.nextInt(highBound - lowBound) + lowBound;
+        final float[] expectedData = new float[floatCount];
+        for (int i = 0; i < floatCount; i++) {
+            expectedData[i] = (float) 0xffffffff;
+        }
+        file.writeArray(expectedData);
+        file.close();
+
+        file = new BufferedFile(fileName, mode);
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        final ArrayDataOutput output = new BufferedDataOutputStream(byteArrayOutputStream);
+        try {
+            file.read(output, ArrayFuncs.getBaseClass(expectedData), 0, floatCount);
+            output.flush();
+
+            final ByteArrayInputStream byteArrayInputStream =
+                    new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            final ArrayDataInput input = new BufferedDataInputStream(byteArrayInputStream);
+            final float[] resultData = new float[floatCount];
+            input.read(resultData);
+            Assert.assertArrayEquals("Wrong data array.", expectedData, resultData, 0.0F);
+        } finally {
+            file.close();
+        }
+    }
+
+    /**
+     * Write out a random number of booleans and stream them back.
+     * @throws Exception for any errors.
+     */
+    @Test
+    public void testReadBooleanStream() throws Exception {
+        final String fileName = "target/BufferedFileTestStreamFloat";
+        final String mode = "rw";
+        BufferedFile file = new BufferedFile(fileName, mode);
+        final Random random = new Random();
+        final int lowBound = 10;
+        final int highBound = 100;
+        final int booleanCount = random.nextInt(highBound - lowBound) + lowBound;
+        final boolean[] expectedData = new boolean[booleanCount];
+        for (int i = 0; i < booleanCount; i++) {
+            expectedData[i] = true;
+        }
+        file.writeArray(expectedData);
+        file.close();
+
+        file = new BufferedFile(fileName, mode);
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        final ArrayDataOutput output = new BufferedDataOutputStream(byteArrayOutputStream);
+        try {
+            file.read(output, ArrayFuncs.getBaseClass(expectedData), 0, booleanCount);
+            output.flush();
+
+            final ByteArrayInputStream byteArrayInputStream =
+                    new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            final ArrayDataInput input = new BufferedDataInputStream(byteArrayInputStream);
+            final boolean[] resultData = new boolean[booleanCount];
+            input.read(resultData);
+            Assert.assertEquals("Wrong data length.", expectedData.length, resultData.length);
+
+            for (int i = 0; i < resultData.length; i++) {
+                Assert.assertTrue("Wrong value at " + i, resultData[i]);
+            }
         } finally {
             file.close();
         }

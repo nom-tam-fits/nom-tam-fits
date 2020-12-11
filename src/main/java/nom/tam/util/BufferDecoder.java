@@ -134,7 +134,7 @@ public abstract class BufferDecoder {
         } else if (type == byte.class) {
             for (int i = start; i < start + length; i++) {
                 final byte[] buf = new byte[1];
-                read(buf, 0, 1);
+                read(buf, 0, buf.length);
                 output.writeByte(buf[0]);
             }
         } else if (type == long.class) {
@@ -369,5 +369,4 @@ public abstract class BufferDecoder {
         return this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] << FitsIO.BITS_OF_1_BYTE | //
                 this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK;
     }
-
 }

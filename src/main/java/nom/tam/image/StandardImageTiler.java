@@ -32,12 +32,17 @@ package nom.tam.image;
  */
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsUtil;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.FitsIO;
+import nom.tam.util.MemoryUsage;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.type.PrimitiveTypeHandler;
 
@@ -46,6 +51,7 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  * by T. McGlynn to permit tiles that go off the edge of the image.
  */
 public abstract class StandardImageTiler implements ImageTiler {
+    private static final Logger LOGGER = Logger.getLogger(StandardImageTiler.class.getName());
 
     /**
      * @return the offset of a given position.
@@ -307,9 +313,16 @@ public abstract class StandardImageTiler implements ImageTiler {
      */
     protected void streamTile(ArrayDataOutput output, int[] newDims, int[] corners, int[] lengths) throws IOException {
 
+        final ByteIndexer byteIndexer = new ByteIndexer();
+
         int n = newDims.length;
         int[] posits = new int[n];
         int segment = lengths[n - 1];
+
+        // Ask the base class for its proper size.
+        int baseLength = PrimitiveTypeHandler.valueOf(this.base).size();
+        int loopCount = 0;
+        final int loopCheck = 200;
 
         System.arraycopy(corners, 0, posits, 0, n);
 
@@ -336,26 +349,21 @@ public abstract class StandardImageTiler implements ImageTiler {
             }
 
             if (validSegment) {
-                // Ask the base class for its proper size.
-                int baseLength = PrimitiveTypeHandler.valueOf(this.base).size();
                 long offset = getOffset(newDims, posits) * baseLength;
+                this.randomAccessFile.seek(this.fileOffset + offset);
+                this.randomAccessFile.read(output, this.base, 0, segment);
 
-                // Point to offset at real beginning of segment
-                int actualLen = segment;
-                long actualOffset = offset;
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    byteIndexer.increment(this.base, segment);
 
-                if (posits[mx] < 0) {
-                    actualOffset -= (long) posits[mx] * baseLength;
-                    actualLen += posits[mx];
+                    if (loopCount % loopCheck == 0) {
+                        byteIndexer.mark();
+                        MemoryUsage.checkpoint();
+                    }
                 }
-                if (posits[mx] + segment > newDims[mx]) {
-                    actualLen -= posits[mx] + segment - newDims[mx];
-                }
-
-                this.randomAccessFile.seek(this.fileOffset + actualOffset);
-                this.randomAccessFile.read(output, this.base, 0, actualLen);
             }
 
+            loopCount++;
         } while (incrementPosition(corners, posits, lengths));
     }
 
@@ -472,5 +480,70 @@ public abstract class StandardImageTiler implements ImageTiler {
             throw new IOException("No data source for tile subset");
         }
         fillTile(data, outArray, this.dims, corners, lengths);
+    }
+
+    private static final class ByteIndexer {
+        private static final long MILLISECONDS_TO_SECONDS = 1000L;
+        private long bytesWritten = 0L;
+        private final Date startDate = new Date();
+
+
+        void incrementInt(final int byteCount) {
+            bytesWritten += (long) FitsIO.BYTES_IN_INTEGER * byteCount;
+        }
+
+        void incrementDouble(final int byteCount) {
+            bytesWritten += (long) FitsIO.BYTES_IN_DOUBLE * byteCount;
+        }
+
+        void incrementFloat(final int byteCount) {
+            bytesWritten += (long) FitsIO.BYTES_IN_FLOAT * byteCount;
+        }
+
+        void incrementLong(final int byteCount) {
+            bytesWritten += (long) FitsIO.BYTES_IN_LONG * byteCount;
+        }
+
+        void incrementByte(final int byteCount) {
+            bytesWritten += byteCount;
+        }
+
+        void incrementBoolean(final int byteCount) {
+            bytesWritten += (long) FitsIO.BYTES_IN_BOOLEAN * byteCount;
+        }
+
+        void incrementShort(final int byteCount) {
+            bytesWritten += (long) FitsIO.BYTES_IN_SHORT * byteCount;
+        }
+
+        void increment(final Class<?> type, final int byteCount) {
+            if (type == byte.class) {
+                incrementByte(byteCount);
+            } else if (type == int.class) {
+                incrementInt(byteCount);
+            } else if (type == short.class) {
+                incrementShort(byteCount);
+            } else if (type == double.class) {
+                incrementDouble(byteCount);
+            } else if (type == float.class) {
+                incrementFloat(byteCount);
+            } else if (type == long.class) {
+                incrementLong(byteCount);
+            } else if (type == boolean.class) {
+                incrementBoolean(byteCount);
+            } else {
+                throw new IllegalStateException("Unknown type " + type);
+            }
+        }
+
+        void mark() {
+            final Date currDate = new Date();
+            final long timeSpent = currDate.getTime() - startDate.getTime();
+            final int seconds = (int) (timeSpent / MILLISECONDS_TO_SECONDS);
+
+            System.out.println(bytesWritten + " bytes written ( "
+                               + (seconds > 0 ? bytesWritten / seconds : bytesWritten)
+                               + " per second )");
+        }
     }
 }

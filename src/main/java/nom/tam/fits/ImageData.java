@@ -250,7 +250,7 @@ public class ImageData extends Data {
                     throw new FitsException("Error attempting to fill image", e);
                 }
 
-            } else if (this.dataArray == null && this.dataDescription != null) {
+            } else if (this.dataDescription != null) {
                 // Need to create an array to match a specified header.
                 this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
 
