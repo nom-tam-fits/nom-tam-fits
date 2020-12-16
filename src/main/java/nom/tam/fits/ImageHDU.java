@@ -107,7 +107,11 @@ public class ImageHDU extends BasicHDU<ImageData> {
     }
 
     public static Data manufactureData(Header hdr) throws FitsException {
-        return new ImageData(hdr);
+        return ImageHDU.manufactureData(hdr, false);
+    }
+
+    public static Data manufactureData(Header hdr, boolean streamWriteFlag) throws FitsException {
+        return streamWriteFlag ? new StreamingImageData(hdr) : new ImageData(hdr);
     }
 
     /**

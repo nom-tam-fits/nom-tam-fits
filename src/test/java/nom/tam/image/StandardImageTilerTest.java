@@ -41,6 +41,7 @@ import nom.tam.util.BufferedFile;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.SafeClose;
 
+import nom.tam.util.type.PrimitiveTypeHandler;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -82,10 +83,8 @@ public class StandardImageTilerTest {
     @Before
     public void setup() throws Exception {
         dataArray = new int[10][10];
-        for (int index = 0; index < dataArray.length; index++) {
-            for (int index2 = 0; index2 < dataArray[index].length; index2++) {
-                dataArray[index][index2] = 1;
-            }
+        for (int[] ints : dataArray) {
+            Arrays.fill(ints, 1);
         }
         BufferedFile file = new BufferedFile("target/StandardImageTilerTest", "rw");
         file.writeArray(dataArray);
@@ -237,4 +236,57 @@ public class StandardImageTilerTest {
         Assert.assertArrayEquals(new int[25], tile);
     }
 
+    @Test
+    public void testByteIndexer() throws Exception {
+        final StandardImageTiler.ByteIndexer testSubject = new StandardImageTiler.ByteIndexer();
+        
+        final int intLength = PrimitiveTypeHandler.valueOf(int.class).size();
+        testSubject.increment(int.class, 45);
+        long bytesWritten = testSubject.getBytesWritten();
+        Assert.assertEquals("Wrong value from int.", bytesWritten, 45L * intLength);
+
+        final int floatLength = PrimitiveTypeHandler.valueOf(float.class).size();
+        testSubject.increment(float.class, 12);
+        Assert.assertEquals("Wrong value from float added.", testSubject.getBytesWritten(),
+                            bytesWritten + (12L * floatLength));
+        bytesWritten = testSubject.getBytesWritten();
+
+        final int doubleLength = PrimitiveTypeHandler.valueOf(double.class).size();
+        testSubject.increment(double.class, 356);
+        Assert.assertEquals("Wrong value from double added.", testSubject.getBytesWritten(),
+                            bytesWritten + (356L * doubleLength));
+        bytesWritten = testSubject.getBytesWritten();
+
+        testSubject.mark();
+
+        final int byteLength = PrimitiveTypeHandler.valueOf(byte.class).size();
+        testSubject.increment(byte.class, 1024);
+        Assert.assertEquals("Wrong value from byte added.", testSubject.getBytesWritten(),
+                            bytesWritten + (1024L * byteLength));
+        bytesWritten = testSubject.getBytesWritten();
+
+        final int longLength = PrimitiveTypeHandler.valueOf(long.class).size();
+        testSubject.increment(long.class, 299);
+        Assert.assertEquals("Wrong value from long added.", testSubject.getBytesWritten(),
+                            bytesWritten + (299L * longLength));
+        bytesWritten = testSubject.getBytesWritten();
+
+        final int booleanLength = PrimitiveTypeHandler.valueOf(boolean.class).size();
+        testSubject.increment(boolean.class, 3);
+        Assert.assertEquals("Wrong value from boolean added.", testSubject.getBytesWritten(),
+                            bytesWritten + (3L * booleanLength));
+        bytesWritten = testSubject.getBytesWritten();
+
+        final int shortLength = PrimitiveTypeHandler.valueOf(short.class).size();
+        testSubject.increment(short.class, 1907);
+        Assert.assertEquals("Wrong value from short added.", testSubject.getBytesWritten(),
+                            bytesWritten + (1907L * shortLength));
+
+        try {
+            testSubject.increment(String.class, 40);
+            Assert.fail("Should have thrown an IllegalStateException");
+        } catch (IllegalStateException illegalStateException) {
+            // Good.
+        }
+    }
 }

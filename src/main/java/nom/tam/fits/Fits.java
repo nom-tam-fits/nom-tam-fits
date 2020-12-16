@@ -150,6 +150,11 @@ public class Fits implements Closeable {
     private boolean atEOF;
 
     /**
+     * Does the Data being read in expect to be Streamed out when written?
+     */
+    private boolean streamWriteFlag = false;
+
+    /**
      * The last offset we reached. A -1 is used to indicate that we cannot use
      * the offset.
      */
@@ -676,7 +681,7 @@ public class Fits implements Closeable {
             this.atEOF = true;
             return null;
         }
-        Data data = hdr.makeData();
+        Data data = hdr.makeData(this.streamWriteFlag);
         try {
             data.read(this.dataStr);
         } catch (PaddingException e) {
@@ -742,6 +747,10 @@ public class Fits implements Closeable {
         this.dataStr = stream;
         this.atEOF = false;
         this.lastFileOffset = -1;
+    }
+
+    public void setStreamWrite(final boolean useStreamWrite) {
+        this.streamWriteFlag = useStreamWrite;
     }
 
     /**

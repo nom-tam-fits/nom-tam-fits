@@ -76,12 +76,19 @@ public class ImageData extends Data {
     protected static class ArrayDesc {
 
         private final int[] dims;
-
         private final Class<?> type;
 
         ArrayDesc(int[] dims, Class<?> type) {
             this.dims = dims;
             this.type = type;
+        }
+
+        int[] getDimensions() {
+            return dims;
+        }
+
+        Class<?> getType() {
+            return type;
         }
     }
 
@@ -115,7 +122,7 @@ public class ImageData extends Data {
     private Object dataArray;
 
     /** A description of what the data should look like */
-    private ArrayDesc dataDescription;
+    protected ArrayDesc dataDescription;
 
     /** The image tiler associated with this image. */
     private StandardImageTiler tiler;

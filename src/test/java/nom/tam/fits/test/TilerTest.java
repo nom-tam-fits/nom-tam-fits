@@ -124,8 +124,7 @@ public class TilerTest {
         LOGGER.fine("doTile3()");
 
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        final DataOutputStream outputStream = new DataOutputStream(byteArrayOutputStream);
-        final ArrayDataOutput output = new BufferedDataOutputStream(outputStream);
+        final ArrayDataOutput output = new BufferedDataOutputStream(byteArrayOutputStream);
 
         t.getTile(output, new int[]{
                 y,
@@ -139,8 +138,7 @@ public class TilerTest {
         float expectedSum = 0;
         final ByteArrayInputStream byteArrayInputStream =
                 new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-        final DataInputStream inputStream = new DataInputStream(byteArrayInputStream);
-        final ArrayDataInput input = new BufferedDataInputStream(inputStream);
+        final ArrayDataInput input = new BufferedDataInputStream(byteArrayInputStream);
         final Class<?> type = ArrayFuncs.getBaseClass(data);
         final Object testInput = ArrayFuncs.newInstance(type, ny * nx);
 
@@ -236,10 +234,16 @@ public class TilerTest {
     }
 
     private void doTest(Object data, String suffix) throws Exception {
+        doTest(data, suffix, false);
+        doTest(data, suffix, true);
+    }
+
+    private void doTest(Object data, String suffix, boolean useStreamWrite) throws Exception {
         Fits f = null;
         BufferedFile bf = null;
         try {
             f = new Fits();
+            f.setStreamWrite(useStreamWrite);
             bf = new BufferedFile("target/tiler" + suffix + ".fits", "rw");
             f.addHDU(Fits.makeHDU(data));
             f.write(bf);
@@ -250,6 +254,7 @@ public class TilerTest {
 
         try {
             f = new Fits("target/tiler" + suffix + ".fits");
+            f.setStreamWrite(useStreamWrite);
             ImageHDU h = (ImageHDU) f.readHDU();
 
             StandardImageTiler t = h.getTiler();
@@ -291,10 +296,10 @@ public class TilerTest {
             expected = null;
             try {
                 t.getTile(new int[]{
-                    10,
-                    10
+                        10,
+                        10
                 }, new int[]{
-                    20
+                        20
                 });
             } catch (IOException e) {
                 expected = e;

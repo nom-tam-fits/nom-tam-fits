@@ -33,12 +33,9 @@ package nom.tam.image;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.fits.FitsException;
-import nom.tam.fits.FitsUtil;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsIO;
@@ -50,8 +47,7 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  * This class provides a subset of an N-dimensional image. Modified May 2, 2000
  * by T. McGlynn to permit tiles that go off the edge of the image.
  */
-public abstract class StandardImageTiler implements ImageTiler {
-    private static final Logger LOGGER = Logger.getLogger(StandardImageTiler.class.getName());
+public abstract class StandardImageTiler implements ImageTiler, Cloneable {
 
     /**
      * @return the offset of a given position.
@@ -353,14 +349,14 @@ public abstract class StandardImageTiler implements ImageTiler {
                 this.randomAccessFile.seek(this.fileOffset + offset);
                 this.randomAccessFile.read(output, this.base, 0, segment);
 
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    byteIndexer.increment(this.base, segment);
+                // Print statistics for streaming.
+                byteIndexer.increment(this.base, segment);
 
-                    if (loopCount % loopCheck == 0) {
-                        byteIndexer.mark();
-                        MemoryUsage.checkpoint();
-                    }
+                if (loopCount % loopCheck == 0) {
+                    byteIndexer.mark();
+                    MemoryUsage.checkpoint();
                 }
+                // End statistics printing.
             }
 
             loopCount++;
@@ -387,6 +383,16 @@ public abstract class StandardImageTiler implements ImageTiler {
         return o;
     }
 
+    @Override
+    public StandardImageTiler clone() throws CloneNotSupportedException {
+        return new StandardImageTiler(this.randomAccessFile, 0, this.dims, this.base) {
+            @Override
+            protected Object getMemoryImage() {
+                return null;
+            }
+        };
+    }
+
     /**
      * See if we can get the image data from memory. This may be overridden by
      * other classes, notably in nom.tam.fits.ImageData.
@@ -402,23 +408,16 @@ public abstract class StandardImageTiler implements ImageTiler {
             throw new IOException("Inconsistent sub-image request");
         } else if (output == null) {
             throw new IOException("Attempt to read from null data output");
+        } else {
+            for (int i = 0; i < this.dims.length; i += 1) {
+                if (corners[i] < 0 || lengths[i] < 0 || corners[i] + lengths[i] > this.dims[i]) {
+                    throw new IOException("Sub-image not within image");
+                }
+            }
         }
 
         streamTile(output, this.dims, corners, lengths);
         output.flush();
-
-        int arraySize = 1;
-        for (int i = 0; i < this.dims.length; i += 1) {
-
-            if (corners[i] < 0 || lengths[i] < 0 || corners[i] + lengths[i] > this.dims[i]) {
-                throw new IOException("Sub-image not within image");
-            }
-
-            arraySize *= lengths[i];
-        }
-
-        // Pad the data at the end to match the expected byte length.
-        FitsUtil.pad(output, (long) arraySize * PrimitiveTypeHandler.valueOf(this.base).size());
     }
 
     /**
@@ -482,7 +481,7 @@ public abstract class StandardImageTiler implements ImageTiler {
         fillTile(data, outArray, this.dims, corners, lengths);
     }
 
-    private static final class ByteIndexer {
+    static final class ByteIndexer {
         private static final long MILLISECONDS_TO_SECONDS = 1000L;
         private long bytesWritten = 0L;
         private final Date startDate = new Date();
@@ -534,6 +533,10 @@ public abstract class StandardImageTiler implements ImageTiler {
             } else {
                 throw new IllegalStateException("Unknown type " + type);
             }
+        }
+
+        long getBytesWritten() {
+            return this.bytesWritten;
         }
 
         void mark() {
