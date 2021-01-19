@@ -101,8 +101,15 @@ package nom.tam.util;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-public final class MemoryUsage {
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+/**
+ * Class to print out memory statistics.  It is added to this library as a means of tracking how it navigates through
+ * FITS files and ensuring that no extra memory is used, given that FITS files can have rather large data sets.
+ */
+public final class MemoryUsage {
+    private static final Logger LOGGER = Logger.getLogger(MemoryUsage.class.getName());
     private static final long MEGABYTE = 1024L * 1024L;
 
     public static long bytesToMegabytes(long bytes) {
@@ -110,7 +117,7 @@ public final class MemoryUsage {
     }
 
     private MemoryUsage() {
-
+        LOGGER.setLevel(Level.FINER);
     }
 
     @SuppressFBWarnings(value = "DM_GC", justification = "Checkpoint reporting")
@@ -121,12 +128,12 @@ public final class MemoryUsage {
         // Run the garbage collector
         final long start = System.currentTimeMillis();
         runtime.gc();
-        System.out.println("Garbage Collection: OK (" + (System.currentTimeMillis() - start) + "ms)");
+        LOGGER.fine("Garbage Collection: OK (" + (System.currentTimeMillis() - start) + "ms)");
 
         // Calculate the used memory
         final long memory = runtime.totalMemory() - runtime.freeMemory();
 
-        System.out.println("Memory in bytes: " + memory + " (" + bytesToMegabytes(memory) + "MB)");
+        LOGGER.fine("Memory in bytes: " + memory + " (" + bytesToMegabytes(memory) + "MB)");
 
         return memory;
     }
