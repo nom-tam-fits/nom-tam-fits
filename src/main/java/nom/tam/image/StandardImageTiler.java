@@ -32,16 +32,28 @@ package nom.tam.image;
  */
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import nom.tam.fits.FitsException;
+import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.FitsIO;
+import nom.tam.util.MemoryUsage;
 import nom.tam.util.RandomAccess;
+import nom.tam.util.type.PrimitiveTypeHandler;
 
 /**
  * This class provides a subset of an N-dimensional image. Modified May 2, 2000
  * by T. McGlynn to permit tiles that go off the edge of the image.
+ *
+ * Modified January 19, 2021 by D. Jenkins to allow tiles to be written directly to an ArrayDataOutput to avoid memory
+ * capacity issues.
  */
-public abstract class StandardImageTiler implements ImageTiler {
+public abstract class StandardImageTiler implements ImageTiler, Cloneable {
+    private static final Logger LOGGER = Logger.getLogger(StandardImageTiler.class.getName());
 
     /**
      * @return the offset of a given position.
@@ -121,7 +133,7 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * File a tile segment from a file.
+     * Fill a tile segment from a file.
      * 
      * @param output
      *            The output tile.
@@ -224,7 +236,6 @@ public abstract class StandardImageTiler implements ImageTiler {
 
         int n = newDims.length;
         int[] posits = new int[n];
-        int baseLength = ArrayFuncs.getBaseLength(o);
         int segment = lengths[n - 1];
 
         System.arraycopy(corners, 0, posits, 0, n);
@@ -261,6 +272,7 @@ public abstract class StandardImageTiler implements ImageTiler {
                 if (data != null) {
                     fillMemData(data, posits, segment, o, outputOffset, 0);
                 } else {
+                    int baseLength = ArrayFuncs.getBaseLength(o);
                     long offset = getOffset(newDims, posits) * baseLength;
 
                     // Point to offset at real beginning
@@ -269,7 +281,7 @@ public abstract class StandardImageTiler implements ImageTiler {
                     long actualOffset = offset;
                     int actualOutput = outputOffset;
                     if (posits[mx] < 0) {
-                        actualOffset -= posits[mx] * baseLength;
+                        actualOffset -= (long) posits[mx] * baseLength;
                         actualOutput -= posits[mx];
                         actualLen += posits[mx];
                     }
@@ -285,6 +297,78 @@ public abstract class StandardImageTiler implements ImageTiler {
         if (data == null) {
             this.randomAccessFile.seek(currentOffset);
         }
+    }
+
+    /**
+     * Fill the subset.
+     *
+     * @param output
+     *            The stream to be written to.
+     * @param newDims
+     *            The dimensions of the full image.
+     * @param corners
+     *            The indices of the corner of the image.
+     * @param lengths
+     *            The dimensions of the subset.
+     * @throws IOException
+     *             if the underlying stream failed
+     */
+    protected void streamTile(ArrayDataOutput output, int[] newDims, int[] corners, int[] lengths) throws IOException {
+
+        final ByteIndexer byteIndexer = new ByteIndexer();
+
+        int n = newDims.length;
+        int[] posits = new int[n];
+        int segment = lengths[n - 1];
+
+        // Ask the base class for its proper size.
+        int baseLength = PrimitiveTypeHandler.valueOf(this.base).size();
+        int loopCount = 0;
+        final int loopCheck = 200;
+
+        System.arraycopy(corners, 0, posits, 0, n);
+
+        do {
+
+            // This implies there is some overlap
+            // in the last index (in conjunction
+            // with other tests)
+
+            int mx = newDims.length - 1;
+            boolean validSegment = posits[mx] + lengths[mx] >= 0 && posits[mx] < newDims[mx];
+
+            // Don't do anything for the current
+            // segment if anything but the
+            // last index is out of range.
+
+            if (validSegment) {
+                for (int i = 0; i < mx; i += 1) {
+                    if (posits[i] < 0 || posits[i] >= newDims[i]) {
+                        validSegment = false;
+                        break;
+                    }
+                }
+            }
+
+            if (validSegment) {
+                long offset = getOffset(newDims, posits) * baseLength;
+                this.randomAccessFile.seek(this.fileOffset + offset);
+                this.randomAccessFile.read(output, this.base, 0, segment);
+
+                // Print statistics for streaming.  Only use for FINE (DEBUG) logging.
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    byteIndexer.increment(this.base, segment);
+
+                    if (loopCount % loopCheck == 0) {
+                        byteIndexer.mark();
+                        MemoryUsage.checkpoint();
+                    }
+                }
+                // End statistics printing.
+            }
+
+            loopCount++;
+        } while (incrementPosition(corners, posits, lengths));
     }
 
     /**
@@ -307,6 +391,16 @@ public abstract class StandardImageTiler implements ImageTiler {
         return o;
     }
 
+    @Override
+    public StandardImageTiler clone() throws CloneNotSupportedException {
+        return new StandardImageTiler(this.randomAccessFile, 0, this.dims, this.base) {
+            @Override
+            protected Object getMemoryImage() {
+                return null;
+            }
+        };
+    }
+
     /**
      * See if we can get the image data from memory. This may be overridden by
      * other classes, notably in nom.tam.fits.ImageData.
@@ -314,6 +408,25 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @return the image data
      */
     protected abstract Object getMemoryImage();
+
+    @Override
+    public void getTile(ArrayDataOutput output, int[] corners, int[] lengths) throws FitsException, IOException {
+
+        if (corners.length != this.dims.length || lengths.length != this.dims.length) {
+            throw new IOException("Inconsistent sub-image request");
+        } else if (output == null) {
+            throw new IOException("Attempt to read from null data output");
+        } else {
+            for (int i = 0; i < this.dims.length; i += 1) {
+                if (corners[i] < 0 || lengths[i] < 0 || corners[i] + lengths[i] > this.dims[i]) {
+                    throw new IOException("Sub-image not within image");
+                }
+            }
+        }
+
+        streamTile(output, this.dims, corners, lengths);
+        output.flush();
+    }
 
     /**
      * Get a subset of the image. An image tile is returned as a one-dimensional
@@ -374,5 +487,74 @@ public abstract class StandardImageTiler implements ImageTiler {
             throw new IOException("No data source for tile subset");
         }
         fillTile(data, outArray, this.dims, corners, lengths);
+    }
+
+    static final class ByteIndexer {
+        private static final long MILLISECONDS_TO_SECONDS = 1000L;
+        private long bytesWritten = 0L;
+        private final Date startDate = new Date();
+
+
+        void incrementInt(final int byteCount) {
+            bytesWritten += (long) FitsIO.BYTES_IN_INTEGER * byteCount;
+        }
+
+        void incrementDouble(final int byteCount) {
+            bytesWritten += (long) FitsIO.BYTES_IN_DOUBLE * byteCount;
+        }
+
+        void incrementFloat(final int byteCount) {
+            bytesWritten += (long) FitsIO.BYTES_IN_FLOAT * byteCount;
+        }
+
+        void incrementLong(final int byteCount) {
+            bytesWritten += (long) FitsIO.BYTES_IN_LONG * byteCount;
+        }
+
+        void incrementByte(final int byteCount) {
+            bytesWritten += byteCount;
+        }
+
+        void incrementBoolean(final int byteCount) {
+            bytesWritten += (long) FitsIO.BYTES_IN_BOOLEAN * byteCount;
+        }
+
+        void incrementShort(final int byteCount) {
+            bytesWritten += (long) FitsIO.BYTES_IN_SHORT * byteCount;
+        }
+
+        void increment(final Class<?> type, final int byteCount) {
+            if (type == byte.class) {
+                incrementByte(byteCount);
+            } else if (type == int.class) {
+                incrementInt(byteCount);
+            } else if (type == short.class) {
+                incrementShort(byteCount);
+            } else if (type == double.class) {
+                incrementDouble(byteCount);
+            } else if (type == float.class) {
+                incrementFloat(byteCount);
+            } else if (type == long.class) {
+                incrementLong(byteCount);
+            } else if (type == boolean.class) {
+                incrementBoolean(byteCount);
+            } else {
+                throw new IllegalStateException("Unknown type " + type);
+            }
+        }
+
+        long getBytesWritten() {
+            return this.bytesWritten;
+        }
+
+        void mark() {
+            final Date currDate = new Date();
+            final long timeSpent = currDate.getTime() - startDate.getTime();
+            final int seconds = (int) (timeSpent / MILLISECONDS_TO_SECONDS);
+
+            LOGGER.info(bytesWritten + " bytes written ( "
+                        + (seconds > 0 ? bytesWritten / seconds : bytesWritten)
+                        + " per second )");
+        }
     }
 }

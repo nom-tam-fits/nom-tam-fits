@@ -134,9 +134,24 @@ public final class FitsFactory {
      *             the type of the data
      */
     public static Data dataFactory(Header hdr) throws FitsException {
+        return FitsFactory.dataFactory(hdr, false);
+    }
+
+    /**
+     * @return Given a Header construct an appropriate data.
+     * @param hdr
+     *            header to create the data from
+     * @param streamWriteFlag
+     *            flag to indicate using stream writing
+     * @throws FitsException
+     *             if the header did not contain enough information to detect
+     *             the type of the data
+     */
+    public static Data dataFactory(Header hdr, boolean streamWriteFlag) throws FitsException {
 
         if (ImageHDU.isHeader(hdr)) {
-            Data d = ImageHDU.manufactureData(hdr);
+
+            Data d = ImageHDU.manufactureData(hdr, streamWriteFlag);
             hdr.afterExtend(); // Fix for positioning error noted by V. Forchi
             return d;
         } else if (RandomGroupsHDU.isHeader(hdr)) {

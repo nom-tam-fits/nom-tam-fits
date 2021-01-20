@@ -1,14 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package nom.tam.image;
+package nom.tam.util;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2020 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -35,22 +31,14 @@ package nom.tam.image;
  * #L%
  */
 
-import nom.tam.fits.FitsException;
-import nom.tam.util.ArrayDataOutput;
+import org.junit.Test;
 
-import java.io.IOException;
-
-/**
- * @author tmcglynn
- */
-public interface ImageTiler {
-
-    Object getCompleteImage() throws IOException;
-
-    Object getTile(int[] corners, int[] lengths) throws IOException;
-
-    void getTile(ArrayDataOutput output, int[] corners, int[] lengths) throws FitsException, IOException;
-
-    void getTile(Object array, int[] corners, int[] lengths) throws IOException;
-
+public class MemoryUsageTest {
+    /**
+     * Here because the code coverage wants it covered.
+     */
+    @Test
+    public void testCheckpoint() {
+        MemoryUsage.checkpoint();
+    }
 }

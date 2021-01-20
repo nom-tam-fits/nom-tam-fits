@@ -49,6 +49,21 @@ public interface ArrayDataInput extends java.io.DataInput, FitsIO {
     void mark(int readlimit) throws IOException;
 
     /**
+     * Stream out a read to the given output.
+     * @param output
+     *            The data output to write to.
+     * @param type
+     *            The type of data to expect.
+     * @param offset
+     *            The index to start at.
+     * @param size
+     *            The amount of data to write.
+     * @throws IOException
+     *            if one of the underlying operations fails
+     */
+    void read(ArrayDataOutput output, Class<?> type, int offset, int size) throws IOException;
+
+    /**
      * Read an array of byte's.
      * 
      * @return number of bytes read.

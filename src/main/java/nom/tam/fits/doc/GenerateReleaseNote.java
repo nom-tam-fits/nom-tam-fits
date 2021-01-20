@@ -65,7 +65,7 @@ public final class GenerateReleaseNote {
 
         String fileName = "NOTE.v" + version.substring(0, version.indexOf('.')) + version.substring(version.indexOf('.') + 1);
 
-        PrintStream out = new PrintStream(new File("target/" + fileName));
+        PrintStream out = new PrintStream("target/" + fileName, "UTF-8");
 
         out.print("Release ");
         out.println(version);

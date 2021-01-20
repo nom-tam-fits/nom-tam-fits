@@ -114,6 +114,46 @@ public abstract class BufferDecoder {
 
     protected abstract int eofCheck(EOFException e, int start, int index, int length) throws EOFException;
 
+    protected void read(ArrayDataOutput output, Class<?> type, int start, int length) throws IOException {
+        if (type == float.class) {
+            for (int i = start; i < start + length; i++) {
+                output.writeFloat(readFloat());
+            }
+        } else if (type == int.class) {
+            for (int i = start; i < start + length; i++) {
+                output.writeInt(readInt());
+            }
+        } else if (type == short.class) {
+            for (int i = start; i < start + length; i++) {
+                output.writeShort(readShort());
+            }
+        } else if (type == double.class) {
+            for (int i = start; i < start + length; i++) {
+                output.writeDouble(readDouble());
+            }
+        } else if (type == byte.class) {
+            for (int i = start; i < start + length; i++) {
+                final byte[] buf = new byte[1];
+                read(buf, 0, buf.length);
+                output.writeByte(buf[0]);
+            }
+        } else if (type == long.class) {
+            for (int i = start; i < start + length; i++) {
+                output.writeLong(readLong());
+            }
+        } else if (type == boolean.class) {
+            for (int i = start; i < start + length; i++) {
+                output.writeBoolean(readBoolean());
+            }
+        } else if (type == char.class) {
+            for (int i = start; i < start + length; i++) {
+                output.writeChar(readChar());
+            }
+        } else {
+            throw new IOException("Invalid type for tile array");
+        }
+    }
+
     protected int read(boolean[] b, int start, int length) throws IOException {
 
         int i = start;
@@ -145,18 +185,13 @@ public abstract class BufferDecoder {
                 this.sharedBuffer.bufferOffset += get;
                 offset += get;
                 total += get;
-                continue;
 
             } else {
 
                 // This might be pretty long, but we know that the
                 // old dataBuffer.buffer is exhausted.
                 try {
-                    if (len > this.sharedBuffer.buffer.length) {
-                        checkBuffer(this.sharedBuffer.buffer.length);
-                    } else {
-                        checkBuffer(len);
-                    }
+                    checkBuffer(Math.min(len, this.sharedBuffer.buffer.length));
                 } catch (EOFException e) {
                     if (this.sharedBuffer.bufferLength > 0) {
                         System.arraycopy(this.sharedBuffer.buffer, 0, buf, offset, this.sharedBuffer.bufferLength);
@@ -338,5 +373,4 @@ public abstract class BufferDecoder {
         return this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] << FitsIO.BITS_OF_1_BYTE | //
                 this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] & FitsIO.BYTE_MASK;
     }
-
 }

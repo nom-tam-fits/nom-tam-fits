@@ -1177,7 +1177,18 @@ public class Header implements FitsElement {
      *             the type of the data
      */
     public Data makeData() throws FitsException {
-        return FitsFactory.dataFactory(this);
+        return makeData(false);
+    }
+
+    /**
+     * @return Create the data element corresponding to the current header
+     * @param streamWriteFlag   Flag to indicate that a Streaming data implementation is expected.
+     * @throws FitsException
+     *             if the header did not contain enough information to detect
+     *             the type of the data
+     */
+    public Data makeData(boolean streamWriteFlag) throws FitsException {
+        return FitsFactory.dataFactory(this, streamWriteFlag);
     }
 
     /**
