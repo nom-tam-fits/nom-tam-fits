@@ -145,6 +145,10 @@ public abstract class BufferDecoder {
             for (int i = start; i < start + length; i++) {
                 output.writeBoolean(readBoolean());
             }
+        } else if (type == char.class) {
+            for (int i = start; i < start + length; i++) {
+                output.writeChar(readChar());
+            }
         } else {
             throw new IOException("Invalid type for tile array");
         }

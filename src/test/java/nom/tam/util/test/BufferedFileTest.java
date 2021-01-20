@@ -48,7 +48,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.lang.reflect.Array;
 
+import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.PrimitiveTypeHandler;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -794,6 +798,28 @@ public class BufferedFileTest {
         }
     }
 
+    void testStreamArray(ArrayDataInput bf, String label, Object array) throws Exception {
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        final Class<?> type = ArrayFuncs.getBaseClass(array);
+        final ArrayDataOutput dataOutput = new BufferedDataOutputStream(byteArrayOutputStream);
+        final PrimitiveType<?> primType = PrimitiveTypeHandler.valueOf(type);
+
+        // The size is the computed size of the array in number of items (i.e. without the primitive conversion).
+        final int size = (int) (ArrayFuncs.computeLSize(array) / primType.size());
+
+        bf.read(dataOutput, type, 0, size);
+        dataOutput.flush();
+
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+        final ArrayDataInput input = new BufferedDataInputStream(byteArrayInputStream);
+        final Object newArray = ArrayFuncs.mimicArray(array, type);
+
+        input.readLArray(newArray);
+
+        boolean state = TestArrayFuncs.arrayEquals(array, newArray);
+        assertTrue(label, state);
+    }
+
     void testArray(ArrayDataInput bf, String label, Object array) throws Exception {
         Object newArray = ArrayFuncs.mimicArray(array, ArrayFuncs.getBaseClass(array));
         bf.readLArray(newArray);
@@ -978,6 +1004,96 @@ public class BufferedFileTest {
         testArray(bi, "slong1", tl0);
         testArray(bi, "slongnull", tl1);
         testArray(bi, "sshort2", ts);
+        bi.skipBytes(10000);
+        assertEquals('Y', bi.read());
+    }
+
+    @Test
+    public void testBufferedReadToStream() throws Exception {
+
+        double[][] td = new double[100][600];
+        for (int i = 0; i < 100; i += 1) {
+            for (int j = 0; j < 600; j += 1) {
+                td[i][j] = i + 2 * j;
+            }
+        }
+        int[][][] ti = new int[5][4][3];
+        for (int i = 0; i < 5; i += 1) {
+            for (int j = 0; j < 4; j += 1) {
+                for (int k = 0; k < 3; k += 1) {
+                    ti[i][j][k] = i * j * k;
+                }
+            }
+        }
+
+        float[][] tf = new float[10][];
+        for (int i = 0; i < 10; i += 1) {
+            tf[i] = new float[i];
+            for (int j = 0; j < i; j += 1) {
+                tf[i][j] = (float) Math.sin(i * j);
+            }
+        }
+
+        boolean[] tb = new boolean[100];
+        for (int i = 2; i < 100; i += 1) {
+            tb[i] = !tb[i - 1];
+        }
+
+        short[][] ts = new short[5][5];
+        ts[2][2] = 222;
+
+        byte[] tbyte = new byte[1024];
+        for (int i = 0; i < tbyte.length; i += 1) {
+            tbyte[i] = (byte) i;
+        }
+
+        char[] tc = new char[10];
+        tc[3] = 'c';
+
+        long[][][] tl0 = new long[1][1][1];
+        long[][][] tl1 = new long[1][1][0];
+
+        BufferedDataOutputStream bf = new BufferedDataOutputStream(new FileOutputStream("jtest.fil"));
+
+        bf.writeArray(td);
+        bf.writeArray(tf);
+        bf.writeArray(ti);
+        bf.writeArray(ts);
+        bf.writeArray(tb);
+        bf.writeArray(tbyte);
+        bf.writeArray(tc);
+        bf.writeArray(tl0);
+        bf.writeArray(tl1);
+        bf.writeArray(ts);
+
+        for (int index = 0; index < 10000; index++) {
+            bf.write('X');
+        }
+        bf.write('Y');
+
+        bf.close();
+
+        // do not allow the use of the skip method to simulate streams that do
+        // not support it.
+        FileInputStream fileInput = new FileInputStream("jtest.fil") {
+
+            @Override
+            public long skip(long n) throws IOException {
+                throw new IOException("not supported");
+            }
+        };
+        BufferedDataInputStream bi = new BufferedDataInputStream(fileInput);
+
+        testStreamArray(bi, "sdouble", td);
+        testStreamArray(bi, "sfloat", tf);
+        testStreamArray(bi, "sint", ti);
+        testStreamArray(bi, "sshort", ts);
+        testStreamArray(bi, "sbool", tb);
+        testStreamArray(bi, "sbyte", tbyte);
+        testStreamArray(bi, "schar", tc);
+        testStreamArray(bi, "slong1", tl0);
+        testStreamArray(bi, "slongnull", tl1);
+        testStreamArray(bi, "sshort2", ts);
         bi.skipBytes(10000);
         assertEquals('Y', bi.read());
     }

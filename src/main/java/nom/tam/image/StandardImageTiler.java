@@ -33,6 +33,8 @@ package nom.tam.image;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.fits.FitsException;
@@ -46,8 +48,12 @@ import nom.tam.util.type.PrimitiveTypeHandler;
 /**
  * This class provides a subset of an N-dimensional image. Modified May 2, 2000
  * by T. McGlynn to permit tiles that go off the edge of the image.
+ *
+ * Modified January 19, 2021 by D. Jenkins to allow tiles to be written directly to an ArrayDataOutput to avoid memory
+ * capacity issues.
  */
 public abstract class StandardImageTiler implements ImageTiler, Cloneable {
+    private static final Logger LOGGER = Logger.getLogger(StandardImageTiler.class.getName());
 
     /**
      * @return the offset of a given position.
@@ -349,12 +355,14 @@ public abstract class StandardImageTiler implements ImageTiler, Cloneable {
                 this.randomAccessFile.seek(this.fileOffset + offset);
                 this.randomAccessFile.read(output, this.base, 0, segment);
 
-                // Print statistics for streaming.
-                byteIndexer.increment(this.base, segment);
+                // Print statistics for streaming.  Only use for FINE (DEBUG) logging.
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    byteIndexer.increment(this.base, segment);
 
-                if (loopCount % loopCheck == 0) {
-                    byteIndexer.mark();
-                    MemoryUsage.checkpoint();
+                    if (loopCount % loopCheck == 0) {
+                        byteIndexer.mark();
+                        MemoryUsage.checkpoint();
+                    }
                 }
                 // End statistics printing.
             }
@@ -544,9 +552,9 @@ public abstract class StandardImageTiler implements ImageTiler, Cloneable {
             final long timeSpent = currDate.getTime() - startDate.getTime();
             final int seconds = (int) (timeSpent / MILLISECONDS_TO_SECONDS);
 
-            System.out.println(bytesWritten + " bytes written ( "
-                               + (seconds > 0 ? bytesWritten / seconds : bytesWritten)
-                               + " per second )");
+            LOGGER.info(bytesWritten + " bytes written ( "
+                        + (seconds > 0 ? bytesWritten / seconds : bytesWritten)
+                        + " per second )");
         }
     }
 }
