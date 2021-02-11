@@ -12,7 +12,7 @@ repositories {
 
 sourceCompatibility = 1.8
 group = 'org.opencadc'
-version = '1.16.1'
+version = '1.16.2'
 
 dependencies {
     compile 'com.google.code.findbugs:annotations:[3.0,4.0)'

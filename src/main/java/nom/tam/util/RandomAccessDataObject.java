@@ -32,9 +32,7 @@ package nom.tam.util;
  */
 
 import java.io.Closeable;
-import java.io.FileDescriptor;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 
 /**
  * Minimal interface for underlying data object that supports random access. The
@@ -79,11 +77,4 @@ public interface RandomAccessDataObject extends Closeable {
     void write(int i) throws IOException;
     
     void writeUTF(String s) throws IOException;
-    
-    // misc methods: not likely implementable by anything not a File
-    
-    FileChannel getChannel();
-    
-    FileDescriptor getFD() throws IOException;
-
 }
