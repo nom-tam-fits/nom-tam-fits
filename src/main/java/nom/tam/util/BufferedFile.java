@@ -62,7 +62,6 @@ package nom.tam.util;
  */
 import java.io.EOFException;
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -316,12 +315,9 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     @Override
     protected void finalize() {
         try {
-            if (getFD().valid()) {
-                flush();
-                close();
-            }
-        } catch (Exception e) {
-            BufferedFile.LOG.log(Level.SEVERE, "could not finalize buffered file", e);
+            close();
+        } catch (IOException e) {
+            BufferedFile.LOG.log(Level.SEVERE, "could not flush and close buffered file", e);
         }
     }
 
@@ -345,9 +341,9 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      * 
      * @return the file channel
      */
-    public java.nio.channels.FileChannel getChannel() {
-        return this.randomAccessFile.getChannel();
-    }
+    //public java.nio.channels.FileChannel getChannel() {
+    //    return this.randomAccessFile.getChannel();
+    //}
 
     /**
      * Get the file descriptor associated with this stream. Note that this
@@ -357,9 +353,9 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
      * @throws IOException
      *             if the descriptor could not be accessed.
      */
-    public FileDescriptor getFD() throws IOException {
-        return this.randomAccessFile.getFD();
-    }
+    //public FileDescriptor getFD() throws IOException {
+    //    return this.randomAccessFile.getFD();
+    //}
 
     /**
      * Get the current offset into the file.
