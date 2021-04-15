@@ -20,4 +20,4 @@ jobs:
         java-version: 1.8
     
     - name: build and test nom-tam-fits
-      run: gradle --info clean assemble javadoc
+      run: ./gradlew --info clean assemble javadoc
