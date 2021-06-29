@@ -140,11 +140,17 @@ public class BufferedFileTest {
     }
 
     /**
-     * Write out a random number of bytes and stream them back.
+     * Write out a random number of bytes and stream back every nth value.
      * @throws Exception for any errors.
      */
     @Test
     public void testReadByteStream() throws Exception {
+        for (int i = 1; i < 15; i++) {
+            testReadByteStream(i);
+        }
+    }
+
+    void testReadByteStream(final int step) throws Exception {
         final String fileName = "target/BufferedFileTestStreamByte";
         final String mode = "rw";
         BufferedFile file = new BufferedFile(fileName, mode);
@@ -152,50 +158,74 @@ public class BufferedFileTest {
         final int lowBound = 10;
         final int highBound = 100;
         final int byteCount = random.nextInt(highBound - lowBound) + lowBound;
-        final byte[] expectedData = new byte[byteCount];
+        final byte[] entireData = new byte[byteCount];
+        final int expectedCount = (int) Math.ceil((double) byteCount / step);
+        final byte[] expectedData = new byte[expectedCount];
         for (int i = 0; i < byteCount; i++) {
-            expectedData[i] = (byte) 0xffffffff;
+            final byte[] bytes = new byte[1];
+            random.nextBytes(bytes);
+            entireData[i] = bytes[0];
+
+            // Build the expected data at the same time.
+            if (i % step == 0) {
+                expectedData[i / step] = entireData[i];
+            }
         }
-        file.writeArray(expectedData);
+        file.writeArray(entireData);
         file.close();
 
         file = new BufferedFile(fileName, mode);
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         final ArrayDataOutput output = new BufferedDataOutputStream(byteArrayOutputStream);
         try {
-            file.read(output, ArrayFuncs.getBaseClass(expectedData), 0, byteCount);
+            file.read(output, ArrayFuncs.getBaseClass(expectedData), 0, byteCount, step);
             output.flush();
-            Assert.assertArrayEquals("Wrong data array.", expectedData, byteArrayOutputStream.toByteArray());
+            final byte[] resultData = byteArrayOutputStream.toByteArray();
+            Assert.assertArrayEquals("Wrong data array for step " + step, expectedData, resultData);
         } finally {
             file.close();
         }
     }
 
+
+
     /**
-     * Write out a random number of floats and stream them back.
+     * Write out a random number of floats and stream back every nth value.
      * @throws Exception for any errors.
      */
     @Test
     public void testReadFloatStream() throws Exception {
+        for (int i = 1; i < 15; i++) {
+            testReadFloatStream(i);
+        }
+    }
+
+    void testReadFloatStream(final int step) throws Exception {
         final String fileName = "target/BufferedFileTestStreamFloat";
         final String mode = "rw";
         BufferedFile file = new BufferedFile(fileName, mode);
         final Random random = new Random();
         final int lowBound = 10;
-        final int highBound = 100;
+        final int highBound = 1000;
         final int floatCount = random.nextInt(highBound - lowBound) + lowBound;
+        final float[] entireData = new float[floatCount];
         final float[] expectedData = new float[floatCount];
         for (int i = 0; i < floatCount; i++) {
-            expectedData[i] = (float) 0xffffffff;
+            entireData[i] = random.nextFloat();
+
+            // Build the expected data at the same time.
+            if (i % step == 0) {
+                expectedData[i / step] = entireData[i];
+            }
         }
-        file.writeArray(expectedData);
+        file.writeArray(entireData);
         file.close();
 
         file = new BufferedFile(fileName, mode);
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         final ArrayDataOutput output = new BufferedDataOutputStream(byteArrayOutputStream);
         try {
-            file.read(output, ArrayFuncs.getBaseClass(expectedData), 0, floatCount);
+            file.read(output, ArrayFuncs.getBaseClass(expectedData), 0, floatCount, step);
             output.flush();
 
             final ByteArrayInputStream byteArrayInputStream =
@@ -215,25 +245,36 @@ public class BufferedFileTest {
      */
     @Test
     public void testReadBooleanStream() throws Exception {
-        final String fileName = "target/BufferedFileTestStreamFloat";
+        for (int i = 1; i < 15; i++) {
+            testReadBooleanStream(i);
+        }
+    }
+
+    void testReadBooleanStream(final int step) throws Exception {
+        final String fileName = "target/BufferedFileTestStreamBoolean";
         final String mode = "rw";
         BufferedFile file = new BufferedFile(fileName, mode);
         final Random random = new Random();
         final int lowBound = 10;
         final int highBound = 100;
         final int booleanCount = random.nextInt(highBound - lowBound) + lowBound;
+        final boolean[] entireData = new boolean[booleanCount];
         final boolean[] expectedData = new boolean[booleanCount];
         for (int i = 0; i < booleanCount; i++) {
-            expectedData[i] = true;
+            entireData[i] = random.nextBoolean();
+
+            if (i % step == 0) {
+                expectedData[i / step] = entireData[i];
+            }
         }
-        file.writeArray(expectedData);
+        file.writeArray(entireData);
         file.close();
 
         file = new BufferedFile(fileName, mode);
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         final ArrayDataOutput output = new BufferedDataOutputStream(byteArrayOutputStream);
         try {
-            file.read(output, ArrayFuncs.getBaseClass(expectedData), 0, booleanCount);
+            file.read(output, ArrayFuncs.getBaseClass(expectedData), 0, booleanCount, step);
             output.flush();
 
             final ByteArrayInputStream byteArrayInputStream =
@@ -244,8 +285,59 @@ public class BufferedFileTest {
             Assert.assertEquals("Wrong data length.", expectedData.length, resultData.length);
 
             for (int i = 0; i < resultData.length; i++) {
-                Assert.assertTrue("Wrong value at " + i, resultData[i]);
+                Assert.assertEquals("Wrong value at " + i, expectedData[i], resultData[i]);
             }
+        } finally {
+            file.close();
+        }
+    }
+
+    /**
+     * Write out a random number of integers and stream them back.
+     * @throws Exception for any errors.
+     */
+    @Test
+    public void testReadIntegerStream() throws Exception {
+        for (int i = 1; i < 15; i++) {
+            testReadIntegerStream(i);
+        }
+    }
+
+    void testReadIntegerStream(final int step) throws Exception {
+        final String fileName = "target/BufferedFileTestStreamInteger";
+        final String mode = "rw";
+        BufferedFile file = new BufferedFile(fileName, mode);
+        final Random random = new Random();
+        final int lowBound = 10;
+        final int highBound = 100;
+        final int intCount = random.nextInt(highBound - lowBound) + lowBound;
+        final int[] entireData = new int[intCount];
+        final int[] expectedData = new int[intCount];
+        for (int i = 0; i < intCount; i++) {
+            entireData[i] = random.nextInt();
+
+            // Build the expected data at the same time.
+            if (i % step == 0) {
+                expectedData[i / step] = entireData[i];
+            }
+        }
+        file.writeArray(entireData);
+        file.close();
+
+        file = new BufferedFile(fileName, mode);
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        final ArrayDataOutput output = new BufferedDataOutputStream(byteArrayOutputStream);
+        try {
+            file.read(output, ArrayFuncs.getBaseClass(expectedData), 0, intCount, step);
+            output.flush();
+
+
+            final ByteArrayInputStream byteArrayInputStream =
+                    new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            final ArrayDataInput input = new BufferedDataInputStream(byteArrayInputStream);
+            final int[] resultData = new int[intCount];
+            input.read(resultData);
+            Assert.assertArrayEquals("Wrong data array for step " + step, expectedData, resultData);
         } finally {
             file.close();
         }

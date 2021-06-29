@@ -58,10 +58,12 @@ public interface ArrayDataInput extends java.io.DataInput, FitsIO {
      *            The index to start at.
      * @param size
      *            The amount of data to write.
+     * @param step
+     *            The amount of spacing between values.  Caller should default to 1 if unknown.
      * @throws IOException
      *            if one of the underlying operations fails
      */
-    void read(ArrayDataOutput output, Class<?> type, int offset, int size) throws IOException;
+    void read(ArrayDataOutput output, Class<?> type, int offset, int size, int step) throws IOException;
 
     /**
      * Read an array of byte's.

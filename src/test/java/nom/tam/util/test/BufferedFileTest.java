@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.lang.reflect.Array;
 
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.type.PrimitiveType;
@@ -807,7 +806,7 @@ public class BufferedFileTest {
         // The size is the computed size of the array in number of items (i.e. without the primitive conversion).
         final int size = (int) (ArrayFuncs.computeLSize(array) / primType.size());
 
-        bf.read(dataOutput, type, 0, size);
+        bf.read(dataOutput, type, 0, size, 1);
         dataOutput.flush();
 
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());

@@ -11,15 +11,15 @@ repositories {
 
 sourceCompatibility = 1.8
 group = 'org.opencadc'
-version = '1.16.2'
+version = '1.16.3'
 
 description = 'OpenCADC nom-tam-fits library (fork)'
 def git_url = 'https://github.com/opencadc/nom-tam-fits'
 
 dependencies {
-    compile 'com.google.code.findbugs:annotations:[3.0,4.0)'
-    compile 'org.apache.commons:commons-compress:1.18'
+    implementation 'com.google.code.findbugs:annotations:[3.0,4.0)'
+    implementation 'org.apache.commons:commons-compress:1.18'
 
-    testCompile 'junit:junit:4.13'
+    testImplementation 'junit:junit:[4.13,5.0)'
 }
 

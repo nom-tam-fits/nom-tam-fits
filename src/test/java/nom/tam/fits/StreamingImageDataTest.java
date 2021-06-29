@@ -99,20 +99,49 @@ package nom.tam.fits;
  * #L%
  */
 
+import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.BufferedFile;
+import nom.tam.util.Cursor;
+import nom.tam.util.RandomAccess;
+import nom.tam.util.RandomAccessDataObject;
+import nom.tam.util.RandomAccessFileExt;
+import nom.tam.util.type.PrimitiveType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class StreamingImageDataTest {
+    private static final Logger LOGGER = Logger.getLogger(StreamingImageDataTest.class.getName());
+
+    static {
+        LOGGER.setLevel(Level.FINE);
+    }
+
+    /**
+     * This test takes several steps to turning a plain data array into an HDU.  A Header is manufactured from the
+     * source data first, then an HDU can be created and written out to a FITS file to allow all of the proper
+     * padding of data to occur.
+     * Next, the file is read in to get a fresh version of the HDU, which is then sliced using the StreamingImageData
+     * API.
+     * @throws Exception    Any errors during testing are passed up.
+     */
     @Test
     public void testWrite() throws Exception {
         final int[][] testData = new int[300][300];
@@ -158,7 +187,7 @@ public class StreamingImageDataTest {
         final Header sliceHeader = ImageHDU.manufactureHeader(new ImageData(sliceSpec));
         streamingImageData = new StreamingImageData(sliceHeader);
         streamingImageData.setTiler(testHDU.getTiler().clone());
-        streamingImageData.setTile(new int[]{0, 0}, new int[]{40, 100});
+        streamingImageData.setTile(new int[]{0, 0}, new int[]{40, 100}, new int[]{1, 1});
         streamingImageData.write(arrayDataOutput);
 
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(outputStream.toByteArray());
@@ -168,5 +197,98 @@ public class StreamingImageDataTest {
         input.readLArray(testInput);
 
         Assert.assertEquals("Wrong length", (40L * 100L * baseLength), testInput.length * baseLength);
+    }
+
+    /**
+     * This test takes several steps to turning a plain data array into an HDU.  A Header is manufactured from the
+     * source data first, then an HDU can be created and written out to a FITS file to allow all of the proper
+     * padding of data to occur.
+     * Next, the file is read in to get a fresh version of the HDU, which is then sliced using the StreamingImageData
+     * API.
+     * @throws Exception    Any errors during testing are passed up.
+     */
+    @Test
+    public void testWriteStep() throws Exception {
+        final int axis1 = 6;
+        final int axis2 = 6;
+        final int[][] testData = new int[axis1][axis2];
+        for (int i = 0; i < axis1; i += 1) {
+            for (int j = 0; j < axis2; j += 1) {
+                testData[i][j] = 1000 * i + j;
+            }
+        }
+
+        // Setup
+        final File fitsFile = File.createTempFile(StreamingImageDataTest.class.getName(), ".fits");
+        System.out.println("Writing out to FITS file " + fitsFile.getAbsolutePath());
+
+        final ImageData sourceImageData = new ImageData(testData);
+        final Header sourceHeader = ImageHDU.manufactureHeader(sourceImageData);
+        final Fits sourceFits = new Fits();
+        sourceFits.setStreamWrite(true);
+        final BasicHDU<?> hdu = FitsFactory.hduFactory(sourceHeader, sourceImageData);
+        sourceFits.addHDU(hdu);
+        sourceFits.write(fitsFile);
+        sourceFits.close();
+        System.out.println("Writing out to FITS file " + fitsFile.getAbsolutePath() + ": OK");
+
+        final Fits fitsRead = new Fits(fitsFile);
+        fitsRead.setStreamWrite(true);
+        final ImageHDU imageHDU = (ImageHDU) fitsRead.readHDU();
+        final StandardImageTiler tiler = imageHDU.getTiler();
+
+        // Do tile
+        final File cutoutFile = File.createTempFile(StreamingImageDataTest.class.getName(), "-cutout.fits");
+        System.out.println("Writing cutout to FITS file " + cutoutFile.getAbsolutePath());
+        final int cutoutAxis1 = 4;
+        final int cutoutAxis2 = 4;
+        final int[] cutout = new int[]{cutoutAxis1, cutoutAxis2};
+        final int[] steps = new int[]{2, 2};
+
+        // Simulate test data and write the cutout to the output stream.
+        final Fits cutoutFits = new Fits();
+        cutoutFits.setStreamWrite(true);
+        final Header newHeader = new Header();
+        for (final Cursor<String, HeaderCard> iter = sourceHeader.iterator(); iter.hasNext();) {
+            newHeader.addLine(iter.next());
+        }
+        newHeader.setNaxis(1, cutoutAxis1 / steps[0]);
+        newHeader.setNaxis(2, cutoutAxis2 / steps[1]);
+        final StreamingImageData testSubject = (StreamingImageData) FitsFactory.dataFactory(newHeader, true);
+        testSubject.setTiler(tiler);
+        testSubject.setTile(new int[]{0, 0}, cutout, steps);
+        cutoutFits.addHDU(FitsFactory.hduFactory(newHeader, testSubject));
+        cutoutFits.write(cutoutFile);
+        cutoutFits.close();
+        // End writing cutout file.
+
+        final Fits readCutoutFits = new Fits(cutoutFile);
+        readCutoutFits.setStreamWrite(true);
+        readCutoutFits.read();
+
+        final ByteArrayOutputStream readCutoutOutputStream = new ByteArrayOutputStream();
+        final ArrayDataOutput readCutoutArrayDataOutput = new BufferedDataOutputStream(readCutoutOutputStream);
+        final ImageHDU readCutoutHDU = (ImageHDU) readCutoutFits.getHDU(0);
+
+        readCutoutHDU.getData().write(readCutoutArrayDataOutput);
+        readCutoutFits.close();
+
+        final byte[] resultByteArray = readCutoutOutputStream.toByteArray();
+        final ByteArrayOutputStream expectedOutputStream = new ByteArrayOutputStream();
+        final ArrayDataOutput expectedArrayDataOutput = new BufferedDataOutputStream(expectedOutputStream);
+
+        for (int i = 0; i < cutoutAxis1; i += steps[0]) {
+            for (int j = 0; j < cutoutAxis2; j += steps[1]) {
+                expectedArrayDataOutput.writeInt(testData[i][j]);
+            }
+        }
+
+        FitsUtil.pad(expectedArrayDataOutput, readCutoutHDU.getData().getTrueSize());
+
+        expectedArrayDataOutput.close();
+
+        final byte[] expectedByteArray = expectedOutputStream.toByteArray();
+
+        Assert.assertArrayEquals("Wrong output bytes.", expectedByteArray, resultByteArray);
     }
 }

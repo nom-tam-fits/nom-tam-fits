@@ -414,8 +414,8 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     }
 
     @Override
-    public void read(ArrayDataOutput output, Class<?> type, int offset, int size) throws IOException {
-        this.dataDecoder.read(output, type, offset, size);
+    public void read(ArrayDataOutput output, Class<?> type, int offset, int size, int step) throws IOException {
+        this.dataDecoder.read(output, type, offset, size, step);
     }
 
     @Override

@@ -161,8 +161,8 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     }
 
     @Override
-    public void read(ArrayDataOutput output, Class<?> type, int offset, int size) throws IOException {
-        this.bufferDecoder.read(output, type, offset, size);
+    public void read(ArrayDataOutput output, Class<?> type, int offset, int size, int step) throws IOException {
+        this.bufferDecoder.read(output, type, offset, size, step);
     }
 
     @Override

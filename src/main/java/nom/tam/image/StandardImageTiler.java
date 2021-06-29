@@ -310,16 +310,22 @@ public abstract class StandardImageTiler implements ImageTiler, Cloneable {
      *            The indices of the corner of the image.
      * @param lengths
      *            The dimensions of the subset.
+     * @param steps
+     *            The amount between values.
      * @throws IOException
      *             if the underlying stream failed
      */
-    protected void streamTile(ArrayDataOutput output, int[] newDims, int[] corners, int[] lengths) throws IOException {
+    protected void streamTile(ArrayDataOutput output, int[] newDims, int[] corners, int[] lengths, int[] steps)
+            throws IOException {
 
         final ByteIndexer byteIndexer = new ByteIndexer();
 
         int n = newDims.length;
         int[] posits = new int[n];
         int segment = lengths[n - 1];
+
+        // This is the "outer" step value (current row)
+        int segmentStepValue = steps[n - 1];
 
         // Ask the base class for its proper size.
         int baseLength = PrimitiveTypeHandler.valueOf(this.base).size();
@@ -335,7 +341,8 @@ public abstract class StandardImageTiler implements ImageTiler, Cloneable {
             // with other tests)
 
             int mx = newDims.length - 1;
-            boolean validSegment = posits[mx] + lengths[mx] >= 0 && posits[mx] < newDims[mx];
+            boolean validSegment = posits[mx] + lengths[mx] >= 0 && posits[mx] < newDims[mx]
+                                   && (loopCount % segmentStepValue == 0);
 
             // Don't do anything for the current
             // segment if anything but the
@@ -353,7 +360,7 @@ public abstract class StandardImageTiler implements ImageTiler, Cloneable {
             if (validSegment) {
                 long offset = getOffset(newDims, posits) * baseLength;
                 this.randomAccessFile.seek(this.fileOffset + offset);
-                this.randomAccessFile.read(output, this.base, 0, segment);
+                this.randomAccessFile.read(output, this.base, 0, segment, steps[mx]);
 
                 // Print statistics for streaming.  Only use for FINE (DEBUG) logging.
                 if (LOGGER.isLoggable(Level.FINE)) {
@@ -410,7 +417,8 @@ public abstract class StandardImageTiler implements ImageTiler, Cloneable {
     protected abstract Object getMemoryImage();
 
     @Override
-    public void getTile(ArrayDataOutput output, int[] corners, int[] lengths) throws FitsException, IOException {
+    public void getTile(ArrayDataOutput output, int[] corners, int[] lengths, int[] steps)
+            throws FitsException, IOException {
 
         if (corners.length != this.dims.length || lengths.length != this.dims.length) {
             throw new IOException("Inconsistent sub-image request");
@@ -424,7 +432,7 @@ public abstract class StandardImageTiler implements ImageTiler, Cloneable {
             }
         }
 
-        streamTile(output, this.dims, corners, lengths);
+        streamTile(output, this.dims, corners, lengths, steps);
         output.flush();
     }
 

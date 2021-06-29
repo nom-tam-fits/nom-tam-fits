@@ -49,7 +49,7 @@ public interface ImageTiler {
 
     Object getTile(int[] corners, int[] lengths) throws IOException;
 
-    void getTile(ArrayDataOutput output, int[] corners, int[] lengths) throws FitsException, IOException;
+    void getTile(ArrayDataOutput output, int[] corners, int[] lengths, int[] step) throws FitsException, IOException;
 
     void getTile(Object array, int[] corners, int[] lengths) throws IOException;
 

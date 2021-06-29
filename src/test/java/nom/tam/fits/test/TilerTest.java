@@ -132,6 +132,9 @@ public class TilerTest {
         }, new int[]{
                 ny,
                 nx
+        }, new int[]{
+                1,
+                1
         });
 
         float resultSum = 0;

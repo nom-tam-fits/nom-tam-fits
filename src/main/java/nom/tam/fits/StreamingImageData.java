@@ -105,6 +105,7 @@ import nom.tam.util.ArrayDataOutput;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -113,6 +114,7 @@ import java.util.List;
 public class StreamingImageData extends ImageData {
     private final List<Integer> corners = new ArrayList<Integer>();
     private final List<Integer> lengths = new ArrayList<Integer>();
+    private final List<Integer> steps = new ArrayList<Integer>();
 
     /**
      * Constructor to construct parameters around the expected data.
@@ -124,7 +126,7 @@ public class StreamingImageData extends ImageData {
         super(header);
     }
 
-    public void setTile(final int[] cornerValues, final int[] lengthValues) {
+    public void setTile(final int[] cornerValues, final int[] lengthValues, final int[] stepValues) {
         this.corners.clear();
         for (final int i : cornerValues) {
             this.corners.add(i);
@@ -133,6 +135,12 @@ public class StreamingImageData extends ImageData {
         this.lengths.clear();
         for (final int i : lengthValues) {
             this.lengths.add(i);
+        }
+
+        // Step value cannot be
+        this.steps.clear();
+        for (final int i : stepValues) {
+            this.steps.add(i < 0 ? 1 : i);
         }
     }
 
@@ -171,7 +179,20 @@ public class StreamingImageData extends ImageData {
                     }
                 }
 
-                this.getTiler().getTile(o, starts, lens);
+                final int[] stepValues = new int[lens.length];
+                if (this.steps.isEmpty()) {
+                    Arrays.fill(stepValues, 1);
+                } else {
+                    final int size = this.steps.size();
+                    final int[] argumentStepValues = new int[size];
+                    for (int i = 0; i < size; i++) {
+                        argumentStepValues[i] = this.steps.get(i);
+                    }
+
+                    System.arraycopy(argumentStepValues, 0, stepValues, 0, stepValues.length);
+                }
+
+                this.getTiler().getTile(o, starts, lens, stepValues);
                 FitsUtil.pad(o, trueSize);
             }
         } catch (IOException ioException) {

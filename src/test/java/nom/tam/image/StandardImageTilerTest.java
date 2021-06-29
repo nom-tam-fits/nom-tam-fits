@@ -119,7 +119,7 @@ public class StandardImageTilerTest {
         tiler.setFile(null);
         IOException actual = null;
         try {
-            tiler.getTile((ArrayDataOutput) null, new int[2], new int[2]);
+            tiler.getTile((ArrayDataOutput) null, new int[2], new int[2], new int[2]);
         } catch (IOException e) {
             actual = e;
         }

@@ -114,40 +114,64 @@ public abstract class BufferDecoder {
 
     protected abstract int eofCheck(EOFException e, int start, int index, int length) throws EOFException;
 
-    protected void read(ArrayDataOutput output, Class<?> type, int start, int length) throws IOException {
+    protected void read(ArrayDataOutput output, Class<?> type, int start, int length, int step) throws IOException {
         if (type == float.class) {
             for (int i = start; i < start + length; i++) {
-                output.writeFloat(readFloat());
+                final float floatValue = readFloat();
+                if (i % step == 0) {
+                    output.writeFloat(floatValue);
+                }
             }
         } else if (type == int.class) {
             for (int i = start; i < start + length; i++) {
-                output.writeInt(readInt());
+                final int integerValue = readInt();
+                if (i % step == 0) {
+                    output.writeInt(integerValue);
+                }
             }
         } else if (type == short.class) {
             for (int i = start; i < start + length; i++) {
-                output.writeShort(readShort());
+                final int shortValue = readShort();
+                if (i % step == 0) {
+                    output.writeShort(shortValue);
+                }
             }
         } else if (type == double.class) {
             for (int i = start; i < start + length; i++) {
-                output.writeDouble(readDouble());
+                final double doubleValue = readDouble();
+                if (i % step == 0) {
+                    output.writeDouble(doubleValue);
+                }
             }
         } else if (type == byte.class) {
             for (int i = start; i < start + length; i++) {
                 final byte[] buf = new byte[1];
                 read(buf, 0, buf.length);
-                output.writeByte(buf[0]);
+
+                if (i % step == 0) {
+                    output.writeByte(buf[0]);
+                }
             }
         } else if (type == long.class) {
             for (int i = start; i < start + length; i++) {
-                output.writeLong(readLong());
+                final long longValue = readLong();
+                if (i % step == 0) {
+                    output.writeLong(longValue);
+                }
             }
         } else if (type == boolean.class) {
             for (int i = start; i < start + length; i++) {
-                output.writeBoolean(readBoolean());
+                final boolean booleanValue = readBoolean();
+                if (i % step == 0) {
+                    output.writeBoolean(booleanValue);
+                }
             }
         } else if (type == char.class) {
             for (int i = start; i < start + length; i++) {
-                output.writeChar(readChar());
+                final char charValue = readChar();
+                if (i % step == 0) {
+                    output.writeChar(charValue);
+                }
             }
         } else {
             throw new IOException("Invalid type for tile array");
