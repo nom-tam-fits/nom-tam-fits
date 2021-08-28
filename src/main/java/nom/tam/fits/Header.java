@@ -31,6 +31,7 @@ package nom.tam.fits;
  * #L%
  */
 
+import static nom.tam.fits.header.NonStandard.CONTINUE;
 import static nom.tam.fits.header.Standard.BITPIX;
 import static nom.tam.fits.header.Standard.COMMENT;
 import static nom.tam.fits.header.Standard.END;
@@ -1557,8 +1558,8 @@ public class Header implements FitsElement {
         }
     }
 
-    private void addDuplicate(HeaderCard dup) {
-        if (!COMMENT.key().equals(dup.getKey()) && !HISTORY.key().equals(dup.getKey()) && !dup.getKey().trim().isEmpty()) {
+    private void addDuplicate(HeaderCard dup) {      
+        if (!COMMENT.key().equals(dup.getKey()) && !HISTORY.key().equals(dup.getKey()) && !CONTINUE.key().equals(dup.getKey()) && !dup.getKey().trim().isEmpty()) {
             LOG.log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
             if (this.duplicates == null) {
                 this.duplicates = new ArrayList<HeaderCard>();
