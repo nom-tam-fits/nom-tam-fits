@@ -287,18 +287,6 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
     }
 
     @Override
-    protected void finalize() {
-        try {
-            if (getFD().valid()) {
-                flush();
-                close();
-            }
-        } catch (Exception e) {
-            BufferedFile.LOG.log(Level.SEVERE, "could not finalize buffered file", e);
-        }
-    }
-
-    @Override
     public void flush() throws IOException {
 
         if (!this.doingInput && this.bufferPointer.bufferOffset > 0) {
