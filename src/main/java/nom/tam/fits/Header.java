@@ -1558,7 +1558,7 @@ public class Header implements FitsElement {
         }
     }
 
-    private void addDuplicate(HeaderCard dup) {      
+    private void addDuplicate(HeaderCard dup) {
         if (!COMMENT.key().equals(dup.getKey()) && !HISTORY.key().equals(dup.getKey()) && !CONTINUE.key().equals(dup.getKey()) && !dup.getKey().trim().isEmpty()) {
             LOG.log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
             if (this.duplicates == null) {

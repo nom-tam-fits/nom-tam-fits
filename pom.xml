@@ -88,8 +88,8 @@
 		</contributor>
 		<contributor>
 			<name>Attila Kovacs</name>
-			<email>attila [at] submm [dot] caltech [dot] edu</email>
-			<url>http://www.submm.caltech.edu/~attila</url>
+			<email>attila [dot] kovacs [at] cfa [dot] harvard [dot] edu</email>
+			<url>https://www.sigmyne.com/attila</url>
 		</contributor>
 		<contributor>
 			<name>V. Forchi</name>
@@ -334,12 +334,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.17</version>
+				<version>3.1.2</version>
 				<dependencies>
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>6.14.1</version>
+						<version>8.29</version>
 					</dependency>
 				</dependencies>
 				<executions>
@@ -600,7 +600,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
-			<version>1.18</version>
+			<version>1.21</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -612,7 +612,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>4.13.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
