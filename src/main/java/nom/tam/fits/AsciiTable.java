@@ -63,7 +63,7 @@ import nom.tam.util.RandomAccess;
  */
 public class AsciiTable extends AbstractTableData {
 
-    private static final int MAX_INTEGER_LENGTH = 10;
+    private static final int MIN_LONG_LENGTH = 10;
 
     private static final int FLOAT_MAX_LENGTH = 16;
 
@@ -167,7 +167,7 @@ public class AsciiTable extends AbstractTableData {
                     this.types[i] = String.class;
                     break;
                 case 'I':
-                    if (this.lengths[i] > MAX_INTEGER_LENGTH) {
+                    if (this.lengths[i] >= MIN_LONG_LENGTH) {
                         this.types[i] = long.class;
                     } else {
                         this.types[i] = int.class;
