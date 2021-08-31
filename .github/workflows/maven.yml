@@ -32,3 +32,7 @@ jobs:
     - name: Build with Maven
       run: mvn -B clean test --file pom.xml
       working-directory: ./nom-tam-fits
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
