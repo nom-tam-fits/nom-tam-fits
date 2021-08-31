@@ -75,7 +75,7 @@ public class FitsDate {
     private static final int NEW_FORMAT_YEAR_GROUP = 2;
 
     private static final Pattern NORMAL_REGEX = Pattern
-            .compile("\\s*(([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9]))(T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])(\\.([0-9][0-9][0-9]|[0-9][0-9]))?)?\\s*");
+            .compile("\\s*(([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9]))(T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])(\\.([0-9]+))?)?\\s*");
 
     private static final int OLD_FORMAT_DAY_OF_MONTH_GROUP = 1;
 
@@ -85,9 +85,11 @@ public class FitsDate {
 
     private static final Pattern OLD_REGEX = Pattern.compile("\\s*([0-9][0-9])/([0-9][0-9])/([0-9][0-9])\\s*");
 
-    private static final int TWO_DIGIT_MILISECONDS_FACTOR = 10;
-
     private static final int YEAR_OFFSET = 1900;
+    
+    private static final int NB_DIGITS_MILLIS = 3;
+    
+    private static final int POW_TEN = 10;
 
     /**
      * @return the current date in FITS date format
@@ -204,11 +206,12 @@ public class FitsDate {
     private static int getMilliseconds(Matcher match, int groupIndex) {
         String value = match.group(groupIndex);
         if (value != null) {
-            int result = Integer.parseInt(value);
-            if (value.length() == 2) {
-                result = result * FitsDate.TWO_DIGIT_MILISECONDS_FACTOR;
+            value = String.format("%-3s", value).replace(' ', '0');
+            int num = Integer.parseInt(value);
+            if (value.length() > NB_DIGITS_MILLIS) {
+                num = (int) Math.round(num / Math.pow(POW_TEN, value.length() - NB_DIGITS_MILLIS));
             }
-            return result;
+            return num;
         }
         return -1;
     }
