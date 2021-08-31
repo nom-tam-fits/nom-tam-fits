@@ -247,18 +247,10 @@ public class HeaderCard implements CursorValue<String> {
 
         DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.US);
 
-        if (decimalValue.compareTo(BigDecimal.valueOf(1)) == 1 || decimalValue.compareTo(BigDecimal.valueOf(-1)) == -1) {
-            if (useD) {
-                symbols.setExponentSeparator("D+");
-            } else {
-                symbols.setExponentSeparator("E+");
-            }
+        if (useD) {
+            symbols.setExponentSeparator("D");
         } else {
-            if (useD) {
-                symbols.setExponentSeparator("D");
-            } else {
-                symbols.setExponentSeparator("E");
-            }
+            symbols.setExponentSeparator("E");
         }
         DecimalFormat format = new DecimalFormat("0.0E0", symbols);
         format.setRoundingMode(RoundingMode.HALF_UP);
