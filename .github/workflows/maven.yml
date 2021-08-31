@@ -16,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        path: nom-tam-fits
     - name: Check out blackbox images 
       uses: actions/checkout@v2
       with:
