@@ -14,6 +14,4 @@ fork is intended to provide up-to-date code and releases until the main reposito
 
 This for switches from Travis CI to GitHub Actions, and Coveralls to Codecov.io for better Actions integration. It also incorporates recent bug fixes that were submitted as pull requests to the base repo.
 
-Full documentation of the library can be found at:
-
-our documentation at the [nom-tam-fits project site](http://nom-tam-fits.github.io/nom-tam-fits/ "nom-tam-fits project site").
+Full documentation of the library can be found at the nom-tam-fits [Project Site](http://nom-tam-fits.github.io/nom-tam-fits/ "nom-tam-fits project site").
