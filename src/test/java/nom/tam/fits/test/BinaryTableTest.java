@@ -45,8 +45,12 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -478,6 +482,7 @@ public class BinaryTableTest {
             bhdu.setColumnMeta(i, "TX", i + 1, null, true);
             bhdu.setColumnMeta(i, "TY", 2. * (i + 1), null, true);
             bhdu.setColumnMeta(i, "TZ", 3. * (i + 1), i + 1, null, true);
+            bhdu.setColumnMeta(i, "TSCI", 3. * (i + 1), i + 1, false,null, true);
         }
         bhdu.setCurrentColumn(1);
         Assert.assertEquals(-1, bhdu.findColumn("XXX"));
@@ -495,10 +500,13 @@ public class BinaryTableTest {
             hdr.findCard("TTYPE" + (i + 1));
             HeaderCard hc = hdr.nextCard();
             assertEquals("M" + i + "0", "TTYPE" + (i + 1), hc.getKey());
+            assertEquals(String.format("NAM%d", i+1),hc.getValue());
             hc = hdr.nextCard();
             assertEquals("M" + i + "A", "TCOMM" + (i + 1), hc.getKey());
+            assertEquals("T", hc.getValue());
             hc = hdr.nextCard();
             assertEquals("M" + i + "B", "TFORM" + (i + 1), hc.getKey());
+
             hc = hdr.nextCard();
             // There may have been a TDIM keyword inserted automatically. Let's
             // skip it if it was. It should only appear immediately after the
@@ -507,12 +515,25 @@ public class BinaryTableTest {
                 hc = hdr.nextCard();
             }
             assertEquals("M" + i + "C", "TUNIT" + (i + 1), hc.getKey());
+            assertEquals(hc.getValue(),String.format("UNIT%d", i+1));
             hc = hdr.nextCard();
             assertEquals("M" + i + "D", "TX" + (i + 1), hc.getKey());
+            assertEquals(String.format("%d", i+1),hc.getValue());
             hc = hdr.nextCard();
             assertEquals("M" + i + "E", "TY" + (i + 1), hc.getKey());
+            assertEquals(String.format("%.1f", 2. * (i + 1)), hc.getValue());
             hc = hdr.nextCard();
             assertEquals("M" + i + "F", "TZ" + (i + 1), hc.getKey());
+            assertEquals(String.format("%."+(i+1)+"f", 3. * (i + 1)), hc.getValue());
+            hc = hdr.nextCard();
+            assertEquals("M" + i + "F", "TSCI" + (i + 1), hc.getKey());
+            DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.US);
+            DecimalFormat format = new DecimalFormat("0.0E0", symbols);
+            format.setRoundingMode(RoundingMode.HALF_UP);
+            format.setMinimumFractionDigits(i+1);
+            format.setMaximumFractionDigits(i+1);
+            String value = format.format(3. * (i + 1));
+            assertEquals(value, hc.getValue());
         }
     }
 

@@ -92,7 +92,8 @@
 			<url>https://www.sigmyne.com/attila</url>
 		</contributor>
 		<contributor>
-			<name>V. Forchi</name>
+			<name>Vincenzo Forchi</name>
+			<email>vforchi [at] eso [dot] org</email>
 		</contributor>
 		<contributor>
 			<name>J.C. Segovia</name>
@@ -402,7 +403,7 @@
 			<plugin>
 				<groupId>org.eluder.coveralls</groupId>
 				<artifactId>coveralls-maven-plugin</artifactId>
-				<version>4.1.0</version>
+				<version>4.3.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

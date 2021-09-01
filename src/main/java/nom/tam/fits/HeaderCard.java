@@ -83,6 +83,10 @@ public class HeaderCard implements CursorValue<String> {
 
     private static final String HIERARCH_WITH_DOT = NonStandard.HIERARCH.key() + ".";
 
+    private static final char CHR20 = 0x20;
+
+    private static final char CHR7E = 0x7e;
+
     /**
      * regexp for IEEE floats
      */
@@ -247,18 +251,10 @@ public class HeaderCard implements CursorValue<String> {
 
         DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.US);
 
-        if (decimalValue.compareTo(BigDecimal.valueOf(1)) == 1 || decimalValue.compareTo(BigDecimal.valueOf(-1)) == -1) {
-            if (useD) {
-                symbols.setExponentSeparator("D+");
-            } else {
-                symbols.setExponentSeparator("E+");
-            }
+        if (useD) {
+            symbols.setExponentSeparator("D");
         } else {
-            if (useD) {
-                symbols.setExponentSeparator("D");
-            } else {
-                symbols.setExponentSeparator("E");
-            }
+            symbols.setExponentSeparator("E");
         }
         DecimalFormat format = new DecimalFormat("0.0E0", symbols);
         format.setRoundingMode(RoundingMode.HALF_UP);
@@ -1118,6 +1114,26 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
+     * Takes an arbitrary String object and turns it into a string with
+     * characters than can be harmlessly output to a FITS header.
+     * The FITS standard excludes certain characters; moreover writing
+     * non-7-bit characters can end up producing multiple bytes per
+     * character in some text encodings, leading to a corrupted header.
+     *
+     * @param str input string
+     * @return  sanitized string
+     */
+    private static String sanitize(String str) {
+        int nc = str.length();
+        char[] cbuf = new char[nc];
+        for (int ic = 0; ic < nc; ic++) {
+            char c = str.charAt(ic);
+            cbuf[ic] = (c >= CHR20 && c <= CHR7E) ? c : '?';
+        }
+        return new String(cbuf);
+    }
+
+    /**
      * Return the modulo 80 character card image, the toString tries to preserve
      * as much as possible of the comment value by reducing the alignment of the
      * Strings if the comment is longer and if longString is enabled the string
@@ -1204,7 +1220,7 @@ public class HeaderCard implements CursorValue<String> {
             }
         }
         buf.completeLine();
-        return buf.toString();
+        return sanitize(buf.toString());
     }
 
     /**
