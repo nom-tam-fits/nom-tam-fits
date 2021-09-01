@@ -265,7 +265,6 @@ public interface ArrayDataInput extends java.io.DataInput, FitsIO {
      * The ArrayDataInput classes do not support String input since it is
      * unclear how one would read in an Array of strings.
      * 
-     * @return number of bytes read.
      * @param o
      *            A [multidimensional] primitive (or Object) array.
      * @deprecated use {@link ArrayDataInput#readLArray(Object)} instead.
@@ -281,7 +280,6 @@ public interface ArrayDataInput extends java.io.DataInput, FitsIO {
      * read. This version works even if the underlying data is more than 2
      * Gigabytes.
      * 
-     * @return number of bytes read.
      * @param o
      *            The object to be read. This object should be a primitive
      *            (possibly multi-dimensional) array.
