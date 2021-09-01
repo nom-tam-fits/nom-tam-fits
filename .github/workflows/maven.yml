@@ -5,7 +5,7 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ master, remix ]
+    branches: [ master, remix, covtest ]
   pull_request:
     branches: [ master, remix ]
 
@@ -30,5 +30,18 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build with Maven
-      run: mvn -B clean test --file pom.xml
+      run: mvn -B test jacoco:report --file pom.xml
       working-directory: ./nom-tam-fits
+    - name: Publish Test Report
+      if: ${{ always() }}
+      uses: scacap/action-surefire-report@v1
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        working-directory: ./nom-tam-fits
+        files: ./target/site/jacoco/jacoco.xml
+        fail_ci_if_error: false
+        flags: unittests
+        name: codecov
+        verbose: true
