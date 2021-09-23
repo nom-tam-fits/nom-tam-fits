@@ -46,9 +46,11 @@ jobs:
         echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
         
     - name: Commit JaCoCo badge
-      commit_message: JaCoCo badge
-      file_pattern: *.svg
-      repository: nom-tam-fits
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: JaCoCo badge
+        file_pattern: *.svg
+        repository: nom-tam-fits
         
     - name: Upload JaCoCo coverage report
       uses: actions/upload-artifact@v2
