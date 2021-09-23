@@ -1,5 +1,7 @@
 package nom.tam.fits.header.hierarch;
 
+import java.util.Locale;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -37,7 +39,7 @@ public class StandardIHierarchKeyFormatter implements IHierarchKeyFormatter {
 
     @Override
     public void append(String key, FitsLineAppender buffer) {
-        buffer.appendReplacing(key, '.', ' ');
+        buffer.appendReplacing(key.toUpperCase(Locale.US), '.', ' ');
     }
 
 }

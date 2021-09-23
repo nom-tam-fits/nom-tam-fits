@@ -481,15 +481,15 @@ public class HeaderCard implements CursorValue<String> {
         this.isString = false;
 
         String card = readOneHeaderLine(dis);
-
+        
+        // extract the key
+        this.key = FitsHeaderCardParser.parseCardKey(card);
+        
         if (FitsFactory.getUseHierarch() && card.startsWith(HIERARCH_WITH_BLANK)) {
-            hierarchCard(card, dis);
+            extractValueCommentFromString(dis, card);
             return;
         }
-
-        // extract the key
-        this.key = card.substring(0, MAX_KEYWORD_LENGTH).trim();
-
+            
         // if it is an empty key, assume the remainder of the card is a comment
         if (this.key.isEmpty()) {
             this.comment = card.substring(MAX_KEYWORD_LENGTH);
@@ -1259,18 +1259,6 @@ public class HeaderCard implements CursorValue<String> {
             return Boolean.FALSE;
         }
         return defaultValue;
-    }
-
-    /**
-     * Process HIERARCH style cards... HIERARCH LEV1 LEV2 ... = value / comment
-     * The keyword for the card will be "HIERARCH.LEV1.LEV2..." A '/' is assumed
-     * to start a comment.
-     *
-     * @param dis
-     */
-    private void hierarchCard(String card, HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
-        this.key = FitsHeaderCardParser.parseCardKey(card);
-        extractValueCommentFromString(dis, card);
     }
 
     private void longStringCard(HeaderCardCountingArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException {

@@ -1589,12 +1589,12 @@ public class Header implements FitsElement {
     }
 
     private void checkFirstCard(String key) throws IOException {
-        if (key == null || !key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {
+        if (key == null || !key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {            
             if (this.fileOffset > 0 && FitsFactory.getAllowTerminalJunk()) {
                 throw new EOFException("Not FITS format at " + this.fileOffset + ":" + key);
-            } else {
-                throw new IOException("Not FITS format at " + this.fileOffset + ":" + key);
             }
+            
+            throw new IOException("Not FITS format at " + this.fileOffset + ":" + key);
         }
     }
 
