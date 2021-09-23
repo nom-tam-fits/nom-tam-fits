@@ -50,13 +50,13 @@ jobs:
       with:
         commit_message: JaCoCo badge
         file_pattern: *.svg
-        repository: nom-tam-fits
+        repository: ./nom-tam-fits
         
     - name: Upload JaCoCo coverage report
       uses: actions/upload-artifact@v2
       with:
         name: jacoco-report
-        path: nom-tam-fits/target/site/jacoco/
+        path: ./nom-tam-fits/target/site/jacoco/
 
     - name: Publish test report
       if: ${{ always() }}
