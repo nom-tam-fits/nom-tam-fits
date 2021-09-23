@@ -14,20 +14,24 @@ jobs:
     - uses: actions/checkout@v2
       with:
         path: nom-tam-fits
+        
     - name: Check out blackbox images 
       uses: actions/checkout@v2
       with:
         repository: nom-tam-fits/blackbox-images
         path: blackbox-images
+        
     - name: Set up JDK 11
       uses: actions/setup-java@v2
       with:
         java-version: '11'
         distribution: 'adopt'
         cache: maven
+        
     - name: Build with Maven
       run: mvn -B test jacoco:report --file pom.xml
       working-directory: ./nom-tam-fits
+      
     - name: Generate JaCoCo badge
       uses: cicirello/jacoco-badge-generator@v2
       with:
@@ -35,9 +39,29 @@ jobs:
         on-missing-report: fail
         fail-if-coverage-less-than: 95
         fail-on-coverage-decrease: true
+
+    - name: Log coverage percentage
+      run: |
+        echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
+        echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
+        
+    - name: Commit and push the badge (if it changed)
+      uses: EndBug/add-and-commit@v7
+      with:
+        default_author: github_actions
+        message: 'commit jacoco badge'
+        add: '*.svg'
+        
+    - name: Upload JaCoCo coverage report
+      uses: actions/upload-artifact@v2
+      with:
+        name: jacoco-report
+        path: nom-tam-fits/target/site/jacoco/
+
     - name: Publish test report
       if: ${{ always() }}
       uses: scacap/action-surefire-report@v1
+
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
       with:
