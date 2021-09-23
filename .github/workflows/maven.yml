@@ -33,12 +33,13 @@ jobs:
       working-directory: ./nom-tam-fits
       
     - name: Generate JaCoCo badge
+      id: jacoco
       uses: cicirello/jacoco-badge-generator@v2
       with:
         jacoco-csv-file: ./nom-tam-fits/target/site/jacoco/jacoco.csv
         badges-directory: ./nom-tam-fits/.github/badges
         on-missing-report: fail
-        fail-if-coverage-less-than: 95
+        fail-if-coverage-less-than: 98
         fail-on-coverage-decrease: true
 
     - name: Log coverage percentage
@@ -58,15 +59,11 @@ jobs:
         fi
         cd ..
         
-    - name: Upload JaCoCo coverage report
-      uses: actions/upload-artifact@v2
-      with:
-        name: jacoco-report
-        path: ./nom-tam-fits/target/site/jacoco/
-
-    - name: Publish test report
-      if: ${{ always() }}
-      uses: scacap/action-surefire-report@v1
+#    - name: Upload JaCoCo coverage report
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: jacoco-report
+#       path: ./nom-tam-fits/target/site/jacoco/
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
