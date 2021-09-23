@@ -31,7 +31,7 @@ jobs:
     - name: Generate JaCoCo badge
       uses: cicirello/jacoco-badge-generator@v2
       with:
-        jacoco-csv-file: target/site/jacoco/jacoco.csv
+        jacoco-csv-file: nom-tam-fits/target/site/jacoco/jacoco.csv
         on-missing-report: fail
         fail-if-coverage-less-than: 95
         fail-on-coverage-decrease: true
