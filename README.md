@@ -1,9 +1,9 @@
+![Build Status](https://github.com/attipaci/nom-tam-fits/actions/workflows/maven.yml/badge.svg)
+[![Coverage Status](https://codecov.io/gh/attipaci/nom-tam-fits/branch/master/graph/badge.svg?token=F85TJ906TN)](https://codecov.io/gh/attipaci/nom-tam-fits)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits/badge.svg)](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits)
+
 # nom-tam-fits
 
-current status 
-[![Build Status](https://travis-ci.org/nom-tam-fits/nom-tam-fits.png)](https://travis-ci.org/nom-tam-fits/nom-tam-fits)
-[![Coverage Status](https://coveralls.io/repos/nom-tam-fits/nom-tam-fits/badge.svg?branch=master)](https://coveralls.io/r/nom-tam-fits/nom-tam-fits?branch=master)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits/badge.svg)](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits)
 
 Pure java Java library for reading and writing FITS files. FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data.
 
