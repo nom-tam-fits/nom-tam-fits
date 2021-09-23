@@ -15,8 +15,6 @@
 	it is worth reading the documentation. -->
 
 <module name="Checker">
-
-	<module name="SuppressionCommentFilter"/>
 	
 	<!-- If you set the basedir property below, then all reported file names 
 		will be relative to the specified directory. See http://checkstyle.sourceforge.net/5.x/config.html#Checker 
@@ -49,8 +47,16 @@
 	<!-- <property name="headerFile" value="${checkstyle.header.file}"/> -->
 	<!-- <property name="fileExtensions" value="java"/> -->
 	<!-- </module> -->
+	
+	<!-- Checks for Size Violations. -->
+	<!-- See http://checkstyle.sf.net/config_sizes.html -->
+	<module name="LineLength">
+		<property name="max" value="180" />
+	</module>
 
 	<module name="TreeWalker">
+
+		<module name="SuppressionCommentFilter"/>
 
 		<!-- Checks for Javadoc comments. -->
 		<!-- See http://checkstyle.sf.net/config_javadoc.html -->
@@ -83,9 +89,6 @@
 
 		<!-- Checks for Size Violations. -->
 		<!-- See http://checkstyle.sf.net/config_sizes.html -->
-		<module name="LineLength">
-			<property name="max" value="180" />
-		</module>
 		<module name="MethodLength" />
 		<module name="ParameterNumber" />
 
