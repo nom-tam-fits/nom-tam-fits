@@ -45,12 +45,10 @@ jobs:
         echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
         echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
         
-    - name: Commit and push the badge (if it changed)
-      uses: EndBug/add-and-commit@v7
-      with:
-        default_author: github_actions
-        message: 'commit jacoco badge'
-        add: '*.svg'
+    - name: Commit JaCoCo badge
+      commit_message: JaCoCo badge
+      file_pattern: *.svg
+      repository: nom-tam-fits
         
     - name: Upload JaCoCo coverage report
       uses: actions/upload-artifact@v2
