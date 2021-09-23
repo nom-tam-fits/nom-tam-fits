@@ -1,5 +1,6 @@
 ![Build Status](https://github.com/attipaci/nom-tam-fits/actions/workflows/maven.yml/badge.svg)
-[![Coverage Status](https://codecov.io/gh/attipaci/nom-tam-fits/branch/master/graph/badge.svg?token=F85TJ906TN)](https://codecov.io/gh/attipaci/nom-tam-fits)
+#[![Coverage Status](https://codecov.io/gh/nom-tam-fits/nom-tam-fits/branch/master/graph/badge.svg?token=F85TJ906TN)](https://codecov.io/gh/nom-tam-fits/nom-tam-fits)
+![Coverage](.github/badges/jacoco.svg)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits/badge.svg)](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits)
 
 # nom-tam-fits
