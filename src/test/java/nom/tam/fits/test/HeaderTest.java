@@ -531,6 +531,8 @@ public class HeaderTest {
 
     @Test
     public void testHierachKeyWordParsing() {
+        FitsFactory.setUseHierarch(true);
+        
         String keyword = FitsHeaderCardParser.parseCardKey("HIERARCH test this = 'bla bla' ");
         assertEquals("HIERARCH.TEST.THIS", keyword);
 
@@ -555,8 +557,13 @@ public class HeaderTest {
         keyword = FitsHeaderCardParser.parseCardKey("HIERARCH    ESO INS   OPTI-3 ID= 'ESO#427 ' / Optical element identifier");
         assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
 
+        // AK: The old test expected "" here, but that's inconsistent behavior for the same type of
+        // line if hierarch is enabled or not. When HIERARCH is not enabled, we require it to return the
+        // first word (max 8 characters) as part of the requirement to parse malformed headers
+        // as much as possible. So, we should be requiring the same behavior for these type
+        // of keys when HIERARCH is enabled.
         keyword = FitsHeaderCardParser.parseCardKey("sdfajsg sdgf asdgf kasj sjk ID Optical element identifier");
-        assertEquals("", keyword);
+        assertEquals("SDFAJSG", keyword);
 
         keyword = FitsHeaderCardParser.parseCardKey("SIMPLE = T");
         assertEquals("SIMPLE", keyword);

@@ -32,10 +32,15 @@ package nom.tam.fits.utilities;
  */
 
 import java.util.Locale;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import nom.tam.fits.FitsFactory;
+import nom.tam.fits.HeaderCard;
 import nom.tam.util.AsciiFuncs;
+
+import static nom.tam.fits.header.NonStandard.HIERARCH;
 
 /**
  * A helper utility class to parse header cards for there value (especially
@@ -127,22 +132,21 @@ public final class FitsHeaderCardParser {
                 newLength--;
             }
             return quotedString.substring(0, newLength);
-        } else {
-            int lastIndexOfQuote = 0;
-            StringBuffer sb = new StringBuffer(quotedString.length());
-            while (indexOfQuote >= 0) {
-                sb.append(quotedString, lastIndexOfQuote, indexOfQuote);
-                lastIndexOfQuote = indexOfQuote + 1;
-                indexOfQuote = quotedString.indexOf('\'', lastIndexOfQuote + 1);
-            }
-            sb.append(quotedString, lastIndexOfQuote, quotedString.length());
-            int newLength = sb.length();
-            while (newLength > 0 && AsciiFuncs.isWhitespace(sb.charAt(newLength - 1))) {
-                newLength--;
-            }
-            sb.setLength(newLength);
-            return sb.toString();
         }
+        int lastIndexOfQuote = 0;
+        StringBuffer sb = new StringBuffer(quotedString.length());
+        while (indexOfQuote >= 0) {
+            sb.append(quotedString, lastIndexOfQuote, indexOfQuote);
+            lastIndexOfQuote = indexOfQuote + 1;
+            indexOfQuote = quotedString.indexOf('\'', lastIndexOfQuote + 1);
+        }
+        sb.append(quotedString, lastIndexOfQuote, quotedString.length());
+        int newLength = sb.length();
+        while (newLength > 0 && AsciiFuncs.isWhitespace(sb.charAt(newLength - 1))) {
+            newLength--;
+        }
+        sb.setLength(newLength);
+        return sb.toString();
     }
 
     /**
@@ -171,19 +175,63 @@ public final class FitsHeaderCardParser {
      * @return dot separated key list
      */
     public static String parseCardKey(String card) {
-        int indexOfEquals = card.indexOf('=');
-        StringBuilder builder = new StringBuilder();
-        Matcher kewordMatcher = FitsHeaderCardParser.KEYWORD_PATTERN.matcher(card);
-        while (kewordMatcher.find() && kewordMatcher.start() < indexOfEquals) {
+        /*
+         * AK: The parsing of headers should never be stricter that the writing,
+         * such that any header written by this library can be parsed back
+         * without errors. (And, if anything, the parsing should be more
+         * permissive to allow reading FITS produced by other libraries, which
+         * may be less stringent in their rules). The original implementation
+         * strongly enforced the ESO HIERARCH convention when reading, but not
+         * at all for writing. Here is a tolerant hierarch parser that will
+         * read back any hierarch key that was written by this library. The input 
+         * FITS can use any space or even '.' to separate the hierarchies, and 
+         * the hierarchical elements may contain any ASCII characters other than
+         * those used for separating. It is more in line with what we do with 
+         * standard keys too.
+         */
+        
+        // Find the '=' in the line, if any...
+        int iEq = card.indexOf('=');
+        
+        // The stem is in the first 8 characters or what precedes an '=' character
+        // before that.
+        int endStem = (iEq > 0 && iEq <= HeaderCard.MAX_KEYWORD_LENGTH) ? iEq : HeaderCard.MAX_KEYWORD_LENGTH;
+        
+        // Find the key stem of the long key.
+        String stem = card.substring(0, endStem).trim().toUpperCase(Locale.US);
+        
+        // If not using HIERARCH, then be very resilient, and return whatever key the first 8 chars make...
+        if (!FitsFactory.getUseHierarch()) {
+            return stem;
+        }
+
+        // If the line does not have an '=', then it's a comment. Return it as is.
+        if (iEq < 0) {
+            return stem;
+        }
+        
+        StringTokenizer tokens = new StringTokenizer(card.substring(stem.length(), iEq), " \t\r\n.");
+
+        // If it's not a HIERARCH keyword, then return an empty key.
+        if (!stem.equalsIgnoreCase(HIERARCH.key())) {
+            return stem;
+        }
+
+        // Compose the hierarchical key...
+        StringBuilder builder = new StringBuilder(stem);
+
+        while (tokens.hasMoreTokens()) {
+            String token = tokens.nextToken();
+
+            // Add a . to separate hierarchies
             if (builder.length() != 0) {
                 builder.append('.');
             }
-            builder.append(kewordMatcher.group(1).toUpperCase(Locale.US));
-            if (kewordMatcher.group(2).endsWith("=")) {
-                break;
-            }
+
+            builder.append(token);
         }
-        return builder.toString();
+
+        return builder.toString().toUpperCase(Locale.US);
     }
 
     /**

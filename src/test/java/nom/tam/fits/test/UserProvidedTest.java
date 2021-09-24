@@ -101,10 +101,12 @@ public class UserProvidedTest {
             // the real test is if this throws an exception, it should not!
             headerRewriter.rewrite();
             fits.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw e;
         } finally {
             FitsFactory.setLongStringsEnabled(longStringsEnabled);
             FitsFactory.setUseHierarch(useHierarch);
-
         }
     }
 

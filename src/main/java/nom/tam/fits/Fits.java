@@ -473,7 +473,7 @@ public class Fits implements Closeable {
     }
 
     /**
-     * @return the n'th HDU. If the HDU is already read simply return a pointer
+     * Returns the n'th HDU. If the HDU is already read simply return a pointer
      *         to the cached data. Otherwise read the associated stream until
      *         the n'th HDU is read.
      * @param n
