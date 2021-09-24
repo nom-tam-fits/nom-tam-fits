@@ -56,7 +56,11 @@ public final class FitsFactory {
 
         private boolean useAsciiTables = true;
 
-        private boolean useHierarch = false;
+        // MBT (28-JUL-2017): change default from false to true.
+        // This is required for HIERARCH-based wide fits processing
+        // (see uk.ac.starlink.fits.WideFits).  If that gets backed out of,
+        // this could be set back to its factory setting (false).
+        private boolean useHierarch = true;
 
         private boolean checkAsciiStrings = false;
 
