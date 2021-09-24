@@ -368,7 +368,7 @@ public class UserProvidedTest {
     }
 
     @Test
-    public void tetestInvalidHeaderProblemstInvalidHeaderProblem() throws Exception {
+    public void testInvalidHeaderProblem() throws Exception {
         FitsFactory.setLongStringsEnabled(true);
         FitsFactory.setUseHierarch(true);
         FitsFactory.setAllowHeaderRepairs(true);

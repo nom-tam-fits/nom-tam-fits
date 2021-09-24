@@ -291,16 +291,21 @@ public class HeaderCardTest {
     }
 
     @Test
-    @Ignore
-    public void testHierarchExtremValues() throws Exception {
+    public void testHierarchTolerant() throws Exception {
         FitsFactory.setUseHierarch(true);
         FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(1));
-        HeaderCard hc;
-        hc = new HeaderCard("HIERARCH [xxxx].@{ping}", "xx", "Comment");
-        assertEquals("HIERARCH [xxxx].@{ping} = 'xx' / Comment                                        ", hc.toString());
-        HeaderCard reparsedCard = HeaderCard.create(hc.toString());
-        assertEquals("HIERARCH [xxxx].@{ping}", reparsedCard.getKey());
+        HeaderCard hc = HeaderCard.create("HIERARCH [xxx].@{ping}= xx / Comment");
+        assertEquals("HIERARCH.[XXX].@{PING}", hc.getKey());
+        assertEquals("xx", hc.getValue());
+    }
 
+    @Test
+    public void testSimpleHierarch() throws Exception {
+        FitsFactory.setUseHierarch(false);
+        HeaderCard hc = HeaderCard.create("HIERARCH= 0.123 / Comment");
+        assertEquals("HIERARCH", hc.getKey());
+        assertEquals("0.123", hc.getValue());
+        assertEquals("Comment", hc.getComment());
     }
 
     @Test
