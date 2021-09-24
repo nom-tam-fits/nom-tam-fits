@@ -190,8 +190,8 @@ public class HeaderCardTest {
     public void testBigDecimal1() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", new BigDecimal("12345678901234567890123456789012345678901234567890123456789012345678901234567.890"), "dummy");
         assertEquals(BigInteger.class, hc.valueType());
-        assertEquals("1.234567890123456789012345678901234567890123456789012345678901235E+76", hc.getValue());
-        assertEquals(new BigInteger("12345678901234567890123456789012345678901234567890123456789012350000000000000"), hc.getValue(BigInteger.class, null));
+        assertEquals("1.2345678901234567890123456789012345678901234567890123456789012346E76", hc.getValue());
+        assertEquals(new BigInteger("12345678901234567890123456789012345678901234567890123456789012346000000000000"), hc.getValue(BigInteger.class, null));
     }
 
     @Test
@@ -210,8 +210,8 @@ public class HeaderCardTest {
                 new BigDecimal("1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567.890123456789012345678901234567890"),
                 "dummy");
         assertEquals(BigInteger.class, hc.valueType());
-        assertEquals("1.234567890123456789012345678901234567890123456789012345678901235E+96", hc.getValue());
-        assertEquals(new BigInteger("1234567890123456789012345678901234567890123456789012345678901235000000000000000000000000000000000"), hc.getValue(BigInteger.class, null));
+        assertEquals("1.2345678901234567890123456789012345678901234567890123456789012346E96", hc.getValue());
+        assertEquals(new BigInteger("1234567890123456789012345678901234567890123456789012345678901234600000000000000000000000000000000"), hc.getValue(BigInteger.class, null));
     }
 
     @Test
@@ -240,8 +240,8 @@ public class HeaderCardTest {
     public void testBigInteger() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", new BigInteger("1234567890123456789012345678901234567890123456789012345678901234567890"), "dummy");
         assertEquals(BigInteger.class, hc.valueType());
-        assertEquals("1.234567890123456789012345678901234567890123456789012345678901235E+69", hc.getValue());
-        assertEquals(new BigInteger("1234567890123456789012345678901234567890123456789012345678901235000000"), hc.getValue(BigInteger.class, null));
+        assertEquals("1.2345678901234567890123456789012345678901234567890123456789012346E69", hc.getValue());
+        assertEquals(new BigInteger("1234567890123456789012345678901234567890123456789012345678901234600000"), hc.getValue(BigInteger.class, null));
     }
 
     @Test
@@ -272,7 +272,7 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard("TEST", -123456789012345678.242342429f, "dummy");
         String val = hc.getValue();
         assertEquals(Double.class, hc.valueType());
-        assertEquals(Double.valueOf(-1.234568E+17), hc.getValue(Double.class, null), 1d);
+        assertEquals(Double.valueOf(-1.234568E17), hc.getValue(Double.class, null), 1d);
         hc.setValue(12345.6666f, 2);
         assertEquals(Double.class, hc.valueType());
         assertEquals(Double.valueOf(12345.67d), hc.getValue(Double.class, null), 10000000000d);
@@ -427,18 +427,18 @@ public class HeaderCardTest {
     public void testScientificFloats_1() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", -1234.567f, 4, false, "dummy");
         String val = hc.getValue();
-        assertEquals("tld1", 10, val.length());
-        assertEquals("-1.2346E+3", val);
-        assertEquals(-1.2346E+3f, hc.getValue(Float.class, null), 0.0000001f);
+        assertEquals("tld1", 9, val.length());
+        assertEquals("-1.2346E3", val);
+        assertEquals(-1.2346E3f, hc.getValue(Float.class, null), 0.0000001f);
     }
 
     @Test
     public void testScientificFloats_2() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", 1234.567f, 4, false, "dummy");
         String val = hc.getValue();
-        assertEquals("tld1", 9, val.length());
-        assertEquals("1.2346E+3", val);
-        assertEquals(1.2346E+3f, hc.getValue(Float.class, null), 0.0000001f);
+        assertEquals("tld1", 8, val.length());
+        assertEquals("1.2346E3", val);
+        assertEquals(1.2346E3f, hc.getValue(Float.class, null), 0.0000001f);
     }
 
     @Test
@@ -463,18 +463,18 @@ public class HeaderCardTest {
     public void testScientificDoubles_1() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", -123456.78905D, 6, true, "dummy");
         String val = hc.getValue();
-        assertEquals("tld1", val.length(), 12);
-        assertEquals("-1.234568D+5", val);
-        assertEquals(-1.234568E+5, hc.getValue(Double.class, null), 0.000000001d);
+        assertEquals("tld1", val.length(), 11);
+        assertEquals("-1.234568D5", val);
+        assertEquals(-1.234568E5, hc.getValue(Double.class, null), 0.000000001d);
     }
 
     @Test
     public void testScientificDoubles_2() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", 123456.78905D, 6, true, "dummy");
         String val = hc.getValue();
-        assertEquals("tld1", val.length(), 11);
-        assertEquals("1.234568D+5", val);
-        assertEquals(1.234568E+5, hc.getValue(Double.class, null), 0.000000001d);
+        assertEquals("tld1", val.length(), 10);
+        assertEquals("1.234568D5", val);
+        assertEquals(1.234568E5, hc.getValue(Double.class, null), 0.000000001d);
     }
 
     @Test
@@ -501,9 +501,9 @@ public class HeaderCardTest {
                 new BigDecimal("123456789012345678901234567890123456789012345678901234567.8901234567890123456789012345678901234567890123456789012345678901234567890"),
                 9, true,"dummy");
         String val = hc.getValue();
-        assertEquals("tld1", 15, val.length());
-        assertEquals("1.234567890D+56", val);
-        assertEquals(new BigDecimal("1.234567890E+56"), hc.getValue(BigDecimal.class, null));
+        assertEquals("tld1", 14, val.length());
+        assertEquals("1.234567890D56", val);
+        assertEquals(new BigDecimal("1.234567890E56"), hc.getValue(BigDecimal.class, null));
     }
 
     @Test
@@ -512,9 +512,9 @@ public class HeaderCardTest {
                 new BigDecimal("-123456789012345678901234567890123456789012345678901234567.8901234567890123456789012345678901234567890123456789012345678901234567890"),
                 9, true,"dummy");
         String val = hc.getValue();
-        assertEquals("tld1", 16, val.length());
-        assertEquals("-1.234567890D+56", val);
-        assertEquals(new BigDecimal("-1.234567890E+56"), hc.getValue(BigDecimal.class, null));
+        assertEquals("tld1", 15, val.length());
+        assertEquals("-1.234567890D56", val);
+        assertEquals(new BigDecimal("-1.234567890E56"), hc.getValue(BigDecimal.class, null));
     }
 
     @Test
