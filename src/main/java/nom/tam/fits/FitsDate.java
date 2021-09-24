@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * Fits date object parsed from the different type of date combinations
  */
-public class FitsDate {
+public class FitsDate implements Comparable<FitsDate> {
 
     /**
      * logger to log to.
@@ -291,6 +291,59 @@ public class FitsDate {
             }
         }
         return buf.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof FitsDate)) {
+            return false;
+        }
+
+        FitsDate fitsDate = (FitsDate) o;
+        return hour == fitsDate.hour && mday == fitsDate.mday && millisecond == fitsDate.millisecond
+                && minute == fitsDate.minute && month == fitsDate.month && second == fitsDate.second && year == fitsDate.year;
+    }
+
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = prime * hour;
+        result = prime * result + mday;
+        result = prime * result + millisecond;
+        result = prime * result + minute;
+        result = prime * result + month;
+        result = prime * result + second;
+        result = prime * result + year;
+
+        return result;
+    }
+
+    @Override
+    public int compareTo(FitsDate fitsDate) {
+        int result = Integer.compare(year, fitsDate.year);
+        if (result == 0) {
+            result = Integer.compare(month, fitsDate.month);
+            if (result == 0) {
+                result = Integer.compare(mday, fitsDate.mday);
+                if (result == 0) {
+                    result = Integer.compare(hour, fitsDate.hour);
+                    if (result == 0) {
+                        result = Integer.compare(minute, fitsDate.minute);
+                        if (result == 0) {
+                            result = Integer.compare(second, fitsDate.second);
+                            if (result == 0) {
+                                result = Integer.compare(millisecond, fitsDate.millisecond);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     private void appendThreeDigitValue(StringBuilder buf, int value) {
