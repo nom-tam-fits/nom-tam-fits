@@ -1,4 +1,4 @@
-![Build Status](https://github.com/attipaci/nom-tam-fits/actions/workflows/maven.yml/badge.svg)
+![Build Status](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/maven.yml/badge.svg)
 ![Coverage](.github/badges/jacoco.svg)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits/badge.svg)](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits)
 

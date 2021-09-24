@@ -120,12 +120,12 @@
 	<distributionManagement>
 		<repository>
 			<id>sonatype-nexus-staging</id>
-			<name>i4j sonytype Maven 2 repository</name>
+			<name>i4j sonatype Maven 2 repository</name>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
 		</repository>
 		<snapshotRepository>
 			<id>sonatype-nexus-staging</id>
-			<name>i4j sonytype Snapshot Maven 2 repository</name>
+			<name>i4j sonatype Snapshot Maven 2 repository</name>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 		<site>
