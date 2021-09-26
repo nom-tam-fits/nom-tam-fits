@@ -562,16 +562,16 @@ public class HeaderCardTest {
 
     @Test
     public void testStringQuotes() throws Exception {
-        HeaderCard hc = new HeaderCard("TEST", "'bla bla'", "dummy");
+        HeaderCard hc = HeaderCard.create("TEST    = 'bla bla' / dummy");
         assertEquals(String.class, hc.valueType());
         assertEquals("bla bla", hc.getValue(String.class, null));
-        HeaderCardException actual = null;
-        try {
-            hc = new HeaderCard("TEST", "'bla bla", "dummy");
-        } catch (HeaderCardException e) {
-            actual = e;
-        }
-        assertNotNull(actual);
+
+        hc = HeaderCard.create("TEST    = '''bla'' bla' / dummy");
+        assertEquals(String.class, hc.valueType());
+        assertEquals("'bla' bla", hc.getValue(String.class, null));
+        
+        hc = new HeaderCard("TEST", "'bla' bla", "dummy");
+        assertEquals("'bla' bla", hc.getValue(String.class, null));
     }
 
     @Test

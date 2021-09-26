@@ -176,8 +176,9 @@ public class HeaderCard implements CursorValue<String> {
      * @return a created HeaderCard from a FITS card string.
      * @param card
      *            the 80 character card image
+     * @throws IllegalArgumentException     if the card is illegal
      */
-    public static HeaderCard create(String card) {
+    public static HeaderCard create(String card) throws IllegalArgumentException {
         try {
             return new HeaderCard(stringToArrayInputStream(card));
         } catch (Exception e) {
@@ -786,14 +787,18 @@ public class HeaderCard implements CursorValue<String> {
             throw new HeaderCardException("Keyword too long");
         }
         if (value != null) {
-            value = value.replaceAll(" *$", "");
+            // Discard trailing spaces (TODO do we really want to?)
+            value = value.replaceAll("[ \t\r\n]*$", "");
 
+            /*
             if (value.startsWith("'")) {
                 if (value.charAt(value.length() - 1) != '\'') {
                     throw new HeaderCardException("Missing end quote in string value");
                 }
                 value = value.substring(1, value.length() - 1).trim();
             }
+            */
+            
             // Remember that quotes get doubled in the value...
             if (!FitsFactory.isLongStringsEnabled()
                     && value.replace("'", "''").length() > (this.isString ? HeaderCard.MAX_STRING_VALUE_LENGTH : HeaderCard.MAX_VALUE_LENGTH)) {

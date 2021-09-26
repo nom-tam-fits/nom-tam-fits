@@ -52,7 +52,7 @@ import nom.tam.image.compression.hdu.CompressedTableHDU;
  */
 public final class FitsFactory {
 
-    protected static final class FitsSettings {
+    protected static final class FitsSettings implements Cloneable {
 
         private boolean useAsciiTables = true;
 
@@ -74,17 +74,17 @@ public final class FitsFactory {
 
         private IHierarchKeyFormatter hierarchKeyFormatter = new StandardIHierarchKeyFormatter();
 
+        @Override
+        protected FitsSettings clone() {
+            try { 
+                return (FitsSettings) super.clone();
+            } catch (CloneNotSupportedException e) {
+                return null;
+            }
+        }
+        
         private FitsSettings copy() {
-            FitsSettings settings = new FitsSettings();
-            settings.useAsciiTables = this.useAsciiTables;
-            settings.useHierarch = this.useHierarch;
-            settings.checkAsciiStrings = this.checkAsciiStrings;
-            settings.allowTerminalJunk = this.allowTerminalJunk;
-            settings.longStringsEnabled = this.longStringsEnabled;
-            settings.hierarchKeyFormatter = this.hierarchKeyFormatter;
-            settings.skipBlankAfterAssign = this.skipBlankAfterAssign;
-            settings.allowHeaderRepairs = this.allowHeaderRepairs;
-            return settings;
+            return clone();
         }
 
         protected IHierarchKeyFormatter getHierarchKeyFormatter() {
