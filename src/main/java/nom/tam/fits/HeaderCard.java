@@ -176,7 +176,7 @@ public class HeaderCard implements CursorValue<String> {
      * @return a created HeaderCard from a FITS card string.
      * @param card
      *            the 80 character card image
-     * @throws IllegalArgumentException     if the card is illegal
+     * @throws IllegalArgumentException     if the card is malformed
      */
     public static HeaderCard create(String card) throws IllegalArgumentException {
         try {

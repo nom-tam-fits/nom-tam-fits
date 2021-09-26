@@ -562,16 +562,33 @@ public class HeaderCardTest {
 
     @Test
     public void testStringQuotes() throws Exception {
+        // Regular string value in FITS header
         HeaderCard hc = HeaderCard.create("TEST    = 'bla bla' / dummy");
         assertEquals(String.class, hc.valueType());
         assertEquals("bla bla", hc.getValue(String.class, null));
 
+        // Quoted string in FITS with ''
         hc = HeaderCard.create("TEST    = '''bla'' bla' / dummy");
         assertEquals(String.class, hc.valueType());
         assertEquals("'bla' bla", hc.getValue(String.class, null));
         
+        // Quotes in constructed value
         hc = new HeaderCard("TEST", "'bla' bla", "dummy");
         assertEquals("'bla' bla", hc.getValue(String.class, null));
+       
+        // Unfinished quotes
+        Exception ex = null;
+        try {
+            hc = HeaderCard.create("TEST    = 'bla bla / dummy");
+        } catch (IllegalArgumentException e) {
+            ex = e;
+        }
+        assertNotNull(ex);
+        
+        // Quotes in comment
+        hc = HeaderCard.create("TEST    = / 'bla bla' dummy");
+        assertEquals("", hc.getValue(String.class, null));
+       
     }
 
     @Test

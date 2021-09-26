@@ -276,7 +276,8 @@ public final class FitsHeaderCardParser {
         if (indexOfQuote >= 0) {
             Matcher matcher = FitsHeaderCardParser.STRING_PATTERN.matcher(card);
             if (matcher.find(indexOfQuote)) {
-                if (card.lastIndexOf('/', matcher.start()) < 0) {
+                int iComment = card.indexOf('/');
+                if (iComment < 0 || iComment > matcher.start()) {
                     return new ParsedValue(deleteQuotes(matcher.group(1)), extractComment(card, matcher.end()));
                 }
             }
