@@ -498,6 +498,7 @@ public class HeaderCard implements CursorValue<String> {
             this.comment = card.substring(MAX_KEYWORD_LENGTH).trim();
             return;
         }
+        
         extractValueCommentFromString(dis, card);
     }
 

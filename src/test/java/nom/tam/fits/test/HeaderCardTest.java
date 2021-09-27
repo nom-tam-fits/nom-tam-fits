@@ -124,11 +124,7 @@ public class HeaderCardTest {
         assertEquals("t13", lng, p.getComment());
 
         HeaderCard z = new HeaderCard("TTTT", 1.234567891234567891234567e101, "a comment");
-        assertTrue("t14", z.toString().indexOf("E") > 0);
-        
-        p = HeaderCard.create("KEYWORD sderrfgre");
-        assertNull("no-equals", p.getValue());
-        
+        assertTrue("t14", z.toString().indexOf("E") > 0);        
     }
 
     @Test
@@ -349,8 +345,10 @@ public class HeaderCardTest {
         assertEquals("h9", "123", hc.getValue());
         assertEquals("h10", "Comment", hc.getComment());
 
+        hc = HeaderCard.create("KEYWORD sderrfgre");
+        assertNull("no-equals", hc.getValue());
+        
         // now test a longString
-
         FitsFactory.setLongStringsEnabled(true);
 
         hc = new HeaderCard(key, "a verly long value that must be splitted over multiple lines to fit the card", "the comment is also not the smallest");

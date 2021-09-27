@@ -258,14 +258,11 @@ public final class FitsHeaderCardParser {
         int indexOfEquals = card.indexOf('=');
       
         value = new ParsedValue();
-        
-        if (indexOfEquals < 0) {
-            return value;
-        }
-      
-        // its no string so the value goes max till the comment
+
         int endOfValue = card.length() - 1;
-        int startOfComment = card.indexOf('/', indexOfEquals);
+        int startOfComment = indexOfEquals > 0 ? card.indexOf('/', indexOfEquals) : parseCardKey(card).length();
+     
+        // its no string so the value goes max till the comment
         if (startOfComment > 0) {
             endOfValue = startOfComment - 1;
             value.comment = extractComment(card, startOfComment);
