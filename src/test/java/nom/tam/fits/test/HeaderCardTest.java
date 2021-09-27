@@ -576,6 +576,10 @@ public class HeaderCardTest {
         hc = new HeaderCard("TEST", "'bla' bla", "dummy");
         assertEquals("'bla' bla", hc.getValue(String.class, null));
        
+        // Quotes in comment
+        hc = HeaderCard.create("TEST    = / 'bla bla' dummy");
+        assertEquals("", hc.getValue(String.class, null));
+        
         // Unfinished quotes
         Exception ex = null;
         try {
@@ -585,10 +589,9 @@ public class HeaderCardTest {
         }
         assertNotNull(ex);
         
-        // Quotes in comment
-        hc = HeaderCard.create("TEST    = / 'bla bla' dummy");
-        assertEquals("", hc.getValue(String.class, null));
-       
+        FitsFactory.setAllowHeaderRepairs(true);
+        hc = HeaderCard.create("TEST    = 'bla bla / dummy");
+        assertEquals("bla bla / dummy", hc.getValue(String.class, null));
     }
 
     @Test

@@ -33,10 +33,12 @@ package nom.tam.fits.utilities;
 
 import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import nom.tam.fits.FitsFactory;
+import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.util.AsciiFuncs;
 
@@ -50,6 +52,8 @@ import static nom.tam.fits.header.NonStandard.HIERARCH;
  */
 public final class FitsHeaderCardParser {
 
+    private static final Logger LOG = Logger.getLogger(Header.class.getName());
+    
     /**
      * value comment pair of the header card.
      */
@@ -273,15 +277,29 @@ public final class FitsHeaderCardParser {
      */
     private static ParsedValue parseStringValue(String card) {
         int indexOfQuote = card.indexOf('\'');
-        if (indexOfQuote >= 0) {
-            Matcher matcher = FitsHeaderCardParser.STRING_PATTERN.matcher(card);
-            if (matcher.find(indexOfQuote)) {
-                int iComment = card.indexOf('/');
-                if (iComment < 0 || iComment > matcher.start()) {
-                    return new ParsedValue(deleteQuotes(matcher.group(1)), extractComment(card, matcher.end()));
-                }
-            }
+        if (indexOfQuote < 0) {
+            return null;
         }
+
+        int iComment = card.indexOf('/');
+        if (iComment > 0 && iComment < indexOfQuote) {
+            // Comment before quote => Not a string...
+            return null;
+        }
+
+        Matcher matcher = FitsHeaderCardParser.STRING_PATTERN.matcher(card);
+
+        if (matcher.find(indexOfQuote)) {
+            // Proper string with end quote....
+            return new ParsedValue(deleteQuotes(matcher.group(1)), extractComment(card, matcher.end()));
+        } 
+
+        // String with missing end quote
+        if (FitsFactory.isAllowHeaderRepairs()) {
+            LOG.warning("Ignored missing end quote in " + parseCardKey(card) + "!");
+            return new ParsedValue(card.substring(indexOfQuote + 1).trim().replace("''", "'"), null); 
+        }
+
         return null;
     }
 
