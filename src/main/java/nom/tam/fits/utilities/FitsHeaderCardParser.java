@@ -256,13 +256,14 @@ public final class FitsHeaderCardParser {
      
         // ok no string lets check for an equals.
         int indexOfEquals = card.indexOf('=');
+      
+        value = new ParsedValue();
         
         if (indexOfEquals < 0) {
-            return null;
+            return value;
         }
-
+      
         // its no string so the value goes max till the comment
-        value = new ParsedValue();
         int endOfValue = card.length() - 1;
         int startOfComment = card.indexOf('/', indexOfEquals);
         if (startOfComment > 0) {

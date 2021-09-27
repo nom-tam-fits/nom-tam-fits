@@ -1250,7 +1250,7 @@ public class HeaderCard implements CursorValue<String> {
     private void extractValueCommentFromString(HeaderCardCountingArrayDataInput dis, String card) throws IOException, TruncatedFileException {
         // extract the value/comment part of the string
         ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
-
+        
         if (FitsFactory.isLongStringsEnabled() && parsedValue.isString() && parsedValue.getValue().endsWith("&")) {
             longStringCard(dis, parsedValue);
         } else {

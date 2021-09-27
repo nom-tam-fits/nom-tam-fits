@@ -125,6 +125,10 @@ public class HeaderCardTest {
 
         HeaderCard z = new HeaderCard("TTTT", 1.234567891234567891234567e101, "a comment");
         assertTrue("t14", z.toString().indexOf("E") > 0);
+        
+        p = HeaderCard.create("KEYWORD sderrfgre");
+        assertNull("no-equals", p.getValue());
+        
     }
 
     @Test
