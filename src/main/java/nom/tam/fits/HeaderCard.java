@@ -1342,6 +1342,9 @@ public class HeaderCard implements CursorValue<String> {
             parsed = null;
 
             if (longValue.length() > 0 && longValue.charAt(longValue.length() - 1) == '&') {
+                if (!dis.markSupported()) {
+                    throw new IOException("InputStream does not support mark/reset");
+                }
                 longValue.setLength(longValue.length() - 1);
                 dis.mark();
                 String card = readOneHeaderLine(dis);

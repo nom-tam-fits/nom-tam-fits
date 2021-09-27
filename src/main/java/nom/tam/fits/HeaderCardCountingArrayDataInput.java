@@ -81,6 +81,15 @@ public class HeaderCardCountingArrayDataInput {
     }
 
     /**
+     * indicate whether mark/reset functionality is supported
+     *
+     * @return true iff mark/reset will work
+     */
+    public boolean markSupported() {
+        return input.markSupported();
+    }
+
+    /**
      * mark the current position in the stream.
      * 
      * @throws IOException
