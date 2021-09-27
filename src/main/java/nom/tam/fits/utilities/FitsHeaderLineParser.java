@@ -213,10 +213,7 @@ public class FitsHeaderLineParser {
             parsePos = line.indexOf(token, parsePos) + token.length();
 
             // Add a . to separate hierarchies
-            if (builder.length() != 0) {
-                builder.append('.');
-            }
-
+            builder.append('.');
             builder.append(token);
         }
         
@@ -253,7 +250,8 @@ public class FitsHeaderLineParser {
 
         if (line.charAt(parsePos) == '/') {
             if (++parsePos >= line.length()) {
-                // nothing left to parse.
+                // empty comment
+                comment = "";
                 return;
             }
         }
@@ -287,9 +285,16 @@ public class FitsHeaderLineParser {
         if (CONTINUE.key().equals(key)) {
             parseValueBody();
         } else if (line.charAt(parsePos) == '=') {
-            if (parsePos > HeaderCard.MAX_KEYWORD_LENGTH && (!FitsFactory.getUseHierarch() || !key.startsWith(HIERARCH.key()))) {
-                // = after the 9th character and we don't have hierarch support or it's not a hierarch key
-                return;
+            if (parsePos > HeaderCard.MAX_KEYWORD_LENGTH) {
+                // equal sign = after the 9th char -- only supported with hierarch keys...
+                if (!key.startsWith(HIERARCH.key())) {
+                    // It's not a HIERARCH key
+                    return;
+                }
+                if (HIERARCH.key().equals(key)) {
+                    // The key is only HIERARCH, without a hierarchical keyword after it...
+                    return;
+                }
             }
 
             parsePos++;
@@ -370,24 +375,9 @@ public class FitsHeaderLineParser {
      * @see FitsFactory#setAllowHeaderRepairs(boolean)
      */
     private void parseStringValue() throws IllegalArgumentException {
-        if (!skipSpaces()) {
-            // nothing left to parse.
-            return;
-        }
-        
         // In case the string parsing fails, we'll reset the parse position to where we
         // started.
-        int from = parsePos;
-        
-        if (!isNextQuote()) {
-            // Not a string
-            return;
-        }
-        
-        if (++parsePos >= line.length()) {
-            // nothing left to parse.
-            return;
-        }
+        int from = parsePos++;
 
         StringBuilder buf = new StringBuilder(HeaderCard.MAX_VALUE_LENGTH);
 

@@ -300,6 +300,49 @@ public class HeaderCardTest {
         hc = HeaderCard.create("CONTINUE  abc'def' /         ");
         assertEquals("abc'def'", hc.getValue());
     }
+    
+    @Test
+    public void testParseCornerCases() throws Exception {
+        HeaderCard hc = HeaderCard.create("CARD = ''");
+        assertEquals("", hc.getValue());
+        
+        // Last char is start of comment /
+        byte[] bytes = hc.toString().getBytes();
+        bytes[bytes.length- 1] = '/';
+        hc = HeaderCard.create(new String(bytes));
+        assertEquals("", hc.getComment());
+    }
+    
+    public void testMisplacedEqual() throws Exception {
+        FitsFactory.setUseHierarch(false);
+        
+        // Not a value because = is not in the first 9 chars...
+        HeaderCard hc = HeaderCard.create("CARD       = 'value'");
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+        
+        // Not a value because we aren't supporting hierarch convention
+        hc = HeaderCard.create("HIERARCH TEST = 'value'");
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+        
+        FitsFactory.setUseHierarch(true);
+        
+        // Not a value because = is not in the first 9 chars, and it's not a HIERARCH card...
+        hc = HeaderCard.create("CARD       = 'value'");
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+        
+        // Hierarch without hierarchy.
+        hc = HeaderCard.create("HIERARCH       = 'value'");
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+        
+        // Proper hierarch
+        hc = HeaderCard.create("HIERARCH TEST= 'value'");
+        assertNotNull(hc.getValue());
+        assertNull(hc.getComment());
+    }
         
     @Test
     public void testBigDecimal1() throws Exception {
