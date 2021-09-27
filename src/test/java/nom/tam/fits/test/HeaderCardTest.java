@@ -321,6 +321,11 @@ public class HeaderCardTest {
         assertNull(hc.getValue());
         assertNotNull(hc.getComment());
         
+        // Hierarch without hierarchy, with equal in the wrong place...
+        hc = HeaderCard.create("HIERARCH       = 'value'");
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+        
         // Not a value because we aren't supporting hierarch convention
         hc = HeaderCard.create("HIERARCH TEST = 'value'");
         assertNull(hc.getValue());

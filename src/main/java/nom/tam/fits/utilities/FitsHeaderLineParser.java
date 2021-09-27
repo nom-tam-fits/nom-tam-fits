@@ -192,19 +192,18 @@ public class FitsHeaderLineParser {
             return;
         }
 
-        // If the line does not have an '=', then it's a comment. Return it as is.
+        // If the line does not have an '=', can only be a simple key
         if (iEq < 0) {
             return;
         }
 
-        StringTokenizer tokens = new StringTokenizer(line.substring(stem.length(), iEq), " \t\r\n.");
-
         // If it's not a HIERARCH keyword, then return an empty key.
-        if (!stem.equalsIgnoreCase(HIERARCH.key())) {
+        if (!stem.equals(HIERARCH.key())) {
             return;
         }
 
         // Compose the hierarchical key...
+        StringTokenizer tokens = new StringTokenizer(line.substring(stem.length(), iEq), " \t\r\n.");
         StringBuilder builder = new StringBuilder(stem);
 
         while (tokens.hasMoreTokens()) {
