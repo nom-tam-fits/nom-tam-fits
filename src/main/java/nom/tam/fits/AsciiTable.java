@@ -63,7 +63,7 @@ import nom.tam.util.RandomAccess;
  */
 public class AsciiTable extends AbstractTableData {
 
-    private static final int MIN_LONG_LENGTH = 10;
+    private static final int MAX_INTEGER_LENGTH = 10;
 
     private static final int FLOAT_MAX_LENGTH = 16;
 
@@ -138,6 +138,27 @@ public class AsciiTable extends AbstractTableData {
      *             if the operation failed
      */
     public AsciiTable(Header hdr) throws FitsException {
+        this(hdr, true);
+    }
+
+    /**
+     * Create an ASCII table given a header, with custom integer handling
+     * support.
+     *
+     * <p>The <code>supportRoundTrip</code> parameter controls how columns
+     * with format "<code>I10</code>" are handled; this is tricky because some,
+     * but not all, integers that can be represented in 10 characters can
+     * be represented as 32-bit integers.
+     * 
+     * @param hdr
+     *            The header describing the table
+     * @param supportRoundTrip
+     *            if true, columns written as ints will be represented as ints;
+     *            if false, all int values are guaranteed to be readable
+     * @throws FitsException
+     *             if the operation failed
+     */
+    public AsciiTable(Header hdr, boolean supportRoundTrip) throws FitsException {
 
         this.nRows = hdr.getIntValue(NAXIS2);
         this.nFields = hdr.getIntValue(TFIELDS);
@@ -167,7 +188,8 @@ public class AsciiTable extends AbstractTableData {
                     this.types[i] = String.class;
                     break;
                 case 'I':
-                    if (this.lengths[i] >= MIN_LONG_LENGTH) {
+                    if (supportRoundTrip ? this.lengths[i] > MAX_INTEGER_LENGTH
+                                         : this.lengths[i] >= MAX_INTEGER_LENGTH) {
                         this.types[i] = long.class;
                     } else {
                         this.types[i] = int.class;
