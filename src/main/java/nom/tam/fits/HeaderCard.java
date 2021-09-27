@@ -1,8 +1,6 @@
 package nom.tam.fits;
 
 import static nom.tam.fits.header.NonStandard.CONTINUE;
-import static nom.tam.fits.header.Standard.COMMENT;
-import static nom.tam.fits.header.Standard.HISTORY;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -21,8 +19,7 @@ import java.util.regex.Pattern;
 
 import nom.tam.fits.FitsFactory.FitsSettings;
 import nom.tam.fits.header.NonStandard;
-import nom.tam.fits.utilities.FitsHeaderCardParser;
-import nom.tam.fits.utilities.FitsHeaderCardParser.ParsedValue;
+import nom.tam.fits.utilities.FitsHeaderLineParser;
 import nom.tam.fits.utilities.FitsLineAppender;
 import nom.tam.fits.utilities.FitsSubString;
 import nom.tam.util.ArrayDataInput;
@@ -174,13 +171,12 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * @return a created HeaderCard from a FITS card string.
-     * @param card
-     *            the 80 character card image
-     * @throws IllegalArgumentException     if the card is malformed
+     * @param line  the 80 character card image
+     * @throws IllegalArgumentException     if the card is malformed (e.g. a missing end-quote).
      */
-    public static HeaderCard create(String card) throws IllegalArgumentException {
+    public static HeaderCard create(String line) throws IllegalArgumentException {
         try {
-            return new HeaderCard(stringToArrayInputStream(card));
+            return new HeaderCard(stringToArrayInputStream(line));
         } catch (Exception e) {
             throw new IllegalArgumentException("card not legal", e);
         }
@@ -467,11 +463,11 @@ public class HeaderCard implements CursorValue<String> {
         }
     }
 
-    public HeaderCard(ArrayDataInput dis) throws TruncatedFileException, IOException {
+    public HeaderCard(ArrayDataInput dis) throws IllegalArgumentException, TruncatedFileException, IOException {
         this(new HeaderCardCountingArrayDataInput(dis));
     }
 
-    public HeaderCard(HeaderCardCountingArrayDataInput dis) throws TruncatedFileException, IOException {
+    public HeaderCard(HeaderCardCountingArrayDataInput dis) throws IllegalArgumentException, TruncatedFileException, IOException {
         this.key = null;
         this.value = null;
         this.comment = null;
@@ -479,27 +475,18 @@ public class HeaderCard implements CursorValue<String> {
 
         String card = readOneHeaderLine(dis);
         
+        FitsHeaderLineParser parsed = new FitsHeaderLineParser(card);
+        
         // extract the key
-        this.key = FitsHeaderCardParser.parseCardKey(card);
+        this.key = parsed.getKey();
         
-        if (FitsFactory.getUseHierarch() && card.startsWith(HIERARCH_WITH_BLANK)) {
-            extractValueCommentFromString(dis, card);
-            return;
+        if (FitsFactory.isLongStringsEnabled() && parsed.isString() && parsed.getValue().endsWith("&")) {
+            longStringCard(dis, parsed);
+        } else {
+            this.value = parsed.getValue();
+            this.isString = parsed.isString();
+            this.comment = parsed.getComment();
         }
-            
-        // if it is an empty key, assume the remainder of the card is a comment
-        if (this.key.isEmpty()) {
-            this.comment = card.substring(MAX_KEYWORD_LENGTH);
-            return;
-        }
-
-        // Non-key/value pair lines are treated as keyed comments
-        if (this.key.equals(COMMENT.key()) || this.key.equals(HISTORY.key()) || !card.startsWith("=", MAX_KEYWORD_LENGTH)) {
-            this.comment = card.substring(MAX_KEYWORD_LENGTH).trim();
-            return;
-        }
-        
-        extractValueCommentFromString(dis, card);
     }
 
     /**
@@ -790,16 +777,7 @@ public class HeaderCard implements CursorValue<String> {
         if (value != null) {
             // Discard trailing spaces (TODO do we really want to?)
             value = value.replaceAll("[ \t\r\n]*$", "");
-
-            /*
-            if (value.startsWith("'")) {
-                if (value.charAt(value.length() - 1) != '\'') {
-                    throw new HeaderCardException("Missing end quote in string value");
-                }
-                value = value.substring(1, value.length() - 1).trim();
-            }
-            */
-            
+     
             // Remember that quotes get doubled in the value...
             if (!FitsFactory.isLongStringsEnabled()
                     && value.replace("'", "''").length() > (this.isString ? HeaderCard.MAX_STRING_VALUE_LENGTH : HeaderCard.MAX_VALUE_LENGTH)) {
@@ -1248,23 +1226,6 @@ public class HeaderCard implements CursorValue<String> {
         return null;
     }
 
-    private void extractValueCommentFromString(HeaderCardCountingArrayDataInput dis, String card) throws IOException, TruncatedFileException {
-        // extract the value/comment part of the string
-        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
-        
-        if (FitsFactory.isLongStringsEnabled() && parsedValue.isString() && parsedValue.getValue().endsWith("&")) {
-            longStringCard(dis, parsedValue);
-        } else {
-            this.value = parsedValue.getValue();
-            this.isString = parsedValue.isString();
-            this.comment = parsedValue.getComment();
-            int indexOfQuote = this.value.indexOf('\'');
-            if (!this.isString && indexOfQuote >= 0) {
-                throw new IllegalArgumentException("Missing or unexpected single quotes in value");
-            }    
-        }
-    }
-
     private Boolean getBooleanValue(Boolean defaultValue) {
         if ("T".equals(this.value)) {
             return Boolean.TRUE;
@@ -1274,31 +1235,34 @@ public class HeaderCard implements CursorValue<String> {
         return defaultValue;
     }
 
-    private void longStringCard(HeaderCardCountingArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException {
+    private void longStringCard(HeaderCardCountingArrayDataInput dis, FitsHeaderLineParser parsed) throws IOException, TruncatedFileException {
         // ok this is a longString now read over all continues.
         StringBuilder longValue = new StringBuilder();
         StringBuilder longComment = null;
-        ParsedValue continueCard = parsedValue;
-        do {
-            if (continueCard.getValue() != null) {
-                longValue.append(continueCard.getValue());
+        
+        while (parsed != null) {
+            if (parsed.getValue() != null) {
+                longValue.append(parsed.getValue());
             }
-            if (continueCard.getComment() != null) {
+            
+            if (parsed.getComment() != null) {
                 if (longComment == null) {
-                    longComment = new StringBuilder();
-                } else {
+                    longComment = new StringBuilder(parsed.getComment());
+                } else if (!parsed.getComment().isEmpty()) {
                     longComment.append(' ');
-                }
-                longComment.append(continueCard.getComment());
+                    longComment.append(parsed.getComment());
+                }         
             }
-            continueCard = null;
+            
+            parsed = null;
+            
             if (longValue.length() > 0 && longValue.charAt(longValue.length() - 1) == '&') {
                 longValue.setLength(longValue.length() - 1);
                 dis.mark();
                 String card = readOneHeaderLine(dis);
                 if (card.startsWith(CONTINUE.key())) {
                     // extract the value/comment part of the string
-                    continueCard = FitsHeaderCardParser.parseCardValue(card);
+                    parsed = new FitsHeaderLineParser(card);
                 } else {
                     // the & was part of the string put it back.
                     longValue.append('&');
@@ -1306,9 +1270,10 @@ public class HeaderCard implements CursorValue<String> {
                     dis.reset();
                 }
             }
-        } while (continueCard != null);
-        this.comment = longComment == null ? null : longComment.toString();
-        this.value = longValue.toString();
+        }
+        
+        this.comment = longComment == null ? null : longComment.toString().trim();
+        this.value = longValue.toString().trim();
         this.isString = true;
     }
 

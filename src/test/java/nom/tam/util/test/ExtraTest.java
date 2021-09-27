@@ -31,13 +31,8 @@ package nom.tam.util.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
-import java.lang.reflect.Constructor;
-
-import nom.tam.fits.utilities.FitsHeaderCardParser;
-import nom.tam.fits.utilities.FitsHeaderCardParser.ParsedValue;
+import nom.tam.fits.utilities.FitsHeaderLineParser;
 import nom.tam.fits.utilities.FitsLineAppender;
 
 import org.junit.Assert;
@@ -55,18 +50,9 @@ public class ExtraTest {
 
     @Test
     public void testParseStringComment() {
-        ParsedValue value = FitsHeaderCardParser.parseCardValue(" = / ' test '");
+        FitsHeaderLineParser value = new FitsHeaderLineParser("KEY = / ' test '");
         Assert.assertEquals("", value.getValue());
         Assert.assertEquals("' test '", value.getComment());
-    }
-
-    @Test
-    public void testFitsHeaderCardParser() throws Exception {
-        Constructor<?>[] constrs = FitsHeaderCardParser.class.getDeclaredConstructors();
-        assertEquals(constrs.length, 1);
-        assertFalse(constrs[0].isAccessible());
-        constrs[0].setAccessible(true);
-        constrs[0].newInstance();
     }
 
 }

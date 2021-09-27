@@ -185,7 +185,122 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard("TEST", (String) null, "dummy");
         assertEquals(Integer.valueOf(5), hc.getValue(int.class, 5));
     }
+    
+    @Test
+    public void testHeaderBlanks() throws Exception {
+        
+        
+        HeaderCard hc = HeaderCard.create("               ");
+        assertEquals("", hc.getKey());
+        assertNull(hc.getValue());
+        assertNull(hc.getComment());
+        
+        hc = HeaderCard.create("=          ");
+        assertEquals("", hc.getKey());
+        assertNull(hc.getValue());
+        assertEquals("=", hc.getComment());
 
+        hc = HeaderCard.create("  =          ");
+        assertEquals("", hc.getKey());
+        assertNull(hc.getValue());
+        assertEquals("=", hc.getComment());
+        
+        hc = HeaderCard.create("CARD       /          ");
+        assertEquals("CARD", hc.getKey());
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+        
+        hc = HeaderCard.create("CARD = 123 /          ");
+        assertEquals("CARD", hc.getKey());
+        assertEquals("123", hc.getValue());
+        assertEquals("", hc.getComment());
+        
+        hc = HeaderCard.create("CARD = 123 /          ");
+        assertEquals("CARD", hc.getKey());
+        assertEquals("123", hc.getValue());
+        assertEquals("", hc.getComment());
+        
+        
+        hc = HeaderCard.create("CONTINUE   /   ");
+        assertEquals("CONTINUE", hc.getKey());
+        assertEquals("", hc.getValue());
+        assertEquals("", hc.getComment());
+        
+        hc = HeaderCard.create("CONTINUE 123  /   ");
+        assertEquals("CONTINUE", hc.getKey());
+        assertEquals("123", hc.getValue());
+        assertEquals("", hc.getComment());
+        
+        hc = HeaderCard.create("CARD");
+        assertEquals("CARD", hc.getKey());
+        assertNull(hc.getValue());
+        assertNull(hc.getComment());
+        
+        hc = HeaderCard.create("  = '         ");
+        assertEquals("", hc.getKey());
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+    }
+    
+    
+    @Test
+    public void testMissingEndQuotes() throws Exception {
+        boolean thrown = false;
+        HeaderCard hc = null;
+        
+        FitsFactory.setAllowHeaderRepairs(false);
+        
+        try {
+            thrown = false;
+            hc = HeaderCard.create("");
+        } catch(IllegalArgumentException e) {
+            thrown = true;
+        }
+        assertEquals(true, thrown);
+                 
+        try {
+            thrown = false;
+            hc = HeaderCard.create("CONTINUE '         ");
+        } catch(IllegalArgumentException e) {
+            thrown = true;
+        }
+        assertEquals(true, thrown);
+        
+        try {
+            thrown = false;
+            hc = HeaderCard.create("CARD = '         ");
+        } catch(IllegalArgumentException e) {
+            thrown = true;
+        }
+        assertEquals(true, thrown);
+        
+        
+        FitsFactory.setAllowHeaderRepairs(true);
+              
+        hc = HeaderCard.create("CONTINUE '         ");
+        assertNotNull(hc.getValue());
+        
+        hc = HeaderCard.create("CONTINUE '      /   ");
+        assertNotNull(hc.getValue());
+        assertNull(hc.getComment());
+        
+        hc = HeaderCard.create("CARD = '         ");
+        assertNotNull(hc.getValue());
+        
+        hc = HeaderCard.create("CARD = '       /  ");
+        assertNotNull(hc.getValue());
+        assertNull(hc.getComment());
+    }
+    
+    @Test
+    public void testMidQuotes() throws Exception {
+        HeaderCard hc = HeaderCard.create("CARD = abc'def' /         ");
+        assertEquals("abc'def'", hc.getValue());
+        
+        hc = HeaderCard.create("CONTINUE  abc'def' /         ");
+        assertEquals("abc'def'", hc.getValue());
+    }
+        
     @Test
     public void testBigDecimal1() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", new BigDecimal("12345678901234567890123456789012345678901234567890123456789012345678901234567.890"), "dummy");
