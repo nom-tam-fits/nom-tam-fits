@@ -110,7 +110,7 @@ public final class FitsHeaderCardParser {
     /**
      * pattern to match FITS keywords, specially to parse hirarchical keywords.
      */
-    private static final Pattern KEYWORD_PATTERN = Pattern.compile("([A-Z|a-z|0-9|_|-]+)([ |\\.]*=?)");
+    //private static final Pattern KEYWORD_PATTERN = Pattern.compile("([A-Z|a-z|0-9|_|-]+)([ |\\.]*=?)");
 
     /**
      * pattern to match a quoted string where 2 quotes are used to escape a
@@ -240,7 +240,7 @@ public final class FitsHeaderCardParser {
 
     /**
      * Parse the card for a value and comment. Quoted string values are unquoted
-     * and the {@link ParsedValue#isString} specifies if the value was a quoted
+     * and the {@link ParsedValue#isString()} specifies if the value was a quoted
      * string. non quoted values are trimmed.
      * 
      * @param card
@@ -249,21 +249,29 @@ public final class FitsHeaderCardParser {
      */
     public static ParsedValue parseCardValue(String card) {
         ParsedValue value = parseStringValue(card);
-        if (value == null) {
-            // ok no string lets check for an equals.
-            int indexOfEquals = card.indexOf('=');
-            if (indexOfEquals > 0) {
-                // its no string so the value goes max till the comment
-                value = new ParsedValue();
-                int endOfValue = card.length() - 1;
-                int startOfComment = card.indexOf('/', indexOfEquals);
-                if (startOfComment > 0) {
-                    endOfValue = startOfComment - 1;
-                    value.comment = extractComment(card, startOfComment);
-                }
-                value.value = card.substring(indexOfEquals + 1, endOfValue + 1).trim();
-            }
+        
+        if (value != null) {
+            return value;
         }
+     
+        // ok no string lets check for an equals.
+        int indexOfEquals = card.indexOf('=');
+        
+        if (indexOfEquals < 0) {
+            return null;
+        }
+
+        // its no string so the value goes max till the comment
+        value = new ParsedValue();
+        int endOfValue = card.length() - 1;
+        int startOfComment = card.indexOf('/', indexOfEquals);
+        if (startOfComment > 0) {
+            endOfValue = startOfComment - 1;
+            value.comment = extractComment(card, startOfComment);
+        }
+        
+        value.value = card.substring(indexOfEquals + 1, endOfValue + 1).trim();
+        
         return value;
     }
 
