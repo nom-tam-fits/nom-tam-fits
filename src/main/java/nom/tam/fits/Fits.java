@@ -34,7 +34,7 @@ package nom.tam.fits;
 import java.io.Closeable;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
-import java.io.EOFException;
+//import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -673,16 +673,14 @@ public class Fits implements Closeable {
                 if (readHDU() == null) {
                     break;
                 }
-            } catch (EOFException e) {
-                if (FitsFactory.getAllowTerminalJunk() && //
-                        e.getCause() instanceof TruncatedFileException && //
-                        getNumberOfHDUs() > 0) {
+            } catch (IOException e) {
+                if (FitsFactory.getAllowTerminalJunk() && e.getCause() instanceof TruncatedFileException && getNumberOfHDUs() > 0) {
                     this.atEOF = true;
                     return;
                 }
-                throw new FitsException("IO error: " + e);
-            } catch (IOException e) {
-                throw new FitsException("IO error: " + e);
+                
+                throw new FitsException("Corrupted FITS file." + (FitsFactory.getAllowTerminalJunk() 
+                        ? "" : ":\n\n --> Try FitsFactory.setAllowTerminalJunk(true) prior to reading to work around.\n"), e);
             }
         }
     }
