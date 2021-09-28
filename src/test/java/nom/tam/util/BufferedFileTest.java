@@ -82,6 +82,7 @@ public class BufferedFileTest {
         file.write(new byte[10]);
         file.close();
         file = new BufferedFile("target/BufferedFileBigMark", "rw");
+        Assert.assertTrue(file.markSupported());
         try {
             file.read();
             long expectesd = file.getFilePointer();

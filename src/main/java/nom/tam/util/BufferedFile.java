@@ -353,6 +353,11 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
         }
     }
 
+    @Override
+    public boolean markSupported() {
+        return true;
+    }
+
     private void needBuffer(int need) throws IOException {
         if (this.doingInput) {
             this.fileOffset += this.bufferPointer.bufferOffset;

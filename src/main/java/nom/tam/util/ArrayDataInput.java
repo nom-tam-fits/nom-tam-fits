@@ -49,6 +49,15 @@ public interface ArrayDataInput extends java.io.DataInput, FitsIO {
     void mark(int readlimit) throws IOException;
 
     /**
+     * See the general contract of the <code>markSupported</code> method of
+     * <code>InputStream</code>.
+     *
+     * @return  true if this stream instance supports the mark and
+     *               reset methods; false otherwise.
+     */
+    boolean markSupported();
+
+    /**
      * Read an array of byte's.
      * 
      * @return number of bytes read.
