@@ -1,8 +1,7 @@
 package nom.tam.fits;
 
 import static nom.tam.fits.header.NonStandard.CONTINUE;
-import static nom.tam.fits.header.Standard.COMMENT;
-import static nom.tam.fits.header.Standard.HISTORY;
+import static nom.tam.fits.header.NonStandard.HIERARCH;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -15,14 +14,13 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import nom.tam.fits.FitsFactory.FitsSettings;
 import nom.tam.fits.header.NonStandard;
-import nom.tam.fits.utilities.FitsHeaderCardParser;
-import nom.tam.fits.utilities.FitsHeaderCardParser.ParsedValue;
 import nom.tam.fits.utilities.FitsLineAppender;
 import nom.tam.fits.utilities.FitsSubString;
 import nom.tam.util.ArrayDataInput;
@@ -173,13 +171,88 @@ public class HeaderCard implements CursorValue<String> {
     private String value;
 
     /**
-     * @return a created HeaderCard from a FITS card string.
-     * @param card
-     *            the 80 character card image
+     * <p>
+     * Creates a new FITS header card from a FITS stream representation of it, which is how the key/value and
+     * comment are represented inside the FITS file, normally as an 80-character wide entry. The parsing
+     * of header 'lines' conforms to all FITS standards, and some optional conventions, such as HIERARCH keywords
+     * (if {@link FitsFactory#setUseHierarch(boolean)} is enabled), COMMENT and HISTORY entries,
+     * and OGIP 1.0 long CONTINUE lines (if {@link FitsFactory#setLongStringsEnabled(boolean)} is enabled).
+     * </p>
+     *  
+     * <p>
+     * However, the parsing here is permissive beyond the standards and conventions, and will do its best to
+     * support a wide range of FITS files, which may deviate from the standard in subtle (or no so subtle) ways.
+     * </p>
+     * 
+     * <p>
+     * Here is a brief summary of the rules that guide the parsing of keywords, values, and comment 'fields'
+     * from the single header line:
+     * </p>
+     * 
+     * <p>
+     * <b>A. Keywords</b>
+     * </p>
+     * 
+     * <ul>
+     * <li>The standard FITS keyword is the first 8 characters of the line, or up to an equal [=] character, 
+     * whichever comes first,  with trailing spaces removed, and always converted to upper-case.</li>
+     * <li>If {@link FitsFactory#setUseHierarch(boolean)} is enabled, structured longer keywords can be composed
+     * after a <code>HIERARCH</code> base key, followed by space (and/or dot ].]) separated parts, up to an 
+     * equal sign [=]. The library will represent the same components (including <code>HIERARCH</code>) but 
+     * separated by single dots [.]. For example, the header line starting with [<code>HIERARCH SMA OBS TARGET=</code>], 
+     * will be referred as [<code>HIERARCH.SMA.OBS.TARGET</code>] withing this library. The keyword parts 
+     * can be composed of any ASCII characters except dot [.], white spaces, or equal [=].</li>
+     * <li>By default, all parts of the key are converted to upper-case. Case sensitive HIERARCH keywords can be 
+     * retained after enabling {@link nom.tam.fits.header.hierarch.IHierarchKeyFormatter#setCaseSensitive(boolean)}.</li>
+     *
+     * </ul>  
+     * 
+     * <p>
+     * <b>B. Values</b>
+     * </p>
+     * 
+     * <p>Values are the part of the header line, that is between the keyword and an optional ending comment. Legal 
+     * header values follow the following parse patterns:
+     * 
+     * <ul>
+     * <li>Begin with an equal sign [=], or else come after a CONTINUE keyword.</li>
+     * <li>Next can be a quoted value such as <code>'hello'</code>, placed inside two single quotes. Or an unquoted value, 
+     * such as <code>123</code>.</li>
+     * <li>Quoted values must begin with a single quote ['] and and with the next single quote. If there is no end-quote 
+     * in the line, it is not considered a string value but rather a comment, unless 
+     * {@link FitsFactory#setAllowHeaderRepairs(boolean)} is enabled, in which case the entire remaining line after the 
+     * opening quote is assumed to be a malformed value.</li>
+     * <li>Unquoted values end at the fist [/] character, or else go until the line end.</li>
+     * <li>Quoted values have trailing spaces removed, s.t. [<code>'  value   '</code>] becomes [<code>  value</code>].</li>
+     * <li>Unquoted values are trimmed, with both leading and trailing spaces removed, e.g. [<code>  123  </code>] 
+     * becomes [<code>123</code>].</li>
+     * </ul>
+     * 
+     * <p>
+     * <b>C. Comments</b>
+     * </p>
+     * 
+     * <p>The following rules guide the parsing of the values component:
+     * 
+     * <ul>
+     * <li>If a value is present (see above), the comment is what comes after it. That is, for quoted values, everything
+     * that follows the closing quote. For unquoted values, it's what comes after the first [/], with the [/] itself
+     * removed.</li>
+     * <li>If a value is not present, then everything following the keyword is considered the comment.</li>
+     * <li>Comments are trimmed, with both leading and trailing spaces removed.</li>
+     * </ul>
+     * 
+     * 
+     * @return a newly created HeaderCard from a FITS card string.
+     * @param line  the card image (typically 80 characters if in a FITS file). 
+     * @throws IllegalArgumentException     if the card is malformed (e.g. a missing end-quote).
+     * 
+     * @see FitsFactory#setUseHierarch(boolean)
+     * @see nom.tam.fits.header.hierarch.IHierarchKeyFormatter#setCaseSensitive(boolean)
      */
-    public static HeaderCard create(String card) {
+    public static HeaderCard create(String line) throws IllegalArgumentException {
         try {
-            return new HeaderCard(stringToArrayInputStream(card));
+            return new HeaderCard(stringToArrayInputStream(line));
         } catch (Exception e) {
             throw new IllegalArgumentException("card not legal", e);
         }
@@ -466,38 +539,30 @@ public class HeaderCard implements CursorValue<String> {
         }
     }
 
-    public HeaderCard(ArrayDataInput dis) throws TruncatedFileException, IOException {
+    public HeaderCard(ArrayDataInput dis) throws IllegalArgumentException, TruncatedFileException, IOException {
         this(new HeaderCardCountingArrayDataInput(dis));
     }
 
-    public HeaderCard(HeaderCardCountingArrayDataInput dis) throws TruncatedFileException, IOException {
+    public HeaderCard(HeaderCardCountingArrayDataInput dis) throws IllegalArgumentException, TruncatedFileException, IOException {
         this.key = null;
         this.value = null;
         this.comment = null;
         this.isString = false;
 
         String card = readOneHeaderLine(dis);
-        
-        // extract the key
-        this.key = FitsHeaderCardParser.parseCardKey(card);
-        
-        if (FitsFactory.getUseHierarch() && card.startsWith(HIERARCH_WITH_BLANK)) {
-            extractValueCommentFromString(dis, card);
-            return;
-        }
-            
-        // if it is an empty key, assume the remainder of the card is a comment
-        if (this.key.isEmpty()) {
-            this.comment = card.substring(MAX_KEYWORD_LENGTH);
-            return;
-        }
 
-        // Non-key/value pair lines are treated as keyed comments
-        if (this.key.equals(COMMENT.key()) || this.key.equals(HISTORY.key()) || !card.startsWith("=", MAX_KEYWORD_LENGTH)) {
-            this.comment = card.substring(MAX_KEYWORD_LENGTH).trim();
-            return;
+        Parser parsed = new Parser(card);
+
+        // extract the key
+        this.key = parsed.getKey();
+
+        if (FitsFactory.isLongStringsEnabled() && parsed.isString() && parsed.getValue().endsWith("&")) {
+            longStringCard(dis, parsed);
+        } else {
+            this.value = parsed.getValue();
+            this.isString = parsed.isString();
+            this.comment = parsed.getComment();
         }
-        extractValueCommentFromString(dis, card);
     }
 
     /**
@@ -767,9 +832,9 @@ public class HeaderCard implements CursorValue<String> {
      * Create a HeaderCard from its component parts
      *
      * @param key
-     *            Keyword (null for a COMMENT)
+     *            Case-sensitive keyword (null for a COMMENT)
      * @param value
-     *            Value
+     *            Value     the string value (tailing spaces will be removed)
      * @param comment
      *            Comment
      * @param nullable
@@ -786,14 +851,18 @@ public class HeaderCard implements CursorValue<String> {
             throw new HeaderCardException("Keyword too long");
         }
         if (value != null) {
-            value = value.replaceAll(" *$", "");
-
-            if (value.startsWith("'")) {
-                if (value.charAt(value.length() - 1) != '\'') {
-                    throw new HeaderCardException("Missing end quote in string value");
+            // Discard trailing spaces
+            int to = value.length();
+            while (--to >= 0) {
+                if (!Character.isSpaceChar(value.charAt(to))) {
+                    break;
                 }
-                value = value.substring(1, value.length() - 1).trim();
             }
+            to++;
+            if (to < value.length()) {
+                value = value.substring(0, to);
+            }
+
             // Remember that quotes get doubled in the value...
             if (!FitsFactory.isLongStringsEnabled()
                     && value.replace("'", "''").length() > (this.isString ? HeaderCard.MAX_STRING_VALUE_LENGTH : HeaderCard.MAX_VALUE_LENGTH)) {
@@ -1242,32 +1311,6 @@ public class HeaderCard implements CursorValue<String> {
         return null;
     }
 
-    private void extractValueCommentFromString(HeaderCardCountingArrayDataInput dis, String card) throws IOException, TruncatedFileException {
-        // extract the value/comment part of the string
-        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
-
-        if (FitsFactory.isLongStringsEnabled() && parsedValue.isString() && parsedValue.getValue().endsWith("&")) {
-            longStringCard(dis, parsedValue);
-        } else {
-            this.value = parsedValue.getValue();
-            this.isString = parsedValue.isString();
-            this.comment = parsedValue.getComment();
-            int indexOfQuote = this.value.indexOf('\'');
-            if (!this.isString && indexOfQuote >= 0) {
-                if (indexOfQuote == 0 && FitsFactory.current().isAllowHeaderRepairs()) {
-                    // ok error case, string without closing quote. lets try to
-                    // accept it
-                    this.value = this.value.substring(1);
-                    this.isString = true;
-                    this.comment = null;
-                    LOG.warning("Corrected header card " + this.key + " repaired missing end-quote in string value!");
-                } else {
-                    throw new IllegalArgumentException("no single quotes allowed in values");
-                }
-            }
-        }
-    }
-
     private Boolean getBooleanValue(Boolean defaultValue) {
         if ("T".equals(this.value)) {
             return Boolean.TRUE;
@@ -1277,31 +1320,34 @@ public class HeaderCard implements CursorValue<String> {
         return defaultValue;
     }
 
-    private void longStringCard(HeaderCardCountingArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException {
+    private void longStringCard(HeaderCardCountingArrayDataInput dis, Parser parsed) throws IOException, TruncatedFileException {
         // ok this is a longString now read over all continues.
         StringBuilder longValue = new StringBuilder();
         StringBuilder longComment = null;
-        ParsedValue continueCard = parsedValue;
-        do {
-            if (continueCard.getValue() != null) {
-                longValue.append(continueCard.getValue());
+
+        while (parsed != null) {
+            if (parsed.getValue() != null) {
+                longValue.append(parsed.getValue());
             }
-            if (continueCard.getComment() != null) {
+
+            if (parsed.getComment() != null) {
                 if (longComment == null) {
-                    longComment = new StringBuilder();
-                } else {
+                    longComment = new StringBuilder(parsed.getComment());
+                } else if (!parsed.getComment().isEmpty()) {
                     longComment.append(' ');
-                }
-                longComment.append(continueCard.getComment());
+                    longComment.append(parsed.getComment());
+                }         
             }
-            continueCard = null;
+
+            parsed = null;
+
             if (longValue.length() > 0 && longValue.charAt(longValue.length() - 1) == '&') {
                 longValue.setLength(longValue.length() - 1);
                 dis.mark();
                 String card = readOneHeaderLine(dis);
                 if (card.startsWith(CONTINUE.key())) {
                     // extract the value/comment part of the string
-                    continueCard = FitsHeaderCardParser.parseCardValue(card);
+                    parsed = new Parser(card);
                 } else {
                     // the & was part of the string put it back.
                     longValue.append('&');
@@ -1309,9 +1355,10 @@ public class HeaderCard implements CursorValue<String> {
                     dis.reset();
                 }
             }
-        } while (continueCard != null);
-        this.comment = longComment == null ? null : longComment.toString();
-        this.value = longValue.toString();
+        }
+
+        this.comment = longComment == null ? null : longComment.toString().trim();
+        this.value = longValue.toString().trim();
         this.isString = true;
     }
 
@@ -1404,4 +1451,381 @@ public class HeaderCard implements CursorValue<String> {
     void setKey(String newKey) {
         this.key = newKey;
     }
+
+
+
+    /**
+     * A helper utility class to parse header cards for there value (especially
+     * strings) and comments.
+     *
+     * @author Attila Kovacs
+     * @author Richard van Nieuwenhoven
+     */
+    private static class Parser {
+
+        /** For logging */
+        private static final Logger LOG = Logger.getLogger(Header.class.getName());
+
+        /** The header line (usually 80-character width), which to parse. */
+        private String line;
+
+        /**
+         * the value of the card. (trimmed and standardized with . in HIERARCH)
+         */
+        private String key = null;
+
+        /**
+         * the value of the card. (trimmed)
+         */
+        private String value = null;
+
+        /**
+         * the comment specified with the value.
+         */
+        private String comment = null;
+
+        /**
+         * was the value quoted?
+         */
+        private boolean isString = false;
+
+        /**
+         * The position in the string that right after the last character processed by this parser
+         */
+        private int parsePos = 0;
+
+        /**
+         * Instantiates a new parser for a FITS header line.
+         * 
+         * @param line  a line in the FITS header, normally exactly 80-characters wide (but need not be).'
+         * 
+         * @see #getKey()
+         * @see #getValue()
+         * @see #getComment()
+         * @see #isString()
+         * 
+         * @throws IllegalArgumentException     if there is a missing end-quote and header repairs aren't allowed.
+         * 
+         * @see FitsFactory#setAllowHeaderRepairs(boolean)
+         */
+        Parser(String line) throws IllegalArgumentException {
+            this.line = line;
+            parseKey();
+            parseValue();
+            parseComment();
+        }
+
+        /**
+         * Returns the keyword component of the parsed header line. If the processing of HIERARCH
+         * keywords is enabled, it may be a `HIERARCH` style long key with the components separated
+         * by dots (e.g. `HIERARCH.ORG.SYSTEM.SUBSYS.ELEMENT`). Otherwise, it will be a standard
+         * 0--8 character standard uppercase FITS keyword (including simply `HIERARCH` if 
+         * {@link FitsFactory#setUseHierarch(boolean)} was set <code>false</code>).
+         * 
+         * @return the FITS header keyword for the line.
+         * 
+         * @see FitsFactory#setUseHierarch(boolean)
+         */
+        String getKey() {
+            return this.key;
+        }
+
+        /**
+         * Returns the value component of the parsed header line.
+         * 
+         * @return the value part of the line or <code>null</code> if the line contained no value.
+         * 
+         *  @see FitsFactory#setUseHierarch(boolean)
+         */
+        String getValue() {
+            return this.value;
+        }
+
+        /**
+         * Returns the comment component of the parsed header line.
+         * 
+         * @return the comment part of the line or <code>null</code> if the line contained no comment.
+         */
+        String getComment() {
+            return this.comment;
+        }
+
+        /**
+         * Returns whether the line contained a quoted string value. By default, strings with missing end
+         * quotes are no considered string values, but rather as comments. To allow processing lines
+         * with missing quotes as string values, you must set {@link FitsFactory#setAllowHeaderRepairs(boolean)}
+         * to <code>true</code> prior to parsing a header line with the missing end quote.
+         * 
+         * @return true if the value was quoted.
+         * 
+         * @see FitsFactory#setAllowHeaderRepairs(boolean)
+         */
+        boolean isString() {
+            return this.isString;
+        }
+
+
+
+        /**
+         * Parses a fits keyword from a card and standardizes it (trim, uppercase, and hierarch with dots).
+         *
+         */
+        private void parseKey() {
+            /*
+             * AK: The parsing of headers should never be stricter that the writing,
+             * such that any header written by this library can be parsed back
+             * without errors. (And, if anything, the parsing should be more
+             * permissive to allow reading FITS produced by other libraries, which
+             * may be less stringent in their rules). The original implementation
+             * strongly enforced the ESO HIERARCH convention when reading, but not
+             * at all for writing. Here is a tolerant hierarch parser that will
+             * read back any hierarch key that was written by this library. The input 
+             * FITS can use any space or even '.' to separate the hierarchies, and 
+             * the hierarchical elements may contain any ASCII characters other than
+             * those used for separating. It is more in line with what we do with 
+             * standard keys too.
+             */
+
+            // Find the '=' in the line, if any...
+            int iEq = line.indexOf('=');
+
+            // The stem is in the first 8 characters or what precedes an '=' character
+            // before that.
+            int endStem = (iEq >= 0 && iEq <= HeaderCard.MAX_KEYWORD_LENGTH) ? iEq : HeaderCard.MAX_KEYWORD_LENGTH;
+
+            // Find the key stem of the long key.
+            String stem = line.substring(0, endStem).trim().toUpperCase(Locale.US);
+
+            key = stem;
+            parsePos = endStem;
+
+            // If not using HIERARCH, then be very resilient, and return whatever key the first 8 chars make...
+            if (!FitsFactory.getUseHierarch()) {
+                return;
+            }
+
+            // If the line does not have an '=', can only be a simple key
+            if (iEq < 0) {
+                return;
+            }
+
+            // If it's not a HIERARCH keyword, then return an empty key.
+            if (!stem.equals(HIERARCH.key())) {
+                return;
+            }
+
+            // Compose the hierarchical key...
+            StringTokenizer tokens = new StringTokenizer(line.substring(stem.length(), iEq), " \t\r\n.");
+            StringBuilder builder = new StringBuilder(stem);
+
+            while (tokens.hasMoreTokens()) {
+                String token = tokens.nextToken();
+
+                parsePos = line.indexOf(token, parsePos) + token.length();
+
+                // Add a . to separate hierarchies
+                builder.append('.');
+                builder.append(token);
+            }
+
+            key = builder.toString();
+
+            if (!FitsFactory.getHierarchFormater().isCaseSensitive()) {
+                key = key.toUpperCase(Locale.US);
+            }
+        }
+
+        /**
+         * Advances the parse position to skip any spaces at the current parse position, and returns whether there
+         * is anything left in the line after the spaces...
+         * 
+         * @return      <code>true</code> if there is more non-space characters in the string, otherwise <code>false</code>
+         */
+        private boolean skipSpaces() {
+            for (; parsePos < line.length(); parsePos++) {
+                if (!Character.isSpaceChar(line.charAt(parsePos))) {
+                    // Line has non-space characters left to parse...
+                    return true;
+                }
+            }
+            // nothing left to parse.
+            return false;
+        }
+
+        /**
+         * Parses the comment components starting for the current parse position. After this call the parse position
+         * is set to the end of the string. The leading '/' (if found) is not included in the comment.
+         * 
+         */
+        private void parseComment() {
+            if (!skipSpaces()) {
+                // nothing left to parse.
+                return;
+            }
+
+            if (line.charAt(parsePos) == '/') {
+                if (++parsePos >= line.length()) {
+                    // empty comment
+                    comment = "";
+                    return;
+                }
+            }
+
+            comment = line.substring(parsePos).trim();        
+            parsePos = line.length();
+        }
+
+
+
+        /**
+         * Parses the value component from the current parse position. The parse position is advanced to
+         * the first character after the value specification in the line. If the header line does
+         * not contain a value component, then the value field of this object is set to <code>null</code>.
+         * 
+         * @throws IllegalArgumentException     if there is a missing end-quote and header repairs aren't allowed.
+         * 
+         * @see FitsFactory#setAllowHeaderRepairs(boolean)
+         */
+        private void parseValue() {
+            if (key.isEmpty()) {
+                // the entire line is a comment.
+                return;
+            }
+
+            if (!skipSpaces()) {
+                // nothing left to parse.
+                return;
+            }
+
+            if (CONTINUE.key().equals(key)) {
+                parseValueBody();
+            } else if (line.charAt(parsePos) == '=') {
+                if (parsePos > HeaderCard.MAX_KEYWORD_LENGTH) {
+                    // equal sign = after the 9th char -- only supported with hierarch keys...
+                    if (!key.startsWith(HIERARCH.key())) {
+                        // It's not a HIERARCH key
+                        return;
+                    }
+                    if (HIERARCH.key().equals(key)) {
+                        // The key is only HIERARCH, without a hierarchical keyword after it...
+                        return;
+                    }
+                }
+
+                parsePos++;
+                parseValueBody();
+            }
+        }
+
+        /**
+         * Parses the value body from the current parse position. The parse position is advanced to
+         * the first character after the value specification in the line. If the header line does
+         * not contain a value component, then the value field of this object is set to <code>null</code>.
+         * 
+         * @throws IllegalArgumentException     if there is a missing end-quote and header repairs aren't allowed.
+         * 
+         * @see FitsFactory#setAllowHeaderRepairs(boolean)
+         */
+        private void parseValueBody() throws IllegalArgumentException {
+            if (!skipSpaces()) {
+                // nothing left to parse.
+                return;
+            }
+
+            if (isNextQuote()) {
+                // Parse as a string value, or else throw an exception.
+                parseStringValue();
+            } else {
+                int end = line.indexOf('/', parsePos);
+                if (end < 0) {
+                    end = line.length();     
+                }
+                value = line.substring(parsePos, end).trim();
+                parsePos = end;
+            }
+
+        }
+
+        /**
+         * Checks if the next character, at the current parse position, is a single quote.
+         * 
+         * @return  <code>true</code> if the next character on the line exists and is a single quote, otherwise <code>false</code>.
+         */
+        private boolean isNextQuote() {
+            if (parsePos >= line.length()) {
+                // nothing left to parse.
+                return false;
+            }
+            return line.charAt(parsePos) == '\'';
+        }
+
+        /**
+         * Returns the string fom a parsed string value component, with trailing spaces removed. It preserves
+         * leading spaces.
+         * 
+         * @param buf   the parsed string value.
+         * @return      the string value with trailing spaces removed.
+         */
+        private String getString(StringBuilder buf) {  
+            int to = buf.length();
+
+            // Remove trailing spaces only!
+            while (--to >= 0) {
+                if (!Character.isSpaceChar(buf.charAt(to))) {
+                    break;
+                }
+            }
+
+            isString = true;
+            return to < 0 ? "" : buf.substring(0, to + 1);
+        }
+
+        /**
+         * Parses a quoted string value starting at the current parse position. If successful, the parse
+         * position is updated to after the string. Otherwise, the parse position is advanced only to skip 
+         * leading spaces starting from the input position.
+         * 
+         * @throws IllegalArgumentException     if there is a missing end-quote and header repairs aren't allowed.
+         * 
+         * @see FitsFactory#setAllowHeaderRepairs(boolean)
+         */
+        private void parseStringValue() throws IllegalArgumentException {
+            // In case the string parsing fails, we'll reset the parse position to where we
+            // started.
+            int from = parsePos++;
+
+            StringBuilder buf = new StringBuilder(HeaderCard.MAX_VALUE_LENGTH);
+
+            // Build the string value, up to the end quote and paying attention to double
+            // quotes inside the string, which are translated to single quotes within
+            // the string value itself.
+            for (; parsePos < line.length(); parsePos++) {
+                if (isNextQuote()) {
+                    parsePos++;
+
+                    if (isNextQuote()) {
+                        // Quoted quote...
+                        buf.append('\'');
+                    } else {
+                        // Closing single quote.
+                        value = getString(buf);
+                        return;
+                    }
+                } else {
+                    buf.append(line.charAt(parsePos));
+                }
+            }
+
+            // String with missing end quote
+            if (FitsFactory.isAllowHeaderRepairs()) {
+                LOG.warning("Ignored missing end quote in " + getKey() + "!");
+                value = getString(buf);
+            } else {
+                value = null;
+                parsePos = from;
+                throw new IllegalArgumentException("Missing or unexpected single quotes in value");
+            }
+        }
+    }
+
 }

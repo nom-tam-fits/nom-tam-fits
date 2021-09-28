@@ -124,7 +124,7 @@ public class HeaderCardTest {
         assertEquals("t13", lng, p.getComment());
 
         HeaderCard z = new HeaderCard("TTTT", 1.234567891234567891234567e101, "a comment");
-        assertTrue("t14", z.toString().indexOf("E") > 0);
+        assertTrue("t14", z.toString().indexOf("E") > 0);        
     }
 
     @Test
@@ -185,7 +185,170 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard("TEST", (String) null, "dummy");
         assertEquals(Integer.valueOf(5), hc.getValue(int.class, 5));
     }
+    
+    @Test
+    public void testHeaderBlanks() throws Exception {
+        
+        
+        HeaderCard hc = HeaderCard.create("               ");
+        assertEquals("", hc.getKey());
+        assertNull(hc.getValue());
+        assertNull(hc.getComment());
+        
+        hc = HeaderCard.create("=          ");
+        assertEquals("", hc.getKey());
+        assertNull(hc.getValue());
+        assertEquals("=", hc.getComment());
 
+        hc = HeaderCard.create("  =          ");
+        assertEquals("", hc.getKey());
+        assertNull(hc.getValue());
+        assertEquals("=", hc.getComment());
+        
+        hc = HeaderCard.create("CARD       /          ");
+        assertEquals("CARD", hc.getKey());
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+        
+        hc = HeaderCard.create("CARD = 123 /          ");
+        assertEquals("CARD", hc.getKey());
+        assertEquals("123", hc.getValue());
+        assertEquals("", hc.getComment());
+        
+        hc = HeaderCard.create("CARD = 123 /          ");
+        assertEquals("CARD", hc.getKey());
+        assertEquals("123", hc.getValue());
+        assertEquals("", hc.getComment());
+        
+        
+        hc = HeaderCard.create("CONTINUE   /   ");
+        assertEquals("CONTINUE", hc.getKey());
+        assertEquals("", hc.getValue());
+        assertEquals("", hc.getComment());
+        
+        hc = HeaderCard.create("CONTINUE 123  /   ");
+        assertEquals("CONTINUE", hc.getKey());
+        assertEquals("123", hc.getValue());
+        assertEquals("", hc.getComment());
+        
+        hc = HeaderCard.create("CARD");
+        assertEquals("CARD", hc.getKey());
+        assertNull(hc.getValue());
+        assertNull(hc.getComment());
+        
+        hc = HeaderCard.create("  = '         ");
+        assertEquals("", hc.getKey());
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+    }
+    
+    
+    @Test
+    public void testMissingEndQuotes() throws Exception {
+        boolean thrown = false;
+        HeaderCard hc = null;
+        
+        FitsFactory.setAllowHeaderRepairs(false);
+        
+        try {
+            thrown = false;
+            hc = HeaderCard.create("");
+        } catch(IllegalArgumentException e) {
+            thrown = true;
+        }
+        assertEquals(true, thrown);
+                 
+        try {
+            thrown = false;
+            hc = HeaderCard.create("CONTINUE '         ");
+        } catch(IllegalArgumentException e) {
+            thrown = true;
+        }
+        assertEquals(true, thrown);
+        
+        try {
+            thrown = false;
+            hc = HeaderCard.create("CARD = '         ");
+        } catch(IllegalArgumentException e) {
+            thrown = true;
+        }
+        assertEquals(true, thrown);
+        
+        
+        FitsFactory.setAllowHeaderRepairs(true);
+              
+        hc = HeaderCard.create("CONTINUE '         ");
+        assertNotNull(hc.getValue());
+        
+        hc = HeaderCard.create("CONTINUE '      /   ");
+        assertNotNull(hc.getValue());
+        assertNull(hc.getComment());
+        
+        hc = HeaderCard.create("CARD = '         ");
+        assertNotNull(hc.getValue());
+        
+        hc = HeaderCard.create("CARD = '       /  ");
+        assertNotNull(hc.getValue());
+        assertNull(hc.getComment());
+    }
+    
+    @Test
+    public void testMidQuotes() throws Exception {
+        HeaderCard hc = HeaderCard.create("CARD = abc'def' /         ");
+        assertEquals("abc'def'", hc.getValue());
+        
+        hc = HeaderCard.create("CONTINUE  abc'def' /         ");
+        assertEquals("abc'def'", hc.getValue());
+    }
+    
+    @Test
+    public void testParseCornerCases() throws Exception {
+        HeaderCard hc = HeaderCard.create("CARD = ''");
+        assertEquals("", hc.getValue());
+        
+        // Last char is start of comment /
+        byte[] bytes = hc.toString().getBytes();
+        bytes[bytes.length- 1] = '/';
+        hc = HeaderCard.create(new String(bytes));
+        assertEquals("", hc.getComment());
+    }
+    
+    public void testMisplacedEqual() throws Exception {
+        FitsFactory.setUseHierarch(false);
+        
+        // Not a value because = is not in the first 9 chars...
+        HeaderCard hc = HeaderCard.create("CARD       = 'value'");
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+        
+        // Hierarch without hierarchy, with equal in the wrong place...
+        hc = HeaderCard.create("HIERARCH       = 'value'");
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+        
+        // Not a value because we aren't supporting hierarch convention
+        hc = HeaderCard.create("HIERARCH TEST = 'value'");
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+        
+        FitsFactory.setUseHierarch(true);
+        
+        // Not a value because = is not in the first 9 chars, and it's not a HIERARCH card...
+        hc = HeaderCard.create("CARD       = 'value'");
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+        
+        // Hierarch without hierarchy.
+        hc = HeaderCard.create("HIERARCH       = 'value'");
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+        
+        // Proper hierarch
+        hc = HeaderCard.create("HIERARCH TEST= 'value'");
+        assertNotNull(hc.getValue());
+        assertNull(hc.getComment());
+    }
+        
     @Test
     public void testBigDecimal1() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", new BigDecimal("12345678901234567890123456789012345678901234567890123456789012345678901234567.890"), "dummy");
@@ -345,8 +508,10 @@ public class HeaderCardTest {
         assertEquals("h9", "123", hc.getValue());
         assertEquals("h10", "Comment", hc.getComment());
 
+        hc = HeaderCard.create("KEYWORD sderrfgre");
+        assertNull("no-equals", hc.getValue());
+        
         // now test a longString
-
         FitsFactory.setLongStringsEnabled(true);
 
         hc = new HeaderCard(key, "a verly long value that must be splitted over multiple lines to fit the card", "the comment is also not the smallest");
@@ -355,7 +520,63 @@ public class HeaderCardTest {
                 "CONTINUE  'ple lines to fit the card' / the comment is also not the smallest    ", hc.toString());
 
     }
+    
+    @Test
+    public void testHierarchMixedCase() throws Exception { 
+        // The default is to use upper-case only for HIERARCH
+        assertEquals(false, FitsFactory.getHierarchFormater().isCaseSensitive());
+        
+        int l = "HIERARCH abc DEF HiJ".length();
+        
+        HeaderCard hc = HeaderCard.create("HIERARCH abc DEF HiJ= 'something'");
+        assertEquals("HIERARCH.ABC.DEF.HIJ", hc.getKey());
+        assertEquals("HIERARCH ABC DEF HIJ", hc.toString().substring(0, l));
+        
+        hc = new HeaderCard("HIERARCH.abc.DEF.HiJ", "something", null);
+        assertEquals("HIERARCH.abc.DEF.HiJ", hc.getKey());
+        assertEquals("HIERARCH ABC DEF HIJ", hc.toString().substring(0, l));
+        
+        FitsFactory.getHierarchFormater().setCaseSensitive(true);
+        assertEquals(true, FitsFactory.getHierarchFormater().isCaseSensitive());
+        
+        hc = HeaderCard.create("HIERARCH abc DEF HiJ= 'something'");
+        assertEquals("HIERARCH.abc.DEF.HiJ", hc.getKey());
+        assertEquals("HIERARCH abc DEF HiJ", hc.toString().substring(0, l));
+        
+        hc = new HeaderCard("HIERARCH.abc.DEF.HiJ", "something", null);
+        assertEquals("HIERARCH.abc.DEF.HiJ", hc.getKey());    
+        assertEquals("HIERARCH abc DEF HiJ", hc.toString().substring(0, l));
+    }
 
+    @Test
+    public void testBlacksHierarchMixedCase() throws Exception { 
+        FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
+        
+        // The default is to use upper-case only for HIERARCH
+        assertEquals(false, FitsFactory.getHierarchFormater().isCaseSensitive());
+
+        int l = "HIERARCH  abc.DEF.HiJ".length();
+        
+        HeaderCard hc = HeaderCard.create("HIERARCH abc DEF HiJ= 'something'");
+        assertEquals("HIERARCH.ABC.DEF.HIJ", hc.getKey());
+        assertEquals("HIERARCH  ABC.DEF.HIJ", hc.toString().substring(0, l));
+        
+        hc = new HeaderCard("HIERARCH.abc.DEF.HiJ", "something", null);
+        assertEquals("HIERARCH.abc.DEF.HiJ", hc.getKey());
+        assertEquals("HIERARCH  ABC.DEF.HIJ", hc.toString().substring(0, l));
+        
+        FitsFactory.getHierarchFormater().setCaseSensitive(true);
+        assertEquals(true, FitsFactory.getHierarchFormater().isCaseSensitive());
+        
+        hc = HeaderCard.create("HIERARCH abc DEF HiJ= 'something'");
+        assertEquals("HIERARCH.abc.DEF.HiJ", hc.getKey());
+        assertEquals("HIERARCH  abc.DEF.HiJ", hc.toString().substring(0, l));
+        
+        hc = new HeaderCard("HIERARCH.abc.DEF.HiJ", "something", null);
+        assertEquals("HIERARCH.abc.DEF.HiJ", hc.getKey());   
+        assertEquals("HIERARCH  abc.DEF.HiJ", hc.toString().substring(0, l));
+    }
+    
     @Test
     public void testLongStringWithSkippedBlank() throws Exception {
         FitsFactory.setUseHierarch(true);
@@ -368,6 +589,14 @@ public class HeaderCardTest {
         assertEquals("HIERARCH TEST1 TEST2 INT='a verly long value that must be splitted over multip&'" + //
                 "CONTINUE  'le lines to fit the card' / the comment is also not the smallest     ", hc.toString());
 
+    }
+    
+    @Test
+    public void testSanitize() throws Exception {
+        String card = "CARD = 'abc\t\r\n\bdef'";
+        String sanitized = "CARD    = 'abc????def'";
+        HeaderCard hc = HeaderCard.create(card);
+        assertEquals(sanitized, hc.toString().substring(0, sanitized.length()));
     }
 
     @Test
@@ -562,16 +791,36 @@ public class HeaderCardTest {
 
     @Test
     public void testStringQuotes() throws Exception {
-        HeaderCard hc = new HeaderCard("TEST", "'bla bla'", "dummy");
+        // Regular string value in FITS header
+        HeaderCard hc = HeaderCard.create("TEST    = 'bla bla' / dummy");
         assertEquals(String.class, hc.valueType());
         assertEquals("bla bla", hc.getValue(String.class, null));
-        HeaderCardException actual = null;
+
+        // Quoted string in FITS with ''
+        hc = HeaderCard.create("TEST    = '''bla'' bla' / dummy");
+        assertEquals(String.class, hc.valueType());
+        assertEquals("'bla' bla", hc.getValue(String.class, null));
+        
+        // Quotes in constructed value
+        hc = new HeaderCard("TEST", "'bla' bla", "dummy");
+        assertEquals("'bla' bla", hc.getValue(String.class, null));
+       
+        // Quotes in comment
+        hc = HeaderCard.create("TEST    = / 'bla bla' dummy");
+        assertEquals("", hc.getValue(String.class, null));
+        
+        // Unfinished quotes
+        Exception ex = null;
         try {
-            hc = new HeaderCard("TEST", "'bla bla", "dummy");
-        } catch (HeaderCardException e) {
-            actual = e;
+            hc = HeaderCard.create("TEST    = 'bla bla / dummy");
+        } catch (IllegalArgumentException e) {
+            ex = e;
         }
-        assertNotNull(actual);
+        assertNotNull(ex);
+        
+        FitsFactory.setAllowHeaderRepairs(true);
+        hc = HeaderCard.create("TEST    = 'bla bla / dummy");
+        assertEquals("bla bla / dummy", hc.getValue(String.class, null));
     }
 
     @Test

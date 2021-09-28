@@ -81,8 +81,6 @@ import nom.tam.fits.HeaderOrder;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.TruncatedFileException;
 import nom.tam.fits.header.Standard;
-import nom.tam.fits.utilities.FitsHeaderCardParser;
-import nom.tam.fits.utilities.FitsHeaderCardParser.ParsedValue;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
@@ -287,9 +285,9 @@ public class HeaderTest {
             assertNull(hdr.findCard("LONG3").getComment());
 
             String string = hdr.findCard("LONG1").toString();
-            val = FitsHeaderCardParser.parseCardValue(string).getValue();
+            val = HeaderCard.create(string).getValue();
             FitsFactory.setLongStringsEnabled(false);
-            val = FitsHeaderCardParser.parseCardValue(string).getValue();
+            val = HeaderCard.create(string).getValue();
             FitsFactory.setLongStringsEnabled(true);
 
             assertEquals("LongT3", true, !val.equals(lng));
@@ -413,7 +411,7 @@ public class HeaderTest {
             Arrays.fill(bytes, (byte) ' ');
             System.arraycopy(AsciiFuncs.getBytes(cardString), 0, bytes, 0, cardString.length());
             HeaderCard rereadCard = new HeaderCard(new BufferedDataInputStream(new ByteArrayInputStream(bytes)));
-
+            
             assertEquals(cardValue, rereadCard.getValue());
             assertEquals(headerCard.getValue(), rereadCard.getValue());
             assertEquals(cardComment, headerCard.getComment());
@@ -533,28 +531,28 @@ public class HeaderTest {
     public void testHierachKeyWordParsing() {
         FitsFactory.setUseHierarch(true);
         
-        String keyword = FitsHeaderCardParser.parseCardKey("HIERARCH test this = 'bla bla' ");
+        String keyword = HeaderCard.create("HIERARCH test this = 'bla bla' ").getKey();
         assertEquals("HIERARCH.TEST.THIS", keyword);
 
-        keyword = FitsHeaderCardParser.parseCardKey("HIERARCH test this= 'bla bla' ");
+        keyword = HeaderCard.create("HIERARCH test this= 'bla bla' ").getKey();
         assertEquals("HIERARCH.TEST.THIS", keyword);
 
-        keyword = FitsHeaderCardParser.parseCardKey("HIERARCH.test.this= 'bla bla' ");
+        keyword = HeaderCard.create("HIERARCH.test.this= 'bla bla' ").getKey();
         assertEquals("HIERARCH.TEST.THIS", keyword);
 
-        keyword = FitsHeaderCardParser.parseCardKey("HIERARCH ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier");
+        keyword = HeaderCard.create("HIERARCH ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
         assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
 
-        keyword = FitsHeaderCardParser.parseCardKey("HIERARCH ESO INS. OPTI-3 ID = 'ESO#427 ' / Optical element identifier");
+        keyword = HeaderCard.create("HIERARCH ESO INS. OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
         assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
 
-        keyword = FitsHeaderCardParser.parseCardKey("HIERARCH ESO.INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier");
+        keyword = HeaderCard.create("HIERARCH ESO.INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
         assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
 
-        keyword = FitsHeaderCardParser.parseCardKey("HIERARCH..ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier");
+        keyword = HeaderCard.create("HIERARCH..ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
         assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
 
-        keyword = FitsHeaderCardParser.parseCardKey("HIERARCH    ESO INS   OPTI-3 ID= 'ESO#427 ' / Optical element identifier");
+        keyword = HeaderCard.create("HIERARCH    ESO INS   OPTI-3 ID= 'ESO#427 ' / Optical element identifier").getKey();
         assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
 
         // AK: The old test expected "" here, but that's inconsistent behavior for the same type of
@@ -562,10 +560,10 @@ public class HeaderTest {
         // first word (max 8 characters) as part of the requirement to parse malformed headers
         // as much as possible. So, we should be requiring the same behavior for these type
         // of keys when HIERARCH is enabled.
-        keyword = FitsHeaderCardParser.parseCardKey("sdfajsg sdgf asdgf kasj sjk ID Optical element identifier");
+        keyword = HeaderCard.create("sdfajsg sdgf asdgf kasj sjk ID Optical element identifier").getKey();
         assertEquals("SDFAJSG", keyword);
 
-        keyword = FitsHeaderCardParser.parseCardKey("SIMPLE = T");
+        keyword = HeaderCard.create("SIMPLE = T").getKey();
         assertEquals("SIMPLE", keyword);
     }
 
@@ -1008,10 +1006,10 @@ public class HeaderTest {
     public void testTrimBlanksAfterQuotedString() throws Exception {
         String card = "TESTTEST= 'TESTVALUE ''QUOTED'' TRIMMSTUFF     '  / comment";
 
-        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);
-        assertEquals("comment", parsedValue.getComment());
+        HeaderCard hc = HeaderCard.create(card);
+        assertEquals("comment", hc.getComment());
         // lets see if the blanks after the value are removed.
-        assertEquals("TESTVALUE 'QUOTED' TRIMMSTUFF", parsedValue.getValue());
+        assertEquals("TESTVALUE 'QUOTED' TRIMMSTUFF", hc.getValue());
 
     }
 

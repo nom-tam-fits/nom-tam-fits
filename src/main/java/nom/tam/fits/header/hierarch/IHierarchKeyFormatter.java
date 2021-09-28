@@ -36,4 +36,24 @@ import nom.tam.fits.utilities.FitsLineAppender;
 public interface IHierarchKeyFormatter {
 
     void append(String key, FitsLineAppender buffer);
+
+    /**
+     * Sets whether case-sensitive (mixed-case) HIERARCH keywords are supported.
+     * 
+     * @param value
+     *            If <code>false</code> (default), then all HIERARCH keywords
+     *            will be converted to upper-case. Otherwise, case will be
+     *            preserved.
+     * @see #isCaseSensitive()
+     */
+    void setCaseSensitive(boolean value);
+
+    /**
+     * Checks if this formatter allows support for case-sensitive (mixed-case)
+     * hierarchical keywords.
+     * 
+     * @return If <code>false</code> (default), then all HIERARCH keywords will
+     *         be converted to upper-case. Otherwise, case will be preserved.
+     */
+    boolean isCaseSensitive();
 }
