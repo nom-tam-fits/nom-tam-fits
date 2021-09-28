@@ -1,5 +1,7 @@
 package nom.tam.util.test;
 
+import nom.tam.fits.HeaderCard;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -32,7 +34,6 @@ package nom.tam.util.test;
  */
 
 
-import nom.tam.fits.utilities.FitsHeaderLineParser;
 import nom.tam.fits.utilities.FitsLineAppender;
 
 import org.junit.Assert;
@@ -50,9 +51,9 @@ public class ExtraTest {
 
     @Test
     public void testParseStringComment() {
-        FitsHeaderLineParser value = new FitsHeaderLineParser("KEY = / ' test '");
-        Assert.assertEquals("", value.getValue());
-        Assert.assertEquals("' test '", value.getComment());
+        HeaderCard hc = HeaderCard.create("KEY = / ' test '");
+        Assert.assertEquals("", hc.getValue());
+        Assert.assertEquals("' test '", hc.getComment());
     }
 
 }
