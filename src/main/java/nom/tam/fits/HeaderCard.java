@@ -199,7 +199,7 @@ public class HeaderCard implements CursorValue<String> {
      * <li>If {@link FitsFactory#setUseHierarch(boolean)} is enabled, structured longer keywords can be composed
      * after a <code>HIERARCH</code> base key, followed by space (and/or dot ].]) separated parts, up to an 
      * equal sign [=]. The library will represent the same components (including <code>HIERARCH</code>) but 
-     * separated by single dots [.]. For example, the header line starting with [<code>HIERARCH SMA OBS TARGET=</code>], 
+     * separated by single dots [.]. For example, the header line starting with [<code>HIERARCH SMA OBS TARGET =</code>], 
      * will be referred as [<code>HIERARCH.SMA.OBS.TARGET</code>] withing this library. The keyword parts 
      * can be composed of any ASCII characters except dot [.], white spaces, or equal [=].</li>
      * <li>By default, all parts of the key are converted to upper-case. Case sensitive HIERARCH keywords can be 
@@ -1375,7 +1375,11 @@ public class HeaderCard implements CursorValue<String> {
 
     private boolean stringValueToString(int alignSmallString, int alignPosition, FitsLineAppender buf, boolean commentHandled) {
         String stringValue = this.value.replace("'", "''");
-        if (FitsFactory.isLongStringsEnabled() && stringValue.length() > maxStringValueLength()) {
+        
+        // We can only write a single-line string, including the quotes, in the space left on the line...
+        int spaceLeft = FITS_HEADER_CARD_SIZE - buf.length() % FITS_HEADER_CARD_SIZE - 2;
+         
+        if (FitsFactory.isLongStringsEnabled() && stringValue.length() > spaceLeft) {
             writeLongStringValue(buf, stringValue);
             commentHandled = true;
         } else {
@@ -1459,7 +1463,8 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * A helper utility class to parse header cards for there value (especially
-     * strings) and comments.
+     * strings) and comments. See {@link HeaderCard#create(String)} for a description
+     * of the rules that guide parsing.
      *
      * @author Attila Kovacs
      * @author Richard van Nieuwenhoven
@@ -1826,7 +1831,7 @@ public class HeaderCard implements CursorValue<String> {
             } else {
                 value = null;
                 parsePos = from;
-                throw new IllegalArgumentException("Missing or unexpected single quotes in value");
+                throw new IllegalArgumentException("Missing end quote in [" + line + "]");
             }
         }
     }
