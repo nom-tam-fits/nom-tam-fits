@@ -148,7 +148,7 @@ public final class FitsFactory {
             return d;
         } else if (RandomGroupsHDU.isHeader(hdr)) {
             return RandomGroupsHDU.manufactureData(hdr);
-        } else if (current().useAsciiTables && AsciiTableHDU.isHeader(hdr)) {
+        } else if (current().isUseAsciiTables() && AsciiTableHDU.isHeader(hdr)) {
             return AsciiTableHDU.manufactureData(hdr);
         } else if (CompressedImageHDU.isHeader(hdr)) {
             return CompressedImageHDU.manufactureData(hdr);
@@ -169,29 +169,64 @@ public final class FitsFactory {
      *         allowed.
      */
     public static boolean getAllowTerminalJunk() {
-        return current().allowTerminalJunk;
+        return current().isAllowTerminalJunk();
     }
 
     /**
      * @return Do we allow automatic header repairs, like missing end quotes?
      */
     public static boolean isAllowHeaderRepairs() {
-        return current().allowHeaderRepairs;
+        return current().isAllowHeaderRepairs();
     }
 
     /**
      * @return the formatter to use for hierarch keys.
      */
     public static IHierarchKeyFormatter getHierarchFormater() {
-        return current().hierarchKeyFormatter;
+        return current().getHierarchKeyFormatter();
     }
 
     /**
      * @return <code>true</code> if we are processing HIERARCH style keywords
      */
     public static boolean getUseHierarch() {
-        return current().useHierarch;
+        return current().isUseHierarch();
     }
+    
+    /**
+     * whether ASCII tables should be used where feasible.
+     * 
+     * @return <code>true</code> if we ASCII tables are allowed.
+     * 
+     * @see #setUseAsciiTables(boolean)
+     */
+    public static boolean getUseAsciiTables() {
+        return current().isUseAsciiTables();
+    }
+    
+
+    /**
+     * @return Get the current status for string checking.
+     */
+    public static boolean getCheckAsciiStrings() {
+        return current().isCheckAsciiStrings();
+    }
+    
+    /**
+     * @return <code>true</code> If long string support is enabled.
+     */
+    public static boolean isLongStringsEnabled() {
+        return current().isLongStringsEnabled();
+    }
+
+    /**
+     * @return <code>true</code> If blanks after the assign are ommitted in the
+     *         header.
+     */
+    public static boolean isSkipBlankAfterAssign() {
+        return current().isSkipBlankAfterAssign();
+    }
+    
     
     /**
      * @return Given Header and data objects return the appropriate type of HDU.
@@ -212,7 +247,7 @@ public final class FitsFactory {
             return (BasicHDU<DataClass>) new CompressedImageHDU(hdr, (CompressedImageData) d);
         } else if (d instanceof RandomGroupsData) {
             return (BasicHDU<DataClass>) new RandomGroupsHDU(hdr, (RandomGroupsData) d);
-        } else if (current().useAsciiTables && d instanceof AsciiTable) {
+        } else if (current().isUseAsciiTables() && d instanceof AsciiTable) {
             return (BasicHDU<DataClass>) new AsciiTableHDU(hdr, (AsciiTable) d);
         } else if (d instanceof CompressedTableData) {
             return (BasicHDU<DataClass>) new CompressedTableHDU(hdr, (CompressedTableData) d);
@@ -245,7 +280,7 @@ public final class FitsFactory {
         } else if (RandomGroupsHDU.isData(o)) {
             d = RandomGroupsHDU.encapsulate(o);
             h = RandomGroupsHDU.manufactureHeader(d);
-        } else if (current().useAsciiTables && AsciiTableHDU.isData(o)) {
+        } else if (current().isUseAsciiTables() && AsciiTableHDU.isData(o)) {
             d = AsciiTableHDU.encapsulate(o);
             h = AsciiTableHDU.manufactureHeader(d);
         } else if (BinaryTableHDU.isData(o)) {
@@ -297,21 +332,6 @@ public final class FitsFactory {
     }
 
     // CHECKSTYLE:ON
-
-    /**
-     * @return <code>true</code> If long string support is enabled.
-     */
-    public static boolean isLongStringsEnabled() {
-        return current().longStringsEnabled;
-    }
-
-    /**
-     * @return <code>true</code> If blanks after the assign are ommitted in the
-     *         header.
-     */
-    public static boolean isSkipBlankAfterAssign() {
-        return current().skipBlankAfterAssign;
-    }
 
     /**
      * Do we allow junk after a valid FITS file?
@@ -447,17 +467,10 @@ public final class FitsFactory {
         FitsSettings settings = LOCAL_SETTINGS.get();
         if (settings == null) {
             return GLOBAL_SETTINGS;
-        } else {
-            return settings;
         }
+        return settings;
     }
 
-    /**
-     * @return Get the current status for string checking.
-     */
-    static boolean getCheckAsciiStrings() {
-        return current().checkAsciiStrings;
-    }
 
     private FitsFactory() {
     }
