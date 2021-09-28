@@ -1,5 +1,7 @@
 package nom.tam.fits.header.hierarch;
 
+import java.util.Locale;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -41,6 +43,8 @@ public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
     private static final int HIERARCH_KEY_OFFSET = HIERARCH_TEXT.length() + 1;
 
     private final String blanks;
+    
+    private boolean allowMixedCase;
 
     public BlanksDotHierarchKeyFormatter(int count) {
         StringBuilder builder = new StringBuilder();
@@ -52,8 +56,22 @@ public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
 
     @Override
     public void append(String key, FitsLineAppender buffer) {
+        if (!allowMixedCase) {
+            key = key.toUpperCase(Locale.US);
+        }
+        
         buffer.append(HIERARCH_TEXT);
         buffer.append(blanks);
         buffer.append(key, HIERARCH_KEY_OFFSET, key.length());
+    }
+    
+    @Override
+    public void setCaseSensitive(boolean value) {
+        allowMixedCase = value;
+    }
+
+    @Override
+    public final boolean isCaseSensitive() {
+        return allowMixedCase;
     }
 }

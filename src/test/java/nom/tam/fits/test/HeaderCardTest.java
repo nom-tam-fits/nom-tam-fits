@@ -520,7 +520,63 @@ public class HeaderCardTest {
                 "CONTINUE  'ple lines to fit the card' / the comment is also not the smallest    ", hc.toString());
 
     }
+    
+    @Test
+    public void testHierarchMixedCase() throws Exception { 
+        // The default is to use upper-case only for HIERARCH
+        assertEquals(false, FitsFactory.getHierarchFormater().isCaseSensitive());
+        
+        int l = "HIERARCH abc DEF HiJ".length();
+        
+        HeaderCard hc = HeaderCard.create("HIERARCH abc DEF HiJ= 'something'");
+        assertEquals("HIERARCH.ABC.DEF.HIJ", hc.getKey());
+        assertEquals("HIERARCH ABC DEF HIJ", hc.toString().substring(0, l));
+        
+        hc = new HeaderCard("HIERARCH.abc.DEF.HiJ", "something", null);
+        assertEquals("HIERARCH.abc.DEF.HiJ", hc.getKey());
+        assertEquals("HIERARCH ABC DEF HIJ", hc.toString().substring(0, l));
+        
+        FitsFactory.getHierarchFormater().setCaseSensitive(true);
+        assertEquals(true, FitsFactory.getHierarchFormater().isCaseSensitive());
+        
+        hc = HeaderCard.create("HIERARCH abc DEF HiJ= 'something'");
+        assertEquals("HIERARCH.abc.DEF.HiJ", hc.getKey());
+        assertEquals("HIERARCH abc DEF HiJ", hc.toString().substring(0, l));
+        
+        hc = new HeaderCard("HIERARCH.abc.DEF.HiJ", "something", null);
+        assertEquals("HIERARCH.abc.DEF.HiJ", hc.getKey());    
+        assertEquals("HIERARCH abc DEF HiJ", hc.toString().substring(0, l));
+    }
 
+    @Test
+    public void testBlacksHierarchMixedCase() throws Exception { 
+        FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
+        
+        // The default is to use upper-case only for HIERARCH
+        assertEquals(false, FitsFactory.getHierarchFormater().isCaseSensitive());
+
+        int l = "HIERARCH  abc.DEF.HiJ".length();
+        
+        HeaderCard hc = HeaderCard.create("HIERARCH abc DEF HiJ= 'something'");
+        assertEquals("HIERARCH.ABC.DEF.HIJ", hc.getKey());
+        assertEquals("HIERARCH  ABC.DEF.HIJ", hc.toString().substring(0, l));
+        
+        hc = new HeaderCard("HIERARCH.abc.DEF.HiJ", "something", null);
+        assertEquals("HIERARCH.abc.DEF.HiJ", hc.getKey());
+        assertEquals("HIERARCH  ABC.DEF.HIJ", hc.toString().substring(0, l));
+        
+        FitsFactory.getHierarchFormater().setCaseSensitive(true);
+        assertEquals(true, FitsFactory.getHierarchFormater().isCaseSensitive());
+        
+        hc = HeaderCard.create("HIERARCH abc DEF HiJ= 'something'");
+        assertEquals("HIERARCH.abc.DEF.HiJ", hc.getKey());
+        assertEquals("HIERARCH  abc.DEF.HiJ", hc.toString().substring(0, l));
+        
+        hc = new HeaderCard("HIERARCH.abc.DEF.HiJ", "something", null);
+        assertEquals("HIERARCH.abc.DEF.HiJ", hc.getKey());   
+        assertEquals("HIERARCH  abc.DEF.HiJ", hc.toString().substring(0, l));
+    }
+    
     @Test
     public void testLongStringWithSkippedBlank() throws Exception {
         FitsFactory.setUseHierarch(true);

@@ -216,7 +216,11 @@ public class FitsHeaderLineParser {
             builder.append(token);
         }
         
-        key = builder.toString().toUpperCase(Locale.US);
+        key = builder.toString();
+        
+        if (!FitsFactory.getHierarchFormater().isCaseSensitive()) {
+            key = key.toUpperCase(Locale.US);
+        }
     }
 
     /**

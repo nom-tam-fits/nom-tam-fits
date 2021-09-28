@@ -36,10 +36,24 @@ import java.util.Locale;
 import nom.tam.fits.utilities.FitsLineAppender;
 
 public class StandardIHierarchKeyFormatter implements IHierarchKeyFormatter {
-
+    private boolean allowMixedCase;
+    
     @Override
     public void append(String key, FitsLineAppender buffer) {
-        buffer.appendReplacing(key.toUpperCase(Locale.US), '.', ' ');
+        if (!allowMixedCase) {
+            key = key.toUpperCase(Locale.US);
+        }
+        buffer.appendReplacing(key, '.', ' ');
+    }
+
+    @Override
+    public void setCaseSensitive(boolean value) {
+        allowMixedCase = value;
+    }
+
+    @Override
+    public final boolean isCaseSensitive() {
+        return allowMixedCase;
     }
 
 }

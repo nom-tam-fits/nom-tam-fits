@@ -61,7 +61,7 @@ public final class FitsFactory {
         // (see uk.ac.starlink.fits.WideFits).  If that gets backed out of,
         // this could be set back to its factory setting (false).
         private boolean useHierarch = true;
-
+        
         private boolean checkAsciiStrings = false;
 
         private boolean allowTerminalJunk = false;
@@ -71,6 +71,7 @@ public final class FitsFactory {
         private boolean longStringsEnabled = false;
 
         private boolean skipBlankAfterAssign = false;
+        
 
         private IHierarchKeyFormatter hierarchKeyFormatter = new StandardIHierarchKeyFormatter();
 
@@ -90,6 +91,8 @@ public final class FitsFactory {
         protected IHierarchKeyFormatter getHierarchKeyFormatter() {
             return this.hierarchKeyFormatter;
         }
+        
+        
 
         protected boolean isAllowTerminalJunk() {
             return this.allowTerminalJunk;
@@ -166,14 +169,14 @@ public final class FitsFactory {
      *         allowed.
      */
     public static boolean getAllowTerminalJunk() {
-        return current().isAllowTerminalJunk();
+        return current().allowTerminalJunk;
     }
 
     /**
      * @return Do we allow automatic header repairs, like missing end quotes?
      */
     public static boolean isAllowHeaderRepairs() {
-        return current().isAllowHeaderRepairs();
+        return current().allowHeaderRepairs;
     }
 
     /**
@@ -189,7 +192,7 @@ public final class FitsFactory {
     public static boolean getUseHierarch() {
         return current().useHierarch;
     }
-
+    
     /**
      * @return Given Header and data objects return the appropriate type of HDU.
      * @param hdr
