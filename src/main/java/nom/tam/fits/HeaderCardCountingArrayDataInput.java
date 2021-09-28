@@ -82,7 +82,7 @@ public class HeaderCardCountingArrayDataInput {
 
     /**
      * indicate whether mark/reset functionality is supported
-     *
+     * 
      * @return true iff mark/reset will work
      */
     public boolean markSupported() {
