@@ -44,6 +44,8 @@ public class StandardIHierarchKeyFormatter implements IHierarchKeyFormatter {
             key = key.toUpperCase(Locale.US);
         }
         buffer.appendReplacing(key, '.', ' ');
+        // cfitsio specifies a required space before the '=', so let's play nice with it.
+        buffer.append(' ');
     }
 
     @Override

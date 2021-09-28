@@ -62,7 +62,9 @@ public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
         
         buffer.append(HIERARCH_TEXT);
         buffer.append(blanks);
-        buffer.append(key, HIERARCH_KEY_OFFSET, key.length());
+        buffer.append(key, HIERARCH_KEY_OFFSET, key.length());  
+        // cfitsio specifies a required space before the '=', so let's play nice with it.
+        buffer.append(' ');
     }
     
     @Override

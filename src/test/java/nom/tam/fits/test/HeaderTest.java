@@ -171,7 +171,7 @@ public class HeaderTest {
             hdr.addValue("FLT1", 1.34, "A float value");
             hdr.addValue("FLT2", -1.234567890e-134, "A very long float");
             hdr.insertComment("Comment after flt2");
-     
+
             c.setKey("INTVAL1");
             hc = (HeaderCard) c.next();
             assertEquals("INTVAL1", "INTVAL1", hc.getKey());
@@ -204,8 +204,8 @@ public class HeaderTest {
             SafeClose.close(f);
         }
     }
-    
-   
+
+
     /** Confirm initial location versus EXTEND keyword (V. Forchi). */
     @Test
     public void extendTest() throws Exception {
@@ -366,7 +366,7 @@ public class HeaderTest {
         assertNull(card.getComment());
         assertFalse(new HeaderCard("STRKEY",
                 "This is a very long string keyword value that is continued over at least three keywords in the FITS header even if it has no comment.", null).toString()
-                        .contains("/"));
+                .contains("/"));
         FitsFactory.setLongStringsEnabled(false);
     }
 
@@ -411,7 +411,7 @@ public class HeaderTest {
             Arrays.fill(bytes, (byte) ' ');
             System.arraycopy(AsciiFuncs.getBytes(cardString), 0, bytes, 0, cardString.length());
             HeaderCard rereadCard = new HeaderCard(new BufferedDataInputStream(new ByteArrayInputStream(bytes)));
-            
+
             assertEquals(cardValue, rereadCard.getValue());
             assertEquals(headerCard.getValue(), rereadCard.getValue());
             assertEquals(cardComment, headerCard.getComment());
@@ -487,7 +487,7 @@ public class HeaderTest {
             SafeClose.close(f);
         }
     }
-    
+
 
     @Test
     public void testHeaderCommentsDrift() throws Exception {
@@ -530,7 +530,7 @@ public class HeaderTest {
     @Test
     public void testHierachKeyWordParsing() {
         FitsFactory.setUseHierarch(true);
-        
+
         String keyword = HeaderCard.create("HIERARCH test this = 'bla bla' ").getKey();
         assertEquals("HIERARCH.TEST.THIS", keyword);
 
@@ -657,11 +657,11 @@ public class HeaderTest {
             SafeClose.close(f);
         }
     }
-    
+
     @Test
     public void orderTest() throws Exception {
         Header h = new Header();
-        
+
         // Start with an 'existing' header
         h.addValue("BLAH1", 0, "");
         h.addValue("BLAH2", 0, "");
@@ -670,8 +670,8 @@ public class HeaderTest {
         h.addValue("MARKER", 0, "");
         h.addValue("BLAH4", 0, "");
         h.addValue("KEY2", 0, "");
-        
-        
+
+
         // Now insert some keys before MARKER
         h.findCard("MARKER");
         h.addValue("KEY1", 1, "");
@@ -680,21 +680,21 @@ public class HeaderTest {
         h.addValue("KEY4", 1, "");
         h.addValue("KEY5", 1, "");
 
-        
+
         // Now do an in-place update and a deletion, which should not affect
         // the position. The position should remain before MARKER.
         h.updateLine("BLAH2", new HeaderCard("BLAH2A", 1, ""));
         h.deleteKey("BLAH1");
         h.addValue("KEY6", 1, "");
-        
+
         // Use updateLine for a non-existent key. This should result in
         // adding a new card at the current position
         h.updateLine("KEY7", new HeaderCard("KEY7", 1, ""));
-        
+
         // Check to that the keys appear in the expected order...
         Cursor<String, HeaderCard> c = h.iterator();
         c.setKey("KEY1");
-        
+
         for(int i=1; i<=7; i++) {
             HeaderCard card = c.next();
             assertEquals("KEY" + i, card.getKey());
@@ -747,7 +747,7 @@ public class HeaderTest {
             assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue("ZZZ", -1.0), -1.0, 0.000001);
-            
+
             hdr.addValue(CTYPE2.name(), BigDecimal.valueOf(5.0), "nothing special");
             assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue(CTYPE2, -1d), 5.0, 0.000001);
@@ -879,7 +879,7 @@ public class HeaderTest {
         iterator.add(new HeaderCard(NAXIS.name(), 1, ""));
         Assert.assertEquals(0, header.getSize());
         header.addValue("END", "", "");
-         
+
         Assert.assertEquals(2880, header.getSize());
         return header;
     }
@@ -980,7 +980,9 @@ public class HeaderTest {
              */
             try {
                 f = new Fits(filename);
+
                 Header headerRewriter = f.getHDU(0).getHeader();
+
                 assertEquals("aaaaaaaabbbbbbbbbcccccccccccdddddddddddeeeeeeeeeee", headerRewriter.findCard("HIERARCH.TEST.THIS.LONG.HEADER").getValue());
                 for (int index = 1; index < 60; index++) {
                     StringBuilder buildder = new StringBuilder();
