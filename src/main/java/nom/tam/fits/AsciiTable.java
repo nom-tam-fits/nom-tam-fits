@@ -138,6 +138,30 @@ public class AsciiTable extends AbstractTableData {
      *             if the operation failed
      */
     public AsciiTable(Header hdr) throws FitsException {
+        this(hdr, true);
+    }
+
+    /**
+     * Create an ASCII table given a header, with custom integer handling
+     * support.
+     *
+     * <p>The <code>preferInt</code> parameter controls how columns
+     * with format "<code>I10</code>" are handled; this is tricky because some,
+     * but not all, integers that can be represented in 10 characters can
+     * be represented as 32-bit integers.  Setting it true may make it
+     * more likely to avoid unexpected type changes during round-tripping,
+     * but it also means that some (large number) data in I10 columns may
+     * be impossible to read.
+     * 
+     * @param hdr
+     *            The header describing the table
+     * @param preferInt
+     *            if true, format "I10" columns will be represented as ints,
+     *            if false, as longs
+     * @throws FitsException
+     *             if the operation failed
+     */
+    public AsciiTable(Header hdr, boolean preferInt) throws FitsException {
 
         this.nRows = hdr.getIntValue(NAXIS2);
         this.nFields = hdr.getIntValue(TFIELDS);
@@ -167,7 +191,8 @@ public class AsciiTable extends AbstractTableData {
                     this.types[i] = String.class;
                     break;
                 case 'I':
-                    if (this.lengths[i] > MAX_INTEGER_LENGTH) {
+                    if (preferInt ? this.lengths[i] > MAX_INTEGER_LENGTH
+                                  : this.lengths[i] >= MAX_INTEGER_LENGTH) {
                         this.types[i] = long.class;
                     } else {
                         this.types[i] = int.class;

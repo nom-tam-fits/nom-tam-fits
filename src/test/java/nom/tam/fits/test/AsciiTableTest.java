@@ -1056,4 +1056,33 @@ public class AsciiTableTest {
         assertNotNull(actual);
         assertTrue(actual.getCause().getMessage().contains("XXXXX"));
     }
+
+    @Test
+    public void testI10() throws Exception {
+        // Test configurable edge case of ASCII table with format I10 columns;
+        // there are pros and cons for interpreting these as int or long,
+        // so configurability is provided.
+        String i10loc = "src/test/resources/nom/tam/fits/test/test_i10.fits";
+
+        // Default configuration is preferInt.
+        AsciiTable t0 = (AsciiTable) new Fits(i10loc).getHDU(1).getData();
+        assertEquals(int[].class, t0.getColumn(1).getClass());
+
+        // Test with explicit configuration.
+        AsciiTable ti = readAsciiTable(i10loc, true);
+        assertEquals(int[].class, ti.getColumn(1).getClass());
+
+        AsciiTable tl = readAsciiTable(i10loc, false);
+        assertEquals(long[].class, tl.getColumn(1).getClass());
+    }
+
+    private AsciiTable readAsciiTable(String location, boolean preferInt) throws Exception {
+        ArrayDataInput in = new BufferedFile(location);
+        // Skip the primary HDU
+        Header primaryHdr = Header.readHeader(in);
+        Header tblHdr = Header.readHeader(in);
+        AsciiTable table = new AsciiTable(tblHdr, preferInt);
+        table.read(in);
+        return table;
+    }
 }
