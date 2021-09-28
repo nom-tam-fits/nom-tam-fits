@@ -590,6 +590,14 @@ public class HeaderCardTest {
                 "CONTINUE  'le lines to fit the card' / the comment is also not the smallest     ", hc.toString());
 
     }
+    
+    @Test
+    public void testSanitize() throws Exception {
+        String card = "CARD = 'abc\t\r\n\bdef'";
+        String sanitized = "CARD    = 'abc????def'";
+        HeaderCard hc = HeaderCard.create(card);
+        assertEquals(sanitized, hc.toString().substring(0, sanitized.length()));
+    }
 
     @Test
     public void testInt() throws Exception {
