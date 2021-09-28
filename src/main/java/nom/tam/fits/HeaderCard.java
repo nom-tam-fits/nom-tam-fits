@@ -172,20 +172,20 @@ public class HeaderCard implements CursorValue<String> {
 
     /**
      * <p>
-     * Creates a new FITS header card from a FITS string representation of it, which is how the key/value and
-     * comment are represented inside the FITS file, normally as an 80-character wide header entry. The parsing
+     * Creates a new FITS header card from a FITS stream representation of it, which is how the key/value and
+     * comment are represented inside the FITS file, normally as an 80-character wide entry. The parsing
      * of header 'lines' conforms to all FITS standards, and some optional conventions, such as HIERARCH keywords
      * (if {@link FitsFactory#setUseHierarch(boolean)} is enabled), COMMENT and HISTORY entries,
      * and OGIP 1.0 long CONTINUE lines (if {@link FitsFactory#setLongStringsEnabled(boolean)} is enabled).
      * </p>
      *  
      * <p>
-     * However, the parsing here is more tolerant than the standards and conventions, and will do its best to
-     * support a wider range of FITS files, which may deviate from the standard in subtle (or no so subtle) ways.
+     * However, the parsing here is permissive beyond the standards and conventions, and will do its best to
+     * support a wide range of FITS files, which may deviate from the standard in subtle (or no so subtle) ways.
      * </p>
      * 
      * <p>
-     * Here is a brief summary of the rules that guide the pasing of keywords, values, and comment 'fields'
+     * Here is a brief summary of the rules that guide the parsing of keywords, values, and comment 'fields'
      * from the single header line:
      * </p>
      * 
@@ -194,53 +194,57 @@ public class HeaderCard implements CursorValue<String> {
      * </p>
      * 
      * <ul>
-     * <li>The standard FITS keyword is the first 8 characters of the line, or up to an equal '=' character, whichever comes first, 
-     * with trailing spaces removved, and always converted to upper-case.</li>
+     * <li>The standard FITS keyword is the first 8 characters of the line, or up to an equal [=] character, 
+     * whichever comes first,  with trailing spaces removed, and always converted to upper-case.</li>
      * <li>If {@link FitsFactory#setUseHierarch(boolean)} is enabled, structured longer keywords can be composed
-     * after a `HIERARCH` key, followed by space (and/or dot '.') separated parts, up to an equal sign '='. The
-     * library will represent the same components (including `HIERARCH`) but separated by single dots '.'. For example,
-     * the heade line starting with `HIERARCH SMA OBS TARGET=`, will be referred to as 
-     * `HIERARCH.SMA.OBS.TARGET` withing this library. The keyword parts can be composed of any printable ASCII character
-     * except dot '.', white spaces, and equal '='. By default, all parts are converted to upper-case when written to, or 
-     * read back from, a stream to standardize, Case sensitive HIERARCH keywords can be retained after enabling
-     * {@link nom.tam.fits.header.hierarch.IHierarchKeyFormatter#setCaseSensitive(boolean)}.</li>
+     * after a <code>HIERARCH</code> base key, followed by space (and/or dot ].]) separated parts, up to an 
+     * equal sign [=]. The library will represent the same components (including <code>HIERARCH</code>) but 
+     * separated by single dots [.]. For example, the header line starting with [<code>HIERARCH SMA OBS TARGET=</code>], 
+     * will be referred as [<code>HIERARCH.SMA.OBS.TARGET</code>] withing this library. The keyword parts 
+     * can be composed of any ASCII characters except dot [.], white spaces, or equal [=].</li>
+     * <li>By default, all parts of the key are converted to upper-case. Case sensitive HIERARCH keywords can be 
+     * retained after enabling {@link nom.tam.fits.header.hierarch.IHierarchKeyFormatter#setCaseSensitive(boolean)}.</li>
+     *
      * </ul>  
      * 
      * <p>
      * <b>B. Values</b>
      * </p>
      * 
-     * <p>Values are the part of the header line, that lies between the keyword and an optional comment (marked with
-     * a '/'). Legal values follow the following patterns:
+     * <p>Values are the part of the header line, that is between the keyword and an optional ending comment. Legal 
+     * header values follow the following parse patterns:
      * 
      * <ul>
-     * <li>Begin with an equal sign '=', or else come after a CONTINUE keyword.</li>
-     * <li>Next can be a quoted value such as `'hello'`, placed inside two single quotes. Or an unquoted value, such as `123`.</li>
-     * <li>Quoted values must begin with a quote and and with the next single quote. If there is no end-quote in the line,
-     * it is not considered a string value but rather a comment, unless {@link FitsFactory#setAllowHeaderRepairs(boolean)} is
-     * enabled, in which case the entire remaining line after the opening quote is assumed to be a malformed value.</li>
-     * <li>Unquoted values end at the fist '/' character, or else go until the line end.</li>
-     * <li>Quoted values have trailing spaces removed, s.t. `'  value   '` becomes '`  value'`.</li>
-     * <li>Unquoted values are trimmed, with both leading and trailing spaces removed, e.g. `  123  ` becomes `123`.</li>
+     * <li>Begin with an equal sign [=], or else come after a CONTINUE keyword.</li>
+     * <li>Next can be a quoted value such as <code>'hello'</code>, placed inside two single quotes. Or an unquoted value, 
+     * such as <code>123</code>.</li>
+     * <li>Quoted values must begin with a single quote ['] and and with the next single quote. If there is no end-quote 
+     * in the line, it is not considered a string value but rather a comment, unless 
+     * {@link FitsFactory#setAllowHeaderRepairs(boolean)} is enabled, in which case the entire remaining line after the 
+     * opening quote is assumed to be a malformed value.</li>
+     * <li>Unquoted values end at the fist [/] character, or else go until the line end.</li>
+     * <li>Quoted values have trailing spaces removed, s.t. [<code>'  value   '</code>] becomes [<code>  value</code>].</li>
+     * <li>Unquoted values are trimmed, with both leading and trailing spaces removed, e.g. [<code>  123  </code>] 
+     * becomes [<code>123</code>].</li>
      * </ul>
      * 
      * <p>
      * <b>C. Comments</b>
      * </p>
      * 
-     * <p>The following guide the parsing of the values component:
+     * <p>The following rules guide the parsing of the values component:
      * 
      * <ul>
      * <li>If a value is present (see above), the comment is what comes after it. That is, for quoted values, everything
-     * that follows the closing quote. For unquoted values, it's what comes after the first '/', with the '/' itself
+     * that follows the closing quote. For unquoted values, it's what comes after the first [/], with the [/] itself
      * removed.</li>
      * <li>If a value is not present, then everything following the keyword is considered the comment.</li>
      * <li>Comments are trimmed, with both leading and trailing spaces removed.</li>
      * </ul>
      * 
      * 
-     * @return a created HeaderCard from a FITS card string.
-     * @param line  the 80 character card image
+     * @return a newly created HeaderCard from a FITS card string.
+     * @param line  the card image (typically 80 characters if in a FITS file). 
      * @throws IllegalArgumentException     if the card is malformed (e.g. a missing end-quote).
      * 
      * @see FitsFactory#setUseHierarch(boolean)
