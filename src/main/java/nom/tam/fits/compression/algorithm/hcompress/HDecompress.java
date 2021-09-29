@@ -700,9 +700,8 @@ public class HDecompress {
         c = inputBit(infile) | c << 1;
         if (c == N62) {
             return 0;
-        } else {
-            return N14;
         }
+        return N14;
     }
 
     private int inputNbits(ByteBuffer infile, int n) {

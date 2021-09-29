@@ -195,9 +195,8 @@ public final class FitsUtil {
     public static long findOffset(Closeable o) {
         if (o instanceof RandomAccess) {
             return ((RandomAccess) o).getFilePointer();
-        } else {
-            return -1;
         }
+        return -1;
     }
 
     /**

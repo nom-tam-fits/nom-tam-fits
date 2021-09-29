@@ -611,7 +611,7 @@ public enum Standard implements IFitsHeader {
 
     public static final IFitsHeader NAXIS2 = NAXISn.n(2);
 
-    private static final ThreadLocal<Class<?>> COMMENT_CONTEXT = new ThreadLocal<Class<?>>();
+    private static final ThreadLocal<Class<?>> COMMENT_CONTEXT = new ThreadLocal<>();
 
     /**
      * The value of the XTENSION keword in case of a binary table.
@@ -697,9 +697,8 @@ public enum Standard implements IFitsHeader {
                 String foundcommentReplacement = commentReplacement.getComment();
                 if (foundcommentReplacement == null) {
                     return comment();
-                } else {
-                    return foundcommentReplacement;
                 }
+                return foundcommentReplacement;
             }
         }
         return null;

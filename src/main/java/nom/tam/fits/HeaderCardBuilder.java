@@ -32,6 +32,7 @@ package nom.tam.fits;
  */
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Date;
 
@@ -164,6 +165,32 @@ public class HeaderCardBuilder {
      * @throws HeaderCardException
      *             if the card creation failed.
      */
+    public HeaderCardBuilder value(BigDecimal newValue) throws HeaderCardException {
+        final BigDecimal scaledValue;
+        if (scale >= 0) {
+            scaledValue = newValue.setScale(scale, RoundingMode.HALF_UP);
+        } else {
+            scaledValue = newValue;
+        }
+        if (this.card == null) {
+            this.card = new HeaderCard(this.key.key(), scaledValue, null);
+            this.header.addLine(this.card);
+        } else {
+            this.card.setValue(scaledValue);
+        }
+        return this;
+    }
+
+    /**
+     * set the value of the current card.If the card did not exist yet the card
+     * will be created.
+     * 
+     * @param newValue
+     *            the new value to set.
+     * @return this
+     * @throws HeaderCardException
+     *             if the card creation failed.
+     */
     public HeaderCardBuilder value(double newValue) throws HeaderCardException {
         if (this.card == null) {
             if (scale >= 0) {
@@ -192,47 +219,8 @@ public class HeaderCardBuilder {
      * @throws HeaderCardException
      *             if the card creation failed.
      */
-    public HeaderCardBuilder value(BigDecimal newValue) throws HeaderCardException {
-        final BigDecimal scaledValue;
-        if (scale >= 0) {
-            scaledValue = newValue.setScale(scale, RoundingMode.HALF_UP);
-        } else {
-            scaledValue = newValue;
-        }
-        if (this.card == null) {
-            this.card = new HeaderCard(this.key.key(), scaledValue, null);
-            this.header.addLine(this.card);
-        } else {
-            this.card.setValue(scaledValue);
-        }
-        return this;
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
     public HeaderCardBuilder value(float newValue) throws HeaderCardException {
-        if (this.card == null) {
-            if (scale >= 0) {
-                this.card = new HeaderCard(this.key.key(), newValue, scale, null);
-            } else {
-                this.card = new HeaderCard(this.key.key(), newValue, null);
-            }
-            this.header.addLine(this.card);
-        } else {
-            if (scale >= 0) {
-                this.card.setValue(newValue, scale);
-            } else {
-                this.card.setValue(newValue);
-            }
-        }
+        value(new BigDecimal(newValue, MathContext.DECIMAL32));
         return this;
     }
 

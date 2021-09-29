@@ -43,7 +43,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.FitsException;
-import nom.tam.util.SafeClose;
 
 public final class CompressionManager {
 
@@ -89,9 +88,8 @@ public final class CompressionManager {
             ICompressProvider selectedProvider = selectCompressionProvider(mag1, mag2);
             if (selectedProvider != null) {
                 return selectedProvider.decompress(pb);
-            } else {
-                return pb;
             }
+            return pb;
         } catch (IOException e) {
             // This is probably a prelude to failure...
             throw new FitsException("Unable to analyze input stream", e);
@@ -107,21 +105,17 @@ public final class CompressionManager {
      * @return true if the file is compressed
      */
     public static boolean isCompressed(File file) {
-        InputStream fis = null;
-        try {
-            if (file.exists()) {
-                fis = new FileInputStream(file);
-                int mag1 = fis.read();
-                int mag2 = fis.read();
-                fis.close();
-                return selectCompressionProvider(mag1, mag2) != null;
-            }
+        if (!file.exists()) {
+            return false;
+        }
+        
+        try (InputStream fis = new FileInputStream(file)) {
+            int mag1 = fis.read();
+            int mag2 = fis.read();
+            fis.close();
+            return selectCompressionProvider(mag1, mag2) != null;
         } catch (IOException e) {
             LOG.log(Level.FINEST, "Error while checking if file " + file + " is compressed", e);
-            // This is probably a prelude to failure...
-            return false;
-        } finally {
-            SafeClose.close(fis);
         }
         return false;
     }

@@ -259,7 +259,7 @@ public class ColumnTable<T> implements DataTable {
                 is.read(table.doublePointers[index], arrOffset, size);
             }
         };
-        Map<PrimitiveType<?>, PointerAccess<?>> pointerAccess = new HashMap<PrimitiveType<?>, PointerAccess<?>>();
+        Map<PrimitiveType<?>, PointerAccess<?>> pointerAccess = new HashMap<>();
         pointerAccess.put(PrimitiveTypes.BYTE, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypes.BYTE.type()]);
         pointerAccess.put(PrimitiveTypes.BOOLEAN, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypes.BOOLEAN.type()]);
         pointerAccess.put(PrimitiveTypes.CHAR, POINTER_ACCESSORS_BY_TYPE[PrimitiveTypes.CHAR.type()]);
@@ -380,9 +380,8 @@ public class ColumnTable<T> implements DataTable {
         PointerAccess<Object> accessor = selectPointerAccessor(data);
         if (accessor == null) {
             throw new TableException("Invalid type for added column:" + data.getClass().getComponentType());
-        } else {
-            accessor.set(this, extendArray(accessor.get(this), data));
         }
+        accessor.set(this, extendArray(accessor.get(this), data));
     }
 
     @SuppressWarnings("unchecked")
@@ -460,7 +459,6 @@ public class ColumnTable<T> implements DataTable {
 
         // Now check that that we fill up all of the arrays exactly.
         int ratio = 0;
-        int newRowSize = 0;
 
         this.types = new char[newArrays.length];
         this.bases = new Class[newArrays.length];
@@ -471,7 +469,6 @@ public class ColumnTable<T> implements DataTable {
 
             ratio = checkColumnConsistency(newArrays[i], classname, ratio, newSizes[i]);
 
-            newRowSize += newSizes[i] * ArrayFuncs.getBaseLength(newArrays[i]);
             this.types[i] = classname.charAt(1);
             this.bases[i] = ArrayFuncs.getBaseClass(newArrays[i]);
         }
@@ -509,14 +506,13 @@ public class ColumnTable<T> implements DataTable {
         }
         if (thisRatio > 0) {
             return thisRatio;
-        } else {
-            return ratio;
         }
+        return ratio;
 
     }
 
     public ColumnTable<T> copy() throws TableException {
-        return new ColumnTable<T>((Object[]) ArrayFuncs.deepClone(this.arrays), this.sizes.clone());
+        return new ColumnTable<>((Object[]) ArrayFuncs.deepClone(this.arrays), this.sizes.clone());
     }
 
     /**

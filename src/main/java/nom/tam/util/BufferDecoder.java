@@ -147,28 +147,25 @@ public abstract class BufferDecoder {
                 total += get;
                 continue;
 
-            } else {
-
-                // This might be pretty long, but we know that the
-                // old dataBuffer.buffer is exhausted.
-                try {
-                    if (len > this.sharedBuffer.buffer.length) {
-                        checkBuffer(this.sharedBuffer.buffer.length);
-                    } else {
-                        checkBuffer(len);
-                    }
-                } catch (EOFException e) {
-                    if (this.sharedBuffer.bufferLength > 0) {
-                        System.arraycopy(this.sharedBuffer.buffer, 0, buf, offset, this.sharedBuffer.bufferLength);
-                        total += this.sharedBuffer.bufferLength;
-                        this.sharedBuffer.bufferLength = 0;
-                    }
-                    if (total == 0) {
-                        throw e;
-                    } else {
-                        return total;
-                    }
+            }
+            // This might be pretty long, but we know that the
+            // old dataBuffer.buffer is exhausted.
+            try {
+                if (len > this.sharedBuffer.buffer.length) {
+                    checkBuffer(this.sharedBuffer.buffer.length);
+                } else {
+                    checkBuffer(len);
                 }
+            } catch (EOFException e) {
+                if (this.sharedBuffer.bufferLength > 0) {
+                    System.arraycopy(this.sharedBuffer.buffer, 0, buf, offset, this.sharedBuffer.bufferLength);
+                    total += this.sharedBuffer.bufferLength;
+                    this.sharedBuffer.bufferLength = 0;
+                }
+                if (total == 0) {
+                    throw e;
+                }
+                return total;
             }
         }
 

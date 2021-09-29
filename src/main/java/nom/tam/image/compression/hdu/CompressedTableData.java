@@ -93,7 +93,7 @@ public class CompressedTableData extends BinaryTable {
         if (this.columnCompressionAlgorithms.length < ncols) {
             this.columnCompressionAlgorithms = Arrays.copyOfRange(this.columnCompressionAlgorithms, 0, ncols);
         }
-        this.tiles = new ArrayList<BinaryTableTile>();
+        this.tiles = new ArrayList<>();
         for (int column = 0; column < ncols; column++) {
             addByteVaryingColumn();
             int tileIndex = 1;
@@ -114,7 +114,7 @@ public class CompressedTableData extends BinaryTable {
         int nrows = targetHeader.getIntValue(Standard.NAXIS2);
         int ncols = compressedHeader.getIntValue(TFIELDS);
         this.rowsPerTile = compressedHeader.getIntValue(Compression.ZTILELEN, nrows);
-        this.tiles = new ArrayList<BinaryTableTile>();
+        this.tiles = new ArrayList<>();
         BinaryTable.createColumnDataFor(dataToFill);
         for (int column = 0; column < ncols; column++) {
             int tileIndex = 1;

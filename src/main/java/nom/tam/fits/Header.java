@@ -104,7 +104,7 @@ public class Header implements FitsElement {
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
      */
-    private final HashedList<HeaderCard> cards = new HashedList<HeaderCard>();
+    private final HashedList<HeaderCard> cards = new HashedList<>();
 
     /** Offset of this Header in the FITS file */
     private long fileOffset = -1;
@@ -638,9 +638,8 @@ public class Header implements FitsElement {
         HeaderCard card = findCard(key);
         if (card == null) {
             return null;
-        } else {
-            return card.toString();
         }
+        return card.toString();
     }
 
     /**
@@ -1187,9 +1186,8 @@ public class Header implements FitsElement {
     public HeaderCard nextCard() {
         if (cursor().hasNext()) {
             return cursor().next();
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -1562,7 +1560,7 @@ public class Header implements FitsElement {
         if (!COMMENT.key().equals(dup.getKey()) && !HISTORY.key().equals(dup.getKey()) && !CONTINUE.key().equals(dup.getKey()) && !dup.getKey().trim().isEmpty()) {
             LOG.log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
             if (this.duplicates == null) {
-                this.duplicates = new ArrayList<HeaderCard>();
+                this.duplicates = new ArrayList<>();
             }
             this.duplicates.add(dup);
         }

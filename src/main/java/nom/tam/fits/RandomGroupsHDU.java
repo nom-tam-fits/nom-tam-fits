@@ -42,7 +42,6 @@ import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 
 import java.io.PrintStream;
-import java.util.logging.Logger;
 
 import nom.tam.util.ArrayFuncs;
 
@@ -57,14 +56,11 @@ import nom.tam.util.ArrayFuncs;
  */
 public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
-    private static final Logger LOG = Logger.getLogger(RandomGroupsHDU.class.getName());
-
     public static RandomGroupsData encapsulate(Object o) throws FitsException {
         if (o instanceof Object[][]) {
             return new RandomGroupsData((Object[][]) o);
-        } else {
-            throw new FitsException("Attempt to encapsulate invalid data in Random Group");
         }
+        throw new FitsException("Attempt to encapsulate invalid data in Random Group");
     }
 
     static Object[] generateSampleRow(Header h) throws FitsException {

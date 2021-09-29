@@ -43,7 +43,6 @@ import static nom.tam.fits.header.Standard.TZEROn;
 import static nom.tam.fits.header.Standard.XTENSION;
 
 import java.io.PrintStream;
-import java.util.logging.Logger;
 
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
@@ -54,8 +53,6 @@ import nom.tam.util.Cursor;
  * FITS ASCII table header/data unit
  */
 public class AsciiTableHDU extends TableHDU<AsciiTable> {
-
-    private static final Logger LOG = Logger.getLogger(AsciiTableHDU.class.getName());
 
     /**
      * The standard column stems for an ASCII table. Note that TBCOL is not
@@ -119,9 +116,9 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
                 }
             }
             return true;
-        } else {
-            return false;
         }
+        
+        return false;
     }
 
     /**

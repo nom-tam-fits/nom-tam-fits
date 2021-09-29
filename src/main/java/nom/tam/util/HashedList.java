@@ -128,11 +128,10 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         public VALUE next() {
             if (this.current < 0 || this.current >= HashedList.this.ordered.size()) {
                 throw new NoSuchElementException("Outside list");
-            } else {
-                VALUE entry = HashedList.this.ordered.get(this.current);
-                this.current++;
-                return entry;
             }
+            VALUE entry = HashedList.this.ordered.get(this.current);
+            this.current++;
+            return entry;
         }
 
         @Override
@@ -170,10 +169,10 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     }
 
     /** An ordered list of the keys */
-    private final ArrayList<VALUE> ordered = new ArrayList<VALUE>();
+    private final ArrayList<VALUE> ordered = new ArrayList<>();
 
     /** The key value pairs */
-    private final HashMap<String, VALUE> keyed = new HashMap<String, VALUE>();
+    private final HashMap<String, VALUE> keyed = new HashMap<>();
     
     /**
      * This maintains a 'current' position in the list...
@@ -354,9 +353,8 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     public Cursor<String, VALUE> iterator(int n) {
         if (n >= 0 && n <= this.ordered.size()) {
             return new HashedListIterator(n);
-        } else {
-            throw new NoSuchElementException("Invalid index for iterator:" + n);
         }
+        throw new NoSuchElementException("Invalid index for iterator:" + n);
     }
     
     
@@ -383,9 +381,8 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         VALUE entry = this.keyed.get(key);
         if (entry != null) {
             return new HashedListIterator(indexOf(entry));
-        } else {
-            throw new NoSuchElementException("Unknown key for iterator:" + key);
         }
+        throw new NoSuchElementException("Unknown key for iterator:" + key);
     }
 
     /**

@@ -63,6 +63,7 @@ public class CloseIS extends FilterInputStream {
 
     private final Process proc;
 
+    @SuppressWarnings("resource")
     public CloseIS(Process proc, final InputStream compressed) {
         super(new BufferedInputStream(proc.getInputStream(), CompressionManager.ONE_MEGABYTE));
         if (compressed == null) {
@@ -153,13 +154,11 @@ public class CloseIS extends FilterInputStream {
         if (exception != null || exitValue != 0) {
             if (errorText != null && !errorText.trim().isEmpty()) {
                 throw new IOException(errorText, exception);
-            } else {
-                if (exception == null) {
-                    throw new IOException("exit value was " + exitValue);
-                } else {
-                    throw exception;
-                }
             }
+            if (exception == null) {
+                throw new IOException("exit value was " + exitValue);
+            }
+            throw exception;
         }
     }
 

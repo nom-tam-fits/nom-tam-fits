@@ -213,7 +213,7 @@ public class BinaryTable extends AbstractTableData {
     /**
      * A list describing each of the columns in the table
      */
-    private List<ColumnDesc> columnList = new ArrayList<ColumnDesc>();
+    private List<ColumnDesc> columnList = new ArrayList<>();
 
     /**
      * The number of rows in the table.
@@ -263,7 +263,7 @@ public class BinaryTable extends AbstractTableData {
         ColumnTable<SaveState> tab = (ColumnTable<SaveState>) tabIn;
         // This will throw an error if this isn't the correct type.
         SaveState extra = tab.getExtraState();
-        this.columnList = new ArrayList<ColumnDesc>();
+        this.columnList = new ArrayList<>();
         for (ColumnDesc col : extra.columns) {
             ColumnDesc copy = (ColumnDesc) col.clone();
             copy.column = null;
@@ -1631,7 +1631,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     protected ColumnTable<SaveState> createColumnTable(Object[] arrCol, int[] sizes) throws TableException {
-        return new ColumnTable<SaveState>(arrCol, sizes);
+        return new ColumnTable<>(arrCol, sizes);
     }
 
     /**
@@ -1849,10 +1849,8 @@ public class BinaryTable extends AbstractTableData {
 
         if (Character.isDigit(tform.charAt(0))) {
             return initialNumber(tform);
-
-        } else {
-            return 1;
         }
+        return 1;
     }
 
     /**
@@ -1880,9 +1878,8 @@ public class BinaryTable extends AbstractTableData {
 
         if (tform.length() > ind + 1) {
             return tform.charAt(ind + 1);
-        } else {
-            return 0;
-        }
+        } 
+        return 0;
     }
 
     /**

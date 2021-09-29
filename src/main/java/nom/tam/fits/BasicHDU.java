@@ -574,10 +574,10 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
         if (newPrimary && !canBePrimary()) {
             throw new FitsException("Invalid attempt to make HDU of type:" + this.getClass().getName() + " primary.");
-        } else {
-            this.isPrimary = newPrimary;
-        }
-
+        } 
+        
+        this.isPrimary = newPrimary;
+       
         // Some FITS readers don't like the PCOUNT and GCOUNT keywords
         // in a primary array or they EXTEND keyword in extensions.
 
@@ -607,7 +607,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
             HeaderCard pcard = this.myHeader.findCard(PCOUNT);
             HeaderCard gcard = this.myHeader.findCard(GCOUNT);
 
-            this.myHeader.getCard(2 + naxis);
+            //this.myHeader.getCard(2 + naxis);
+            this.myHeader.findCard(NAXIS.key() + naxis);
+            
             if (pcard == null) {
                 this.myHeader.addValue(PCOUNT, pcount);
             }

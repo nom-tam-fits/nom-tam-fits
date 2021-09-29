@@ -91,14 +91,12 @@ public final class ArrayFuncs {
                 }
             }
             return size;
-        } else {
-            PrimitiveType<?> primType = PrimitiveTypeHandler.valueOf(o.getClass());
-            if (primType.individualSize()) {
-                return primType.size(o);
-            } else {
-                return primType.size();
-            }
         }
+        PrimitiveType<?> primType = PrimitiveTypeHandler.valueOf(o.getClass());
+        if (primType.individualSize()) {
+            return primType.size(o);
+        }
+        return primType.size();
     }
 
     /**
@@ -150,9 +148,8 @@ public final class ArrayFuncs {
     public static Object convertArray(Object array, Class<?> newType, boolean reuse) {
         if (getBaseClass(array) == newType && reuse) {
             return array;
-        } else {
-            return convertArray(array, newType);
         }
+        return convertArray(array, newType);
     }
 
     /**
@@ -248,19 +245,18 @@ public final class ArrayFuncs {
             Object result = Array.newInstance(o.getClass().getComponentType(), length);
             System.arraycopy(o, 0, result, 0, length);
             return result;
-        } else {
-            // Get the base type.
-            Class<?> baseClass = getBaseClass(o);
-            // Allocate the array but make all but the first dimension 0.
-            int[] dims = getDimensions(o);
-            Arrays.fill(dims, 1, dims.length, 0);
-            Object copy = ArrayFuncs.newInstance(baseClass, dims);
-            // Now fill in the next level down by recursion.
-            for (int i = 0; i < dims[0]; i++) {
-                Array.set(copy, i, deepClone(Array.get(o, i)));
-            }
-            return copy;
         }
+        // Get the base type.
+        Class<?> baseClass = getBaseClass(o);
+        // Allocate the array but make all but the first dimension 0.
+        int[] dims = getDimensions(o);
+        Arrays.fill(dims, 1, dims.length, 0);
+        Object copy = ArrayFuncs.newInstance(baseClass, dims);
+        // Now fill in the next level down by recursion.
+        for (int i = 0; i < dims[0]; i++) {
+            Array.set(copy, i, deepClone(Array.get(o, i)));
+        }
+        return copy;
     }
 
     /**
@@ -327,9 +323,8 @@ public final class ArrayFuncs {
     public static Object getBaseArray(Object o) {
         if (o.getClass().getComponentType().isArray()) {
             return getBaseArray(Array.get(o, 0));
-        } else {
-            return o;
         }
+        return o;
     }
 
     /**

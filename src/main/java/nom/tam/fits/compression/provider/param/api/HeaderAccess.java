@@ -79,9 +79,8 @@ public class HeaderAccess implements IHeaderAccess {
         if (this.builder == null) {
             this.builder = this.header.card(key);
             return this.builder;
-        } else {
-            return this.builder.card(key);
         }
+        return this.builder.card(key);
     }
 
 }

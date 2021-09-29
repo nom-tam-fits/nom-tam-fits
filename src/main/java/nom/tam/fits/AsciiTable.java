@@ -665,9 +665,8 @@ public class AsciiTable extends AbstractTableData {
     public Object getElement(int row, int col) throws FitsException {
         if (this.data != null) {
             return singleElement(row, col);
-        } else {
-            return parseSingleElement(row, col);
         }
+        return parseSingleElement(row, col);
     }
 
     /**
@@ -707,9 +706,8 @@ public class AsciiTable extends AbstractTableData {
 
         if (this.data != null) {
             return singleRow(row);
-        } else {
-            return parseSingleRow(row);
-        }
+        } 
+        return parseSingleRow(row);
     }
 
     /**
@@ -745,9 +743,8 @@ public class AsciiTable extends AbstractTableData {
     public boolean isNull(int row, int col) {
         if (this.isNull != null) {
             return this.isNull[row * this.nFields + col];
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -771,12 +768,10 @@ public class AsciiTable extends AbstractTableData {
         if (extractElement(0, this.lengths[col], res, 0, 0, this.nulls[col])) {
             this.buffer = null;
             return res[0];
-
-        } else {
-
-            this.buffer = null;
-            return null;
-        }
+        } 
+        
+        this.buffer = null;
+        return null;
     }
 
     /**

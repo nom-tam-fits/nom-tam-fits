@@ -102,9 +102,8 @@ public class BufferedFile implements ArrayDataOutput, RandomAccess {
         protected int eofCheck(EOFException e, int start, int index, int length) throws EOFException {
             if (start == index) {
                 throw e;
-            } else {
-                return (index - start) * length;
             }
+            return (index - start) * length;
         }
     };
 

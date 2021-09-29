@@ -54,7 +54,7 @@ public final class GenericKey {
     private static final Map<String, IFitsHeader> STANDARD_KEYS;
 
     static {
-        Map<String, IFitsHeader> headers = new HashMap<String, IFitsHeader>();
+        Map<String, IFitsHeader> headers = new HashMap<>();
         for (IFitsHeader key : Standard.values()) {
             headers.put(key.key(), key);
         }

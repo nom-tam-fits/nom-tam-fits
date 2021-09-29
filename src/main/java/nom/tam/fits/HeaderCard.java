@@ -67,8 +67,6 @@ public class HeaderCard implements CursorValue<String> {
 
     private static final int SPACE_NEEDED_FOR_EQUAL_AND_TWO_BLANKS = 3;
 
-    private static final double MAX_DECIMAL_VALUE_TO_USE_PLAIN_STRING = 1.0E16;
-
     private static final Logger LOG = Logger.getLogger(HeaderCard.class.getName());
 
     private static final String CONTINUE_CARD_PREFIX = CONTINUE.key() + "  '";
@@ -251,8 +249,8 @@ public class HeaderCard implements CursorValue<String> {
      * @see nom.tam.fits.header.hierarch.IHierarchKeyFormatter#setCaseSensitive(boolean)
      */
     public static HeaderCard create(String line) throws IllegalArgumentException {
-        try {
-            return new HeaderCard(stringToArrayInputStream(line));
+        try (ArrayDataInput in = stringToArrayInputStream(line)) {
+            return new HeaderCard(in);
         } catch (Exception e) {
             throw new IllegalArgumentException("card not legal", e);
         }
@@ -481,6 +479,7 @@ public class HeaderCard implements CursorValue<String> {
      * @throws TruncatedFileException
      *             is there was not a complete line available in the input.
      */
+    @SuppressWarnings("resource")
     private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
         byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
         int len;

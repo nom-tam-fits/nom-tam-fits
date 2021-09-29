@@ -64,24 +64,22 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
     protected final T initializedColumn() {
         if (this.original != null) {
             return this.original.initializedColumn();
-        } else {
-            final int arraySize = this.size;
-            final Class<T> arrayClass = this.clazz;
-            synchronized (this) {
-                if (this.column == null) {
-                    this.column = arrayClass.cast(Array.newInstance(arrayClass.getComponentType(), arraySize));
-                }
-            }
-            return this.column;
         }
+        final int arraySize = this.size;
+        final Class<T> arrayClass = this.clazz;
+        synchronized (this) {
+            if (this.column == null) {
+                this.column = arrayClass.cast(Array.newInstance(arrayClass.getComponentType(), arraySize));
+            }
+        }
+        return this.column;
     }
 
     protected final T originalColumn() {
         if (this.original != null) {
             return this.original.originalColumn();
-        } else {
-            return this.column;
         }
+        return this.column;
     }
 
     public void setOriginal(CompressColumnParameter<T, OPTION> value) {

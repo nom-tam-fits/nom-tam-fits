@@ -68,9 +68,9 @@ public class CompressedImageHDU extends BinaryTableHDU {
      */
     static final List<IFitsHeader> TABLE_COLUMN_KEYS = Collections.unmodifiableList(Arrays.asList(binaryTableColumnKeyStems()));
 
-    static final Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> COMPRESSED_HEADER_MAPPING = new HashMap<IFitsHeader, BackupRestoreUnCompressedHeaderCard>();
+    static final Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> COMPRESSED_HEADER_MAPPING = new HashMap<>();
 
-    static final Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> UNCOMPRESSED_HEADER_MAPPING = new HashMap<IFitsHeader, BackupRestoreUnCompressedHeaderCard>();
+    static final Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> UNCOMPRESSED_HEADER_MAPPING = new HashMap<>();
 
     /**
      * Prepare a compressed image hdu for the specified image. the tile axis
