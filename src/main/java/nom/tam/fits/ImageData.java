@@ -345,6 +345,7 @@ public class ImageData extends Data {
         return this.byteSize;
     }
 
+    @SuppressWarnings("unchecked")
     protected ArrayDesc parseHeader(Header h) throws FitsException {
         int gCount = h.getIntValue(GCOUNT, 1);
         int pCount = h.getIntValue(PCOUNT, 0);
@@ -354,7 +355,7 @@ public class ImageData extends Data {
         int bitPix = h.getIntValue(BITPIX, 0);
         PrimitiveType<Buffer> primitivType = PrimitiveTypeHandler.valueOf(bitPix);
         if (primitivType == null) {
-            primitivType = PrimitiveTypeHandler.nearestValueOf(bitPix);
+            primitivType = (PrimitiveType<Buffer>) PrimitiveTypeHandler.nearestValueOf(bitPix);
             if (primitivType == PrimitiveTypes.UNKNOWN) {
                 throw new FitsException("illegal bitpix value " + bitPix);
             }

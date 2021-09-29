@@ -90,9 +90,8 @@ public class CompressorControlNameComputer {
                     Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equalsIgnoreCase(quantAlgorithm) || //
                     Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equalsIgnoreCase(quantAlgorithm)) {
                 return "Quant";
-            } else {
-                return "Unknown";
             }
+            return "Unknown";
         }
         return "";
     }

@@ -107,9 +107,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
      * Skip the requested number of bytes. This differs from the skip call in
      * that it takes an long argument and will throw an end of file if the full
      * number of bytes cannot be skipped.
-     * 
-     * @param toSkip
-     *            The number of bytes to skip.
+     *
      */
     private byte[] skipBuf = null;
 
@@ -155,9 +153,8 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
         if (i == start) {
             throw e;
-        } else {
-            return (i - start) * length;
         }
+        return (i - start) * length;
     }
 
     @Override
@@ -181,14 +178,12 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
             if (xlen <= 0) {
                 if (total == 0) {
                     throw new EOFException();
-                } else {
-                    return total;
                 }
-            } else {
-                remainingToRead -= xlen;
-                total += xlen;
-                currentOffset += xlen;
+                return total;
             }
+            remainingToRead -= xlen;
+            total += xlen;
+            currentOffset += xlen;
         }
         return total;
     }

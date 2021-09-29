@@ -298,12 +298,13 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void readBaseType(Header header) {
         if (getBaseType() == null) {
             int zBitPix = header.getIntValue(ZBITPIX);
             PrimitiveType<Buffer> primitiveType = PrimitiveTypeHandler.valueOf(zBitPix);
             if (primitiveType == null) {
-                primitiveType = PrimitiveTypeHandler.nearestValueOf(zBitPix);
+                primitiveType = (PrimitiveType<Buffer>) PrimitiveTypeHandler.nearestValueOf(zBitPix);
                 if (primitiveType == PrimitiveTypes.UNKNOWN) {
                     throw new IllegalArgumentException("illegal value for zbitpix " + zBitPix);
                 }

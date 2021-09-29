@@ -141,7 +141,7 @@ public class Fits implements Closeable {
     /**
      * A vector of HDUs that have been added to this Fits object.
      */
-    private final List<BasicHDU<?>> hduList = new ArrayList<BasicHDU<?>>();
+    private final List<BasicHDU<?>> hduList = new ArrayList<>();
 
     /**
      * Has the input stream reached the EOF?
@@ -261,6 +261,7 @@ public class Fits implements Closeable {
      *             Thrown if unable to find or open a file or URL from the
      *             string given.
      **/
+    @SuppressWarnings("resource")
     public Fits(String filename, boolean compressed) throws FitsException {
         if (filename == null) {
             throw new FitsException("Null FITS Identifier String");
@@ -304,6 +305,7 @@ public class Fits implements Closeable {
      *             Thrown if unable to find or open a file or URL from the
      *             string given.
      */
+    @SuppressWarnings("resource")
     public Fits(URL myURL) throws FitsException {
         try {
             streamInit(FitsUtil.getURLStream(myURL, 0));
@@ -374,16 +376,12 @@ public class Fits implements Closeable {
      */
     public static String version() {
         Properties props = new Properties();
-        InputStream versionProperties = null;
-        try {
-            versionProperties = Fits.class.getResourceAsStream("/META-INF/maven/gov.nasa.gsfc.heasarc/nom-tam-fits/pom.properties");
+        try (InputStream versionProperties = Fits.class.getResourceAsStream("/META-INF/maven/gov.nasa.gsfc.heasarc/nom-tam-fits/pom.properties")) {
             props.load(versionProperties);
             return props.getProperty("version");
         } catch (IOException e) {
             LOG.log(Level.INFO, "reading version failed, ignoring", e);
             return "unknown";
-        } finally {
-            saveClose(versionProperties);
         }
     }
 
@@ -459,6 +457,7 @@ public class Fits implements Closeable {
      * @throws FitsException
      *             if the opening of the file failed.
      */
+    @SuppressWarnings("resource")
     @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "stream stays open, and will be read when nessesary.")
     protected void fileInit(File myFile, boolean compressed) throws FitsException {
         try {
@@ -747,13 +746,13 @@ public class Fits implements Closeable {
     public void skipHDU() throws FitsException, IOException {
         if (this.atEOF) {
             return;
-        } else {
-            Header hdr = new Header(this.dataStr);
-            int dataSize = (int) hdr.getDataSize();
-            this.dataStr.skipAllBytes(dataSize);
-            if (this.dataStr instanceof RandomAccess) {
-                this.lastFileOffset = ((RandomAccess) this.dataStr).getFilePointer();
-            }
+        } 
+        
+        Header hdr = new Header(this.dataStr);
+        int dataSize = (int) hdr.getDataSize();
+        this.dataStr.skipAllBytes(dataSize);
+        if (this.dataStr instanceof RandomAccess) {
+            this.lastFileOffset = ((RandomAccess) this.dataStr).getFilePointer();
         }
     }
 
@@ -785,6 +784,7 @@ public class Fits implements Closeable {
      * @throws FitsException
      *             if the initialization failed
      */
+    @SuppressWarnings("resource")
     protected void streamInit(InputStream inputStream) throws FitsException {
         this.dataStr = new BufferedDataInputStream(CompressionManager.decompress(inputStream));
     }
@@ -843,12 +843,8 @@ public class Fits implements Closeable {
      *             closed.
      */
     public void write(File file) throws IOException, FitsException {
-        BufferedFile bf = null;
-        try {
-            bf = new BufferedFile(file, "rw");
+        try (BufferedFile bf = new BufferedFile(file, "rw")) {
             write(bf);
-        } finally {
-            SafeClose.close(bf);
         }
     }
 

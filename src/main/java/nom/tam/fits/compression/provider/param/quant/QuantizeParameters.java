@@ -80,10 +80,9 @@ public abstract class QuantizeParameters extends CompressParameters {
                 this.quantz,
                 this.blank
             };
-        } else {
-            return new ICompressHeaderParameter[]{
-                this.quantz
-            };
         }
+        return new ICompressHeaderParameter[]{
+            this.quantz
+        };
     }
 }

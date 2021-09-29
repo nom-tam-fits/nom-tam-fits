@@ -279,30 +279,28 @@ public final class ByteFormatter {
 
         if (simple) {
             return Math.abs(mantissa(mant, lmant, exp, simple, buf, off, len));
-        } else {
-            off = mantissa(mant, lmant, 0, simple, buf, off, len - lexp - 1);
-            if (off < 0) {
-                off = -off;
-                len -= off;
-                // Handle the expanded exponent by filling
-                if (exp == MAXIMUM_SINGLE_DIGIT_INTEGER || exp == MAXIMUM_TWO_DIGIT_INTEGER) {
-                    // Cannot fit...
-                    if (off + len == minSize) {
-                        truncationFiller(buf, off, len);
-                        return off + len;
-                    } else {
-                        // Steal a character from the mantissa.
-                        off--;
-                    }
-                }
-                exp++;
-                lexp = format(exp, this.tbuf2, 0, ByteFormatter.TEMP_BUFFER_SIZE);
-            }
-            buf[off] = (byte) 'E';
-            off++;
-            System.arraycopy(this.tbuf2, 0, buf, off, lexp);
-            return off + lexp;
         }
+        off = mantissa(mant, lmant, 0, simple, buf, off, len - lexp - 1);
+        if (off < 0) {
+            off = -off;
+            len -= off;
+            // Handle the expanded exponent by filling
+            if (exp == MAXIMUM_SINGLE_DIGIT_INTEGER || exp == MAXIMUM_TWO_DIGIT_INTEGER) {
+                // Cannot fit...
+                if (off + len == minSize) {
+                    truncationFiller(buf, off, len);
+                    return off + len;
+                }
+                // Steal a character from the mantissa.
+                off--;
+            }
+            exp++;
+            lexp = format(exp, this.tbuf2, 0, ByteFormatter.TEMP_BUFFER_SIZE);
+        }
+        buf[off] = (byte) 'E';
+        off++;
+        System.arraycopy(this.tbuf2, 0, buf, off, lexp);
+        return off + lexp;
     }
 
     /**
@@ -401,9 +399,8 @@ public final class ByteFormatter {
         } else if (Double.isInfinite(val)) {
             if (val > 0) {
                 return format(INFINITY, buf, off, len);
-            } else {
-                return format(NEGATIVE_INFINITY, buf, off, len);
             }
+            return format(NEGATIVE_INFINITY, buf, off, len);
         }
 
         int power = (int) (Math.log(pos) * ByteFormatter.I_LOG_10);
@@ -511,9 +508,8 @@ public final class ByteFormatter {
         } else if (Float.isInfinite(val)) {
             if (val > 0) {
                 return format("Infinity", buf, off, len);
-            } else {
-                return format("-Infinity", buf, off, len);
             }
+            return format("-Infinity", buf, off, len);
         }
 
         int power = (int) Math.floor(Math.log(pos) * ByteFormatter.I_LOG_10);
@@ -597,10 +593,9 @@ public final class ByteFormatter {
         if (val == Integer.MIN_VALUE) {
             if (len > ByteFormatter.NUMBER_BASE) {
                 return format("-2147483648", buf, off, len);
-            } else {
-                truncationFiller(buf, off, len);
-                return off + len;
             }
+            truncationFiller(buf, off, len);
+            return off + len;
         }
 
         int pos = Math.abs(val);
@@ -677,10 +672,9 @@ public final class ByteFormatter {
         if (val == Long.MIN_VALUE) {
             if (len > MAX_LONG_LENGTH) {
                 return format("-9223372036854775808", buf, off, len);
-            } else {
-                truncationFiller(buf, off, len);
-                return off + len;
             }
+            truncationFiller(buf, off, len);
+            return off + len;
         }
         long pos = Math.abs(val);
         // First count the number of characters in the result.

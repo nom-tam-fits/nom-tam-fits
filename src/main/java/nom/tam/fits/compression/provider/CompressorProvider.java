@@ -287,6 +287,9 @@ public class CompressorProvider implements ICompressorProvider {
                 }
             }
         }
+        if (defaultProvider == null) {
+            return null;
+        }
         return defaultProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);
     }
 
@@ -300,9 +303,8 @@ public class CompressorProvider implements ICompressorProvider {
                 if (clazz.length > 1) {
                     Class<?> parametersClass = clazz[1];
                     return new TileCompressorControl(compressorClass, parametersClass);
-                } else {
-                    return new TileCompressorControl(compressorClass);
                 }
+                return new TileCompressorControl(compressorClass);
             }
         }
         return null;

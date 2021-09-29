@@ -143,9 +143,8 @@ public class RandomGroupsData extends Data {
 
         if (this.dataArray != null && this.dataArray.length > 0) {
             return (ArrayFuncs.computeLSize(this.dataArray[0][0]) + ArrayFuncs.computeLSize(this.dataArray[0][1])) * this.dataArray.length;
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     /** Read the RandomGroupsData */

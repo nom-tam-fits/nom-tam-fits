@@ -40,7 +40,6 @@ import static nom.tam.util.FitsIO.BYTE_4_OF_LONG_MASK;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.FitsException;
@@ -52,11 +51,6 @@ import nom.tam.util.FitsIO;
 public final class FitsCheckSum {
 
     private static final int CHECKSUM_STRING_SIZE = 16;
-
-    /**
-     * logger to log to.
-     */
-    private static final Logger LOG = Logger.getLogger(FitsCheckSum.class.getName());
 
     private static final int CHECKSUM_BLOCK_SIZE = 4;
 

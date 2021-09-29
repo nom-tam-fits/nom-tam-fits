@@ -51,6 +51,8 @@ import java.io.Serializable;
  */
 public class HeaderOrder implements java.util.Comparator<String>, Serializable {
 
+
+    
     /**
      * Serialization id.
      */
@@ -100,9 +102,8 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
             if (naxisNc2 > 0) {
                 if (naxisNc1 < naxisNc2) {
                     return -1;
-                } else {
-                    return 1;
                 }
+                return 1;
             }
             return -1;
         } else if (naxisNc2 > 0) {

@@ -40,9 +40,8 @@ public final class TileBufferFactory {
     public static TileBuffer createTileBuffer(PrimitiveType<Buffer> baseType, int dataOffset, int imageWidth, int width, int height) {
         if (imageWidth > width) {
             return new TileBufferColumnBased(baseType, dataOffset, imageWidth, width, height);
-        } else {
-            return new TileBufferRowBased(baseType, dataOffset, width, height);
         }
+        return new TileBufferRowBased(baseType, dataOffset, width, height);
     }
 
     private TileBufferFactory() {

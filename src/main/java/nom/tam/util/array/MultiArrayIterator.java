@@ -61,20 +61,18 @@ public class MultiArrayIterator {
         if (this.baseIsNoSubArray) {
             if (this.baseNextCalled) {
                 return null;
-            } else {
-                this.baseNextCalled = true;
-                return this.baseArray;
             }
-        } else {
-            Object result = null;
-            while (result == null || Array.getLength(result) == 0) {
-                result = this.pointer.next();
-                if (result == MultiArrayPointer.END) {
-                    return null;
-                }
-            }
-            return result;
+            this.baseNextCalled = true;
+            return this.baseArray;
         }
+        Object result = null;
+        while (result == null || Array.getLength(result) == 0) {
+            result = this.pointer.next();
+            if (result == MultiArrayPointer.END) {
+                return null;
+            }
+        }
+        return result;
     }
 
     public void reset() {

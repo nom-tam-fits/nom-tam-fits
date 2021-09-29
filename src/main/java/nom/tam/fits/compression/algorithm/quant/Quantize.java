@@ -141,7 +141,6 @@ public class Quantize {
      *            check for null values, if true
      * @param nullvalue
      *            value of null pixels, if nullcheck is true
-     * @return error status
      */
     private void calculateNoise(double[] arrayIn, int nx, int ny) {
         DoubleArrayPointer array = new DoubleArrayPointer(arrayIn);
@@ -283,15 +282,14 @@ public class Quantize {
             for (int index = 0; index < nx; index++) {
                 if (isNull(array.get(index))) {
                     continue;
-                } else {
-                    if (array.get(index) < this.xminval) {
-                        this.xminval = array.get(index);
-                    }
-                    if (array.get(index) > this.xmaxval) {
-                        this.xmaxval = array.get(index);
-                    }
-                    ngoodpix++;
                 }
+                if (array.get(index) < this.xminval) {
+                    this.xminval = array.get(index);
+                }
+                if (array.get(index) > this.xmaxval) {
+                    this.xmaxval = array.get(index);
+                }
+                ngoodpix++;
             }
             setNoiseResult(ngoodpix);
             return true;

@@ -5,8 +5,6 @@ import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.TTYPEn;
 
-import java.util.logging.Logger;
-
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
 
@@ -46,8 +44,6 @@ import nom.tam.fits.header.IFitsHeader;
  * interface.
  */
 public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> {
-
-    private static final Logger LOG = Logger.getLogger(TableHDU.class.getName());
 
     /**
      * Create the TableHDU. Note that this will normally only be invoked by

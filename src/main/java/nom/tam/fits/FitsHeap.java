@@ -182,8 +182,7 @@ public class FitsHeap implements FitsElement {
         expandHeap(size);
         ByteArrayOutputStream bo = new ByteArrayOutputStream(size);
 
-        try {
-            BufferedDataOutputStream o = new BufferedDataOutputStream(bo);
+        try (BufferedDataOutputStream o = new BufferedDataOutputStream(bo)) {
             o.writeArray(data);
             o.flush();
             o.close();

@@ -65,13 +65,12 @@ public class AbstractNullPixelMask {
     public byte[] getMaskBytes() {
         if (this.mask == null) {
             return EMPTY_BYTE_ARRAY;
-        } else {
-            int size = this.mask.position();
-            byte[] result = new byte[size];
-            this.mask.rewind();
-            this.mask.get(result);
-            return result;
         }
+        int size = this.mask.position();
+        byte[] result = new byte[size];
+        this.mask.rewind();
+        this.mask.get(result);
+        return result;
     }
 
     public void setMask(ByteBuffer mask) {
