@@ -181,7 +181,6 @@ public class HeaderCardBuilder {
         return this;
     }
 
-    
     /**
      * set the value of the current card.If the card did not exist yet the card
      * will be created.
@@ -209,7 +208,7 @@ public class HeaderCardBuilder {
         }
         return this;
     }
-    
+
     /**
      * set the value of the current card.If the card did not exist yet the card
      * will be created.
