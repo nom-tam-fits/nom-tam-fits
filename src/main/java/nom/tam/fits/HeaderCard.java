@@ -1471,9 +1471,6 @@ public class HeaderCard implements CursorValue<String> {
      */
     private static class Parser {
 
-        /** For logging */
-        private static final Logger LOG = Logger.getLogger(Header.class.getName());
-
         /** The header line (usually 80-character width), which to parse. */
         private String line;
 
