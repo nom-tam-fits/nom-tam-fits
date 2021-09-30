@@ -8,7 +8,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -60,18 +59,44 @@ import nom.tam.util.CursorValue;
  */
 
 /**
- * This class describes methods to access and manipulate the individual cards
- * for a FITS Header.
+ * This class describes methods to access and manipulate the individual cards for a FITS Header.
  */
 public class HeaderCard implements CursorValue<String> {
 
-    private static final int SPACE_NEEDED_FOR_EQUAL_AND_TWO_BLANKS = 3;
+    /** The number of characters per header card (line). */
+    public static final int FITS_HEADER_CARD_SIZE = 80;
+
+    /**
+     * Maximum length of a FITS long string value field. the &amp; for the continuation needs one char.
+     */
+    public static final int MAX_LONG_STRING_VALUE_LENGTH = HeaderCard.MAX_STRING_VALUE_LENGTH - 1;
+
+    /** if a commend needs the be specified 2 extra chars are needed to start the comment */
+    public static final int MAX_LONG_STRING_VALUE_WITH_COMMENT_LENGTH = HeaderCard.MAX_LONG_STRING_VALUE_LENGTH - 2;
+
+    /** Maximum length of a FITS string value field. */
+    public static final int MAX_STRING_VALUE_LENGTH = HeaderCard.MAX_VALUE_LENGTH - 2;
+
+    /** Maximum length of a FITS value field. */
+    public static final int MAX_VALUE_LENGTH = 70;
+
+    /** Maximum length of a FITS keyword field */
+    public static final int MAX_KEYWORD_LENGTH = 8;
+
+    /** "= " (equals and space, as per FITS standard) */
+    public static final int ASSIGN_LENGTH = 2; // "= ";
+
+    /** Maximum HIERARCH keyword length (80 chars must fit [<keyword> = '&'] at minimum... */
+    public static final int MAX_HIERARCH_KEYWORD_LENGTH = FITS_HEADER_CARD_SIZE - 6;
+
+    /**
+     * the start and end quotes of the string and the ampasant to continue the string.
+     */
+    public static final int MAX_LONG_STRING_CONTINUE_OVERHEAD = 3;
 
     private static final Logger LOG = Logger.getLogger(HeaderCard.class.getName());
 
     private static final String CONTINUE_CARD_PREFIX = CONTINUE.key() + "  '";
-
-    public static final int FITS_HEADER_CARD_SIZE = 80;
 
     private static final String HIERARCH_WITH_BLANK = NonStandard.HIERARCH.key() + " ";
 
@@ -83,59 +108,25 @@ public class HeaderCard implements CursorValue<String> {
 
     private static final char CHR7E = 0x7e;
 
-    /**
-     * regexp for IEEE floats
-     */
-    private static final Pattern IEEE_REGEX = Pattern.compile("[+-]?(?=\\d*[.eE])(?=\\.?\\d)\\d*\\.?\\d*(?:[eE][+-]?\\d+)?");
-    private static final Pattern DBLSCI_REGEX = Pattern.compile("[+-]?(?=\\d*[.dD])(?=\\.?\\d)\\d*\\.?\\d*(?:[dD][+-]?\\d+)?");
+    private static final int FLEX_PRECISION = Integer.MAX_VALUE;
+
+    /** regexp for IEEE floats */
+    private static final Pattern IEEE_REGEX = Pattern
+            .compile("[+-]?(?=\\d*[.eE])(?=\\.?\\d)\\d*\\.?\\d*(?:[eE][+-]?\\d+)?");
+
+    private static final Pattern DBLSCI_REGEX = Pattern
+            .compile("[+-]?(?=\\d*[.dD])(?=\\.?\\d)\\d*\\.?\\d*(?:[dD][+-]?\\d+)?");
 
     private static final BigDecimal LONG_MAX_VALUE_AS_BIG_DECIMAL = BigDecimal.valueOf(Long.MAX_VALUE);
 
-    /**
-     * regexp for numbers.
-     */
+    /** regexp for numbers. */
     private static final Pattern LONG_REGEX = Pattern.compile("[+-]?[0-9][0-9]*");
 
-    /**
-     * max number of characters an integer can have.
-     */
+    /** max number of characters an integer can have. */
     private static final int MAX_INTEGER_STRING_SIZE = Integer.toString(Integer.MAX_VALUE).length() - 1;
 
-    /** Maximum length of a FITS keyword field */
-    public static final int MAX_KEYWORD_LENGTH = 8;
-
-    /**
-     * the start and end quotes of the string and the ampasant to continue the
-     * string.
-     */
-    public static final int MAX_LONG_STRING_CONTINUE_OVERHEAD = 3;
-
-    /**
-     * max number of characters a long can have.
-     */
+    /** max number of characters a long can have. */
     private static final int MAX_LONG_STRING_SIZE = Long.toString(Long.MAX_VALUE).length() - 1;
-
-    /**
-     * Maximum length of a FITS long string value field. the &amp; for the
-     * continuation needs one char.
-     */
-    public static final int MAX_LONG_STRING_VALUE_LENGTH = HeaderCard.MAX_STRING_VALUE_LENGTH - 1;
-
-    /**
-     * if a commend needs the be specified 2 extra chars are needed to start the
-     * comment
-     */
-    public static final int MAX_LONG_STRING_VALUE_WITH_COMMENT_LENGTH = HeaderCard.MAX_LONG_STRING_VALUE_LENGTH - 2;
-
-    /**
-     * Maximum length of a FITS string value field.
-     */
-    public static final int MAX_STRING_VALUE_LENGTH = HeaderCard.MAX_VALUE_LENGTH - 2;
-
-    /**
-     * Maximum length of a FITS value field.
-     */
-    public static final int MAX_VALUE_LENGTH = 70;
 
     private static final int NORMAL_ALIGN_POSITION = 30;
 
@@ -143,95 +134,82 @@ public class HeaderCard implements CursorValue<String> {
 
     private static final int STRING_SPLIT_POSITION_FOR_EXTRA_COMMENT_SPACE = 35;
 
-    /**
-     * The comment part of the card (set to null if there's no comment)
-     */
+    private static final int MIN_EXPONENT_OVERHEAD = 3; // "." + "E#"
+
+    private static final DecimalFormatSymbols DECIMAL_SYMBOLS = DecimalFormatSymbols.getInstance(Locale.US);
+
+    /** The comment part of the card (set to null if there's no comment) */
     private String comment;
 
-    /**
-     * A flag indicating whether or not this is a string value
-     */
+    /** A flag indicating whether or not this is a string value */
     private boolean isString;
 
-    /**
-     * The keyword part of the card (set to null if there's no keyword)
-     */
+    /** The keyword part of the card (set to null if there's no keyword) */
     private String key;
 
-    /**
-     * Does this card represent a nullable field. ?
-     */
+    /** Does this card represent a nullable field. ? */
     private boolean nullable;
 
-    /**
-     * The value part of the card (set to null if there's no value)
-     */
+    /** The value part of the card (set to null if there's no value) */
     private String value;
 
     /**
      * <p>
-     * Creates a new FITS header card from a FITS stream representation of it, which is how the key/value and
-     * comment are represented inside the FITS file, normally as an 80-character wide entry. The parsing
-     * of header 'lines' conforms to all FITS standards, and some optional conventions, such as HIERARCH keywords
-     * (if {@link FitsFactory#setUseHierarch(boolean)} is enabled), COMMENT and HISTORY entries,
-     * and OGIP 1.0 long CONTINUE lines (if {@link FitsFactory#setLongStringsEnabled(boolean)} is enabled).
+     * Creates a new FITS header card from a FITS stream representation of it, which is how the key/value and comment
+     * are represented inside the FITS file, normally as an 80-character wide entry. The parsing of header 'lines'
+     * conforms to all FITS standards, and some optional conventions, such as HIERARCH keywords (if
+     * {@link FitsFactory#setUseHierarch(boolean)} is enabled), COMMENT and HISTORY entries, and OGIP 1.0 long CONTINUE
+     * lines (if {@link FitsFactory#setLongStringsEnabled(boolean)} is enabled).
      * </p>
-     *  
      * <p>
-     * However, the parsing here is permissive beyond the standards and conventions, and will do its best to
-     * support a wide range of FITS files, which may deviate from the standard in subtle (or no so subtle) ways.
+     * However, the parsing here is permissive beyond the standards and conventions, and will do its best to support a
+     * wide range of FITS files, which may deviate from the standard in subtle (or no so subtle) ways.
      * </p>
-     * 
      * <p>
-     * Here is a brief summary of the rules that guide the parsing of keywords, values, and comment 'fields'
-     * from the single header line:
+     * Here is a brief summary of the rules that guide the parsing of keywords, values, and comment 'fields' from the
+     * single header line:
      * </p>
-     * 
      * <p>
      * <b>A. Keywords</b>
      * </p>
-     * 
      * <ul>
-     * <li>The standard FITS keyword is the first 8 characters of the line, or up to an equal [=] character, 
-     * whichever comes first,  with trailing spaces removed, and always converted to upper-case.</li>
-     * <li>If {@link FitsFactory#setUseHierarch(boolean)} is enabled, structured longer keywords can be composed
-     * after a <code>HIERARCH</code> base key, followed by space (and/or dot ].]) separated parts, up to an 
-     * equal sign [=]. The library will represent the same components (including <code>HIERARCH</code>) but 
-     * separated by single dots [.]. For example, the header line starting with [<code>HIERARCH SMA OBS TARGET =</code>], 
-     * will be referred as [<code>HIERARCH.SMA.OBS.TARGET</code>] withing this library. The keyword parts 
-     * can be composed of any ASCII characters except dot [.], white spaces, or equal [=].</li>
-     * <li>By default, all parts of the key are converted to upper-case. Case sensitive HIERARCH keywords can be 
-     * retained after enabling {@link nom.tam.fits.header.hierarch.IHierarchKeyFormatter#setCaseSensitive(boolean)}.</li>
-     *
-     * </ul>  
-     * 
+     * <li>The standard FITS keyword is the first 8 characters of the line, or up to an equal [=] character, whichever
+     * comes first, with trailing spaces removed, and always converted to upper-case.</li>
+     * <li>If {@link FitsFactory#setUseHierarch(boolean)} is enabled, structured longer keywords can be composed after a
+     * <code>HIERARCH</code> base key, followed by space (and/or dot ].]) separated parts, up to an equal sign [=]. The
+     * library will represent the same components (including <code>HIERARCH</code>) but separated by single dots [.].
+     * For example, the header line starting with [<code>HIERARCH SMA OBS TARGET =</code>], will be referred as
+     * [<code>HIERARCH.SMA.OBS.TARGET</code>] withing this library. The keyword parts can be composed of any ASCII
+     * characters except dot [.], white spaces, or equal [=].</li>
+     * <li>By default, all parts of the key are converted to upper-case. Case sensitive HIERARCH keywords can be
+     * retained after enabling
+     * {@link nom.tam.fits.header.hierarch.IHierarchKeyFormatter#setCaseSensitive(boolean)}.</li>
+     * </ul>
      * <p>
      * <b>B. Values</b>
      * </p>
-     * 
-     * <p>Values are the part of the header line, that is between the keyword and an optional ending comment. Legal 
-     * header values follow the following parse patterns:
-     * 
+     * <p>
+     * Values are the part of the header line, that is between the keyword and an optional ending comment. Legal header
+     * values follow the following parse patterns:
      * <ul>
      * <li>Begin with an equal sign [=], or else come after a CONTINUE keyword.</li>
-     * <li>Next can be a quoted value such as <code>'hello'</code>, placed inside two single quotes. Or an unquoted value, 
-     * such as <code>123</code>.</li>
-     * <li>Quoted values must begin with a single quote ['] and and with the next single quote. If there is no end-quote 
-     * in the line, it is not considered a string value but rather a comment, unless 
-     * {@link FitsFactory#setAllowHeaderRepairs(boolean)} is enabled, in which case the entire remaining line after the 
+     * <li>Next can be a quoted value such as <code>'hello'</code>, placed inside two single quotes. Or an unquoted
+     * value, such as <code>123</code>.</li>
+     * <li>Quoted values must begin with a single quote ['] and and with the next single quote. If there is no end-quote
+     * in the line, it is not considered a string value but rather a comment, unless
+     * {@link FitsFactory#setAllowHeaderRepairs(boolean)} is enabled, in which case the entire remaining line after the
      * opening quote is assumed to be a malformed value.</li>
      * <li>Unquoted values end at the fist [/] character, or else go until the line end.</li>
-     * <li>Quoted values have trailing spaces removed, s.t. [<code>'  value   '</code>] becomes [<code>  value</code>].</li>
-     * <li>Unquoted values are trimmed, with both leading and trailing spaces removed, e.g. [<code>  123  </code>] 
+     * <li>Quoted values have trailing spaces removed, s.t. [<code>'  value   '</code>] becomes
+     * [<code>  value</code>].</li>
+     * <li>Unquoted values are trimmed, with both leading and trailing spaces removed, e.g. [<code>  123  </code>]
      * becomes [<code>123</code>].</li>
      * </ul>
-     * 
      * <p>
      * <b>C. Comments</b>
      * </p>
-     * 
-     * <p>The following rules guide the parsing of the values component:
-     * 
+     * <p>
+     * The following rules guide the parsing of the values component:
      * <ul>
      * <li>If a value is present (see above), the comment is what comes after it. That is, for quoted values, everything
      * that follows the closing quote. For unquoted values, it's what comes after the first [/], with the [/] itself
@@ -240,10 +218,11 @@ public class HeaderCard implements CursorValue<String> {
      * <li>Comments are trimmed, with both leading and trailing spaces removed.</li>
      * </ul>
      * 
-     * 
      * @return a newly created HeaderCard from a FITS card string.
-     * @param line  the card image (typically 80 characters if in a FITS file). 
-     * @throws IllegalArgumentException     if the card is malformed (e.g. a missing end-quote).
+     * 
+     * @param line the card image (typically 80 characters if in a FITS file).
+     * 
+     * @throws IllegalArgumentException if the card is malformed (e.g. a missing end-quote).
      * 
      * @see FitsFactory#setUseHierarch(boolean)
      * @see nom.tam.fits.header.hierarch.IHierarchKeyFormatter#setCaseSensitive(boolean)
@@ -257,183 +236,249 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * Create a string from a BigDecimal making sure that it's not longer than
-     * the available space.
-     *
-     * @param decimalValue
-     *            the decimal value to print
-     * @param availableSpace
-     *            the space available for the value
-     * @return the string representing the value.
+     * Creates a new header card with the hexadecomal representation of an integer value
+     * 
+     * @param key the keyword
+     * @param value the integer value
+     * @param comment optional comment, or <code>null</code>.
+     * 
+     * @return A new header card, with the specified integer in hexadecomal representation.
+     * 
+     * @throws HeaderCardException if the card is invalid (for example the keyword is not valid).
+     * 
+     * @see #getHexValue()
+     * @see Header#getHexValue(String)
      */
-    private static String dblString(BigDecimal decimalValue, int availableSpace) {
-        return dblString(decimalValue, -1, availableSpace);
+    public static HeaderCard withHexValue(String key, long value, String comment) throws HeaderCardException {
+        return new HeaderCard(key, Long.toHexString(value), comment, false, false);
     }
 
     /**
-     * Create a string from a BigDecimal making sure that it's not longer than
-     * the available space.
+     * Returns a string representation of a decimal number, in the available space, using either fixed decimal format or
+     * exponential notitation. It will use the notation that either gets closer to the required fixed precision while
+     * filling the available space, or if both notations can fir it will return the more compact one. If neither
+     * notation can be accomodated in the space available, then an exception is thrown.
      *
-     * @param decimalValue
-     *            the decimal value to print
-     * @param precision
-     *            the precision to use
-     * @param availableSpace
-     *            the space available for the value
+     * @param decimalValue the decimal value to print
+     * @param precision the absolute decimal places to try represent.
+     * @param availableSpace the space available for the value
+     * 
      * @return the string representing the value.
+     * 
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
      */
-    private static String dblString(BigDecimal decimalValue, int precision, int availableSpace) {
-        int curPrecision = precision;
-        BigDecimal decimal = decimalValue;
-        if (precision >= 0) {
-            decimal = decimalValue.setScale(precision, RoundingMode.HALF_UP);
-        } else {
-            curPrecision = decimal.scale();
+    private static String flexFormat(BigDecimal decimalValue, final int precision, int availableSpace)
+            throws IllegalStateException {
+
+        // The value in exponential notation...
+        String fixed = null;
+        try {
+            fixed = fixedFormat(decimalValue, precision, availableSpace);
+        } catch (IllegalStateException e) {
+            // We'll try with exponential notation...
         }
-        String value = decimal.toString();
-        while (value.length() > availableSpace) {
-            curPrecision -= 1;
-            if (curPrecision < 0) {
-                return expString(decimalValue, precision, false, availableSpace);
+
+        // The value in exponential notation...
+        String exp = null;
+        try {
+            // Drop precision as necessary.
+            if (precision != FLEX_PRECISION && precision < decimalValue.scale()) {
+                // Drop precision as required
+                decimalValue = decimalValue.setScale(precision, RoundingMode.HALF_UP);
             }
-            decimal = decimalValue.setScale(curPrecision, RoundingMode.HALF_UP);
-            value = decimal.toString();
+            exp = expFormat(decimalValue, FLEX_PRECISION, false, availableSpace);
+        } catch (IllegalStateException e) {
+            if (fixed == null) {
+                throw e;
+            }
         }
+
+        if (fixed == null) {
+            return exp;
+        }
+
+        if (exp == null) {
+            return fixed;
+        }
+
+        // Go with whichever is more compact.
+        return exp.length() < fixed.length() ? exp : fixed;
+    }
+
+    /**
+     * Returns a fixed decimal representation of a value in the available space. If it's not at all possible to fit the
+     * fixed representation in the space available, then an exception is
+     * 
+     * @param decimalValue
+     * @param precision
+     * @param availableSpace
+     * 
+     * @return
+     * 
+     * @throws IllegalStateException
+     */
+    private static String fixedFormat(BigDecimal decimalValue, final int precision, int availableSpace)
+            throws IllegalStateException {
+        if (availableSpace < 1) {
+            throw new IllegalStateException(
+                    "Not enough space (" + availableSpace + ") to print value: " + decimalValue.toString());
+        }
+
+        boolean allowReducedPrecision = (precision == FLEX_PRECISION);
+
+        BigDecimal d = decimalValue;
+
+        if (precision != FLEX_PRECISION && precision < decimalValue.scale()) {
+            // Drop precision as required
+            d = decimalValue.setScale(precision, RoundingMode.HALF_UP);
+        }
+
+        String value = d.toPlainString();
+        // System.err.println("### F1: " + value);
+
+        if (value.length() > availableSpace) {
+            int delta = value.length() - availableSpace;
+
+            // dropping precision will shorten the string, but only up to the integer part (precision = 0).
+            if (!allowReducedPrecision || delta > d.scale()) {
+                throw new IllegalStateException("Not enough space (" + availableSpace + ") to print value " + d);
+            }
+
+            BigDecimal truncated = decimalValue.setScale(d.scale() - delta, RoundingMode.HALF_UP);
+            // System.err.println("### F2: " + truncated.toPlainString());
+            return truncated.toPlainString();
+        }
+
         return value;
     }
 
     /**
-     * Create a scientific notation string from a BigDecimal making sure that it's not longer than
-     * the available space.
+     * Create a scientific notation string from a BigDecimal making sure that it's not longer than the available space.
      *
-     * @param decimalValue
-     *            the decimal value to print
-     * @param precision
-     *            the precision to use
-     * @param useD
-     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     * @param decimalValue the decimal value to print
+     * @param decimals the decimal places to show in the exponental notation
+     * @param useD Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
      *            more precision than can be represented by a single precision 32-bit floating point.
-     * @param availableSpace
-     *            the space available for the value
+     * @param availableSpace the space available for the value
+     * 
      * @return the string representing the value.
+     * 
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
      */
-    private static String expString(BigDecimal decimalValue, int precision, boolean useD, int availableSpace) {
-        String value;
+    private static String expFormat(BigDecimal decimalValue, int decimals, boolean useD, int availableSpace)
+            throws IllegalStateException {
+        if (availableSpace < MIN_EXPONENT_OVERHEAD + 1) {
+            throw new IllegalStateException(
+                    "Not enough space (" + availableSpace + ") to print value: " + decimalValue.toString());
+        }
 
-        DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.US);
+        boolean allowReducedPrecision = (decimals == FLEX_PRECISION);
+
+        if (decimals == FLEX_PRECISION) {
+            allowReducedPrecision = true;
+        }
+
+        decimals = Math.min(decimals, availableSpace - MIN_EXPONENT_OVERHEAD);
+
+        DecimalFormatSymbols symbols = DECIMAL_SYMBOLS;
 
         if (useD) {
+            DecimalFormatSymbols.getInstance(Locale.US);
             symbols.setExponentSeparator("D");
         } else {
-            symbols.setExponentSeparator("E");
+            DECIMAL_SYMBOLS.setExponentSeparator("E");
         }
+
         DecimalFormat format = new DecimalFormat("0.0E0", symbols);
-        format.setRoundingMode(RoundingMode.HALF_UP);
-        if (precision < 0) {
-            precision = availableSpace;
+        format.setMinimumFractionDigits(0);
+        format.setMaximumFractionDigits(decimals);
+
+        String value = format.format(decimalValue);
+
+        // System.err.println("### E1: " + value);
+
+        if (value.length() > availableSpace) {
+            int delta = value.length() - availableSpace;
+
+            if (!allowReducedPrecision || delta > decimals) {
+                throw new IllegalStateException(
+                        "Not enough space (" + availableSpace + ") to print value: " + decimalValue.toString());
+            }
+
+            format.setMaximumFractionDigits(decimals - delta);
+
+            // System.err.println("### E2: " + format.format(decimalValue));
+            return format.format(decimalValue);
         }
-        do {
-            format.setMinimumFractionDigits(precision);
-            format.setMaximumFractionDigits(precision);
-            value = format.format(decimalValue);
-            precision--;
-        } while (value.length() > availableSpace);
+
         return value;
     }
 
     /**
-     * Create a scientific notation string from a BigDecimal making sure that it's not longer than
-     * the available space. It uses 'E' to indicate exponent.
+     * Create a scientific notation string from a BigDecimal making sure that it's not longer than the available space.
+     * It uses 'E' to indicate exponent.
      *
-     * @param decimalValue
-     *            the decimal value to print
-     * @param precision
-     *            the precision to use
-     * @param availableSpace
-     *            the space available for the value
+     * @param decimalValue the decimal value to print
+     * @param precision the precision to use
+     * @param availableSpace the space available for the value
+     * 
      * @return the string representing the value.
+     * 
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
      */
-    private static String expString(BigDecimal decimalValue, int precision, int availableSpace) {
-        return expString(decimalValue, precision, false, availableSpace);
+    private static String expFormat(BigDecimal decimalValue, int precision, int availableSpace)
+            throws IllegalStateException {
+        return expFormat(decimalValue, precision, false, availableSpace);
     }
 
     /**
-     * Create a string from a BigDecimal making sure that it's not longer than
-     * the available space.
-     *
-     * @param decimalValue
-     *            the decimal value to print
-     * @param availableSpace
-     *            the space available for the value
-     * @return the string representing the value.
+     * @param input float value being converted
+     * @param precision the number of decimal places to show
+     * @param availableSpace the space available for the value
+     * 
+     * @return Create a fixed decimal string from a double with the specified precision.
+     * 
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
      */
-    private static String dblString(double decimalValue, int availableSpace) {
-        return dblString(BigDecimal.valueOf(decimalValue), -1, availableSpace);
+    private static String flexFormat(double input, int precision, int availableSpace) throws IllegalStateException {
+        return flexFormat(BigDecimal.valueOf(input), precision, availableSpace);
     }
 
     /**
-     * @param input
-     *            float value being converted
-     * @param precision
-     *            the number of decimal places to show
-     * @param availableSpace
-     *            the space available for the value
-     * @return Create a fixed decimal string from a double with the specified
-     *         precision.
-     */
-    private static String dblString(double input, int precision, int availableSpace) {
-        return dblString(BigDecimal.valueOf(input), precision, availableSpace);
-    }
-
-    /**
-     * @param input
-     *            float value being converted
-     * @param precision
-     *            the number of decimal places to show
-     * @param useD
-     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     * @param input float value being converted
+     * @param precision the number of decimal places to show
+     * @param useD Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
      *            more precision than can be represented by a single precision 32-bit floating point.
-     * @param availableSpace
-     *            the space available for the value
-     * @return Create a fixed decimal string from a double with the specified
-     *         precision.
+     * @param availableSpace the space available for the value
+     * 
+     * @return Create a fixed decimal string from a double with the specified precision.
+     * 
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
      */
-    private static String expString(double input, int precision, boolean useD, int availableSpace) {
-        return expString(BigDecimal.valueOf(input), precision, useD, availableSpace);
+    private static String expFormat(double input, int precision, boolean useD, int availableSpace)
+            throws IllegalStateException {
+        return expFormat(BigDecimal.valueOf(input), precision, useD, availableSpace);
     }
 
     /**
-     * @param input
-     *            float value being converted
-     * @param precision
-     *            the number of decimal places to show
-     * @param availableSpace
-     *            the space available for the value
-     * @return Create a fixed decimal string from a double with the specified
-     *         precision.
+     * @param input float value being converted
+     * @param precision the number of decimal places to show
+     * @param availableSpace the space available for the value
+     * 
+     * @return Create a fixed decimal string from a double with the specified precision.
+     * 
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
      */
-    private static String expString(double input, int precision, int availableSpace) {
-        return expString(input, precision, false, availableSpace);
+    private static String expFormat(double input, int precision, int availableSpace) throws IllegalStateException {
+        return expFormat(input, precision, false, availableSpace);
     }
 
     /**
-     * attention float to double cases are very lossy so a toString is needed to
-     * keep the precision. proof (double)500.055f = 500.05499267578125d
+     * detect the decimal type of the value, does it fit in a Double/BigInteger or must it be a BigDecimal to keep the
+     * needed precission.
      *
-     * @param floatValue
-     *            the float value
-     * @return the BigDecimal as close to the value of the float as possible
-     */
-    private static BigDecimal floatToBigDecimal(float floatValue) {
-        return new BigDecimal(floatValue, MathContext.DECIMAL32);
-    }
-
-    /**
-     * detect the decimal type of the value, does it fit in a Double/BigInteger
-     * or must it be a BigDecimal to keep the needed precission.
-     *
-     * @param value
-     *            the String value to check.
+     * @param value the String value to check.
+     * 
      * @return the type to fit the value
      */
     private static Class<?> getDecimalNumberType(String value) {
@@ -445,7 +490,8 @@ public class HeaderCard implements CursorValue<String> {
         }
 
         BigDecimal bigDecimal = new BigDecimal(value);
-        if (bigDecimal.abs().compareTo(HeaderCard.LONG_MAX_VALUE_AS_BIG_DECIMAL) > 0 && bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
+        if (bigDecimal.abs().compareTo(HeaderCard.LONG_MAX_VALUE_AS_BIG_DECIMAL) > 0
+                && bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
             return BigInteger.class;
         } else if (bigDecimal.equals(BigDecimal.valueOf(Double.valueOf(value)))) {
             return Double.class;
@@ -471,16 +517,16 @@ public class HeaderCard implements CursorValue<String> {
     /**
      * Read exactly one complete fits header line from the input.
      *
-     * @param dis
-     *            the data input stream to read the line
+     * @param dis the data input stream to read the line
+     * 
      * @return a string of exactly 80 characters
-     * @throws IOException
-     *             if the input stream could not be read
-     * @throws TruncatedFileException
-     *             is there was not a complete line available in the input.
+     * 
+     * @throws IOException if the input stream could not be read
+     * @throws TruncatedFileException is there was not a complete line available in the input.
      */
     @SuppressWarnings("resource")
-    private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
+    private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis)
+            throws IOException, TruncatedFileException {
         byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
         int len;
         int need = FITS_HEADER_CARD_SIZE;
@@ -503,7 +549,11 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     private static int spaceAvailableForValue(String key) {
-        return FITS_HEADER_CARD_SIZE - (Math.max(key.length(), CONTINUE.key().length()) + SPACE_NEEDED_FOR_EQUAL_AND_TWO_BLANKS);
+        if (key.length() > MAX_KEYWORD_LENGTH) {
+            return FITS_HEADER_CARD_SIZE - (Math.max(key.length(), MAX_KEYWORD_LENGTH)
+                    + FitsFactory.getHierarchFormater().getExtraSpaceRequired(key));
+        }
+        return FITS_HEADER_CARD_SIZE - (Math.max(key.length(), MAX_KEYWORD_LENGTH) + ASSIGN_LENGTH);
     }
 
     private static ArrayDataInput stringToArrayInputStream(String card) {
@@ -518,18 +568,16 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * This method is only used internally when it is sure that the creation of
-     * the card is granted not to throw an exception
+     * This method is only used internally when it is sure that the creation of the card is granted not to throw an
+     * exception
      *
-     * @param key
-     *            the key for the card
-     * @param comment
-     *            the comment for the card
-     * @param isString
-     *            is this a string value card?
+     * @param key the key for the card
+     * @param comment the comment for the card
+     * @param isString is this a string value card?
+     * 
      * @return the new HeaderCard
      */
-    protected static HeaderCard saveNewHeaderCard(String key, String comment, boolean isString) {
+    public static HeaderCard saveNewHeaderCard(String key, String comment, boolean isString) {
         try {
             return new HeaderCard(key, null, comment, false, isString);
         } catch (HeaderCardException e) {
@@ -542,7 +590,8 @@ public class HeaderCard implements CursorValue<String> {
         this(new HeaderCardCountingArrayDataInput(dis));
     }
 
-    public HeaderCard(HeaderCardCountingArrayDataInput dis) throws IllegalArgumentException, TruncatedFileException, IOException {
+    public HeaderCard(HeaderCardCountingArrayDataInput dis)
+            throws IllegalArgumentException, TruncatedFileException, IOException {
         this.key = null;
         this.value = null;
         this.comment = null;
@@ -565,194 +614,161 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * Create a HeaderCard from its component parts
+     * Creates a HeaderCard from its component parts. The card will be created either in the long decimal format or in
+     * the exponential notitation, whichever preserves more digits, or else whichever is the more compact notation.
+     * Trailing zeroes will be omitted.
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param key keyword (null for a comment)
+     * @param value value (null for a comment or keyword without an '=')
+     * @param comment comment
+     * 
+     * @throws HeaderCardException for any invalid keyword
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision.
      */
-    public HeaderCard(String key, BigDecimal value, String comment) throws HeaderCardException {
-        this(key, dblString(value, spaceAvailableForValue(key)), comment, false, false);
+    public HeaderCard(String key, BigDecimal value, String comment) throws HeaderCardException, IllegalStateException {
+        this(key, flexFormat(value, FLEX_PRECISION, spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
-     * Create a HeaderCard from its component parts
+     * Creates a HeaderCard from its component parts showing digits at most up to the specified decimal place. The card
+     * will be created either in the long decimal format or in the exponential notitation, whichever preserves more
+     * digits, or else whichever is the more compact notation. Trailing zeroes will be omitted.
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param precision
-     *            Number of decimal places (fixed format).
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param key keyword (null for a comment)
+     * @param value value (null for a comment or keyword without an '=')
+     * @param precision absolute precision -- decimal places in the long (fixed) format.
+     * @param comment comment
+     * 
+     * @throws HeaderCardException for any invalid keyword
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with the specified
+     *             precision.
      */
-    public HeaderCard(String key, BigDecimal value, int precision, String comment) throws HeaderCardException {
-        this(key, dblString(value, precision, spaceAvailableForValue(key)), comment, false, false);
+    public HeaderCard(String key, BigDecimal value, int precision, String comment)
+            throws HeaderCardException, IllegalStateException {
+        this(key, flexFormat(value, precision, spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
-     * Create a HeaderCard from its component parts
+     * Create a HeaderCard with a decimal value in exponental form, with up to the specified number of decimal places
+     * showing. Trailing zeroes will be omitted.
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param precision
-     *            Number of decimal places (fixed format).
-     * @param useD
-     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     * @param key keyword (null for a comment)
+     * @param value value (null for a comment or keyword without an '=')
+     * @param decimals Number of decimal places, in the exponential notation that can be used. For example, the number
+     *            0.0123456789 will become `1.23E-2` if `precision` is set to 2.
+     * @param useD Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
      *            more precision than can be represented by a single precision 32-bit floating point.
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param comment comment
+     * 
+     * @throws HeaderCardException for any invalid keyword
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with the specified
+     *             decimal places
      */
-    public HeaderCard(String key, BigDecimal value, int precision, boolean useD, String comment) throws HeaderCardException {
-        this(key, expString(value, precision, useD, spaceAvailableForValue(key)), comment, false, false);
+    public HeaderCard(String key, BigDecimal value, int decimals, boolean useD, String comment)
+            throws HeaderCardException, IllegalStateException {
+        this(key, expFormat(value, decimals, useD, spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
      * Create a HeaderCard from its component parts
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param key keyword (null for a comment)
+     * @param value value (null for a comment or keyword without an '=')
+     * @param comment comment
+     * 
+     * @exception HeaderCardException for any invalid keyword
      */
     public HeaderCard(String key, BigInteger value, String comment) throws HeaderCardException {
-        this(key, dblString(new BigDecimal(value), spaceAvailableForValue(key)), comment, false, false);
+        this(key, flexFormat(new BigDecimal(value), MAX_VALUE_LENGTH, spaceAvailableForValue(key)), comment, false,
+                false);
     }
 
     /**
      * Create a HeaderCard from its component parts
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param key keyword (null for a comment)
+     * @param value value (null for a comment or keyword without an '=')
+     * @param comment comment
+     * 
+     * @exception HeaderCardException for any invalid keyword
      */
     public HeaderCard(String key, boolean value, String comment) throws HeaderCardException {
         this(key, value ? "T" : "F", comment, false, false);
     }
 
     /**
-     * Create a HeaderCard from its component parts
+     * Creates a HeaderCard from its component parts showing digits at most up to the specified decimal place. The card
+     * will be created either in the long decimal format or in the exponential notitation, whichever preserves more
+     * digits, or else whichever is the more compact notation. Trailing zeroes will be omitted.
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param precision
-     *            Number of decimal places (fixed format).
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param key keyword (null for a comment)
+     * @param value value (null for a comment or keyword without an '=')
+     * @param precision absolute precision -- decimal places in the long (fixed) format.
+     * @param comment comment
+     * 
+     * @throws HeaderCardException for any invalid keyword, or if the value is infinite or NaN.
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with the specified
+     *             precision.
      */
-    public HeaderCard(String key, double value, int precision, String comment) throws HeaderCardException {
-        this(key, dblString(value, precision, spaceAvailableForValue(key)), comment, false, false);
+    public HeaderCard(String key, double value, int precision, String comment)
+            throws HeaderCardException, IllegalStateException {
+        if (!Double.isFinite(value)) {
+            throw new HeaderCardException("Cannot represent " + value + " in FITS headers.");
+        }
+        set(key, flexFormat(value, precision, spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
-     * Create a HeaderCard from its component parts
+     * Create a HeaderCard with a decimal value in exponental form, with up to the specified number of decimal places
+     * showing. Trailing zeroes will be omitted.
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param precision
-     *            Number of decimal places (fixed format).
-     * @param useD
-     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     * @param key keyword (null for a comment)
+     * @param value value (null for a comment or keyword without an '=')
+     * @param decimals Number of decimal places, in the exponential notation that can be used. For example, the number
+     *            0.0123456789 will become `1.23E-2` if `precision` is set to 2.
+     * @param useD Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
      *            more precision than can be represented by a single precision 32-bit floating point.
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param comment comment
+     * 
+     * @throws HeaderCardException for any invalid keyword, or if the value is infinite or NaN.
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with the specified
+     *             number of decimals
      */
-    public HeaderCard(String key, double value, int precision, boolean useD, String comment) throws HeaderCardException {
-        this(key, expString(value, precision, useD, spaceAvailableForValue(key)), comment, false, false);
+    public HeaderCard(String key, double value, int decimals, boolean useD, String comment)
+            throws HeaderCardException, IllegalStateException {
+        if (!Double.isFinite(value)) {
+            throw new HeaderCardException("Cannot represent " + value + " in FITS headers.");
+        }
+        set(key, expFormat(value, decimals, useD, spaceAvailableForValue(key)), comment, false, false);
+    }
+
+    /**
+     * Creates a HeaderCard from its component parts. The card will be created either in the long decimal format or in
+     * the exponential notitation, whichever preserves more digits, or else whichever is the more compact notation.
+     * Trailing zeroes will be omitted.
+     *
+     * @param key keyword (null for a comment)
+     * @param value value (null for a comment or keyword without an '=')
+     * @param comment comment
+     * 
+     * @throws HeaderCardException for any invalid keyword, or if the value is infinite or NaN.
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
+     */
+    public HeaderCard(String key, double value, String comment) throws HeaderCardException, IllegalStateException {
+        if (!Double.isFinite(value)) {
+            throw new HeaderCardException("Cannot represent " + value + " in FITS headers.");
+        }
+        set(key, flexFormat(value, FLEX_PRECISION, spaceAvailableForValue(key)), comment, false, false);
     }
 
     /**
      * Create a HeaderCard from its component parts
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
-     */
-    public HeaderCard(String key, double value, String comment) throws HeaderCardException {
-        this(key, dblString(value, spaceAvailableForValue(key)), comment, false, false);
-    }
-
-    /**
-     * Create a HeaderCard from its component parts
-     *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param precision
-     *            Number of decimal places (fixed format).
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
-     */
-    @Deprecated
-    public HeaderCard(String key, float value, int precision, String comment) throws HeaderCardException {
-        this(key, dblString(floatToBigDecimal(value), precision, spaceAvailableForValue(key)), comment, false, false);
-    }
-
-    /**
-     * Create a HeaderCard from its component parts
-     *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
-     */
-    @Deprecated
-    public HeaderCard(String key, float value, String comment) throws HeaderCardException {
-        this(key, dblString(floatToBigDecimal(value), spaceAvailableForValue(key)), comment, false, false);
-    }
-
-    /**
-     * Create a HeaderCard from its component parts
-     *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param key keyword (null for a comment)
+     * @param value value (null for a comment or keyword without an '=')
+     * @param comment comment
+     * 
+     * @exception HeaderCardException for any invalid keyword
      */
     public HeaderCard(String key, int value, String comment) throws HeaderCardException {
         this(key, String.valueOf(value), comment, false, false);
@@ -761,33 +777,26 @@ public class HeaderCard implements CursorValue<String> {
     /**
      * Create a HeaderCard from its component parts
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param key keyword (null for a comment)
+     * @param value value (null for a comment or keyword without an '=')
+     * @param comment comment
+     * 
+     * @exception HeaderCardException for any invalid keyword
      */
     public HeaderCard(String key, long value, String comment) throws HeaderCardException {
         this(key, String.valueOf(value), comment, false, false);
     }
 
     /**
-     * Create a comment style card. This constructor builds a card which has no
-     * value. This may be either a comment style card in which case the nullable
-     * field should be false, or a value field which has a null value, in which
+     * Create a comment style card. This constructor builds a card which has no value. This may be either a comment
+     * style card in which case the nullable field should be false, or a value field which has a null value, in which
      * case the nullable field should be true.
      *
-     * @param key
-     *            The key for the comment or nullable field.
-     * @param comment
-     *            The comment
-     * @param nullable
-     *            Is this a nullable field or a comment-style card?
-     * @throws HeaderCardException
-     *             for any invalid keyword or value
+     * @param key The key for the comment or nullable field.
+     * @param comment The comment
+     * @param nullable Is this a nullable field or a comment-style card?
+     * 
+     * @throws HeaderCardException for any invalid keyword or value
      */
     public HeaderCard(String key, String comment, boolean nullable) throws HeaderCardException {
         this(key, null, comment, nullable, true);
@@ -796,14 +805,11 @@ public class HeaderCard implements CursorValue<String> {
     /**
      * Create a HeaderCard from its component parts
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword or value
+     * @param key keyword (null for a comment)
+     * @param value value (null for a comment or keyword without an '=')
+     * @param comment comment
+     * 
+     * @exception HeaderCardException for any invalid keyword or value
      */
     public HeaderCard(String key, String value, String comment) throws HeaderCardException {
         this(key, value, comment, false, true);
@@ -812,16 +818,12 @@ public class HeaderCard implements CursorValue<String> {
     /**
      * Create a HeaderCard from its component parts
      *
-     * @param key
-     *            Keyword (null for a COMMENT)
-     * @param value
-     *            Value
-     * @param comment
-     *            Comment
-     * @param nullable
-     *            Is this a nullable value card?
-     * @exception HeaderCardException
-     *                for any invalid keyword or value
+     * @param key Keyword (null for a COMMENT)
+     * @param value Value
+     * @param comment Comment
+     * @param nullable Is this a nullable value card?
+     * 
+     * @exception HeaderCardException for any invalid keyword or value
      */
     public HeaderCard(String key, String value, String comment, boolean nullable) throws HeaderCardException {
         this(key, value, comment, nullable, true);
@@ -830,54 +832,127 @@ public class HeaderCard implements CursorValue<String> {
     /**
      * Create a HeaderCard from its component parts
      *
-     * @param key
-     *            Case-sensitive keyword (null for a COMMENT)
-     * @param value
-     *            Value     the string value (tailing spaces will be removed)
-     * @param comment
-     *            Comment
-     * @param nullable
-     *            Is this a nullable value card?
-     * @exception HeaderCardException
-     *                for any invalid keyword or value
+     * @param key Case-sensitive keyword (null for a COMMENT)
+     * @param value Value the string value (tailing spaces will be removed)
+     * @param comment Comment
+     * @param nullable Is this a nullable value card?
+     * 
+     * @exception HeaderCardException for any invalid keyword or value
+     * 
+     * @see #set(String, String, String, boolean, boolean)
      */
-    private HeaderCard(String key, String value, String comment, boolean nullable, boolean isString) throws HeaderCardException {
-        this.isString = isString;
-        if (key == null && value != null) {
-            throw new HeaderCardException("Null keyword with non-null value");
-        } else if (key != null && key.length() > HeaderCard.MAX_KEYWORD_LENGTH && //
-                (!FitsFactory.getUseHierarch() || !key.startsWith(HIERARCH_WITH_DOT))) {
-            throw new HeaderCardException("Keyword too long");
+    private HeaderCard(String key, String value, String comment, boolean nullable, boolean isString)
+            throws HeaderCardException {
+        set(key, value, comment, nullable, isString);
+    }
+
+    /**
+     * Sets all components of the card to the specified values. For internal use only.
+     *
+     * @param key Case-sensitive keyword (null for a COMMENT)
+     * @param value Value the string value (tailing spaces will be removed)
+     * @param comment Comment
+     * @param nullable Is this a nullable value card?
+     * 
+     * @exception HeaderCardException for any invalid keyword or value
+     */
+    private void set(String aKey, String aValue, String aComment, boolean isNullable, boolean useString)
+            throws HeaderCardException {
+        this.isString = useString;
+
+        if (aKey != null) {
+            if (aKey.trim().isEmpty()) {
+                // If value is null and the key is just spaces, then add the spaces into the comment.
+                aKey = "";
+                aComment = (aComment == null) ? aKey : aKey + aComment;
+            }
         }
-        if (value != null) {
+
+        if (aKey == null && aValue != null) {
+            throw new HeaderCardException("Null keyword with non-null value: [" + aValue + "]");
+        } else if (aKey != null) {
+            validateKey(aKey);
+        }
+
+        if (aValue != null) {
             // Discard trailing spaces
-            int to = value.length();
+            int to = aValue.length();
             while (--to >= 0) {
-                if (!Character.isSpaceChar(value.charAt(to))) {
+                if (!Character.isSpaceChar(aValue.charAt(to))) {
                     break;
                 }
             }
             to++;
-            if (to < value.length()) {
-                value = value.substring(0, to);
+            if (to < aValue.length()) {
+                aValue = aValue.substring(0, to);
             }
 
             // Remember that quotes get doubled in the value...
-            if (!FitsFactory.isLongStringsEnabled()
-                    && value.replace("'", "''").length() > (this.isString ? HeaderCard.MAX_STRING_VALUE_LENGTH : HeaderCard.MAX_VALUE_LENGTH)) {
-                throw new HeaderCardException("Value too long");
+            if (!FitsFactory.isLongStringsEnabled() && aValue.replace("'", "''")
+                    .length() > (this.isString ? HeaderCard.MAX_STRING_VALUE_LENGTH : HeaderCard.MAX_VALUE_LENGTH)) {
+                throw new HeaderCardException("Value too long: " + aValue.length() + " [" + aValue + "]");
             }
         }
 
-        this.key = key;
-        this.value = value;
-        this.comment = comment;
-        this.nullable = nullable;
+        this.key = aKey;
+        this.value = aValue;
+        this.comment = aComment;
+        this.nullable = isNullable;
+    }
+
+    public static void validateKey(String key) throws HeaderCardException {
+        if (key == null) {
+            throw new HeaderCardException("Keyword is null");
+        }
+
+        int maxLength = MAX_KEYWORD_LENGTH;
+        if (FitsFactory.getUseHierarch() && key.toUpperCase().startsWith(HIERARCH_WITH_DOT)) {
+            maxLength = MAX_HIERARCH_KEYWORD_LENGTH;
+        }
+
+        if (key.length() > maxLength) {
+            throw new HeaderCardException("Keyword is too long: [" + sanitize(key) + "]");
+        }
+
+        // Check the whole key for non-printable, non-standard ASCII
+        for (int i = key.length(); --i >= 0;) {
+            char c = key.charAt(i);
+            if (c < CHR20) {
+                throw new HeaderCardException(
+                        "Keyword contains non-printable character 0x" + (int) c + ": [" + sanitize(key) + "].");
+            }
+            if (c > CHR7E) {
+                throw new HeaderCardException("Keyword contains extendeed ASCII characters: [" + sanitize(key)
+                        + "]. Only 0x20 through 0x7E are allowed.");
+            }
+        }
+
+        // Check if the first 8 characters conform to strict FITS specification...
+        for (int i = Math.min(MAX_KEYWORD_LENGTH, key.length()); --i >= 0;) {
+            char c = key.charAt(i);
+            if (c >= 'a' && c <= 'z') {
+                continue;
+            }
+            if (c >= 'A' && c <= 'Z') {
+                continue;
+            }
+            if (c >= '0' && c <= '9') {
+                continue;
+            }
+            if (c == '-') {
+                continue;
+            }
+            if (c == '_') {
+                continue;
+            }
+            throw new HeaderCardException("Base keyword contains invalid characters: [" + sanitize(key)
+                    + "]. Only [A-Z][a-z][0-9][-][_] are allowed.");
+        }
     }
 
     /**
-     * @return the size of the card in blocks of 80 bytes. So normally every
-     *         card will return 1. only long stings can return more than one.
+     * @return the size of the card in blocks of 80 bytes. So normally every card will return 1. only long stings can
+     *             return more than one.
      */
     public int cardSize() {
         if (this.isString && this.value != null && FitsFactory.isLongStringsEnabled()) {
@@ -921,12 +996,20 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * @param clazz
-     *            the requested class of the value
-     * @param defaultValue
-     *            the value if the card was not present.
-     * @param <T>
-     *            the type of the requested class
+     * Returns the integer value from the hexadecimal representation of it in the Header. The FITS standard explicitly
+     * allows hexadecimal values, such as 2B, not only decimal values such as 43 in the header.
+     * 
+     * @return the value from this card
+     */
+    public long getHexValue() {
+        return Long.decode("0x" + this.value);
+    }
+
+    /**
+     * @param clazz the requested class of the value
+     * @param defaultValue the value if the card was not present.
+     * @param <T> the type of the requested class
+     * 
      * @return the value from this card as a specific type
      */
     public <T> T getValue(Class<T> clazz, T defaultValue) {
@@ -984,8 +1067,7 @@ public class HeaderCard implements CursorValue<String> {
     /**
      * set the comment of a card.
      *
-     * @param comment
-     *            the comment to set.
+     * @param comment the comment to set.
      */
     public void setComment(String comment) {
         this.comment = comment;
@@ -994,65 +1076,69 @@ public class HeaderCard implements CursorValue<String> {
     /**
      * Set the value for this card.
      *
-     * @param update
-     *            the new value to set
+     * @param update the new value to set
+     * 
      * @return the HeaderCard itself
+     * 
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
      */
-    public HeaderCard setValue(BigDecimal update) {
-        this.value = dblString(update, spaceAvailableForValue(this.key));
+    public HeaderCard setValue(BigDecimal update) throws IllegalStateException {
+        this.value = flexFormat(update, FLEX_PRECISION, spaceAvailableForValue(this.key));
         return this;
     }
 
     /**
      * Set the value for this card.
      *
-     * @param update
-     *            the new value to set
-     * @param precision
-     *            the number of decimal places to show
+     * @param update the new value to set
+     * @param precision the number of decimal places to show
+     * 
      * @return the HeaderCard itself
+     * 
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
      */
-    public HeaderCard setValue(BigDecimal update, int precision) {
-        this.value = dblString(update, precision, spaceAvailableForValue(this.key));
+    public HeaderCard setValue(BigDecimal update, int precision) throws IllegalStateException {
+        this.value = flexFormat(update, precision, spaceAvailableForValue(this.key));
         return this;
     }
 
     /**
      * Set the value for this card.
      *
-     * @param update
-     *            the new value to set
-     * @param precision
-     *            the number of decimal places to show
-     * @param useD
-     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     * @param update the new value to set
+     * @param precision the number of decimal places to show
+     * @param useD Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
      *            more precision than can be represented by a single precision 32-bit floating point.
+     * 
      * @return the HeaderCard itself
+     * 
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
      */
-    public HeaderCard setExpValue(BigDecimal update, int precision, boolean useD) {
-        this.value = expString(update, precision, useD, spaceAvailableForValue(this.key));
+    public HeaderCard setExpValue(BigDecimal update, int precision, boolean useD) throws IllegalStateException {
+        this.value = expFormat(update, precision, useD, spaceAvailableForValue(this.key));
         return this;
     }
 
     /**
      * Set the value for this card.
      *
-     * @param update
-     *            the new value to set
-     * @param precision
-     *            the number of decimal places to show
+     * @param update the new value to set
+     * @param precision the number of decimal places to show
+     * 
      * @return the HeaderCard itself
+     * 
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
      */
-    public HeaderCard setExpValue(BigDecimal update, int precision) {
-        this.value = expString(update, precision, spaceAvailableForValue(this.key));
+    public HeaderCard setExpValue(BigDecimal update, int precision) throws IllegalStateException {
+        this.value = expFormat(update, precision, spaceAvailableForValue(this.key));
         return this;
     }
 
     /**
      * Set the value for this card.
      *
-     * @param update
-     *            the new value to set
+     * @param update the new value to set
+     * 
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(boolean update) {
@@ -1063,93 +1149,69 @@ public class HeaderCard implements CursorValue<String> {
     /**
      * Set the value for this card.
      *
-     * @param update
-     *            the new value to set
+     * @param update the new value to set
+     * 
      * @return the HeaderCard itself
+     * 
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
      */
-    public HeaderCard setValue(double update) {
-        this.value = dblString(update, spaceAvailableForValue(this.key));
+    public HeaderCard setValue(double update) throws IllegalStateException {
+        this.value = flexFormat(update, FLEX_PRECISION, spaceAvailableForValue(this.key));
         return this;
     }
 
     /**
      * Set the value for this card.
      *
-     * @param update
-     *            the new value to set
-     * @param precision
-     *            the number of decimal places to show
+     * @param update the new value to set
+     * @param precision the number of decimal places to show
+     * 
      * @return the HeaderCard itself
+     * 
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
      */
-    public HeaderCard setValue(double update, int precision) {
-        this.value = dblString(update, precision, spaceAvailableForValue(this.key));
+    public HeaderCard setValue(double update, int precision) throws IllegalStateException {
+        this.value = flexFormat(update, precision, spaceAvailableForValue(this.key));
         return this;
     }
 
     /**
      * Set the value for this card that uses scientific notation.
      *
-     * @param update
-     *            the new value to set
-     * @param precision
-     *            the number of decimal places to show
-     * @param useD
-     *            Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
+     * @param update the new value to set
+     * @param precision the number of decimal places to show
+     * @param useD Use the letter 'D' instead of 'E' in the notation. This was traditionally used to indicate value has
      *            more precision than can be represented by a single precision 32-bit floating point.
+     * 
      * @return the HeaderCard itself
+     * 
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
      */
-    public HeaderCard setExpValue(double update, int precision, boolean useD) {
-        this.value = expString(update, precision, useD, spaceAvailableForValue(this.key));
+    public HeaderCard setExpValue(double update, int precision, boolean useD) throws IllegalStateException {
+        this.value = expFormat(update, precision, useD, spaceAvailableForValue(this.key));
         return this;
     }
 
     /**
      * Set the value for this card that uses scientific notation. Uses 'E' to indicate exponent.
      *
-     * @param update
-     *            the new value to set
-     * @param precision
-     *            the number of decimal places to show
+     * @param update the new value to set
+     * @param precision the number of decimal places to show
+     * 
      * @return the HeaderCard itself
+     * 
+     * @throws IllegalStateException if the decimal value cannot be represented in the alotted space with any precision
      */
-    public HeaderCard setExpValue(double update, int precision) {
-        this.value = expString(update, precision, spaceAvailableForValue(this.key));
+    public HeaderCard setExpValue(double update, int precision) throws IllegalStateException {
+        this.value = expFormat(update, precision, spaceAvailableForValue(this.key));
         return this;
     }
 
     /**
      * Set the value for this card.
      *
-     * @param update
-     *            the new value to set
-     * @return the HeaderCard itself
-     */
-    @Deprecated
-    public HeaderCard setValue(float update) {
-        this.value = dblString(floatToBigDecimal(update), spaceAvailableForValue(this.key));
-        return this;
-    }
-
-    /**
-     * Set the value for this card.
-     *
-     * @param update
-     *            the new value to set
-     * @param precision
-     *            the number of decimal places to show
-     * @return the HeaderCard itself
-     */
-    @Deprecated
-    public HeaderCard setValue(float update, int precision) {
-        this.value = dblString(floatToBigDecimal(update), precision, spaceAvailableForValue(this.key));
-        return this;
-    }
-
-    /**
-     * Set the value for this card.
-     *
-     * @param update
-     *            the new value to set
+     * @param update the new value to set
+     * 
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(int update) {
@@ -1160,8 +1222,8 @@ public class HeaderCard implements CursorValue<String> {
     /**
      * Set the value for this card.
      *
-     * @param update
-     *            the new value to set
+     * @param update the new value to set
+     * 
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(long update) {
@@ -1170,10 +1232,22 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
+     * Set the value for this card, represented as a hexadecimal number.
+     *
+     * @param update the new value to set
+     * 
+     * @return the HeaderCard itself
+     */
+    public HeaderCard setHextValue(long update) {
+        this.value = Long.toHexString(update);
+        return this;
+    }
+
+    /**
      * Set the value for this card.
      *
-     * @param update
-     *            the new value to set
+     * @param update the new value to set
+     * 
      * @return the HeaderCard itself
      */
     public HeaderCard setValue(String update) {
@@ -1182,14 +1256,13 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * Takes an arbitrary String object and turns it into a string with
-     * characters than can be harmlessly output to a FITS header.
-     * The FITS standard excludes certain characters; moreover writing
-     * non-7-bit characters can end up producing multiple bytes per
-     * character in some text encodings, leading to a corrupted header.
+     * Takes an arbitrary String object and turns it into a string with characters than can be harmlessly output to a
+     * FITS header. The FITS standard excludes certain characters; moreover writing non-7-bit characters can end up
+     * producing multiple bytes per character in some text encodings, leading to a corrupted header.
      *
      * @param str input string
-     * @return  sanitized string
+     * 
+     * @return sanitized string
      */
     private static String sanitize(String str) {
         int nc = str.length();
@@ -1202,9 +1275,8 @@ public class HeaderCard implements CursorValue<String> {
     }
 
     /**
-     * Return the modulo 80 character card image, the toString tries to preserve
-     * as much as possible of the comment value by reducing the alignment of the
-     * Strings if the comment is longer and if longString is enabled the string
+     * Return the modulo 80 character card image, the toString tries to preserve as much as possible of the comment
+     * value by reducing the alignment of the Strings if the comment is longer and if longString is enabled the string
      * can be split into one more card to have more space for the comment.
      */
     @Override
@@ -1215,8 +1287,8 @@ public class HeaderCard implements CursorValue<String> {
     /**
      * Same as {@link #toString()} just with a prefetched settings object
      * 
-     * @param settings
-     *            the settings to use for writing the header card
+     * @param settings the settings to use for writing the header card
+     * 
      * @return the string representing the card.
      */
     protected String toString(final FitsSettings settings) {
@@ -1240,7 +1312,8 @@ public class HeaderCard implements CursorValue<String> {
         FitsSubString commentSubString = new FitsSubString(this.comment);
         if (FITS_HEADER_CARD_SIZE - alignPosition - MAX_LONG_STRING_CONTINUE_OVERHEAD < commentSubString.length()) {
             // with alignment the comment would not fit so lets make more space
-            alignPosition = Math.max(buf.length(), FITS_HEADER_CARD_SIZE - MAX_LONG_STRING_CONTINUE_OVERHEAD - commentSubString.length());
+            alignPosition = Math.max(buf.length(),
+                    FITS_HEADER_CARD_SIZE - MAX_LONG_STRING_CONTINUE_OVERHEAD - commentSubString.length());
             alignSmallString = buf.length();
         }
         boolean commentHandled = false;
@@ -1303,7 +1376,8 @@ public class HeaderCard implements CursorValue<String> {
                 return Boolean.class;
             } else if (HeaderCard.LONG_REGEX.matcher(trimedValue).matches()) {
                 return getIntegerNumberType(trimedValue);
-            } else if (HeaderCard.IEEE_REGEX.matcher(trimedValue).find() || HeaderCard.DBLSCI_REGEX.matcher(trimedValue).find()) {
+            } else if (HeaderCard.IEEE_REGEX.matcher(trimedValue).find()
+                    || HeaderCard.DBLSCI_REGEX.matcher(trimedValue).find()) {
                 return getDecimalNumberType(trimedValue);
             }
         }
@@ -1319,7 +1393,8 @@ public class HeaderCard implements CursorValue<String> {
         return defaultValue;
     }
 
-    private void longStringCard(HeaderCardCountingArrayDataInput dis, Parser parsed) throws IOException, TruncatedFileException {
+    private void longStringCard(HeaderCardCountingArrayDataInput dis, Parser parsed)
+            throws IOException, TruncatedFileException {
         // ok this is a longString now read over all continues.
         StringBuilder longValue = new StringBuilder();
         StringBuilder longComment = null;
@@ -1335,7 +1410,7 @@ public class HeaderCard implements CursorValue<String> {
                 } else if (!parsed.getComment().isEmpty()) {
                     longComment.append(' ');
                     longComment.append(parsed.getComment());
-                }         
+                }
             }
 
             parsed = null;
@@ -1372,12 +1447,13 @@ public class HeaderCard implements CursorValue<String> {
         return maxStringValueLength;
     }
 
-    private boolean stringValueToString(int alignSmallString, int alignPosition, FitsLineAppender buf, boolean commentHandled) {
+    private boolean stringValueToString(int alignSmallString, int alignPosition, FitsLineAppender buf,
+            boolean commentHandled) {
         String stringValue = this.value.replace("'", "''");
-        
+
         // We can only write a single-line string, including the quotes, in the space left on the line...
         int spaceLeft = FITS_HEADER_CARD_SIZE - buf.length() % FITS_HEADER_CARD_SIZE - 2;
-         
+
         if (FitsFactory.isLongStringsEnabled() && stringValue.length() > spaceLeft) {
             writeLongStringValue(buf, stringValue);
             commentHandled = true;
@@ -1458,12 +1534,9 @@ public class HeaderCard implements CursorValue<String> {
         this.key = newKey;
     }
 
-
-
     /**
-     * A helper utility class to parse header cards for there value (especially
-     * strings) and comments. See {@link HeaderCard#create(String)} for a description
-     * of the rules that guide parsing.
+     * A helper utility class to parse header cards for there value (especially strings) and comments. See
+     * {@link HeaderCard#create(String)} for a description of the rules that guide parsing.
      *
      * @author Attila Kovacs
      * @author Richard van Nieuwenhoven
@@ -1501,14 +1574,14 @@ public class HeaderCard implements CursorValue<String> {
         /**
          * Instantiates a new parser for a FITS header line.
          * 
-         * @param line  a line in the FITS header, normally exactly 80-characters wide (but need not be).'
+         * @param line a line in the FITS header, normally exactly 80-characters wide (but need not be).'
          * 
          * @see #getKey()
          * @see #getValue()
          * @see #getComment()
          * @see #isString()
          * 
-         * @throws IllegalArgumentException     if there is a missing end-quote and header repairs aren't allowed.
+         * @throws IllegalArgumentException if there is a missing end-quote and header repairs aren't allowed.
          * 
          * @see FitsFactory#setAllowHeaderRepairs(boolean)
          */
@@ -1520,11 +1593,11 @@ public class HeaderCard implements CursorValue<String> {
         }
 
         /**
-         * Returns the keyword component of the parsed header line. If the processing of HIERARCH
-         * keywords is enabled, it may be a `HIERARCH` style long key with the components separated
-         * by dots (e.g. `HIERARCH.ORG.SYSTEM.SUBSYS.ELEMENT`). Otherwise, it will be a standard
-         * 0--8 character standard uppercase FITS keyword (including simply `HIERARCH` if 
-         * {@link FitsFactory#setUseHierarch(boolean)} was set <code>false</code>).
+         * Returns the keyword component of the parsed header line. If the processing of HIERARCH keywords is enabled,
+         * it may be a `HIERARCH` style long key with the components separated by dots (e.g.
+         * `HIERARCH.ORG.SYSTEM.SUBSYS.ELEMENT`). Otherwise, it will be a standard 0--8 character standard uppercase
+         * FITS keyword (including simply `HIERARCH` if {@link FitsFactory#setUseHierarch(boolean)} was set
+         * <code>false</code>).
          * 
          * @return the FITS header keyword for the line.
          * 
@@ -1539,7 +1612,7 @@ public class HeaderCard implements CursorValue<String> {
          * 
          * @return the value part of the line or <code>null</code> if the line contained no value.
          * 
-         *  @see FitsFactory#setUseHierarch(boolean)
+         * @see FitsFactory#setUseHierarch(boolean)
          */
         String getValue() {
             return this.value;
@@ -1555,10 +1628,10 @@ public class HeaderCard implements CursorValue<String> {
         }
 
         /**
-         * Returns whether the line contained a quoted string value. By default, strings with missing end
-         * quotes are no considered string values, but rather as comments. To allow processing lines
-         * with missing quotes as string values, you must set {@link FitsFactory#setAllowHeaderRepairs(boolean)}
-         * to <code>true</code> prior to parsing a header line with the missing end quote.
+         * Returns whether the line contained a quoted string value. By default, strings with missing end quotes are no
+         * considered string values, but rather as comments. To allow processing lines with missing quotes as string
+         * values, you must set {@link FitsFactory#setAllowHeaderRepairs(boolean)} to <code>true</code> prior to parsing
+         * a header line with the missing end quote.
          * 
          * @return true if the value was quoted.
          * 
@@ -1568,26 +1641,19 @@ public class HeaderCard implements CursorValue<String> {
             return this.isString;
         }
 
-
-
         /**
          * Parses a fits keyword from a card and standardizes it (trim, uppercase, and hierarch with dots).
-         *
          */
         private void parseKey() {
             /*
-             * AK: The parsing of headers should never be stricter that the writing,
-             * such that any header written by this library can be parsed back
-             * without errors. (And, if anything, the parsing should be more
-             * permissive to allow reading FITS produced by other libraries, which
-             * may be less stringent in their rules). The original implementation
-             * strongly enforced the ESO HIERARCH convention when reading, but not
-             * at all for writing. Here is a tolerant hierarch parser that will
-             * read back any hierarch key that was written by this library. The input 
-             * FITS can use any space or even '.' to separate the hierarchies, and 
-             * the hierarchical elements may contain any ASCII characters other than
-             * those used for separating. It is more in line with what we do with 
-             * standard keys too.
+             * AK: The parsing of headers should never be stricter that the writing, such that any header written by
+             * this library can be parsed back without errors. (And, if anything, the parsing should be more permissive
+             * to allow reading FITS produced by other libraries, which may be less stringent in their rules). The
+             * original implementation strongly enforced the ESO HIERARCH convention when reading, but not at all for
+             * writing. Here is a tolerant hierarch parser that will read back any hierarch key that was written by this
+             * library. The input FITS can use any space or even '.' to separate the hierarchies, and the hierarchical
+             * elements may contain any ASCII characters other than those used for separating. It is more in line with
+             * what we do with standard keys too.
              */
 
             // Find the '=' in the line, if any...
@@ -1640,10 +1706,10 @@ public class HeaderCard implements CursorValue<String> {
         }
 
         /**
-         * Advances the parse position to skip any spaces at the current parse position, and returns whether there
-         * is anything left in the line after the spaces...
+         * Advances the parse position to skip any spaces at the current parse position, and returns whether there is
+         * anything left in the line after the spaces...
          * 
-         * @return      <code>true</code> if there is more non-space characters in the string, otherwise <code>false</code>
+         * @return <code>true</code> if there is more non-space characters in the string, otherwise <code>false</code>
          */
         private boolean skipSpaces() {
             for (; parsePos < line.length(); parsePos++) {
@@ -1657,9 +1723,8 @@ public class HeaderCard implements CursorValue<String> {
         }
 
         /**
-         * Parses the comment components starting for the current parse position. After this call the parse position
-         * is set to the end of the string. The leading '/' (if found) is not included in the comment.
-         * 
+         * Parses the comment components starting for the current parse position. After this call the parse position is
+         * set to the end of the string. The leading '/' (if found) is not included in the comment.
          */
         private void parseComment() {
             if (!skipSpaces()) {
@@ -1675,18 +1740,16 @@ public class HeaderCard implements CursorValue<String> {
                 }
             }
 
-            comment = line.substring(parsePos).trim();        
+            comment = line.substring(parsePos).trim();
             parsePos = line.length();
         }
 
-
-
         /**
-         * Parses the value component from the current parse position. The parse position is advanced to
-         * the first character after the value specification in the line. If the header line does
-         * not contain a value component, then the value field of this object is set to <code>null</code>.
+         * Parses the value component from the current parse position. The parse position is advanced to the first
+         * character after the value specification in the line. If the header line does not contain a value component,
+         * then the value field of this object is set to <code>null</code>.
          * 
-         * @throws IllegalArgumentException     if there is a missing end-quote and header repairs aren't allowed.
+         * @throws IllegalArgumentException if there is a missing end-quote and header repairs aren't allowed.
          * 
          * @see FitsFactory#setAllowHeaderRepairs(boolean)
          */
@@ -1722,11 +1785,11 @@ public class HeaderCard implements CursorValue<String> {
         }
 
         /**
-         * Parses the value body from the current parse position. The parse position is advanced to
-         * the first character after the value specification in the line. If the header line does
-         * not contain a value component, then the value field of this object is set to <code>null</code>.
+         * Parses the value body from the current parse position. The parse position is advanced to the first character
+         * after the value specification in the line. If the header line does not contain a value component, then the
+         * value field of this object is set to <code>null</code>.
          * 
-         * @throws IllegalArgumentException     if there is a missing end-quote and header repairs aren't allowed.
+         * @throws IllegalArgumentException if there is a missing end-quote and header repairs aren't allowed.
          * 
          * @see FitsFactory#setAllowHeaderRepairs(boolean)
          */
@@ -1742,7 +1805,7 @@ public class HeaderCard implements CursorValue<String> {
             } else {
                 int end = line.indexOf('/', parsePos);
                 if (end < 0) {
-                    end = line.length();     
+                    end = line.length();
                 }
                 value = line.substring(parsePos, end).trim();
                 parsePos = end;
@@ -1753,7 +1816,8 @@ public class HeaderCard implements CursorValue<String> {
         /**
          * Checks if the next character, at the current parse position, is a single quote.
          * 
-         * @return  <code>true</code> if the next character on the line exists and is a single quote, otherwise <code>false</code>.
+         * @return <code>true</code> if the next character on the line exists and is a single quote, otherwise
+         *             <code>false</code>.
          */
         private boolean isNextQuote() {
             if (parsePos >= line.length()) {
@@ -1764,13 +1828,14 @@ public class HeaderCard implements CursorValue<String> {
         }
 
         /**
-         * Returns the string fom a parsed string value component, with trailing spaces removed. It preserves
-         * leading spaces.
+         * Returns the string fom a parsed string value component, with trailing spaces removed. It preserves leading
+         * spaces.
          * 
-         * @param buf   the parsed string value.
-         * @return      the string value with trailing spaces removed.
+         * @param buf the parsed string value.
+         * 
+         * @return the string value with trailing spaces removed.
          */
-        private String getString(StringBuilder buf) {  
+        private String getString(StringBuilder buf) {
             int to = buf.length();
 
             // Remove trailing spaces only!
@@ -1785,11 +1850,11 @@ public class HeaderCard implements CursorValue<String> {
         }
 
         /**
-         * Parses a quoted string value starting at the current parse position. If successful, the parse
-         * position is updated to after the string. Otherwise, the parse position is advanced only to skip 
-         * leading spaces starting from the input position.
+         * Parses a quoted string value starting at the current parse position. If successful, the parse position is
+         * updated to after the string. Otherwise, the parse position is advanced only to skip leading spaces starting
+         * from the input position.
          * 
-         * @throws IllegalArgumentException     if there is a missing end-quote and header repairs aren't allowed.
+         * @throws IllegalArgumentException if there is a missing end-quote and header repairs aren't allowed.
          * 
          * @see FitsFactory#setAllowHeaderRepairs(boolean)
          */
@@ -1831,5 +1896,4 @@ public class HeaderCard implements CursorValue<String> {
             }
         }
     }
-
 }

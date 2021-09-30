@@ -178,7 +178,7 @@ public class EnumHeaderTest {
     }
 
     @Test
-    public void testSynonyms() {
+    public void testSynonyms() throws Exception {
         Assert.assertEquals(Standard.EQUINOX, Synonyms.primaryKeyword(Standard.EPOCH));
         Assert.assertEquals("EQUINOX", Synonyms.primaryKeyword("EPOCH"));
         Assert.assertArrayEquals(new IFitsHeader[]{
@@ -211,14 +211,14 @@ public class EnumHeaderTest {
     }
 
     @Test
-    public void testLookup() {
+    public void testLookup() throws Exception {
         assertSame(Standard.BITPIX, GenericKey.lookup(Standard.BITPIX.key()));
         assertSame(Standard.NAXISn, GenericKey.lookup(Standard.NAXISn.n(99).key()));
 
     }
 
     @Test
-    public void testIFitsHeader() {
+    public void testIFitsHeader() throws Exception {
         assertEquals(9, IFitsHeader.HDU.values().length);
         assertSame(IFitsHeader.HDU.ANY, IFitsHeader.HDU.valueOf(IFitsHeader.HDU.ANY.name()));
         assertEquals(14, IFitsHeader.SOURCE.values().length);

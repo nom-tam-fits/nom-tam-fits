@@ -49,6 +49,12 @@ public class StandardIHierarchKeyFormatter implements IHierarchKeyFormatter {
     }
 
     @Override
+    public int getExtraSpaceRequired(String key) {
+        // The one extra space before '='...
+        return 1;
+    }
+    
+    @Override
     public void setCaseSensitive(boolean value) {
         allowMixedCase = value;
     }

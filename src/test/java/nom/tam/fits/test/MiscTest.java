@@ -95,7 +95,7 @@ public class MiscTest {
     }
 
     @Test
-    public void testRegex() {
+    public void testRegex() throws Exception {
         Pattern doubleQuotePattern = Pattern.compile("''");
         Pattern stringPattern = Pattern.compile("'(?:[^']|'{2})*'");
         String[] testStrings = {

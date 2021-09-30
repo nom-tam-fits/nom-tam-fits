@@ -52,29 +52,62 @@ import nom.tam.image.compression.hdu.CompressedTableHDU;
  */
 public final class FitsFactory {
 
+    private static final boolean DEFAULT_USE_ASCII_TABLES = false;
+    
+    private static final boolean DEFAULT_USE_HIERARCH = true;
+    
+    private static final boolean DEFAULT_LONG_STRINGS_ENABLED = false;
+    
+    private static final boolean DEFAULT_CHECK_ASCII_STRINGS = false;
+    
+    private static final boolean DEFAULT_ALLOW_TERMINAL_JUNK = false;
+    
+    private static final boolean DEFAULT_ALLOW_HEADER_REPAIRS = false;
+    
+    private static final boolean DEFAULT_SKIP_BLANK_AFTER_ASSIGN = false;
+    
+    private static final boolean DEFAULT_CASE_SENSITIVE_HIERARCH = false;
+    
+    private static final IHierarchKeyFormatter DEFAULT_HIERARCH_FORMATTER = new StandardIHierarchKeyFormatter();
+    
+    
     protected static final class FitsSettings implements Cloneable {
 
-        private boolean useAsciiTables = true;
+        private boolean useAsciiTables;
 
-        // MBT (28-JUL-2017): change default from false to true.
-        // This is required for HIERARCH-based wide fits processing
-        // (see uk.ac.starlink.fits.WideFits).  If that gets backed out of,
-        // this could be set back to its factory setting (false).
-        private boolean useHierarch = true;
+        private boolean useHierarch;
         
-        private boolean checkAsciiStrings = false;
+        private boolean checkAsciiStrings;
 
-        private boolean allowTerminalJunk = false;
+        private boolean allowTerminalJunk;
 
-        private boolean allowHeaderRepairs = false;
+        private boolean allowHeaderRepairs;
 
-        private boolean longStringsEnabled = false;
+        private boolean longStringsEnabled;
 
-        private boolean skipBlankAfterAssign = false;
+        private boolean skipBlankAfterAssign;
         
 
-        private IHierarchKeyFormatter hierarchKeyFormatter = new StandardIHierarchKeyFormatter();
+        private IHierarchKeyFormatter hierarchKeyFormatter = DEFAULT_HIERARCH_FORMATTER;
 
+        private FitsSettings() {
+            useAsciiTables = DEFAULT_USE_ASCII_TABLES;
+
+            // MBT (28-JUL-2017): change default from false to true.
+            // This is required for HIERARCH-based wide fits processing
+            // (see uk.ac.starlink.fits.WideFits).  If that gets backed out of,
+            // this could be set back to its factory setting (false).
+            useHierarch = DEFAULT_USE_HIERARCH;
+            
+            checkAsciiStrings = DEFAULT_CHECK_ASCII_STRINGS;
+            allowTerminalJunk = DEFAULT_ALLOW_TERMINAL_JUNK;
+            allowHeaderRepairs = DEFAULT_ALLOW_HEADER_REPAIRS;
+            longStringsEnabled = DEFAULT_LONG_STRINGS_ENABLED;
+            skipBlankAfterAssign = DEFAULT_SKIP_BLANK_AFTER_ASSIGN;
+            hierarchKeyFormatter = DEFAULT_HIERARCH_FORMATTER;
+            hierarchKeyFormatter.setCaseSensitive(DEFAULT_CASE_SENSITIVE_HIERARCH);
+        }
+        
         @Override
         protected FitsSettings clone() {
             try { 
@@ -332,6 +365,24 @@ public final class FitsFactory {
     }
 
     // CHECKSTYLE:ON
+    
+    /**
+     * Restores all settings to their default values.
+     * 
+     */
+    public static void setDefaults() {
+        FitsSettings s = current();
+        s.allowHeaderRepairs = DEFAULT_ALLOW_HEADER_REPAIRS;
+        s.allowTerminalJunk = DEFAULT_ALLOW_TERMINAL_JUNK;
+        s.checkAsciiStrings = DEFAULT_CHECK_ASCII_STRINGS;
+        s.longStringsEnabled = DEFAULT_LONG_STRINGS_ENABLED;
+        s.skipBlankAfterAssign = DEFAULT_SKIP_BLANK_AFTER_ASSIGN;
+        s.useAsciiTables = DEFAULT_USE_ASCII_TABLES;
+        s.useHierarch = DEFAULT_USE_HIERARCH;        
+        s.hierarchKeyFormatter = DEFAULT_HIERARCH_FORMATTER;
+        s.hierarchKeyFormatter.setCaseSensitive(DEFAULT_CASE_SENSITIVE_HIERARCH);
+    }
+    
 
     /**
      * Do we allow junk after a valid FITS file?

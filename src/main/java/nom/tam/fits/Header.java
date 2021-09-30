@@ -971,6 +971,8 @@ public class Header implements FitsElement {
         return (int) getLongValue(key, dft);
     }
 
+    
+  
     /**
      * Get the n'th key in the header.
      *
@@ -1043,6 +1045,66 @@ public class Header implements FitsElement {
         return fcard.getValue(Long.class, dft).longValue();
     }
 
+
+    /**
+     * Get the <CODE>long</CODE> value associated with the given key, for
+     * a hexadecimal representation in the header.
+     *
+     * @param key
+     *            The header key.
+     * @return The associated value or 0 if not found.
+     */
+    public long getHexValue(IFitsHeader key) {
+        return getHexValue(key.key());
+    }
+
+    /**
+     * Get the <CODE>long</CODE> value associated with the given key, for
+     * a hexadecimal representation in the header.
+     *
+     * @param key
+     *            The header key.
+     * @param dft
+     *            The default value to be returned if the key cannot be found.
+     * @return the associated value.
+     */
+    public long getHexValue(IFitsHeader key, long dft) {
+        return getHexValue(key.key(), dft);
+    }
+
+    /**
+     * Get the <CODE>long</CODE> value associated with the given key, for
+     * a hexadecimal representation in the header.
+     *
+     * @param key
+     *            The header key.
+     * @return The associated value or 0 if not found.
+     */
+    public long getHexValue(String key) {
+        return getHexValue(key, 0L);
+    }
+
+    /**
+     * Get the <CODE>long</CODE> value associated with the given key, for
+     * a hexadecimal representation in the header.
+     *
+     * @param key
+     *            The header key.
+     * @param dft
+     *            The default value to be returned if the key cannot be found.
+     * @return the associated value.
+     */
+    public long getHexValue(String key, long dft) {
+        HeaderCard fcard = findCard(key);
+        if (fcard == null) {
+            return dft;
+        }
+        return fcard.getHexValue();
+    }
+
+    
+    
+    
     /**
      * @return the number of cards in the header
      */
@@ -1121,13 +1183,13 @@ public class Header implements FitsElement {
      * Add a line to the header using the COMMENT style, i.e., no '=' in column
      * 9.
      *
-     * @param header
-     *            The comment style header.
+     * @param key
+     *            The comment style header keyword.
      * @param value
      *            A string to follow the header.
      */
-    public void insertCommentStyle(String header, String value) {
-        cursor().add(HeaderCard.saveNewHeaderCard(header, value, false));
+    public void insertCommentStyle(String key, String value) {
+        cursor().add(HeaderCard.saveNewHeaderCard(key, value, false));
     }
 
     /**

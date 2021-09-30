@@ -47,12 +47,23 @@ public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
     private boolean allowMixedCase;
 
     public BlanksDotHierarchKeyFormatter(int count) {
+        if (count < 1) {
+            throw new IllegalArgumentException("HIERARCH needs at least one blank space after it."); 
+        }
+        
         StringBuilder builder = new StringBuilder();
         for (int index = 0; index < count; index++) {
             builder.append(' ');
         }
         blanks = builder.toString();
     }
+    
+    @Override
+    public int getExtraSpaceRequired(String key) {
+        // The number of blank spaces minus the one standard, and the one extra space before '='...
+        return blanks.length();
+    }
+    
 
     @Override
     public void append(String key, FitsLineAppender buffer) {

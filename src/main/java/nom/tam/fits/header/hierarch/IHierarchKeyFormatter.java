@@ -38,6 +38,15 @@ public interface IHierarchKeyFormatter {
     void append(String key, FitsLineAppender buffer);
 
     /**
+     * Returns the extra spaces required when printing the key, relative to a
+     * space separated components following "HIERARCH " and the "= " prior to
+     * the value.
+     * 
+     * @return
+     */
+    int getExtraSpaceRequired(String key);
+
+    /**
      * Sets whether case-sensitive (mixed-case) HIERARCH keywords are supported.
      * 
      * @param value

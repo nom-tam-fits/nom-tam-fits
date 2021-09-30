@@ -32,7 +32,6 @@ package nom.tam.fits;
  */
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Date;
 
@@ -206,21 +205,6 @@ public class HeaderCardBuilder {
                 this.card.setValue(newValue);
             }
         }
-        return this;
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(float newValue) throws HeaderCardException {
-        value(new BigDecimal(newValue, MathContext.DECIMAL32));
         return this;
     }
 
