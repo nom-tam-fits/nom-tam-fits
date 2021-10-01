@@ -1,5 +1,31 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
+	  <release version="1.15.3-SNAPSHOT" date="2021-09-24" description="Maintenance release with bug fixes.">	
+			<action type="add" dev="attipaci" issue="153">
+				Fix-up build, no Logger warnings on multiple CONTINUE keywords, tolerant HIERARCH parsing, and other small fixes.
+			</action>
+			<action type="add" dev="FinitePhaseSpace" issue="138">
+				FitsDate equals/hashCode/compareTo
+			</action>
+			<action type="add" dev="Zlika" issue="135">
+				Fix management of sub-seconds in FitsDate
+			</action>
+			<action type="add" dev="olebole" issue="130">
+				Fix serious FITS character handling bug
+			</action>
+			<action type="add" dev="olebole" issue="125">
+				Set FitsFactory.useHierarch to true
+			</action>
+			<action type="add" dev="wcleveland" issue="123">
+				Minor fixes prior to release
+			</action>
+			<action type="add" dev="attipaci" issue="121">
+				Improved Header card ordering 
+			</action>
+			<action type="add" dev="wcleveland" issue="120">
+				Added Scientific Notation 
+			</action>			
+	  </release>
 		<release version="1.15.2" date="2017-04-28" description="Maintenance release with bug fixes.">
 			<action type="update">
 				Maintenance release with bug fixes.
