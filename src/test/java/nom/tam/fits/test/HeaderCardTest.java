@@ -380,15 +380,6 @@ public class HeaderCardTest {
         assertEquals(80, hc.toString().length());
     }
 
-    @Test
-    public void testBigDecimal5() throws Exception {
-        HeaderCard hc = new HeaderCard("TEST", true, "dummy");
-        assertEquals(new BigDecimal("123.0"), hc.getValue(BigDecimal.class, new BigDecimal("123.0")));
-        assertEquals(new Double("123.0"), hc.getValue(Double.class, new Double("123.0")));
-        assertNull(hc.getValue(Double.class, null));
-        assertEquals(80, hc.toString().length());
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public void testOther() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", new BigDecimal("123.0"), "dummy");

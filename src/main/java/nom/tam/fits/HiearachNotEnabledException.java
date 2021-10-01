@@ -1,5 +1,3 @@
-package nom.tam.fits;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -31,23 +29,36 @@ package nom.tam.fits;
  * #L%
  */
 
+package nom.tam.fits;
+
 /**
- * This exception is thrown when an EOF is detected in the middle of an HDU.
+ * Thrown when an operation requires support for HIERARCH style long keywords
+ * but the library does not have the hierarch support enabled at present.
  * 
- * @see FitsFactory#setAllowTerminalJunk(boolean)
+ * @author Attila Kovacs
+ * @see FitsFactory#setUseHierarch(boolean)
  */
-public class TruncatedFileException extends FitsException {
+public class HiearachNotEnabledException extends IllegalStateException {
 
     /**
-     * serial version UID.
+     * 
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 3178787676158092095L;
 
-    public TruncatedFileException(String msg) {
-        super(msg);
+    private static String getMessage(String key) {
+        return "Hierarch support is not enabled for [" + key + "]" + "\n\n --> Try FitsFactory.setUseHierarch(true).\n";
     }
 
-    public TruncatedFileException(String msg, Exception cause) {
-        super(msg, cause);
+    public HiearachNotEnabledException(String key, Throwable cause) {
+        super(getMessage(key), cause);
     }
+
+    public HiearachNotEnabledException(String key) {
+        super(getMessage(key));
+    }
+
+    public HiearachNotEnabledException(Throwable cause) {
+        super(cause);
+    }
+
 }

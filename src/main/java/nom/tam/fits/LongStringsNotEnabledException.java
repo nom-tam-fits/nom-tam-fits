@@ -1,5 +1,3 @@
-package nom.tam.fits;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -31,23 +29,36 @@ package nom.tam.fits;
  * #L%
  */
 
+package nom.tam.fits;
+
 /**
- * This exception is thrown when an EOF is detected in the middle of an HDU.
+ * Thrown when an operation requires support for long header strings, but the
+ * library does not have long string support enabled at present.
  * 
- * @see FitsFactory#setAllowTerminalJunk(boolean)
+ * @author Attila Kovacs
+ * @see FitsFactory#setLongStringsEnabled(boolean)
  */
-public class TruncatedFileException extends FitsException {
+public class LongStringsNotEnabledException extends IllegalStateException {
 
     /**
-     * serial version UID.
+     * 
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -6255591057669953444L;
 
-    public TruncatedFileException(String msg) {
-        super(msg);
+    private static String getMessage(String key) {
+        return "Long string support is not enabled for [" + key + "]" + "\n\n --> Try FitsFactory.setLongStringsEnabled(true).\n";
     }
 
-    public TruncatedFileException(String msg, Exception cause) {
-        super(msg, cause);
+    public LongStringsNotEnabledException(String key, Throwable cause) {
+        super(getMessage(key), cause);
     }
+
+    public LongStringsNotEnabledException(String key) {
+        super(getMessage(key));
+    }
+
+    public LongStringsNotEnabledException(Throwable cause) {
+        super(cause);
+    }
+
 }
