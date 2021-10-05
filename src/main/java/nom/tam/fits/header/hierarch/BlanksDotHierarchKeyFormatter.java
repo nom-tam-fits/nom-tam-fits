@@ -2,6 +2,8 @@ package nom.tam.fits.header.hierarch;
 
 import java.util.Locale;
 
+import nom.tam.fits.utilities.FitsLineAppender;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -33,14 +35,9 @@ import java.util.Locale;
  * #L%
  */
 
-import nom.tam.fits.header.NonStandard;
-import nom.tam.fits.utilities.FitsLineAppender;
+import static nom.tam.fits.header.NonStandard.HIERARCH;
 
 public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
-
-    private static final String HIERARCH_TEXT = NonStandard.HIERARCH.key();
-
-    private static final int HIERARCH_KEY_OFFSET = HIERARCH_TEXT.length() + 1;
 
     private final String blanks;
     
@@ -59,6 +56,11 @@ public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
     }
     
     @Override
+    public void append(String key, FitsLineAppender buffer) {
+        buffer.append(toHeaderString(key));
+    }
+    
+    @Override
     public int getExtraSpaceRequired(String key) {
         // The number of blank spaces minus the one standard, and the one extra space before '='...
         return blanks.length();
@@ -66,16 +68,13 @@ public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
     
 
     @Override
-    public void append(String key, FitsLineAppender buffer) {
+    public String toHeaderString(String key) {
         if (!allowMixedCase) {
             key = key.toUpperCase(Locale.US);
         }
         
-        buffer.append(HIERARCH_TEXT);
-        buffer.append(blanks);
-        buffer.append(key, HIERARCH_KEY_OFFSET, key.length());  
         // cfitsio specifies a required space before the '=', so let's play nice with it.
-        buffer.append(' ');
+        return HIERARCH.key() + blanks + key.substring(HIERARCH.key().length() + 1) + " ";
     }
     
     @Override

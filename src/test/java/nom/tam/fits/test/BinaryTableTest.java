@@ -482,7 +482,7 @@ public class BinaryTableTest {
             bhdu.setColumnMeta(i, "TX", i + 1, null, true);
             bhdu.setColumnMeta(i, "TY", 2. * (i + 1), null, true);
             bhdu.setColumnMeta(i, "TZ", 3. * (i + 1), i + 1, null, true);
-            bhdu.setColumnMeta(i, "TSCI", 3. * (i + 1), i + 1, false, null, true);
+            bhdu.setColumnMeta(i, "TSCI", 3. * (i + 1), i + 1, null, true);
         }
         bhdu.setCurrentColumn(1);
         Assert.assertEquals(-1, bhdu.findColumn("XXX"));
@@ -514,23 +514,23 @@ public class BinaryTableTest {
             if (hc.getKey().startsWith("TDIM")) {
                 hc = hdr.nextCard();
             }
+            
+            
             assertEquals("M" + i + "C", "TUNIT" + (i + 1), hc.getKey());
             assertEquals(hc.getValue(),String.format("UNIT%d", i+1));
             hc = hdr.nextCard();
             assertEquals("M" + i + "D", "TX" + (i + 1), hc.getKey());
-            assertEquals(Integer.toString(i + 1), hc.getValue());
+            assertEquals(i + 1, (int) hc.getValue(Integer.class, null));
             hc = hdr.nextCard();
             assertEquals("M" + i + "E", "TY" + (i + 1), hc.getKey());
-            assertEquals(Double.toString(2. * (i + 1)), hc.getValue());
+            assertEquals(2. * (i + 1), hc.getValue(Double.class, null), 1e-12);
             hc = hdr.nextCard();
             assertEquals("M" + i + "F", "TZ" + (i + 1), hc.getKey());
-            assertEquals(Double.toString(3. * (i + 1)), hc.getValue());
+            assertEquals(3. * (i + 1), hc.getValue(Double.class, null), 1e-12);
             hc = hdr.nextCard();
             assertEquals("M" + i + "F", "TSCI" + (i + 1), hc.getKey());
             
-            DecimalFormat df = new DecimalFormat("0.###E0");
-            
-            assertEquals("3x" + (i + 1), df.format(3.0 * (i + 1)), hc.getValue());
+            assertEquals("3x" + (i + 1), 3.0 * (i + 1), hc.getValue(Double.class, 0.0).doubleValue(), 1e-12);
         }
     }
 

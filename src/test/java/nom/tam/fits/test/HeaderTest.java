@@ -268,11 +268,11 @@ public class HeaderTest {
                 SafeClose.close(bf);
             }
             String val = hdr.getStringValue("LONG1");
-            assertEquals("LongT1", val, lng);
+            assertEquals("LongT1", lng, val);
             val = hdr.getStringValue("LONG2");
-            assertEquals("LongT2", val, "xx'yy'zz" + lng);
-            assertEquals("APOS1", hdr.getStringValue("APOS1").length(), 70);
-            assertEquals("APOS2", hdr.getStringValue("APOS2").length(), 71);
+            assertEquals("LongT2",  "xx'yy'zz" + lng, val);
+            assertEquals("APOS1", 70, hdr.getStringValue("APOS1").length());
+            assertEquals("APOS2", 71, hdr.getStringValue("APOS2").length());
 
             // long3 should not have a comment!
             assertNull(hdr.findCard("LONG3").getComment());
@@ -293,25 +293,28 @@ public class HeaderTest {
                 val = hdr.getStringValue("LONG1");
                 assertEquals("LongT5", val, lng);
                 val = hdr.getStringValue("LONG2");
-                assertEquals("LongT6", val, "xx'yy'zz" + lng);
-                assertEquals("longamp2", hdr.getStringValue("LONGISH"), lng + "&");
-                assertEquals("APOS1b", hdr.getStringValue("APOS1").length(), 70);
-                assertEquals("APOS2b", hdr.getStringValue("APOS2").length(), 71);
-                assertEquals("APOS2c", hdr.getStringValue("APOS2"), sixty + " ''''''''''");
-                assertEquals("longamp1b", hdr.getStringValue("SHORT"), "A STRING ENDING IN A &");
-                assertEquals("longamp2b", hdr.getStringValue("LONGISH"), lng + "&");
+                assertEquals("LongT6", "xx'yy'zz" + lng, val);
+                assertEquals("longamp2", lng + "&", hdr.getStringValue("LONGISH"));
+                assertEquals("APOS1b", 70, hdr.getStringValue("APOS1").length());
+                assertEquals("APOS2b", 71, hdr.getStringValue("APOS2").length());
+                assertEquals("APOS2c",  sixty + " ''''''''''", hdr.getStringValue("APOS2"));
+                assertEquals("longamp1b", "A STRING ENDING IN A &", hdr.getStringValue("SHORT"));
+                assertEquals("longamp2b", lng + "&", hdr.getStringValue("LONGISH"));
 
                 int cnt = hdr.getNumberOfCards();
                 int pcnt = hdr.getNumberOfPhysicalCards();
-                // This should remove all three cards associated with
+                // This should remove all records associated with
                 // LONG1
+                int nd = hdr.findCard("LONG1").cardSize();
                 hdr.removeCard("LONG1");
                 assertEquals("deltest", cnt - 1, hdr.getNumberOfCards());
-                assertEquals("deltest", pcnt - 4, hdr.getNumberOfPhysicalCards());
+                assertEquals("deltest", pcnt - nd, hdr.getNumberOfPhysicalCards());
 
+                nd += hdr.findCard("LONG2").cardSize();
                 hdr.removeCard("LONG2");
-                assertEquals("deltest2", pcnt - 8, hdr.getNumberOfPhysicalCards());
                 assertEquals("deltest2", cnt - 2, hdr.getNumberOfCards());
+                assertEquals("deltest2", pcnt - 9, hdr.getNumberOfPhysicalCards());
+   
             } finally {
                 SafeClose.close(bf);
             }
@@ -328,7 +331,7 @@ public class HeaderTest {
                 "CONTINUE  'FITS header.' / This is another optional comment.                    ");
 
         assertEquals("This is a very long string keyword value that is continued over 3 keywords in the FITS header.", card.getValue());
-        assertEquals("Optional Comment This is another optional comment.", card.getComment());
+        assertEquals("Optional Comment              This is another optional comment.", card.getComment());
 
         card = HeaderCard.create("STRKEY  = 'This is a very long string keyword&'  / Optional Comment             " + //
                 "CONTINUE  ' value that is continued over 2 keywords        &  '                 " + //
@@ -342,8 +345,7 @@ public class HeaderTest {
                 "long longer longest comment");
         assertEquals("LONGSTR = 'This is very very very very very very very very very very very very&'" + //
                 "CONTINUE  ' very very very very very very very very very very very very very v&'" + //
-                "CONTINUE  'ery very long string value of FITS &' / long longer longest comment  " + //
-                "CONTINUE  'card'                                                                ", card.toString());
+                "CONTINUE  'ery very long string value of FITS card' /long longer longest comment", card.toString());
 
         FitsFactory.setLongStringsEnabled(false);
     }
@@ -643,9 +645,9 @@ public class HeaderTest {
         try {
             f = new Fits("target/hx2.fits");
             HeaderCard c1 = f.getHDU(0).getHeader().findCard(SIMPLE.key());
-            assertEquals("tuhc1", c1.getComment(), null);
+            assertEquals("tuhc1", null, c1.getComment());
             c1 = f.getHDU(0).getHeader().findCard(BITPIX.key());
-            assertEquals("tuhc2", c1.getComment(), "A byte tiledImageOperation");
+            assertEquals("tuhc2", "A byte tiledImageOperation", c1.getComment());
         } finally {
             SafeClose.close(f);
         }
@@ -946,7 +948,7 @@ public class HeaderTest {
                 f = new Fits();
                 BasicHDU<?> primaryHdu = FitsFactory.hduFactory(new float[0]);
 
-                primaryHdu.getHeader().addValue("HIERARCH.TEST.THIS.LONG.HEADER", "aaaaaaaabbbbbbbbbcccccccccccdddddddddddeeeeeeeeeee", "");
+                primaryHdu.getHeader().addValue("HIERARCH.TEST.THIS.LONG.HEADER", "aaaaaaaabbbbbbbbbcccccccccccdddddddddddeeeeeeeeeee", null);
 
                 for (int index = 1; index < 60; index++) {
                     StringBuilder buildder = new StringBuilder();
@@ -1167,78 +1169,35 @@ public class HeaderTest {
 
     }
 
-    @Test
-    public void testScientificNotation() throws Exception {
-        Header hdr = new Header();
-
-        // Add new cards
-        hdr.addExpValue("SCI_D", 12345.6789, 4, true, "SciNotation with D");
-        hdr.addExpValue("BIGDEC", new BigDecimal("12345678901234567890.1234567890"), 10, true, "Big Desc Sci Note");
-        hdr.addExpValue( "SCI_E", 1234.12f, 2,"SciNotation with E");
-        hdr.addExpValue("BIGDEC2", new BigDecimal("-12345678901234567890.1234567890"), 8,"Another Big Desc Sci Note");
-
-        assertEquals("1.2346D4", hdr.findCard("SCI_D").getValue());
-        assertEquals(12346.0f, hdr.getFloatValue("SCI_D"), 0.00001f);
-        assertEquals("1.2345678901D19",hdr.findCard("BIGDEC").getValue());
-        assertEquals(new BigDecimal("1.2345678901E19"), hdr.getBigDecimalValue("BIGDEC"));
-        assertEquals("1.23E3", hdr.findCard("SCI_E").getValue());
-        assertEquals(1230.0, hdr.getDoubleValue("SCI_E"), 0.00001);
-        assertEquals("-1.23456789E19",hdr.findCard("BIGDEC2").getValue());
-        assertEquals(new BigDecimal("-1.23456789E+19"), hdr.getBigDecimalValue("BIGDEC2"));
-
-        // Update the cards
-        hdr.findCard("SCI_E").setExpValue(2468.123f, 1, false);
-        assertEquals("2.5E3", hdr.findCard("SCI_E").getValue());
-        assertEquals(2500.0f, hdr.getFloatValue("SCI_E"), 0.00001f);
-
-        hdr.findCard("SCI_D").setExpValue(13456.76344, 3, true);
-        assertEquals("1.346D4", hdr.findCard("SCI_D").getValue());
-        assertEquals(13460.0, hdr.getDoubleValue("SCI_D"), 0.00001);
-
-        hdr.findCard("SCI_D").setExpValue(13456.76344, 3);
-        assertEquals("1.346E4", hdr.findCard("SCI_D").getValue());
-        assertEquals(13460.0, hdr.getDoubleValue("SCI_D"), 0.00001);
-
-        hdr.findCard("BIGDEC").setExpValue(new BigDecimal("0.0000707703"), 4, true);
-        assertEquals("7.077D-5", hdr.findCard("BIGDEC").getValue());
-        assertEquals(new BigDecimal("0.00007077"), hdr.getBigDecimalValue("BIGDEC"));
-
-        hdr.findCard("BIGDEC2").setExpValue(new BigDecimal("-0.0000707703"), 4);
-        assertEquals("-7.077E-5", hdr.findCard("BIGDEC2").getValue());
-        assertEquals(new BigDecimal("-0.00007077"), hdr.getBigDecimalValue("BIGDEC2"));
-
-        hdr.findCard("BIGDEC").setExpValue(new BigDecimal("0.0000707703"), 4, true);
-        assertEquals("7.077D-5", hdr.findCard("BIGDEC").getValue());
-        assertEquals(new BigDecimal("0.00007077"), hdr.getBigDecimalValue("BIGDEC"));
-
-        hdr.findCard("BIGDEC2").setExpValue(new BigDecimal("-0.0000707703"), 4);
-        assertEquals("-7.077E-5", hdr.findCard("BIGDEC2").getValue());
-        assertEquals(new BigDecimal("-0.00007077"), hdr.getBigDecimalValue("BIGDEC2"));
-    }
 
     @Test
     public void testFixedDecimal() throws Exception {
         Header hdr = new Header();
 
         // Add new cards
-        hdr.addValue("FIX_D", 1234.5678945, 4, "Fixed Double");
+        hdr.addValue("FIX_D", 1234.5678945, "Fixed Double");
+        hdr.addValue("FIX_F", 1234.56f, "Fixed Float");
         hdr.addValue("BIGDEC", new BigDecimal("12345678901234567890.1234567890"), 8, "Fixed Big Decimal");
 
-        assertEquals("1234.5679", hdr.findCard("FIX_D").getValue());
-        assertEquals(1234.5678945, hdr.getDoubleValue("FIX_D"), 1e-4);
+        assertEquals(1234.5678945, hdr.findCard("FIX_D").getValue(Double.class, null), 1e-10);
+        assertEquals(1234.5678945, hdr.getDoubleValue("FIX_D"), 1e-12);
 
-        assertEquals("12345678901234567890.12345679",hdr.findCard("BIGDEC").getValue());
-        assertEquals(new BigDecimal("12345678901234567890.12345679"), hdr.getBigDecimalValue("BIGDEC"));
+        assertEquals("1.23456789E19", hdr.findCard("BIGDEC").getValue());
+        assertEquals(1.23456789E19, hdr.getDoubleValue("BIGDEC"), 1.1e11);
 
 
         // Update the cards
         hdr.findCard("FIX_D").setValue(1345.676344, 3);
-        assertEquals("1345.676", hdr.findCard("FIX_D").getValue());
-        assertEquals(1345.676, hdr.getDoubleValue("FIX_D"), 1.1e-3);
+        assertEquals(1346.0, hdr.getDoubleValue("FIX_D"), 1e-6);
 
         hdr.findCard("BIGDEC").setValue(new BigDecimal("0.00707703"), 4);
-        assertEquals("0.0071", hdr.findCard("BIGDEC").getValue());
-        assertEquals(new BigDecimal("0.0071"), hdr.getBigDecimalValue("BIGDEC"));
+        assertEquals(new BigDecimal("0.007077"), hdr.getBigDecimalValue("BIGDEC"));
+        
+        hdr.findCard("FIX_F").setValue(2468.123f, 4);
+        assertEquals(2468.1f, hdr.getFloatValue("FIX_F"), 0.01f);
+
+        hdr.findCard("FIX_D").setValue(13456.76344, 3);
+        assertEquals(13460.0, hdr.getDoubleValue("FIX_D"), 1e-6);
     }
 
 }

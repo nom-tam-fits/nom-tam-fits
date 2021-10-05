@@ -42,4 +42,8 @@ public class HeaderCardException extends FitsException {
     public HeaderCardException(String s) {
         super(s);
     }
+
+    public HeaderCardException(String s, Throwable reason) {
+        super(s, reason);
+    }
 }

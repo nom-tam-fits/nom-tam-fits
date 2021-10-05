@@ -63,6 +63,8 @@ public final class FitsFactory {
     private static final boolean DEFAULT_ALLOW_TERMINAL_JUNK = false;
     
     private static final boolean DEFAULT_ALLOW_HEADER_REPAIRS = false;
+
+    private static final boolean DEFAULT_ALLOW_EXPONENT_D = false;
     
     private static final boolean DEFAULT_SKIP_BLANK_AFTER_ASSIGN = false;
     
@@ -78,6 +80,8 @@ public final class FitsFactory {
         private boolean useHierarch;
         
         private boolean checkAsciiStrings;
+        
+        private boolean allowExponentD;
 
         private boolean allowTerminalJunk;
 
@@ -100,6 +104,7 @@ public final class FitsFactory {
             useHierarch = DEFAULT_USE_HIERARCH;
             
             checkAsciiStrings = DEFAULT_CHECK_ASCII_STRINGS;
+            allowExponentD = DEFAULT_ALLOW_EXPONENT_D;
             allowTerminalJunk = DEFAULT_ALLOW_TERMINAL_JUNK;
             allowHeaderRepairs = DEFAULT_ALLOW_HEADER_REPAIRS;
             longStringsEnabled = DEFAULT_LONG_STRINGS_ENABLED;
@@ -125,7 +130,9 @@ public final class FitsFactory {
             return this.hierarchKeyFormatter;
         }
         
-        
+        protected boolean isAllowExponentD() {
+            return this.allowExponentD;
+        }
 
         protected boolean isAllowTerminalJunk() {
             return this.allowTerminalJunk;
@@ -195,6 +202,16 @@ public final class FitsFactory {
             throw new FitsException("Unrecognizable header in dataFactory");
         }
 
+    }
+    
+
+    /**
+     * @return Do we allow automatic header repairs, like missing end quotes?
+     * 
+     * @since 1.16
+     */
+    public static boolean isAllowExponentD() {
+        return current().isAllowExponentD();
     }
 
     /**
@@ -369,9 +386,11 @@ public final class FitsFactory {
     /**
      * Restores all settings to their default values.
      * 
+     * @since 1.16
      */
     public static void setDefaults() {
         FitsSettings s = current();
+        s.allowExponentD = DEFAULT_ALLOW_EXPONENT_D;
         s.allowHeaderRepairs = DEFAULT_ALLOW_HEADER_REPAIRS;
         s.allowTerminalJunk = DEFAULT_ALLOW_TERMINAL_JUNK;
         s.checkAsciiStrings = DEFAULT_CHECK_ASCII_STRINGS;
@@ -383,6 +402,18 @@ public final class FitsFactory {
         s.hierarchKeyFormatter.setCaseSensitive(DEFAULT_CASE_SENSITIVE_HIERARCH);
     }
     
+    /**
+     * Do we allow 'D' instead of E to mark the exponent for a floating point
+     * value with precision beyond that of a 32-bit float?
+     *
+     * @param allowExponentD    if <code>true</code> D will be used instead of E to indicate
+     *                          the exponent of a decimal with more precision than a 32-bit float.
+     *                          
+     * @since 1.16
+     */
+    public static void setAllowExponentD(boolean allowExponentD) {
+        current().allowExponentD = allowExponentD;
+    }
 
     /**
      * Do we allow junk after a valid FITS file?

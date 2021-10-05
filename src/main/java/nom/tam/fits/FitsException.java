@@ -46,7 +46,7 @@ public class FitsException extends Exception {
         super(msg);
     }
 
-    public FitsException(String msg, Exception reason) {
+    public FitsException(String msg, Throwable reason) {
         super(msg, reason);
     }
 }

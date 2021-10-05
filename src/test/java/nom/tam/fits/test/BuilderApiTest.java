@@ -107,12 +107,12 @@ public class BuilderApiTest {
                 .card(DATAMIN).value(100)//
                 .card(DATAMAX).value(200)//
                 .card(Standard.BSCALE).value(300.0)//
-                .scale(2)//
+                .precision(4)//
                 .card(TZEROn.n(5)).value(50.55)//
-                .card(Standard.BZERO).value(500.055)//
+                .card(Standard.BZERO).value(500.055f)//
                 .card(Standard.EQUINOX).value(new BigDecimal("500.055"))//
-                .card(TZEROn.n(3)).value(600.055)//
-                .noScale()//
+                .card(TZEROn.n(3)).value(600.055f)//
+                .flexiblePrecision()//
                 .card(TZEROn.n(1)).value(100.99999d)//
                 .card(TZEROn.n(2)).value(new BigDecimal("100.99999"))//
                 .card(TZEROn.n(4)).value(101.999)//
@@ -128,11 +128,11 @@ public class BuilderApiTest {
         Assert.assertEquals(100, header.getIntValue(DATAMIN));
         Assert.assertEquals(200.0, header.getFloatValue(DATAMAX), 0.000001);
         Assert.assertEquals(300.0, header.getDoubleValue(Standard.BSCALE), 0.000001);
-        Assert.assertEquals(500.06, header.getDoubleValue(Standard.BZERO), 0.000001);
+        Assert.assertEquals(500.06f, header.getFloatValue(Standard.BZERO), 0.011f);
         Assert.assertEquals(500.06, header.getDoubleValue(Standard.EQUINOX), 0.000001);
         Assert.assertEquals(100.99999, header.getDoubleValue(TZEROn.n(1)), 0.000001);
         Assert.assertEquals(100.99999, header.getDoubleValue(TZEROn.n(2)), 0.000001);
-        Assert.assertEquals(600.06, header.getFloatValue(TZEROn.n(3)), 0.011);
+        Assert.assertEquals(600.06f, header.getFloatValue(TZEROn.n(3)), 0.011f);
         Assert.assertEquals(101.999, header.getFloatValue(TZEROn.n(4)), 0.000001);
         Assert.assertEquals(false, header.getBooleanValue(AUTHOR));
         Assert.assertEquals(50.55, header.getFloatValue(TZEROn.n(5)), 0.000001);

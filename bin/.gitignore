@@ -1,2 +1,6 @@
 /bin/
+/.classpath
+/.gitignore
+/.project
 /nom/
+/CommentCard.class

@@ -248,37 +248,7 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      */
-    public void addValue(IFitsHeader key, double val) throws HeaderCardException {
-        addValue(key.key(), val, key.comment());
-    }
-
-    /**
-     * Add or replace a key with the given long value and comment. Note that
-     * int's will be promoted to long's.
-     *
-     * @param key
-     *            The header key.
-     * @param val
-     *            The long value.
-     * @throws HeaderCardException
-     *             If the parameters cannot build a valid FITS card.
-     */
-    public void addValue(IFitsHeader key, int val) throws HeaderCardException {
-        addValue(key.key(), val, key.comment());
-    }
-
-    /**
-     * Add or replace a key with the given long value and comment. Note that
-     * int's will be promoted to long's.
-     *
-     * @param key
-     *            The header key.
-     * @param val
-     *            The long value.
-     * @throws HeaderCardException
-     *             If the parameters cannot build a valid FITS card.
-     */
-    public void addValue(IFitsHeader key, long val) throws HeaderCardException {
+    public void addValue(IFitsHeader key, Number val) throws HeaderCardException {
         addValue(key.key(), val, key.comment());
     }
 
@@ -296,102 +266,7 @@ public class Header implements FitsElement {
         addValue(key.key(), val, key.comment());
     }
 
-    /**
-     * Add or replace a key with the given bigdecimal value and comment. Note
-     * that float values will be promoted to doubles.
-     *
-     * @param key
-     *            The header key.
-     * @param val
-     *            The bigDecimal value.
-     * @param comment
-     *            A comment to append to the card.
-     * @throws HeaderCardException
-     *             If the parameters cannot build a valid FITS card.
-     */
-    public void addValue(String key, BigDecimal val, String comment) throws HeaderCardException {
-        addLine(new HeaderCard(key, val, comment));
-    }
-
-    /**
-     * Add or replace a key with the given bigdecimal value and comment. Note
-     * that float values will be promoted to doubles.
-     *
-     * @param key
-     *            The header key.
-     * @param val
-     *            The bigDecimal value.
-     * @param precision
-     *            The fixed number of decimal places to show.
-     * @param comment
-     *            A comment to append to the card.
-     * @throws HeaderCardException
-     *             If the parameters cannot build a valid FITS card.
-     */
-    public void addValue(String key, BigDecimal val, int precision, String comment) throws HeaderCardException {
-        addLine(new HeaderCard(key, val, precision, comment));
-    }
-
-    /**
-     * Add or replace a key with the given bigdecimal value and comment. Note
-     * that float values will be promoted to doubles.
-     *
-     * @param key
-     *            The header key.
-     * @param val
-     *            The bigDecimal value.
-     * @param precision
-     *            The fixed number of decimal places to show.
-     * @param useD
-     *            Use the letter 'D' instead of 'E' in the notation. This was
-     *            traditionally used to indicate value has more precision than
-     *            can be represented by a single precision 32-bit floating
-     *            point.
-     * @param comment
-     *            A comment to append to the card.
-     * @throws HeaderCardException
-     *             If the parameters cannot build a valid FITS card.
-     */
-    public void addExpValue(String key, BigDecimal val, int precision, boolean useD, String comment) throws HeaderCardException {
-        addLine(new HeaderCard(key, val, precision, useD, comment));
-    }
-
-    /**
-     * Add or replace a key with the given bigdecimal value and comment. Note
-     * that float values will be promoted to doubles.
-     *
-     * @param key
-     *            The header key.
-     * @param val
-     *            The bigDecimal value.
-     * @param precision
-     *            The fixed number of decimal places to show.
-     * @param comment
-     *            A comment to append to the card.
-     * @throws HeaderCardException
-     *             If the parameters cannot build a valid FITS card.
-     */
-    public void addExpValue(String key, BigDecimal val, int precision, String comment) throws HeaderCardException {
-        addLine(new HeaderCard(key, val, precision, false, comment));
-    }
-
-    /**
-     * Add or replace a key with the given BigInteger value and comment. Note
-     * that float values will be promoted to doubles.
-     *
-     * @param key
-     *            The header key.
-     * @param val
-     *            The BigInteger value.
-     * @param comment
-     *            A comment to append to the card.
-     * @throws HeaderCardException
-     *             If the parameters cannot build a valid FITS card.
-     */
-    public void addValue(String key, BigInteger val, String comment) throws HeaderCardException {
-        addLine(new HeaderCard(key, val, comment));
-    }
-
+   
     /**
      * Add or replace a key with the given boolean value and comment.
      *
@@ -408,6 +283,7 @@ public class Header implements FitsElement {
         addLine(new HeaderCard(key, val, comment));
     }
 
+    
     /**
      * Add or replace a key with the given double value and comment. Note that
      * float values will be promoted to doubles.
@@ -421,10 +297,11 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      */
-    public void addValue(String key, double val, String comment) throws HeaderCardException {
+    public void addValue(String key, Number val, String comment) throws HeaderCardException {
         addLine(new HeaderCard(key, val, comment));
     }
-
+    
+ 
     /**
      * Add or replace a key with the given double value and comment. Note that
      * float values will be promoted to doubles.
@@ -440,71 +317,10 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      */
-    public void addValue(String key, double val, int precision, String comment) throws HeaderCardException {
+    public void addValue(String key, Number val, int precision, String comment) throws HeaderCardException {
         addLine(new HeaderCard(key, val, precision, comment));
     }
 
-    /**
-     * Add or replace a key with the given double value and comment. Note that
-     * float values will be promoted to doubles. This will be in scientific
-     * notation.
-     *
-     * @param key
-     *            The header key.
-     * @param val
-     *            The double value.
-     * @param precision
-     *            The fixed number of decimal places to show.
-     * @param useD
-     *            Use the letter 'D' instead of 'E' in the notation. This was
-     *            traditionally used to indicate value has more precision than
-     *            can be represented by a single precision 32-bit floating
-     *            point.
-     * @param comment
-     *            A comment to append to the card.
-     * @throws HeaderCardException
-     *             If the parameters cannot build a valid FITS card.
-     */
-    public void addExpValue(String key, double val, int precision, boolean useD, String comment) throws HeaderCardException {
-        addLine(new HeaderCard(key, val, precision, useD, comment));
-    }
-
-    /**
-     * Add or replace a key with the given double value and comment. Note that
-     * float values will be promoted to doubles. This will be in scientific
-     * notation using 'E' to indicated exponent.
-     *
-     * @param key
-     *            The header key.
-     * @param val
-     *            The double value.
-     * @param precision
-     *            The fixed number of decimal places to show.
-     * @param comment
-     *            A comment to append to the card.
-     * @throws HeaderCardException
-     *             If the parameters cannot build a valid FITS card.
-     */
-    public void addExpValue(String key, double val, int precision, String comment) throws HeaderCardException {
-        addLine(new HeaderCard(key, val, precision, false, comment));
-    }
-
-    /**
-     * Add or replace a key with the given long value and comment. Note that
-     * int's will be promoted to long's.
-     *
-     * @param key
-     *            The header key.
-     * @param val
-     *            The long value.
-     * @param comment
-     *            A comment to append to the card.
-     * @throws HeaderCardException
-     *             If the parameters cannot build a valid FITS card.
-     */
-    public void addValue(String key, long val, String comment) throws HeaderCardException {
-        addLine(new HeaderCard(key, val, comment));
-    }
 
     /**
      * Add or replace a key with the given string value and comment.
@@ -522,6 +338,32 @@ public class Header implements FitsElement {
         addLine(new HeaderCard(key, val, comment));
     }
 
+    
+    /**
+     * Adds a comment card (with COMMENT key) with the specified text.
+     * 
+     * @param text                      the text of the comment
+     * @throws HeaderCardException      If the text contains characters outside the 0x20 and 0x7E
+     * 
+     * @since 1.16
+     */
+    public void addComment(String text) throws HeaderCardException {
+        addLine(HeaderCard.createCommentCard(text));
+    }
+    
+    /**
+     * Adds a hisotry card (with HISTORY key) with the specified text.
+     * 
+     * @param text                      the text of the history entry
+     * @throws HeaderCardException      If the text contains characters outside the 0x20 and 0x7E
+     * 
+     * @since 1.16
+     */
+    public void addHistory(String text) throws HeaderCardException {
+        addLine(HeaderCard.createCommentCard(text));
+    }
+    
+    
     /**
      * get a builder for filling the header cards using the builder pattern.
      *
@@ -643,29 +485,42 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the <CODE>double</CODE> value associated with the given key.
+     * Get the bid decimal value associated with the given key.
      *
      * @param key
      *            The header key.
      * @return The associated value or 0.0 if not found.
      */
-    public BigDecimal getBigDecimalValue(IFitsHeader key) {
+    public final BigDecimal getBigDecimalValue(IFitsHeader key) {
         return getBigDecimalValue(key.key());
     }
 
     /**
-     * Get the <CODE>double</CODE> value associated with the given key.
+     * Get the big decimal value associated with the given key.
+     *
+     * @param key
+     *            The header key.
+     * @param dft
+     *            The default value to return if the key cannot be found.
+     * @return the associated value.
+     */
+    public final BigDecimal getBigDecimalValue(IFitsHeader key, BigDecimal dft) {
+        return getBigDecimalValue(key, dft);
+    }
+    
+    /**
+     * Get the big decimal value associated with the given key.
      *
      * @param key
      *            The header key.
      * @return The associated value or 0.0 if not found.
      */
-    public BigDecimal getBigDecimalValue(String key) {
+    public final BigDecimal getBigDecimalValue(String key) {
         return getBigDecimalValue(key, BigDecimal.ZERO);
     }
 
     /**
-     * Get the <CODE>double</CODE> value associated with the given key.
+     * Get the big decimal value associated with the given key.
      *
      * @param key
      *            The header key.
@@ -682,7 +537,20 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the <CODE>long</CODE> value associated with the given key.
+     * Get the big integer value associated with the given key.
+     *
+     * @param key
+     *            The header key.
+     *
+     * @return the associated value or 0 if not found.
+     */
+    public final BigInteger getBigIntegerValue(IFitsHeader key) {
+        return getBigIntegerValue(key.key());
+    }
+
+    
+    /**
+     * Get the big integer value associated with the given key.
      *
      * @param key
      *            The header key.
@@ -690,23 +558,23 @@ public class Header implements FitsElement {
      *            The default value to be returned if the key cannot be found.
      * @return the associated value.
      */
-    public BigInteger getBigIntegerValue(IFitsHeader key, BigInteger dft) {
+    public final BigInteger getBigIntegerValue(IFitsHeader key, BigInteger dft) {
         return getBigIntegerValue(key.key(), dft);
     }
 
     /**
-     * Get the <CODE>long</CODE> value associated with the given key.
+     * Get the big integer value associated with the given key.
      *
      * @param key
      *            The header key.
      * @return The associated value or 0 if not found.
      */
-    public BigInteger getBigIntegerValue(String key) {
+    public final BigInteger getBigIntegerValue(String key) {
         return getBigIntegerValue(key, BigInteger.ZERO);
     }
 
     /**
-     * Get the <CODE>long</CODE> value associated with the given key.
+     * Get the big integer value associated with the given key.
      *
      * @param key
      *            The header key.
@@ -730,7 +598,7 @@ public class Header implements FitsElement {
      * @return The value found, or false if not found or if the keyword is not a
      *         logical keyword.
      */
-    public boolean getBooleanValue(IFitsHeader key) {
+    public final boolean getBooleanValue(IFitsHeader key) {
         return getBooleanValue(key.key());
     }
 
@@ -744,7 +612,7 @@ public class Header implements FitsElement {
      *            parameter does not seem to be a boolean.
      * @return the associated value.
      */
-    public boolean getBooleanValue(IFitsHeader key, boolean dft) {
+    public final boolean getBooleanValue(IFitsHeader key, boolean dft) {
         return getBooleanValue(key.key(), dft);
     }
 
@@ -756,7 +624,7 @@ public class Header implements FitsElement {
      * @return The value found, or false if not found or if the keyword is not a
      *         logical keyword.
      */
-    public boolean getBooleanValue(String key) {
+    public final boolean getBooleanValue(String key) {
         return getBooleanValue(key, false);
     }
 
@@ -813,7 +681,7 @@ public class Header implements FitsElement {
      *            The header key.
      * @return The associated value or 0.0 if not found.
      */
-    public double getDoubleValue(IFitsHeader key) {
+    public final double getDoubleValue(IFitsHeader key) {
         return getDoubleValue(key.key());
     }
 
@@ -826,7 +694,7 @@ public class Header implements FitsElement {
      *            The default value to return if the key cannot be found.
      * @return the associated value.
      */
-    public double getDoubleValue(IFitsHeader key, double dft) {
+    public final double getDoubleValue(IFitsHeader key, double dft) {
         return getDoubleValue(key.key(), dft);
     }
 
@@ -837,8 +705,8 @@ public class Header implements FitsElement {
      *            The header key.
      * @return The associated value or 0.0 if not found.
      */
-    public double getDoubleValue(String key) {
-        return getDoubleValue(key, 0.);
+    public final double getDoubleValue(String key) {
+        return getDoubleValue(key, 0.0);
     }
 
     /**
@@ -885,7 +753,7 @@ public class Header implements FitsElement {
      *            The header key.
      * @return The associated value or 0.0 if not found.
      */
-    public float getFloatValue(IFitsHeader key) {
+    public final float getFloatValue(IFitsHeader key) {
         return getFloatValue(key.key());
 
     }
@@ -897,8 +765,8 @@ public class Header implements FitsElement {
      * @param dft
      *            The value to be returned if the key is not found.
      */
-    public float getFloatValue(IFitsHeader key, float dft) {
-        return (float) getDoubleValue(key, dft);
+    public final float getFloatValue(IFitsHeader key, float dft) {
+        return getFloatValue(key.key(), dft);
     }
 
     /**
@@ -908,8 +776,8 @@ public class Header implements FitsElement {
      *            The header key.
      * @return The associated value or 0.0 if not found.
      */
-    public float getFloatValue(String key) {
-        return (float) getDoubleValue(key);
+    public final float getFloatValue(String key) {
+        return getFloatValue(key, 0.0F);
     }
 
     /**
@@ -934,7 +802,7 @@ public class Header implements FitsElement {
      *            The header key.
      * @return The associated value or 0 if not found.
      */
-    public int getIntValue(IFitsHeader key) {
+    public final int getIntValue(IFitsHeader key) {
         return (int) getLongValue(key);
     }
 
@@ -945,7 +813,7 @@ public class Header implements FitsElement {
      * @param dft
      *            The value to be returned if the key is not found.
      */
-    public int getIntValue(IFitsHeader key, int dft) {
+    public final int getIntValue(IFitsHeader key, int dft) {
         return (int) getLongValue(key, dft);
     }
 
@@ -956,7 +824,7 @@ public class Header implements FitsElement {
      *            The header key.
      * @return The associated value or 0 if not found.
      */
-    public int getIntValue(String key) {
+    public final int getIntValue(String key) {
         return (int) getLongValue(key);
     }
 
@@ -1000,7 +868,7 @@ public class Header implements FitsElement {
      *            The header key.
      * @return The associated value or 0 if not found.
      */
-    public long getLongValue(IFitsHeader key) {
+    public final long getLongValue(IFitsHeader key) {
         return getLongValue(key.key());
     }
 
@@ -1013,7 +881,7 @@ public class Header implements FitsElement {
      *            The default value to be returned if the key cannot be found.
      * @return the associated value.
      */
-    public long getLongValue(IFitsHeader key, long dft) {
+    public final long getLongValue(IFitsHeader key, long dft) {
         return getLongValue(key.key(), dft);
     }
 
@@ -1024,7 +892,7 @@ public class Header implements FitsElement {
      *            The header key.
      * @return The associated value or 0 if not found.
      */
-    public long getLongValue(String key) {
+    public final long getLongValue(String key) {
         return getLongValue(key, 0L);
     }
 
@@ -1054,7 +922,7 @@ public class Header implements FitsElement {
      *            The header key.
      * @return The associated value or 0 if not found.
      */
-    public long getHexValue(IFitsHeader key) {
+    public final long getHexValue(IFitsHeader key) {
         return getHexValue(key.key());
     }
 
@@ -1068,7 +936,7 @@ public class Header implements FitsElement {
      *            The default value to be returned if the key cannot be found.
      * @return the associated value.
      */
-    public long getHexValue(IFitsHeader key, long dft) {
+    public final long getHexValue(IFitsHeader key, long dft) {
         return getHexValue(key.key(), dft);
     }
 
@@ -1080,7 +948,7 @@ public class Header implements FitsElement {
      *            The header key.
      * @return The associated value or 0 if not found.
      */
-    public long getHexValue(String key) {
+    public final long getHexValue(String key) {
         return getHexValue(key, 0L);
     }
 
@@ -1138,10 +1006,15 @@ public class Header implements FitsElement {
         return headerSize();
     }
 
-    public String getStringValue(IFitsHeader header) {
+    public final String getStringValue(IFitsHeader header) {
         return getStringValue(header.key());
     }
-
+    
+    public final String getStringValue(IFitsHeader header, String dft) {
+        return getStringValue(header.key(), dft);
+    }
+    
+    
     /**
      * Get the <CODE>String</CODE> value associated with the given key.
      *
@@ -1150,11 +1023,25 @@ public class Header implements FitsElement {
      * @return The associated value or null if not found or if the value is not
      *         a string.
      */
-    public String getStringValue(String key) {
+    public final String getStringValue(String key) {
+        return getStringValue(key, null);
+    }
+
+    /**
+     * Get the <CODE>String</CODE> value associated with the given key.
+     *
+     * @param key
+     *            The header key.
+     * @param dft
+     *            The default value.
+     * @return The associated value or the default value if not found or if the value is not
+     *         a string.
+     */
+    public String getStringValue(String key, String dft) {
 
         HeaderCard fcard = findCard(key);
         if (fcard == null || !fcard.isStringValue()) {
-            return null;
+            return dft;
         }
 
         return fcard.getValue();
@@ -1854,9 +1741,13 @@ public class Header implements FitsElement {
             return false;
         }
         if (!this.cards.replaceKey(oldKey, newKey)) {
-            throw new HeaderCardException("Duplicate key in replace");
+            throw new HeaderCardException("Duplicate key [" + newKey + "] in replace");
         }
-        oldCard.setKey(newKey);
+        try {
+            oldCard.changeKey(newKey);
+        } catch (IllegalArgumentException e) {
+            throw new HeaderCardException("New key [" + newKey + "] is invalid or too long for existing value.", e);
+        }
         return true;
     }
 

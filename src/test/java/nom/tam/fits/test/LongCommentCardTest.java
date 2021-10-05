@@ -34,6 +34,8 @@ package nom.tam.fits.test;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import javax.xml.stream.events.EndDocument;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -48,12 +50,13 @@ import nom.tam.util.Cursor;
 
 public class LongCommentCardTest {
 
+    private static int length = 200;
+    private static boolean enableLongKeywords = true;
+    
     @Test
-    public void testLongComments() throws Exception {
-        test(200, true);
-    }
-
-    private void test(int length, boolean enableLongKeywords) throws Exception {
+    public void test() throws Exception {
+        length = 200;
+        
         boolean longEnabled = FitsFactory.isLongStringsEnabled();
         try {
             // Enable/disable tthe OGIP 1.0 convention for long entries as
@@ -73,7 +76,7 @@ public class LongCommentCardTest {
             header.addLine(new HeaderCard("HISTORY", counts(length), false));
 
             // Add a non-nullable COMMENT entry with the desired length...
-            header.addLine(new HeaderCard("COMMENT", counts(length), false));
+            header.addLine(HeaderCard.createCommentCard(counts(length)));
 
             header.insertHistory(counts(length));
             header.insertComment(counts(length));
@@ -96,10 +99,10 @@ public class LongCommentCardTest {
             fits = new Fits(file);
             Cursor<String, HeaderCard> iterator = fits.getHDU(0).getHeader().iterator();
             while (iterator.hasNext()) {
-                HeaderCard headerCard = (HeaderCard) iterator.next();
-                if (headerCard.getValue() == null && (headerCard.getKey().equals(Standard.COMMENT.key()) || headerCard.getKey().equals(Standard.HISTORY.key()))) {
+                HeaderCard headerCard = iterator.next();
+                if (headerCard.isCommentStyleCard() && !Standard.END.key().equals(headerCard.getKey())) {
                     commentLike++;
-                    Assert.assertEquals(72, headerCard.getComment().length());
+                    Assert.assertEquals(headerCard.getComment(), 70, headerCard.getComment().length());
                 }
             }
             Assert.assertEquals(4, commentLike);
@@ -113,7 +116,7 @@ public class LongCommentCardTest {
     public String counts(int n) {
         StringBuffer buf = new StringBuffer();
         for (int i = 1; i <= n; i++)
-            buf.append((i % 10));
+            buf.append(i % 10);
         return new String(buf);
     }
 

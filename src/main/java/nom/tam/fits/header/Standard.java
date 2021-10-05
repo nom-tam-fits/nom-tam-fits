@@ -435,6 +435,7 @@ public enum Standard implements IFitsHeader {
      * value is 'FK5'.
      */
     RADESYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Coordinate reference frame of major/minor axes."),
+    
     /**
      * Coordinate reference frame of major/minor axes. use RADESYS instead.
      * 

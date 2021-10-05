@@ -526,7 +526,7 @@ public class AsciiTable extends AbstractTableData {
                 throw new FitsException("Invalid type for ASCII table conversion:" + array[col]);
             }
         } catch (FormatException e) {
-            throw new FitsException("Error parsing data at row,col:" + row + "," + col + "  " + e);
+            throw new FitsException("Error parsing data at row,col:" + row + "," + col + "  ", e);
         }
         return true;
     }

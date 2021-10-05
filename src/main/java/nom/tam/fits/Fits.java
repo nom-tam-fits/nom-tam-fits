@@ -274,6 +274,7 @@ public class Fits implements Closeable {
             }
         } catch (Exception e) {
             LOG.log(Level.FINE, "not a file " + filename, e);
+            throw new FitsException("could not detect type of " + filename, e);
         }
         try {
             InputStream str = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
@@ -283,6 +284,7 @@ public class Fits implements Closeable {
             }
         } catch (Exception e) {
             LOG.log(Level.FINE, "not a resource " + filename, e);
+            throw new FitsException("could not detect type of " + filename, e);
         }
         try {
             InputStream is = FitsUtil.getURLStream(new URL(filename), 0);
@@ -290,8 +292,9 @@ public class Fits implements Closeable {
             return;
         } catch (Exception e) {
             LOG.log(Level.FINE, "not a url " + filename, e);
+            throw new FitsException("could not detect type of " + filename, e);
         }
-        throw new FitsException("could not detect type of " + filename);
+        
     }
 
     /**

@@ -35,6 +35,19 @@ import nom.tam.fits.utilities.FitsLineAppender;
 
 public interface IHierarchKeyFormatter {
 
+    /**
+     * Returns the string reppresentation of the specified HIERARCH keyword in
+     * the FITS header
+     * 
+     * @param key
+     *            the HIERARCH keyword, in the dot separated convention of this
+     *            library
+     * @return how this key looks in the FITS header with this formatting
+     *         convention.
+     * @since 1.16
+     */
+    String toHeaderString(String key);
+
     void append(String key, FitsLineAppender buffer);
 
     /**
@@ -42,7 +55,9 @@ public interface IHierarchKeyFormatter {
      * space separated components following "HIERARCH " and the "= " prior to
      * the value.
      * 
-     * @return
+     * @return the number of extra spaces relative to the most compact notation
+     *         for the components.
+     * @since 1.16
      */
     int getExtraSpaceRequired(String key);
 
@@ -54,6 +69,7 @@ public interface IHierarchKeyFormatter {
      *            will be converted to upper-case. Otherwise, case will be
      *            preserved.
      * @see #isCaseSensitive()
+     * @since 1.16
      */
     void setCaseSensitive(boolean value);
 
@@ -63,6 +79,7 @@ public interface IHierarchKeyFormatter {
      * 
      * @return If <code>false</code> (default), then all HIERARCH keywords will
      *         be converted to upper-case. Otherwise, case will be preserved.
+     * @since 1.16
      */
     boolean isCaseSensitive();
 }

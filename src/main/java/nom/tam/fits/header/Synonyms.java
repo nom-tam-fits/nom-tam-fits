@@ -43,8 +43,10 @@ import nom.tam.fits.header.extra.STScIExt;
  * @author Richard van Nieuwenhoven
  */
 public enum Synonyms {
+    @SuppressWarnings("deprecation")
     EQUINOX(Standard.EQUINOX, Standard.EPOCH),
     TIMESYS(NOAOExt.TIMESYS, STScIExt.TIMESYS),
+    @SuppressWarnings("deprecation")
     RADESYS(Standard.RADESYS, Standard.RADECSYS),
     DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);
 
