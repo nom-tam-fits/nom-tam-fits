@@ -32,16 +32,6 @@ jobs:
       run: mvn -B test jacoco:report --file pom.xml
       working-directory: ./nom-tam-fits
       
-    - name: Generate JaCoCo badge
-      id: jacoco
-      uses: cicirello/jacoco-badge-generator@v2
-      with:
-        jacoco-csv-file: ./nom-tam-fits/target/site/jacoco/jacoco.csv
-        badges-directory: ./nom-tam-fits/.github/badges
-        on-missing-report: fail
-        fail-if-coverage-less-than: 98
-        fail-on-coverage-decrease: true
-
     - name: Log coverage percentage
       run: |
         echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
@@ -75,3 +65,14 @@ jobs:
         flags: unittests
         name: codecov
         verbose: true
+        
+    - name: Generate JaCoCo badge
+      id: jacoco
+      uses: cicirello/jacoco-badge-generator@v2
+      with:
+        jacoco-csv-file: ./nom-tam-fits/target/site/jacoco/jacoco.csv
+        badges-directory: ./nom-tam-fits/.github/badges
+        on-missing-report: fail
+        fail-if-coverage-less-than: 98
+        fail-on-coverage-decrease: true
+
