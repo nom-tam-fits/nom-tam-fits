@@ -61,13 +61,13 @@ public class FlexFormat {
      * The maximum number of decimal places to show (after the leading figure)
      * for double-precision (64-bit) values.
      */
-    private static final int DOUBLE_DECIMALS = 15;
+    public static final int DOUBLE_DECIMALS = 15;
 
     /**
      * The maximum number of decimal places to show (after the leading figure)
      * for single-precision (32-bit) values.
      */
-    private static final int FLOAT_DECIMALS = 7;
+    public static final int FLOAT_DECIMALS = 7;
 
     /**
      * The exclusive upper limit floating point value that can be shown in fixed

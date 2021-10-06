@@ -36,23 +36,45 @@ import java.util.StringTokenizer;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.LongValueException;
 
+/**
+ * A no-frills complex value, mainly just for representing complex numbers in FITS headers.
+ * Its a non-mutable object that is created with a real and imaginary parts, which can be
+ * retrieved thereafter, and provides string formatting that is suited specifically for
+ * representation in FITS headers.
+ * 
+ * @author Attila Kovacs
+ *
+ * @since 1.16
+ */
 public class ComplexValue {
 
+    /** The real and imaginary parts */
     private double re, im;
     
-    public ComplexValue() {
-        re = 0.0;
-        im = 0.0;
-    }
-    
+    /** 
+     * Instantiates a new complex number value with the specified real and imaginary components.
+     * 
+     * @param re    the real part
+     * @param im    thei maginary part
+     */
     public ComplexValue(double re, double im) {
         this.re = re;
         this.im = im;
     }
     
-    public ComplexValue(String text) throws IllegalArgumentException {  
-        this();
-        
+    /**
+     * Instantiates a new complex number value from the string repressentation of it in
+     * a FITS header value.
+     * 
+     * @param text      The FITS header value representing the complex number, in brackets
+     *                  with the real and imaginary pars separated by a comma. Additional
+     *                  spaces may surround the component parts.
+     * @throws IllegalArgumentException     
+     *                  if the supplied string does not appear to be a FITS standard
+     *                  representation of a complex value.
+     *                  
+     */
+    public ComplexValue(String text) throws IllegalArgumentException {        
         // Allow the use of 'D' or 'd' to mark the exponent, instead of the standard 'E' or 'e'...
         text = text.trim().toUpperCase().replace('D', 'E');
         
@@ -89,14 +111,35 @@ public class ComplexValue {
         }
     }
     
+    /**
+     * Checks if the complex value is finite. That is, if neither the real or imaginary parts
+     * are NaN or Infinite.
+     * 
+     * @return      <code>true</code>if neither the real or imaginary parts are NaN or Infinite.
+     *              Otherwise <code>false</code>.
+     */
     public final boolean isFinite() {
         return Double.isFinite(re) && Double.isFinite(im);
     }
     
+    /**
+     * Returns the real part of this complex value.
+     * 
+     * @return      the real part
+     * 
+     * @see #im()
+     */
     public final double re() {
         return re;
     }
     
+    /**
+     * Returns the imaginary part of this complex value.
+     * 
+     * @return      the imaginary part
+     * 
+     * @see #re()
+     */
     public final double im() {
         return im;
     }
@@ -106,17 +149,40 @@ public class ComplexValue {
         return "(" + re + "," + im + ")";
     }
     
+    /**
+     * Converts this complex value to its string representation with up to the specified 
+     * number of decimal places showing after the leading figure, for both the
+     * real and imaginary parts. 
+     * 
+     * @param decimals  the maximum number of decimal places to show.
+     * @return          the string representation with the specified precision, which
+     *                  may be used in a FITS header.
+     *                  
+     * @see FlexFormat
+     */
     public String toString(int decimals) {
         FlexFormat f = new FlexFormat().setPrecision(decimals); 
         return "(" + f.format(re) + "," + f.format(im) + ")";
     }
     
+    /**
+     * Converts this comlex value to its string representation using up to the
+     * specified number of characters only. The precision may be reduced as
+     * necessary to ensure that the representation fits in the allotted space.
+     * 
+     * @param maxLength     the maximum length of the returned string representation
+     * @return              the string representation, possibly with reduced
+     *                      precision to fit into the alotted space.
+     * @throws LongValueException
+     *                      if the space was too short to fit the value even
+     *                      with the minimal (1-digit) precision.
+     */
     public String toBoundedString(int maxLength) throws LongValueException {
         if (maxLength < MIN_STRING_LENGTH) {
             throw new LongValueException(maxLength, toString());
         }
         
-        int decimals = DOUBLE_PRECISION;
+        int decimals = FlexFormat.DOUBLE_DECIMALS;
         
         String s = toString(decimals);
         while (s.length() > maxLength) {
@@ -132,7 +198,9 @@ public class ComplexValue {
         return s;
     }
    
-    private static final int DOUBLE_PRECISION = 16;
-    
+    /** 
+     * The minimum size string needed to represent a complex value with 
+     * even just single digits for the real and imaginary parts. 
+     */
     private static final int MIN_STRING_LENGTH = 5;     // "(#,#)"
 }
