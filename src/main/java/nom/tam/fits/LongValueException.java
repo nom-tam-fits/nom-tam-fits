@@ -38,6 +38,7 @@ package nom.tam.fits;
  * its current form (and keyword) in a FITS header.
  * 
  * @author Attila Kovacs
+ * @since 1.16
  */
 public class LongValueException extends IllegalStateException {
 

@@ -37,6 +37,7 @@ package nom.tam.fits;
  * 
  * @author Attila Kovacs
  * @see FitsFactory#setAllowHeaderRepairs(boolean)
+ * @since 1.16
  */
 public class UnclosedQuoteException extends IllegalStateException {
 

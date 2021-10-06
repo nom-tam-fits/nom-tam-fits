@@ -1163,6 +1163,7 @@ public class Header implements FitsElement {
      * @throws IOException
      *             if the operation failed
      */
+    @SuppressWarnings("deprecation")
     @Override
     public void read(ArrayDataInput dis) throws TruncatedFileException, IOException {
         if (dis instanceof RandomAccess) {

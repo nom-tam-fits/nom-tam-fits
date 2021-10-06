@@ -620,7 +620,7 @@ public class HeaderCardTest {
 
     @Test
     public void testScientificDoubles_1() throws Exception {
-        FitsFactory.setAllowExponentD(true);
+        FitsFactory.setUseExponentD(true);
         HeaderCard hc = new HeaderCard("TEST", -123456.78905D, 6, "dummy");
         assertEquals(-1.234568E5, hc.getValue(Double.class, 0.0), 1.1);
         assertEquals(-123456.78905D, hc.getValue(Double.class, null), 0.11);
@@ -629,7 +629,7 @@ public class HeaderCardTest {
 
     @Test
     public void testScientificDoubles_2() throws Exception {
-        FitsFactory.setAllowExponentD(true);
+        FitsFactory.setUseExponentD(true);
         HeaderCard hc = new HeaderCard("TEST", 123456.78905D, 2, "dummy");
         String val = hc.getValue();
         assertEquals("1.23E5", val);
@@ -640,7 +640,7 @@ public class HeaderCardTest {
 
     @Test
     public void testScientificDoubles_3() throws Exception {
-        FitsFactory.setAllowExponentD(true);
+        FitsFactory.setUseExponentD(true);
         HeaderCard hc = new HeaderCard("TEST", -0.000012345678905D, 6, "dummy");
         String val = hc.getValue();
         assertEquals("-1.234568E-5", val);
@@ -651,7 +651,7 @@ public class HeaderCardTest {
 
     @Test
     public void testScientificDoubles_4() throws Exception {
-        FitsFactory.setAllowExponentD(true);
+        FitsFactory.setUseExponentD(true);
         HeaderCard hc = new HeaderCard("TEST", 0.000012345678905D, 6, "dummy");
         assertEquals("1.234568E-5", hc.getValue());
         assertTrue(hc.toString().contains("E-5"));
@@ -661,7 +661,7 @@ public class HeaderCardTest {
 
     @Test
     public void testScientificLongDoubles_1() throws Exception {
-        FitsFactory.setAllowExponentD(true);
+        FitsFactory.setUseExponentD(true);
         HeaderCard hc = new HeaderCard("TEST",
                 new BigDecimal("123456789012345678901234567890123456789012345678901234567.8901234567890123456789012345678901234567890123456789012345678901234567890"),
                 9,"dummy");  
@@ -674,7 +674,7 @@ public class HeaderCardTest {
 
     @Test
     public void testScientificLongDoubles_2() throws Exception {
-        FitsFactory.setAllowExponentD(true);
+        FitsFactory.setUseExponentD(true);
         HeaderCard hc = new HeaderCard("TEST",
                 new BigDecimal("-123456789012345678901234567890123456789012345678901234567.8901234567890123456789012345678901234567890123456789012345678901234567890"),
                 9,"dummy");
@@ -687,7 +687,7 @@ public class HeaderCardTest {
 
     @Test
     public void testScientificLongDoubles_3() throws Exception {
-        FitsFactory.setAllowExponentD(true);
+        FitsFactory.setUseExponentD(true);
         HeaderCard hc = new HeaderCard("TEST",
                 new BigDecimal("0.000000000000000000000000001234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"),
                 9,"dummy");
@@ -700,7 +700,7 @@ public class HeaderCardTest {
 
     @Test
     public void testScientificLongDoubles_4() throws Exception {
-        FitsFactory.setAllowExponentD(true);
+        FitsFactory.setUseExponentD(true);
         HeaderCard hc = new HeaderCard("TEST",
                 new BigDecimal("-0.000000000000000000000000001234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123"),
                 9,"dummy");

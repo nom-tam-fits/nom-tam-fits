@@ -36,11 +36,20 @@ import java.io.IOException;
 import nom.tam.util.ArrayDataInput;
 
 /**
+ * 
+ * <p>
  * A helper class to keep track of the number of physical cards for a logical
  * card.
+ * </p>
+ * 
+ * <p>
+ * This class should not have public visibility. And really, the counting should be
+ * completely internalized by HeaderCard. Perhaps remove in a future major release.
+ * </p>
  * 
  * @author Richard van Nieuwenhoven
  */
+@Deprecated
 public class HeaderCardCountingArrayDataInput {
 
     /**

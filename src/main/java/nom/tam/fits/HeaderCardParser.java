@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 import nom.tam.util.ComplexValue;
 
 /**
- * A helper utility class to parse header cards for there value (especially strings) and comments. See
+ * Converts a single 80-character wide FITS header record into a header card. See
  * {@link HeaderCard#create(String)} for a description of the rules that guide parsing.
  *
  * @author Attila Kovacs
@@ -60,8 +60,8 @@ class HeaderCardParser {
     private static final Pattern COMPLEX_REGEX = Pattern.compile("[(][\\s]?" + DECIMAL_REGEX + "[,;\\s]?" + DECIMAL_REGEX + "[\\s]?[)]");
 
    
-    /** regexp for nintegers. */
-    private static final Pattern LONG_REGEX = Pattern.compile("[+-]?\\d*");
+    /** regexp for nintegers (including hecadecimal). */
+    private static final Pattern LONG_REGEX = Pattern.compile("[+-]?[\\dA-Fa-f]*");
     
     
     /** The header line (usually 80-character width), which to parse. */
@@ -182,10 +182,39 @@ class HeaderCardParser {
         return String.class.isAssignableFrom(type);
     }
     
-    Class<?> getType() {
+    /**
+     * <p>
+     * Returns the inferred Java class for the value stored in the header record, such as a
+     * {@link String} class, a {@link Boolean} class, an integer type ({@link Integer}, {@link Long}, or {@link BigInteger})
+     * class, a decimal type ({@link Float}, {@link Double}, or {@link BigDecimal}) class,
+     * a {@link ComplexValue} class, or <code>null</code>. For number types, it returns the
+     * 'smallest' type that can be used to represent the string value. 
+     * </p>
+     * <p>
+     * Its an inferred type as
+     * the true underlying type that was used to create the value is lost. For example, the
+     * value <code>42</code> may have been written from any integer type, including <code>byte</code>
+     * or <code>short<code>, but this routine will guess it to be an <code>int</code> ({@link Integer}
+     * type. As such, it may not be equal to {@link HeaderCard#valueType()} from which the
+     * record was created, and hence should not be used for round-trip testing of type equality.
+     * </p>
+     * 
+     * @return  the inferred type of the stored serialized (string) value, or <code>null</code>
+     *          if the value does not seem to match any of the supported value types.
+     * 
+     * @see HeaderCard#valueType()
+     */
+    Class<?> getInferredType() {
         return type;
     }
 
+    /**
+     * Returns the header record, which was parsed. Typically this would be a standard 80-character wide
+     * header record in a FITS file, but this parser class isn't picky, it will parse any record of
+     * any length, as long as it follows the rules of the layout of the header fields...
+     * 
+     * @return      the single FITS header record that was parsed.
+     */
     String getRecord() {
         return line;
     }
@@ -367,7 +396,7 @@ class HeaderCardParser {
             }
             value = line.substring(parsePos, end).trim();
             parsePos = end;
-            this.type = getInferredValueType();
+            this.type = getInferredValueType(value);
         }
 
     }
@@ -394,7 +423,7 @@ class HeaderCardParser {
      * 
      * @return the string value with trailing spaces removed.
      */
-    public static String getNoTrailingSpaceString(StringBuilder buf) {
+    private static String getNoTrailingSpaceString(StringBuilder buf) {
         int to = buf.length();
 
         // Remove trailing spaces only!
@@ -446,18 +475,18 @@ class HeaderCardParser {
     }
     
     /**
-     * @return the type of the value.
+     * Returns the inferred Java class for the specified value. See {@link #getInferredType()}
+     * for a more detailed description.
+     * 
+     * @param value     the serialized (string) representation of a FITS header value.
+     * @return          the inferred type of the specified serialized (string) value, or <code>null</code>
+     *                  if the value does not seem to match any of the supported value types.
      */
-    private Class<?> getInferredValueType() {
-        return getInferredValueType(this.value);
-    }
-    
     private static Class<?> getInferredValueType(String value) {
         if (value == null) {
             return null;
         }
-        
-        
+           
         String trimmedValue = value.trim().toUpperCase();
         
         if ("T".equals(trimmedValue) || "F".equals(trimmedValue)) {
@@ -474,13 +503,17 @@ class HeaderCardParser {
     }
 
     /**
-     * detect the decimal type of the value.
+     * Returns the guessed decimal type of a string representation of a decimal value.
      *
-     * @param value the String value to check.
+     * @param value     the string representation of a decimal value.
      * 
-     * @return the type to fit the value
+     * @return the      The Java class ({@link Float}, {@link Double}, or {@link BigDecimal}) 
+     *                  that can be used to represent the value with the precision provided.
+     *                  
+     * @see #getInferredValueType()
+     * @see #getIntegerType(String)
      */
-    private static Class<?> getDecimalType(String value) {
+    private static Class<? extends Number> getDecimalType(String value) {
         value = value.toUpperCase(Locale.US);
         boolean hasD = (value.indexOf('D') >= 0);
         
@@ -499,7 +532,18 @@ class HeaderCardParser {
         return BigDecimal.class;
     }
 
-    private static Class<?> getIntegerType(String value) {    
+    /**
+     * Returns the guessed integer type of a string representation of a integer value.
+     *
+     * @param value     the string representation of an integer value.
+     * 
+     * @return the      The Java class ({@link Integer}, {@link Long}, or {@link BigInteger})
+     *                  that can be used to represent the value with the number of digits provided.
+     *                  
+     * @see #getInferredValueType()
+     * @see #getDecimalType(String)
+     */
+    private static Class<? extends Number> getIntegerType(String value) {    
         try {
             Integer.parseInt(value);
             return Integer.class;

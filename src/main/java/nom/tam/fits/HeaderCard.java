@@ -89,6 +89,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
     /** The start and end quotes of the string and the ampasant to continue the string. */
     public static final int MAX_LONG_STRING_CONTINUE_OVERHEAD = 3;
+    
+    /** The first ASCII character that may be used in header records */
+    public static final char MIN_VALID_CHAR = 0x20;
+
+    /** The last ASCII character that may be used in header records */
+    public static final char MAX_VALID_CHAR = 0x7e;
 
     /** The string "HIERARCH." */
     private static final String HIERARCH_WITH_DOT = NonStandard.HIERARCH.key() + ".";
@@ -130,9 +136,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *                                      fully parsing an 80-character line.
      * @throws IOException                  if there was some IO issue.
      * 
-     * @see #HeaderCard(HeaderCardCountingArrayDataInput)
      * @see FitsFactory#setLongStringsEnabled(boolean)
      */
+    @SuppressWarnings("deprecation")
     public HeaderCard(ArrayDataInput dis) throws UnclosedQuoteException, TruncatedFileException, IOException {
         this(new HeaderCardCountingArrayDataInput(dis));
     }
@@ -175,14 +181,14 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
         // extract the key
         this.key = parsed.getKey();
-        this.type = parsed.getType();
+        this.type = parsed.getInferredType();
 
         if (FitsFactory.isLongStringsEnabled() && parsed.isString() && parsed.getValue().endsWith("&")) {
             // Potentially a multi-record long string card...
             parseLongStringCard(dis, parsed);
         } else {
             this.value = parsed.getValue();
-            this.type = parsed.getType();
+            this.type = parsed.getInferredType();
             this.comment = parsed.getTrimmedComment();
         }
         
@@ -1043,6 +1049,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @throws TruncatedFileException   if the stream endedc ubnexpectedly in the middle of
      *                                  an 80-character record.
      */
+    @SuppressWarnings("deprecation")
     private void parseLongStringCard(HeaderCardCountingArrayDataInput dis, HeaderCardParser next)
             throws IOException, TruncatedFileException {
 
@@ -1303,7 +1310,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @throws IOException if the input stream could not be read
      * @throws TruncatedFileException is there was not a complete line available in the input.
      */
-    @SuppressWarnings("resource")
+    @SuppressWarnings({ "resource", "deprecation" })
     private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis)
             throws IOException, TruncatedFileException {
         byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
@@ -1388,13 +1395,35 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * Replaces illegal characters in the string ith '?' to be suitable for FITS header records. According to the FITS
      * standard, headers may only contain ASCII characters in the range 0x20 and 0x7E (inclusive).
      * 
-     * @param key       the input string.
+     * @param str       the input string.
      * @return          the sanitized string for use in a FITS header, with illegal characters replaced by '?'.
      * 
+     * @see #isValidChar(char)
      * @see #validateChars(String)
      */
-    private static String sanitize(String key) {
-        return HeaderCardFormatter.sanitize(key);
+    public static String sanitize(String str) {
+        int nc = str.length();
+        char[] cbuf = new char[nc];
+        for (int ic = 0; ic < nc; ic++) {
+            char c = str.charAt(ic);
+            cbuf[ic] = isValidChar(c) ? c : '?';
+        }
+        return new String(cbuf);
+    }
+    
+    /**
+     * Checks if a character is valid for inclusion in a FITS header record. The FITS standard specifies
+     * that only ASCII characters between 0x20 thru 0x7E may be used in FITS headers.
+     * 
+     * @param c     the character to check
+     * @return      <code>true</code> if the character is allowed in the FITS header, otherwise
+     *              <code>false</code>.
+     *              
+     * @see #validateChars(String)
+     * @see #sanitize(String)
+     */
+    public static boolean isValidChar(char c) {
+        return (c >= MIN_VALID_CHAR && c <= MAX_VALID_CHAR);
     }
     
     /**
@@ -1409,6 +1438,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @since 1.16
      * 
+     * @see #isValidChar(char)
+     * @see #sanitize(String)
      * @see #validateKey(String)
      */
     public static void validateChars(String text) throws IllegalArgumentException {
@@ -1418,11 +1449,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         
         for (int i = text.length(); --i >= 0;) {
             char c = text.charAt(i);
-            if (c < HeaderCardFormatter.MIN_VALID_CHAR) {
+            if (c < MIN_VALID_CHAR) {
                 throw new IllegalArgumentException(
                         "Non-printable character(s), e.g. 0x" + (int) c + ", in [" + sanitize(text) + "].");
             }
-            if (c > HeaderCardFormatter.MAX_VALID_CHAR) {
+            if (c > MAX_VALID_CHAR) {
                 throw new IllegalArgumentException("Extendeed ASCII character(s) in [" + sanitize(text)
                         + "]. Only 0x20 through 0x7E are allowed.");
             }
@@ -1461,11 +1492,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         // Check the whole key for non-printable, non-standard ASCII
         for (int i = key.length(); --i >= 0;) {
             char c = key.charAt(i);
-            if (c < HeaderCardFormatter.MIN_VALID_CHAR) {
+            if (c < MIN_VALID_CHAR) {
                 throw new IllegalArgumentException(
                         "Keyword contains non-printable character 0x" + (int) c + ": [" + sanitize(key) + "].");
             }
-            if (c > HeaderCardFormatter.MAX_VALID_CHAR) {
+            if (c > MAX_VALID_CHAR) {
                 throw new IllegalArgumentException("Keyword contains extendeed ASCII characters: [" + sanitize(key)
                         + "]. Only 0x20 through 0x7E are allowed.");
             }

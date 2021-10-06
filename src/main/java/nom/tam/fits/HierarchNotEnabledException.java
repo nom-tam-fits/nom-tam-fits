@@ -37,8 +37,9 @@ package nom.tam.fits;
  * 
  * @author Attila Kovacs
  * @see FitsFactory#setUseHierarch(boolean)
+ * @since 1.16
  */
-public class HiearachNotEnabledException extends IllegalStateException {
+public class HierarchNotEnabledException extends IllegalStateException {
 
     /**
      * 
@@ -49,15 +50,15 @@ public class HiearachNotEnabledException extends IllegalStateException {
         return "Hierarch support is not enabled for [" + key + "]" + "\n\n --> Try FitsFactory.setUseHierarch(true).\n";
     }
 
-    public HiearachNotEnabledException(String key, Throwable cause) {
+    public HierarchNotEnabledException(String key, Throwable cause) {
         super(getMessage(key), cause);
     }
 
-    public HiearachNotEnabledException(String key) {
+    public HierarchNotEnabledException(String key) {
         super(getMessage(key));
     }
 
-    public HiearachNotEnabledException(Throwable cause) {
+    public HierarchNotEnabledException(Throwable cause) {
         super(cause);
     }
 

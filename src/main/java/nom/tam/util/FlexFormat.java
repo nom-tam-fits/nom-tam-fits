@@ -42,51 +42,183 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.LongValueException;
 
+/**
+ * Formatting number values for use in FITS headers.
+ * 
+ * @author Attila Kovacs
+ * 
+ * @since 1.16
+ */
 public class FlexFormat {
 
+    /**
+     * Constant to specify the precision (number of decimal places shown) should
+     * be the natural precision of the number type, or whatever can be fit into
+     * the space available in the FITS header record.
+     */
     public static final int FLEX_PRECISION = -1;
 
+    /**
+     * The maximum number of decimal places to show (after the leading figure)
+     * for double-precision (64-bit) values.
+     */
     private static final int DOUBLE_DECIMALS = 15;
 
+    /**
+     * The maximum number of decimal places to show (after the leading figure)
+     * for single-precision (32-bit) values.
+     */
     private static final int FLOAT_DECIMALS = 7;
 
+    /**
+     * The exclusive upper limit floating point value that can be shown in fixed
+     * format. Values larger or equals to it will always be shown in exponential
+     * format. This is juist for human readability. If there are more than 5
+     * figures in front of the decimal place, they become harder to comprehend
+     * at first sight than the explicit powers of 10 of the exponential format.
+     */
     private static final double MAX_FIXED = 1e6;
 
+    /**
+     * The smallest floating point value that can be shown in fixed format.
+     * Values smallert than this value will always be printed in exponential
+     * format. This is juist for human readability. If there are more than 2
+     * leading zeroes in front of the decimal place, they become harder to
+     * comprehend at first sight than the explicit powers of 10 of the
+     * exponential format.
+     */
     private static final double MIN_FIXED = 0.001;
 
+    /**
+     * The maximum number of decimal places to show after the leading figure
+     * (i.e. fractional digits in exponential format). If the value has more
+     * precision than this value it will be rounded to the specified decimal
+     * place. The special value {@link #FLEX_PRECISION} can be used to display
+     * as many of the available decimal places as can fit into the space that is
+     * available (see {@link #setWidth(int)}.
+     */
     private int decimals = FLEX_PRECISION;
 
+    /**
+     * The maximum number of characters available for showing number values.
+     * This class will always return numbers that fit in that space, or else
+     * throw an exception.
+     */
     private int width = HeaderCard.FITS_HEADER_CARD_SIZE;
 
     private static final DecimalFormatSymbols SYMBOLS = DecimalFormatSymbols.getInstance(Locale.US);
 
+    /**
+     * Sets the maximum number of decimal places to show after the leading
+     * figure (i.e. fractional digits in exponential format). If the value has
+     * more precision than this value it will be rounded to the specified
+     * decimal place. The special value {@link #FLEX_PRECISION} can be used to
+     * display as many of the available decimal places as can fit into the space
+     * that is available (see {@link #setWidth(int)}.
+     * 
+     * @param nDecimals
+     *            the requested new number of decimal places to show after the
+     *            leading figure, or {@link #FLEX_PRECISION}. If an explicit
+     *            value is set, all decimal values will be printed in
+     *            exponential format with up to that many fractional digits
+     *            showing before the exponent symbol.
+     * @return itself
+     * @see #flexPrecision()
+     * @see #getPrecision()
+     * @see #setWidth(int)
+     * @see #format(Number)
+     */
     public synchronized FlexFormat setPrecision(int nDecimals) {
         this.decimals = nDecimals;
         return this;
     }
 
+    /**
+     * Selects flexible precision formatting of floating point values. The
+     * values will be printed either in fixed format or exponential format, with
+     * up to the number of decimal places supported by the underlying value, or
+     * else as many as can fit into the space available (to provide a fail-safe
+     * behavior).
+     * 
+     * @return itself
+     * @see #setPrecision(int)
+     * @see #getPrecision()
+     * @see #setWidth(int)
+     * @see #format(Number)
+     */
     public FlexFormat flexPrecision() {
         this.decimals = FLEX_PRECISION;
         return this;
     }
 
+    /**
+     * Returns the maximum number of decimal places that will be shown when
+     * formatting floating point values in exponential form, or
+     * {@link #FLEX_PRECISION} if either fixed or exponential form may be used
+     * with up to the native precision of the value, or whatever precision can
+     * be shown in the space available.
+     * 
+     * @return the maximum number of decimal places that will be shown when
+     *         formatting floating point values, or {@link #FLEX_PRECISION}.
+     * @see #setPrecision(int)
+     * @see #flexPrecision()
+     * @see #setWidth(int)
+     */
     public final int getPrecision() {
         return decimals;
     }
 
+    /**
+     * Sets the number of characters that this formatter can use to print number
+     * values. Subsequent calls to {@link #format(Number)} will guarantee to
+     * return only values that are shorter or equals to the specified width, or
+     * else throw an exception.
+     * 
+     * @param nChars
+     *            the new maximum length for formatted values.
+     * @return itself
+     * @see #getWidth()
+     * @see #forCard(HeaderCard)
+     * @see #setPrecision(int)
+     * @see #format(Number)
+     */
     public synchronized FlexFormat setWidth(int nChars) {
         this.width = nChars;
         return this;
     }
 
-    public FlexFormat forCard(HeaderCard card) {
+    /**
+     * Sets the number of characters that this formatter can use to print number
+     * values to the space available for the value field in the specified header
+     * card. It is essentially a shorthand for
+     * <code>setWidth(card.spaceForValue())</code>.
+     * 
+     * @param card
+     *            the header card in which the formatted number values must fit.
+     * @return itself
+     */
+    public final FlexFormat forCard(HeaderCard card) {
         return setWidth(card.spaceForValue());
     }
 
+    /**
+     * Returns the number of characters that this formatter can use to print
+     * number values
+     * 
+     * @return the maximum length for formatted values.
+     */
     public final int getWidth() {
         return width;
     }
 
+    /**
+     * Checks if the specified number is a decimal (non-integer) type.
+     * 
+     * @param value
+     *            the number to check
+     * @return <code>true</code> if the specified number is a decimal type
+     *         value, or else <code>false</code> if it is an integer type.
+     */
     private static boolean isDecimal(Number value) {
         return value instanceof Float || value instanceof Double || value instanceof BigDecimal;
     }
@@ -105,6 +237,9 @@ public class FlexFormat {
      * @throws LongValueException
      *             if the decimal value cannot be represented in the alotted
      *             space with any precision
+     * @see #setPrecision(int)
+     * @see #setWidth(int)
+     * @see #forCard(HeaderCard)
      */
     public synchronized String format(Number value) throws LongValueException {
 
@@ -118,7 +253,7 @@ public class FlexFormat {
             // (It's not really trivial to control the number of significant
             // gigures in the fixed format...)
             double a = Math.abs(value.doubleValue());
-            if (a >= MIN_FIXED && a <= MAX_FIXED) {
+            if (a >= MIN_FIXED && a < MAX_FIXED) {
                 // Fixed format only in a resonable data...
                 try {
                     fixed = format(value, "0.#", FLEX_PRECISION, false);
@@ -131,7 +266,7 @@ public class FlexFormat {
         // The value in exponential notation...
         String exp = null;
         try {
-            exp = format(value, "0.#E0", decimals, FitsFactory.isAllowExponentD());
+            exp = format(value, "0.#E0", decimals, FitsFactory.isUseExponentD());
         } catch (LongValueException e) {
             if (fixed == null) {
                 throw e;
@@ -242,5 +377,4 @@ public class FlexFormat {
 
         return text;
     }
-
 }
