@@ -46,7 +46,6 @@ import nom.tam.fits.LongValueException;
  * Formatting number values for use in FITS headers.
  * 
  * @author Attila Kovacs
- * 
  * @since 1.16
  */
 public class FlexFormat {
