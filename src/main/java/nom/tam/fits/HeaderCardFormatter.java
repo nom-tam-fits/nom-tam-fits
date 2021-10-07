@@ -31,8 +31,8 @@
 
 package nom.tam.fits;
 
-import static nom.tam.fits.header.NonStandard.CONTINUE;
-import static nom.tam.fits.header.Standard.COMMENT;
+import static nom.tam.fits.header.Standard.BLANKS;
+import static nom.tam.fits.header.Standard.CONTINUE;
 
 import nom.tam.fits.FitsFactory.FitsSettings;
 
@@ -179,7 +179,7 @@ class HeaderCardFormatter {
         String key = card.getKey();
         
         if (key == null) {
-            key = COMMENT.key();
+            key = BLANKS.key();
         }
         
         if (card.hasHierarchKey()) {

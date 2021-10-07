@@ -61,7 +61,7 @@ public class FlexFormat {
      * The maximum number of decimal places to show (after the leading figure)
      * for double-precision (64-bit) values.
      */
-    public static final int DOUBLE_DECIMALS = 15;
+    public static final int DOUBLE_DECIMALS = 17;
 
     /**
      * The maximum number of decimal places to show (after the leading figure)
@@ -226,7 +226,7 @@ public class FlexFormat {
      * Returns a string representation of a decimal number, in the available
      * space, using either fixed decimal format or exponential notitation. It
      * will use the notation that either gets closer to the required fixed
-     * precision while filling the available space, or if both notations can fir
+     * precision while filling the available space, or if both notations can fit
      * it will return the more compact one. If neither notation can be
      * accomodated in the space available, then an exception is thrown.
      * 
@@ -246,6 +246,7 @@ public class FlexFormat {
         String fixed = null;
 
         if (!isDecimal(value)) {
+            // For integer types, always consider the fixed format...
             fixed = value.toString();
         } else if (decimals < 0) {
             // Don"t do fixed format if precision is set explicitly
@@ -264,11 +265,15 @@ public class FlexFormat {
 
         // The value in exponential notation...
         String exp = null;
-        try {
-            exp = format(value, "0.#E0", decimals, FitsFactory.isUseExponentD());
-        } catch (LongValueException e) {
-            if (fixed == null) {
-                throw e;
+
+        // Don't even try exponential for primitive integer types.
+        if (isDecimal(value) || value instanceof BigInteger) {
+            try {
+                exp = format(value, "0.#E0", decimals, FitsFactory.isUseExponentD());
+            } catch (LongValueException e) {
+                if (fixed == null) {
+                    throw e;
+                }
             }
         }
 

@@ -50,16 +50,8 @@ public class LongStringsNotEnabledException extends IllegalStateException {
         return "Long string support is not enabled for [" + key + "]" + "\n\n --> Try FitsFactory.setLongStringsEnabled(true).\n";
     }
 
-    public LongStringsNotEnabledException(String key, Throwable cause) {
-        super(getMessage(key), cause);
-    }
-
     public LongStringsNotEnabledException(String key) {
         super(getMessage(key));
-    }
-
-    public LongStringsNotEnabledException(Throwable cause) {
-        super(cause);
     }
 
 }

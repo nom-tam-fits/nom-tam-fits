@@ -52,6 +52,7 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.TruncatedFileException;
+import nom.tam.fits.UnclosedQuoteException;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
@@ -248,7 +249,7 @@ public class HeaderCardTest {
         } catch(IllegalArgumentException e) {
             thrown = true;
         }
-        assertEquals(true, thrown);
+        assertTrue(thrown);
                  
         try {
             thrown = false;
@@ -256,7 +257,7 @@ public class HeaderCardTest {
         } catch(IllegalArgumentException e) {
             thrown = true;
         }
-        assertEquals(true, thrown);
+        assertTrue(thrown);
         
         try {
             thrown = false;
@@ -264,8 +265,7 @@ public class HeaderCardTest {
         } catch(IllegalArgumentException e) {
             thrown = true;
         }
-        assertEquals(true, thrown);
-        
+        assertTrue(thrown);
         
         FitsFactory.setAllowHeaderRepairs(true);
               
@@ -576,6 +576,26 @@ public class HeaderCardTest {
     }
     
     @Test
+    public void testLongComment() throws Exception {
+        String value = "value";
+        String start = "This is a long comment with";
+        String comment = start + "                                                                               wrapped spaces.";
+
+        FitsFactory.setLongStringsEnabled(false);
+        HeaderCard hc = new HeaderCard("TEST", value, comment);
+        assertEquals(comment, hc.getComment());
+        hc = HeaderCard.create(hc.toString());
+        assertEquals(start, hc.getComment());
+        
+        FitsFactory.setLongStringsEnabled(true);
+        hc = new HeaderCard("TEST", value, comment);
+        assertEquals(comment, hc.getComment());
+        hc = HeaderCard.create(hc.toString());
+        assertEquals(comment, hc.getComment());
+    }
+    
+    
+    @Test
     public void testSanitize() throws Exception {
         String card = "CARD = 'abc\t\r\n\bdef'";
         String sanitized = "CARD    = 'abc????def'";
@@ -585,7 +605,7 @@ public class HeaderCardTest {
 
     @Test
     public void testInt() throws Exception {
-        HeaderCard hc = new HeaderCard("TEST", 9999, "dummy");
+        HeaderCard hc = new HeaderCard("TEST", 9999);
         assertEquals(Integer.class, hc.valueType());
         assertEquals(Integer.valueOf(9999), hc.getValue(Integer.class, null));
         hc.setValue(9999);
@@ -598,7 +618,7 @@ public class HeaderCardTest {
 
     @Test
     public void testLong() throws Exception {
-        HeaderCard hc = new HeaderCard("TEST", 999999999999999999L, "dummy");
+        HeaderCard hc = new HeaderCard("TEST", 999999999999999999L);
         assertEquals(Long.class, hc.valueType());
         assertEquals(Long.valueOf(999999999999999999L), hc.getValue(Long.class, null));
         assertEquals(80, hc.toString().length());
@@ -609,8 +629,8 @@ public class HeaderCardTest {
         // Check to see if we make long double values
         // fit in the recommended space.
         HeaderCard hc = new HeaderCard("TEST",
-                new BigDecimal("123456789012345678901234567890123456789012345678901234567.8901234567890123456789012345678901234567890123456789012345678901234567890"),
-                "dummy");
+                new BigDecimal("123456789012345678901234567890123456789012345678901234567.8901234567890123456789012345678901234567890123456789012345678901234567890")
+        );
         String val = hc.getValue();
         assertEquals("tld1", val.length(), 70);
         assertEquals(BigDecimal.class, hc.valueType());
@@ -966,4 +986,7 @@ public class HeaderCardTest {
         assertEquals("HIERARCH.TIMESYS.BBBB.CCCC", card.getKey());
         assertEquals("HIERARCH TIMESYS BBBB CCCC ='UTC' / All dates are in UTC time                   ", card.toString());
     }
+    
+    
+    
 }

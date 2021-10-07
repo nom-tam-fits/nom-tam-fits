@@ -50,16 +50,8 @@ public class UnclosedQuoteException extends IllegalStateException {
         return "Unclosed quotes in: [" + line.trim() + "]" + "\n\n --> Try FitsFactory.setAllowHeaderRepairs(true).\n";
     }
 
-    public UnclosedQuoteException(String line, Throwable cause) {
-        super(getMessage(line), cause);
-    }
-
     public UnclosedQuoteException(String line) {
         super(getMessage(line));
-    }
-
-    public UnclosedQuoteException(Throwable cause) {
-        super(cause);
     }
 
 }

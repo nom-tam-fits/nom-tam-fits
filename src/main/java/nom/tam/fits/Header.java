@@ -31,7 +31,7 @@ package nom.tam.fits;
  * #L%
  */
 
-import static nom.tam.fits.header.NonStandard.CONTINUE;
+import static nom.tam.fits.header.Standard.CONTINUE;
 import static nom.tam.fits.header.Standard.BITPIX;
 import static nom.tam.fits.header.Standard.COMMENT;
 import static nom.tam.fits.header.Standard.END;

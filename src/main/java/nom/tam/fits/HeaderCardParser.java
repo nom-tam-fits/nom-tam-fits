@@ -31,7 +31,7 @@
 
 package nom.tam.fits;
 
-import static nom.tam.fits.header.NonStandard.CONTINUE;
+import static nom.tam.fits.header.Standard.CONTINUE;
 import static nom.tam.fits.header.NonStandard.HIERARCH;
 
 import java.math.BigDecimal;
@@ -103,14 +103,15 @@ class HeaderCardParser {
      * @see #getComment()
      * @see #isString()
      * 
-     * @throws UnclosedQuoteException if there is a missing end-quote and header repairs aren't allowed.
+     * @throws UnclosedQuoteException       if there is a missing end-quote and header repairs aren't allowed.
+     * @throws IllegalArgumentException     if the record contained neither a key or a value.
      * 
      * @see FitsFactory#setAllowHeaderRepairs(boolean)
      */
-    HeaderCardParser(String line) throws UnclosedQuoteException {
+    HeaderCardParser(String line) throws UnclosedQuoteException, IllegalArgumentException {
         this.line = line;
         if (line == null) {
-            return;
+            throw new IllegalArgumentException("Cannot parse null string");
         }
         parseKey();
         parseValue();

@@ -50,16 +50,8 @@ public class HierarchNotEnabledException extends IllegalStateException {
         return "Hierarch support is not enabled for [" + key + "]" + "\n\n --> Try FitsFactory.setUseHierarch(true).\n";
     }
 
-    public HierarchNotEnabledException(String key, Throwable cause) {
-        super(getMessage(key), cause);
-    }
-
     public HierarchNotEnabledException(String key) {
         super(getMessage(key));
-    }
-
-    public HierarchNotEnabledException(Throwable cause) {
-        super(cause);
     }
 
 }

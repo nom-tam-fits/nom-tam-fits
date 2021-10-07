@@ -31,9 +31,10 @@
 
 package nom.tam.fits;
 
+import static nom.tam.fits.header.Standard.BLANKS;
 import static nom.tam.fits.header.Standard.COMMENT;
+import static nom.tam.fits.header.Standard.CONTINUE;
 import static nom.tam.fits.header.Standard.HISTORY;
-import static nom.tam.fits.header.NonStandard.CONTINUE;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -166,6 +167,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @see #HeaderCard(ArrayDataInput)
      * @see FitsFactory#setLongStringsEnabled(boolean)
+     * 
      */
     @Deprecated
     public HeaderCard(HeaderCardCountingArrayDataInput dis) throws UnclosedQuoteException, TruncatedFileException, IOException {
@@ -202,16 +204,13 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @param key       keyword
      * @param value     value
      * 
-     * @throws HeaderCardException      for any invalid keyword
-     * @throws NumberFormatException    if the input value is NaN or Infinity.
-     * @throws LongValueException       if the decimal value cannot be represented in the alotted space with any precision.
-     * 
+     * @throws HeaderCardException      for any invalid keyword or value.
      * @since 1.16
      * 
      * @see #HeaderCard(String, Number, String)
      * @see #HeaderCard(String, Number, int, String)
      */
-    public HeaderCard(String key, Number value) throws HeaderCardException, NumberFormatException, LongValueException {
+    public HeaderCard(String key, Number value) throws HeaderCardException {
         this(key, value, FlexFormat.FLEX_PRECISION, null);
     }
     
@@ -224,14 +223,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @param value     value
      * @param comment   optional comment, or <code>null</code>
      * 
-     * @throws HeaderCardException      for any invalid keyword
-     * @throws NumberFormatException    if the input value is NaN or Infinity.
-     * @throws LongValueException       if the decimal value cannot be represented in the alotted space with any precision.
+     * @throws HeaderCardException      for any invalid keyword or value
      * 
      * @see #HeaderCard(String, Number)
      * @see #HeaderCard(String, Number, int, String)
      */
-    public HeaderCard(String key, Number value, String comment) throws HeaderCardException, NumberFormatException, LongValueException {
+    public HeaderCard(String key, Number value, String comment) throws HeaderCardException {
         this(key, value, FlexFormat.FLEX_PRECISION, comment);
     }
 
@@ -245,17 +242,17 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @param decimals  the number of decimal places to show in the scientific notation. 
      * @param comment   optional comment, or <code>null</code>
      * 
-     * @throws HeaderCardException      for any invalid keyword
-     * @throws NumberFormatException    if the input value is NaN or Infinity.
-     * @throws LongValueException       if the decimal value cannot be represented in the alotted space with the specified
-     *                                  precision.
+     * @throws HeaderCardException      for any invalid keyword or value
      *                                  
      * @see #HeaderCard(String, Number)
      * @see #HeaderCard(String, Number, String)
      */
-    public HeaderCard(String key, Number value, int decimals, String comment) 
-            throws HeaderCardException, NumberFormatException, LongValueException {
-        checkNumber(value);        
+    public HeaderCard(String key, Number value, int decimals, String comment) throws HeaderCardException {
+        try { 
+            checkNumber(value);        
+        } catch (NumberFormatException e) {
+            throw new HeaderCardException("FITS headers may not contain NaN or Infinite values", e);
+        }
         set(key, new FlexFormat().setWidth(spaceForValue(key)).setPrecision(decimals).format(value), comment, value.getClass());
     }
 
@@ -280,7 +277,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @param value     value
      * @param comment   optional comment, or <code>null</code>
      * 
-     * @throws HeaderCardException for any invalid keyword
+     * @throws HeaderCardException for any invalid keyword or value
      * 
      * @see #HeaderCard(String, boolean)
      */
@@ -296,14 +293,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @param key       keyword
      * @param value     value
      * 
-     * @throws HeaderCardException      for any invalid keyword.
-     * @throws NumberFormatException    if the input value is NaN or Infinity.
-     * @throws LongValueException       if the decimal value cannot be represented in the alotted space with any precision
+     * @throws HeaderCardException      for any invalid keyword or value.
      * 
      * @see #HeaderCard(String, ComplexValue, String)
      * @see #HeaderCard(String, ComplexValue, int, String)
      */
-    public HeaderCard(String key, ComplexValue value) throws HeaderCardException, LongValueException {
+    public HeaderCard(String key, ComplexValue value) throws HeaderCardException {
         this(key, value, null);
     }
     
@@ -316,14 +311,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @param value     value
      * @param comment   optional comment, or <code>null</code>
      * 
-     * @throws HeaderCardException      for any invalid keyword.
-     * @throws NumberFormatException    if the input value is NaN or Infinity.
-     * @throws LongValueException       if the decimal value cannot be represented in the alotted space with any precision
+     * @throws HeaderCardException      for any invalid keyword or value.
      * 
      * @see #HeaderCard(String, ComplexValue)
      * @see #HeaderCard(String, ComplexValue, int, String)
      */
-    public HeaderCard(String key, ComplexValue value, String comment) throws HeaderCardException, LongValueException {
+    public HeaderCard(String key, ComplexValue value, String comment) throws HeaderCardException {
         this();
         if (!value.isFinite()) {
             throw new HeaderCardException("Cannot represent " + value + " in FITS headers.");
@@ -342,14 +335,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @param decimals  the number of decimal places to show. 
      * @param comment   optional comment, or <code>null</code>
      * 
-     * @throws HeaderCardException  for any invalid keyword, or if the value is infinite or NaN.
-     * @throws LongValueException   if the decimal value cannot be represented in the alotted space with the specified
-     *                              precision.
+     * @throws HeaderCardException  for any invalid keyword or value.
      *                              
      * @see #HeaderCard(String, ComplexValue)
      * @see #HeaderCard(String, ComplexValue, String)
      */
-    public HeaderCard(String key, ComplexValue value, int decimals, String comment) throws HeaderCardException, LongValueException {
+    public HeaderCard(String key, ComplexValue value, int decimals, String comment) throws HeaderCardException {
         this();
         if (!value.isFinite()) {
             throw new HeaderCardException("Cannot represent " + value + " in FITS headers.");
@@ -380,6 +371,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #createCommentStyleCard(String, String)
      * @see #createCommentCard(String)
      * @see #createHistoryCard(String)
+     * 
+     * @deprecated Use {@link #HeaderCard(String, String, String)}, or {@link #createCommentStyleCard(String, String)} instead.
      */
     @Deprecated
     public HeaderCard(String key, String comment, boolean withNullValue) throws HeaderCardException {
@@ -460,7 +453,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #set(String, String, String, Class)
      */
     private HeaderCard(String key, String value, String comment, Class<?> type) throws HeaderCardException {
-        set(key, value, comment, type);
+        set(key, value, comment, type);         
         this.type = type;
     }
     
@@ -491,7 +484,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         } else if (aKey != null) {
             try {
                 validateKey(aKey);
-            } catch (IllegalArgumentException e) {
+            } catch (Exception e) {
                 throw new HeaderCardException("Invalid FITS keyword: [" + sanitize(aKey) + "]", e);
             }
         }
@@ -543,7 +536,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
             // Check that the value fits in the space available for it.
             if (aValue.length() > spaceForValue()) {
-                throw new LongValueException(key, spaceForValue());
+                throw new HeaderCardException("Value too long: [" + sanitize(aValue) + "]", new LongValueException(key, spaceForValue()));
             }
         }
 
@@ -760,7 +753,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         if (type == null) {
             return false;
         }
-        return Number.class.isAssignableFrom(type) && isDecimalType();
+        return Number.class.isAssignableFrom(type) && !isDecimalType();
     } 
     
     /**
@@ -981,11 +974,13 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *                                              the space available after the keyword.
      * @throws LongStringsNotEnabledException       if the card contains a long string but support for long strings
      *                                              is currently disabled.
+     * @throws HierarchNotEnabledException          if the card contains a HIERARCH-style long keyword but support
+     *                                              for these is currently disabled.
      *                                      
      * @see FitsFactory#setLongStringsEnabled(boolean)
      */
     @Override
-    public String toString() throws LongValueException, LongStringsNotEnabledException {
+    public String toString() throws LongValueException, LongStringsNotEnabledException, HierarchNotEnabledException {
         return toString(FitsFactory.current());
     }
 
@@ -999,11 +994,14 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @throws LongValueException                   if the card has a long string value that is too long to contain in
      *                                              the space available after the keyword.
      * @throws LongStringsNotEnabledException       if the card contains a long string but support for long strings
-     *                                              is currently disabled.
+     *                                              is disabled in the settings.
+     * @throws HierarchNotEnabledException          if the card contains a HIERARCH-style long keyword but support
+     *                                              for these is disabled in the settings.
      *                                      
      * @see FitsFactory#setLongStringsEnabled(boolean)
      */
-    protected synchronized String toString(final FitsSettings settings) throws LongValueException, LongStringsNotEnabledException {
+    protected synchronized String toString(final FitsSettings settings) 
+            throws LongValueException, LongStringsNotEnabledException, HierarchNotEnabledException {
         return new HeaderCardFormatter(settings).toString(this);
     }
 
@@ -1162,6 +1160,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Updates the keyword for this card.
      * 
+     * @throws HierarchNotEnabledException      if the new key is a HIERARCH-style long key
+     *                                          but support for these is not currently
+     *                                          enabled.
      * @throws IllegalArgumentException         if the keyword contains invalid characters
      * @throws LongValueException               if the new keyword does not leave sufficient
      *                                          room for the current non-string value.
@@ -1173,7 +1174,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #spaceForValue()
      * @see #getValue()
      */
-    synchronized void changeKey(String newKey) throws IllegalArgumentException, LongValueException, LongStringsNotEnabledException {
+    public synchronized void changeKey(String newKey) 
+            throws HierarchNotEnabledException, LongValueException, LongStringsNotEnabledException, IllegalArgumentException {
+        
         validateKey(newKey);
         if (getHeaderValueSize() > spaceForValue(newKey)) {
             if (isStringValue()) {
@@ -1254,12 +1257,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @param line the card image (typically 80 characters if in a FITS file).
      * 
-     * @throws UnclosedQuoteException if the card is missing an end-quote.
+     * @throws IllegalArgumentException     if the card was malformed, truncated, or if there was an IO error.
      * 
      * @see FitsFactory#setUseHierarch(boolean)
      * @see nom.tam.fits.header.hierarch.IHierarchKeyFormatter#setCaseSensitive(boolean)
      */
-    public static HeaderCard create(String line) throws UnclosedQuoteException {
+    public static HeaderCard create(String line) throws IllegalArgumentException {
         try (ArrayDataInput in = stringToArrayInputStream(line)) {
             return new HeaderCard(in);
         } catch (Exception e) {
@@ -1273,7 +1276,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         card.set(key, null, comment, null);
         return card;
     }
-   
+
+    public static HeaderCard createBlankCommentCard(String text) throws HeaderCardException {
+        return createCommentStyleCard(BLANKS.key(), text);
+    }
+    
     public static HeaderCard createCommentCard(String text) throws HeaderCardException {
         return createCommentStyleCard(COMMENT.key(), text);
     }
@@ -1282,8 +1289,27 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         return createCommentStyleCard(HISTORY.key(), text);
     }
     
+    
     /**
-     * Creates a new header card with the hexadecomal representation of an integer value
+     * Creates a new header card with the hexadecimal representation of an integer value
+     * 
+     * @param key the keyword
+     * @param value the integer value
+     * 
+     * @return A new header card, with the specified integer in hexadecomal representation.
+     * 
+     * @throws HeaderCardException if the card is invalid (for example the keyword is not valid).
+     * 
+     * @see #createHexValueCard(String, long, String)
+     * @see #getHexValue()
+     * @see Header#getHexValue(String)
+     */
+    public static HeaderCard createHexValueCard(String key, long value) throws HeaderCardException {
+        return createHexValueCard(key, value, null);
+    }
+    
+    /**
+     * Creates a new header card with the hexadecimal representation of an integer value
      * 
      * @param key the keyword
      * @param value the integer value
@@ -1293,10 +1319,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @throws HeaderCardException if the card is invalid (for example the keyword is not valid).
      * 
+     * @see #createHexValueCard(String, long)
      * @see #getHexValue()
      * @see Header#getHexValue(String)
      */
-    public static HeaderCard withHexValue(String key, long value, String comment) throws HeaderCardException {
+    public static HeaderCard createHexValueCard(String key, long value, String comment) throws HeaderCardException {
         return new HeaderCard(key, Long.toHexString(value), comment, Long.class);
     }
 
@@ -1385,9 +1412,6 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         if (key == null) {
             return false;
         }
-        if (!FitsFactory.getUseHierarch()) {
-            return false;
-        }
         return key.toUpperCase().startsWith(HIERARCH_WITH_DOT);
     }
 
@@ -1465,9 +1489,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * and currently settings for supporting extensions to the standard, such as HIERARCH-style keywords.
      * 
      * @param key           the proposed keyword string
-     * @throws IllegalArgumentException     if the string cannot be used as a FITS keyword with the
-     *                                      current settings. The exception will contain an informative
-     *                                      message describing the issue.
+     * 
+     * @throws IllegalArgumentException     
+     *                      if the string cannot be used as a FITS keyword with the
+     *                      current settings. The exception will contain an informative
+     *                      message describing the issue.
      * 
      * @since 1.16
      * 
@@ -1481,6 +1507,10 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
         int maxLength = MAX_KEYWORD_LENGTH;
         if (isHierarchKey(key)) {
+            if (!FitsFactory.getUseHierarch()) {
+                throw new HierarchNotEnabledException(key);
+            }
+            
             maxLength = MAX_HIERARCH_KEYWORD_LENGTH;
             validateHierarchComponents(key);
         }

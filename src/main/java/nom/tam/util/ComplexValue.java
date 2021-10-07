@@ -182,9 +182,14 @@ public class ComplexValue {
             throw new LongValueException(maxLength, toString());
         }
         
+        String s = toString();
+        if (s.length() <= maxLength) {
+            return s;
+        }
+        
         int decimals = FlexFormat.DOUBLE_DECIMALS;
         
-        String s = toString(decimals);
+        s = toString(decimals);
         while (s.length() > maxLength) {
             // Assume both real and imaginary parts shorten the same amount... 
             decimals -= (s.length() - maxLength + 1) / 2;

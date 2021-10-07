@@ -147,6 +147,21 @@ public enum Standard implements IFitsHeader {
     COMMENT(SOURCE.RESERVED, HDU.ANY, VALUE.NONE, "descriptive comment"),
 
     /**
+     * The CONTINUE keyword, when followed by spaces in columns 9 and 10 of the
+     * card image and a character string enclosed in single quotes starting in
+     * column 11 or higher, indicates that the quoted string should be treated
+     * as a continuation of the character string value in the previous key
+     * keyword. To conform to this convention, the character string value on the
+     * previous keyword must end with the ampersand character ('&amp;'), but the
+     * ampersand is not part of the value string and should be deleted before
+     * concatenating the strings together. The character string value may be
+     * continued on any number of consecutive CONTINUE keywords, thus
+     * effectively allowing arbitrarily long strings to be written as keyword
+     * values.
+     */
+    CONTINUE(SOURCE.HEASARC, HDU.ANY, VALUE.NONE, "denotes the CONTINUE long string keyword convention"),
+    
+    /**
      * This keyword is used to indicate a rotation from a standard coordinate
      * system described by the CTYPEn to a different coordinate system in which
      * the values in the array are actually expressed. Rules for such rotations
