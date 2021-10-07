@@ -96,7 +96,7 @@ class HeaderCardParser {
     /**
      * Instantiates a new parser for a FITS header line.
      * 
-     * @param line a line in the FITS header, normally exactly 80-characters wide (but need not be).'
+     * @param line a line in the FITS header, normally exactly 80-characters wide (but need not be).
      * 
      * @see #getKey()
      * @see #getValue()

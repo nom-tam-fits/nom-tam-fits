@@ -70,6 +70,12 @@ public class FlexFormat {
     public static final int FLOAT_DECIMALS = 7;
 
     /**
+     * The maximum number of decimal places to show (after the leading figure)
+     * for double-precision (64-bit) values.
+     */
+    public static final int MIN_BIGINT_DECIMALS = DOUBLE_DECIMALS;
+
+    /**
      * The exclusive upper limit floating point value that can be shown in fixed
      * format. Values larger or equals to it will always be shown in exponential
      * format. This is juist for human readability. If there are more than 5
@@ -248,6 +254,10 @@ public class FlexFormat {
         if (!isDecimal(value)) {
             // For integer types, always consider the fixed format...
             fixed = value.toString();
+            if (!(value instanceof BigInteger)) {
+                // Don't even try exponential for primitive integer types.
+                return fixed;
+            }
         } else if (decimals < 0) {
             // Don"t do fixed format if precision is set explicitly
             // (It's not really trivial to control the number of significant
@@ -266,14 +276,11 @@ public class FlexFormat {
         // The value in exponential notation...
         String exp = null;
 
-        // Don't even try exponential for primitive integer types.
-        if (isDecimal(value) || value instanceof BigInteger) {
-            try {
-                exp = format(value, "0.#E0", decimals, FitsFactory.isUseExponentD());
-            } catch (LongValueException e) {
-                if (fixed == null) {
-                    throw e;
-                }
+        try {
+            exp = format(value, "0.#E0", decimals, FitsFactory.isUseExponentD());
+        } catch (LongValueException e) {
+            if (fixed == null) {
+                throw e;
             }
         }
 
@@ -369,6 +376,11 @@ public class FlexFormat {
             }
 
             nDecimals -= delta;
+            if (value instanceof BigInteger && nDecimals < MIN_BIGINT_DECIMALS) {
+                // We cannot show enough decimals for big integer...
+                return null;
+            }
+
             f.setMaximumFractionDigits(nDecimals);
             text = f.format(value);
         }

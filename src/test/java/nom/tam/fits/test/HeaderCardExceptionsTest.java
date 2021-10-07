@@ -49,7 +49,6 @@ import nom.tam.fits.HierarchNotEnabledException;
 import nom.tam.fits.LongStringsNotEnabledException;
 import nom.tam.fits.LongValueException;
 import nom.tam.fits.UnclosedQuoteException;
-import nom.tam.util.ComplexValue;
 
 public class HeaderCardExceptionsTest {
     
@@ -209,52 +208,13 @@ public class HeaderCardExceptionsTest {
         }
     }
     
+    @Test(expected = LongValueException.class)
     public void testLongValueException2() throws Exception {
         FitsFactory.setUseHierarch(true);
-        HeaderCard hc = null;
-        try { 
-            hc = new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO", 1); 
-        }
-        catch (HeaderCardException e) {
-        }
-        // The above should not throw an exception.
-        assertNotNull(hc);
-        
-        
-        Exception thrown = null;
-        // But this one should...
-        try {
-            hc.setValue(1234567890123456789L);
-        } catch(Exception e) {
-            thrown = e;
-        }
-        
-        assertNotNull(thrown);
-        assertEquals(LongValueException.class, thrown);
+        HeaderCard hc = new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PPP", 1); 
+        hc.setValue(1234567890123456789L);
     }
     
-    public void testLongValueException3() throws Exception {
-        FitsFactory.setUseHierarch(true);
-        HeaderCard hc = null;
-        try {
-            hc = HeaderCard.create("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO = 123456789012345678901234567890");
-        } catch (LongValueException e) {
-        }
-        // The above should not throw an exception.
-        assertNotNull(hc);
-        
-        Exception thrown = null;
-        
-        // But this one should...
-        try { 
-            hc.toString();
-        } catch(Exception e) {
-            thrown = e;
-        }
-        
-        assertNotNull(thrown);
-        assertEquals(LongValueException.class, thrown);
-    }
     
     @Test
     public void testLongStringsNotEnabledException1() throws Exception {

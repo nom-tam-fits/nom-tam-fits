@@ -58,4 +58,8 @@ public class LongValueException extends IllegalStateException {
     public LongValueException(int spaceAvailable, String value) {
         super("Not enough space (" + spaceAvailable + ") for: [" + value + "]");
     }
+
+    public LongValueException(int spaceAvailable, String key, String value) {
+        super("Not enough space (" + spaceAvailable + ") for: [" + key + "=" + value + "]");
+    }
 }

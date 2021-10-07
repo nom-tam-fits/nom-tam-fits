@@ -139,6 +139,7 @@ public class ComplexValueTest {
         assertTrue("toBoundedString3", thrown);
     }
     
+    @Test
     public void testComplexFromString() throws Exception {
         // Missing brackets
         ComplexValue z = new ComplexValue("(5566.2,-1123.1)");
@@ -196,6 +197,7 @@ public class ComplexValueTest {
         new HeaderCard("COMPLEX", new ComplexValue(Double.NaN, -2.0));
     }
     
+    @Test
     public void testComplexNaNSetCard() throws Exception {
         HeaderCard hc = new HeaderCard("COMPLEX", new ComplexValue(1.0, -2.0));
         
@@ -215,12 +217,13 @@ public class ComplexValueTest {
                 new ComplexValue(Math.PI, -Math.PI), 16, "comment");
     }
     
+    @Test
     public void testNoSpaceComplexValue() throws Exception {
         FitsFactory.setUseHierarch(true);
         HeaderCard hc = null;
         
         try {
-            hc = new HeaderCard("HIERARCH.SOME.VERY.LONG.COMPLEX.KEYWORD.TAKING.UP.THE.SPACE", true, "comment");
+            hc = new HeaderCard("HIERARCH.SOME.VERY.LONG.COMPLEX.KEYWORD.TAKING.UP.ALL.THE.SPACE", true, "comment");
             hc.setValue(new ComplexValue(0.0, 0.0));
         } catch(HeaderCardException e) {
             
@@ -239,75 +242,5 @@ public class ComplexValueTest {
         assertTrue(thrown);
     }
     
-
-    public void flexFormatTest() throws Exception {
-        FlexFormat f = new FlexFormat();
-        
-        int i = 1001;
-        BigInteger bigi = new BigInteger("12345678901234567890");
-        
-        f.setPrecision(FlexFormat.DOUBLE_DECIMALS);
-        assertEquals(FlexFormat.DOUBLE_DECIMALS, f.getPrecision());
-        
-        f.setPrecision(FlexFormat.FLOAT_DECIMALS);
-        assertEquals(FlexFormat.FLOAT_DECIMALS, f.getPrecision());
-        
-        f.flexPrecision();
-        assertEquals(FlexFormat.FLEX_PRECISION, f.getPrecision());
-        
-        f.setPrecision(-11233);
-        assertEquals(FlexFormat.FLEX_PRECISION, f.getPrecision());
-        
-        f.setWidth(80);
-        assertEquals(80, f.getWidth());
-        
-        String s = f.format(Math.PI);
-        assertEquals(Math.PI, Double.parseDouble(s), 1e-12);
-  
-        s = f.format(1e12 * Math.PI);
-        assertEquals(1e12 * Math.PI, Double.parseDouble(s), 1.0);
-        
-        s = f.format(1e-12 * Math.PI);
-        assertEquals(1e-12 * Math.PI, Double.parseDouble(s), 1e-24);
-        
-        s = f.format(i);
-        assertEquals(i, Integer.parseInt(s));
-        
-        s = f.format(bigi);
-        assertEquals(bigi, new BigInteger(s));
-        
-        f.setWidth(10);
-        assertEquals(10, f.getWidth());
-        
-        
-        s = f.format(Math.PI);
-        assertEquals(Math.PI, Double.parseDouble(s), 1e-6);
-        
-        s = f.format(1e12 * Math.PI);
-        assertEquals(1e12 * Math.PI, Double.parseDouble(s), 1e6);
-        
-        s = f.format(1e-12 * Math.PI);
-        assertEquals(1e-12 * Math.PI, Double.parseDouble(s), 1e-16);
-        
-        s = f.format(i);
-        assertEquals(i, Integer.parseInt(s));
-        
-        s = f.format(bigi);
-        assertEquals(bigi.doubleValue(), Double.parseDouble(s), 1e15);
-        
-        f.setWidth(-100);
-        assertEquals(0, f.getWidth());
-        
-        boolean thrown = false;
-        try {
-            s = f.format(Math.PI);
-            assertEquals(Math.PI, Double.parseDouble(s), 1e-6);
-        } catch(LongValueException e) {
-            thrown = true;
-        }
-        assertTrue(thrown);
-        
    
-    }
-
 }

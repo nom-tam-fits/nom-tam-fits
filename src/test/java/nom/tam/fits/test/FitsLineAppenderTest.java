@@ -63,6 +63,7 @@ public class FitsLineAppenderTest {
         assertEquals(HeaderCard.FITS_HEADER_CARD_SIZE, l.spaceLeftInLine());
         
         l.append('X');
+        assertEquals(1, l.length());
         assertEquals(HeaderCard.FITS_HEADER_CARD_SIZE-1, l.spaceLeftInLine());
         
         l.append("FILES");
@@ -83,6 +84,23 @@ public class FitsLineAppenderTest {
         
         l.completeLine();
         assertEquals(HeaderCard.FITS_HEADER_CARD_SIZE, l.spaceLeftInLine());
+        
+        l.completeLine();
+        assertEquals(HeaderCard.FITS_HEADER_CARD_SIZE, l.spaceLeftInLine());
+        
+        l = new FitsLineAppender();
+        // Nothing happens if it's an empty appender
+        l.appendSpacesTo(14);
+        assertEquals(0, l.length());
+        
+        l.append('X');
+        // Now 14
+        l.appendSpacesTo(14);
+        assertEquals(14, l.length());
+        
+        l.appendSpacesTo(12);
+        // Still 14
+        assertEquals(14, l.length());
     }
     
     @Test

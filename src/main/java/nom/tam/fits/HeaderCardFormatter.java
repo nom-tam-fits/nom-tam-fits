@@ -235,7 +235,7 @@ class HeaderCardFormatter {
             }
         } else {
             if (value.length() > available) {
-                throw new LongValueException(card.getKey(), available);
+                throw new LongValueException(available, card.getKey(), card.getValue());
             }
             append(buf, value, 0);
         }

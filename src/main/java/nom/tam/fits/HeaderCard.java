@@ -826,7 +826,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      */
     public synchronized HeaderCard setValue(Number update, int decimals) throws NumberFormatException, LongValueException {
         checkNumber(update);
-        this.value = new FlexFormat().forCard(this).setPrecision(decimals).format(update);
+        setUnquotedValue(new FlexFormat().forCard(this).setPrecision(decimals).format(update));
         this.type = update.getClass();
         return this;
     }
@@ -900,7 +900,10 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @throws LongValueException       if the value is too long to fit in the available space.
      */
     private synchronized void setUnquotedValue(String update) throws LongValueException {
-
+        if (update.length() > spaceForValue()) {
+            throw new LongValueException(spaceForValue(), key, value);
+        }
+        this.value = update;
     }
     
     /**
@@ -914,7 +917,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @since 1.16
      */
     public synchronized HeaderCard setHexValue(long update) throws LongValueException {
-        setUnquotedValue(String.valueOf(update));
+        setUnquotedValue(Long.toHexString(update));
         this.type = (update == (int) update) ? Integer.class : Long.class;
         return this;
     }
@@ -1166,10 +1169,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         
         validateKey(newKey);
         if (getHeaderValueSize() > spaceForValue(newKey)) {
-            if (isStringValue()) {
+            if (!isStringValue()) {
+                throw new LongValueException(spaceForValue(newKey), newKey + "= " + value);
+            } else if (!FitsFactory.isLongStringsEnabled()) {
                 throw new LongStringsNotEnabledException(newKey);
             }
-            throw new LongValueException(spaceForValue(newKey), newKey + "= " + value);
         }
         this.key = newKey;
     }
