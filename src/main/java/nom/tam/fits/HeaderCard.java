@@ -404,6 +404,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #createCommentStyleCard(String, String)
      * @see #createCommentCard(String)
      * @see #createHistoryCard(String)
+     * 
+     * @deprecated Use {@link #HeaderCard(String, String, String)}, or {@link #createCommentStyleCard(String, String)} instead.
      */
     @Deprecated
     public HeaderCard(String key, String value, String text, boolean nullable) throws HeaderCardException {
@@ -650,11 +652,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         } else if (Boolean.class.isAssignableFrom(asType)) {
             return asType.cast(getBooleanValue((Boolean) defaultValue));
         } else if (ComplexValue.class.isAssignableFrom(asType)) {
-            try {
-                return asType.cast(new ComplexValue(value)); 
-            } catch (IllegalArgumentException e) {
-                return asType.cast(defaultValue);
-            }
+            return asType.cast(new ComplexValue(value)); 
         }
 
         // Convert the Double Scientific Notation specified by FITS to pure IEEE.
@@ -697,7 +695,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #isCommentStyleCard()
      */
     public synchronized boolean isKeyValuePair() {
-        return this.key != null && this.value != null;
+        return this.value != null;
     }
 
     /**
@@ -890,13 +888,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             throw new NumberFormatException("Cannot represent " + update + " in FITS headers.");
         }
         
-        String newValue = update.toString(decimals);
-        if (newValue.length() > spaceForValue(this.key)) {
-            throw new LongValueException(this.key, spaceForValue(this.key));
-        }
-  
-        this.value = newValue;
-        this.type = ComplexValue.class;
+        setUnquotedValue(update.toString(decimals));
         return this;
     }
     
@@ -908,12 +900,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @throws LongValueException       if the value is too long to fit in the available space.
      */
     private synchronized void setUnquotedValue(String update) throws LongValueException {
-        int available = spaceForValue(this.key);
-        
-        if (update.length() > available) {
-            throw new LongValueException(key, available);
-        }
-        this.value = update;
+
     }
     
     /**

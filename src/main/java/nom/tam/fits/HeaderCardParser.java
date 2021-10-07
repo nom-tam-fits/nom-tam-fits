@@ -57,7 +57,7 @@ class HeaderCardParser {
     /** regexp for IEEE floats */
     private static final Pattern DECIMAL_REGEX = Pattern.compile("[+-]?\\d*\\.?\\d*(?:[dDeE]?[+-]?\\d+)?");
     
-    private static final Pattern COMPLEX_REGEX = Pattern.compile("[(][\\s]?" + DECIMAL_REGEX + "[,;\\s]?" + DECIMAL_REGEX + "[\\s]?[)]");
+    private static final Pattern COMPLEX_REGEX = Pattern.compile("\\(\\s*" + DECIMAL_REGEX + "\\s*,\\s*" + DECIMAL_REGEX + "\\s*\\)");
 
    
     /** regexp for nintegers (including hecadecimal). */
@@ -210,17 +210,6 @@ class HeaderCardParser {
     }
 
     /**
-     * Returns the header record, which was parsed. Typically this would be a standard 80-character wide
-     * header record in a FITS file, but this parser class isn't picky, it will parse any record of
-     * any length, as long as it follows the rules of the layout of the header fields...
-     * 
-     * @return      the single FITS header record that was parsed.
-     */
-    String getRecord() {
-        return line;
-    }
-    
-    /**
      * Parses a fits keyword from a card and standardizes it (trim, uppercase, and hierarch with dots).
      */
     private void parseKey() {
@@ -314,7 +303,7 @@ class HeaderCardParser {
         boolean containsComment = false;
         
         if (value == null) {
-            // Comment-style card
+            // Comment-style card or anything after a quoted string value...
             containsComment = true;
         } else if (line.charAt(parsePos) == '/') {
             // After value comment
@@ -324,6 +313,15 @@ class HeaderCardParser {
                 comment = "";
                 return;
             }
+        } else if (type == String.class && FitsFactory.isAllowHeaderRepairs()) {
+            // Junk after a string value -- If header repairs are possible, we can
+            // interpret it as comment...
+            comment = line.substring(parsePos).trim();
+            if (comment.isEmpty()) { 
+                comment = null;
+            }
+            parsePos = line.length();
+            return;
         }
         
         comment = containsComment ? line.substring(parsePos) : null;
@@ -523,13 +521,20 @@ class HeaderCardParser {
             value = value.replace('D', 'E');
         }
         
-        BigDecimal bigd = new BigDecimal(value);
-        if (bigd.equals(new BigDecimal(bigd.floatValue()))) {
+        try {
+            Float.parseFloat(value);
             return hasD ? Double.class : Float.class;
+        } catch (NumberFormatException e) {
+            // Nothing to do, we keep going
         }
-        if (bigd.equals(new BigDecimal(bigd.doubleValue()))) {
+        
+        try {
+            Double.parseDouble(value);
             return Double.class;
+        } catch (NumberFormatException e) {
+            // Nothing to do, we keep going
         }
+
         return BigDecimal.class;
     }
 

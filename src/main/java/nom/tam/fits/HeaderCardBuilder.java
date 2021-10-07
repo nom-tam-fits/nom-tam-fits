@@ -198,7 +198,7 @@ public class HeaderCardBuilder {
      * @param decimals     the new number of decimal places to show.
      * @return this
      * 
-     * @see #precision(int)
+     * @deprecated Use {@link #precision(int)} instead.
      */
     @Deprecated
     public HeaderCardBuilder scale(int decimals) {
@@ -226,7 +226,7 @@ public class HeaderCardBuilder {
      * 
      * @return this
      * 
-     * @see #flexiblePrecision()
+     * @deprecated Use {@link #flexiblePrecision()} instead
      */
     @Deprecated
     public HeaderCardBuilder noScale() {

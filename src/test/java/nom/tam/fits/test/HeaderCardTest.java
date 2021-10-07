@@ -36,6 +36,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -51,11 +52,14 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.LongStringsNotEnabledException;
+import nom.tam.fits.LongValueException;
 import nom.tam.fits.TruncatedFileException;
 import nom.tam.fits.UnclosedQuoteException;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
+import nom.tam.util.ComplexValue;
 
 public class HeaderCardTest {
 
@@ -416,12 +420,25 @@ public class HeaderCardTest {
 
     @Test
     public void testCardCopy() throws Exception {
-        HeaderCard hc = new HeaderCard("TEST", new BigDecimal("123.0"), "dummy");
-        hc = HeaderCard.create(hc.toString());
+        HeaderCard hc1 = new HeaderCard("TEST", 123.0, "dummy");
+        HeaderCard hc2 = hc1.copy();
+        
+        assertEquals(hc2.getKey(), hc1.getKey());
+        assertEquals(hc2.getValue(), hc1.getValue());
+        assertEquals(hc2.getComment(), hc1.getComment());
+        assertEquals(hc2.valueType(), hc1.valueType());
+    }
 
-        assertEquals(BigDecimal.class, hc.valueType());
-        assertEquals(new BigDecimal("123.0"), hc.getValue(BigDecimal.class, null));
-        assertEquals(new Double("123.0"), hc.getValue(Double.class, null));
+    
+    @Test
+    public void testCardReread() throws Exception {
+        HeaderCard hc1 = new HeaderCard("TEST", 123.0F, "dummy");
+        HeaderCard hc2 = HeaderCard.create(hc1.toString());
+        
+        assertEquals(hc2.getKey(), hc1.getKey());
+        assertEquals(hc2.getValue(), hc1.getValue());
+        assertEquals(hc2.getComment(), hc1.getComment());
+        assertEquals(hc2.valueType(), hc1.valueType());
     }
 
     @Test
@@ -461,7 +478,7 @@ public class HeaderCardTest {
         HeaderCard hc;
         String key = "HIERARCH.TEST1.TEST2.INT";
         boolean thrown = false;
-
+        
         FitsFactory.setUseHierarch(false);
         try {
             hc = new HeaderCard(key, 123, "Comment");
@@ -584,6 +601,7 @@ public class HeaderCardTest {
         FitsFactory.setLongStringsEnabled(false);
         HeaderCard hc = new HeaderCard("TEST", value, comment);
         assertEquals(comment, hc.getComment());
+      
         hc = HeaderCard.create(hc.toString());
         assertEquals(start, hc.getComment());
         
@@ -594,7 +612,80 @@ public class HeaderCardTest {
         assertEquals(comment, hc.getComment());
     }
     
+    @Test
+    public void testFakeLongCards() throws Exception {
+        FitsFactory.setLongStringsEnabled(true);
+        
+        // Continue not with a string value...
+        HeaderCard hc = HeaderCard.create("TEST   = '                                                                    &'" 
+                    + "CONTINUE  not a string / whatever                                               ");
+        assertEquals(1, hc.cardSize());
+        
+        // Continue, but no ending &
+        hc = HeaderCard.create("TEST   = '                                                                     '" 
+                + "CONTINUE  'a string' / whatever                                               ");
+        assertEquals(1, hc.cardSize());
+        
+        // Ending &, but no CONTINUE
+        hc = HeaderCard.create("TEST   = '                                                                     '" 
+                + "COMMENT   'a string' / whatever                                               ");
+        assertEquals(1, hc.cardSize());
+    }
     
+    public void testFakeHierarch()  throws Exception {
+        FitsFactory.setUseHierarch(true);
+        
+        // Just a regular card.
+        HeaderCard hc = HeaderCard.create("HIERARCH= 'value'");
+        assertEquals("HIERARCH", hc.getKey());
+        assertEquals("value", hc.getValue());
+        assertNull(hc.getComment());
+        
+        // '=' in the wrong place
+        hc = HeaderCard.create("HIERARCH = 'value'");
+        assertEquals("HIERARCH", hc.getKey());
+        assertNull(hc.getValue());
+        assertNotNull(hc.getComment());
+    }
+    
+    public void testChangeKey() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", "value", "comment");
+        HeaderCard hc2 = new HeaderCard("TEST", "long value ---------------------------------------------------------");
+        HeaderCard hc3 = new HeaderCard("TEST", new BigInteger("1234567890123456789012345678901234567890123456789012345678901234567890"));
+        
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setLongStringsEnabled(false);
+        
+        hc.changeKey("TEST1");
+        assertEquals("TEST1", hc.getKey());
+        
+        boolean thrown = false;
+        try {
+            hc2.changeKey("HIERARCH.ZZZ");
+        } catch(LongStringsNotEnabledException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+        
+        thrown = false;
+        try {
+            hc3.changeKey("HIERARCH.ZZZ");
+        } catch(LongValueException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+        
+        FitsFactory.setLongStringsEnabled(true);
+        
+        hc.changeKey("TEST2");
+        assertEquals("TEST2", hc.getKey());
+        
+        hc.changeKey("HIERARCH.ZZZ"); 
+        assertTrue(hc.hasHierarchKey());
+        assertEquals("HIERARCH.ZZZ", hc.getKey());
+        
+    }
+        
     @Test
     public void testSanitize() throws Exception {
         String card = "CARD = 'abc\t\r\n\bdef'";
@@ -954,6 +1045,151 @@ public class HeaderCardTest {
         HeaderCard.create("");
     }
 
+    public void testSimpleConstructors() throws Exception {        
+        HeaderCard hc = new HeaderCard("TEST", true);
+        assertEquals("TEST", hc.getKey());
+        assertEquals("T", hc.getValue());
+        assertEquals(true, hc.getValue(Boolean.class, false));
+        assertNull(hc.getComment());
+        
+        hc = new HeaderCard("TEST", false);
+        assertEquals("TEST", hc.getKey());
+        assertEquals("T", hc.getValue());
+        assertEquals(false, hc.getValue(Boolean.class, true));
+        assertNull(hc.getComment());
+        
+        hc = new HeaderCard("TEST", 101);
+        assertEquals("TEST", hc.getKey());
+        assertTrue(hc.isIntegerType());
+        assertFalse(hc.isDecimalType());
+        assertEquals(Integer.class, hc.valueType());
+        assertEquals(101, hc.getValue());
+        assertEquals(101, hc.getValue(Integer.class, 0).intValue());
+        assertEquals(101, hc.getValue(Long.class, 0L).intValue());
+        assertEquals(101, hc.getValue(Short.class, (short) 0).intValue());
+        assertEquals(101, hc.getValue(Byte.class, (byte) 0).intValue());
+        assertEquals(101, hc.getValue(BigInteger.class, BigInteger.ZERO).intValue());
+        assertNull(hc.getComment());
+        
+        hc = new HeaderCard("TEST", Math.PI);
+        assertEquals("TEST", hc.getKey());
+        assertEquals(Double.class, hc.valueType());
+        assertFalse(hc.isIntegerType());
+        assertTrue(hc.isDecimalType());
+        assertEquals(Math.PI, hc.getValue());
+        assertEquals(Math.PI, hc.getValue(Double.class, 0.0).doubleValue(), 1e-12);
+        assertEquals(Math.PI, hc.getValue(Float.class, 0.0F).doubleValue(), 1e-6);
+        assertEquals(Math.PI, hc.getValue(BigDecimal.class, BigDecimal.ZERO).doubleValue(), 1e-12);
+        assertNull(hc.getComment());
+       
+        
+        hc = new HeaderCard("TEST", new ComplexValue(1.0, -2.0));
+        assertEquals("TEST", hc.getKey());
+        assertEquals(ComplexValue.class, hc.valueType());
+        assertFalse(hc.isIntegerType());
+        assertFalse(hc.isDecimalType());        
+        assertNull(hc.getComment());
+        
+        hc = new HeaderCard("TEST", "string value");
+        assertEquals("TEST", hc.getKey());
+        assertEquals(String.class, hc.valueType());
+        assertEquals("string value", hc.getValue());
+        assertFalse(hc.isIntegerType());
+        assertFalse(hc.isDecimalType()); 
+        assertTrue(hc.isStringValue());
+        assertNull(hc.getComment());
+    }
+    
+    
+    public void testSetValue() throws Exception {    
+        HeaderCard hc = new HeaderCard("TEST", "value");
+        
+        int i = 20211006;
+        hc.setHexValue(i);
+        assertEquals(Integer.class, hc.valueType());
+        assertEquals(i, hc.getValue(Integer.class, 0).intValue());
+        
+        long l = 202110062256L;
+        hc.setHexValue(l);
+        assertEquals(Long.class, hc.valueType());
+        assertEquals(l, hc.getValue(Long.class, 0L).longValue());
+        
+        BigInteger big = new BigInteger("12345678901234567890");
+        hc.setValue(big);
+        assertEquals(BigInteger.class, hc.valueType());
+        assertEquals(big, hc.getValue(BigInteger.class, BigInteger.ZERO));
+    }
+    
+    public void testSetValueExcept() throws Exception {
+        FitsFactory.setUseHierarch(true);
+        HeaderCard hc = new HeaderCard("HIERARCH.ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ", 0);
+        
+        boolean thrown = false;
+
+        try {
+            int i = 20211006;
+            hc.setHexValue(i);
+        } catch(LongValueException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+
+        thrown = false;
+        try {
+            long l = 202110062256L;
+            hc.setHexValue(l);
+        } catch(LongValueException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+
+        thrown = false;
+        try {
+            BigInteger big = new BigInteger("12345678901234567890");
+            hc.setValue(big);
+        } catch(LongValueException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+        
+        thrown = false;
+        try {
+            BigInteger big = new BigInteger("12345678901234567890", 1);
+            hc.setValue(big);
+        } catch(LongValueException e) {
+            thrown = true;
+        }
+        assertFalse(thrown);
+    }
+    
+        
+    @Test()
+    public void testParseDExponent() throws Exception {
+        HeaderCard hc = HeaderCard.create("TEST   = 1.53E4");
+        assertEquals(Float.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 1.53D4");
+        assertEquals(Double.class, hc.valueType());
+    }
+    
+    @Test
+    public void testEmptyNonString() throws Exception {
+        HeaderCard hc = HeaderCard.create("TEST=     / comment");
+        assertEquals("", hc.getValue());
+        assertNotNull(hc.getComment());
+    }
+    
+    @Test
+    public void testJunkAfterStringValue() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(false);
+        HeaderCard hc = HeaderCard.create("TEST= 'value' junk    / comment");
+        assertNull(hc.getComment());
+        
+        FitsFactory.setAllowHeaderRepairs(true);
+        hc = HeaderCard.create("TEST= 'value' junk    / comment");
+        assertTrue(hc.getComment().startsWith("junk"));
+    }
+    
     @Test()
     public void testHeaderCardFormat() throws Exception {
         HeaderCard card = HeaderCard.create("TIMESYS = 'UTC ' / All dates are in UTC time");

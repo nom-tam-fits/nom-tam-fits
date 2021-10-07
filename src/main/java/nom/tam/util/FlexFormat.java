@@ -128,7 +128,7 @@ public class FlexFormat {
      * @see #format(Number)
      */
     public synchronized FlexFormat setPrecision(int nDecimals) {
-        this.decimals = nDecimals;
+        this.decimals = nDecimals < 0 ? FLEX_PRECISION : nDecimals;
         return this;
     }
 
@@ -182,7 +182,7 @@ public class FlexFormat {
      * @see #format(Number)
      */
     public synchronized FlexFormat setWidth(int nChars) {
-        this.width = nChars;
+        this.width = nChars > 0 ? nChars : 0;
         return this;
     }
 

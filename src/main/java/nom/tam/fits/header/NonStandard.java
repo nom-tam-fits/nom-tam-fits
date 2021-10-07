@@ -45,7 +45,7 @@ package nom.tam.fits.header;
  */
 public enum NonStandard implements IFitsHeader {
     /**
-     * The CONTINUE key is now part of the FITS standard as of 4.0, so use
+     * @deprecated The CONTINUE key is now part of the FITS 4.0 standard, so use
      * {@link Standard#CONTINUE} instead.
      */
     @Deprecated

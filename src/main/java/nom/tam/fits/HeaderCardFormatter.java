@@ -31,7 +31,6 @@
 
 package nom.tam.fits;
 
-import static nom.tam.fits.header.Standard.BLANKS;
 import static nom.tam.fits.header.Standard.CONTINUE;
 
 import nom.tam.fits.FitsFactory.FitsSettings;
@@ -95,20 +94,6 @@ class HeaderCardFormatter {
     
     /** whatever fits after "CONTINUE  '' /" */
     private static final int MAX_LONG_END_COMMENT = 68 - LONG_COMMENT_PREFIX.length(); 
-    
-    /**
-     * Instantiates a new header card formatter with the current FITS settings. The settings control
-     * whether HIERARCH-style long keywords can be used, whether long string values are permitted
-     * and whether 'D' may be used to as the exponent marker to indicate high-precision decimal
-     * values.
-     * 
-     * @see FitsFactory#setUseHierarch(boolean)
-     * @see FitsFactory#setLongStringsEnabled(boolean)
-     * @see FitsFactory#setUseExponentD(boolean)
-     */
-    HeaderCardFormatter() {
-        this(FitsFactory.current());
-    }
     
     /**
      * Instantiates a new header card formatter with the specified FITS settings.
@@ -177,10 +162,6 @@ class HeaderCardFormatter {
      */
     private void appendKey(StringBuffer buf, HeaderCard card) throws HierarchNotEnabledException {
         String key = card.getKey();
-        
-        if (key == null) {
-            key = BLANKS.key();
-        }
         
         if (card.hasHierarchKey()) {
             if (!settings.isUseHierarch()) {
