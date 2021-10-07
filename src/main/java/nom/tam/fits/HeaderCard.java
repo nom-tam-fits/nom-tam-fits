@@ -44,7 +44,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import nom.tam.fits.FitsFactory.FitsSettings;
 import nom.tam.fits.header.NonStandard;
@@ -72,7 +71,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     
     /** The length of two single quotes that must surround string values. */
     public static final int STRING_QUOTES_LENGTH = 2;
-
+    
     /** Maximum length of a FITS value field. */
     public static final int MAX_VALUE_LENGTH = 70;
     
@@ -97,11 +96,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /** The last ASCII character that may be used in header records */
     public static final char MAX_VALID_CHAR = 0x7e;
 
+    /** The default keyword to use instead of null or any number of blanks. */
+    public static final String EMPTY_KEY = "";
+
     /** The string "HIERARCH." */
     private static final String HIERARCH_WITH_DOT = NonStandard.HIERARCH.key() + ".";
-
-    /** Regex pattern for matching string that use scientific notation with 'D' or 'd' before the exponent. */
-    private static final Pattern DBLSCI_REGEX = Pattern.compile("[+-]?\\d*\\.?\\d*(?:[dD]?[+-]?\\d+)?");
 
     /** The keyword part of the card (set to null if there's no keyword) */
     private String key;
@@ -202,7 +201,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * Trailing zeroes will be omitted.
      *
      * @param key       keyword
-     * @param value     value
+     * @param value     value (can be <code>null</code>, in which case the card type defaults to <code>Integer.class</code>)
      * 
      * @throws HeaderCardException      for any invalid keyword or value.
      * @since 1.16
@@ -220,7 +219,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * Trailing zeroes will be omitted.
      *
      * @param key       keyword
-     * @param value     value
+     * @param value     value (can be <code>null</code>, in which case the card type defaults to <code>Integer.class</code>)
      * @param comment   optional comment, or <code>null</code>
      * 
      * @throws HeaderCardException      for any invalid keyword or value
@@ -238,7 +237,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * gets formatted as <code>3.14E0</code>.
      *
      * @param key       keyword
-     * @param value     value
+     * @param value     value (can be <code>null</code>, in which case the card type defaults to <code>Integer.class</code>)
      * @param decimals  the number of decimal places to show in the scientific notation. 
      * @param comment   optional comment, or <code>null</code>
      * 
@@ -248,6 +247,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #HeaderCard(String, Number, String)
      */
     public HeaderCard(String key, Number value, int decimals, String comment) throws HeaderCardException {
+        if (value == null) {
+            set(key, null, comment, Integer.class);
+            return;
+        }
+        
         try { 
             checkNumber(value);        
         } catch (NumberFormatException e) {
@@ -260,29 +264,29 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * Creates a new card with a boolean value (and no comment).
      *
      * @param key       keyword
-     * @param value     value
+     * @param value     value (can be <code>null</code>)
      * 
      * @throws HeaderCardException for any invalid keyword
      * 
      * @see #HeaderCard(String, boolean, String)
      */
-    public HeaderCard(String key, boolean value) throws HeaderCardException {
-        this(key, value ? "T" : "F", null);
+    public HeaderCard(String key, Boolean value) throws HeaderCardException {
+        this(key, value, null);
     }
 
     /**
      * Creates a new card with a boolean value, and a comment.
      *
      * @param key       keyword
-     * @param value     value
+     * @param value     value (can be <code>null</code>)
      * @param comment   optional comment, or <code>null</code>
      * 
      * @throws HeaderCardException for any invalid keyword or value
      * 
      * @see #HeaderCard(String, boolean)
      */
-    public HeaderCard(String key, boolean value, String comment) throws HeaderCardException {
-        this(key, value ? "T" : "F", comment, Boolean.class);
+    public HeaderCard(String key, Boolean value, String comment) throws HeaderCardException {
+        this(key, value == null ? null : (value ? "T" : "F"), comment, Boolean.class);
     }
     
     /**
@@ -291,7 +295,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * more compact notation. Trailing zeroes will be omitted.
      *
      * @param key       keyword
-     * @param value     value
+     * @param value     value (can be <code>null</code>)
      * 
      * @throws HeaderCardException      for any invalid keyword or value.
      * 
@@ -308,7 +312,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * more compact notation. Trailing zeroes will be omitted.
      *
      * @param key       keyword
-     * @param value     value
+     * @param value     value (can be <code>null</code>)
      * @param comment   optional comment, or <code>null</code>
      * 
      * @throws HeaderCardException      for any invalid keyword or value.
@@ -318,6 +322,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      */
     public HeaderCard(String key, ComplexValue value, String comment) throws HeaderCardException {
         this();
+        
+        if (value == null) {
+            set(key, null, comment, ComplexValue.class);
+            return;
+        }
+        
         if (!value.isFinite()) {
             throw new HeaderCardException("Cannot represent " + value + " in FITS headers.");
         }
@@ -331,7 +341,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * <code>(3.14E0,1.2E1)</code>.
      *
      * @param key       keyword
-     * @param value     value
+     * @param value     value (can be <code>null</code>)
      * @param decimals  the number of decimal places to show. 
      * @param comment   optional comment, or <code>null</code>
      * 
@@ -342,6 +352,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      */
     public HeaderCard(String key, ComplexValue value, int decimals, String comment) throws HeaderCardException {
         this();
+        
+        if (value == null) {
+            set(key, null, comment, ComplexValue.class);
+            return;
+        }
+        
         if (!value.isFinite()) {
             throw new HeaderCardException("Cannot represent " + value + " in FITS headers.");
         }
@@ -393,8 +409,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * case the nullable field should be true.
      *
      * @param key       The key for the comment or nullable field.
-     * @param value     the value.
-     * @param text      The comment
+     * @param value     The value (can be <code>null</code>)
+     * @param comment   The comment
      * @param nullable  If <code>true</code> a null value is a valid value. Otherwise, a <code>null</code> value 
      *                  turns this into a comment-style card.
      * 
@@ -408,8 +424,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @deprecated Use {@link #HeaderCard(String, String, String)}, or {@link #createCommentStyleCard(String, String)} instead.
      */
     @Deprecated
-    public HeaderCard(String key, String value, String text, boolean nullable) throws HeaderCardException {
-        this(key, value, text, (nullable || value != null) ? String.class : null);
+    public HeaderCard(String key, String value, String comment, boolean nullable) throws HeaderCardException {
+        this(key, value, comment, (nullable || value != null) ? String.class : null);
     }
 
     /**
@@ -462,35 +478,39 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Sets all components of the card to the specified values. For internal use only.
      *
-     * @param aKey       Case-sensitive keyword (can be null for COMMENT)
-     * @param aValue     the serialized value (tailing spaces will be removed)
-     * @param aComment   an optional comment or null.
+     * @param aKey       Case-sensitive keyword (can be <code>null</code> for COMMENT)
+     * @param aValue     the serialized value (tailing spaces will be removed), or <code>null</code>
+     * @param aComment   an optional comment or <code>null</code>.
      * @param aType      The Java class from which the value field was derived, or
      *                   null if it's a comment-style card.
      * 
      * @throws HeaderCardException for any invalid keyword or value
      */
     private void set(String aKey, String aValue, String aComment, Class<?> aType) throws HeaderCardException {
+        if (aType == null && aValue != null) {
+            throw new HeaderCardException("Null type for value: [" + sanitize(aValue) + "]");
+        }
+        
         this.type = aType;
         
-        if (aKey != null && aValue == null) {
-            if (aKey.trim().isEmpty()) {
-                // If value is null and the key is just spaces, then add the spaces into the comment.
-                // and empty the key.
-                aKey = "";
-            }
+        // AK: Map null and blank keys to BLANKS.key()
+        // This simplifies things as we won't have to check for null keys separately!
+        if (aKey == null) {
+            aKey = EMPTY_KEY;
+        } else if (aKey.trim().isEmpty()) {
+            aKey = EMPTY_KEY;
+        }
+      
+        if (aKey.isEmpty() && aValue != null) {
+            throw new HeaderCardException("Blank or null key for value: [" + sanitize(aValue) + "]");
+        } 
+        
+        try {
+            validateKey(aKey);
+        } catch (RuntimeException e) {
+            throw new HeaderCardException("Invalid FITS keyword: [" + sanitize(aKey) + "]", e);
         }
 
-        if (aKey == null && aValue != null) {
-            throw new HeaderCardException("Null keyword with non-null value: [" + sanitize(aValue) + "]");
-        } else if (aKey != null) {
-            try {
-                validateKey(aKey);
-            } catch (Exception e) {
-                throw new HeaderCardException("Invalid FITS keyword: [" + sanitize(aKey) + "]", e);
-            }
-        }
-        
         this.key = aKey;
        
         try {
@@ -508,11 +528,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
         
         if (aValue == null) {
-            this.value = aValue;
+            this.value = null;
             return;
-        }
-        
-        if (isStringValue()) { 
+        } else if (isStringValue()) { 
             // Discard trailing spaces
             int to = aValue.length();
             while (--to >= 0) {
@@ -541,7 +559,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
                 throw new HeaderCardException("Value too long: [" + sanitize(aValue) + "]", new LongValueException(key, spaceForValue()));
             }
         }
-
+        
         this.value = aValue;
     }
 
@@ -582,9 +600,10 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Returns the keyword component of this card, which may be null.
+     * Returns the keyword component of this card, which may be empty but never <code>null</code>,
+     * but it may be an empty string.
      * 
-     * @return the keyword from this card
+     * @return the keyword from this card, guaranteed to be not <code>null</code>).
      * 
      * @see #getValue()
      * @see #getComment()
@@ -637,7 +656,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * Returns the value cast to the specified type, is possible.
      * 
      * @param asType        the requested class of the value
-     * @param defaultValue  the value if the card was not present.
+     * @param defaultValue  the value if the card was not present or had a null value.
      * @param <T>           the generic type of the requested class
      * 
      * @return the value from this card as a specific type, or the specified default value
@@ -645,45 +664,63 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @throws IllegalArgumentException     if the value cannot be cast into the the specified type.
      */
     public synchronized <T> T getValue(Class<T> asType, T defaultValue) throws IllegalArgumentException {
+
+        if (this.value == null) {
+            return defaultValue;
+        }
+        
         if (String.class.isAssignableFrom(asType)) {
             return asType.cast(this.value);
-        } else if (this.value == null || this.value.isEmpty()) {
+        }
+        if (this.value == null || this.value.isEmpty()) {
             return defaultValue;
-        } else if (Boolean.class.isAssignableFrom(asType)) {
+        }
+        if (Boolean.class.isAssignableFrom(asType)) {
             return asType.cast(getBooleanValue((Boolean) defaultValue));
-        } else if (ComplexValue.class.isAssignableFrom(asType)) {
+        }
+        if (ComplexValue.class.isAssignableFrom(asType)) {
             return asType.cast(new ComplexValue(value)); 
         }
-
-        // Convert the Double Scientific Notation specified by FITS to pure IEEE.
-        if (HeaderCard.DBLSCI_REGEX.matcher(value).find()) {
-            value = value.toUpperCase().replace('D', 'E');
+        if (!Number.class.isAssignableFrom(asType)) {
+            throw new IllegalArgumentException("unsupported class " + asType);
+        }
+           
+        
+        if (Byte.class.isAssignableFrom(asType)) {
+            return asType.cast(Byte.parseByte(value));
+        }
+        if (Short.class.isAssignableFrom(asType)) {
+            return asType.cast(Short.parseShort(value));
+        }
+        if (Integer.class.isAssignableFrom(asType)) {
+            return asType.cast(Integer.parseInt(value));
+        }
+        if (Long.class.isAssignableFrom(asType)) {
+            return asType.cast(Long.parseLong(value));
+        }
+        if (BigInteger.class.isAssignableFrom(asType)) {
+            try { 
+                return asType.cast(new BigInteger(value)); 
+            } catch (NumberFormatException e) {
+                // No worries we'll try again from BigDecimal...
+            }
         }
 
-        if (Number.class.isAssignableFrom(asType)) {
-            if (Byte.class.isAssignableFrom(asType)) {
-                return asType.cast(Byte.parseByte(value));
-            } else if (Short.class.isAssignableFrom(asType)) {
-                return asType.cast(Short.parseShort(value));
-            } else if (Integer.class.isAssignableFrom(asType)) {
-                return asType.cast(Integer.parseInt(value));
-            } else if (Long.class.isAssignableFrom(asType)) {
-                return asType.cast(Long.parseLong(value));
-            } else if (Float.class.isAssignableFrom(asType)) {
-                return asType.cast(Float.parseFloat(value));
-            } else if (Double.class.isAssignableFrom(asType)) {
-                return asType.cast(Double.parseDouble(value));
-            } else if (BigDecimal.class.isAssignableFrom(asType)) {
-                return asType.cast(new BigDecimal(value));
-            } else if (BigInteger.class.isAssignableFrom(asType)) {
-                try { 
-                    return asType.cast(new BigInteger(value)); 
-                } catch (NumberFormatException e) {
-                    return asType.cast(new BigDecimal(value).toBigIntegerExact());
-                }
-            }
-        } 
-        
+        String ieee = value.toUpperCase().replace('D', 'E');
+
+        if (Float.class.isAssignableFrom(asType)) {
+            return asType.cast(Float.parseFloat(ieee));
+        }
+        if (Double.class.isAssignableFrom(asType)) {
+            return asType.cast(Double.parseDouble(ieee));
+        }
+        if (BigDecimal.class.isAssignableFrom(asType)) {
+            return asType.cast(new BigDecimal(ieee));
+        }
+        if (BigInteger.class.isAssignableFrom(asType)) {
+            return asType.cast(new BigDecimal(ieee).toBigIntegerExact());
+        }
+ 
         throw new IllegalArgumentException("unsupported class " + asType);
     }
 
@@ -695,7 +732,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #isCommentStyleCard()
      */
     public synchronized boolean isKeyValuePair() {
-        return this.value != null;
+        return !isCommentStyleCard() && !key.isEmpty() && value != null;
     }
 
     /**
@@ -724,10 +761,6 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #valueType()
      * 
      * @since 1.16
-     * 
-     * @see #isIntegerType()
-     * @see #isStringValue()
-     * @see #valueType()
      */
     public synchronized boolean isDecimalType() {
         if (type == null) {
@@ -776,6 +809,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *          dot-separated components. Otherwise <code>false</code>.
      *          
      * @since 1.16
+     * 
      */
     public final boolean hasHierarchKey() {
         return isHierarchKey(key);
@@ -796,7 +830,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * format, whichever preserves more digits, or else whichever is the more compact notation.
      * Trailing zeroes will be omitted.
      *
-     * @param update the new value to set
+     * @param update    the new value to set (can be <code>null</code>, in which case the card type defaults to 
+     *                  <code>Integer.class</code>)
      * 
      * @return the card itself
      * 
@@ -814,7 +849,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * places showing between the decimal point and the exponent. For example, if <code>decimals</code> is set to 2, 
      * then &pi; gets formatted as <code>3.14E0</code>.
      *
-     * @param update    the new value to set
+     * @param update    the new value to set (can be <code>null</code>, in which case the card type defaults to 
+     *                  <code>Integer.class</code>)
      * @param decimals  the number of decimal places to show in the scientific notation. 
      * 
      * @return the card itself
@@ -825,9 +861,15 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #setValue(Number)
      */
     public synchronized HeaderCard setValue(Number update, int decimals) throws NumberFormatException, LongValueException {
-        checkNumber(update);
-        setUnquotedValue(new FlexFormat().forCard(this).setPrecision(decimals).format(update));
-        this.type = update.getClass();
+        if (update == null) {
+            this.value = null;
+            this.type = Integer.class;
+        } else {
+            checkNumber(update);
+            setUnquotedValue(new FlexFormat().forCard(this).setPrecision(decimals).format(update));
+
+            this.type = update.getClass();
+        }
         return this;
     }
 
@@ -838,9 +880,14 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @return the card itself
      */
-    public synchronized HeaderCard setValue(boolean update) {
-        // There is always room for a boolean value. :-)
-        this.value = update ? "T" : "F";
+    public synchronized HeaderCard setValue(Boolean update) {
+        if (update == null) {
+            this.value = null;
+        } else {
+            // There is always room for a boolean value. :-)
+            this.value = update ? "T" : "F";
+        }
+        
         this.type = Boolean.class;
         return this;
     }
@@ -884,11 +931,16 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @since 1.16
      */
     public synchronized HeaderCard setValue(ComplexValue update, int decimals) throws LongValueException {
-        if (!update.isFinite()) {
-            throw new NumberFormatException("Cannot represent " + update + " in FITS headers.");
+        if (update == null) {
+            this.value = null;
+        } else {
+            if (!update.isFinite()) {
+                throw new NumberFormatException("Cannot represent " + update + " in FITS headers.");
+            }
+            setUnquotedValue(update.toString(decimals));
         }
         
-        setUnquotedValue(update.toString(decimals));
+        this.type = ComplexValue.class;
         return this;
     }
     
@@ -937,18 +989,19 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #validateChars(String)
      */
     public synchronized HeaderCard setValue(String update) throws IllegalArgumentException, LongStringsNotEnabledException {
-        validateChars(update);
-        
-        int l = STRING_QUOTES_LENGTH;
-        if (update != null) {
-            l += update.length();
+        if (update == null) {
+            // There is always room for an empty string...
+            this.value = null;
+        } else {
+            validateChars(update);
+            int l = STRING_QUOTES_LENGTH + update.length();
+            if (!FitsFactory.isLongStringsEnabled() && l > spaceForValue(key)) {
+                throw new LongStringsNotEnabledException("New string value for [" + key + "] is too long."
+                        + "\n\n --> You can enable long string support by FitsFactory.setLongStringEnabled(true).\n");
+            }
+            this.value = update;
         }
         
-        if (!FitsFactory.isLongStringsEnabled() && l > spaceForValue(key)) {
-            throw new LongStringsNotEnabledException("New string value for [" + key + "] is too long."
-                    + "\n\n --> You can enable long string support by FitsFactory.setLongStringEnabled(true).\n");
-        }
-        this.value = update;
         this.type = String.class;
         return this;
     }
@@ -1124,10 +1177,14 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
         
         int n = isStringValue() ? 2 : 0;
-        if (value != null) { 
-            n += value.length();      
-            for (int i = value.indexOf('\''); i >= 0;) {
-                // Add the number of qwuotes that need quoting.
+        if (value == null) {
+            return n;
+        }
+        
+        n += value.length();      
+        for (int i = value.length(); --i >= 0;) {
+            if (value.charAt(i) == '\'') {
+                // Add the number of quotes that need quoting.
                 n++;
             }
         }
@@ -1400,9 +1457,6 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @return      <code>true</code> if the specified key may be a HIERARC-style key, otehrwise <code>false</code>. 
      */
     private static boolean isHierarchKey(String key) {
-        if (key == null) {
-            return false;
-        }
         return key.toUpperCase().startsWith(HIERARCH_WITH_DOT);
     }
 
@@ -1492,10 +1546,6 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see FitsFactory#setUseHierarch(boolean)
      */
     public static void validateKey(String key) throws IllegalArgumentException {
-        if (key == null) {
-            throw new IllegalArgumentException("Keyword is null");
-        }
-
         int maxLength = MAX_KEYWORD_LENGTH;
         if (isHierarchKey(key)) {
             if (!FitsFactory.getUseHierarch()) {
@@ -1555,7 +1605,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @throws HeaderCardException
      */
-    private static void validateHierarchComponents(String key) throws IllegalArgumentException {
+    private static void validateHierarchComponents(String key) throws IllegalArgumentException {        
         for (int i = key.length(); --i >= 0;) {
             if (Character.isSpaceChar(key.charAt(i))) {
                 throw new IllegalArgumentException("No spaces allowed in HIERARCH keywords used internally: [" + sanitize(key) + "].");

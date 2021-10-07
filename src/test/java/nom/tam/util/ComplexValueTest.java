@@ -32,6 +32,7 @@ package nom.tam.util;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -88,6 +89,16 @@ public class ComplexValueTest {
             f.setPrecision(decimals);
             s = "(" + f.format(re) + "," + f.format(im) + ")";
             assertEquals("toString(" + decimals + ")", s, z.toString(decimals));
+            
+            ComplexValue z2 = new ComplexValue(z.re(), z.im());
+            assertEquals(z, z2);
+            assertEquals(z.hashCode(), z2.hashCode());
+            
+            z2 = new ComplexValue(z.re() - 1.0, z.im());
+            assertNotEquals(z, z2);
+
+            z2 = new ComplexValue(z.re(), z.im() + 1.0);
+            assertNotEquals(z, z2);
         }
         
         
@@ -195,6 +206,21 @@ public class ComplexValueTest {
     @Test(expected = HeaderCardException.class)
     public void testComplexNaNCard() throws Exception {
         new HeaderCard("COMPLEX", new ComplexValue(Double.NaN, -2.0));
+    }
+    
+    @Test(expected = HeaderCardException.class)
+    public void testComplexNaNCard2() throws Exception {
+        new HeaderCard("COMPLEX", new ComplexValue(Double.NaN, -2.0), 10, "comment");
+    }
+    
+    @Test(expected = HeaderCardException.class)
+    public void testComplexInfCard() throws Exception {
+        new HeaderCard("COMPLEX", new ComplexValue(Double.POSITIVE_INFINITY, -2.0));
+    }
+    
+    @Test(expected = HeaderCardException.class)
+    public void testComplexInfCard2() throws Exception {
+        new HeaderCard("COMPLEX", new ComplexValue(Double.NEGATIVE_INFINITY, -2.0), 10, "comment");
     }
     
     @Test

@@ -653,7 +653,7 @@ public class HeaderCardTest {
     @Test
     public void testChangeKey() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", "value", "comment");
-        HeaderCard hc2 = new HeaderCard("TEST", "long value ---------------------------------------------------------");
+        HeaderCard hc2 = new HeaderCard("TEST", "long value '-----------------------------------------------------'");
         HeaderCard hc3 = new HeaderCard("TEST", new BigInteger("1234567890123456789012345678901234567890123456789012345678901234567890"));
         
         FitsFactory.setUseHierarch(true);
@@ -1193,6 +1193,99 @@ public class HeaderCardTest {
         hc = HeaderCard.create("TEST= 'value' junk    / comment");
         assertTrue(hc.getComment().startsWith("junk"));
     }
+    
+    @Test
+    public void testConstructNullValues() throws Exception {
+        Boolean b = null;
+        Integer i = null;
+        ComplexValue z = null;
+        String s = null;
+        ComplexValue zdef = new ComplexValue(3.1, -1.3);
+
+        
+        HeaderCard hc = new HeaderCard("TEST", b);
+        assertFalse(hc.isCommentStyleCard());
+        assertFalse(hc.isKeyValuePair());
+        assertEquals(Boolean.class, hc.valueType());
+        assertNull(hc.getValue());
+        assertTrue(hc.toString().indexOf('=') == 8);
+        assertTrue(hc.getValue(Boolean.class, true));
+        assertFalse(hc.getValue(Boolean.class, false));
+        
+        hc = new HeaderCard("TEST", i);
+        assertFalse(hc.isCommentStyleCard());
+        assertFalse(hc.isKeyValuePair());
+        assertEquals(Integer.class, hc.valueType());
+        assertNull(hc.getValue());
+        assertTrue(hc.toString().indexOf('=') == 8);
+        assertEquals(101, hc.getValue(Integer.class, 101).intValue());
+        
+        hc = new HeaderCard("TEST", z);
+        assertFalse(hc.isCommentStyleCard());
+        assertFalse(hc.isKeyValuePair());
+        assertEquals(ComplexValue.class, hc.valueType());
+        assertNull(hc.getValue());
+        assertTrue(hc.toString().indexOf('=') == 8);
+        assertEquals(-1, hc.toString().indexOf('\''));
+        assertEquals(zdef, hc.getValue(ComplexValue.class, zdef));
+        
+        hc = new HeaderCard("TEST", s);
+        assertFalse(hc.isCommentStyleCard());
+        assertFalse(hc.isKeyValuePair());
+        assertEquals(String.class, hc.valueType());
+        assertNull(hc.getValue());
+        assertTrue(hc.toString().indexOf('=') == 8);
+        assertEquals("bla", hc.getValue(String.class, "bla"));
+    }
+    
+    
+    @Test
+    public void testSetNullValues() throws Exception {
+        Boolean b = null;
+        Integer i = null;
+        ComplexValue z = null;
+        String s = null;
+        ComplexValue zdef = new ComplexValue(3.1, -1.3);
+
+        
+        HeaderCard hc = new HeaderCard("TEST", "value");
+        
+        hc.setValue(b);
+        assertFalse(hc.isCommentStyleCard());
+        assertFalse(hc.isKeyValuePair());
+        assertEquals(Boolean.class, hc.valueType());
+        assertNull(hc.getValue());
+        assertTrue(hc.toString().indexOf('=') == 8);
+        assertTrue(hc.getValue(Boolean.class, true));
+        assertFalse(hc.getValue(Boolean.class, false));
+        
+        hc.setValue(i);
+        assertFalse(hc.isCommentStyleCard());
+        assertFalse(hc.isKeyValuePair());
+        assertEquals(Integer.class, hc.valueType());
+        assertNull(hc.getValue());
+        assertTrue(hc.toString().indexOf('=') == 8);
+        assertEquals(101, hc.getValue(Integer.class, 101).intValue());
+        
+        hc.setValue(z);
+        assertFalse(hc.isCommentStyleCard());
+        assertFalse(hc.isKeyValuePair());
+        assertEquals(ComplexValue.class, hc.valueType());
+        assertNull(hc.getValue());
+        assertTrue(hc.toString().indexOf('=') == 8);
+        assertEquals(-1, hc.toString().indexOf('\''));
+        assertEquals(zdef, hc.getValue(ComplexValue.class, zdef));
+        
+        hc.setValue(s);
+        assertFalse(hc.isCommentStyleCard());
+        assertFalse(hc.isKeyValuePair());
+        assertEquals(String.class, hc.valueType());
+        assertNull(hc.getValue());
+        assertTrue(hc.toString().indexOf('=') == 8);
+        assertEquals("bla", hc.getValue(String.class, "bla"));
+    }
+    
+    
     
     @Test
     public void testHeaderCardFormat() throws Exception {

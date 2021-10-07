@@ -247,7 +247,7 @@ class HeaderCardParser {
             return;
         }
 
-        // If it's not a HIERARCH keyword, then return an empty key.
+        // If it's not a HIERARCH keyword, then return the simple key.
         if (!stem.equals(HIERARCH.key())) {
             return;
         }
@@ -479,11 +479,12 @@ class HeaderCardParser {
      * 
      * @param value     the serialized (string) representation of a FITS header value.
      * @return          the inferred type of the specified serialized (string) value, or <code>null</code>
-     *                  if the value does not seem to match any of the supported value types.
+     *                  if the value does not seem to match any of the supported value types. <code>null</code>
+     *                  values default to <code>Boolean.class</code>.
      */
     private static Class<?> getInferredValueType(String value) {
         if (value == null) {
-            return null;
+            return Boolean.class;
         }
            
         String trimmedValue = value.trim().toUpperCase();

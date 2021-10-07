@@ -238,7 +238,8 @@ public class FlexFormat {
      * 
      * @param value
      *            the decimal value to print
-     * @return the string representing the value.
+     * @return the string representing the value, or an empty string if the
+     *         value was <code>null</code>.
      * @throws LongValueException
      *             if the decimal value cannot be represented in the alotted
      *             space with any precision
@@ -247,6 +248,10 @@ public class FlexFormat {
      * @see #forCard(HeaderCard)
      */
     public synchronized String format(Number value) throws LongValueException {
+
+        if (value == null) {
+            return "";
+        }
 
         // The value in fixed notation...
         String fixed = null;

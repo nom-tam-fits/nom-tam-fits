@@ -35,6 +35,7 @@ import static nom.tam.fits.header.Standard.CONTINUE;
 
 import nom.tam.fits.FitsFactory.FitsSettings;
 
+
 /**
  * Converts {@link HeaderCard}s into one or more 80-character wide FITS header records. It is a
  * replacement for {@link nom.tam.fits.utilities.FitsLineAppender}, which is still available
@@ -162,7 +163,7 @@ class HeaderCardFormatter {
      */
     private void appendKey(StringBuffer buf, HeaderCard card) throws HierarchNotEnabledException {
         String key = card.getKey();
-        
+
         if (card.hasHierarchKey()) {
             if (!settings.isUseHierarch()) {
                 throw new HierarchNotEnabledException(key);
@@ -206,22 +207,19 @@ class HeaderCardFormatter {
      */
     private int appendValue(StringBuffer buf, HeaderCard card) throws LongValueException, LongStringsNotEnabledException {
         String value = card.getValue();
-        if (value == null) {
-            if (card.isStringValue()) {
-                // For strings, treat null as if empty string.
-                value = "";
-            } else {
-                // null non-string value. Nothing to do...
-                return buf.length();
-            }
-        }
         
-        if (!card.isStringValue() && value.isEmpty()) {
-            // Empty non-string value, nothing to do...
+        if (card.isCommentStyleCard()) {
+            // omment-style card. Nothing to do here...
             return buf.length();
         }
-        
+
+        // Add assignment sequence "= "
         buf.append(getAssignString());
+       
+        if (value == null) {
+            // 'null' value, nothing more to append.
+            return buf.length();
+        }
         
         int valueStart = buf.length();        
         int available = getAvailable(buf);

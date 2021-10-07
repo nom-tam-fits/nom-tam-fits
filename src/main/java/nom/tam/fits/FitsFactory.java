@@ -89,6 +89,7 @@ public final class FitsFactory {
 
         private boolean longStringsEnabled;
 
+        @Deprecated
         private boolean skipBlankAfterAssign;
         
 
@@ -146,6 +147,14 @@ public final class FitsFactory {
             return this.longStringsEnabled;
         }
 
+        /**
+         * @deprecated The FITS standard is very explicit that assignment must be "= ". If we allow
+         *              skipping the space, it will result in a non-standard FITS, that is likely
+         *              to break compatibility with other tools.
+         * 
+         * @return  whether to use only "=", instead of the standard "= " between the keyword
+         *          and the value.
+         */
         protected boolean isSkipBlankAfterAssign() {
             return this.skipBlankAfterAssign;
         }
@@ -270,9 +279,15 @@ public final class FitsFactory {
     }
 
     /**
-     * @return <code>true</code> If blanks after the assign are ommitted in the
-     *         header.
+     * 
+     * @return  whether to use only "=", instead of the standard "= " between the keyword
+     *          and the value.
+     *          
+     * @deprecated The FITS standard is very explicit that assignment must be "= ". If we allow
+     *              skipping the space, it will result in a non-standard FITS, that is likely
+     *              to break compatibility with other tools.
      */
+    @Deprecated
     public static boolean isSkipBlankAfterAssign() {
         return current().isSkipBlankAfterAssign();
     }
@@ -477,7 +492,13 @@ public final class FitsFactory {
      *
      * @param skipBlankAfterAssign
      *            value to set
+     * 
+     * @deprecated The FITS standard is very explicit that assignment must be "= ". If we allow
+     *              skipping the space, it will result in a non-standard FITS, that is likely
+     *              to break compatibility with other tools.
+     * 
      */
+    @Deprecated
     public static void setSkipBlankAfterAssign(boolean skipBlankAfterAssign) {
         current().skipBlankAfterAssign = skipBlankAfterAssign;
     }

@@ -49,6 +49,8 @@ public class FlexFormatTest {
         int i = 1001;
         BigInteger bigi = new BigInteger("12345678901234567890");
         
+        assertEquals("", f.format(null));
+        
         f.setPrecision(FlexFormat.DOUBLE_DECIMALS);
         assertEquals(FlexFormat.DOUBLE_DECIMALS, f.getPrecision());
         

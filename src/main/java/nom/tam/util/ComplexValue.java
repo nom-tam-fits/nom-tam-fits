@@ -62,6 +62,25 @@ public class ComplexValue {
         this.im = im;
     }
     
+    @Override
+    public int hashCode() {
+        return Double.hashCode(re) ^ Double.hashCode(im);
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        
+        if (!(o instanceof ComplexValue)) {
+            return false;
+        }
+        
+        ComplexValue z = (ComplexValue) o;
+        return z.re() == re() && z.im() == im();        
+    }
+    
     /**
      * Instantiates a new complex number value from the string repressentation of it in
      * a FITS header value.
