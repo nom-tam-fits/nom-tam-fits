@@ -48,8 +48,18 @@ import nom.tam.fits.LongValueException;
  */
 public class ComplexValue {
 
+    /** The complex zero **/
+    public static final ComplexValue ZERO = new ComplexValue(0.0, 0.0);
+    
+    /** The complex unity along the real axis, or (1.0, 0.0) **/
+    public static final ComplexValue ONE = new ComplexValue(1.0, 0.0);
+    
+    /** The unity along the imaginary axis <i>i</i>, or (0.0, 1.0) **/
+    public static final ComplexValue I = new ComplexValue(0.0, 1.0);
+    
     /** The real and imaginary parts */
     private double re, im;
+    
     
     /** 
      * Instantiates a new complex number value with the specified real and imaginary components.
@@ -61,26 +71,7 @@ public class ComplexValue {
         this.re = re;
         this.im = im;
     }
-    
-    @Override
-    public int hashCode() {
-        return Double.hashCode(re) ^ Double.hashCode(im);
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        
-        if (!(o instanceof ComplexValue)) {
-            return false;
-        }
-        
-        ComplexValue z = (ComplexValue) o;
-        return z.re() == re() && z.im() == im();        
-    }
-    
+
     /**
      * Instantiates a new complex number value from the string repressentation of it in
      * a FITS header value.
@@ -128,6 +119,38 @@ public class ComplexValue {
         if (tokens.hasMoreTokens()) {
             im = Double.parseDouble(tokens.nextToken());
         }
+    }
+    
+    
+    @Override
+    public int hashCode() {
+        return Double.hashCode(re) ^ Double.hashCode(im);
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        
+        if (!(o instanceof ComplexValue)) {
+            return false;
+        }
+        
+        ComplexValue z = (ComplexValue) o;
+        return z.re() == re() && z.im() == im();        
+    }
+    
+    
+    /**
+     * Checks if the complex value is zero. That is, if both the real or imaginary parts
+     * are zero.
+     * 
+     * @return      <code>true</code>if both the real or imaginary parts are zero.
+     *              Otherwise <code>false</code>.
+     */
+    public final boolean isZero() {
+        return re() == 0.0 && im() == 0.0;
     }
     
     /**

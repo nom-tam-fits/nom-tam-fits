@@ -672,7 +672,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         if (String.class.isAssignableFrom(asType)) {
             return asType.cast(this.value);
         }
-        if (this.value == null || this.value.isEmpty()) {
+        if (this.value.isEmpty()) {
             return defaultValue;
         }
         if (Boolean.class.isAssignableFrom(asType)) {

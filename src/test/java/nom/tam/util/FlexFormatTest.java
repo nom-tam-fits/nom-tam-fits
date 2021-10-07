@@ -84,7 +84,6 @@ public class FlexFormatTest {
         f.setWidth(10);
         assertEquals(10, f.getWidth());
         
-        
         s = f.format(Math.PI);
         assertEquals(Math.PI, Double.parseDouble(s), 1e-6);
         

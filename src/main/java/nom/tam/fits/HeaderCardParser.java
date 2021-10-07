@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import nom.tam.util.ComplexValue;
+import nom.tam.util.FlexFormat;
 
 /**
  * Converts a single 80-character wide FITS header record into a header card. See
@@ -522,18 +523,13 @@ class HeaderCardParser {
             value = value.replace('D', 'E');
         }
         
-        try {
-            Float.parseFloat(value);
-            return hasD ? Double.class : Float.class;
-        } catch (NumberFormatException e) {
-            // Nothing to do, we keep going
-        }
+        BigDecimal big = new BigDecimal(value);
+        int decimals = big.precision() - 1;
         
-        try {
-            Double.parseDouble(value);
+        if (decimals <= FlexFormat.FLOAT_DECIMALS && Float.isFinite(big.floatValue())) {
+            return hasD ? Double.class : Float.class;
+        } else if (decimals <= FlexFormat.DOUBLE_DECIMALS && Double.isFinite(big.doubleValue())) {
             return Double.class;
-        } catch (NumberFormatException e) {
-            // Nothing to do, we keep going
         }
 
         return BigDecimal.class;

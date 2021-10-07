@@ -61,7 +61,7 @@ public class FlexFormat {
      * The maximum number of decimal places to show (after the leading figure)
      * for double-precision (64-bit) values.
      */
-    public static final int DOUBLE_DECIMALS = 17;
+    public static final int DOUBLE_DECIMALS = 16;
 
     /**
      * The maximum number of decimal places to show (after the leading figure)

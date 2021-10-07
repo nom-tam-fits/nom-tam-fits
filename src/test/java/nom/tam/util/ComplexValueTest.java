@@ -46,7 +46,6 @@ import nom.tam.fits.HeaderCard;
 import nom.tam.fits.LongValueException;
 import nom.tam.fits.HeaderCardException;
 
-import java.math.BigInteger;
 import java.util.Random;
 
 public class ComplexValueTest {
@@ -99,6 +98,8 @@ public class ComplexValueTest {
 
             z2 = new ComplexValue(z.re(), z.im() + 1.0);
             assertNotEquals(z, z2);
+            
+            assertNotEquals(z, f);
         }
         
         
@@ -176,6 +177,44 @@ public class ComplexValueTest {
         new ComplexValue("(5566.2,-112#.1)"); 
     }
     
+    @Test(expected = IllegalArgumentException.class)
+    public void testBadComplex4() throws Exception {
+        // Missing closing bracket
+        new ComplexValue("(5566.2,,   "); 
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testBadComplex5() throws Exception {
+        // Missing closing bracket
+        new ComplexValue("(5566.2   "); 
+    }
+    
+    @Test
+    public void testRepairComplex() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(true);
+        // Missing closing bracket
+        ComplexValue z = new ComplexValue("(5566.2,-1123.1");
+        assertEquals(5566.2, z.re(), 1e-10);
+        assertEquals(-1123.1, z.im(), 1e-10);
+    }
+    
+    @Test
+    public void testRepairComplex1() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(true);
+        // Missing closing bracket
+        ComplexValue z = new ComplexValue("(5566.2"); 
+        assertEquals(5566.2, z.re(), 1e-10);
+        assertEquals(0.0, z.im(), 1e-10);
+    }
+    
+    @Test
+    public void testRepairComplex2() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(true);
+        // Missing closing bracket
+        ComplexValue z = new ComplexValue("(  "); 
+        assertEquals(0.0, z.re(), 1e-10);
+        assertEquals(0.0, z.im(), 1e-10);
+    }
     
     @Test
     public void testComplexCard() throws Exception {
@@ -184,6 +223,17 @@ public class ComplexValueTest {
         assertEquals(ComplexValue.class, hc.valueType());
         
         ComplexValue z = hc.getValue(ComplexValue.class, null);
+        assertNotNull(z);
+        
+        assertEquals(1.0, z.re(), 1e-12);
+        assertEquals(-2.0, z.im(), 1e-12);
+        
+        
+        hc = new HeaderCard("COMPLEX", new ComplexValue(1.0, -2.0), 12, "comment");
+
+        assertEquals(ComplexValue.class, hc.valueType());
+        
+        z = hc.getValue(ComplexValue.class, null);
         assertNotNull(z);
         
         assertEquals(1.0, z.re(), 1e-12);
@@ -201,6 +251,27 @@ public class ComplexValueTest {
         
         assertEquals(1.0, z.re(), 1e-12);
         assertEquals(-2.0, z.im(), 1e-12);
+    }
+    
+    @Test
+    public void testComplexFromNumber() throws Exception {
+        ComplexValue z = new ComplexValue("-1.51");
+        assertEquals(-1.51, z.re(), 1e-12);
+        assertEquals(0.0, z.im(), 1e-12);
+    }
+    
+    @Test
+    public void testComplexIsZero() throws Exception {
+        ComplexValue z = new ComplexValue(0.0, 0.0);
+        assertTrue(z.isZero());
+        z = new ComplexValue(1.0, 0.0);
+        assertFalse(z.isZero());
+        z = new ComplexValue(0.0, -1.0);
+        assertFalse(z.isZero());
+        z = new ComplexValue(Double.NaN, 0.0);
+        assertFalse(z.isZero());
+        z = new ComplexValue(0.0, Double.POSITIVE_INFINITY);
+        assertFalse(z.isZero());
     }
     
     @Test(expected = HeaderCardException.class)

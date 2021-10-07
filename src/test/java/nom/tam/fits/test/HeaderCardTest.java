@@ -932,11 +932,31 @@ public class HeaderCardTest {
 
     @Test
     public void testKeyWordNullability() throws Exception {
-        assertEquals("TEST    = 'VALUE   '           / COMMENT                                        ", new HeaderCard("TEST", "VALUE", "COMMENT", true).toString());
-        assertEquals("TEST    = 'VALUE   '           / COMMENT                                        ", new HeaderCard("TEST", "VALUE", "COMMENT", false).toString());
-        assertEquals("TEST    =                      / COMMENT                                        ", new HeaderCard("TEST", null, "COMMENT", true).toString());
+        HeaderCard hc = new HeaderCard("TEST", "VALUE", "COMMENT", true);
+        assertEquals("TEST    = 'VALUE   '           / COMMENT                                        ", hc.toString());
+        assertTrue(hc.isKeyValuePair());
+        assertFalse(hc.isCommentStyleCard());
+        assertEquals(hc.toString(), HeaderCard.create(hc.toString()).toString());
+        
+        hc = new HeaderCard("TEST", "VALUE", "COMMENT", false);
+        assertEquals("TEST    = 'VALUE   '           / COMMENT                                        ", hc.toString());
+        assertTrue(hc.isKeyValuePair());
+        assertFalse(hc.isCommentStyleCard());
+        assertEquals(hc.toString(), HeaderCard.create(hc.toString()).toString());
+        
+        hc = new HeaderCard("TEST", null, "COMMENT", true);
+        assertEquals("TEST    =                      / COMMENT                                        ", hc.toString());
+        assertFalse(hc.isKeyValuePair());
+        assertFalse(hc.isCommentStyleCard());
+        assertEquals(hc.toString(), HeaderCard.create(hc.toString()).toString());
+        
+        hc = new HeaderCard("TEST", null, "COMMENT", false);
         // AK: Fixed because comment can start at or after byte 11 only!
-        assertEquals("TEST      COMMENT                                                               ", new HeaderCard("TEST", null, "COMMENT", false).toString());
+        assertEquals("TEST      COMMENT                                                               ", hc.toString());
+        assertFalse(hc.isKeyValuePair());
+        assertTrue(hc.isCommentStyleCard());
+        assertEquals(hc.toString(), HeaderCard.create(hc.toString()).toString());
+        
         HeaderCardException actual = null;
         try {
             new HeaderCard(null, "VALUE", "COMMENT", true);
@@ -944,11 +964,6 @@ public class HeaderCardTest {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        assertTrue(new HeaderCard("TEST", "VALUE", "COMMENT", true).isKeyValuePair());
-        assertTrue(new HeaderCard("TEST", "VALUE", "COMMENT", false).isKeyValuePair());
-        assertFalse(new HeaderCard("TEST", null, "COMMENT", true).isKeyValuePair());
-        assertFalse(new HeaderCard("TEST", null, "COMMENT", false).isKeyValuePair());
-
     }
 
     @Test
@@ -1198,6 +1213,7 @@ public class HeaderCardTest {
     public void testConstructNullValues() throws Exception {
         Boolean b = null;
         Integer i = null;
+        Float f = null;
         ComplexValue z = null;
         String s = null;
         ComplexValue zdef = new ComplexValue(3.1, -1.3);
@@ -1220,7 +1236,24 @@ public class HeaderCardTest {
         assertTrue(hc.toString().indexOf('=') == 8);
         assertEquals(101, hc.getValue(Integer.class, 101).intValue());
         
+        hc = new HeaderCard("TEST", f, 10, "comment");
+        assertFalse(hc.isCommentStyleCard());
+        assertFalse(hc.isKeyValuePair());
+        assertEquals(Integer.class, hc.valueType());
+        assertNull(hc.getValue());
+        assertTrue(hc.toString().indexOf('=') == 8);
+        assertEquals(101.0F, hc.getValue(Float.class, 101.0F).floatValue(), 1e-3);
+        
         hc = new HeaderCard("TEST", z);
+        assertFalse(hc.isCommentStyleCard());
+        assertFalse(hc.isKeyValuePair());
+        assertEquals(ComplexValue.class, hc.valueType());
+        assertNull(hc.getValue());
+        assertTrue(hc.toString().indexOf('=') == 8);
+        assertEquals(-1, hc.toString().indexOf('\''));
+        assertEquals(zdef, hc.getValue(ComplexValue.class, zdef));
+        
+        hc = new HeaderCard("TEST", z, 10, "comment");
         assertFalse(hc.isCommentStyleCard());
         assertFalse(hc.isKeyValuePair());
         assertEquals(ComplexValue.class, hc.valueType());
@@ -1238,11 +1271,51 @@ public class HeaderCardTest {
         assertEquals("bla", hc.getValue(String.class, "bla"));
     }
     
+    @Test
+    public void testCastEmpty() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", "");
+        assertEquals(101, hc.getValue(Integer.class, 101).intValue());
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testUnknownCast() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", "value");
+        hc.getValue(Object.class, null);
+    }
+    
+    public void testKeyValuePair() throws Exception {
+        String s = null;
+        
+        HeaderCard hc = new HeaderCard("TEST", s);
+        assertFalse(hc.isKeyValuePair());
+        
+        hc = new HeaderCard(null, s);
+        assertFalse(hc.isKeyValuePair());
+        
+        hc = new HeaderCard("    ", s);
+        assertFalse(hc.isKeyValuePair());
+        
+        hc = new HeaderCard("TEST", "value");
+        assertTrue(hc.isKeyValuePair());      
+    }
+    
+    @Test(expected = HeaderCardException.class)
+    public void testKeyValueExcept1() throws Exception {
+        // This one throws an exception...
+        new HeaderCard(null, "value");
+    }
+    
+    @Test(expected = HeaderCardException.class)
+    public void testKeyValueExcept2() throws Exception {
+        // This one throws an exception...
+        new HeaderCard("    ", "value");
+    }
     
     @Test
     public void testSetNullValues() throws Exception {
         Boolean b = null;
         Integer i = null;
+        Float f = null;
         ComplexValue z = null;
         String s = null;
         ComplexValue zdef = new ComplexValue(3.1, -1.3);
@@ -1267,7 +1340,24 @@ public class HeaderCardTest {
         assertTrue(hc.toString().indexOf('=') == 8);
         assertEquals(101, hc.getValue(Integer.class, 101).intValue());
         
+        hc.setValue(f, 10);
+        assertFalse(hc.isCommentStyleCard());
+        assertFalse(hc.isKeyValuePair());
+        assertEquals(Integer.class, hc.valueType());
+        assertNull(hc.getValue());
+        assertTrue(hc.toString().indexOf('=') == 8);
+        assertEquals(101.0F, hc.getValue(Float.class, 101.0F).floatValue(), 1e-3);
+        
         hc.setValue(z);
+        assertFalse(hc.isCommentStyleCard());
+        assertFalse(hc.isKeyValuePair());
+        assertEquals(ComplexValue.class, hc.valueType());
+        assertNull(hc.getValue());
+        assertTrue(hc.toString().indexOf('=') == 8);
+        assertEquals(-1, hc.toString().indexOf('\''));
+        assertEquals(zdef, hc.getValue(ComplexValue.class, zdef));
+        
+        hc.setValue(z, 10);
         assertFalse(hc.isCommentStyleCard());
         assertFalse(hc.isKeyValuePair());
         assertEquals(ComplexValue.class, hc.valueType());
