@@ -62,9 +62,9 @@ public class HeaderCardStaticTest {
     }
     
     @Test
-    public void testCreateBlankCommentCard() throws Exception {
+    public void testCreateUnkeyedCommentCard() throws Exception {
         String text = "my comment here";
-        HeaderCard hc = HeaderCard.createBlankCommentCard(text);
+        HeaderCard hc = HeaderCard.createUnkeyedCommentCard(text);
         
         assertEquals("", hc.getKey());
         assertEquals(text, hc.getComment());

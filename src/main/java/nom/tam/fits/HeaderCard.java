@@ -681,44 +681,41 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         if (ComplexValue.class.isAssignableFrom(asType)) {
             return asType.cast(new ComplexValue(value)); 
         }
-        if (!Number.class.isAssignableFrom(asType)) {
-            throw new IllegalArgumentException("unsupported class " + asType);
-        }
-           
-        
-        if (Byte.class.isAssignableFrom(asType)) {
-            return asType.cast(Byte.parseByte(value));
-        }
-        if (Short.class.isAssignableFrom(asType)) {
-            return asType.cast(Short.parseShort(value));
-        }
-        if (Integer.class.isAssignableFrom(asType)) {
-            return asType.cast(Integer.parseInt(value));
-        }
-        if (Long.class.isAssignableFrom(asType)) {
-            return asType.cast(Long.parseLong(value));
-        }
-        if (BigInteger.class.isAssignableFrom(asType)) {
-            try { 
-                return asType.cast(new BigInteger(value)); 
-            } catch (NumberFormatException e) {
-                // No worries we'll try again from BigDecimal...
+        if (Number.class.isAssignableFrom(asType)) {
+            if (Byte.class.isAssignableFrom(asType)) {
+                return asType.cast(Byte.parseByte(value));
             }
-        }
+            if (Short.class.isAssignableFrom(asType)) {
+                return asType.cast(Short.parseShort(value));
+            }
+            if (Integer.class.isAssignableFrom(asType)) {
+                return asType.cast(Integer.parseInt(value));
+            }
+            if (Long.class.isAssignableFrom(asType)) {
+                return asType.cast(Long.parseLong(value));
+            }
+            if (BigInteger.class.isAssignableFrom(asType)) {
+                try { 
+                    return asType.cast(new BigInteger(value)); 
+                } catch (NumberFormatException e) {
+                    // No worries we'll try again from BigDecimal...
+                }
+            }
 
-        String ieee = value.toUpperCase().replace('D', 'E');
+            String ieee = value.toUpperCase().replace('D', 'E');
 
-        if (Float.class.isAssignableFrom(asType)) {
-            return asType.cast(Float.parseFloat(ieee));
-        }
-        if (Double.class.isAssignableFrom(asType)) {
-            return asType.cast(Double.parseDouble(ieee));
-        }
-        if (BigDecimal.class.isAssignableFrom(asType)) {
-            return asType.cast(new BigDecimal(ieee));
-        }
-        if (BigInteger.class.isAssignableFrom(asType)) {
-            return asType.cast(new BigDecimal(ieee).toBigIntegerExact());
+            if (Float.class.isAssignableFrom(asType)) {
+                return asType.cast(Float.parseFloat(ieee));
+            }
+            if (Double.class.isAssignableFrom(asType)) {
+                return asType.cast(Double.parseDouble(ieee));
+            }
+            if (BigDecimal.class.isAssignableFrom(asType)) {
+                return asType.cast(new BigDecimal(ieee));
+            }
+            if (BigInteger.class.isAssignableFrom(asType)) {
+                return asType.cast(new BigDecimal(ieee).toBigIntegerExact());
+            }
         }
  
         throw new IllegalArgumentException("unsupported class " + asType);
@@ -1318,25 +1315,83 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
     }
     
-    
-    public static HeaderCard createCommentStyleCard(String key, String comment) throws HeaderCardException {
+    /**
+     * Creates a comment-style card with no associated value field.
+     * 
+     * @param key       The keyword, or <code>null</code> blank/empty string for an unkeyed comment.
+     * @param comment   The comment text.
+     * @return          a new comment-style header card with the specified key and comment text.
+     * @throws HeaderCardException      if the key or value were invalid.
+     * @throws LongValueException       if the comment text is longer than the space available
+     *                                  in comment-style cards (70 characters max)
+     * 
+     * @see #createUnkeyedCommentCard(String)
+     * @see #createCommentCard(String)
+     * @see #createHistoryCard(String)
+     */
+    public static HeaderCard createCommentStyleCard(String key, String comment) throws HeaderCardException, LongValueException {
+        if (comment.length() > MAX_VALUE_LENGTH) {
+            throw new LongValueException(MAX_VALUE_LENGTH, key, comment);
+        }
         HeaderCard card = new HeaderCard();
         card.set(key, null, comment, null);
         return card;
     }
 
-    public static HeaderCard createBlankCommentCard(String text) throws HeaderCardException {
+    /**
+     * Creates a new unkeyed comment card for th FITS header. These are comment-style cards with no associated
+     * value field, and with a blank keyword. They are commonly used to add explanatory notes in the
+     * FITS header. Keyed comments are another alternative...
+     * 
+     * @param text      a concise descriptive entry (max 70 characters).
+     * @return          a new COMMENT card with the specified key and comment text.
+     * @throws HeaderCardException      if the text contains invalid charaters.
+     * @throws LongValueException       if the comment text is longer than the space available
+     *                                  in comment-style cards (70 characters max)
+     *                                  
+     * @see #createCommentCard(String)
+     * @see #createCommentStyleCard(String, String)
+     */
+    public static HeaderCard createUnkeyedCommentCard(String text) throws HeaderCardException, LongValueException {
         return createCommentStyleCard(BLANKS.key(), text);
     }
     
-    public static HeaderCard createCommentCard(String text) throws HeaderCardException {
+    /**
+     * Creates a new keyed comment card for th FITS header. These are comment-style cards with no associated
+     * value field, and with COMMENT as the keyword. They are commonly used to add explanatory notes in the
+     * FITS header. Unkeyed comments are another alternative...
+     * 
+     * @param text      a concise descriptive entry (max 70 characters).
+     * @return          a new COMMENT card with the specified key and comment text.
+     * @throws HeaderCardException      if the text contains invalid charaters.
+     * @throws LongValueException       if the comment text is longer than the space available
+     *                                  in comment-style cards (70 characters max)
+     *                                  
+     * @see #createUnkeyedCommentCard(String)
+     * @see #createCommentStyleCard(String, String)
+     */
+    public static HeaderCard createCommentCard(String text) throws HeaderCardException, LongValueException {
         return createCommentStyleCard(COMMENT.key(), text);
     }
     
-    public static HeaderCard createHistoryCard(String text) throws HeaderCardException {
+    /**
+     * Creates a new history record for the FITS header. These are comment-style cards with no associated
+     * value field, and with HISTORY as the keyword. They are commonly used to document the
+     * sequence operations that were performed on the data before it arrived to the state represented
+     * by the FITS file. The text field for history entries is limited to 70 characters max per
+     * card. However there is no limit to how many such entries are in a FITS header.
+     * 
+     * @param text      a concise descriptive entry (max 70 characters).
+     * @return          a new HISTORY card with the specified key and comment text.
+     * @throws HeaderCardException      if the text contains invalid charaters.
+     * @throws LongValueException       if the comment text is longer than the space available
+     *                                  in comment-style cards (70 characters max)
+     *                                  
+     * @see #createCommentStyleCard(String, String)
+     */
+    public static HeaderCard createHistoryCard(String text) throws HeaderCardException, LongValueException {
         return createCommentStyleCard(HISTORY.key(), text);
     }
-    
     
     /**
      * Creates a new header card with the hexadecimal representation of an integer value
@@ -1410,13 +1465,19 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         return AsciiFuncs.asciiString(buffer);
     }
 
+    /**
+     * Returns the maximum number of characters that can be used for a value field in a single FITS header
+     * record (80 characters wide), after the specified keyword.
+     * 
+     * @param key   the header keyword, which may be a HIERARCH-style key...
+     * @return      the space available for the value field in a single record, after the keyword,
+     *              and the assigmnent sequence (or equivalent blank space).
+     */
     private static int spaceForValue(String key) {
         if (key.length() > MAX_KEYWORD_LENGTH) {
             return FITS_HEADER_CARD_SIZE - (Math.max(key.length(), MAX_KEYWORD_LENGTH)
                     + FitsFactory.getHierarchFormater().getExtraSpaceRequired(key));
         }
-        
-        
         return FITS_HEADER_CARD_SIZE - (Math.max(key.length(), MAX_KEYWORD_LENGTH) + HeaderCardFormatter.getAssignLength());
     }
 
@@ -1594,7 +1655,6 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             throw new IllegalArgumentException("Keyword [" + sanitize(key) + "] contains invalid characters. Only [A-Z][a-z][0-9][-][_] are allowed.");
         }
     }
-
     
     /**
      * Additional checks the extended components of the HIEARCH key (in bytes 9-77), to make sure they conform to

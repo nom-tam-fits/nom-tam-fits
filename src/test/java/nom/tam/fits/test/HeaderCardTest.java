@@ -1123,20 +1123,85 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard("TEST", "value");
         
         int i = 20211006;
-        hc.setHexValue(i);
+        hc.setValue(i);
         assertEquals(Integer.class, hc.valueType());
-        assertEquals(i, hc.getHexValue());
+        assertEquals(i, hc.getValue(Integer.class, -1).intValue());
         
         long l = 202110062256L;
         hc.setValue(l);
         assertEquals(Long.class, hc.valueType());
         assertEquals(l, hc.getValue(Long.class, 0L).longValue());
-        
+       
         BigInteger big = new BigInteger("12345678901234567890");
         hc.setValue(big);
         assertEquals(BigInteger.class, hc.valueType());
         assertEquals(big, hc.getValue(BigInteger.class, BigInteger.ZERO));
     }
+    
+    @Test
+    public void testHexValue() throws Exception {   
+        HeaderCard hc = new HeaderCard("TEST", "value");
+        
+        int i = 20211006;
+        hc.setHexValue(i);
+        assertEquals(Integer.class, hc.valueType());
+        assertEquals(i, hc.getHexValue());
+        
+        hc = HeaderCard.create(hc.toString());
+        assertEquals(Integer.class, hc.valueType());
+        assertEquals(i, hc.getHexValue());
+        
+        
+        long l = 202110062256L;
+        hc.setHexValue(l);
+        assertEquals(Long.class, hc.valueType());
+        assertEquals(l, hc.getHexValue());
+        
+        hc = HeaderCard.create(hc.toString());
+        assertEquals(Long.class, hc.valueType());
+        assertEquals(l, hc.getHexValue());
+    }
+    
+    @Test
+    public void testNumberType() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", 156.7f);
+        assertTrue(hc.isDecimalType());
+        assertFalse(hc.isIntegerType());
+        
+        hc = new HeaderCard("TEST", Math.PI);
+        assertTrue(hc.isDecimalType());
+        assertFalse(hc.isIntegerType());
+        
+        hc = new HeaderCard("TEST", new BigDecimal("123456789012345678901234567890.12345678901234567890"));
+        assertTrue(hc.isDecimalType());
+        assertFalse(hc.isIntegerType());
+        
+        hc = new HeaderCard("TEST", (byte) 112);
+        assertTrue(hc.isIntegerType());
+        assertFalse(hc.isDecimalType());
+        
+        hc = new HeaderCard("TEST", (short) 112);
+        assertTrue(hc.isIntegerType());
+        assertFalse(hc.isDecimalType());
+        
+        hc = new HeaderCard("TEST", 112);
+        assertTrue(hc.isIntegerType());
+        assertFalse(hc.isDecimalType());
+
+        hc = new HeaderCard("TEST", 112L);
+        assertTrue(hc.isIntegerType());
+        assertFalse(hc.isDecimalType());
+        
+        hc = new HeaderCard("TEST", new BigInteger("123456789012345678901234567890"));
+        assertTrue(hc.isIntegerType());
+        assertFalse(hc.isDecimalType());
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNull() throws Exception {
+        HeaderCard.create(null);
+    }
+    
     
     @Test
     public void testSetValueExcept() throws Exception {

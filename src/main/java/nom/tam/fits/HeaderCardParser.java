@@ -64,7 +64,6 @@ class HeaderCardParser {
     /** regexp for nintegers (including hecadecimal). */
     private static final Pattern LONG_REGEX = Pattern.compile("[+-]?[\\dA-Fa-f]*");
     
-    
     /** The header line (usually 80-character width), which to parse. */
     private String line;
 
@@ -487,6 +486,9 @@ class HeaderCardParser {
         if (value == null) {
             return Boolean.class;
         }
+        if (value.isEmpty()) {
+            return Boolean.class;
+        }
            
         String trimmedValue = value.trim().toUpperCase();
         
@@ -522,16 +524,15 @@ class HeaderCardParser {
             // Convert the Double Scientific Notation specified by FITS to pure IEEE.
             value = value.replace('D', 'E');
         }
-        
+     
         BigDecimal big = new BigDecimal(value);
-        int decimals = big.precision() - 1;
-        
+        int decimals = big.precision() - 1;   
         if (decimals <= FlexFormat.FLOAT_DECIMALS && Float.isFinite(big.floatValue())) {
             return hasD ? Double.class : Float.class;
-        } else if (decimals <= FlexFormat.DOUBLE_DECIMALS && Double.isFinite(big.doubleValue())) {
+        } 
+        if (decimals <= FlexFormat.DOUBLE_DECIMALS && Double.isFinite(big.doubleValue())) {
             return Double.class;
         }
-
         return BigDecimal.class;
     }
 
@@ -546,21 +547,20 @@ class HeaderCardParser {
      * @see #getInferredValueType()
      * @see #getDecimalType(String)
      */
-    private static Class<? extends Number> getIntegerType(String value) {    
+    private static Class<? extends Number> getIntegerType(String value) { 
         try {
-            Integer.parseInt(value);
-            return Integer.class;
+            int bits = new BigInteger(value).bitLength();      
+            if (bits < Integer.SIZE) {
+                return Integer.class;
+            }
+            if (bits < Long.SIZE) {
+                return Long.class;
+            }   
+            return BigInteger.class;
         } catch (NumberFormatException e) {
-            // Nothing to do, we keep going
-        }
-        
-        try {
-            Long.parseLong(value);
-            return Long.class;
-        } catch (NumberFormatException e) {
-            // Nothing to do, we keep going
-        }
-        
-        return BigInteger.class;
+            // Try hexadecimal...
+            long l = Long.decode("0x" + value);
+            return (l == (int) l) ? Integer.class : Long.class; 
+        }  
     }
 }

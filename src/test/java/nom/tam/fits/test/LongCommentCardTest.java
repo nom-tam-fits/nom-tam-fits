@@ -44,6 +44,7 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.LongValueException;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.Cursor;
@@ -76,8 +77,16 @@ public class LongCommentCardTest {
             header.addLine(new HeaderCard("HISTORY", counts(length), false));
 
             // Add a non-nullable COMMENT entry with the desired length...
-            header.addLine(HeaderCard.createCommentCard(counts(length)));
+            header.addLine(HeaderCard.createCommentCard(counts(HeaderCard.MAX_VALUE_LENGTH)));
 
+            boolean thrown = false;
+            try {
+                header.addLine(HeaderCard.createCommentCard(counts(HeaderCard.MAX_VALUE_LENGTH + 1)));
+            } catch (LongValueException e) {
+                thrown = true;
+            }
+            Assert.assertTrue(thrown);
+                
             header.insertHistory(counts(length));
             header.insertComment(counts(length));
 

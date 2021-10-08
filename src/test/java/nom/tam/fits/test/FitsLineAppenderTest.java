@@ -132,10 +132,14 @@ public class FitsLineAppenderTest {
         s.getAdjustedLength(-1);
         assertEquals(0, s.length());
         
-        s = new FitsSubString("   '''''''''''''''");
+        text = "   '''''''''''''''  ";
+        s = new FitsSubString(text);
         s.getAdjustedLength(5);
         assertEquals(5, s.length());
-        assertEquals("   ''", toString(s));        
+        assertEquals("   ''", toString(s));   
+        
+        s.getAdjustedLength(100);
+        assertEquals(5, s.length());
         
         s = new FitsSubString(null);
         assertEquals(0, s.length());
