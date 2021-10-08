@@ -158,10 +158,13 @@ class HeaderCardFormatter {
      *                      if the card contains a HIERARCH-style long keyword, but support
      *                      for these has not been enabled in the settings used by this
      *                      formatter.
+     * @throws LongValueException
+     *                      if the HIERARCH keyword is itself too long to fit on the
+     *                      record without leaving a minimum amount of space for a value.
      *                      
      * @see FitsFactory#setUseHierarch(boolean)
      */
-    private void appendKey(StringBuffer buf, HeaderCard card) throws HierarchNotEnabledException {
+    private void appendKey(StringBuffer buf, HeaderCard card) throws HierarchNotEnabledException, LongValueException {
         String key = card.getKey();
 
         if (card.hasHierarchKey()) {
@@ -173,7 +176,7 @@ class HeaderCardFormatter {
                 // Truncate HIERARCH keywords as necessary to fit.
                 // This is really just a second parachute here. Normally, HeaderCards
                 // won't allow creation or setting longer keywords...
-                key = key.substring(0, HeaderCard.MAX_HIERARCH_KEYWORD_LENGTH);
+                throw new LongValueException(key, HeaderCard.MAX_HIERARCH_KEYWORD_LENGTH);
             }            
         } else {
             // Just to be certain, we'll make sure base keywords are upper-case, if they
@@ -231,10 +234,9 @@ class HeaderCardFormatter {
                 buf.append(CONTINUE.key() + "  ");
                 from += appendQuotedValue(buf, card, from);
             }
+        } else if (value.length() > available) {
+            throw new LongValueException(available, card.getKey(), card.getValue());
         } else {
-            if (value.length() > available) {
-                throw new LongValueException(available, card.getKey(), card.getValue());
-            }
             append(buf, value, 0);
         }
         
@@ -250,9 +252,11 @@ class HeaderCardFormatter {
      */
     private int getMinTruncatedCommentSize(HeaderCard card) {
         String comment = card.getComment();
-        if (comment == null) {
-            return 0;
-        }
+        
+        // TODO We check for null before calling, so this is dead code here...
+//        if (comment == null) {
+//            return 0;
+//        }
         
         int firstWordLength = comment.indexOf(' ');
         if (firstWordLength < 0) {
@@ -472,9 +476,11 @@ class HeaderCardFormatter {
         }
         
         String text = card.getValue();
-        if (text == null) {
-            return 0;
-        }
+
+        // TODO We check for null before calling, so this is dead code here...
+//        if (text == null) {
+//            return 0;
+//        }
 
         // The the remaining part of the string fits in the space with the
         // quoted quotes, then it's easy...
@@ -604,6 +610,7 @@ class HeaderCardFormatter {
      *              
      * @see #getAssignLength()
      */
+    @SuppressWarnings("deprecation")
     static String getAssignString() {
         return FitsFactory.isSkipBlankAfterAssign() ? "=" : "= ";
     }
@@ -618,6 +625,7 @@ class HeaderCardFormatter {
      *              
      * @see #getAssignString()
      */
+    @SuppressWarnings("deprecation")
     static int getAssignLength() {
         int n = 1;
         if (!FitsFactory.isSkipBlankAfterAssign()) {

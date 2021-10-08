@@ -210,7 +210,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #HeaderCard(String, Number, int, String)
      */
     public HeaderCard(String key, Number value) throws HeaderCardException {
-        this(key, value, FlexFormat.FLEX_PRECISION, null);
+        this(key, value, FlexFormat.AUTO_PRECISION, null);
     }
     
     /**
@@ -228,7 +228,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #HeaderCard(String, Number, int, String)
      */
     public HeaderCard(String key, Number value, String comment) throws HeaderCardException {
-        this(key, value, FlexFormat.FLEX_PRECISION, comment);
+        this(key, value, FlexFormat.AUTO_PRECISION, comment);
     }
 
     /**
@@ -487,9 +487,10 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @throws HeaderCardException for any invalid keyword or value
      */
     private void set(String aKey, String aValue, String aComment, Class<?> aType) throws HeaderCardException {
-        if (aType == null && aValue != null) {
-            throw new HeaderCardException("Null type for value: [" + sanitize(aValue) + "]");
-        }
+        // TODO we never call with null type and non-null value internally, so this is dead code here...
+//        if (aType == null && aValue != null) {
+//            throw new HeaderCardException("Null type for value: [" + sanitize(aValue) + "]");
+//        }
         
         this.type = aType;
         
@@ -838,7 +839,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #setValue(Number, int)
      */
     public final HeaderCard setValue(Number update) throws NumberFormatException, LongValueException {
-        return setValue(update, FlexFormat.FLEX_PRECISION);
+        return setValue(update, FlexFormat.AUTO_PRECISION);
     }
 
     /**
@@ -906,7 +907,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @since 1.16
      */
     public final HeaderCard setValue(ComplexValue update) throws NumberFormatException, LongValueException {
-        return setValue(update, FlexFormat.FLEX_PRECISION);
+        return setValue(update, FlexFormat.AUTO_PRECISION);
     }
     
     /**
@@ -1661,9 +1662,10 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * our own standards of storing hierarch keys as a dot-separated list of components. That is,
      * the keyword must not have any spaces...
      * 
-     * @param key       the HIERARCH key to check.
+     * @param key       the HIERARCH keyword to check.
      * 
-     * @throws HeaderCardException
+     * @throws IllegalArgumentException     if the keyword is not a proper dot-separated set of non-empty 
+     *                                      hierarchical components
      */
     private static void validateHierarchComponents(String key) throws IllegalArgumentException {        
         for (int i = key.length(); --i >= 0;) {

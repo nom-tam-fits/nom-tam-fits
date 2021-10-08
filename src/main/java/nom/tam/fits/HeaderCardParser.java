@@ -38,6 +38,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -45,15 +46,32 @@ import nom.tam.util.ComplexValue;
 import nom.tam.util.FlexFormat;
 
 /**
+ * <p>
  * Converts a single 80-character wide FITS header record into a header card. See
  * {@link HeaderCard#create(String)} for a description of the rules that guide parsing.
+ * </p>
+ * <p>
+ * When parsing header records that violate FITS standards, the violations can be logged
+ * or will throw appropriate excpetions (depending on the severity of the standard 
+ * violation and whether {@link FitsFactory#setAllowHeaderRepairs(boolean)} is
+ * enabled or not. The logging of violations is disabled by default, but may be
+ * controlled via {@link Header#setParserWarningsEnabled(boolean)}.
+ * </p>
+ * 
  *
  * @author Attila Kovacs
- * @author Richard van Nieuwenhoven
+ * 
+ * @see FitsFactory#setAllowHeaderRepairs(boolean)
+ * @see Header#setParserWarningsEnabled(boolean)
  */
 class HeaderCardParser {
 
     private static final Logger LOG = Logger.getLogger(HeaderCardParser.class.getName());
+    
+    static {
+        // Do not log warnings by default.
+        LOG.setLevel(Level.SEVERE);
+    }
     
     /** regexp for IEEE floats */
     private static final Pattern DECIMAL_REGEX = Pattern.compile("[+-]?\\d*\\.?\\d*(?:[dDeE]?[+-]?\\d+)?");
@@ -63,6 +81,13 @@ class HeaderCardParser {
    
     /** regexp for nintegers (including hecadecimal). */
     private static final Pattern LONG_REGEX = Pattern.compile("[+-]?[\\dA-Fa-f]*");
+    
+    /** 
+     * Value to check against for equality to zero. Unfortunately, BigDecimal.ZERO has precision 0, whereas any BigDecimal
+     * created with a zero string has precision 1, so BigDecimals from a string are never equal to BigDecimal.ZERO.
+     * So, we create our own version of zero that can be used to test for parsed zero values...
+     */
+    private static final BigDecimal ZERO = new BigDecimal("0.0");
     
     /** The header line (usually 80-character width), which to parse. */
     private String line;
@@ -110,9 +135,10 @@ class HeaderCardParser {
      */
     HeaderCardParser(String line) throws UnclosedQuoteException, IllegalArgumentException {
         this.line = line;
-        if (line == null) {
-            throw new IllegalArgumentException("Cannot parse null string");
-        }
+        // TODO HeaderCard never calls this with a null argument, so the check below is dead code here...
+//        if (line == null) {
+//            throw new IllegalArgumentException("Cannot parse null string");
+//        }
         parseKey();
         parseValue();
         parseComment();
@@ -226,14 +252,27 @@ class HeaderCardParser {
 
         // Find the '=' in the line, if any...
         int iEq = line.indexOf('=');
-
+        
         // The stem is in the first 8 characters or what precedes an '=' character
         // before that.
         int endStem = (iEq >= 0 && iEq <= HeaderCard.MAX_KEYWORD_LENGTH) ? iEq : HeaderCard.MAX_KEYWORD_LENGTH;
+        endStem = Math.min(line.length(), endStem);
 
-        // Find the key stem of the long key.
-        String stem = line.substring(0, endStem).trim().toUpperCase(Locale.US);
-
+        String rawStem = line.substring(0, endStem).trim();
+        
+        // Check for space at the start of the keyword...
+        if (endStem > 0 && !rawStem.isEmpty()) {
+            if (Character.isSpaceChar(line.charAt(0))) {
+                LOG.warning("[" + sanitize(rawStem) + "] Non-standard starting with a space (trimming).");
+            }
+        }
+        
+        String stem = rawStem.toUpperCase();
+        
+        if (!stem.equals(rawStem)) {
+            LOG.warning("[" + sanitize(rawStem) + "] Non-standard lower-case letter(s) in base keyword.");
+        }   
+        
         key = stem;
         parsePos = endStem;
 
@@ -267,9 +306,21 @@ class HeaderCardParser {
         }
 
         key = builder.toString();
+        
+        if (HIERARCH.key().equals(key)) {
+            // The key is only HIERARCH, without a hierarchical keyword after it...
+            LOG.warning("HIERARCH base keyword without HIERARCH-style long key after it.");
+            return;
+        }
 
         if (!FitsFactory.getHierarchFormater().isCaseSensitive()) {
             key = key.toUpperCase(Locale.US);
+        }
+        
+        try {
+            HeaderCard.validateKey(key);
+        } catch (IllegalArgumentException e) {
+            LOG.warning(e.getMessage());
         }
     }
 
@@ -317,15 +368,19 @@ class HeaderCardParser {
             // Junk after a string value -- If header repairs are possible, we can
             // interpret it as comment...
             comment = line.substring(parsePos).trim();
-            if (comment.isEmpty()) { 
-                comment = null;
-            }
+            LOG.warning("[" + sanitize(getKey()) + "] Junk after string value (included in the comment).");
             parsePos = line.length();
             return;
         }
         
         comment = containsComment ? line.substring(parsePos) : null;
         parsePos = line.length();
+        
+        try {
+            HeaderCard.validateChars(comment);
+        } catch (IllegalArgumentException e) {
+            LOG.warning("[" + sanitize(getKey()) + "]: " + e.getMessage());
+        }
     }
 
     /**
@@ -352,20 +407,33 @@ class HeaderCardParser {
         if (CONTINUE.key().equals(key)) {
             parseValueBody();
         } else if (line.charAt(parsePos) == '=') {
+           
+            if (parsePos < HeaderCard.MAX_KEYWORD_LENGTH) {
+                LOG.warning("[" + sanitize(key) + "] assigmment before byte " + (HeaderCard.MAX_KEYWORD_LENGTH + 1) + " for key '" + sanitize(key) + "'.");
+            }
+            if (parsePos + 1 >= line.length()) {
+                LOG.warning("[" + sanitize(key) + "] Record ends with '='.");
+            } else if (line.charAt(parsePos + 1) != ' ') {
+                LOG.warning("[" + sanitize(key) + "] Missing required standard space after '='.");
+            }    
+            
             if (parsePos > HeaderCard.MAX_KEYWORD_LENGTH) {
                 // equal sign = after the 9th char -- only supported with hierarch keys...
-                if (!key.startsWith(HIERARCH.key())) {
+                if (!key.startsWith(HIERARCH.key() + ".")) {
+                    LOG.warning("[" + sanitize(key) + "] Possibly misplaced '=' (after byte 9).");
                     // It's not a HIERARCH key
                     return;
                 }
-                if (HIERARCH.key().equals(key)) {
-                    // The key is only HIERARCH, without a hierarchical keyword after it...
-                    return;
-                }
-            }
+            } 
 
             parsePos++;
             parseValueBody();
+        }
+        
+        try {
+            HeaderCard.validateChars(value);
+        } catch (IllegalArgumentException e) {
+            LOG.warning("[" + sanitize(getKey()) + "] " + e.getMessage());
         }
     }
 
@@ -395,7 +463,7 @@ class HeaderCardParser {
             }
             value = line.substring(parsePos, end).trim();
             parsePos = end;
-            this.type = getInferredValueType(value);
+            this.type = getInferredValueType(key, value);
         }
 
     }
@@ -466,7 +534,7 @@ class HeaderCardParser {
         
         // String with missing end quote
         if (FitsFactory.isAllowHeaderRepairs()) {
-            LOG.warning("Ignored missing end quote in " + getKey() + "!");
+            LOG.warning("[" + sanitize(key) + "] Ignored missing end quote (value parsed to end of record).");
             value = getNoTrailingSpaceString(buf);
         } else {
             throw new UnclosedQuoteException(line);
@@ -482,11 +550,13 @@ class HeaderCardParser {
      *                  if the value does not seem to match any of the supported value types. <code>null</code>
      *                  values default to <code>Boolean.class</code>.
      */
-    private static Class<?> getInferredValueType(String value) {
-        if (value == null) {
-            return Boolean.class;
-        }
+    private static Class<?> getInferredValueType(String key, String value) {
+        // TODO We never call this with null locally, so the following check is dead code here...
+//        if (value == null) {
+//            return Boolean.class;
+//        }
         if (value.isEmpty()) {
+            LOG.warning("[" + sanitize(key) + "] Null non-string value (defaulted to Boolean.class).");
             return Boolean.class;
         }
            
@@ -501,6 +571,8 @@ class HeaderCardParser {
         } else if (COMPLEX_REGEX.matcher(trimmedValue).matches()) {
             return ComplexValue.class;
         }
+        
+        LOG.warning("[" + sanitize(key) + "] Unrecognised non-string value type '" + sanitize(trimmedValue) + "'.");
         
         return null;
     }
@@ -526,11 +598,28 @@ class HeaderCardParser {
         }
      
         BigDecimal big = new BigDecimal(value);
-        int decimals = big.precision() - 1;   
-        if (decimals <= FlexFormat.FLOAT_DECIMALS && Float.isFinite(big.floatValue())) {
+        
+        // Check for zero, and deal with it separately...
+        if (big.stripTrailingZeros().equals(BigDecimal.ZERO)) {
+            int decimals = big.scale();
+            if (decimals <= FlexFormat.FLOAT_DECIMALS) {
+                return hasD ? Double.class : Float.class;
+            }
+            if (decimals <= FlexFormat.DOUBLE_DECIMALS) {
+                return Double.class;
+            }
+            return BigDecimal.class;
+        }
+       
+        // Now non-zero values...
+        int decimals = big.precision() - 1;
+        float f = big.floatValue();        
+        if (decimals <= FlexFormat.FLOAT_DECIMALS && (f != 0.0F) && Float.isFinite(f)) {
             return hasD ? Double.class : Float.class;
         } 
-        if (decimals <= FlexFormat.DOUBLE_DECIMALS && Double.isFinite(big.doubleValue())) {
+        
+        double d = big.doubleValue();
+        if (decimals <= FlexFormat.DOUBLE_DECIMALS && (d != 0.0) && Double.isFinite(d)) {
             return Double.class;
         }
         return BigDecimal.class;
@@ -563,4 +652,11 @@ class HeaderCardParser {
             return (l == (int) l) ? Integer.class : Long.class; 
         }  
     }
+    
+    private static String sanitize(String text) {
+        return HeaderCard.sanitize(text);
+    }
+    
+    
+    
 }

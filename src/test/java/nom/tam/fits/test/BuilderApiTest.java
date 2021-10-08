@@ -112,7 +112,7 @@ public class BuilderApiTest {
                 .card(Standard.BZERO).value(500.055f)//
                 .card(Standard.EQUINOX).value(new BigDecimal("500.055"))//
                 .card(TZEROn.n(3)).value(600.055f)//
-                .flexiblePrecision()//
+                .autoPrecision()//
                 .card(TZEROn.n(1)).value(100.99999d)//
                 .card(TZEROn.n(2)).value(new BigDecimal("100.99999"))//
                 .card(TZEROn.n(4)).value(101.999)//

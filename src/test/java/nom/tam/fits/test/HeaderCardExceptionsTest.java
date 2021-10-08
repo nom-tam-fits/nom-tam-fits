@@ -215,6 +215,12 @@ public class HeaderCardExceptionsTest {
         hc.setValue(1234567890123456789L);
     }
     
+    @Test(expected = LongValueException.class)
+    public void testLongHierarchReqwite() throws Exception {
+        FitsFactory.setUseHierarch(true);
+        HeaderCard hc = HeaderCard.create("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PPP.QQQ.RR="); 
+        hc.toString();
+    }
     
     @Test
     public void testLongStringsNotEnabledException1() throws Exception {
@@ -316,11 +322,17 @@ public class HeaderCardExceptionsTest {
     }
     
     @Test(expected = HeaderCardException.class)
+    public void testHierarchInvalidSpaces() throws Exception {
+        FitsFactory.setUseHierarch(true);
+        new HeaderCard("HIERARCH.AAA BBB CCC", "value");
+    }
+    
+    @Test(expected = HeaderCardException.class)
     public void testHierarchTooLong() throws Exception {
         FitsFactory.setUseHierarch(true);
         new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PPP.QQQ.RRR.SSS", "value");
     }
-    
+   
     @Test
     public void testHierarchNotEnabledException1() throws Exception {
         FitsFactory.setUseHierarch(true);

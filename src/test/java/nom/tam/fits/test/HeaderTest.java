@@ -85,6 +85,7 @@ import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
@@ -1199,5 +1200,15 @@ public class HeaderTest {
         hdr.findCard("FIX_D").setValue(13456.76344, 3);
         assertEquals(13460.0, hdr.getDoubleValue("FIX_D"), 1e-6);
     }
+    
+    @Test
+    public void testToggleParserWarnings() throws Exception {
+        Header.setParserWarningsEnabled(true);
+        assertTrue(Header.isParserWarningsEnabled());
+        
+        Header.setParserWarningsEnabled(false);
+        assertFalse(Header.isParserWarningsEnabled());
+    }
+    
 
 }

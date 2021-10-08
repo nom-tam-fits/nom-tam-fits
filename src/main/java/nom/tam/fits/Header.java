@@ -64,6 +64,7 @@ import nom.tam.fits.header.IFitsHeader;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
+import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
 import nom.tam.util.FitsIO;
 import nom.tam.util.HashedList;
@@ -1811,5 +1812,49 @@ public class Header implements FitsElement {
         size *= Math.abs(getIntValue(BITPIX, 0)) / FitsIO.BITS_OF_1_BYTE;
 
         return size;
+    }
+    
+    /**
+     * <p>
+     * Sets whether warnings about FITS standard violations are logged when a header is being read (parsed).
+     * Enabling this feature can help identifying various standard violations in existing FITS headers,
+     * which nevertheless do not prevent the successful reading of the header by this library. 
+     * </p>
+     * <p>
+     * If {@link FitsFactory#setAllowHeaderRepairs(boolean)} is set <code>false</code>, this will affect
+     * only minor violations (e.g. a misplaced '=', missing space after '=', non-standard characters
+     * in header etc.), which nevertheless do not interfere with the unamiguous parsing of the header
+     * information. More severe standard violations, where some guessing may be required about the
+     * intent of some malformed header record, will throw appropriate exceptions. If, however,
+     * {@link FitsFactory#setAllowHeaderRepairs(boolean)} is set <code>true</code>, the 
+     * parsing will throw fewer exceptions, and the additional issues may get logged as 
+     * additional warning instead.
+     * 
+     * @param value     <code>true</code> if parser warnings about FITS standard violations when reading in
+     *                  existing FITS headers are to be logged, otherwise <code>false</code>
+     * 
+     * @see FitsFactory#setAllowHeaderRepairs(boolean)
+     * 
+     * @since 1.16
+     */
+    public static void setParserWarningsEnabled(boolean value) {
+        Level level = value ? Level.WARNING : Level.SEVERE;
+        Logger.getLogger(HeaderCardParser.class.getName()).setLevel(level);
+        Logger.getLogger(ComplexValue.class.getName()).setLevel(level);
+    }
+    
+    /**
+     * Checks whether warnings about FITS standard violations are logged when a header is being read 
+     * (parsed).
+     * 
+     * @return      <code>true</code> if parser warnings about FITS standard violations when reading in
+     *              existing FITS headers are enabled and logged, otherwise <code>false</code>
+     *              
+     * @see #setParserWarningsEnabled(boolean)
+     * 
+     * @since 1.16
+     */
+    public static boolean isParserWarningsEnabled() {
+        return !Logger.getLogger(HeaderCardParser.class.getName()).getLevel().equals(Level.SEVERE);
     }
 }

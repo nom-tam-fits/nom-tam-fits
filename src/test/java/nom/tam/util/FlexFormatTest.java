@@ -57,11 +57,11 @@ public class FlexFormatTest {
         f.setPrecision(FlexFormat.FLOAT_DECIMALS);
         assertEquals(FlexFormat.FLOAT_DECIMALS, f.getPrecision());
         
-        f.flexPrecision();
-        assertEquals(FlexFormat.FLEX_PRECISION, f.getPrecision());
+        f.autoPrecision();
+        assertEquals(FlexFormat.AUTO_PRECISION, f.getPrecision());
         
         f.setPrecision(-11233);
-        assertEquals(FlexFormat.FLEX_PRECISION, f.getPrecision());
+        assertEquals(FlexFormat.AUTO_PRECISION, f.getPrecision());
         
         f.setWidth(80);
         assertEquals(80, f.getWidth());
@@ -81,12 +81,6 @@ public class FlexFormatTest {
         s = f.format(bigi);
         assertEquals(bigi, new BigInteger(s));
         
-        f.setWidth(10);
-        assertEquals(10, f.getWidth());
-        
-        s = f.format(Math.PI);
-        assertEquals(Math.PI, Double.parseDouble(s), 1e-6);
-        
         s = f.format(1e12 * Math.PI);
         assertEquals(1e12 * Math.PI, Double.parseDouble(s), 1e8);
         
@@ -99,13 +93,33 @@ public class FlexFormatTest {
         s = f.format(bigi);
         assertEquals(bigi.doubleValue(), Double.parseDouble(s), 1e15);
         
-        f.setWidth(-100);
-        assertEquals(0, f.getWidth());
+        f.setWidth(10);
+        assertEquals(10, f.getWidth());
         
         boolean thrown = false;
         try {
             s = f.format(Math.PI);
-            assertEquals(Math.PI, Double.parseDouble(s), 1e-6);
+        } catch(LongValueException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+
+        f.setWidth(-100);
+        assertEquals(0, f.getWidth());
+        
+        thrown = false;
+        try {
+            s = f.format(Math.PI);
+        } catch(LongValueException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+        
+        f.setWidth(2);
+        f.autoPrecision();
+        thrown = false;
+        try {
+            s = f.format(Math.PI);
         } catch(LongValueException e) {
             thrown = true;
         }

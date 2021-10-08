@@ -32,6 +32,7 @@
 package nom.tam.util;
 
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.LongValueException;
@@ -47,6 +48,8 @@ import nom.tam.fits.LongValueException;
  * @since 1.16
  */
 public class ComplexValue {
+    
+    private static final Logger LOG = Logger.getLogger(ComplexValue.class.getName());
 
     /** The complex zero **/
     public static final ComplexValue ZERO = new ComplexValue(0.0, 0.0);
@@ -60,6 +63,11 @@ public class ComplexValue {
     /** The real and imaginary parts */
     private double re, im;
     
+    /** 
+     * The minimum size string needed to represent a complex value with 
+     * even just single digits for the real and imaginary parts. 
+     */
+    private static final int MIN_STRING_LENGTH = 5;     // "(#,#)"
     
     /** 
      * Instantiates a new complex number value with the specified real and imaginary components.
@@ -73,8 +81,20 @@ public class ComplexValue {
     }
 
     /**
+     * <p>
      * Instantiates a new complex number value from the string repressentation of it in
-     * a FITS header value.
+     * a FITS header value. By default, it will parse complex numbers as a comma-separated
+     * pair of real values enclosed in a bracket, such as <code>(1.0, -2.0)</code>, or
+     * standard real values, such as <code>123.456</code> or <code>123</code> (as real-only
+     * values). There can be any number of spaces around the brackets, number components or
+     * the comma.
+     * </p>
+     * <p>
+     * If {@link FitsFactory#setAllowHeaderRepairs(boolean)} is set <code>true</code>, the
+     * parsing becomes more tolerant, working around missing closing brackets, different
+     * number of comma-separated components, and missing empty components. So, for example
+     * <code>(,-1,abc</code> may be parsed assuming it was meant to be -<i>i</i>. 
+     * </p>
      * 
      * @param text      The FITS header value representing the complex number, in brackets
      *                  with the real and imaginary pars separated by a comma. Additional
@@ -83,6 +103,7 @@ public class ComplexValue {
      *                  if the supplied string does not appear to be a FITS standard
      *                  representation of a complex value.
      *                  
+     * @See {@link FitsFactory#setAllowHeaderRepairs(boolean)}
      */
     public ComplexValue(String text) throws IllegalArgumentException {        
         // Allow the use of 'D' or 'd' to mark the exponent, instead of the standard 'E' or 'e'...
@@ -91,26 +112,29 @@ public class ComplexValue {
         boolean hasOpeningBracket = text.charAt(0) == '(';
         boolean hasClosingBracket = text.charAt(text.length() - 1) == ')';
         
-        if (!hasOpeningBracket && !hasClosingBracket) {
+        if (!(hasOpeningBracket || hasClosingBracket)) {
             // Use just the real value.
             re = Double.parseDouble(text);
             return;
         }
         
-        if (!hasClosingBracket) {
+        if (!hasClosingBracket || !hasClosingBracket) {
             if (!FitsFactory.isAllowHeaderRepairs()) {
-                throw new IllegalArgumentException("Unfinished complex value: " + text 
-                        + "\n\n --> Try FitsFactory.setAllowHeaderRepair(true).\n");
+                throw new IllegalArgumentException("Missing bracket around complex value: '" + text 
+                        + "'\n\n --> Try FitsFactory.setAllowHeaderRepair(true).\n");
             }
+            LOG.warning("Ignored missing bracket in '" + text + "'.");
         }
         
+        int start = hasOpeningBracket ? 1 : 0;
         int end = hasClosingBracket ? text.length() - 1 : text.length();
-        StringTokenizer tokens = new StringTokenizer(text.substring(1, end), ",; \t");
+        StringTokenizer tokens = new StringTokenizer(text.substring(start, end), FitsFactory.isAllowHeaderRepairs() ? ",; \t" : ", ");
         if (tokens.countTokens() != 2) {
             if (!FitsFactory.isAllowHeaderRepairs()) {
-                throw new IllegalArgumentException("Invalid complex value: " + text 
-                        + "\n\n --> Try FitsFactory.setAllowHeaderRepair(true).\n");
+                throw new IllegalArgumentException("Invalid complex value: '" + text 
+                        + "'\n\n --> Try FitsFactory.setAllowHeaderRepair(true).\n");
             }
+            LOG.warning("Ignored wrong number of components (" + tokens.countTokens() + ") in '" + text + "'.");
         }
         
         if (tokens.hasMoreTokens()) {
@@ -244,10 +268,4 @@ public class ComplexValue {
         
         return s;
     }
-   
-    /** 
-     * The minimum size string needed to represent a complex value with 
-     * even just single digits for the real and imaginary parts. 
-     */
-    private static final int MIN_STRING_LENGTH = 5;     // "(#,#)"
 }

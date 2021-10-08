@@ -52,10 +52,10 @@ public class FlexFormat {
 
     /**
      * Constant to specify the precision (number of decimal places shown) should
-     * be the natural precision of the number type, or whatever can be fit into
-     * the space available in the FITS header record.
+     * be the natural precision of the number type, or reduced at most to
+     * {@link #DOUBLE_DECIMALS} as necessary to fit in the alotted space.
      */
-    public static final int FLEX_PRECISION = -1;
+    public static final int AUTO_PRECISION = -1;
 
     /**
      * The maximum number of decimal places to show (after the leading figure)
@@ -70,10 +70,13 @@ public class FlexFormat {
     public static final int FLOAT_DECIMALS = 7;
 
     /**
-     * The maximum number of decimal places to show (after the leading figure)
-     * for double-precision (64-bit) values.
+     * The minimum number of decimal places to show (after the leading figure)
+     * for big-decimal values. 64-bit longs are in the +-1E19 range, so they
+     * provide 18 decimals after the leading figure. We want big integer to
+     * provideat least as many decimal places as a long, when in exponential
+     * form...
      */
-    public static final int MIN_BIGINT_DECIMALS = DOUBLE_DECIMALS;
+    public static final int MIN_BIGINT_EFORM_DECIMALS = 18;
 
     /**
      * The exclusive upper limit floating point value that can be shown in fixed
@@ -98,11 +101,11 @@ public class FlexFormat {
      * The maximum number of decimal places to show after the leading figure
      * (i.e. fractional digits in exponential format). If the value has more
      * precision than this value it will be rounded to the specified decimal
-     * place. The special value {@link #FLEX_PRECISION} can be used to display
+     * place. The special value {@link #AUTO_PRECISION} can be used to display
      * as many of the available decimal places as can fit into the space that is
      * available (see {@link #setWidth(int)}.
      */
-    private int decimals = FLEX_PRECISION;
+    private int decimals = AUTO_PRECISION;
 
     /**
      * The maximum number of characters available for showing number values.
@@ -117,33 +120,34 @@ public class FlexFormat {
      * Sets the maximum number of decimal places to show after the leading
      * figure (i.e. fractional digits in exponential format). If the value has
      * more precision than this value it will be rounded to the specified
-     * decimal place. The special value {@link #FLEX_PRECISION} can be used to
+     * decimal place. The special value {@link #AUTO_PRECISION} can be used to
      * display as many of the available decimal places as can fit into the space
      * that is available (see {@link #setWidth(int)}.
      * 
      * @param nDecimals
      *            the requested new number of decimal places to show after the
-     *            leading figure, or {@link #FLEX_PRECISION}. If an explicit
+     *            leading figure, or {@link #AUTO_PRECISION}. If an explicit
      *            value is set, all decimal values will be printed in
      *            exponential format with up to that many fractional digits
      *            showing before the exponent symbol.
      * @return itself
-     * @see #flexPrecision()
+     * @see #autoPrecision()
      * @see #getPrecision()
      * @see #setWidth(int)
      * @see #format(Number)
      */
     public synchronized FlexFormat setPrecision(int nDecimals) {
-        this.decimals = nDecimals < 0 ? FLEX_PRECISION : nDecimals;
+        this.decimals = nDecimals < 0 ? AUTO_PRECISION : nDecimals;
         return this;
     }
 
     /**
      * Selects flexible precision formatting of floating point values. The
      * values will be printed either in fixed format or exponential format, with
-     * up to the number of decimal places supported by the underlying value, or
-     * else as many as can fit into the space available (to provide a fail-safe
-     * behavior).
+     * up to the number of decimal places supported by the underlying value. For
+     * {@link BigDecimal} and {@link BigInteger} types, the precision may be
+     * reduced at most down to {@link #DOUBLE_DECIMALS} to make it fit in the
+     * available space.
      * 
      * @return itself
      * @see #setPrecision(int)
@@ -151,22 +155,22 @@ public class FlexFormat {
      * @see #setWidth(int)
      * @see #format(Number)
      */
-    public FlexFormat flexPrecision() {
-        this.decimals = FLEX_PRECISION;
+    public FlexFormat autoPrecision() {
+        this.decimals = AUTO_PRECISION;
         return this;
     }
 
     /**
      * Returns the maximum number of decimal places that will be shown when
      * formatting floating point values in exponential form, or
-     * {@link #FLEX_PRECISION} if either fixed or exponential form may be used
+     * {@link #AUTO_PRECISION} if either fixed or exponential form may be used
      * with up to the native precision of the value, or whatever precision can
      * be shown in the space available.
      * 
      * @return the maximum number of decimal places that will be shown when
-     *         formatting floating point values, or {@link #FLEX_PRECISION}.
+     *         formatting floating point values, or {@link #AUTO_PRECISION}.
      * @see #setPrecision(int)
-     * @see #flexPrecision()
+     * @see #autoPrecision()
      * @see #setWidth(int)
      */
     public final int getPrecision() {
@@ -271,7 +275,7 @@ public class FlexFormat {
             if (a >= MIN_FIXED && a < MAX_FIXED) {
                 // Fixed format only in a resonable data...
                 try {
-                    fixed = format(value, "0.#", FLEX_PRECISION, false);
+                    fixed = format(value, "0.#", AUTO_PRECISION, false);
                 } catch (LongValueException e) {
                     // We'll try with exponential notation...
                 }
@@ -303,8 +307,10 @@ public class FlexFormat {
 
     /**
      * Returns a fixed decimal representation of a value in the available space.
-     * If it's not at all possible to fit the fixed representation in the space
-     * available, then an exception is
+     * For BigInteger and BigDecimal types, we allow reducing the precision at
+     * most down to to doube precision, if necessary to fit the number in the
+     * alotted space. If it's not at all possible to fit the fixed
+     * representation in the space available, then an exception is.
      * 
      * @param value
      *            the decimal value to set
@@ -335,53 +341,34 @@ public class FlexFormat {
         f.setRoundingMode(RoundingMode.HALF_UP);
 
         if (nDecimals < 0) {
-            // Determine precision based on the type, and allow reducing it to
-            // make it fit.
-            allowReducedPrecision = true;
-            if (value instanceof BigDecimal) {
-                nDecimals = Math.min(width, ((BigDecimal) value).precision());
-            } else if (value instanceof BigInteger) {
+            // Determine precision based on the type.
+            if (value instanceof BigDecimal || value instanceof BigInteger) {
                 nDecimals = width;
+                allowReducedPrecision = true;
             } else if (value instanceof Double) {
                 nDecimals = DOUBLE_DECIMALS;
-            } else if (value instanceof Float) {
+            } else {
                 nDecimals = FLOAT_DECIMALS;
-            } else {
-                // The fixed format for integers is their standard string value.
-                return value.toString();
             }
         }
 
+        f.setMinimumFractionDigits(fmt.indexOf('E') < 0 ? 1 : 0);
         f.setMaximumFractionDigits(nDecimals);
-
-        if (fmt.indexOf('E') < 0) {
-            // fixed format...
-            if (value instanceof Float || value instanceof Double || value instanceof BigDecimal) {
-                // floating point type
-                f.setMinimumFractionDigits(1);
-            } else {
-                // integer type.
-                f.setMinimumFractionDigits(0);
-            }
-        } else {
-            // exponential format...
-            f.setMinimumFractionDigits(0);
-        }
 
         String text = f.format(value);
 
         // Iterate to make sure we get where we want...
         while (text.length() > width) {
             int delta = text.length() - width;
+            nDecimals -= delta;
 
             // dropping precision will shorten the string, but only up to the
             // integer part (precision = 0).
-            if (!allowReducedPrecision || delta > nDecimals) {
+            if (!allowReducedPrecision || nDecimals < DOUBLE_DECIMALS) {
                 throw new LongValueException(width, text);
             }
 
-            nDecimals -= delta;
-            if (value instanceof BigInteger && nDecimals < MIN_BIGINT_DECIMALS) {
+            if (value instanceof BigInteger && nDecimals < MIN_BIGINT_EFORM_DECIMALS) {
                 // We cannot show enough decimals for big integer...
                 return null;
             }

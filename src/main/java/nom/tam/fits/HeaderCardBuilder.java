@@ -209,6 +209,7 @@ public class HeaderCardBuilder {
     
     /**
      * Sets the number of decimals to show for the following decimal values. 
+     * Trailing zeroes will be ommitted.
      * 
      * 
      * @param decimals     the number of decimals to show for the following decimal values. 
@@ -222,11 +223,11 @@ public class HeaderCardBuilder {
     }
 
     /**
-     * This method has been deprecated. Please use {@link #flexiblePrecision()} instead.
+     * This method has been deprecated. Please use {@link #autoPrecision()} instead.
      * 
      * @return this
      * 
-     * @deprecated Use {@link #flexiblePrecision()} instead
+     * @deprecated Use {@link #autoPrecision()} instead
      */
     @Deprecated
     public HeaderCardBuilder noScale() {
@@ -235,14 +236,14 @@ public class HeaderCardBuilder {
     }
 
     /**
-     * Use the maximum available precision for the given number type, and allow reducing
-     * precision to make the value fit into the allotted space.
+     * Use the native precision for the given number type. Trailing zeroes will be
+     * ommitted.
      * 
      * @return this
      * 
      * @since 1.16
      */
-    public HeaderCardBuilder flexiblePrecision() {
+    public HeaderCardBuilder autoPrecision() {
         this.precision = -1;
         return this;
     }

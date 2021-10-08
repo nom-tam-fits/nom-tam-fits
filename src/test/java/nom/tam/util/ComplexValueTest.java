@@ -186,8 +186,15 @@ public class ComplexValueTest {
     @Test(expected = IllegalArgumentException.class)
     public void testBadComplex5() throws Exception {
         // Missing closing bracket
-        new ComplexValue("(5566.2   "); 
+        new ComplexValue("5566.2   )"); 
     }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testBadComplex6() throws Exception {
+        // Wrong number of components
+        new ComplexValue("(5566.2,1.0,-11.4)"); 
+    }
+    
     
     @Test
     public void testRepairComplex() throws Exception {
@@ -215,6 +222,7 @@ public class ComplexValueTest {
         assertEquals(0.0, z.re(), 1e-10);
         assertEquals(0.0, z.im(), 1e-10);
     }
+    
     
     @Test
     public void testComplexCard() throws Exception {

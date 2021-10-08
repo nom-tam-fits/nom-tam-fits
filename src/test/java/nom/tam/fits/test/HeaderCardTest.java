@@ -688,6 +688,12 @@ public class HeaderCardTest {
         assertTrue(hc.hasHierarchKey());
         assertEquals("HIERARCH.ZZZ", hc.getKey());
         
+        // Changing key with null value...
+        Integer i = null;
+        hc = new HeaderCard("TEST", i);
+        assertNull(hc.getValue());
+        hc.changeKey("NULLVAL");
+        assertEquals("NULLVAL", hc.getKey());
     }
         
     @Test
@@ -1246,7 +1252,6 @@ public class HeaderCardTest {
         assertFalse(thrown);
     }
     
-        
     @Test
     public void testParseDExponent() throws Exception {
         HeaderCard hc = HeaderCard.create("TEST   = 1.53E4");
@@ -1254,6 +1259,71 @@ public class HeaderCardTest {
         
         hc = HeaderCard.create("TEST   = 1.53D4");
         assertEquals(Double.class, hc.valueType());
+        
+        BigInteger bigi = hc.getValue(BigInteger.class, BigInteger.ZERO);
+        assertEquals(new BigInteger("15300"), bigi);
+    }
+    
+    @Test
+    public void testDecimalParseType() throws Exception {
+        HeaderCard hc = HeaderCard.create("TEST   = 123.4324");
+        assertEquals(Float.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 1.445663E-12");
+        assertEquals(Float.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 1.445663E12");
+        assertEquals(Float.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 123.43243453565");
+        assertEquals(Double.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 1.445663435456E-12");
+        assertEquals(Double.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 1.445663435456E12");
+        assertEquals(Double.class, hc.valueType());
+        
+        // Uses 'D'
+        hc = HeaderCard.create("TEST   = 1.445663D-12");
+        assertEquals(Double.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 1.445663D12");
+        assertEquals(Double.class, hc.valueType());
+        
+        // Exponent outside of float range
+        hc = HeaderCard.create("TEST   = 1.445663E-212");
+        assertEquals(Double.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 1.445663E212");
+        assertEquals(Double.class, hc.valueType());
+        
+        // Lots of digits...
+        hc = HeaderCard.create("TEST   = 123.43243453565354464675747567858658");
+        assertEquals(BigDecimal.class, hc.valueType());
+        
+        // Lots of digits in exponential form
+        hc = HeaderCard.create("TEST   = 1.4456634354562355346635674565464523E-12");
+        assertEquals(BigDecimal.class, hc.valueType()); 
+        
+        hc = HeaderCard.create("TEST   = 1.4456634354562355346635674565464523E12");
+        assertEquals(BigDecimal.class, hc.valueType()); 
+        
+        // Exponent outside of double range
+        hc = HeaderCard.create("TEST   = 1.445663E-449");
+        assertEquals(BigDecimal.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 1.445663E449");
+        assertEquals(BigDecimal.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 0.0000000");
+        assertEquals(Float.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 0.0000000000000000");
+        assertEquals(Double.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 0.0000000000000000000000000000000000000000000000000");
+        assertEquals(BigDecimal.class, hc.valueType());
     }
     
     @Test
@@ -1440,7 +1510,34 @@ public class HeaderCardTest {
         assertEquals("bla", hc.getValue(String.class, "bla"));
     }
     
+    @Test
+    public void testRepair() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(true);
+        // '=' before byte 9, not followed by space, junk after string value, invalid characters in key value/comment
+        HeaderCard hc = HeaderCard.create("TE\nST?='value\t'junk\t / \tcomment");
+        assertEquals("TE\nST?", hc.getKey());
+        assertEquals("value\t", hc.getValue());
+        assertEquals("junk\t / \tcomment", hc.getComment());
+        assertTrue(hc.isStringValue());
+        assertTrue(hc.isKeyValuePair()); 
+    }
     
+    @Test 
+    public void testLowerCaseKey() throws Exception {
+        HeaderCard hc = new HeaderCard("test", 1L);
+        assertEquals("test", hc.getKey());
+        assertEquals("TEST", HeaderCard.create(hc.toString()).getKey());
+        
+        hc = HeaderCard.create("test = -1 / comment");
+        assertEquals("TEST", hc.getKey());
+    }
+    
+    @Test 
+    public void testParseKeyStartingWithSpace() throws Exception {
+        HeaderCard hc = HeaderCard.create(" TEST = 'value' / comment");
+        assertEquals("TEST", hc.getKey());
+        assertEquals("TEST", HeaderCard.create(hc.toString()).getKey());
+    }
     
     @Test
     public void testHeaderCardFormat() throws Exception {
