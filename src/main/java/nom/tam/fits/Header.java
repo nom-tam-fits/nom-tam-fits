@@ -231,11 +231,14 @@ public class Header implements FitsElement {
      *            The header key.
      * @param val
      *            The boolean value.
+     * @returns   the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
+     *             
+     * @see #addValue(String, Boolean, String)
      */
-    public void addValue(IFitsHeader key, boolean val) throws HeaderCardException {
-        addValue(key.key(), val, key.comment());
+    public HeaderCard addValue(IFitsHeader key, Boolean val) throws HeaderCardException {
+        return addValue(key.key(), val, key.comment());
     }
 
     /**
@@ -246,11 +249,14 @@ public class Header implements FitsElement {
      *            The header key.
      * @param val
      *            The double value.
+     * @returns   the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
+     * 
+     * @see #addValue(String, Number, String)
      */
-    public void addValue(IFitsHeader key, Number val) throws HeaderCardException {
-        addValue(key.key(), val, key.comment());
+    public HeaderCard addValue(IFitsHeader key, Number val) throws HeaderCardException {
+        return addValue(key.key(), val, key.comment());
     }
 
     /**
@@ -260,11 +266,14 @@ public class Header implements FitsElement {
      *            The header key.
      * @param val
      *            The string value.
+     * @returns   the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
+     *             
+     * @see #addValue(String, String, String)
      */
-    public void addValue(IFitsHeader key, String val) throws HeaderCardException {
-        addValue(key.key(), val, key.comment());
+    public HeaderCard addValue(IFitsHeader key, String val) throws HeaderCardException {
+        return addValue(key.key(), val, key.comment());
     }
 
    
@@ -277,51 +286,152 @@ public class Header implements FitsElement {
      *            The boolean value.
      * @param comment
      *            A comment to append to the card.
+     * @returns   the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
+     *             
+     * @see #addValue(IFitsHeader, Boolean)
+     * @see HeaderCard#HeaderCard(String, Boolean, String)
      */
-    public void addValue(String key, boolean val, String comment) throws HeaderCardException {
-        addLine(new HeaderCard(key, val, comment));
+    public HeaderCard addValue(String key, Boolean val, String comment) throws HeaderCardException {
+        HeaderCard hc = new HeaderCard(key, val, comment);
+        addLine(hc);
+        return hc;
     }
 
     
     /**
-     * Add or replace a key with the given double value and comment. Note that
-     * float values will be promoted to doubles.
+     * Add or replace a key with the given number value and comment. The value will be represented in the
+     * header card with use the native precision of the value or at least {@link nom.tam.util.FlexFormat#DOUBLE_DECIMALS},
+     * whichever fits in the available card space. Trailing zeroes will be ommitted.
      *
      * @param key
      *            The header key.
      * @param val
-     *            The double value.
+     *            The number value.
      * @param comment
      *            A comment to append to the card.
+     * @returns   the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
+     *
+     * @see #addValue(String, Number, int, String)
+     * @see #addValue(IFitsHeader, Number)
+     * @see HeaderCard#HeaderCard(String, Number, String)
      */
-    public void addValue(String key, Number val, String comment) throws HeaderCardException {
-        addLine(new HeaderCard(key, val, comment));
+    public HeaderCard addValue(String key, Number val, String comment) throws HeaderCardException {
+        HeaderCard hc = new HeaderCard(key, val, comment);
+        addLine(hc);
+        return hc;
     }
     
  
     /**
-     * Add or replace a key with the given double value and comment. Note that
-     * float values will be promoted to doubles.
+     * Add or replace a key with the given number value and comment, using up to the specified decimal
+     * places after the leading figure. Trailing zeroes will be ommitted.
      *
      * @param key
      *            The header key.
      * @param val
-     *            The double value.
-     * @param precision
-     *            The fixed number of decimal places to show.
+     *            The number value.
+     * @param decimals
+     *            The number of decimal places to show after the leading figure, or {@link nom.tam.util.FlexFormat#AUTO_PRECISION}
+     *            to use the native precision of the value or at least {@link nom.tam.util.FlexFormat#DOUBLE_DECIMALS},
+     *            whichever fits in the available card space.
      * @param comment
      *            A comment to append to the card.
+     * @returns   the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
+     *             
+     * @see #addValue(String, Number, String)
+     * @see HeaderCard#HeaderCard(String, Number, int, String)
      */
-    public void addValue(String key, Number val, int precision, String comment) throws HeaderCardException {
-        addLine(new HeaderCard(key, val, precision, comment));
+    public HeaderCard addValue(String key, Number val, int decimals, String comment) throws HeaderCardException {
+        HeaderCard hc = new HeaderCard(key, val, decimals, comment);
+        addLine(hc);
+        return hc;
+    }
+    
+    
+    /**
+     * Add or replace a key with the given complex number value and comment. Trailing zeroes will be ommitted.
+     *
+     * @param key
+     *            The header keyword.
+     * @param val
+     *            The complex number value.
+     * @param comment
+     *            A comment to append to the card.
+     * @returns   the new card that was added.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     *             
+     * @since 1.16
+     *
+     * @see #addValue(String, ComplexValue, int, String)
+     * @see HeaderCard#HeaderCard(String, ComplexValue, String)
+     */
+    public HeaderCard addValue(String key, ComplexValue val, String comment) throws HeaderCardException {
+        HeaderCard hc = new HeaderCard(key, val, comment);
+        addLine(hc);
+        return hc;
     }
 
+    /**
+     * Add or replace a key with the given complex number value and comment, using up to the specified decimal
+     * places after the leading figure. Trailing zeroes will be ommitted.
+     *
+     * @param key
+     *            The header keyword.
+     * @param val
+     *            The complex number value.
+     * @param decimals
+     *            The number of decimal places to show after the leading figure, or {@link nom.tam.util.FlexFormat#AUTO_PRECISION}
+     *            to use the native precision of the value, or at least {@link nom.tam.util.FlexFormat#DOUBLE_DECIMALS},
+     *            whichever fits in the available card space.
+     * @param comment
+     *            A comment to append to the card.
+     * @returns   the new card that was added.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     *             
+     * @since 1.16
+     *             
+     * @see #addValue(String, ComplexValue, String)
+     * @see HeaderCard#HeaderCard(String, ComplexValue, int, String)
+     */
+    public HeaderCard addValue(String key, ComplexValue val, int decimals, String comment) throws HeaderCardException {
+        HeaderCard hc = new HeaderCard(key, val, decimals, comment);
+        addLine(hc);
+        return hc;
+    }
+    
+    /**
+     * Add or replace a key with the given integer value in hexadecimal representation,
+     * and comment.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The integer value.
+     * @param comment
+     *            A comment to append to the card.
+     * @returns   the new card that was added.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     * 
+     * @since 1.16
+     *            
+     * @see #addValue(String, Number, String)
+     * @see HeaderCard#createHexValueCard(String, long)
+     * @see #getHexValue(String)
+     */
+    public HeaderCard addHexValue(String key, long val, String comment) throws HeaderCardException {
+        HeaderCard hc = HeaderCard.createHexValueCard(key, val, comment);
+        addLine(hc);
+        return hc;
+    }
 
     /**
      * Add or replace a key with the given string value and comment.
@@ -332,38 +442,19 @@ public class Header implements FitsElement {
      *            The string value.
      * @param comment
      *            A comment to append to the card.
+     * @returns   the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
+     *             
+     * @see #addValue(IFitsHeader, String)
+     * @see HeaderCard#HeaderCard(String, String, String)
      */
-    public void addValue(String key, String val, String comment) throws HeaderCardException {
-        addLine(new HeaderCard(key, val, comment));
+    public HeaderCard addValue(String key, String val, String comment) throws HeaderCardException {
+        HeaderCard hc = new HeaderCard(key, val, comment);
+        addLine(hc);
+        return hc;
     }
 
-    
-    /**
-     * Adds a comment card (with COMMENT key) with the specified text.
-     * 
-     * @param text                      the text of the comment
-     * @throws HeaderCardException      If the text contains characters outside the 0x20 and 0x7E
-     * 
-     * @since 1.16
-     */
-    public void addComment(String text) throws HeaderCardException {
-        addLine(HeaderCard.createCommentCard(text));
-    }
-    
-    /**
-     * Adds a hisotry card (with HISTORY key) with the specified text.
-     * 
-     * @param text                      the text of the history entry
-     * @throws HeaderCardException      If the text contains characters outside the 0x20 and 0x7E
-     * 
-     * @since 1.16
-     */
-    public void addHistory(String text) throws HeaderCardException {
-        addLine(HeaderCard.createCommentCard(text));
-    }
-    
     
     /**
      * get a builder for filling the header cards using the builder pattern.
@@ -506,7 +597,7 @@ public class Header implements FitsElement {
      * @return the associated value.
      */
     public final BigDecimal getBigDecimalValue(IFitsHeader key, BigDecimal dft) {
-        return getBigDecimalValue(key, dft);
+        return getBigDecimalValue(key.key(), dft);
     }
     
     /**
@@ -589,6 +680,47 @@ public class Header implements FitsElement {
             return dft;
         }
         return fcard.getValue(BigInteger.class, dft);
+    }
+    
+    
+    /**
+     * Get the complex number value associated with the given key.
+     *
+     * @param key
+     *            The header key.
+     * @return The associated value or {@link ComplexValue#ZERO} if not found.
+     * 
+     * @since 1.16
+     * 
+     * @see #getComplexValue(String, ComplexValue)
+     * @see HeaderCard#getValue(Class, Object)
+     * @see #addValue(String, ComplexValue, String)
+     */
+    public final ComplexValue getComplexValue(String key) {
+        return getComplexValue(key, ComplexValue.ZERO);
+    }
+
+    /**
+     * Get the complex number value associated with the given key.
+     *
+     * @param key
+     *            The header key.
+     * @param dft
+     *            The default value to return if the key cannot be found.
+     * @return the associated value.
+     * 
+     * @since 1.16
+     * 
+     * @see #getComplexValue(String)
+     * @see HeaderCard#getValue(Class, Object)
+     * @see #addValue(String, ComplexValue, String)
+     */
+    public ComplexValue getComplexValue(String key, ComplexValue dft) {
+        HeaderCard fcard = findCard(key);
+        if (fcard == null) {
+            return dft;
+        }
+        return fcard.getValue(ComplexValue.class, dft);
     }
 
     /**
@@ -914,65 +1046,50 @@ public class Header implements FitsElement {
         return fcard.getValue(Long.class, dft).longValue();
     }
 
-
     /**
-     * Get the <CODE>long</CODE> value associated with the given key, for
-     * a hexadecimal representation in the header.
+     * Get the <CODE>long</CODE> value associated with the given key.
      *
      * @param key
      *            The header key.
      * @return The associated value or 0 if not found.
-     */
-    public final long getHexValue(IFitsHeader key) {
-        return getHexValue(key.key());
-    }
-
-    /**
-     * Get the <CODE>long</CODE> value associated with the given key, for
-     * a hexadecimal representation in the header.
-     *
-     * @param key
-     *            The header key.
-     * @param dft
-     *            The default value to be returned if the key cannot be found.
-     * @return the associated value.
-     */
-    public final long getHexValue(IFitsHeader key, long dft) {
-        return getHexValue(key.key(), dft);
-    }
-
-    /**
-     * Get the <CODE>long</CODE> value associated with the given key, for
-     * a hexadecimal representation in the header.
-     *
-     * @param key
-     *            The header key.
-     * @return The associated value or 0 if not found.
+     * 
+     * @since 1.16
+     * 
+     * @see #getHexValue(String, long)
+     * @see HeaderCard#getHexValue()
+     * @see #addHexValue(String, long, String)
      */
     public final long getHexValue(String key) {
         return getHexValue(key, 0L);
     }
 
     /**
-     * Get the <CODE>long</CODE> value associated with the given key, for
-     * a hexadecimal representation in the header.
+     * Get the <CODE>long</CODE> value stored in hexadecimal format under the specified key.
      *
      * @param key
      *            The header key.
      * @param dft
      *            The default value to be returned if the key cannot be found.
      * @return the associated value.
+     * 
+     * @since 1.16
+     * 
+     * @see #getHexValue(String)
+     * @see HeaderCard#getHexValue()
+     * @see #addHexValue(String, long, String)
      */
     public long getHexValue(String key, long dft) {
         HeaderCard fcard = findCard(key);
         if (fcard == null) {
             return dft;
         }
-        return fcard.getHexValue();
+        try {
+            return fcard.getHexValue();
+        } catch (NumberFormatException e) {
+            return dft;
+        }
     }
-
-    
-    
+   
     
     /**
      * @return the number of cards in the header
@@ -1056,18 +1173,6 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Add a COMMENT line.
-     *
-     * @param value
-     *            The comment.
-     * @exception HeaderCardException
-     *                If the parameter is not a valid FITS comment.
-     */
-    public void insertComment(String value) throws HeaderCardException {
-        insertCommentStyle(COMMENT.key(), value);
-    }
-
-    /**
      * Add a line to the header using the COMMENT style, i.e., no '=' in column
      * 9.
      *
@@ -1075,21 +1180,34 @@ public class Header implements FitsElement {
      *            The comment style header keyword.
      * @param value
      *            A string to follow the header.
+     * @return    The new card that was inserted.
      */
-    public void insertCommentStyle(String key, String value) {
-        cursor().add(HeaderCard.saveNewHeaderCard(key, value, false));
+    public HeaderCard insertCommentStyle(String key, String value) {
+        HeaderCard hc = HeaderCard.saveNewHeaderCard(key, value, false);
+        cursor().add(hc);
+        return hc;
     }
 
+    /**
+     * Add a COMMENT line.
+     *
+     * @param value
+     *            The comment.
+     * @return    The new card that was inserted.
+     */
+    public HeaderCard insertComment(String value) {
+        return insertCommentStyle(COMMENT.key(), value);
+    }
+    
     /**
      * Add a HISTORY line.
      *
      * @param value
      *            The history record.
-     * @exception HeaderCardException
-     *                If the parameter is not a valid FITS comment.
+     * @return    The new card that was inserted.
      */
-    public void insertHistory(String value) throws HeaderCardException {
-        insertCommentStyle(HISTORY.key(), value);
+    public HeaderCard insertHistory(String value) {
+        return insertCommentStyle(HISTORY.key(), value);
     }
 
     /** @return an iterator over the header cards */

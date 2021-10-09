@@ -197,7 +197,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
    
     /**
      * Creates a new card with a number value. The card will be created either in the integer, fixed-decimal, or
-     * format, whichever preserves more digits, or else whichever is the more compact notation.
+     * format, with the native precision. If the native precision cannot be fitted in the available card space,
+     * the value will be represented with reduced precision with at least {@link FlexFormat#DOUBLE_DECIMALS}.
      * Trailing zeroes will be omitted.
      *
      * @param key       keyword
@@ -214,8 +215,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
     
     /**
-     * Creates a new card with a number value and a comment. The card will be created either in the integer, fixed-decimal, or
-     * format, whichever preserves more digits, or else whichever is the more compact notation.
+     * Creates a new card with a number value and a comment. The card will be created either in the integer, 
+     * fixed-decimal, or format. If the native precision cannot be fitted in the available card space,
+     * the value will be represented with reduced precision with at least {@link FlexFormat#DOUBLE_DECIMALS}.
      * Trailing zeroes will be omitted.
      *
      * @param key       keyword
@@ -645,11 +647,15 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * Returns the integer value from the hexadecimal representation of it in the Header. The FITS standard explicitly
      * allows hexadecimal values, such as 2B, not only decimal values such as 43 in the header.
      * 
-     * @return the value from this card
+     * @return the  value from this card
+     * @throws NumberFormatException    if the card's value is null or cannot be parsed as a hexadecimal value.
      * 
      * @see #getValue()
      */
-    public final long getHexValue() {
+    public final long getHexValue() throws NumberFormatException {
+        if (value == null) {
+            throw new NumberFormatException("Card has a null value");
+        }
         return Long.decode("0x" + this.value);
     }
 
@@ -1504,18 +1510,23 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * This method is only used internally when it is sure that the creation of the card is granted not to throw an
-     * exception
+     * This method is only used internally. It is 'safe' (not save!) in the sense that the runtime exception it may
+     * throw does not need to be caught.
      *
      * @param key       keyword
      * @param comment   optional comment, or <code>null</code>
-     * @param isString  is this a string value card?
+     * @param hasValue  does this card have a (<code>null</code>) value field? If <code>true</code> a null value of type
+     *                  <code>String.class</code> is assumed (for backward compatibility).
      * 
      * @return the new HeaderCard
+     * 
+     * @deprecated      This should be used internally only, without public visibility. It will be hidden
+     *                  from users in a future release...
      */
-    public static HeaderCard saveNewHeaderCard(String key, String comment, boolean isString) throws IllegalStateException {
+    @Deprecated
+    public static HeaderCard saveNewHeaderCard(String key, String comment, boolean hasValue) throws IllegalStateException {
         try {
-            return new HeaderCard(key, null, comment, isString ? String.class : null);
+            return new HeaderCard(key, null, comment, hasValue ? String.class : null);
         } catch (HeaderCardException e) {
             LOG.log(Level.SEVERE, "Impossible Exception for internal card creation:" + key, e);
             throw new IllegalStateException(e);

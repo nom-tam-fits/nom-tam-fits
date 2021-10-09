@@ -729,7 +729,9 @@ public class HeaderTest {
             assertEquals(hdr.getStringValue(CTYPE1.name()), "XX");
             assertEquals(hdr.getStringValue(CTYPE1), "XX");
             assertEquals(hdr.getStringValue("ZZZ"), null);
-
+            assertEquals(hdr.getStringValue(CTYPE1, "yy"), "XX");
+            assertEquals(hdr.getStringValue("ZZZ", "yy"), "yy");
+       
             hdr.addValue(CTYPE2, true);
             assertEquals(hdr.getBooleanValue(CTYPE2.name()), true);
             assertEquals(hdr.getBooleanValue(CTYPE2), true);
@@ -751,6 +753,7 @@ public class HeaderTest {
             assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
             assertEquals(hdr.getBigDecimalValue(CTYPE2.name()), BigDecimal.valueOf(5.0));
             assertEquals(hdr.getBigDecimalValue(CTYPE2), BigDecimal.valueOf(5.0));
+            assertEquals(hdr.getBigDecimalValue(CTYPE2, BigDecimal.ZERO), BigDecimal.valueOf(5.0));
             assertEquals(hdr.getBigDecimalValue("ZZZ", BigDecimal.valueOf(-1.0)), BigDecimal.valueOf(-1.0));
 
             hdr.addValue(CTYPE2.name(), 5.0f, "nothing special");
@@ -766,6 +769,7 @@ public class HeaderTest {
             assertEquals(hdr.getIntValue("ZZZ", 0), 0);
             assertEquals(hdr.getBigIntegerValue(CTYPE2.name()), BigInteger.valueOf(5));
             assertEquals(hdr.getBigIntegerValue(CTYPE2.name(), BigInteger.valueOf(-1)), BigInteger.valueOf(5));
+            assertEquals(hdr.getBigIntegerValue(CTYPE2), BigInteger.valueOf(5));
             assertEquals(hdr.getBigIntegerValue(CTYPE2, BigInteger.valueOf(-1)), BigInteger.valueOf(5));
             assertEquals(hdr.getBigIntegerValue("ZZZ", BigInteger.valueOf(-1)), BigInteger.valueOf(-1));
         } finally {
@@ -1215,4 +1219,84 @@ public class HeaderTest {
     public void testHierarchFormatters() throws Exception {
         new BlanksDotHierarchKeyFormatter(0);
     }
+    
+    @Test
+    public void testAddComment() throws Exception {
+        Header h = new Header();
+        int n = h.getNumberOfCards();
+        HeaderCard hc = h.insertComment("this is a comment");
+        assertEquals(n + 1, h.getNumberOfCards());
+        assertTrue(hc.isCommentStyleCard());
+    }
+
+    @Test
+    public void testAddHistory() throws Exception {
+        Header h = new Header();
+        int n = h.getNumberOfCards();
+        HeaderCard hc = h.insertHistory("this is a history entry");
+        assertEquals(n + 1, h.getNumberOfCards());
+        assertTrue(hc.isCommentStyleCard());
+    }
+    
+    
+    @Test
+    public void testComplexValue1() throws Exception {
+        Header h = new Header();
+        ComplexValue z = new ComplexValue(-2.0, 1.0);
+        int n = h.getNumberOfCards();
+        HeaderCard hc = h.addValue("TEST", z, "comment");
+        assertEquals(hc, h.findCard("TEST"));
+        assertEquals(n + 1, h.getNumberOfCards());
+        assertTrue(hc.isKeyValuePair());
+        assertEquals(ComplexValue.class, hc.valueType());
+        assertEquals(z, hc.getValue(ComplexValue.class, ComplexValue.ZERO));
+        
+        assertEquals(z, h.getComplexValue("TEST"));
+        assertEquals(z, h.getComplexValue("TEST", ComplexValue.ZERO));
+        assertEquals(ComplexValue.ZERO, h.getComplexValue("NOEXIST", ComplexValue.ZERO));
+    }
+    
+    @Test
+    public void testComplexValue2() throws Exception {
+        Header h = new Header();
+        ComplexValue z = new ComplexValue(-2.0, 1.0);
+        int n = h.getNumberOfCards();
+        HeaderCard hc = h.addValue("TEST", z, 10, "comment");
+        assertEquals(hc, h.findCard("TEST"));
+        assertEquals(n + 1, h.getNumberOfCards());
+        assertTrue(hc.isKeyValuePair());
+        assertEquals(ComplexValue.class, hc.valueType());
+        assertEquals(z, hc.getValue(ComplexValue.class, ComplexValue.ZERO));
+        
+        assertEquals(z, h.getComplexValue("TEST"));
+        assertEquals(z, h.getComplexValue("TEST", ComplexValue.ZERO));
+        assertEquals(ComplexValue.ZERO, h.getComplexValue("NOEXIST", ComplexValue.ZERO));
+    }
+        
+    @Test
+    public void testHexValue() throws Exception {
+        Header h = new Header();
+        long l = 20211008L;
+        int n = h.getNumberOfCards();
+        HeaderCard hc = h.addHexValue("TEST", l, "comment");
+        assertEquals(hc, h.findCard("TEST"));
+        assertEquals(n + 1, h.getNumberOfCards());
+        assertTrue(hc.isKeyValuePair());
+        assertEquals(Long.class, hc.valueType());
+        assertEquals(l, hc.getHexValue());
+        assertEquals(l, h.getHexValue("TEST"));
+        assertEquals(l, h.getHexValue("TEST", 0L));
+        assertEquals(0, h.getHexValue("NOEXIST", 0L));
+    }
+    
+    @Test
+    public void getHexValueDefault() throws Exception {
+        Header h = new Header();
+        Integer n = null;
+        h.addValue("TEST1", "string", "comment");
+        h.addValue("TEST2", n, "comment");
+        assertEquals(0, h.getHexValue("TEST1", 0L));
+        assertEquals(101L, h.getHexValue("TEST1", 101L));
+    }
+
 }
