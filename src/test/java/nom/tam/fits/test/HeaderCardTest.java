@@ -627,10 +627,23 @@ public class HeaderCardTest {
                 + "CONTINUE  'a string' / whatever                                               ");
         assertEquals(1, hc.cardSize());
         
+        // Continue, null value
+        hc = HeaderCard.create("TEST   = '                                                                     '" 
+                + "CONTINUE  / whatever                                                          ");
+        assertEquals(1, hc.cardSize());
+        
         // Ending &, but no CONTINUE
         hc = HeaderCard.create("TEST   = '                                                                     '" 
                 + "COMMENT   'a string' / whatever                                               ");
         assertEquals(1, hc.cardSize());
+    }
+    
+    @Test
+    public void testLongWithEscapedHierarch()  throws Exception {
+        FitsFactory.setLongStringsEnabled(true);
+        // This looks OK to the eye, but escaping the quotes will not fit in a single line...
+        HeaderCard hc = new HeaderCard("TEST", "long value '-------------------------------------------------------'");
+        assertEquals(2, hc.cardSize());
     }
     
     @Test
@@ -649,6 +662,64 @@ public class HeaderCardTest {
         assertNull(hc.getValue());
         assertNotNull(hc.getComment());
     }
+    
+    @Test(expected = LongValueException.class)
+    public void testRewriteLongStringOverflow1() {
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setLongStringsEnabled(false);
+        // We can read this card, even though the keyword is longer than allowed due to the missing
+        // spaces around the '='.
+        HeaderCard hc = HeaderCard.create("HIERARCH ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ=''");
+        // But we should not be able to re-write this card.
+        hc.toString();
+    }
+    
+    @Test(expected = LongValueException.class)
+    public void testRewriteLongStringOverflow2() {
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setLongStringsEnabled(false);
+        // We can read this card, even though the keyword is longer than allowed due to the missing
+        // spaces around the '='.
+        HeaderCard hc = HeaderCard.create("HIERARCH ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ=T");
+        // But we should not be able to re-write this card.
+        hc.toString();
+    }
+    
+    @Test(expected = LongValueException.class)
+    public void testRewriteLongStringOverflow3() {
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setLongStringsEnabled(false);
+        // We can read this card, even though the keyword is longer than allowed due to the missing
+        // spaces around the '='.
+        HeaderCard hc = HeaderCard.create("HIERARCH ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ=");
+        // But we should not be able to re-write this card.
+        hc.toString();
+    }
+    
+    @Test(expected = LongValueException.class)
+    public void testRewriteLongStringOverflow4() {
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setLongStringsEnabled(false);
+        // We can read this card, even though the keyword is longer than allowed due to the missing
+        // spaces around the '='.
+        HeaderCard hc = HeaderCard.create("HIERARCH ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ=");
+        // But we should not be able to set even a new boolean value...
+        hc.setValue(true);
+    }
+    
+    @Test(expected = LongValueException.class)
+    public void testRewriteLongStringOverflow5() {
+        FitsFactory.setUseHierarch(true);
+        FitsFactory.setLongStringsEnabled(true);
+        // We can read this card, even though the keyword is longer than allowed due to the missing
+        // spaces around the '='.
+        HeaderCard hc = HeaderCard.create(
+                "HIERARCH ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ='&'" +
+                "CONTINUE 'continues here' / comment");
+        // But we should not be able to re-write this card.
+        hc.toString();
+    }
+    
     
     @Test
     public void testChangeKey() throws Exception {
@@ -1327,6 +1398,18 @@ public class HeaderCardTest {
     }
     
     @Test
+    public void testIntegerParseType() throws Exception {
+        HeaderCard hc = HeaderCard.create("TEST   = 123");
+        assertEquals(Integer.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 123456789012345678");
+        assertEquals(Long.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 123456789012345678901234567890");
+        assertEquals(BigInteger.class, hc.valueType());
+    }
+        
+    @Test
     public void testEmptyNonString() throws Exception {
         HeaderCard hc = HeaderCard.create("TEST=     / comment");
         assertEquals("", hc.getValue());
@@ -1335,12 +1418,7 @@ public class HeaderCardTest {
     
     @Test
     public void testJunkAfterStringValue() throws Exception {
-        FitsFactory.setAllowHeaderRepairs(false);
         HeaderCard hc = HeaderCard.create("TEST= 'value' junk    / comment");
-        assertNull(hc.getComment());
-        
-        FitsFactory.setAllowHeaderRepairs(true);
-        hc = HeaderCard.create("TEST= 'value' junk    / comment");
         assertTrue(hc.getComment().startsWith("junk"));
     }
     

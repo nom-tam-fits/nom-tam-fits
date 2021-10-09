@@ -351,29 +351,18 @@ class HeaderCardParser {
             return;
         }
         
-        boolean containsComment = false;
-        
-        if (value == null) {
-            // Comment-style card or anything after a quoted string value...
-            containsComment = true;
-        } else if (line.charAt(parsePos) == '/') {
-            // After value comment
-            containsComment = true;
-            if (++parsePos >= line.length()) {
-                // empty comment
-                comment = "";
-                return;
+        // if no value, then everything is comment from here on...
+        if (value != null) {
+            if (line.charAt(parsePos) == '/') {
+                // Skip the '/' itself, the comment is whatever is after it.
+                parsePos++;
+            } else {
+                // Junk after a string value -- interpret it as the start of the comment...
+                LOG.warning("[" + sanitize(getKey()) + "] Junk after value (included in the comment).");
             }
-        } else if (type == String.class && FitsFactory.isAllowHeaderRepairs()) {
-            // Junk after a string value -- If header repairs are possible, we can
-            // interpret it as comment...
-            comment = line.substring(parsePos).trim();
-            LOG.warning("[" + sanitize(getKey()) + "] Junk after string value (included in the comment).");
-            parsePos = line.length();
-            return;
         }
-        
-        comment = containsComment ? line.substring(parsePos) : null;
+
+        comment = line.substring(parsePos);
         parsePos = line.length();
         
         try {

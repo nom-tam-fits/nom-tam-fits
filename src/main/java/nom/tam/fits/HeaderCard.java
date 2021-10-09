@@ -834,7 +834,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @return the card itself
      * 
      * @throws NumberFormatException    if the input value is NaN or Infinity.
-     * @throws LongValueException if the decimal value cannot be represented in the alotted space with any precision
+     * @throws LongValueException       if the decimal value cannot be represented in the alotted space
      * 
      * @see #setValue(Number, int)
      */
@@ -854,7 +854,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @return the card itself
      * 
      * @throws NumberFormatException    if the input value is NaN or Infinity.
-     * @throws LongValueException       if the decimal value cannot be represented in the alotted space with any precision
+     * @throws LongValueException       if the decimal value cannot be represented in the alotted space
      * 
      * @see #setValue(Number)
      */
@@ -874,13 +874,22 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Sets a new boolean value for this card.
      *
-     * @param update the new value to set
+     * @param update                    the new value to se (can be <code>null</code>).
+     * throws LongValueException        if the card has no room even for the single-character 'T' or 'F'.
+     *                                  This can never happen with cards created programmatically as they
+     *                                  will not allow setting HIERARCH-style keywords long enough to ever
+     *                                  trigger this condition. But, it is possible to read cards from
+     *                                  a non-standard header, which breaches this limit, by ommitting some 
+     *                                  required spaces (esp. after the '='), and have a null value. When that 
+     *                                  happens, we can be left without room for even a single character. 
      * 
      * @return the card itself
      */
-    public synchronized HeaderCard setValue(Boolean update) {
+    public synchronized HeaderCard setValue(Boolean update) throws LongValueException {
         if (update == null) {
             this.value = null;
+        } else if (spaceForValue() < 1) {
+            throw new LongValueException(key, spaceForValue());
         } else {
             // There is always room for a boolean value. :-)
             this.value = update ? "T" : "F";
@@ -895,12 +904,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * fixed-decimal, or format, whichever preserves more digits, or else whichever is the more compact notation.
      * Trailing zeroes will be omitted.
      *
-     * @param update the new value to set
+     * @param update                    the new value to set (can be <code>null</code>)
      * 
      * @return the card itself
      * 
      * @throws NumberFormatException    if the input value is NaN or Infinity.
-     * @throws LongValueException       if the decimal value cannot be represented in the alotted space with any precision
+     * @throws LongValueException       if the decimal value cannot be represented in the alotted space
      * 
      * @see #setValue(ComplexValue, int)
      * 
@@ -916,8 +925,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * will be omitted. For example, if <code>decimals</code> is set to 2, then (&pi;, 12) gets formatted as 
      * <code>(3.14E0,1.2E1)</code>.
      *
-     * @param update the new value to set
-     * @param decimals      @param decimals  the number of decimal places to show in the scientific notation. 
+     * @param update        the new value to set (can be <code>null</code>)
+     * @param decimals      the number of decimal places to show in the scientific notation. 
      * 
      * @return the HeaderCard itself
      * 
@@ -959,7 +968,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Sets the value for this card, represented as a hexadecimal number.
      *
-     * @param update the new value to set
+     * @param update                 the new value to set
      * 
      * @return the HeaderCard itself
      * @throws LongValueException    if the value is too long to fit in the available space.
@@ -978,6 +987,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @param update the new value to set
      * 
      * @return the HeaderCard itself
+     * 
      * @throws IllegalArgumentException         if the new value contains characters that cannot be added to the
      *                                          the FITS header.
      * @throws LongStringsNotEnabledException   if the card contains a long string but support for long strings

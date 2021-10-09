@@ -62,14 +62,16 @@ class HeaderCardFormatter {
     /** 
      * Character sequence that comes after a value field, and before the comment string in the
      * header record. While only a '/' character is really required, we like to add spaces around
-     * it for a more pleasing visual of the resulting header record.
+     * it for a more pleasing visual of the resulting header record. The space before the
+     * '/' is strongly recommended by the FITS standard.
      */
     private static final String COMMENT_PREFIX = " / ";
     
     /**
      * Long string comments should not add a space after the '/', because we want to preserve spaces in continued
      * long string comments, hece we start the comment immediately after the '/' to ensure that
-     * internal spaces in wrapped comments remain intact and properly accounted for.
+     * internal spaces in wrapped comments remain intact and properly accounted for. The space before the
+     * '/' is strongly recommended by the FITS standard.
      */
     private static final String LONG_COMMENT_PREFIX = " /";
     
@@ -234,8 +236,9 @@ class HeaderCardFormatter {
                 buf.append(CONTINUE.key() + "  ");
                 from += appendQuotedValue(buf, card, from);
             }
-        } else if (value.length() > available) {
-            throw new LongValueException(available, card.getKey(), card.getValue());
+        // TODO We prevent the creation of cards with longer values, so the following check is dead code here.    
+//        } else if (value.length() > available) {
+//            throw new LongValueException(available, card.getKey(), card.getValue());
         } else {
             append(buf, value, 0);
         }
@@ -512,9 +515,10 @@ class HeaderCardFormatter {
         available = getAvailable(buf) - QUOTES_LENGTH - 1;
             
         // We need room for an '&' character at the end also... 
-        if (available < 1) {
-            return 0;
-        }
+        // TODO Again we prevent this ever occuring before we reach this point, so it is dead code...
+//        if (available < 1) {
+//            return 0;
+//        }
         
         // Opening quote
         buf.append("'");
@@ -523,10 +527,11 @@ class HeaderCardFormatter {
         int consumed = 0;
         
         for (int i = 0; i < available; i++, consumed++) {
-            if (from + i >= text.length()) {
-                // Reached end of string;
-                break;
-            }
+            // TODO We already know we cannot show the whole string on one line, so this is dead code...
+//            if (from + i >= text.length()) {
+//                // Reached end of string;
+//                break;
+//            }
             
             char c = text.charAt(from + consumed);
             

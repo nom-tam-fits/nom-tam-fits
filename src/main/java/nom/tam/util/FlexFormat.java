@@ -263,9 +263,13 @@ public class FlexFormat {
         if (!isDecimal(value)) {
             // For integer types, always consider the fixed format...
             fixed = value.toString();
-            if (!(value instanceof BigInteger)) {
-                // Don't even try exponential for primitive integer types.
+            if (fixed.length() <= width) {
                 return fixed;
+            } else if (value instanceof BigInteger) {
+                // We'll try exponential with reduced precision...
+                fixed = null;
+            } else {
+                throw new LongValueException(width, fixed);
             }
         } else if (decimals < 0) {
             // Don"t do fixed format if precision is set explicitly

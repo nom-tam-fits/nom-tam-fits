@@ -116,9 +116,7 @@ public class ComplexValue {
             // Use just the real value.
             re = Double.parseDouble(text);
             return;
-        }
-        
-        if (!hasClosingBracket || !hasClosingBracket) {
+        } else if (!hasOpeningBracket || !hasClosingBracket) {
             if (!FitsFactory.isAllowHeaderRepairs()) {
                 throw new IllegalArgumentException("Missing bracket around complex value: '" + text 
                         + "'\n\n --> Try FitsFactory.setAllowHeaderRepair(true).\n");

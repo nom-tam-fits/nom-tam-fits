@@ -40,6 +40,9 @@ import org.junit.Test;
 
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
+import nom.tam.fits.header.hierarch.IHierarchKeyFormatter;
+import nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter;
 import nom.tam.fits.utilities.FitsLineAppender;
 import nom.tam.fits.utilities.FitsSubString;
 
@@ -150,6 +153,21 @@ public class FitsLineAppenderTest {
         StringBuilder buf = new StringBuilder();
         s.appendTo(buf);
         return new String(buf);
+    }
+    
+    @Test
+    public void testIHierarchKeyFormatterAppend() {
+        checkAppendHierarch(new StandardIHierarchKeyFormatter());
+        checkAppendHierarch(new BlanksDotHierarchKeyFormatter(1));
+        checkAppendHierarch(new BlanksDotHierarchKeyFormatter(2));
+        checkAppendHierarch(new BlanksDotHierarchKeyFormatter(3));
+    }
+    
+    private void checkAppendHierarch(IHierarchKeyFormatter f) {
+        String key = "HIERARCH.AAA";
+        FitsLineAppender l = new FitsLineAppender();
+        f.append(key, l);
+        assertEquals(key.length() + f.getExtraSpaceRequired(key), l.length());
     }
     
 }

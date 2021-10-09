@@ -80,6 +80,7 @@ import nom.tam.fits.HeaderOrder;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.TruncatedFileException;
 import nom.tam.fits.header.Standard;
+import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
@@ -1210,5 +1211,8 @@ public class HeaderTest {
         assertFalse(Header.isParserWarningsEnabled());
     }
     
-
+    @Test(expected = IllegalArgumentException.class)
+    public void testHierarchFormatters() throws Exception {
+        new BlanksDotHierarchKeyFormatter(0);
+    }
 }
