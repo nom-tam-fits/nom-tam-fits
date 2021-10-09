@@ -736,7 +736,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #isCommentStyleCard()
      */
     public synchronized boolean isKeyValuePair() {
-        return !isCommentStyleCard() && !key.isEmpty() && value != null;
+        return !isCommentStyleCard() && !(key.isEmpty() || value == null);
     }
 
     /**

@@ -93,7 +93,13 @@ public class HeaderProtectedTest {
     @Test
     public void testTrueDataSize() throws Exception {
         Header header = new Header();
-        Assert.assertEquals(0L, header.trueDataSize());
+        // No BITPIX
+        Assert.assertEquals(0L, header.trueDataSize()); 
+        header.addValue(Standard.BITPIX, 32);
+        // No NAXIS
+        Assert.assertEquals(0L, header.trueDataSize()); 
+        
+        header = new Header();
         header.nullImage();
         header.write(new BufferedDataOutputStream(new ByteArrayOutputStream(), 80));
         Assert.assertEquals(0L, header.trueDataSize());

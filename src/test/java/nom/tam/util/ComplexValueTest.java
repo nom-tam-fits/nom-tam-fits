@@ -218,6 +218,15 @@ public class ComplexValueTest {
     public void testRepairComplex2() throws Exception {
         FitsFactory.setAllowHeaderRepairs(true);
         // Missing closing bracket
+        ComplexValue z = new ComplexValue("5566.2,-1.01)"); 
+        assertEquals(5566.2, z.re(), 1e-10);
+        assertEquals(-1.01, z.im(), 1e-10);
+    }
+    
+    @Test
+    public void testRepairComplex3() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(true);
+        // Missing closing bracket
         ComplexValue z = new ComplexValue("(  "); 
         assertEquals(0.0, z.re(), 1e-10);
         assertEquals(0.0, z.im(), 1e-10);

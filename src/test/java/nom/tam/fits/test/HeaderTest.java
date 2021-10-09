@@ -1238,6 +1238,27 @@ public class HeaderTest {
         assertTrue(hc.isCommentStyleCard());
     }
     
+    @Test
+    public void testAddNull() throws Exception {
+        Header h = new Header();
+        int n = h.getNumberOfCards();
+        h.addLine(null);
+        assertEquals(n, h.getNumberOfCards());
+    }
+    
+    @SuppressWarnings("deprecation")
+    @Test
+    public void testGetKeyByIndex() throws Exception {
+        Header h = new Header();
+        int n = h.getNumberOfCards();
+        h.addValue("TEST", 1.0, null);
+        assertEquals(n + 1, h.getNumberOfCards());
+        
+        assertNull(h.getKey(-1));
+        assertNull(h.getKey(n + 1));
+        assertNotNull(h.getKey(0));
+        assertNotNull(h.getKey(n));
+    }
     
     @Test
     public void testComplexValue1() throws Exception {
@@ -1287,6 +1308,9 @@ public class HeaderTest {
         assertEquals(l, h.getHexValue("TEST"));
         assertEquals(l, h.getHexValue("TEST", 0L));
         assertEquals(0, h.getHexValue("NOEXIST", 0L));
+        String s0 = null;
+        hc.setValue(s0);
+        assertEquals(101L, h.getHexValue("TEST", 101L));  
     }
     
     @Test
@@ -1298,5 +1322,6 @@ public class HeaderTest {
         assertEquals(0, h.getHexValue("TEST1", 0L));
         assertEquals(101L, h.getHexValue("TEST1", 101L));
     }
+ 
 
 }

@@ -291,22 +291,19 @@ public class FlexFormat {
 
         try {
             exp = format(value, "0.#E0", decimals, FitsFactory.isUseExponentD());
+            if (fixed == null) {
+                return exp;
+            }
+            // Go with whichever is more compact.
+            return exp.length() < fixed.length() ? exp : fixed;
+
         } catch (LongValueException e) {
             if (fixed == null) {
                 throw e;
             }
         }
 
-        if (fixed == null) {
-            return exp;
-        }
-
-        if (exp == null) {
-            return fixed;
-        }
-
-        // Go with whichever is more compact.
-        return exp.length() < fixed.length() ? exp : fixed;
+        return fixed;
     }
 
     /**
@@ -337,8 +334,6 @@ public class FlexFormat {
             throw new LongValueException(width);
         }
 
-        boolean allowReducedPrecision = false;
-
         DecimalFormat f = new DecimalFormat(fmt);
         f.setDecimalFormatSymbols(SYMBOLS);
         f.setDecimalSeparatorAlwaysShown(true);
@@ -348,7 +343,6 @@ public class FlexFormat {
             // Determine precision based on the type.
             if (value instanceof BigDecimal || value instanceof BigInteger) {
                 nDecimals = width;
-                allowReducedPrecision = true;
             } else if (value instanceof Double) {
                 nDecimals = DOUBLE_DECIMALS;
             } else {
@@ -366,15 +360,9 @@ public class FlexFormat {
             int delta = text.length() - width;
             nDecimals -= delta;
 
-            // dropping precision will shorten the string, but only up to the
-            // integer part (precision = 0).
-            if (!allowReducedPrecision || nDecimals < DOUBLE_DECIMALS) {
+            if ((value instanceof BigInteger && nDecimals < MIN_BIGINT_EFORM_DECIMALS) || (!(value instanceof BigInteger) && nDecimals < DOUBLE_DECIMALS)) {
+                // We cannot show enough decimals for big types...
                 throw new LongValueException(width, text);
-            }
-
-            if (value instanceof BigInteger && nDecimals < MIN_BIGINT_EFORM_DECIMALS) {
-                // We cannot show enough decimals for big integer...
-                return null;
             }
 
             f.setMaximumFractionDigits(nDecimals);

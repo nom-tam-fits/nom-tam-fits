@@ -1239,6 +1239,13 @@ public class HeaderCardTest {
         assertEquals(l, hc.getHexValue());
     }
     
+    @Test(expected = NumberFormatException.class)
+    public void testHexValueNull() throws Exception {  
+        Long l0 = null;
+        HeaderCard hc = new HeaderCard("TEST", l0);
+        hc.getHexValue();
+    }
+    
     @Test
     public void testNumberType() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", 156.7f);
@@ -1389,6 +1396,12 @@ public class HeaderCardTest {
         
         hc = HeaderCard.create("TEST   = 0.0000000");
         assertEquals(Float.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 0.0E-5");
+        assertEquals(Float.class, hc.valueType());
+        
+        hc = HeaderCard.create("TEST   = 0.0D-5");
+        assertEquals(Double.class, hc.valueType());
         
         hc = HeaderCard.create("TEST   = 0.0000000000000000");
         assertEquals(Double.class, hc.valueType());

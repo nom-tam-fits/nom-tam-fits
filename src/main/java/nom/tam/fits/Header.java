@@ -1297,12 +1297,14 @@ public class Header implements FitsElement {
             while (true) {
                 HeaderCard fcard = new HeaderCard(cardCountingArray);
                 String key = fcard.getKey();
+                // AK: Note, 'key' can never be null, as per contract of the call above. So no need to check...
+                
                 if (firstCard) {
                     checkFirstCard(key);
                     firstCard = false;
                 }
 
-                if (key != null && this.cards.containsKey(key)) {
+                if (this.cards.containsKey(key)) {
                     addDuplicate(this.cards.get(key));
                 }
 
@@ -1656,7 +1658,8 @@ public class Header implements FitsElement {
     }
 
     private void checkFirstCard(String key) throws IOException {
-        if (key == null || !key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {            
+        // AK: key cannot be null by the caller already, so checking for it makes dead code.
+        if (!key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {            
             if (this.fileOffset > 0 && FitsFactory.getAllowTerminalJunk()) {
                 throw new EOFException("Not FITS format at " + this.fileOffset + ":" + key);
             }
@@ -1815,7 +1818,8 @@ public class Header implements FitsElement {
             boolean toFar = false;
             while (cursor().hasNext()) {
                 String key = cursor().next().getKey().trim();
-                if (key == null || key.length() <= colnum.length() || !key.substring(key.length() - colnum.length()).equals(colnum)) {
+                // AK: getKey() cannot return null so no need to check.
+                if (key.length() <= colnum.length() || !key.substring(key.length() - colnum.length()).equals(colnum)) {
                     toFar = true;
                     break;
                 }
