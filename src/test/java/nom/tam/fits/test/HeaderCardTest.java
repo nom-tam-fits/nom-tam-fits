@@ -552,7 +552,7 @@ public class HeaderCardTest {
     }
 
     @Test
-    public void testBlacksHierarchMixedCase() throws Exception { 
+    public void testBlanksHierarchMixedCase() throws Exception { 
         FitsFactory.setUseHierarch(true);
         FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
         
