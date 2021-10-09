@@ -524,6 +524,7 @@ public class HeaderCardTest {
     
     @Test
     public void testHierarchMixedCase() throws Exception { 
+        FitsFactory.setUseHierarch(true);
         // The default is to use upper-case only for HIERARCH
         assertEquals(false, FitsFactory.getHierarchFormater().isCaseSensitive());
         
@@ -551,6 +552,7 @@ public class HeaderCardTest {
 
     @Test
     public void testBlacksHierarchMixedCase() throws Exception { 
+        FitsFactory.setUseHierarch(true);
         FitsFactory.setHierarchFormater(new BlanksDotHierarchKeyFormatter(2));
         
         // The default is to use upper-case only for HIERARCH
@@ -811,6 +813,7 @@ public class HeaderCardTest {
         assertEquals("", hc.getValue(String.class, null));
         
         // Unfinished quotes
+        FitsFactory.setAllowHeaderRepairs(false);
         Exception ex = null;
         try {
             hc = HeaderCard.create("TEST    = 'bla bla / dummy");
