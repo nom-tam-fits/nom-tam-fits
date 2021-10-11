@@ -33,6 +33,7 @@ package nom.tam.fits;
 
 import static nom.tam.fits.header.Standard.CONTINUE;
 import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.BLANKS;
 import static nom.tam.fits.header.Standard.COMMENT;
 import static nom.tam.fits.header.Standard.END;
 import static nom.tam.fits.header.Standard.EXTEND;
@@ -1173,24 +1174,30 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Add a line to the header using the COMMENT style, i.e., no '= ' in column
-     * 9 and 10.
+     * Adds a line to the header using the COMMENT style, i.e., no '=' in column
+     * 9. The comment text may be truncated to fit into a single record, which is
+     * returned. Alternatively, you can split longer comments among multiple consecutive
+     * cards of the same type by {@link #insertCommentStyleMultiline(String, String)}.
      *
      * @param key
      *            The comment style header keyword.
      * @param comment
      *            A string comment to follow. Illegal characters will be replaced by '?' and the
-     *            comment may be truncated to fit into the card-space (70 characters).
+     *            comment may be truncated to fit into the card-space (71 characters).
      * @return    The new card that was inserted, or <code>null</code> if the keyword itself was 
      *            invalid or the comment was <code>null</code>.
+     *            
+     * @see #insertCommentStyleMultiline(String, String)
+     * @see HeaderCard#createCommentStyleCard(String, String)
+     * 
      */
     public HeaderCard insertCommentStyle(String key, String comment) {
         if (comment == null) {
             return null;
         }
             
-        if (comment.length() > HeaderCard.MAX_VALUE_LENGTH) {
-            comment = comment.substring(0, HeaderCard.MAX_VALUE_LENGTH);
+        if (comment.length() > HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH) {
+            comment = comment.substring(0, HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH);
             LOG.warning("Truncated comment to fit card: [" + comment + "]");
         }
         
@@ -1206,25 +1213,101 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Add a COMMENT line.
+     * Adds a line to the header using the COMMENT style, i.e., no '=' in column
+     * 9. If the comment does not fit in a single record, then it will be split
+     * (wrapped) among multiple consecutive records with the same keyword. Wrapped
+     * lines will end with '&' (not itself a standard) to indicate comment cards
+     * that might belong together.
      *
-     * @param value
-     *            The comment.
-     * @return    The new card that was inserted.
+     * @param key
+     *            The comment style header keyword.
+     * @param comment
+     *            A string comment to follow. Illegal characters will be replaced by '?' and the
+     *            comment may be split among multiple records as necessary to be fully preserved.
+     * @return    The number of cards inserted.
+     * 
+     * @since 1.16
+     * 
+     * @see #insertCommentStyle(String, String)
+     * @see #insertComment(String)
+     * @see #insertUnkeyedComment(String)
+     * @see #insertHistory(String)
      */
-    public HeaderCard insertComment(String value) {
-        return insertCommentStyle(COMMENT.key(), value);
+    public int insertCommentStyleMultiline(String key, String comment) {
+        if (comment == null) {
+            return 0;
+        }
+        
+        int n = 0;    
+        
+        for (int from = 0; from < comment.length(); n++) {
+            int to = from + HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH;
+            String part = null;
+            if (to < comment.length()) {
+                part = comment.substring(from, --to) + "&";
+            } else {
+                part = comment.substring(from);
+            }
+            
+            if (insertCommentStyle(key, part) == null) {
+                return n;
+            }
+            from = to;
+        }
+        
+        return n;
     }
     
     /**
-     * Add a HISTORY line.
+     * Adds one or more consecutive COMMENT records, wrapping the comment text as necessary.
+     *
+     * @param value
+     *            The comment.
+     * @return    The number of consecutive COMMENT cards that were inserted
+     * 
+     * @see #insertCommentStyleMultiline(String, String)
+     * @see #insertUnkeyedComment(String)
+     * @see #insertHistory(String)
+     * @see HeaderCard#createCommentCard(String)
+     */
+    public int insertComment(String value) {
+        return insertCommentStyleMultiline(COMMENT.key(), value);
+    }
+    
+    /**
+     * Adds one or more consecutive comment records with no keyword (bytes 1-9 left blank), 
+     * wrapping the comment text as necessary.
+     *
+     * @param value
+     *            The comment.
+     * @return    The number of consecutive comment-style cards with no keyword (blank keyword) that were inserted.
+     * 
+     * @since 1.16
+     * 
+     * @see #insertCommentStyleMultiline(String, String)
+     * @see #insertComment(String)
+     * @see #insertHistory(String)
+     * @see HeaderCard#createUnkeyedCommentCard(String)
+     */
+    public int insertUnkeyedComment(String value) {
+        return insertCommentStyleMultiline(BLANKS.key(), value);
+    }
+    
+    
+    /**
+     * Adds one or more consecutive a HISTORY records, wrapping the comment text as necessary.
      *
      * @param value
      *            The history record.
-     * @return    The new card that was inserted.
+     * @return    The number of consecutive HISTORY cards that were inserted
+     * 
+     * @see #insertCommentStyleMultiline(String, String)
+     * @see #insertComment(String)
+     * @see #insertUnkeyedComment(String)
+     * @see HeaderCard#createHistoryCard(String)
      */
-    public HeaderCard insertHistory(String value) {
-        return insertCommentStyle(HISTORY.key(), value);
+    public int insertHistory(String value) {
+        return insertCommentStyleMultiline(HISTORY.key(), value);
     }
 
     /** @return an iterator over the header cards */

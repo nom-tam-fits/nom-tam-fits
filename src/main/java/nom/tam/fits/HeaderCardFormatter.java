@@ -75,9 +75,6 @@ class HeaderCardFormatter {
      */
     private static final String LONG_COMMENT_PREFIX = " /";
     
-    /** The required blank spaces after the keyword in a comment style card */
-    private static final String COMMENT_CARD_BLANKS = "  ";
-    
     /** 
      * The alignment position of card comments for a more pleasing visual experience. Comments will be
      * aligned to this position, provided the lengths of all fields allow for it.
@@ -297,7 +294,7 @@ class HeaderCardFormatter {
 
         if (card.isCommentStyleCard()) {
             // '  ' instead of '= '
-            available -= COMMENT_CARD_BLANKS.length();
+            available--;
         } else {    
             // ' / '
             available -= COMMENT_PREFIX.length();
@@ -307,7 +304,7 @@ class HeaderCardFormatter {
         }
         
         if (card.isCommentStyleCard()) {
-            buf.append(COMMENT_CARD_BLANKS);
+            buf.append(' ');
         } else {
             buf.append(COMMENT_PREFIX);
         }

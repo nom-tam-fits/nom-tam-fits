@@ -1224,18 +1224,40 @@ public class HeaderTest {
     public void testAddComment() throws Exception {
         Header h = new Header();
         int n = h.getNumberOfCards();
-        HeaderCard hc = h.insertComment("this is a comment");
+        int k = h.insertComment("this is a comment");
         assertEquals(n + 1, h.getNumberOfCards());
-        assertTrue(hc.isCommentStyleCard());
+        assertEquals(k, 1);
+        
+        k = h.insertComment("this is a long comment <------------------------------------------------------------------------------> ends here.");
+        assertEquals(n + k + 1, h.getNumberOfCards());
+        assertEquals(k, 2);
     }
 
+    @Test
+    public void testAddUnkeyedComment() throws Exception {
+        Header h = new Header();
+        int n = h.getNumberOfCards();
+        int k = h.insertUnkeyedComment("this is a comment");
+        assertEquals(n + 1, h.getNumberOfCards());
+        assertEquals(k, 1);
+        
+        k = h.insertUnkeyedComment("this is a long comment <------------------------------------------------------------------------------> ends here.");
+        assertEquals(n + k + 1, h.getNumberOfCards());
+        assertEquals(k, 2);
+    }
+
+    
     @Test
     public void testAddHistory() throws Exception {
         Header h = new Header();
         int n = h.getNumberOfCards();
-        HeaderCard hc = h.insertHistory("this is a history entry");
+        int k = h.insertHistory("this is a history entry");
         assertEquals(n + 1, h.getNumberOfCards());
-        assertTrue(hc.isCommentStyleCard());
+        assertEquals(k, 1);
+        
+        k = h.insertComment("this is a long entry <------------------------------------------------------------------------------> ends here.");
+        assertEquals(n + k + 1, h.getNumberOfCards());
+        assertEquals(k, 2);
     }
     
     @Test
@@ -1333,6 +1355,6 @@ public class HeaderTest {
     public void testInsertInvalidCommentKey() throws Exception {
         Header h = new Header();
         // Keyword has an invalid character
-        assertNull(h.insertCommentStyle("TEST#", null));
+        assertNull(h.insertCommentStyle("TEST#", "some comment here"));
     }
 }

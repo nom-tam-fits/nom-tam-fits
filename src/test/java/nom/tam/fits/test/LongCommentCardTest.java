@@ -77,18 +77,20 @@ public class LongCommentCardTest {
             header.addLine(new HeaderCard("HISTORY", counts(length), false));
 
             // Add a non-nullable COMMENT entry with the desired length...
-            header.addLine(HeaderCard.createCommentCard(counts(HeaderCard.MAX_VALUE_LENGTH)));
+            header.addLine(HeaderCard.createCommentCard(counts(HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH)));
 
             boolean thrown = false;
             try {
-                header.addLine(HeaderCard.createCommentCard(counts(HeaderCard.MAX_VALUE_LENGTH + 1)));
+                header.addLine(HeaderCard.createCommentCard(counts(HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH + 1)));
             } catch (LongValueException e) {
                 thrown = true;
             }
             Assert.assertTrue(thrown);
-                
-            header.insertHistory(counts(length));
-            header.insertComment(counts(length));
+              
+            int n = 2;
+            
+            n += header.insertHistory(counts(length));
+            n += header.insertComment(counts(length));
 
             // Write the result to 'longcommenttest.fits' in the user's home...
             Fits fits = new Fits();
@@ -111,10 +113,10 @@ public class LongCommentCardTest {
                 HeaderCard headerCard = iterator.next();
                 if (headerCard.isCommentStyleCard() && !Standard.END.key().equals(headerCard.getKey())) {
                     commentLike++;
-                    Assert.assertEquals(headerCard.getComment(), 70, headerCard.getComment().length());
+                    Assert.assertTrue(headerCard.getComment(), headerCard.getComment().length() <= HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH);
                 }
             }
-            Assert.assertEquals(4, commentLike);
+            Assert.assertEquals(n, commentLike);
 
         } finally {
             FitsFactory.setLongStringsEnabled(longEnabled);

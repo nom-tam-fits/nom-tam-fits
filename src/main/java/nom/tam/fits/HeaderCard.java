@@ -77,6 +77,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /** Maximum length of a FITS value field. */
     public static final int MAX_VALUE_LENGTH = 70;
     
+    /** Maximum length of a comment-style card comment field. */
+    public static final int MAX_COMMENT_CARD_COMMENT_LENGTH = MAX_VALUE_LENGTH + 1;
+    
     /** Maximum length of a FITS string value field. */
     public static final int MAX_STRING_VALUE_LENGTH = MAX_VALUE_LENGTH - 2;
     
@@ -494,7 +497,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Sets all components of the card to the specified values. For internal use only.
      *
-     * @param aKey       Case-sensitive keyword (can be <code>null</code> for COMMENT)
+     * @param aKey       Case-sensitive keyword (can be <code>null</code> for an unkeyed comment)
      * @param aValue     the serialized value (tailing spaces will be removed), or <code>null</code>
      * @param aComment   an optional comment or <code>null</code>.
      * @param aType      The Java class from which the value field was derived, or
@@ -1499,12 +1502,14 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #createUnkeyedCommentCard(String)
      * @see #createCommentCard(String)
      * @see #createHistoryCard(String)
+     * @see Header#insertCommentStyle(String, String)
+     * @see Header#insertCommentStyleMultiline(String, String)
      */
     public static HeaderCard createCommentStyleCard(String key, String comment) throws HeaderCardException, LongValueException {
         if (comment == null) {
             comment = "";
-        } else if (comment.length() > MAX_VALUE_LENGTH) {
-            throw new LongValueException(MAX_VALUE_LENGTH, key, comment);
+        } else if (comment.length() > MAX_COMMENT_CARD_COMMENT_LENGTH) {
+            throw new LongValueException(MAX_COMMENT_CARD_COMMENT_LENGTH, key, comment);
         }
         HeaderCard card = new HeaderCard();
         card.set(key, null, comment, null);
@@ -1524,6 +1529,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *                                  
      * @see #createCommentCard(String)
      * @see #createCommentStyleCard(String, String)
+     * @see Header#insertUnkeyedComment(String)
      */
     public static HeaderCard createUnkeyedCommentCard(String text) throws HeaderCardException, LongValueException {
         return createCommentStyleCard(BLANKS.key(), text);
@@ -1542,6 +1548,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *                                  
      * @see #createUnkeyedCommentCard(String)
      * @see #createCommentStyleCard(String, String)
+     * @see Header#insertComment(String)
      */
     public static HeaderCard createCommentCard(String text) throws HeaderCardException, LongValueException {
         return createCommentStyleCard(COMMENT.key(), text);
@@ -1561,6 +1568,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *                                  in comment-style cards (70 characters max)
      *                                  
      * @see #createCommentStyleCard(String, String)
+     * @see Header#insertHistory(String)
      */
     public static HeaderCard createHistoryCard(String text) throws HeaderCardException, LongValueException {
         return createCommentStyleCard(HISTORY.key(), text);

@@ -1032,7 +1032,7 @@ public class HeaderCardTest {
         
         hc = new HeaderCard("TEST", null, "COMMENT", false);
         // AK: Fixed because comment can start at or after byte 11 only!
-        assertEquals("TEST      COMMENT                                                               ", hc.toString());
+        assertEquals("TEST     COMMENT                                                                ", hc.toString());
         assertFalse(hc.isKeyValuePair());
         assertTrue(hc.isCommentStyleCard());
         assertEquals(hc.toString(), HeaderCard.create(hc.toString()).toString());
@@ -1074,7 +1074,7 @@ public class HeaderCardTest {
         assertEquals("TEST    ='VALUE    '           / COMMENT                                        ", new HeaderCard("TEST", "VALUE", "COMMENT", false).toString());
         assertEquals("TEST    =                      / COMMENT                                        ", new HeaderCard("TEST", null, "COMMENT", true).toString());
         // AK: Fixed because comment can start at or after byte 11 only!
-        assertEquals("TEST      COMMENT                                                               ", new HeaderCard("TEST", null, "COMMENT", false).toString());
+        assertEquals("TEST     COMMENT                                                                ", new HeaderCard("TEST", null, "COMMENT", false).toString());
         HeaderCardException actual = null;
         try {
             new HeaderCard(null, "VALUE", "COMMENT", true);
