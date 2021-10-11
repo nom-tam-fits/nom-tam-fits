@@ -1221,6 +1221,15 @@ public class HeaderTest {
     }
     
     @Test
+    public void testInsertTruncatedComment() throws Exception {
+        Header h = new Header();      
+        int n = h.getNumberOfCards();
+        HeaderCard hc = h.insertCommentStyle("TRUNCATE", "this is a long comment <------------------------------------------------------------------------------> ends here.");
+        assertEquals(n + 1, h.getNumberOfCards());
+        assertTrue(hc.isCommentStyleCard());
+    }
+
+    @Test
     public void testAddComment() throws Exception {
         Header h = new Header();
         int n = h.getNumberOfCards();
@@ -1349,6 +1358,7 @@ public class HeaderTest {
     public void testInsertNullComment() throws Exception {
         Header h = new Header();
         assertNull(h.insertCommentStyle("TEST", null));
+        assertEquals(0, h.insertCommentStyleMultiline("TEST", null));
     }
     
     @Test
@@ -1356,5 +1366,6 @@ public class HeaderTest {
         Header h = new Header();
         // Keyword has an invalid character
         assertNull(h.insertCommentStyle("TEST#", "some comment here"));
+        assertEquals(0, h.insertCommentStyleMultiline("TEST#", "some comment here"));
     }
 }
