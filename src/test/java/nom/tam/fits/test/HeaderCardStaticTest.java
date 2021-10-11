@@ -34,6 +34,9 @@ package nom.tam.fits.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.math.BigDecimal;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
@@ -153,11 +156,23 @@ public class HeaderCardStaticTest {
         assertEquals(Long.class, hc.valueType());
         assertEquals(4000000000L, hc.getValue(Long.class, -1L).longValue());
         
+        hc = HeaderCard.create(Standard.BUNIT, 3.002f);
+        assertTrue(hc.isKeyValuePair());
+        assertEquals(Standard.BUNIT.key(), hc.getKey());
+        assertEquals(Float.class, hc.valueType());
+        assertEquals(3.002f, hc.getValue(Float.class, 0.0f).floatValue(), 1e-6);
+        
         hc = HeaderCard.create(Standard.BSCALE, 3.0024553);
         assertTrue(hc.isKeyValuePair());
         assertEquals(Standard.BSCALE.key(), hc.getKey());
         assertEquals(Double.class, hc.valueType());
         assertEquals(3.0024553, hc.getValue(Double.class, 0.0).doubleValue(), 1e-12);
+        
+        hc = HeaderCard.create(Standard.BSCALE, new BigDecimal("3.002455343245466030630655356643636346034056666034624354230636705034682857256756"));
+        assertTrue(hc.isKeyValuePair());
+        assertEquals(Standard.BSCALE.key(), hc.getKey());
+        assertEquals(BigDecimal.class, hc.valueType());
+        assertEquals(3.002455343245466, hc.getValue(Double.class, 0.0).doubleValue(), 1e-12);
         
         hc = HeaderCard.create(Standard.XTENSION, "name");
         assertTrue(hc.isKeyValuePair());

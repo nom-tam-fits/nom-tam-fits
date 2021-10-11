@@ -1182,17 +1182,24 @@ public class Header implements FitsElement {
      *            A string comment to follow. Illegal characters will be replaced by '?' and the
      *            comment may be truncated to fit into the card-space (70 characters).
      * @return    The new card that was inserted, or <code>null</code> if the keyword itself was 
-     *            invalid
+     *            invalid or the comment was <code>null</code>.
      */
     public HeaderCard insertCommentStyle(String key, String comment) {
+        if (comment == null) {
+            return null;
+        }
+            
+        if (comment.length() > HeaderCard.MAX_VALUE_LENGTH) {
+            comment = comment.substring(0, HeaderCard.MAX_VALUE_LENGTH);
+            LOG.warning("Truncated comment to fit card: [" + comment + "]");
+        }
+        
         try {
-            if (comment.length() > HeaderCard.MAX_VALUE_LENGTH) {
-                comment = comment.substring(0, HeaderCard.MAX_VALUE_LENGTH);
-            }
             HeaderCard hc = HeaderCard.createCommentStyleCard(key, HeaderCard.sanitize(comment));
             cursor().add(hc);
             return hc;
         } catch (HeaderCardException e) {
+            LOG.warning("Ignoring comment card with invalid key [" + HeaderCard.sanitize(key) + "]");
             e.printStackTrace();
             return null;
         }
@@ -1747,7 +1754,6 @@ public class Header implements FitsElement {
     void checkEnd() {
         // Ensure we have an END card only at the end of the
         // header.
-        //
         Cursor<String, HeaderCard> iter = iterator();
 
         HeaderCard card;

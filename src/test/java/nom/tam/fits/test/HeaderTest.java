@@ -1323,5 +1323,16 @@ public class HeaderTest {
         assertEquals(101L, h.getHexValue("TEST1", 101L));
     }
  
-
+    @Test
+    public void testInsertNullComment() throws Exception {
+        Header h = new Header();
+        assertNull(h.insertCommentStyle("TEST", null));
+    }
+    
+    @Test
+    public void testInsertInvalidCommentKey() throws Exception {
+        Header h = new Header();
+        // Keyword has an invalid character
+        assertNull(h.insertCommentStyle("TEST#", null));
+    }
 }
