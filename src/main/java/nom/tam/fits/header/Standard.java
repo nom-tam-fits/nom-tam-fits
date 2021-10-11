@@ -79,7 +79,7 @@ public enum Standard implements IFitsHeader {
      * Columns 9-80 may contain any ASCII text. Any number of card images with
      * blank keyword fields may appear in a key.
      */
-    BLANKS("        ", SOURCE.RESERVED, HDU.ANY, VALUE.NONE, "descriptive comment"),
+    BLANKS("        ", SOURCE.RESERVED, HDU.ANY, VALUE.NONE, null),
 
     /**
      * This keyword may be used only in the primary key. It shall appear within
@@ -144,7 +144,7 @@ public enum Standard implements IFitsHeader {
      * This keyword shall have no associated value; columns 9-80 may contain any
      * ASCII text. Any number of COMMENT card images may appear in a key.
      */
-    COMMENT(SOURCE.RESERVED, HDU.ANY, VALUE.NONE, "descriptive comment"),
+    COMMENT(SOURCE.RESERVED, HDU.ANY, VALUE.NONE, null),
 
     /**
      * The CONTINUE keyword, when followed by spaces in columns 9 and 10 of the
@@ -232,7 +232,7 @@ public enum Standard implements IFitsHeader {
      * This keyword has no associated value. Columns 9-80 shall be filled with
      * ASCII blanks.
      */
-    END(SOURCE.MANDATORY, HDU.ANY, VALUE.NONE, "marks the end of the key keywords"),
+    END(SOURCE.MANDATORY, HDU.ANY, VALUE.NONE, null),
 
     /**
      * The value field shall contain a floating point number giving the equinox

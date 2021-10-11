@@ -143,25 +143,6 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         return false;
     }
 
-
-    /**
-     * Safely replace a card in the header, knowing that no exception will
-     * occur. Only for internal use!
-     * 
-     * @param key
-     *            the key of the card
-     * @param isString
-     *            is the value a String
-     * @param value
-     *            the String representation of the value
-     */
-    protected void saveReplaceCard(String key, boolean isString, String value) {
-        HeaderCard card = HeaderCard.saveNewHeaderCard(key, null, isString);
-        card.setValue(value);
-        this.myHeader.deleteKey(card.getKey());
-        this.myHeader.addLine(card);
-    }
-
     public void addValue(IFitsHeader key, boolean val) throws HeaderCardException {
         this.myHeader.addValue(key.key(), val, key.comment());
     }

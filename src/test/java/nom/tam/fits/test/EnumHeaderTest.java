@@ -223,7 +223,7 @@ public class EnumHeaderTest {
         assertSame(IFitsHeader.HDU.ANY, IFitsHeader.HDU.valueOf(IFitsHeader.HDU.ANY.name()));
         assertEquals(14, IFitsHeader.SOURCE.values().length);
         assertSame(IFitsHeader.SOURCE.UNKNOWN, IFitsHeader.SOURCE.valueOf(IFitsHeader.SOURCE.UNKNOWN.name()));
-        assertEquals(6, IFitsHeader.VALUE.values().length);
+        assertEquals(7, IFitsHeader.VALUE.values().length);
         assertSame(IFitsHeader.VALUE.ANY, IFitsHeader.VALUE.valueOf(IFitsHeader.VALUE.ANY.name()));
         assertEquals(4, Synonyms.values().length);
     }

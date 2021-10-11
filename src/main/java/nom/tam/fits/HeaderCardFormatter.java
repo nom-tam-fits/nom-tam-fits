@@ -227,7 +227,6 @@ class HeaderCardFormatter {
         }
         
         int valueStart = buf.length();        
-        int available = getAvailable(buf);
 
         if (card.isStringValue()) {
             int from = appendQuotedValue(buf, card, 0);

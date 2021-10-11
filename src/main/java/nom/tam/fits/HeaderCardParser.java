@@ -82,13 +82,6 @@ class HeaderCardParser {
     /** regexp for nintegers (including hecadecimal). */
     private static final Pattern LONG_REGEX = Pattern.compile("[+-]?[\\dA-Fa-f]*");
     
-    /** 
-     * Value to check against for equality to zero. Unfortunately, BigDecimal.ZERO has precision 0, whereas any BigDecimal
-     * created with a zero string has precision 1, so BigDecimals from a string are never equal to BigDecimal.ZERO.
-     * So, we create our own version of zero that can be used to test for parsed zero values...
-     */
-    private static final BigDecimal ZERO = new BigDecimal("0.0");
-    
     /** The header line (usually 80-character width), which to parse. */
     private String line;
 

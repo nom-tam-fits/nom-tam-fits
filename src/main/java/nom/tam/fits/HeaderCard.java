@@ -46,6 +46,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.FitsFactory.FitsSettings;
+import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.AsciiFuncs;
@@ -209,6 +211,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @see #HeaderCard(String, Number, String)
      * @see #HeaderCard(String, Number, int, String)
+     * @see #create(IFitsHeader, Number)
+     * @see FitsFactory#setUseExponentD(boolean)
      */
     public HeaderCard(String key, Number value) throws HeaderCardException {
         this(key, value, FlexFormat.AUTO_PRECISION, null);
@@ -228,6 +232,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @see #HeaderCard(String, Number)
      * @see #HeaderCard(String, Number, int, String)
+     * @see #create(IFitsHeader, Number)
+     * @see FitsFactory#setUseExponentD(boolean)
      */
     public HeaderCard(String key, Number value, String comment) throws HeaderCardException {
         this(key, value, FlexFormat.AUTO_PRECISION, comment);
@@ -235,8 +241,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
     /**
      * Creates a new card with a number value, using scientific notation, with up to the specified decimal places
-     * showing between the decimal place and the exponent. For example, if <code>decimals</code> is set to 2, then &pi; 
-     * gets formatted as <code>3.14E0</code>.
+     * showing between the decimal place and the exponent. For example, if <code>decimals</code> is set to 2, then {@link Math#PI} 
+     * gets formatted as <code>3.14E0</code> (or <code>3.14D0</code> if {@link FitsFactory#setUseExponentD(boolean)} is
+     * enabled).
      *
      * @param key       keyword
      * @param value     value (can be <code>null</code>, in which case the card type defaults to <code>Integer.class</code>)
@@ -247,6 +254,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *                                  
      * @see #HeaderCard(String, Number)
      * @see #HeaderCard(String, Number, String)
+     * @see #create(IFitsHeader, Number)
+     * @see FitsFactory#setUseExponentD(boolean)
      */
     public HeaderCard(String key, Number value, int decimals, String comment) throws HeaderCardException {
         if (value == null) {
@@ -270,7 +279,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @throws HeaderCardException for any invalid keyword
      * 
-     * @see #HeaderCard(String, boolean, String)
+     * @see #HeaderCard(String, Boolean, String)
+     * @see #create(IFitsHeader, Boolean)
      */
     public HeaderCard(String key, Boolean value) throws HeaderCardException {
         this(key, value, null);
@@ -285,7 +295,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @throws HeaderCardException for any invalid keyword or value
      * 
-     * @see #HeaderCard(String, boolean)
+     * @see #HeaderCard(String, Boolean)
+     * @see #create(IFitsHeader, Boolean)
      */
     public HeaderCard(String key, Boolean value, String comment) throws HeaderCardException {
         this(key, value == null ? null : (value ? "T" : "F"), comment, Boolean.class);
@@ -439,6 +450,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @throws HeaderCardException for any invalid keyword or value
      * 
      * @see #HeaderCard(String, String, String)
+     * @see #create(IFitsHeader, String)
      */
     public HeaderCard(String key, String value) throws HeaderCardException {
         this(key, value, null, String.class);
@@ -454,11 +466,13 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @throws HeaderCardException for any invalid keyword or value
      * 
      * @see #HeaderCard(String, String)
+     * @see #create(IFitsHeader, String)
      */
     public HeaderCard(String key, String value, String comment) throws HeaderCardException {
         this(key, value, comment, String.class);
     } 
-   
+    
+
     /**
      * Creates a new card from its component parts. Use locally only...
      *
@@ -476,7 +490,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         set(key, value, comment, type);         
         this.type = type;
     }
-    
+  
     /**
      * Sets all components of the card to the specified values. For internal use only.
      *
@@ -1333,6 +1347,146 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
     
     /**
+     * <p>
+     * Checks if the value type is compatible with what's expected for a standard FITS keyword
+     * and prints out debugging information if there is a mismatch.
+     * </p>
+     * <p>
+     * A type mismatch is a programmer's error that we can let pass, but the programmer should probably
+     * fix, either because the IFitsHeader was defined with an incorrect (too restrictive?) type, 
+     * or because someone is trying to set a value that does not belong to the keyword...
+     * So we just print the stack trace to provide the debugging information for the
+     * developer.
+     * </p>
+     * 
+     * @param key       The standard or conventional FITS keyword
+     * @param type      The type we want to use with that key
+     * 
+     * @since 1.16
+     */
+    private static void checkType(IFitsHeader key, VALUE type) {
+        if (key.valueType() != VALUE.ANY && key.valueType() != type) {
+            new IllegalArgumentException("[" + key + "] created with unexpected value type.").printStackTrace();
+        }
+    }
+    
+    /**
+     * Creates a new card with a standard or conventional keyword and a boolean value, with
+     * the default comment associated with the keyword. Unlike {@link #HeaderCard(String, Boolean)},
+     * this call does not throw an exception, since the keyword and comment should be valid
+     * by design.
+     * 
+     * @param key       The standard or conventional keyword with its associated default comment.
+     * @param value     the boolean value associated to the keyword
+     * 
+     * @return          A new header card with the speficied standard-style key and comment
+     *                  and the specified value, or <code>null</code> if the standard
+     *                  key itself is malformed or illegal.
+     *                  
+     * @throws IllegalArgumentException     
+     *                  if the standard key was ill-defined.
+     *                  
+     * @since 1.16
+     */
+    public static HeaderCard create(IFitsHeader key, Boolean value) throws IllegalArgumentException {
+        checkType(key, VALUE.LOGICAL);
+        
+        try {
+            return new HeaderCard(key.key(), value, key.comment());
+        } catch (HeaderCardException e) {
+            throw new IllegalArgumentException("Invalid standard key [" + key.key() + "]", e);
+        }
+    }
+    
+    /**
+     * Creates a new card with a standard or conventional keyword and a number value, with
+     * the default comment associated with the keyword. Unlike {@link #HeaderCard(String, Number)},
+     * this call does not throw an exception, since the keyword and comment should be valid 
+     * by design.
+     * 
+     * @param key       The standard or conventional keyword with its associated default comment.
+     * @param value     the integer value associated to the keyword.
+     * 
+     * @return          A new header card with the speficied standard-style key and comment
+     *                  and the specified value.
+     *                  
+     * @throws IllegalArgumentException     
+     *                  if the standard key was ill-defined.
+     *                  
+     * @since 1.6
+     */
+    public static HeaderCard create(IFitsHeader key, Number value)  throws IllegalArgumentException  {
+        if (value instanceof Float || value instanceof Double || value instanceof BigInteger) {
+            checkType(key, VALUE.REAL);
+        } else {       
+            checkType(key, VALUE.INTEGER);
+        }
+            
+        try {
+            return new HeaderCard(key.key(), value, key.comment());
+        } catch (HeaderCardException e) {
+            throw new IllegalArgumentException("Invalid standard key [" + key.key() + "]", e);
+        }
+    }
+    
+    /**
+     * Creates a new card with a standard or conventional keyword and a number value, with
+     * the default comment associated with the keyword. Unlike {@link #HeaderCard(String, Number)},
+     * this call does not throw an exception, since the keyword and comment should be valid 
+     * by design.
+     * 
+     * @param key       The standard or conventional keyword with its associated default comment.
+     * @param value     the integer value associated to the keyword.
+     * 
+     * @return          A new header card with the speficied standard-style key and comment
+     *                  and the specified value.
+     *                  
+     * @throws IllegalArgumentException     
+     *                  if the standard key was ill-defined.
+     *                  
+     * @since 1.6
+     */
+    public static HeaderCard create(IFitsHeader key, ComplexValue value)  throws IllegalArgumentException  {
+        checkType(key, VALUE.COMPLEX);
+            
+        try {
+            return new HeaderCard(key.key(), value, key.comment());
+        } catch (HeaderCardException e) {
+            throw new IllegalArgumentException("Invalid standard key [" + key.key() + "]", e);
+        }
+    }
+    
+    /**
+     * Creates a new card with a standard or conventional keyword and an integer value, with
+     * the default comment associated with the keyword. Unlike {@link #HeaderCard(String, Number)},
+     * this call does not throw a hard exception, since the keyword and comment sohould be valid
+     * by design. The string value however will be checked, and an appropriate runtime
+     * exception is thrown if it cannot be included in a FITS header.
+     * 
+     * @param key       The standard or conventional keyword with its associated default comment.
+     * @param value     the string associated to the keyword.
+     * 
+     * @return          A new header card with the speficied standard-style key and comment
+     *                  and the specified value.
+     * 
+     * @throws IllegalArgumentException     
+     *                  if the string value contains characters that are not allowed in
+     *                  FITS headers, that is characters outside of the 0x20 thru 0x7E
+     *                  range, or if the standard key was ill-defined.
+     *                  
+     */
+    public static HeaderCard create(IFitsHeader key, String value) throws IllegalArgumentException {
+        checkType(key, VALUE.STRING);        
+        validateChars(value);
+        
+        try {
+            return new HeaderCard(key.key(), value, key.comment());
+        } catch (HeaderCardException e) {
+            throw new IllegalArgumentException("Invalid standard key [" + key.key() + "]", e);
+        }
+    }
+    
+    /**
      * Creates a comment-style card with no associated value field.
      * 
      * @param key       The keyword, or <code>null</code> blank/empty string for an unkeyed comment.
@@ -1347,14 +1501,16 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #createHistoryCard(String)
      */
     public static HeaderCard createCommentStyleCard(String key, String comment) throws HeaderCardException, LongValueException {
-        if (comment.length() > MAX_VALUE_LENGTH) {
+        if (comment == null) {
+            comment = "";
+        } else if (comment.length() > MAX_VALUE_LENGTH) {
             throw new LongValueException(MAX_VALUE_LENGTH, key, comment);
         }
         HeaderCard card = new HeaderCard();
         card.set(key, null, comment, null);
         return card;
     }
-
+    
     /**
      * Creates a new unkeyed comment card for th FITS header. These are comment-style cards with no associated
      * value field, and with a blank keyword. They are commonly used to add explanatory notes in the
@@ -1510,7 +1666,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * This method is only used internally. It is 'safe' (not save!) in the sense that the runtime exception it may
+     * This method was designed for use internally. It is 'safe' (not save!) in the sense that the runtime exception it may
      * throw does not need to be caught.
      *
      * @param key       keyword
@@ -1520,8 +1676,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @return the new HeaderCard
      * 
-     * @deprecated      This should be used internally only, without public visibility. It will be hidden
-     *                  from users in a future release...
+     * @deprecated      This was to be used internally only, without public visibility. It will become unexposed
+     *                  to users in a future release...
+     *                  
      */
     @Deprecated
     public static HeaderCard saveNewHeaderCard(String key, String comment, boolean hasValue) throws IllegalStateException {

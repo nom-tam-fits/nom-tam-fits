@@ -1173,19 +1173,29 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Add a line to the header using the COMMENT style, i.e., no '=' in column
-     * 9.
+     * Add a line to the header using the COMMENT style, i.e., no '= ' in column
+     * 9 and 10.
      *
      * @param key
      *            The comment style header keyword.
-     * @param value
-     *            A string to follow the header.
-     * @return    The new card that was inserted.
+     * @param comment
+     *            A string comment to follow. Illegal characters will be replaced by '?' and the
+     *            comment may be truncated to fit into the card-space (70 characters).
+     * @return    The new card that was inserted, or <code>null</code> if the keyword itself was 
+     *            invalid
      */
-    public HeaderCard insertCommentStyle(String key, String value) {
-        HeaderCard hc = HeaderCard.saveNewHeaderCard(key, value, false);
-        cursor().add(hc);
-        return hc;
+    public HeaderCard insertCommentStyle(String key, String comment) {
+        try {
+            if (comment.length() > HeaderCard.MAX_VALUE_LENGTH) {
+                comment = comment.substring(0, HeaderCard.MAX_VALUE_LENGTH);
+            }
+            HeaderCard hc = HeaderCard.createCommentStyleCard(key, HeaderCard.sanitize(comment));
+            cursor().add(hc);
+            return hc;
+        } catch (HeaderCardException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -1427,7 +1437,7 @@ public class Header implements FitsElement {
     public void setBitpix(int val) {
         Cursor<String, HeaderCard> iter = iterator();
         iter.next();
-        iter.add(HeaderCard.saveNewHeaderCard(BITPIX.key(), BITPIX.comment(), false).setValue(val));
+        iter.add(HeaderCard.create(BITPIX, val));
     }
 
     /**
@@ -1452,7 +1462,7 @@ public class Header implements FitsElement {
         if (iter.hasNext()) {
             iter.next();
         }
-        iter.add(HeaderCard.saveNewHeaderCard(NAXIS.key(), NAXIS.comment(), false).setValue(val));
+        iter.add(HeaderCard.create(NAXIS, val));
     }
 
     /**
@@ -1477,8 +1487,7 @@ public class Header implements FitsElement {
         if (iter.hasNext()) {
             iter.next();
         }
-        IFitsHeader naxisKey = NAXISn.n(axis);
-        iter.add(HeaderCard.saveNewHeaderCard(naxisKey.key(), naxisKey.comment(), false).setValue(dim));
+        iter.add(HeaderCard.create(NAXISn.n(axis), dim));
     }
 
     /**
@@ -1503,11 +1512,11 @@ public class Header implements FitsElement {
             if (findCard(NAXISn.n(nax)) != null) {
                 iter.next();
                 deleteKey(EXTEND);
-                iter.add(HeaderCard.saveNewHeaderCard(EXTEND.key(), EXTEND.comment(), false).setValue(true));
+                iter.add(HeaderCard.create(EXTEND, true));
             }
         }
 
-        iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), SIMPLE.comment(), false).setValue(val));
+        iter.add(HeaderCard.create(SIMPLE, val));
     }
 
     /**
@@ -1515,13 +1524,17 @@ public class Header implements FitsElement {
      *
      * @param val
      *            The name of the extension.
+     * @throws IllegalArgumentException     
+     *                  if the string value contains characters that are not allowed in
+     *                  FITS headers, that is characters outside of the 0x20 thru 0x7E
+     *                  range.
      */
-    public void setXtension(String val) {
+    public void setXtension(String val) throws IllegalArgumentException {
         deleteKey(SIMPLE);
         deleteKey(XTENSION);
         deleteKey(EXTEND);
         Cursor<String, HeaderCard> iter = iterator();
-        iter.add(HeaderCard.saveNewHeaderCard(XTENSION.key(), XTENSION.comment(), true).setValue(val));
+        iter.add(HeaderCard.create(XTENSION, val));
     }
 
     /**
@@ -1746,7 +1759,13 @@ public class Header implements FitsElement {
             }
         }
         // End cannot have a comment
-        iter.add(HeaderCard.saveNewHeaderCard(END.key(), null, false));
+        
+        try {
+            iter.add(HeaderCard.createCommentStyleCard(END.key(), null));
+        } catch (HeaderCardException e) {
+            // Cannot happen.
+        }
+        
     }
 
     /**
@@ -1797,10 +1816,10 @@ public class Header implements FitsElement {
      */
     void nullImage() {
         Cursor<String, HeaderCard> iter = iterator();
-        iter.add(HeaderCard.saveNewHeaderCard(SIMPLE.key(), SIMPLE.comment(), false).setValue(true));
-        iter.add(HeaderCard.saveNewHeaderCard(BITPIX.key(), BITPIX.comment(), false).setValue(BasicHDU.BITPIX_BYTE));
-        iter.add(HeaderCard.saveNewHeaderCard(NAXIS.key(), NAXIS.comment(), false).setValue(0));
-        iter.add(HeaderCard.saveNewHeaderCard(EXTEND.key(), EXTEND.comment(), false).setValue(true));
+        iter.add(HeaderCard.create(SIMPLE, true));
+        iter.add(HeaderCard.create(BITPIX, BasicHDU.BITPIX_BYTE));
+        iter.add(HeaderCard.create(NAXIS, 0));
+        iter.add(HeaderCard.create(EXTEND, true));
     }
 
     /**
