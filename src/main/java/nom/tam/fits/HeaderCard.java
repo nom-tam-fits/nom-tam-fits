@@ -1497,7 +1497,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @return          a new comment-style header card with the specified key and comment text.
      * @throws HeaderCardException      if the key or value were invalid.
      * @throws LongValueException       if the comment text is longer than the space available
-     *                                  in comment-style cards (70 characters max)
+     *                                  in comment-style cards (71 characters max)
      * 
      * @see #createUnkeyedCommentCard(String)
      * @see #createCommentCard(String)
@@ -1521,11 +1521,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * value field, and with a blank keyword. They are commonly used to add explanatory notes in the
      * FITS header. Keyed comments are another alternative...
      * 
-     * @param text      a concise descriptive entry (max 70 characters).
+     * @param text      a concise descriptive entry (max 71 characters).
      * @return          a new COMMENT card with the specified key and comment text.
      * @throws HeaderCardException      if the text contains invalid charaters.
      * @throws LongValueException       if the comment text is longer than the space available
-     *                                  in comment-style cards (70 characters max)
+     *                                  in comment-style cards (71 characters max)
      *                                  
      * @see #createCommentCard(String)
      * @see #createCommentStyleCard(String, String)
@@ -1540,11 +1540,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * value field, and with COMMENT as the keyword. They are commonly used to add explanatory notes in the
      * FITS header. Unkeyed comments are another alternative...
      * 
-     * @param text      a concise descriptive entry (max 70 characters).
+     * @param text      a concise descriptive entry (max 71 characters).
      * @return          a new COMMENT card with the specified key and comment text.
      * @throws HeaderCardException      if the text contains invalid charaters.
      * @throws LongValueException       if the comment text is longer than the space available
-     *                                  in comment-style cards (70 characters max)
+     *                                  in comment-style cards (71 characters max)
      *                                  
      * @see #createUnkeyedCommentCard(String)
      * @see #createCommentStyleCard(String, String)
@@ -1561,11 +1561,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * by the FITS file. The text field for history entries is limited to 70 characters max per
      * card. However there is no limit to how many such entries are in a FITS header.
      * 
-     * @param text      a concise descriptive entry (max 70 characters).
+     * @param text      a concise descriptive entry (max 71 characters).
      * @return          a new HISTORY card with the specified key and comment text.
      * @throws HeaderCardException      if the text contains invalid charaters.
      * @throws LongValueException       if the comment text is longer than the space available
-     *                                  in comment-style cards (70 characters max)
+     *                                  in comment-style cards (71 characters max)
      *                                  
      * @see #createCommentStyleCard(String, String)
      * @see Header#insertHistory(String)
