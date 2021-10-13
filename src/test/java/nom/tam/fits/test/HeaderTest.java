@@ -1401,12 +1401,13 @@ public class HeaderTest {
             
             // Add some cards with a blank in-between
             h.addValue("TEST1", 1, "comment");
-            h.insertBlankCard();
+            h.insertCommentStyleMultiline(null, "");
             h.addValue("TEST2", 2, null);
             n = h.getNumberOfPhysicalCards();
             assertEquals(n0 + 3, n);
             
             h.ensureCardSpace(37);
+            assertEquals(0, h.getOriginalSize());
             assertEquals(5760, h.getMinimumSize());
             f.write(new File("target/prealloc.fits"));
             f.close();
@@ -1417,6 +1418,7 @@ public class HeaderTest {
             BasicHDU<?> hdu = f.getHDU(0);
             Header h = hdu.getHeader();
           
+            assertEquals(5760, h.getOriginalSize());
             assertEquals(5760, h.getMinimumSize());
             assertEquals(1, h.getIntValue("TEST1"));
             assertEquals(2, h.getIntValue("TEST2"));

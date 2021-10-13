@@ -125,7 +125,7 @@ public class Header implements FitsElement {
      * The number of bytes that this header occupied in file.
      * (for re-writing).
      */
-    private int readSize = 0;
+    private long readSize = 0;
     
     /**
      * the sorter used to sort the header cards defore writing the header.
@@ -1184,18 +1184,20 @@ public class Header implements FitsElement {
      * @see #read(ArrayDataInput)
      */
     public long getMinimumSize() {
-        return FitsUtil.addPadding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE);
+        return FitsUtil.addPadding((long) this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE);
     }
     
-    
     /**
-     * @deprecated  Use {@link #getMinimumSize()} instead.
+     * Returns the original size of the header in the stream from which it was read. 
      * 
-     * @return  the size of the original header in bytes.
+     * @return  the size of the original header in bytes, or 0 if the header was not 
+     *          read from a stream.
+     *          
+     * @see #read(ArrayDataInput)
+     * @see #getMinimumSize()
      */
-    @Deprecated
     public final long getOriginalSize() {
-        return getMinimumSize();
+        return readSize;
     }
     
     /**
@@ -1211,12 +1213,37 @@ public class Header implements FitsElement {
         return headerSize();
     }
 
-    public final String getStringValue(IFitsHeader header) {
-        return getStringValue(header.key());
+    /**
+     * Get the <CODE>String</CODE> value associated with the given standard key.
+     *
+     * @param key
+     *            The standard header key.
+     * @return The associated value or null if not found or if the value is not
+     *         a string.
+     *         
+     * @see #getStringValue(String)
+     * @see #getStringValue(IFitsHeader, String)
+     */
+    public final String getStringValue(IFitsHeader key) {
+        return getStringValue(key.key());
     }
     
-    public final String getStringValue(IFitsHeader header, String dft) {
-        return getStringValue(header.key(), dft);
+    /**
+     * Get the <CODE>String</CODE> value associated with the given standard key.
+     *
+     * @param key
+     *            The standard header key.
+     * @param dft
+     *            The default value.
+     * @return The associated value or the default value if not found or if the value is not
+     *         a string.
+     *         
+     * @see #getStringValue(String, String)
+     * @see #getStringValue(IFitsHeader)
+     * 
+     */
+    public final String getStringValue(IFitsHeader key, String dft) {
+        return getStringValue(key.key(), dft);
     }
     
     
@@ -1227,6 +1254,9 @@ public class Header implements FitsElement {
      *            The header key.
      * @return The associated value or null if not found or if the value is not
      *         a string.
+     *         
+     * @see #getStringValue(IFitsHeader)
+     * @see #getStringValue(String, String)
      */
     public final String getStringValue(String key) {
         return getStringValue(key, null);
@@ -1241,6 +1271,9 @@ public class Header implements FitsElement {
      *            The default value.
      * @return The associated value or the default value if not found or if the value is not
      *         a string.
+     *         
+     * @see #getStringValue(IFitsHeader, String)
+     * @see #getStringValue(String)
      */
     public String getStringValue(String key, String dft) {
 
@@ -1648,7 +1681,7 @@ public class Header implements FitsElement {
     @Override
     public boolean rewriteable() {
         int writeSize = FitsUtil.addPadding(Math.max(minCards, getNumberOfPhysicalCards()) * HeaderCard.FITS_HEADER_CARD_SIZE);
-        return this.fileOffset >= 0 && this.input instanceof ArrayDataOutput && writeSize == readSize;
+        return this.fileOffset >= 0 && this.input instanceof ArrayDataOutput && writeSize == getOriginalSize();
     }
 
     /**
