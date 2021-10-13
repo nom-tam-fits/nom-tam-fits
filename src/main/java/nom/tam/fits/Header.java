@@ -31,10 +31,10 @@ package nom.tam.fits;
  * #L%
  */
 
-import static nom.tam.fits.header.Standard.CONTINUE;
 import static nom.tam.fits.header.Standard.BITPIX;
 import static nom.tam.fits.header.Standard.BLANKS;
 import static nom.tam.fits.header.Standard.COMMENT;
+import static nom.tam.fits.header.Standard.CONTINUE;
 import static nom.tam.fits.header.Standard.END;
 import static nom.tam.fits.header.Standard.EXTEND;
 import static nom.tam.fits.header.Standard.GCOUNT;
@@ -55,6 +55,7 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
@@ -96,12 +97,10 @@ import nom.tam.util.RandomAccess;
  * the FITS header, but this is not done automatically for the user.
  */
 public class Header implements FitsElement {
+    
+    private static final Logger LOG = Logger.getLogger(Header.class.getName());
 
     private static final int MIN_NUMBER_OF_CARDS_FOR_VALID_HEADER = 4;
-
-    private static final int MAX_CARDS_PER_HEADER = FitsFactory.FITS_BLOCK_SIZE / HeaderCard.FITS_HEADER_CARD_SIZE;
-
-    private static final Logger LOG = Logger.getLogger(Header.class.getName());
 
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
@@ -117,18 +116,23 @@ public class Header implements FitsElement {
     private ArrayDataInput input;
 
     /**
-     * Number of cards in header before duplicates were removed. A user may want
-     * to know how large the actual FITS header was on input. Since the keyword
-     * hash removes duplicate keys the internal size may be smaller. Added by
-     * Booth Hartley (IPAC/Caltech).
+     * The mimimum number of cards to write, including blank header space as
+     * described in the FITS 4.0 standard.
      */
-    private int originalCardCount = 0; // RBH ADDED
-
+    private int minCards = 0;
+    
+    /**
+     * The number of bytes that this header occupied in file.
+     * (for re-writing).
+     */
+    private int readSize = 0;
+    
     /**
      * the sorter used to sort the header cards defore writing the header.
      */
     private Comparator<String> headerSorter = new HeaderOrder();
 
+    
     /**
      * Create a header by reading the information from the input stream.
      *
@@ -211,6 +215,44 @@ public class Header implements FitsElement {
         }
     }
 
+    /**
+     * <p>
+     * Preallocates a minimum header card space. When written to a stream, the header will be large enough to 
+     * hold at least the specified number of cards. If the header has fewer physical cards
+     * then the remaining space will be padded with blanks, leaving space for future additions, as specified
+     * by the FITS 4.0 standard for <a href="https://fits.gsfc.nasa.gov/registry/headerspace.html">
+     * preallocated header space</a>. 
+     * <p>
+     * <p>
+     * This method is also called by {@link #read(ArrayDataInput)}, with the number of cards (including 
+     * reserved blank space) contained in the header input stream, in order to ensure that the header remains 
+     * rewritable even if it is shortened by the removal of cards (explicitly, or because they were
+     * duplicates).
+     * </p>
+     * <p>
+     * A new setting always overrides prior ones. For example, calling this method with an argument
+     * that is %lt;=1 will eliminate (reset) any prior preallocated header space.
+     * </p>
+     * 
+     * @param nCards    the mimimum number of 80-character header records that is header
+     *                  must be able to support when written to a stream, including 
+     *                  preallocated blank header space.
+     * 
+     * @since 1.16
+     *                  
+     * @see #getMinimumSize()
+     * @see #write(ArrayDataOutput)
+     * @see #read(ArrayDataInput)
+     * @see #resetOriginalSize()
+     * 
+     */
+    public void ensureCardSpace(int nCards) {
+        if (nCards < 1) {
+            nCards = 1;
+        }
+        this.minCards = nCards;
+    }
+    
     /**
      * Insert a new header card at the current position, deleting any prior
      * occurence of the same card while maintaining the current position to
@@ -1093,35 +1135,79 @@ public class Header implements FitsElement {
    
     
     /**
-     * @return the number of cards in the header
+     * Returns the nominal number of currently defined cards in this header. Each card can 
+     * consist of one or more 80-character wide header records.
+     * 
+     * @return      the number of nominal cards in the header
+     * 
+     * @see #getNumberOfPhysicalCards()
      */
     public int getNumberOfCards() {
-        return this.cards.size();
+        return this.cards.size();        
     }
 
     /**
-     * @return the number of physical cards in the header.
+     * Returns the number of 80-character header records in this header, including
+     * an END marker (whether or not it is currently contained).
+     * 
+     * @return the number of physical cards in the header, including the END marker.
+     * 
+     * @see #getNumberOfCards()
+     * @see #getSize()
      */
     public int getNumberOfPhysicalCards() {
         int count = 0;
         for (HeaderCard card : this.cards) {
             count += card.cardSize();
         }
+        
+        // AK: Count the END card, which may not have been added yet...
+        if (!containsKey(END)) {
+            count++;
+        }
+        
         return count;
     }
 
     /**
-     * @return the size of the original header in bytes.
+     * Returns the minimum number of bytes that will be written by this header, either
+     * as the original byte size of a header that was read, or else the minimum 
+     * preallocated capacity after setting {@link #ensureCardSpace(int)}.
+     * 
+     * @return  the minimum byte size for this header. The actual header may take up 
+     *          more space than that (but never less!), depending on the number of cards 
+     *          contained.
+     * 
+     * @since 1.16
+     * 
+     * @see #ensureCardSpace(int)
+     * @see #read(ArrayDataInput)
      */
-    public long getOriginalSize() {
-        return FitsUtil.addPadding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE);
+    public long getMinimumSize() {
+        return FitsUtil.addPadding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE);
     }
-
+    
+    
     /**
-     * @return the size of the header in bytes
+     * @deprecated  Use {@link #getMinimumSize()} instead.
+     * 
+     * @return  the size of the original header in bytes.
+     */
+    @Deprecated
+    public final long getOriginalSize() {
+        return getMinimumSize();
+    }
+    
+    /**
+     * Returns the current byte size of this header.
+     * 
+     * @return      the size of the header in bytes, or 0 if the header is invalid.
+     * 
+     * @see #getMinimumSize()
+     * @see #ensureCardSpace(int)
      */
     @Override
-    public long getSize() {
+    public final long getSize() {
         return headerSize();
     }
 
@@ -1180,7 +1266,8 @@ public class Header implements FitsElement {
      * cards of the same type by {@link #insertCommentStyleMultiline(String, String)}.
      *
      * @param key
-     *            The comment style header keyword.
+     *            The comment style header keyword, or <code>null</code> for an
+     *            empty comment line.
      * @param comment
      *            A string comment to follow. Illegal characters will be replaced by '?' and the
      *            comment may be truncated to fit into the card-space (71 characters).
@@ -1193,10 +1280,8 @@ public class Header implements FitsElement {
      */
     public HeaderCard insertCommentStyle(String key, String comment) {
         if (comment == null) {
-            return null;
-        }
-            
-        if (comment.length() > HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH) {
+            comment = "";
+        } else if (comment.length() > HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH) {
             comment = comment.substring(0, HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH);
             LOG.warning("Truncated comment to fit card: [" + comment + "]");
         }
@@ -1220,7 +1305,8 @@ public class Header implements FitsElement {
      * that might belong together.
      *
      * @param key
-     *            The comment style header keyword.
+     *            The comment style header keyword, or <code>null</code> for an
+     *            empty comment line.
      * @param comment
      *            A string comment to follow. Illegal characters will be replaced by '?' and the
      *            comment may be split among multiple records as necessary to be fully preserved.
@@ -1234,9 +1320,15 @@ public class Header implements FitsElement {
      * @see #insertHistory(String)
      */
     public int insertCommentStyleMultiline(String key, String comment) {
+        
+        // Empty comments must have at least one space char to write at least one
+        // comment card...
         if (comment == null) {
-            return 0;
+            comment = " ";
+        } else if (comment.isEmpty()) {
+            comment = " ";
         }
+        
         
         int n = 0;    
         
@@ -1288,11 +1380,22 @@ public class Header implements FitsElement {
      * @see #insertComment(String)
      * @see #insertHistory(String)
      * @see HeaderCard#createUnkeyedCommentCard(String)
+     * @see #insertBlankCard()
      */
     public int insertUnkeyedComment(String value) {
         return insertCommentStyleMultiline(BLANKS.key(), value);
     }
     
+    /**
+     * Adds a blank card into the header.
+     * 
+     * @since 1.16
+     * 
+     * @see #insertUnkeyedComment(String)
+     */
+    public void insertBlankCard() {
+        insertCommentStyle(null, null);
+    }
     
     /**
      * Adds one or more consecutive a HISTORY records, wrapping the comment text as necessary.
@@ -1373,7 +1476,14 @@ public class Header implements FitsElement {
     }
 
     /**
+     * <p>
      * Read a stream for header data.
+     * </p>
+     * <p>
+     * As of 1.16, the header is ensured to (re)write at least the same number of
+     * cards as before, padding with blanks as necessary, unless the user resets the preallocated card 
+     * space with a call to {@link #ensureCardSpace(int)}.
+     * </p>
      *
      * @param dis
      *            The input stream to read the data from.
@@ -1381,6 +1491,8 @@ public class Header implements FitsElement {
      *             the the stream ended prematurely
      * @throws IOException
      *             if the operation failed
+     *             
+     * @see #ensureCardSpace(int)
      */
     @SuppressWarnings("deprecation")
     @Override
@@ -1390,20 +1502,35 @@ public class Header implements FitsElement {
         } else {
             this.fileOffset = -1;
         }
-
+        
+        int trailingBlanks = 0;
         boolean firstCard = true;
+        
         HeaderCardCountingArrayDataInput cardCountingArray = new HeaderCardCountingArrayDataInput(dis);
         try {
-            while (true) {
+            for (;;) {
                 HeaderCard fcard = new HeaderCard(cardCountingArray);
+                
+                // AK: Note, 'key' can never be null, as per contract of getKey(). So no need to check...
                 String key = fcard.getKey();
-                // AK: Note, 'key' can never be null, as per contract of the call above. So no need to check...
                 
                 if (firstCard) {
                     checkFirstCard(key);
                     firstCard = false;
-                }
-
+                } else if (fcard.isBlank()) {
+                    // AK: We don't add the trailing blank cards, but keep count of them.
+                    // (esp. in case the aren't trailing...) 
+                    trailingBlanks++;
+                    continue;
+                } else if (!END.key().equals(key)) {
+                    // AK: The preceding blank spaces were internal, not trailing
+                    // so add them back in now...
+                    for (int i = 0; i < trailingBlanks; i++) {
+                        insertBlankCard();
+                    }
+                    trailingBlanks = 0;
+                } 
+                
                 if (this.cards.containsKey(key)) {
                     addDuplicate(this.cards.get(key));
                 }
@@ -1441,13 +1568,15 @@ public class Header implements FitsElement {
         if (this.fileOffset >= 0) {
             this.input = dis;
         }
-        this.originalCardCount = cardCountingArray.getPhysicalCardsRead();
+        ensureCardSpace(cardCountingArray.getPhysicalCardsRead());
+        readSize = FitsUtil.addPadding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE);
+        
         // Read to the end of the current FITS block.
         //
         try {
-            dis.skipAllBytes(FitsUtil.padding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE));
+            dis.skipAllBytes(FitsUtil.padding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE));
         } catch (IOException e) {
-            throw new TruncatedFileException("Failed to skip " + FitsUtil.padding(this.originalCardCount * HeaderCard.FITS_HEADER_CARD_SIZE) + " bytes", e);
+            throw new TruncatedFileException("Failed to skip " + FitsUtil.padding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE) + " bytes", e);
         }
     }
 
@@ -1478,19 +1607,33 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Indicate that we can use the current internal size of the Header as the
-     * 'original' size (e.g., perhaps we've rewritten the header to disk). Note
-     * that affects the results of rewriteable(), so users should not call this
-     * method unless the underlying data has actually been updated.
+     * @deprecated Use {@link #ensureCardSpace(int)} with a 1 argument instead.
+     * 
+     * <p>
+     * Resets any prior preallocated header space, such as was explicitly set by
+     * {@link #ensureCardSpace(int)}, or when the header was read from a stream 
+     * to ensure it remains rewritable, if possible.
+     * </p>
+     * <p>
+     * For headers read from a stream, this will affect {@link #rewriteable()}, 
+     * so users should not call this method unless they do not intend to 
+     * {@link #rewrite()} this header into the original FITS.
+     * </p>
+     * 
+     * @see #ensureCardSpace(int)
+     * @see #read(ArrayDataInput)
+     * @see #getMinimumSize()
+     * @see #rewriteable()
+     * @see #rewrite()
      */
-    public void resetOriginalSize() {
-        this.originalCardCount = getNumberOfPhysicalCards();
+    @Deprecated
+    public final void resetOriginalSize() {
+        ensureCardSpace(1);
     }
 
     /** Rewrite the header. */
     @Override
     public void rewrite() throws FitsException, IOException {
-
         ArrayDataOutput dos = (ArrayDataOutput) this.input;
 
         if (rewriteable()) {
@@ -1504,9 +1647,8 @@ public class Header implements FitsElement {
 
     @Override
     public boolean rewriteable() {
-        return this.fileOffset >= 0 && this.input instanceof ArrayDataOutput && //
-                (getNumberOfPhysicalCards() + MAX_CARDS_PER_HEADER - 1) / MAX_CARDS_PER_HEADER == //
-                (this.originalCardCount + MAX_CARDS_PER_HEADER - 1) / MAX_CARDS_PER_HEADER;
+        int writeSize = FitsUtil.addPadding(Math.max(minCards, getNumberOfPhysicalCards()) * HeaderCard.FITS_HEADER_CARD_SIZE);
+        return this.fileOffset >= 0 && this.input instanceof ArrayDataOutput && writeSize == readSize;
     }
 
     /**
@@ -1696,7 +1838,28 @@ public class Header implements FitsElement {
             }
         }
     }
-
+    
+    /**
+     * Writes a number of blank header records, for example to create preallocated
+     * blank header space as described by the FITS 4.0 standard.
+     * 
+     * @param dos       the output stream to which the data is to be written.
+     * @param n         the number of blank records to add.
+     * @throws IOException  if there was an error writing to the stream
+     * 
+     * @since 1.16
+     * 
+     * @see #ensureCardSpace(int)
+     */
+    private void writeBlankCards(ArrayDataOutput dos, int n) throws IOException {
+        byte[] blank = new byte[HeaderCard.FITS_HEADER_CARD_SIZE];
+        Arrays.fill(blank, (byte) ' ');
+        
+        while (--n >= 0) {
+            dos.write(blank);
+        }
+    }
+        
     /**
      * Write the current header (including any needed padding) to the output
      * stream.
@@ -1705,6 +1868,7 @@ public class Header implements FitsElement {
      *            The output stream to which the data is to be written.
      * @throws FitsException
      *             if the header could not be written.
+     *             
      */
     @Override
     public void write(ArrayDataOutput dos) throws FitsException {
@@ -1718,26 +1882,38 @@ public class Header implements FitsElement {
         checkEnd();
         Cursor<String, HeaderCard> writeIterator = this.cards.iterator(0);
         try {
+            int size = 0;
+            
             while (writeIterator.hasNext()) {
                 HeaderCard card = writeIterator.next();
                 byte[] b = AsciiFuncs.getBytes(card.toString(settings));
+                size += b.length;
+                
+                if (END.key().equals(card.getKey()) && minCards * HeaderCard.FITS_HEADER_CARD_SIZE > size) {
+                    // AK: Add preallocated blank header space before the END key.
+                    writeBlankCards(dos, minCards - size / HeaderCard.FITS_HEADER_CARD_SIZE);
+                    size = minCards;
+                }
+               
                 dos.write(b);
             }
-            FitsUtil.pad(dos, getNumberOfPhysicalCards() * HeaderCard.FITS_HEADER_CARD_SIZE, (byte) ' ');
+            FitsUtil.pad(dos, size, (byte) ' ');
             dos.flush();
         } catch (IOException e) {
-            throw new FitsException("IO Error writing header: " + e);
+            throw new FitsException("IO Error writing header", e);
         }
     }
 
-    private void addDuplicate(HeaderCard dup) {      
-        if (!COMMENT.key().equals(dup.getKey()) && !HISTORY.key().equals(dup.getKey()) && !CONTINUE.key().equals(dup.getKey()) && !dup.getKey().trim().isEmpty()) {
-            LOG.log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
-            if (this.duplicates == null) {
-                this.duplicates = new ArrayList<>();
-            }
-            this.duplicates.add(dup);
+    private void addDuplicate(HeaderCard dup) { 
+        // AK: Don't worry about duplicates for comment-style cards in general.
+        if (dup.isCommentStyleCard() || CONTINUE.key().equals(dup.getKey())) {
+            return;
         }
+        LOG.log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
+        if (this.duplicates == null) {
+            this.duplicates = new ArrayList<>();
+        }
+        this.duplicates.add(dup);
     }
 
     /**
@@ -1858,17 +2034,18 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Return the size of the header data including padding.
+     * Return the size of the header data including padding, or 0 if the header is invalid.
      *
-     * @return the header size including any needed padding.
+     * @return the header size including any needed padding, or 0 if the header is invalid.
+     * 
+     * @see #isValidHeader()
      */
     int headerSize() {
-
         if (!isValidHeader()) {
             return 0;
         }
 
-        return FitsUtil.addPadding(getNumberOfPhysicalCards() * HeaderCard.FITS_HEADER_CARD_SIZE);
+        return FitsUtil.addPadding(Math.max(minCards, getNumberOfPhysicalCards()) * HeaderCard.FITS_HEADER_CARD_SIZE);
     }
 
     /**

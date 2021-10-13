@@ -57,23 +57,24 @@ public class DupTest {
 
         Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits");
         Header hdr = f.readHDU().getHeader();
-        assertEquals("Internal size:", hdr.getSize(), 2880);
-        assertEquals("External size:", hdr.getOriginalSize(), 8640);
+        assertEquals("Internal size:", 8640, hdr.getSize());
+        assertEquals("External size:", 8640, hdr.getMinimumSize());
         assertTrue("Has duplicates:", hdr.hadDuplicates());
         List<HeaderCard> dups = hdr.getDuplicates();
         System.out.println("Number of duplicates:" + dups.size());
         assertTrue("Has dups:", dups != null && dups.size() > 0);
-        assertTrue("Not rewriteable:", !hdr.rewriteable());
+        // AK: It is rewritable with preallocated blank space that is now supported!
+        assertTrue("Not rewriteable:", hdr.rewriteable());
         DataOutputStream bf = new DataOutputStream(new FileOutputStream("target/created_dup.fits"));
+        hdr.resetOriginalSize();
+        assertEquals("External size, after reset", 2880, hdr.getMinimumSize());
         f.write(bf);
         bf.flush();
         bf.close();
-        hdr.resetOriginalSize();
-        assertEquals("External size, after reset", hdr.getOriginalSize(), 2880);
         Fits g = new Fits("target/created_dup.fits");
         hdr = g.readHDU().getHeader();
-        assertEquals("Internal size, after rewrite", hdr.getSize(), 2880);
-        assertEquals("External size, after rewrite", hdr.getOriginalSize(), 2880);
+        assertEquals("Internal size, after rewrite", 2880, hdr.getSize());
+        assertEquals("External size, after rewrite", 2880, hdr.getMinimumSize());
         assertTrue("Now rewriteable", hdr.rewriteable());
         assertTrue("No duplicates", !hdr.hadDuplicates());
         assertTrue("Dups is null", hdr.getDuplicates() == null);

@@ -54,6 +54,7 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -1357,8 +1358,16 @@ public class HeaderTest {
     @Test
     public void testInsertNullComment() throws Exception {
         Header h = new Header();
-        assertNull(h.insertCommentStyle("TEST", null));
-        assertEquals(0, h.insertCommentStyleMultiline("TEST", null));
+        assertNotNull(h.insertCommentStyle("TEST", null));
+        assertEquals(1, h.insertCommentStyleMultiline("TEST", null));
+    }
+    
+    @Test
+    public void testInsertBlankCard() throws Exception {
+        Header h = new Header();
+        int n = h.getNumberOfPhysicalCards();
+        h.insertBlankCard();
+        assertEquals(n + 1, h.getNumberOfPhysicalCards());
     }
     
     @Test
@@ -1367,5 +1376,53 @@ public class HeaderTest {
         // Keyword has an invalid character
         assertNull(h.insertCommentStyle("TEST#", "some comment here"));
         assertEquals(0, h.insertCommentStyleMultiline("TEST#", "some comment here"));
+    }
+    
+    @Test
+    public void testMininumSize() throws Exception {
+        Header h = new Header();
+        h.ensureCardSpace(37);
+        assertEquals(5760, h.getMinimumSize());
+        h.ensureCardSpace(0);
+        assertEquals(2880, h.getMinimumSize());
+    }
+    
+    @Test
+    public void testPreallocatedSpace() throws Exception {
+        int n = 0;
+        
+        try (Fits f = new Fits()) {
+            BasicHDU<?> hdu = FitsFactory.hduFactory(new int[10][10]);
+            f.addHDU(hdu);
+
+            Header h = hdu.getHeader();
+
+            int n0 = h.getNumberOfPhysicalCards();
+            
+            // Add some cards with a blank in-between
+            h.addValue("TEST1", 1, "comment");
+            h.insertBlankCard();
+            h.addValue("TEST2", 2, null);
+            n = h.getNumberOfPhysicalCards();
+            assertEquals(n0 + 3, n);
+            
+            h.ensureCardSpace(37);
+            assertEquals(5760, h.getMinimumSize());
+            f.write(new File("target/prealloc.fits"));
+            f.close();
+        }
+        
+        // Read back and check.
+        try (Fits f = new Fits("target/prealloc.fits")) {
+            BasicHDU<?> hdu = f.getHDU(0);
+            Header h = hdu.getHeader();
+          
+            assertEquals(5760, h.getMinimumSize());
+            assertEquals(1, h.getIntValue("TEST1"));
+            assertEquals(2, h.getIntValue("TEST2"));
+            assertEquals(n, h.getNumberOfPhysicalCards());
+            f.close();
+        }
+        
     }
 }

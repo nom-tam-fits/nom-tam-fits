@@ -1265,6 +1265,21 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
         this.key = newKey;
     }
+    
+    /**
+     * Checks if the card is blank, that is if it contains only empty spaces.
+     * 
+     * @return  <code>true</code> if the card contains nothing but blank spaces.
+     */
+    public boolean isBlank() {
+        if (!isCommentStyleCard() || !key.isEmpty()) {
+            return false;
+        }
+        if (comment == null) {
+            return true;
+        }
+        return comment.isEmpty();
+    }
 
     
     /**
