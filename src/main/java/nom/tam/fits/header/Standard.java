@@ -518,6 +518,20 @@ public enum Standard implements IFitsHeader {
     TDISPn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, "display format"),
 
     /**
+     * The value field of this indexed keyword shall contain a number value
+     * indicating the maximum data value contained in column n. It is
+     * similar to DATAMAX, but specifically for data in a column.
+     */
+    TDMAXn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "Minimum data value "),
+    
+    /**
+     * The value field of this indexed keyword shall contain a number value
+     * indicating the minimum data value contained in column n. It is
+     * similar to DATAMIN, but specifically for data in a column.
+     */
+    TDMINn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "Minimum data value "),
+    
+    /**
      * The value field shall contain a character string identifying the
      * telescope used to acquire the data associated with the key.
      */
@@ -556,6 +570,23 @@ public enum Standard implements IFitsHeader {
     THEAP(SOURCE.RESERVED, HDU.BINTABLE, VALUE.INTEGER, "offset to starting data heap address", //
             replaceable("binarytablehdu:theap", BinaryTable.class) //
     ),
+    
+    /**
+     * The value field of this indexed keyword shall contain a number value
+     * indicating the maximum legal value contained in column n. It can be
+     * (and usually is) larger than the maximum value actually contained
+     * in column n.
+     */
+    TLMAXn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "Minimum data value "),
+    
+    /**
+     * The value field of this indexed keyword shall contain a number value
+     * indicating the minimum data value contained in column n. It is
+     * similar to DATAMIN, but specifically for data in a column. It can be
+     * (and usually is) smaller than the minimum value actually contained
+     * in column n.
+     */
+    TLMINn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "Minimum data value "),
 
     /**
      * In ASCII 'TABLE' extensions, the value field for this indexed keyword

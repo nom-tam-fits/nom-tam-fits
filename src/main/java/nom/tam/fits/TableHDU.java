@@ -331,7 +331,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         }
         return ttype;
     }
-
+    
+    
     /**
      * @return all of the columns of the table.
      * @throws FitsException
@@ -441,6 +442,32 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         this.myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));
     }
 
+    /**
+     * Specify column metadata for a given column in a way that allows all of
+     * the column metadata for a given column to be organized together.
+     *
+     * @param index
+     *            The 0-based index of the column
+     * @param key
+     *            The column key. I.e., the keyword will be key+(index+1)
+     * @param value
+     *            The value to be placed in the header.
+     * @param comment
+     *            The comment for the header
+     * @param after
+     *            Should the header card be after the current column metadata
+     *            block (<code>true</code>), or immediately before the TFORM card 
+     *            (<code>false</code>).
+     * @throws HeaderCardException
+     *             if the header could not be updated
+     *             
+     * @since 1.16
+     */
+    public void setColumnMeta(int index, IFitsHeader key, Number value, String comment, boolean after) throws HeaderCardException {
+        setCurrentColumn(index, after);
+        this.myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));
+    }
+    
     /**
      * Specify column metadata for a given column in a way that allows all of
      * the column metadata for a given column to be organized together.

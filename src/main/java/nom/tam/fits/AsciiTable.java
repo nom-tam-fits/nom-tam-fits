@@ -140,24 +140,31 @@ public class AsciiTable extends AbstractTableData {
     public AsciiTable(Header hdr) throws FitsException {
         this(hdr, true);
     }
-
+    
+   
     /**
+     * <p>
      * Create an ASCII table given a header, with custom integer handling
      * support.
+     * </p>
      *
      * <p>The <code>preferInt</code> parameter controls how columns
      * with format "<code>I10</code>" are handled; this is tricky because some,
      * but not all, integers that can be represented in 10 characters can
-     * be represented as 32-bit integers.  Setting it true may make it
+     * be represented as 32-bit integers.  Setting it <code>true</code> may make it
      * more likely to avoid unexpected type changes during round-tripping,
      * but it also means that some (large number) data in I10 columns may
      * be impossible to read.
+     * </p>
      * 
      * @param hdr
      *            The header describing the table
      * @param preferInt
-     *            if true, format "I10" columns will be represented as ints,
-     *            if false, as longs
+     *            if <code>true</code>, format "I10" columns will be assumed
+     *            <code>int.class</code>, provided TLMINn/TLMAXn or TDMINn/TDMAXn 
+     *            limits (if defined) allow it. 
+     *            if <code>false</code>, I10 columns that have no clear indication 
+     *            of data range will be assumed <code>long.class</code>.
      * @throws FitsException
      *             if the operation failed
      */
@@ -171,6 +178,7 @@ public class AsciiTable extends AbstractTableData {
         this.offsets = new int[this.nFields];
         this.lengths = new int[this.nFields];
         this.nulls = new String[this.nFields];
+        
 
         for (int i = 0; i < this.nFields; i += 1) {
             this.offsets[i] = hdr.getIntValue(TBCOLn.n(i + 1)) - 1;
@@ -191,11 +199,10 @@ public class AsciiTable extends AbstractTableData {
                     this.types[i] = String.class;
                     break;
                 case 'I':
-                    if (preferInt ? this.lengths[i] > MAX_INTEGER_LENGTH
-                                  : this.lengths[i] >= MAX_INTEGER_LENGTH) {
-                        this.types[i] = long.class;
+                    if (this.lengths[i] == MAX_INTEGER_LENGTH) {
+                        this.types[i] = guessI10Type(i, hdr, preferInt);
                     } else {
-                        this.types[i] = int.class;
+                        this.types[i] = this.lengths[i] > MAX_INTEGER_LENGTH ? long.class : int.class;
                     }
                     break;
                 case 'F':
@@ -215,7 +222,89 @@ public class AsciiTable extends AbstractTableData {
             }
         }
     }
+    
+    /**
+     * Checks if the integer value of a specific key requires <code>long</code>
+     * value type to store.
+     * 
+     * @param h     the header
+     * @param key   the keyword to check
+     * @return      <code>true</code> if the keyword exists and has an integer value that is
+     *              outside the range of <code>int</code>. Otherwise <code>false</code>
+     *              
+     * @see #guessI10Type(int, Header, boolean)
+     */
+    private boolean requiresLong(Header h, IFitsHeader key, Long dft) {
+        if (!h.containsKey(key)) {
+            return false;
+        }
+        
+        long l = h.getLongValue(key, dft);
+        if (l == dft) {
+            return false;
+        }
 
+        return (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE);
+    }
+    
+    /**
+     * Guesses what type of values to use to return I10 type table values. Depending on the
+     * range of represented values I10 may fit into <code>int</code> types, or else
+     * require <code>long</code> type arrays. Therefore, the method checks for the
+     * presence of standard column limit keywords TLMINn/TLMAXn and TDMINn/TDMAXn
+     * and if these exist and are outside of the range of an <code>int</code> then
+     * the call will return <code>long.class</code>. If the header does not define the
+     * data limits (fully), it will return the class the caller prefers. Otherwise (data limits
+     * were defined and fit into the <code>int</code> range) <code>int.class</code> will
+     * be returned.
+     * 
+     * @param col           the 0-based table column index
+     * @param h             the header
+     * @param preferInt     whether we prefer <code>int.class</code> over <code>long.class</code>
+     *                      in case the header does not provide us with a clue. 
+     * @return              <code>long.class</code> if the data requires long or
+     *                      we prefer it. Othwerwise <code>int.class</code>
+     *                      
+     * @see #AsciiTable(Header, boolean)
+     */
+    private Class<?> guessI10Type(int col, Header h, boolean preferInt) {
+        col++;
+        
+        if (requiresLong(h, Standard.TLMINn.n(col), Long.MAX_VALUE)) {
+            return long.class;
+        }
+        if (requiresLong(h, Standard.TLMAXn.n(col), Long.MIN_VALUE)) {
+            return long.class;
+        }
+        if (requiresLong(h, Standard.TDMINn.n(col), Long.MAX_VALUE)) {
+            return long.class;
+        }
+        if (requiresLong(h, Standard.TDMAXn.n(col), Long.MIN_VALUE)) {
+            return long.class;
+        }
+        
+        if ((h.containsKey(Standard.TLMINn.n(col)) || h.containsKey(Standard.TDMINn.n(col))) //
+                && (h.containsKey(Standard.TLMAXn.n(col)) || h.containsKey(Standard.TDMAXn.n(col)))) {
+            // There are keywords defining both min/max values, and none of them require long types...
+            return int.class;
+        }
+        
+        return preferInt ? int.class : long.class;
+    }
+
+
+    /**
+     * Return the data type in the specified column, such as <code>int.class</code> or <code>String.class</code>.
+     * 
+     * @param col   The 0-based column index
+     * @return      the class of data in the specified column.
+     * 
+     * @since 1.16
+     */
+    public final Class<?> getColumnType(int col) {
+        return types[col];
+    }
+    
     int addColInfo(int col, Cursor<String, HeaderCard> iter) throws HeaderCardException {
 
         String tform = null;
