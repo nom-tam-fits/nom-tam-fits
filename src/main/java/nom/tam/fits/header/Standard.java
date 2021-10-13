@@ -522,14 +522,14 @@ public enum Standard implements IFitsHeader {
      * indicating the maximum data value contained in column n. It is
      * similar to DATAMAX, but specifically for data in a column.
      */
-    TDMAXn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "Minimum data value "),
+    TDMAXn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "highest column datum"),
     
     /**
      * The value field of this indexed keyword shall contain a number value
      * indicating the minimum data value contained in column n. It is
      * similar to DATAMIN, but specifically for data in a column.
      */
-    TDMINn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "Minimum data value "),
+    TDMINn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "lowest column datum"),
     
     /**
      * The value field shall contain a character string identifying the
@@ -539,7 +539,7 @@ public enum Standard implements IFitsHeader {
 
     /**
      * The value field shall contain a non-negative integer representing the
-     * number of fields in each row of a 'TABLE' or 'BINTABLE' extension. The
+     * number of fields in each row of a 'TABLE' or 'BINTABLmacE' extension. The
      * maximum permissible value is 999. RANGE: [0:999]
      */
     TFIELDS(SOURCE.MANDATORY, HDU.TABLE, VALUE.INTEGER, "number of columns in the table", //
@@ -577,16 +577,15 @@ public enum Standard implements IFitsHeader {
      * (and usually is) larger than the maximum value actually contained
      * in column n.
      */
-    TLMAXn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "Minimum data value "),
+    TLMAXn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "lowest legal column value"),
     
     /**
      * The value field of this indexed keyword shall contain a number value
-     * indicating the minimum data value contained in column n. It is
-     * similar to DATAMIN, but specifically for data in a column. It can be
+     * indicating the minimum data value contained in column n. It can be
      * (and usually is) smaller than the minimum value actually contained
      * in column n.
      */
-    TLMINn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "Minimum data value "),
+    TLMINn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "highest legal column value"),
 
     /**
      * In ASCII 'TABLE' extensions, the value field for this indexed keyword

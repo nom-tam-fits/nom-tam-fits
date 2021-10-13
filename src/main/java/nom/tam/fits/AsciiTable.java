@@ -235,10 +235,6 @@ public class AsciiTable extends AbstractTableData {
      * @see #guessI10Type(int, Header, boolean)
      */
     private boolean requiresLong(Header h, IFitsHeader key, Long dft) {
-        if (!h.containsKey(key)) {
-            return false;
-        }
-        
         long l = h.getLongValue(key, dft);
         if (l == dft) {
             return false;
