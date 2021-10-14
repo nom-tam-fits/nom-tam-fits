@@ -74,13 +74,16 @@ class HeaderCardParser {
     }
     
     /** regexp for IEEE floats */
-    private static final Pattern DECIMAL_REGEX = Pattern.compile("[+-]?\\d*\\.?\\d*(?:[dDeE]?[+-]?\\d+)?");
+    private static final Pattern DECIMAL_REGEX = Pattern.compile("[+-]?\\d+(\\.\\d*)?([dDeE][+-]?\\d+)?");
     
+    /** regexp for complex numbers */
     private static final Pattern COMPLEX_REGEX = Pattern.compile("\\(\\s*" + DECIMAL_REGEX + "\\s*,\\s*" + DECIMAL_REGEX + "\\s*\\)");
-
    
-    /** regexp for nintegers (including hecadecimal). */
-    private static final Pattern LONG_REGEX = Pattern.compile("[+-]?[\\dA-Fa-f]*");
+    /** regexp for decimal integers. */
+    private static final Pattern INT_REGEX = Pattern.compile("[+-]?\\d+");
+    
+    /** regexp for hexadecimal integers. */
+    private static final Pattern HEX_REGEX = Pattern.compile("[+-]?[\\dA-Fa-f]+");
     
     /** The header line (usually 80-character width), which to parse. */
     private String line;
@@ -546,10 +549,12 @@ class HeaderCardParser {
         
         if ("T".equals(trimmedValue) || "F".equals(trimmedValue)) {
             return Boolean.class;
-        } else if (LONG_REGEX.matcher(trimmedValue).matches()) {
-            return getIntegerType(trimmedValue);
+        } else if (INT_REGEX.matcher(trimmedValue).matches()) {
+                return getIntegerType(trimmedValue); 
         } else if (DECIMAL_REGEX.matcher(trimmedValue).matches()) {
-            return getDecimalType(trimmedValue);
+            return getDecimalType(trimmedValue); 
+        } else if (HEX_REGEX.matcher(trimmedValue).matches()) {
+            return getIntegerType(trimmedValue);
         } else if (COMPLEX_REGEX.matcher(trimmedValue).matches()) {
             return ComplexValue.class;
         }
