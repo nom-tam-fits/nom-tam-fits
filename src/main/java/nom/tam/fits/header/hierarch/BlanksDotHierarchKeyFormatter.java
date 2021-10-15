@@ -37,6 +37,7 @@ import nom.tam.fits.utilities.FitsLineAppender;
 
 import static nom.tam.fits.header.NonStandard.HIERARCH;
 
+@SuppressWarnings("deprecation")
 public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
 
     private final String blanks;

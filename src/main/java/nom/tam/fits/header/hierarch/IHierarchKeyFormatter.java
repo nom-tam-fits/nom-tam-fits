@@ -33,6 +33,7 @@ package nom.tam.fits.header.hierarch;
 
 import nom.tam.fits.utilities.FitsLineAppender;
 
+@SuppressWarnings("deprecation")
 public interface IHierarchKeyFormatter {
 
     /**
