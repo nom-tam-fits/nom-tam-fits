@@ -516,21 +516,7 @@ public enum Standard implements IFitsHeader {
      * conventions using such fields.
      */
     TDISPn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, "display format"),
-
-    /**
-     * The value field of this indexed keyword shall contain a number value
-     * indicating the maximum data value contained in column n. It is
-     * similar to DATAMAX, but specifically for data in a column.
-     */
-    TDMAXn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "highest column datum"),
-    
-    /**
-     * The value field of this indexed keyword shall contain a number value
-     * indicating the minimum data value contained in column n. It is
-     * similar to DATAMIN, but specifically for data in a column.
-     */
-    TDMINn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "lowest column datum"),
-    
+   
     /**
      * The value field shall contain a character string identifying the
      * telescope used to acquire the data associated with the key.
@@ -570,23 +556,7 @@ public enum Standard implements IFitsHeader {
     THEAP(SOURCE.RESERVED, HDU.BINTABLE, VALUE.INTEGER, "offset to starting data heap address", //
             replaceable("binarytablehdu:theap", BinaryTable.class) //
     ),
-    
-    /**
-     * The value field of this indexed keyword shall contain a number value
-     * indicating the maximum legal value contained in column n. It can be
-     * (and usually is) larger than the maximum value actually contained
-     * in column n.
-     */
-    TLMAXn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "lowest legal column value"),
-    
-    /**
-     * The value field of this indexed keyword shall contain a number value
-     * indicating the minimum data value contained in column n. It can be
-     * (and usually is) smaller than the minimum value actually contained
-     * in column n.
-     */
-    TLMINn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "highest legal column value"),
-
+  
     /**
      * In ASCII 'TABLE' extensions, the value field for this indexed keyword
      * shall contain the character string that represents an undefined value for

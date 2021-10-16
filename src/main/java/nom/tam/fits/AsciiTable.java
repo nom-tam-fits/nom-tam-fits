@@ -40,6 +40,11 @@ import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.TNULLn;
 
+import static nom.tam.fits.header.DataDescription.TDMINn;
+import static nom.tam.fits.header.DataDescription.TDMAXn;
+import static nom.tam.fits.header.DataDescription.TLMINn;
+import static nom.tam.fits.header.DataDescription.TLMAXn;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -266,21 +271,21 @@ public class AsciiTable extends AbstractTableData {
     private Class<?> guessI10Type(int col, Header h, boolean preferInt) {
         col++;
         
-        if (requiresLong(h, Standard.TLMINn.n(col), Long.MAX_VALUE)) {
+        if (requiresLong(h, TLMINn.n(col), Long.MAX_VALUE)) {
             return long.class;
         }
-        if (requiresLong(h, Standard.TLMAXn.n(col), Long.MIN_VALUE)) {
+        if (requiresLong(h, TLMAXn.n(col), Long.MIN_VALUE)) {
             return long.class;
         }
-        if (requiresLong(h, Standard.TDMINn.n(col), Long.MAX_VALUE)) {
+        if (requiresLong(h, TDMINn.n(col), Long.MAX_VALUE)) {
             return long.class;
         }
-        if (requiresLong(h, Standard.TDMAXn.n(col), Long.MIN_VALUE)) {
+        if (requiresLong(h, TDMAXn.n(col), Long.MIN_VALUE)) {
             return long.class;
         }
         
-        if ((h.containsKey(Standard.TLMINn.n(col)) || h.containsKey(Standard.TDMINn.n(col))) //
-                && (h.containsKey(Standard.TLMAXn.n(col)) || h.containsKey(Standard.TDMAXn.n(col)))) {
+        if ((h.containsKey(TLMINn.n(col)) || h.containsKey(TDMINn.n(col))) //
+                && (h.containsKey(TLMAXn.n(col)) || h.containsKey(TDMAXn.n(col)))) {
             // There are keywords defining both min/max values, and none of them require long types...
             return int.class;
         }

@@ -73,6 +73,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static nom.tam.fits.header.DataDescription.TDMINn;
+import static nom.tam.fits.header.DataDescription.TDMAXn;
+import static nom.tam.fits.header.DataDescription.TLMINn;
+import static nom.tam.fits.header.DataDescription.TLMAXn;
+
 /**
  * This class tests the AsciiTableHDU and AsciiTable FITS classes and implicitly
  * the ByteFormatter and ByteParser classes in the nam.tam.util library. Tests
@@ -1096,8 +1101,8 @@ public class AsciiTableTest {
         // Default configuration is preferInt.
         AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
 
-        hdu.setColumnMeta(col, Standard.TLMINn, Integer.MIN_VALUE, null, true);
-        hdu.setColumnMeta(col, Standard.TLMAXn, Integer.MAX_VALUE, null, true);
+        hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE, null, true);
+        hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE, null, true);
 
         AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
         assertEquals(int.class, t1.getColumnType(col));
@@ -1115,8 +1120,8 @@ public class AsciiTableTest {
         // Default configuration is preferInt.
         AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
 
-        hdu.setColumnMeta(col, Standard.TDMINn, Integer.MIN_VALUE, null, true);
-        hdu.setColumnMeta(col, Standard.TDMAXn, Integer.MAX_VALUE, null, true);
+        hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE, null, true);
+        hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE, null, true);
 
         AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
         assertEquals(int.class, t1.getColumnType(col));
@@ -1134,8 +1139,8 @@ public class AsciiTableTest {
         // Default configuration is preferInt.
         AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
 
-        hdu.setColumnMeta(col, Standard.TLMINn, Integer.MIN_VALUE - 1L, null, true);
-        hdu.setColumnMeta(col, Standard.TLMAXn, Integer.MAX_VALUE, null, true);
+        hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE - 1L, null, true);
+        hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE, null, true);
 
         AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
         assertEquals(long.class, t1.getColumnType(col));
@@ -1153,8 +1158,8 @@ public class AsciiTableTest {
         // Default configuration is preferInt.
         AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
 
-        hdu.setColumnMeta(col, Standard.TDMINn, Integer.MIN_VALUE - 1L, null, true);
-        hdu.setColumnMeta(col, Standard.TDMAXn, Integer.MAX_VALUE, null, true);
+        hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE - 1L, null, true);
+        hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE, null, true);
 
         AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
         assertEquals(long.class, t1.getColumnType(col));
@@ -1172,8 +1177,8 @@ public class AsciiTableTest {
         // Default configuration is preferInt.
         AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
 
-        hdu.setColumnMeta(col, Standard.TLMINn, Integer.MIN_VALUE, null, true);
-        hdu.setColumnMeta(col, Standard.TLMAXn, Integer.MAX_VALUE + 1L, null, true);
+        hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE, null, true);
+        hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE + 1L, null, true);
 
         AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
         assertEquals(long.class, t1.getColumnType(col));
@@ -1191,8 +1196,8 @@ public class AsciiTableTest {
         // Default configuration is preferInt.
         AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
 
-        hdu.setColumnMeta(col, Standard.TDMINn, Integer.MIN_VALUE, null, true);
-        hdu.setColumnMeta(col, Standard.TDMAXn, Integer.MAX_VALUE + 1L, null, true);
+        hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE, null, true);
+        hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE + 1L, null, true);
 
         AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
         assertEquals(long.class, t1.getColumnType(col));
@@ -1210,7 +1215,7 @@ public class AsciiTableTest {
         // Default configuration is preferInt.
         AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
 
-        hdu.setColumnMeta(col, Standard.TLMINn, Integer.MIN_VALUE, null, true);
+        hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE, null, true);
 
         AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
         assertEquals(int.class, t1.getColumnType(col));
@@ -1229,7 +1234,7 @@ public class AsciiTableTest {
         // Default configuration is preferInt.
         AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
 
-        hdu.setColumnMeta(col, Standard.TLMAXn, Integer.MAX_VALUE, null, true);
+        hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE, null, true);
 
         AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
         assertEquals(int.class, t1.getColumnType(col));
@@ -1248,7 +1253,7 @@ public class AsciiTableTest {
         // Default configuration is preferInt.
         AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
 
-        hdu.setColumnMeta(col, Standard.TDMINn, Integer.MIN_VALUE, null, true);
+        hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE, null, true);
 
         AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
         assertEquals(int.class, t1.getColumnType(col));
@@ -1267,7 +1272,7 @@ public class AsciiTableTest {
         // Default configuration is preferInt.
         AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
 
-        hdu.setColumnMeta(col, Standard.TDMAXn, Integer.MAX_VALUE, null, true);
+        hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE, null, true);
 
         AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
         assertEquals(int.class, t1.getColumnType(col));
