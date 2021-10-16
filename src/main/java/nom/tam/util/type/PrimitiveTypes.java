@@ -40,28 +40,43 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
+/**
+ * @deprecated  Use identical static fields of {@link ElementType} instead.
+ * 
+ */
+@Deprecated
 public final class PrimitiveTypes {
 
-    public static final PrimitiveType<Buffer> BOOLEAN = new BooleanType();
+    /** @deprecated Use {@link ElementType#BOOLEAN} instead */
+    public static final ElementType<Buffer> BOOLEAN = ElementType.BOOLEAN;
 
-    public static final PrimitiveType<ByteBuffer> BYTE = new ByteType();
+    /** @deprecated Use {@link ElementType#BYTE} instead */
+    public static final ElementType<ByteBuffer> BYTE = ElementType.BYTE;
 
-    public static final PrimitiveType<CharBuffer> CHAR = new CharType();
+    /** @deprecated Use {@link ElementType#CHAR} instead */
+    public static final ElementType<CharBuffer> CHAR = ElementType.CHAR;
 
-    public static final PrimitiveType<DoubleBuffer> DOUBLE = new DoubleType();
+    /** @deprecated Use {@link ElementType#DOUBLE} instead */
+    public static final ElementType<DoubleBuffer> DOUBLE = ElementType.DOUBLE;
 
-    public static final PrimitiveType<FloatBuffer> FLOAT = new FloatType();
+    /** @deprecated Use {@link ElementType#FLOAT} instead */
+    public static final ElementType<FloatBuffer> FLOAT = ElementType.FLOAT;
 
-    public static final PrimitiveType<IntBuffer> INT = new IntType();
+    /** @deprecated Use {@link ElementType#INT} instead */
+    public static final ElementType<IntBuffer> INT = ElementType.INT;
 
-    public static final PrimitiveType<LongBuffer> LONG = new LongType();
+    /** @deprecated Use {@link ElementType#LONG} instead */
+    public static final ElementType<LongBuffer> LONG = ElementType.LONG;
 
-    public static final PrimitiveType<ShortBuffer> SHORT = new ShortType();
+    /** @deprecated Use {@link ElementType#SHORT} instead */
+    public static final ElementType<ShortBuffer> SHORT = ElementType.SHORT;
 
-    public static final PrimitiveType<Buffer> STRING = new StringType();
+    /** @deprecated Use {@link ElementType#STRING} instead */
+    public static final ElementType<Buffer> STRING = ElementType.STRING;
 
-    public static final PrimitiveType<Buffer> UNKNOWN = new UnknownType();
-
+    /** @deprecated Use {@link ElementType#UNKNOWN} instead */
+    public static final ElementType<Buffer> UNKNOWN = ElementType.UNKNOWN;
+    
     private PrimitiveTypes() {
         // TODO Auto-generated constructor stub
     }

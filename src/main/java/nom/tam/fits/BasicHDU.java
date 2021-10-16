@@ -62,8 +62,8 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.IFitsHeader;
-import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 
@@ -77,16 +77,40 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     private static final Logger LOG = getLogger(BasicHDU.class);
 
+    /**
+     * @deprecated Use {@link Bitpix#BITPIX_BYTE} instead.
+     */
+    @Deprecated
     public static final int BITPIX_BYTE = 8;
 
+    /**
+     * @deprecated Use {@link Bitpix#BITPIX_SHORT} instead.
+     */
+    @Deprecated
     public static final int BITPIX_SHORT = 16;
 
+    /**
+     * @deprecated Use {@link Bitpix#BITPIX_INT} instead.
+     */
+    @Deprecated
     public static final int BITPIX_INT = 32;
 
+    /**
+     * @deprecated Use {@link Bitpix#BITPIX_LONG} instead.
+     */
+    @Deprecated
     public static final int BITPIX_LONG = 64;
 
+    /**
+     * @deprecated Use {@link Bitpix#BITPIX_FLOAT} instead.
+     */
+    @Deprecated
     public static final int BITPIX_FLOAT = -32;
 
+    /**
+     * @deprecated Use {@link Bitpix#BITPIX_DOUBLE} instead.
+     */
+    @Deprecated
     public static final int BITPIX_DOUBLE = -64;
 
 
@@ -248,22 +272,25 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
         return axes;
     }
+    
+    /** 
+     * Return the Bitpix enum type for this HDU.
+     * 
+     * @return      The Bitpix enum object for this HDU.
+     * 
+     * @throws FitsException    if the BITPIX value in the header is absent or invalid.
+     * 
+     * @since 1.16
+     * 
+     * @see #getBitPix()
+     * @see Header#setBitpix(Bitpix)
+     */
+    public Bitpix getBitpix() throws FitsException {
+        return Bitpix.fromHeader(myHeader);
+    }
 
-    public int getBitPix() throws FitsException {
-        int bitpix = this.myHeader.getIntValue(Standard.BITPIX, -1);
-        switch (bitpix) {
-            case BITPIX_BYTE:
-            case BITPIX_SHORT:
-            case BITPIX_INT:
-            case BITPIX_LONG:
-            case BITPIX_FLOAT:
-            case BITPIX_DOUBLE:
-                break;
-            default:
-                throw new FitsException("Unknown BITPIX type " + bitpix);
-        }
-
-        return bitpix;
+    public final int getBitPix() throws FitsException {
+        return getBitpix().getHeaderValue();
     }
 
     public long getBlankValue() throws FitsException {

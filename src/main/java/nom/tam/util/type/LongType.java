@@ -34,14 +34,14 @@ package nom.tam.util.type;
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 
-class LongType extends PrimitiveTypeBase<LongBuffer> {
+import nom.tam.fits.header.Bitpix;
 
-    private static final int BIT_PIX = 64;
+class LongType extends ElementType<LongBuffer> {
 
     private static final int SIZE = 8;
 
     protected LongType() {
-        super(SIZE, false, long.class, Long.class, LongBuffer.class, 'J', BIT_PIX);
+        super(SIZE, false, long.class, Long.class, LongBuffer.class, 'J', Bitpix.BITPIX_LONG);
     }
 
     @Override

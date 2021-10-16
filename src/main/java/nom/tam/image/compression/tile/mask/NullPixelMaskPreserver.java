@@ -40,7 +40,7 @@ import java.nio.ShortBuffer;
 
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.image.tile.operation.buffer.TileBuffer;
-import nom.tam.util.type.PrimitiveTypes;
+import nom.tam.util.type.ElementType;
 
 /**
  * This class overwrites the pixels specified in the mask with null values.
@@ -53,17 +53,17 @@ public class NullPixelMaskPreserver extends AbstractNullPixelMask {
     }
 
     public void preserveNull() {
-        if (getTileBuffer().getBaseType().is(PrimitiveTypes.DOUBLE)) {
+        if (getTileBuffer().getBaseType().is(ElementType.DOUBLE)) {
             preserveNullDoubles();
-        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.FLOAT)) {
+        } else if (getTileBuffer().getBaseType().is(ElementType.FLOAT)) {
             preserveNullFloats();
-        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.LONG)) {
+        } else if (getTileBuffer().getBaseType().is(ElementType.LONG)) {
             preserveNullLongs();
-        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.INT)) {
+        } else if (getTileBuffer().getBaseType().is(ElementType.INT)) {
             preserveNullInts();
-        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.SHORT)) {
+        } else if (getTileBuffer().getBaseType().is(ElementType.SHORT)) {
             preserveNullShorts();
-        } else if (getTileBuffer().getBaseType().is(PrimitiveTypes.BYTE)) {
+        } else if (getTileBuffer().getBaseType().is(ElementType.BYTE)) {
             preserveNullBytes();
         }
         if (getMask() != null) {

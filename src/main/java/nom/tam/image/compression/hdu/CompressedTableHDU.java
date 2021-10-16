@@ -40,7 +40,7 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.Cursor;
-import nom.tam.util.type.PrimitiveTypes;
+import nom.tam.util.type.ElementType;
 
 public class CompressedTableHDU extends BinaryTableHDU {
 
@@ -106,7 +106,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
     public BinaryTableHDU asBinaryTableHDU() throws FitsException {
         Header header = new Header();
         header.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
-        header.addValue(Standard.BITPIX, PrimitiveTypes.BYTE.bitPix());
+        header.addValue(Standard.BITPIX, ElementType.BYTE.bitPix());
         header.addValue(Standard.NAXIS, 2);
         Cursor<String, HeaderCard> headerIterator = header.iterator();
         Cursor<String, HeaderCard> iterator = getHeader().iterator();

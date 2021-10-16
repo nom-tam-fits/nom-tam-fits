@@ -33,7 +33,7 @@ package nom.tam.util.type;
 
 import java.nio.Buffer;
 
-class UnknownType extends PrimitiveTypeBase<Buffer> {
+class UnknownType extends ElementType<Buffer> {
 
     protected UnknownType() {
         super(0, true, Object.class, Object.class, null, 'L', 0);

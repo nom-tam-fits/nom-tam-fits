@@ -17,9 +17,7 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ByteBufferInputStream;
 import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.FitsIO;
-import nom.tam.util.type.PrimitiveType;
-import nom.tam.util.type.PrimitiveTypeHandler;
-import nom.tam.util.type.PrimitiveTypes;
+import nom.tam.util.type.ElementType;
 
 /*
  * #%L
@@ -178,9 +176,9 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
     private final class TypeConversion<B extends Buffer> {
 
-        private final PrimitiveType<B> from;
+        private final ElementType<B> from;
 
-        private final PrimitiveType<T> to;
+        private final ElementType<T> to;
 
         private final B fromBuffer;
 
@@ -190,9 +188,9 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
         private final Object toArray;
 
-        private TypeConversion(PrimitiveType<B> from) {
+        private TypeConversion(ElementType<B> from) {
             this.from = from;
-            this.to = getPrimitiveType(GZipCompressor.this.primitiveSize);
+            this.to = getElementType(GZipCompressor.this.primitiveSize);
             this.toBuffer = GZipCompressor.this.nioBuffer;
             this.fromBuffer = from.asTypedBuffer(ByteBuffer.wrap(GZipCompressor.this.buffer));
             this.fromArray = from.newArray(DEFAULT_GZIP_BUFFER_SIZE / from.size());
@@ -219,7 +217,7 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
     protected T nioBuffer;
 
-    private final byte[] sizeArray = new byte[PrimitiveTypes.INT.size()];
+    private final byte[] sizeArray = new byte[ElementType.INT.size()];
 
     private final IntBuffer sizeBuffer = ByteBuffer.wrap(this.sizeArray).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 
@@ -267,8 +265,8 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
     }
 
     @SuppressWarnings("unchecked")
-    private <B extends Buffer> PrimitiveType<B> getPrimitiveType(int size) {
-        return (PrimitiveType<B>) PrimitiveTypeHandler.valueOf(size * FitsIO.BITS_OF_1_BYTE);
+    private <B extends Buffer> ElementType<B> getElementType(int size) {
+        return (ElementType<B>) ElementType.forBitpix(size * FitsIO.BITS_OF_1_BYTE);
     }
 
     private TypeConversion<Buffer> getTypeConverter(ByteBuffer compressed, int nrOfPrimitiveElements) {
@@ -283,7 +281,7 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
                     if (uncompressedSize % nrOfPrimitiveElements == 0) {
                         int compressedPrimitiveSize = uncompressedSize / nrOfPrimitiveElements;
                         if (compressedPrimitiveSize != this.primitiveSize) {
-                            return new TypeConversion<>(getPrimitiveType(compressedPrimitiveSize));
+                            return new TypeConversion<>(getElementType(compressedPrimitiveSize));
                         }
                     }
                 }

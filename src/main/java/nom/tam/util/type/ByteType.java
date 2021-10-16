@@ -33,12 +33,13 @@ package nom.tam.util.type;
 
 import java.nio.ByteBuffer;
 
-class ByteType extends PrimitiveTypeBase<ByteBuffer> {
+import nom.tam.fits.header.Bitpix;
 
-    private static final int BIT_PIX = 8;
+class ByteType extends ElementType<ByteBuffer> {
+
 
     protected ByteType() {
-        super(1, false, byte.class, Byte.class, ByteBuffer.class, 'B', BIT_PIX);
+        super(1, false, byte.class, Byte.class, ByteBuffer.class, 'B', Bitpix.BITPIX_BYTE);
     }
 
     @Override

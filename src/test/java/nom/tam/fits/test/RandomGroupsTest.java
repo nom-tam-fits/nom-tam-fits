@@ -164,7 +164,7 @@ public class RandomGroupsTest {
     }
 
     @Test
-    public void typedRandomGroup() throws FitsException {
+    public void typedRandomGroup() throws Exception {
         testGroupCreationAndRecreationByType(new byte[20][20], new byte[3], 8, "byte");
         testGroupCreationAndRecreationByType(new short[20][20], new short[3], 16, "short");
         testGroupCreationAndRecreationByType(new int[20][20], new int[3], 32, "int");
@@ -174,7 +174,7 @@ public class RandomGroupsTest {
     }
 
     @Test(expected = FitsException.class)
-    public void illegalTypedRandomGroup() throws FitsException {
+    public void illegalTypedRandomGroup() throws Exception {
         testGroupCreationAndRecreationByType(new Double[20][20], new Double[3], -64, "Double");
     }
 
@@ -212,7 +212,7 @@ public class RandomGroupsTest {
         }
     }
 
-    private void testGroupCreationAndRecreationByType(Object fa, Object pa, int bipix, String typeName) throws FitsException {
+    private void testGroupCreationAndRecreationByType(Object fa, Object pa, int bipix, String typeName) throws Exception {
         Object[][] data = new Object[1][2];
         data[0][0] = pa;
         data[0][1] = fa;

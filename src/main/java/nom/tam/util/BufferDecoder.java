@@ -35,9 +35,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.lang.reflect.Array;
 
-import nom.tam.util.type.PrimitiveType;
-import nom.tam.util.type.PrimitiveTypeHandler;
-import nom.tam.util.type.PrimitiveTypes;
+import nom.tam.util.type.ElementType;
 
 public abstract class BufferDecoder {
 
@@ -46,11 +44,11 @@ public abstract class BufferDecoder {
         /**
          * Counter used in reading arrays
          */
-        private long primitiveArrayCount;
+        private long elementCount;
 
-        protected long primitiveArrayRecurse(Object o) throws IOException {
+        protected long arrayRecurse(Object o) throws IOException {
             if (o == null) {
-                return this.primitiveArrayCount;
+                return this.elementCount;
             }
             if (!o.getClass().isArray()) {
                 throw new IOException("Invalid object passed to BufferedDataInputStream.readArray:" + o.getClass().getName());
@@ -59,39 +57,39 @@ public abstract class BufferDecoder {
             // Is this a multidimensional array? If so process recursively.
             if (o.getClass().getComponentType().isArray()) {
                 for (int i = 0; i < length; i++) {
-                    primitiveArrayRecurse(Array.get(o, i));
+                    arrayRecurse(Array.get(o, i));
                 }
             } else {
                 // This is a one-d array. Process it using our special
                 // functions.
-                PrimitiveType<?> type = PrimitiveTypeHandler.valueOf(o.getClass().getComponentType());
-                if (type == PrimitiveTypes.BOOLEAN) {
-                    this.primitiveArrayCount += read((boolean[]) o, 0, length);
-                } else if (type == PrimitiveTypes.BYTE) {
+                ElementType<?> type = ElementType.forClass(o.getClass().getComponentType());
+                if (type == ElementType.BOOLEAN) {
+                    this.elementCount += read((boolean[]) o, 0, length);
+                } else if (type == ElementType.BYTE) {
                     int len = read((byte[]) o, 0, length);
-                    this.primitiveArrayCount += len;
+                    this.elementCount += len;
                     if (len < length) {
                         throw new EOFException();
                     }
-                } else if (type == PrimitiveTypes.CHAR) {
-                    this.primitiveArrayCount += read((char[]) o, 0, length);
-                } else if (type == PrimitiveTypes.SHORT) {
-                    this.primitiveArrayCount += read((short[]) o, 0, length);
-                } else if (type == PrimitiveTypes.INT) {
-                    this.primitiveArrayCount += read((int[]) o, 0, length);
-                } else if (type == PrimitiveTypes.LONG) {
-                    this.primitiveArrayCount += read((long[]) o, 0, length);
-                } else if (type == PrimitiveTypes.FLOAT) {
-                    this.primitiveArrayCount += read((float[]) o, 0, length);
-                } else if (type == PrimitiveTypes.DOUBLE) {
-                    this.primitiveArrayCount += read((double[]) o, 0, length);
-                } else if (type == PrimitiveTypes.STRING || type == PrimitiveTypes.UNKNOWN) {
+                } else if (type == ElementType.CHAR) {
+                    this.elementCount += read((char[]) o, 0, length);
+                } else if (type == ElementType.SHORT) {
+                    this.elementCount += read((short[]) o, 0, length);
+                } else if (type == ElementType.INT) {
+                    this.elementCount += read((int[]) o, 0, length);
+                } else if (type == ElementType.LONG) {
+                    this.elementCount += read((long[]) o, 0, length);
+                } else if (type == ElementType.FLOAT) {
+                    this.elementCount += read((float[]) o, 0, length);
+                } else if (type == ElementType.DOUBLE) {
+                    this.elementCount += read((double[]) o, 0, length);
+                } else if (type == ElementType.STRING || type == ElementType.UNKNOWN) {
                     for (int i = 0; i < length; i++) {
-                        primitiveArrayRecurse(Array.get(o, i));
+                        arrayRecurse(Array.get(o, i));
                     }
                 }
             }
-            return this.primitiveArrayCount;
+            return this.elementCount;
         }
     }
 
@@ -282,7 +280,7 @@ public abstract class BufferDecoder {
     }
 
     protected long readLArray(Object o) throws IOException {
-        return new PrimitiveArrayRecurse().primitiveArrayRecurse(o);
+        return new PrimitiveArrayRecurse().arrayRecurse(o);
     }
 
     /**

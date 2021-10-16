@@ -33,11 +33,11 @@ package nom.tam.image.tile.operation.buffer;
 
 import java.nio.Buffer;
 
-import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.ElementType;
 
 public class TileBufferRowBased extends TileBuffer {
 
-    public TileBufferRowBased(PrimitiveType<Buffer> baseType, int dataOffset, int width, int height) {
+    public TileBufferRowBased(ElementType<Buffer> baseType, int dataOffset, int width, int height) {
         super(baseType, dataOffset, width, height);
     }
 

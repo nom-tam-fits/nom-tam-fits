@@ -49,6 +49,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
@@ -59,7 +60,7 @@ import nom.tam.util.Cursor;
 import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.TableException;
-import nom.tam.util.type.PrimitiveTypeHandler;
+import nom.tam.util.type.ElementType;
 
 /**
  * This class defines the methods for accessing FITS binary table data.
@@ -153,7 +154,7 @@ public class BinaryTable extends AbstractTableData {
         }
 
         public int rowLen() {
-            return this.size * PrimitiveTypeHandler.valueOf(this.base).size();
+            return this.size * ElementType.forClass(this.base).size();
         }
 
         /**
@@ -592,7 +593,7 @@ public class BinaryTable extends AbstractTableData {
         try {
             Standard.context(BinaryTable.class);
             h.setXtension(XTENSION_BINTABLE);
-            h.setBitpix(BasicHDU.BITPIX_BYTE);
+            h.setBitpix(Bitpix.BYTE);
             h.setNaxes(2);
             h.setNaxis(1, this.rowLen);
             h.setNaxis(2, this.nRow);

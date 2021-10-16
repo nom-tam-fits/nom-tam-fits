@@ -9,7 +9,7 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
 import nom.tam.fits.compression.algorithm.api.ICompressor;
-import nom.tam.util.type.PrimitiveTypes;
+import nom.tam.util.type.ElementType;
 
 /*
  * #%L
@@ -71,7 +71,7 @@ public abstract class NoCompressCompressor<T extends Buffer> implements ICompres
         public boolean compress(DoubleBuffer pixelData, ByteBuffer compressed) {
             int size = pixelData.remaining();
             compressed.asDoubleBuffer().put(pixelData);
-            compressed.position(compressed.position() + size * PrimitiveTypes.DOUBLE.size());
+            compressed.position(compressed.position() + size * ElementType.DOUBLE.size());
             return true;
         }
 
@@ -87,7 +87,7 @@ public abstract class NoCompressCompressor<T extends Buffer> implements ICompres
         public boolean compress(FloatBuffer pixelData, ByteBuffer compressed) {
             int size = pixelData.remaining();
             compressed.asFloatBuffer().put(pixelData);
-            compressed.position(compressed.position() + size * PrimitiveTypes.FLOAT.size());
+            compressed.position(compressed.position() + size * ElementType.FLOAT.size());
 
             return true;
         }
@@ -104,7 +104,7 @@ public abstract class NoCompressCompressor<T extends Buffer> implements ICompres
         public boolean compress(IntBuffer pixelData, ByteBuffer compressed) {
             int size = pixelData.remaining();
             compressed.asIntBuffer().put(pixelData);
-            compressed.position(compressed.position() + size * PrimitiveTypes.INT.size());
+            compressed.position(compressed.position() + size * ElementType.INT.size());
             return true;
         }
 
@@ -120,7 +120,7 @@ public abstract class NoCompressCompressor<T extends Buffer> implements ICompres
         public boolean compress(LongBuffer pixelData, ByteBuffer compressed) {
             int size = pixelData.remaining();
             compressed.asLongBuffer().put(pixelData);
-            compressed.position(compressed.position() + size * PrimitiveTypes.LONG.size());
+            compressed.position(compressed.position() + size * ElementType.LONG.size());
             return true;
         }
 
@@ -136,7 +136,7 @@ public abstract class NoCompressCompressor<T extends Buffer> implements ICompres
         public boolean compress(ShortBuffer pixelData, ByteBuffer compressed) {
             int size = pixelData.remaining();
             compressed.asShortBuffer().put(pixelData);
-            compressed.position(compressed.position() + size * PrimitiveTypes.SHORT.size());
+            compressed.position(compressed.position() + size * ElementType.SHORT.size());
             return true;
         }
 

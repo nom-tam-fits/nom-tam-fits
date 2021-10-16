@@ -166,6 +166,6 @@ public class ProtectedFitsTest {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("string not supported"));
+        Assert.assertTrue(actual.getMessage().toLowerCase().contains("string"));
     }
 }

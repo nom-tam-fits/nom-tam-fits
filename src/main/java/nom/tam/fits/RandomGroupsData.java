@@ -40,6 +40,7 @@ import java.io.EOFException;
 import java.io.IOException;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -103,22 +104,7 @@ public class RandomGroupsData extends Data {
         // Got the information we need to build the header.
 
         h.setSimple(true);
-        if (dbase == byte.class) {
-            h.setBitpix(BasicHDU.BITPIX_BYTE);
-        } else if (dbase == short.class) {
-            h.setBitpix(BasicHDU.BITPIX_SHORT);
-        } else if (dbase == int.class) {
-            h.setBitpix(BasicHDU.BITPIX_INT);
-        } else if (dbase == long.class) { // Non-standard
-            h.setBitpix(BasicHDU.BITPIX_LONG);
-        } else if (dbase == float.class) {
-            h.setBitpix(BasicHDU.BITPIX_FLOAT);
-        } else if (dbase == double.class) {
-            h.setBitpix(BasicHDU.BITPIX_DOUBLE);
-        } else {
-            throw new FitsException("Data type:" + dbase + " not supported for random groups");
-        }
-
+        h.setBitpix(Bitpix.forPrimitiveType(dbase));
         h.setNaxes(ddims.length + 1);
         h.addValue(NAXISn.n(1), 0);
         for (int i = 2; i <= ddims.length + 1; i += 1) {

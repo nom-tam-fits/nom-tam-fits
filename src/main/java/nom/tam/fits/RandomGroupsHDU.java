@@ -43,6 +43,7 @@ import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 
 import java.io.PrintStream;
 
+import nom.tam.fits.header.Bitpix;
 import nom.tam.util.ArrayFuncs;
 
 /**
@@ -68,32 +69,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
         int ndim = h.getIntValue(NAXIS, 0) - 1;
         int[] dims = new int[ndim];
 
-        int bitpix = h.getIntValue(BITPIX, 0);
-
-        Class<?> baseClass;
-
-        switch (bitpix) {
-            case BasicHDU.BITPIX_BYTE:
-                baseClass = Byte.TYPE;
-                break;
-            case BasicHDU.BITPIX_SHORT:
-                baseClass = Short.TYPE;
-                break;
-            case BasicHDU.BITPIX_INT:
-                baseClass = Integer.TYPE;
-                break;
-            case BasicHDU.BITPIX_LONG:
-                baseClass = Long.TYPE;
-                break;
-            case BasicHDU.BITPIX_FLOAT:
-                baseClass = Float.TYPE;
-                break;
-            case BasicHDU.BITPIX_DOUBLE:
-                baseClass = Double.TYPE;
-                break;
-            default:
-                throw new FitsException("Invalid BITPIX:" + bitpix);
-        }
+        Class<?> baseClass = Bitpix.fromHeader(h).getNumberType();
 
         // Note that we have to invert the order of the axes
         // for the FITS file to get the order in the array we

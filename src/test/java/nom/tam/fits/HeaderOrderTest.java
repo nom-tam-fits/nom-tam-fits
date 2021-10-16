@@ -78,7 +78,7 @@ public class HeaderOrderTest {
         
         header.addValue(BLOCKED, 1);
         header.addValue(SIMPLE, true);
-        header.addValue(BITPIX, 1);
+        header.addValue(BITPIX, 8);
         header.addValue(THEAP, 1);  
         header.addValue(NAXIS, 0);
         header.addValue(END, true);
@@ -97,7 +97,7 @@ public class HeaderOrderTest {
         Assert.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
         header = new Header();
         header.addValue(SIMPLE, true);
-        header.addValue(BITPIX, 1);
+        header.addValue(BITPIX, 8);
         header.addValue(NAXIS, 0);
         header.addValue(END, true);
         header.addValue(THEAP, 1);

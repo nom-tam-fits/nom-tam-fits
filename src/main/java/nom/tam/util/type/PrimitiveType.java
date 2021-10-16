@@ -4,7 +4,7 @@ package nom.tam.util.type;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,54 +31,21 @@ package nom.tam.util.type;
  * #L%
  */
 
+
 import java.nio.Buffer;
-import java.nio.ByteBuffer;
 
-public interface PrimitiveType<B extends Buffer> {
+/**
+ * @deprecated Use {@link ElementType} instead.
+ *
+ * @param <B>       the generic type of data buffer
+ */
+@Deprecated
+public abstract class PrimitiveType<B extends Buffer> extends ElementType<B> {
 
-    void appendBuffer(B buffer, B dataToAppend);
+    @Deprecated
+    protected PrimitiveType(int size, boolean individualSize, Class<?> primitiveClass, Class<?> wrapperClass,
+            Class<B> bufferClass, char type, int bitPix) {
+        super(size, individualSize, primitiveClass, wrapperClass, bufferClass, type, bitPix);
+    }
 
-    void appendToByteBuffer(ByteBuffer byteBuffer, B dataToAppend);
-
-    B asTypedBuffer(ByteBuffer buffer);
-
-    int bitPix();
-
-    Class<? extends B> bufferClass();
-
-    ByteBuffer convertToByteBuffer(Object array);
-
-    void getArray(B buffer, Object array);
-
-    void getArray(B buffer, Object array, int length);
-
-    void getArray(B buffer, Object array, int offset, int length);
-
-    boolean individualSize();
-
-    boolean is(PrimitiveType<? extends Buffer> d);
-
-    Object newArray(int length);
-
-    B newBuffer(int length);
-
-    B newBuffer(long length);
-
-    Class<?> primitiveClass();
-
-    void putArray(B buffer, Object array);
-
-    void putArray(B buffer, Object array, int length);
-
-    int size();
-
-    int size(Object instance);
-
-    B sliceBuffer(B buffer);
-
-    char type();
-
-    B wrap(Object array);
-
-    Class<?> wrapperClass();
 }

@@ -1028,7 +1028,7 @@ public class HeaderTest {
         }, 80);
         Header header = new Header();
         header.addValue(SIMPLE, true);
-        header.addValue(BITPIX, 1);
+        header.addValue(BITPIX, 8);
         header.addValue(NAXIS, 0);
         header.addValue(END, true);
 

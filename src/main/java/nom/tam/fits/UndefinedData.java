@@ -31,7 +31,6 @@ package nom.tam.fits;
  * #L%
  */
 
-import static nom.tam.fits.header.Standard.BITPIX;
 import static nom.tam.fits.header.Standard.EXTEND;
 import static nom.tam.fits.header.Standard.GCOUNT;
 import static nom.tam.fits.header.Standard.NAXIS;
@@ -45,6 +44,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -57,8 +57,6 @@ import nom.tam.util.ArrayFuncs;
 public class UndefinedData extends Data {
 
     private static final Logger LOG = getLogger(UndefinedData.class);
-
-    private static final int BITS_PER_BYTE = 8;
 
     private byte[] data;
 
@@ -78,7 +76,7 @@ public class UndefinedData extends Data {
         if (h.getIntValue(GCOUNT) > 1) {
             size *= h.getIntValue(GCOUNT);
         }
-        size *= Math.abs(h.getIntValue(BITPIX) / BITS_PER_BYTE);
+        size *= Bitpix.fromHeader(h).byteSize();
 
         this.data = new byte[size];
     }
@@ -105,7 +103,7 @@ public class UndefinedData extends Data {
         try {
             Standard.context(UndefinedData.class);
             head.setXtension("UNKNOWN");
-            head.setBitpix(BasicHDU.BITPIX_BYTE);
+            head.setBitpix(Bitpix.BYTE);
             head.setNaxes(1);
             head.addValue(NAXISn.n(1), this.data.length);
             head.addValue(PCOUNT, 0);

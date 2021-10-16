@@ -41,8 +41,7 @@ import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
 import nom.tam.image.tile.operation.AbstractTileOperation;
 import nom.tam.image.tile.operation.ITileOperation;
 import nom.tam.image.tile.operation.TileArea;
-import nom.tam.util.type.PrimitiveTypeHandler;
-import nom.tam.util.type.PrimitiveTypes;
+import nom.tam.util.type.ElementType;
 
 /**
  * abstract information holder about the a tile that represents a rectangular
@@ -69,7 +68,7 @@ abstract class TileCompressionOperation extends AbstractTileOperation implements
     }
 
     private ByteBuffer convertToBuffer(Object data) {
-        return PrimitiveTypeHandler.valueOf(data.getClass().getComponentType()).convertToByteBuffer(data);
+        return ElementType.forClass(data.getClass().getComponentType()).convertToByteBuffer(data);
     }
 
     /**
@@ -85,7 +84,7 @@ abstract class TileCompressionOperation extends AbstractTileOperation implements
     protected byte[] getCompressedData() {
         byte[] data = new byte[this.compressedData.limit()];
         this.compressedData.rewind();
-        PrimitiveTypes.BYTE.getArray(this.compressedData, data);
+        ElementType.BYTE.getArray(this.compressedData, data);
         return data;
     }
 
