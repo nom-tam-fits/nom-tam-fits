@@ -67,15 +67,14 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
         @Override
         protected void needBuffer(int need) throws IOException {
             BufferedDataOutputStream.this.checkBuf(need);
-            BufferedDataOutputStream.this.bufferPointer.bufferLength = BufferedDataOutputStream.this.count;
-            BufferedDataOutputStream.this.bufferPointer.bufferOffset = BufferedDataOutputStream.this.count;
+            BufferedDataOutputStream.this.bufferPointer.length = BufferedDataOutputStream.this.count;
+            BufferedDataOutputStream.this.bufferPointer.pos = BufferedDataOutputStream.this.count;
             BufferedDataOutputStream.this.count += need;
         }
 
         @Override
         protected void write(byte[] buf, int offset, int length) throws IOException {
             BufferedDataOutputStream.this.write(buf, offset, length);
-
         }
     };
 
@@ -213,7 +212,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 
     @Override
     public void writeByte(int b) throws IOException {
-        this.bufferEncoder.writeByte(b);
+        this.bufferEncoder.writeByte((byte) (b & FitsIO.BYTE_MASK));
     }
 
     @Override
@@ -223,7 +222,7 @@ public class BufferedDataOutputStream extends BufferedOutputStream implements Ar
 
     @Override
     public void writeChar(int c) throws IOException {
-        this.bufferEncoder.writeChar(c);
+        this.bufferEncoder.writeChar((char) (c & FitsIO.SHORT_MASK));
     }
 
     @Override

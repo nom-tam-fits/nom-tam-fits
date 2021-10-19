@@ -91,11 +91,11 @@ public final class ArrayFuncs {
             }
             return size;
         }
-        ElementType<?> primType = ElementType.forClass(o.getClass());
-        if (primType.individualSize()) {
-            return primType.size(o);
+        ElementType<?> elementType = ElementType.forClass(o.getClass());
+        if (elementType.isVariableSize()) {
+            return elementType.size(o);
         }
-        return primType.size();
+        return elementType.size();
     }
 
     /**

@@ -58,7 +58,7 @@ public enum Bitpix {
     FLOAT(Float.TYPE, ElementType.FLOAT, "32-bit floating point"),
     DOUBLE(Double.TYPE, ElementType.DOUBLE, "64-bit floating point");
     
-    private static final Logger LOG = Logger.getLogger(Header.class.getName());
+    private static final Logger LOG = Logger.getLogger("nom.tam.fits.HeaderCardParser");
     
     private static final int BITS_TO_BYTES_SHIFT = 3;
     
@@ -355,7 +355,7 @@ public enum Bitpix {
             }
             
             if (fixed != 0) {
-                LOG.warning("Repaired invalid BITPIX = " + ival + " --> " + fixed);
+                LOG.warning("Repaired invalid BITPIX value:" + ival + " --> " + fixed);
                 ival = fixed;
             }
         }

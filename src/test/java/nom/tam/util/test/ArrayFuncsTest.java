@@ -43,6 +43,7 @@ import java.lang.reflect.Constructor;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.TestArrayFuncs;
+import nom.tam.util.type.ElementType;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -539,14 +540,13 @@ public class ArrayFuncsTest {
     @Test
     public void testGetBaseLength() {
 
-        assertEquals(ArrayFuncs.getBaseLength(new int[2][3]), 4);
-        assertEquals(ArrayFuncs.getBaseLength(new double[2][3]), 8);
-        assertEquals(ArrayFuncs.getBaseLength(new byte[2][3]), 1);
-        assertEquals(ArrayFuncs.getBaseLength(new short[2][3]), 2);
-        assertEquals(ArrayFuncs.getBaseLength(new int[2][3]), 4);
-        assertEquals(ArrayFuncs.getBaseLength(new char[2][3]), 2);
-        assertEquals(ArrayFuncs.getBaseLength(new float[2][3]), 4);
-        assertEquals(ArrayFuncs.getBaseLength(new boolean[2][3]), 1);
+        assertEquals(ArrayFuncs.getBaseLength(new int[2][3]), ElementType.INT.size());
+        assertEquals(ArrayFuncs.getBaseLength(new double[2][3]), ElementType.DOUBLE.size());
+        assertEquals(ArrayFuncs.getBaseLength(new byte[2][3]), ElementType.BYTE.size());
+        assertEquals(ArrayFuncs.getBaseLength(new short[2][3]), ElementType.SHORT.size());
+        assertEquals(ArrayFuncs.getBaseLength(new char[2][3]), ElementType.CHAR.size());
+        assertEquals(ArrayFuncs.getBaseLength(new float[2][3]), ElementType.FLOAT.size());
+        assertEquals(ArrayFuncs.getBaseLength(new boolean[2][3]), ElementType.BOOLEAN.size());
         assertEquals(ArrayFuncs.getBaseLength(new Object[2][3]), -1);
     }
 

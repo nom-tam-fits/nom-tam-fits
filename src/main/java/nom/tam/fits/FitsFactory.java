@@ -69,6 +69,10 @@ public final class FitsFactory {
     private static final boolean DEFAULT_SKIP_BLANK_AFTER_ASSIGN = false;
     
     private static final boolean DEFAULT_CASE_SENSITIVE_HIERARCH = false;
+   
+    /** true is the legacy behavior */
+    private static final boolean DEFAULT_USE_UNICODE_CHARS = true;
+    
     
     private static final IHierarchKeyFormatter DEFAULT_HIERARCH_FORMATTER = new StandardIHierarchKeyFormatter();
     
@@ -88,6 +92,8 @@ public final class FitsFactory {
         private boolean allowHeaderRepairs;
 
         private boolean longStringsEnabled;
+        
+        private boolean useUnicodeChars;
 
         @Deprecated
         private boolean skipBlankAfterAssign;
@@ -97,13 +103,8 @@ public final class FitsFactory {
 
         private FitsSettings() {
             useAsciiTables = DEFAULT_USE_ASCII_TABLES;
-
-            // MBT (28-JUL-2017): change default from false to true.
-            // This is required for HIERARCH-based wide fits processing
-            // (see uk.ac.starlink.fits.WideFits).  If that gets backed out of,
-            // this could be set back to its factory setting (false).
             useHierarch = DEFAULT_USE_HIERARCH;
-            
+            useUnicodeChars = DEFAULT_USE_UNICODE_CHARS;
             checkAsciiStrings = DEFAULT_CHECK_ASCII_STRINGS;
             useExponentD = DEFAULT_USE_EXPONENT_D;
             allowTerminalJunk = DEFAULT_ALLOW_TERMINAL_JUNK;
@@ -167,6 +168,10 @@ public final class FitsFactory {
             return this.useHierarch;
         }
 
+        protected boolean isUseUnicodeChars() {
+            return this.useUnicodeChars;
+        }
+        
         protected boolean isAllowHeaderRepairs() {
             return this.allowHeaderRepairs;
         }
@@ -223,6 +228,21 @@ public final class FitsFactory {
         return current().isUseExponentD();
     }
 
+    /**
+     * Whether <code>char[]</code> arrays are written as 16-bit integers (<code>short[]</code>)
+     * int binary tables as opposed as FITS character arrays (<code>byte[]</code> with column type
+     * 'A'). See more explanation in {@link #setUseUnicodeChars(boolean)}.
+     * 
+     * @return  <code>true</code> if <code>char[]</code> get written as 16-bit integers in binary table
+     *          columns (column type 'I'), or as FITS 1-byte ASCII character arrays (as is always
+     *          the case for <code>String</code>) with column type 'A'.
+     * 
+     * @since 1.16
+     */
+    public static boolean isUseUnicodeChars() {
+        return current().isUseUnicodeChars();
+    }
+    
     /**
      * @return Is terminal junk (i.e., non-FITS data following a valid HDU)
      *         allowed.
@@ -412,7 +432,8 @@ public final class FitsFactory {
         s.longStringsEnabled = DEFAULT_LONG_STRINGS_ENABLED;
         s.skipBlankAfterAssign = DEFAULT_SKIP_BLANK_AFTER_ASSIGN;
         s.useAsciiTables = DEFAULT_USE_ASCII_TABLES;
-        s.useHierarch = DEFAULT_USE_HIERARCH;        
+        s.useHierarch = DEFAULT_USE_HIERARCH;      
+        s.useUnicodeChars = DEFAULT_USE_UNICODE_CHARS;
         s.hierarchKeyFormatter = DEFAULT_HIERARCH_FORMATTER;
         s.hierarchKeyFormatter.setCaseSensitive(DEFAULT_CASE_SENSITIVE_HIERARCH);
     }
@@ -523,6 +544,32 @@ public final class FitsFactory {
         current().useHierarch = useHierarch;
     }
 
+    /**
+     * <p>
+     * Enable/Disable writing <code>char[]</code> arrays as <code>short[]</code> in FITS binary tables
+     * (with column type 'I'), instead of as standard FITS 1-byte ASCII characters (with column type 'A').
+     * The old default of this library has been to use unicode, and that behavior is retained
+     * by setting the argument to <code>true</code>. On the flipside, setting it to <code>false</code>
+     * provides more ocnvergence between the handling of <code>char[]</code> columns and the nearly
+     * identical <code>String</code> columns, which have already been restricted to ASCII before.
+     * </p>
+     * 
+     *
+     * @param value     <code>true</code> to write <code>char[]</code> arrays as if <code>short[]</code>
+     *                  with column type 'I' to binary tables (old behaviour), or else <code>false</code>
+     *                  to write them as <code>byte[]</code> with column type 'A', the same as
+     *                  for <code>String</code> (preferred behaviour)
+     * 
+     * @since 1.16
+     *                  
+     * @see #isUseUnicodeChars()
+     * 
+     * 
+     */
+    public static void setUseUnicodeChars(boolean value) {
+        current().useUnicodeChars = value;
+    }
+    
     public static ExecutorService threadPool() {
         if (threadPool == null) {
             initializeThreadPool();

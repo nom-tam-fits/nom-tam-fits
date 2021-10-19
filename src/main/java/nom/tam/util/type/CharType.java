@@ -31,11 +31,18 @@ package nom.tam.util.type;
  * #L%
  */
 
-import java.nio.CharBuffer;
+import java.nio.ByteBuffer;
 
-class CharType extends ElementType<CharBuffer> {
+import nom.tam.fits.FitsFactory;
+
+class CharType extends ElementType<ByteBuffer> {
 
     protected CharType() {
-        super(2, false, char.class, Character.class, CharBuffer.class, 'C', 0);
+        super(0, false, char.class, Character.class, null, 'C', 0);
+    }   
+    
+    @Override
+    public int size() {
+        return FitsFactory.isUseUnicodeChars() ? ElementType.SHORT.size() : ElementType.BYTE.size();
     }
 }

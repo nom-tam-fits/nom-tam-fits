@@ -622,7 +622,22 @@ public class ColumnTable<T> implements DataTable {
     }
 
     /**
-     * Get a particular column.
+     * <p>
+     * Gets a particular column in the format that it is stored in the FITS. For most column types
+     * the storage format matches the Java type, but there are exceptions:
+     * </p>
+     * <ul>
+     * <li>Character arrays in FITS are stored as <code>byte[]</code> or <code>short[]</code>, depending
+     * on the {@link nom.tam.fits.FitsFactory#setUseUnicodeChars(boolean)} setting, not unicode Java <code>char[]</code>.
+     * Therefore, this call will return <code>byte[]</code> or <code>short[]</code>, the same as for a byte or 16-bit 
+     * integer array. As a result if a new table is created with the returned data, the new table column will change 
+     * its FITS column type from <code>A</code> to <code>B</code> or <code>I</code>.</li>
+     * <li>Complex values in FITS are stored as <code>float[2]</code> or <code>double[2]</code>, not as a 
+     * {@link ComplexValue} type. Therefore, this call will return <code>float[]</code> or <code>double[]</code>, the 
+     * same as for a float array. As a result if a new table is created with the returned data, the new table column 
+     * will change it's FITS column type from <code>C</code> to <code>F</code>, or from <code>M</code> to 
+     * <code>D</code>,.</li>
+     * </ul>
      * 
      * @param col
      *            The column desired.
@@ -633,7 +648,7 @@ public class ColumnTable<T> implements DataTable {
     public Object getColumn(int col) {
         return this.arrays[col];
     }
-
+    
     /**
      * @return the actual data arrays
      */

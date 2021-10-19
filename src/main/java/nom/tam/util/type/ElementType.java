@@ -34,7 +34,6 @@ package nom.tam.util.type;
 import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -60,23 +59,36 @@ public abstract class ElementType<B extends Buffer> {
 
     private final Class<B> bufferClass;
 
-    private final boolean individualSize;
+    private final boolean isVariableSize;
 
     private final Class<?> primitiveClass;
 
     private final int size;
 
-    private final char type;
+    /** The second character of the Java array type, e.g. `J` from `[J` for `long[]` */
+    private final char javaType;
 
     private final Class<?> wrapperClass;
 
-    protected ElementType(int size, boolean individualSize, Class<?> primitiveClass, Class<?> wrapperClass, Class<B> bufferClass, char type, int bitPix) {
+    /**
+     * 
+     * 
+     * @param size
+     * @param varSize
+     * @param primitiveClass    The primitive data type, e.g. `int.class`, or <code>null</code> if no primitive type is associated.
+     * @param wrapperClass      The boxed data type, e.g. `Integer.class`, or <code>null</code> if no boxed type is associated.
+     * @param bufferClass       The type of underlying buffer (in FITS), or <code>null</code> if arrays of this type 
+     *                          cannot be wrapped into a buffer directly (e.g. because of differing byrte size or order).
+     * @param type              The second character of the Java array type, e.g. `J` from `[J` for `long[]`. 
+     * @param bitPix
+     */
+    protected ElementType(int size, boolean varSize, Class<?> primitiveClass, Class<?> wrapperClass, Class<B> bufferClass, char type, int bitPix) {
         this.size = size;
-        this.individualSize = individualSize;
+        this.isVariableSize = varSize;
         this.primitiveClass = primitiveClass;
         this.wrapperClass = wrapperClass;
         this.bufferClass = bufferClass;
-        this.type = type;
+        this.javaType = type;
         this.bitPix = bitPix;
     }
 
@@ -87,14 +99,14 @@ public abstract class ElementType<B extends Buffer> {
 
  
     public void appendToByteBuffer(ByteBuffer byteBuffer, B dataToAppend) {
-        byte[] temp = new byte[Math.min(COPY_BLOCK_SIZE * this.size, dataToAppend.remaining() * this.size)];
+        byte[] temp = new byte[Math.min(COPY_BLOCK_SIZE * size(), dataToAppend.remaining() * size())];
         B typedBuffer = asTypedBuffer(ByteBuffer.wrap(temp));
         Object array = newArray(Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining()));
         while (dataToAppend.hasRemaining()) {
             int part = Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining());
             getArray(dataToAppend, array, part);
             putArray(typedBuffer, array, part);
-            byteBuffer.put(temp, 0, part * this.size);
+            byteBuffer.put(temp, 0, part * size());
         }
     }
 
@@ -111,7 +123,7 @@ public abstract class ElementType<B extends Buffer> {
     }
 
     public ByteBuffer convertToByteBuffer(Object array) {
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[Array.getLength(array) * this.size]);
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[Array.getLength(array) * size()]);
         putArray(asTypedBuffer(buffer), array);
         buffer.rewind();
         return buffer;
@@ -129,8 +141,16 @@ public abstract class ElementType<B extends Buffer> {
         throw new UnsupportedOperationException("no primitive type");
     }
 
-    public boolean individualSize() {
-        return this.individualSize;
+    public boolean isVariableSize() {
+        return this.isVariableSize;
+    }
+    
+    /**
+     * @deprecated Use {@link #isVariableSize()} instead.
+     */
+    @Deprecated
+    public final boolean individualSize() {
+        return isVariableSize();
     }
 
     public boolean is(ElementType<? extends Buffer> other) {
@@ -177,7 +197,7 @@ public abstract class ElementType<B extends Buffer> {
         if (instance == null) {
             return 0;
         }
-        return this.size;
+        return size();
     }
 
     public B sliceBuffer(B buffer) {
@@ -185,7 +205,7 @@ public abstract class ElementType<B extends Buffer> {
     }
 
     public char type() {
-        return this.type;
+        return this.javaType;
     }
 
     public B wrap(Object array) {
@@ -200,7 +220,7 @@ public abstract class ElementType<B extends Buffer> {
 
     public static final ElementType<ByteBuffer> BYTE = new ByteType();
 
-    public static final ElementType<CharBuffer> CHAR = new CharType();
+    public static final ElementType<ByteBuffer> CHAR = new CharType();
 
     public static final ElementType<DoubleBuffer> DOUBLE = new DoubleType();
 
@@ -213,7 +233,7 @@ public abstract class ElementType<B extends Buffer> {
     public static final ElementType<ShortBuffer> SHORT = new ShortType();
 
     public static final ElementType<Buffer> STRING = new StringType();
-
+    
     public static final ElementType<Buffer> UNKNOWN = new UnknownType();
 
     

@@ -123,7 +123,18 @@ public final class FitsUtil {
         for (int i = 0; i < res.length; i += 1) {
 
             int start = i * maxLen;
-            int end = start + maxLen;
+
+            // AK: The FITS standard states that a 0 byte terminates the
+            // string before the fixed length, and characters beyond it
+            // are undefined. So, we first check where the string ends.
+            int l = 0;
+            for (; l < maxLen; l++) {
+                if (bytes[l] == 0) {
+                    break;
+                }
+            }
+            int end = start + l;
+
             // Pre-trim the string to avoid keeping memory
             // hanging around. (Suggested by J.C. Segovia, ESA).
 
@@ -170,7 +181,6 @@ public final class FitsUtil {
             }
         }
         return res;
-
     }
 
     /**

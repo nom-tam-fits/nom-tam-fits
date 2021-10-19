@@ -33,7 +33,6 @@ package nom.tam.util.type;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -54,7 +53,7 @@ public final class PrimitiveTypes {
     public static final ElementType<ByteBuffer> BYTE = ElementType.BYTE;
 
     /** @deprecated Use {@link ElementType#CHAR} instead */
-    public static final ElementType<CharBuffer> CHAR = ElementType.CHAR;
+    public static final ElementType<ByteBuffer> CHAR = ElementType.CHAR;
 
     /** @deprecated Use {@link ElementType#DOUBLE} instead */
     public static final ElementType<DoubleBuffer> DOUBLE = ElementType.DOUBLE;

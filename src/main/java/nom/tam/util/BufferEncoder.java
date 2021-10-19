@@ -34,62 +34,87 @@ package nom.tam.util;
 import java.io.IOException;
 import java.lang.reflect.Array;
 
+import nom.tam.fits.FitsFactory;
+import nom.tam.util.type.ElementType;
+
 public abstract class BufferEncoder {
 
-    private final BufferPointer sharedBuffer;
+    private final BufferPointer buffer;
+
+    private static final byte BYTE_TRUE = (byte) 'T';
+
+    private static final byte BYTE_FALSE = (byte) 'F';
 
     protected BufferEncoder(BufferPointer sharedBuffer) {
-        this.sharedBuffer = sharedBuffer;
+        this.buffer = sharedBuffer;
     }
 
     protected abstract void needBuffer(int need) throws IOException;
 
     protected void write(boolean[] b, int start, int length) throws IOException {
-        for (int i = start; i < start + length; i++) {
+        int to = start + length;
+        for (int i = start; i < to; i++) {
             writeBoolean(b[i]);
         }
     }
 
     protected abstract void write(byte[] buf, int offset, int length) throws IOException;
 
+    /**
+     * Writes an array of character to the buffer. Note, however, that the FITS
+     * standard for characters is really bytes (ASCII), not unicode. Therefore
+     * we will only 1 byte ASCII per character to the stream.
+     * 
+     * @param c
+     * @param start
+     * @param length
+     * @throws IOException
+     */
     protected void write(char[] c, int start, int length) throws IOException {
-        for (int i = start; i < start + length; i++) {
+        int to = start + length;
+        for (int i = start; i < to; i++) {
             writeChar(c[i]);
         }
     }
 
     protected void write(double[] d, int start, int length) throws IOException {
-        for (int i = start; i < start + length; i++) {
+        int to = start + length;
+        for (int i = start; i < to; i++) {
             writeLong(Double.doubleToLongBits(d[i]));
         }
     }
 
     protected void write(float[] f, int start, int length) throws IOException {
-        for (int i = start; i < start + length; i++) {
+        int to = start + length;
+        for (int i = start; i < to; i++) {
             writeInt(Float.floatToIntBits(f[i]));
         }
     }
 
     protected void write(int[] i, int start, int length) throws IOException {
-        for (int ii = start; ii < start + length; ii++) {
-            writeInt(i[ii]);
+        int to = start + length;
+        for (int k = start; k < to; k++) {
+            writeInt(i[k]);
         }
     }
 
     protected void write(long[] l, int start, int length) throws IOException {
-        for (int i = start; i < start + length; i++) {
+        int to = start + length;
+        for (int i = start; i < to; i++) {
             writeLong(l[i]);
         }
     }
 
     protected void write(short[] s, int start, int length) throws IOException {
-        for (int i = start; i < start + length; i++) {
+        int to = start + length;
+        for (int i = start; i < to; i++) {
             writeShort(s[i]);
         }
     }
 
     protected void write(String[] s, int start, int length) throws IOException {
-        for (int i = start; i < start + length; i++) {
+        int to = start + length;
+        for (int i = start; i < to; i++) {
             write(AsciiFuncs.getBytes(s[i]), 0, s[i].length());
         }
     }
@@ -132,24 +157,20 @@ public abstract class BufferEncoder {
     }
 
     protected void writeBoolean(boolean b) throws IOException {
-        needBuffer(FitsIO.BYTES_IN_BOOLEAN);
-        if (b) {
-            this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset] = (byte) 1;
+        writeByte(b ? BYTE_TRUE : BYTE_FALSE);
+    }
+
+    protected void writeByte(byte b) throws IOException {
+        needBuffer(1);
+        writeUncheckedByte(b);
+    }
+
+    protected void writeChar(char c) throws IOException {
+        if (FitsFactory.isUseUnicodeChars()) {
+            writeShort((short) c);
         } else {
-            this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset] = (byte) 0;
+            writeByte((byte) c);
         }
-        this.sharedBuffer.bufferOffset++;
-    }
-
-    protected void writeByte(int b) throws IOException {
-        needBuffer(FitsIO.BYTES_IN_BYTE);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) b;
-    }
-
-    protected void writeChar(int c) throws IOException {
-        needBuffer(FitsIO.BYTES_IN_CHAR);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (c >>> FitsIO.BITS_OF_1_BYTE);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) c;
     }
 
     protected void writeChars(String s) throws IOException {
@@ -168,28 +189,32 @@ public abstract class BufferEncoder {
     }
 
     protected void writeInt(int i) throws IOException {
-        needBuffer(FitsIO.BYTES_IN_INTEGER);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (i >>> FitsIO.BITS_OF_3_BYTES);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (i >>> FitsIO.BITS_OF_2_BYTES);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (i >>> FitsIO.BITS_OF_1_BYTE);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) i;
+        needBuffer(ElementType.INT.size());
+        writeUncheckedByte((byte) (i >>> FitsIO.BITS_OF_3_BYTES));
+        writeUncheckedByte((byte) (i >>> FitsIO.BITS_OF_2_BYTES));
+        writeUncheckedByte((byte) (i >>> FitsIO.BITS_OF_1_BYTE));
+        writeUncheckedByte((byte) i);
     }
 
     protected void writeLong(long l) throws IOException {
-        needBuffer(FitsIO.BYTES_IN_LONG);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l >>> FitsIO.BITS_OF_7_BYTES);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l >>> FitsIO.BITS_OF_6_BYTES);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l >>> FitsIO.BITS_OF_5_BYTES);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l >>> FitsIO.BITS_OF_4_BYTES);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l >>> FitsIO.BITS_OF_3_BYTES);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l >>> FitsIO.BITS_OF_2_BYTES);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l >>> FitsIO.BITS_OF_1_BYTE);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) l;
+        needBuffer(ElementType.LONG.size());
+        writeUncheckedByte((byte) (l >>> FitsIO.BITS_OF_7_BYTES));
+        writeUncheckedByte((byte) (l >>> FitsIO.BITS_OF_6_BYTES));
+        writeUncheckedByte((byte) (l >>> FitsIO.BITS_OF_5_BYTES));
+        writeUncheckedByte((byte) (l >>> FitsIO.BITS_OF_4_BYTES));
+        writeUncheckedByte((byte) (l >>> FitsIO.BITS_OF_3_BYTES));
+        writeUncheckedByte((byte) (l >>> FitsIO.BITS_OF_2_BYTES));
+        writeUncheckedByte((byte) (l >>> FitsIO.BITS_OF_1_BYTE));
+        writeUncheckedByte((byte) l);
     }
 
     protected void writeShort(int s) throws IOException {
-        needBuffer(FitsIO.BYTES_IN_SHORT);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (s >>> FitsIO.BITS_OF_1_BYTE);
-        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) s;
+        needBuffer(ElementType.SHORT.size());
+        writeUncheckedByte((byte) (s >>> FitsIO.BITS_OF_1_BYTE));
+        writeUncheckedByte((byte) s);
+    }
+
+    protected void writeUncheckedByte(byte b) {
+        buffer.writeByte(b);
     }
 }
