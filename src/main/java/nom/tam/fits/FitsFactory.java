@@ -70,7 +70,12 @@ public final class FitsFactory {
     
     private static final boolean DEFAULT_CASE_SENSITIVE_HIERARCH = false;
    
-    /** true is the legacy behavior */
+    /** 
+     * AK:
+     * true is the legacy behavior 
+     * TODO If and when it is changed to false, the corresponding Logger warnings in BinaryTable
+     * should also be removed. 
+     */
     private static final boolean DEFAULT_USE_UNICODE_CHARS = true;
     
     
@@ -563,7 +568,6 @@ public final class FitsFactory {
      * @since 1.16
      *                  
      * @see #isUseUnicodeChars()
-     * 
      * 
      */
     public static void setUseUnicodeChars(boolean value) {

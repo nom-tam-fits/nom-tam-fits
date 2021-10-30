@@ -150,7 +150,7 @@ public abstract class Data implements FitsElement {
         try {
             ((ArrayDataOutput) this.input).flush();
         } catch (IOException e) {
-            throw new FitsException("Error in rewrite flush: " + e);
+            throw new FitsException("Error in rewrite flush: ", e);
         }
     }
 

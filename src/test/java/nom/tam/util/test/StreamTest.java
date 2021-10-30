@@ -41,7 +41,11 @@ import java.io.PipedOutputStream;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.Before;
 import org.junit.After;
 
@@ -49,27 +53,44 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.AsciiFuncs;
-import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.FitsDataInputStream;
+import nom.tam.util.FitsDataOutputStream;
 import nom.tam.util.SafeClose;
 
 public class StreamTest {
 
-    private static BufferedDataOutputStream ou;
+    private static FitsDataOutputStream ou;
 
-    private static BufferedDataInputStream in;
+    private static FitsDataInputStream in;
 
+
+//    @Rule
+//    public TestRule watcher = new TestWatcher() {
+//        protected void starting(Description description) {
+//            System.out.println("Starting test: " + description.getMethodName());
+//        }
+//    };
+    
     @Before
     @After
     public void setDefaults() {
         FitsFactory.setDefaults();
+        
+        try {
+            while (in.available() > 0) {
+                in.read();
+            }
+        } catch (IOException e) {
+            
+        }
+        
     }
     
     @BeforeClass
     public static void setup() throws Exception {
         PipedInputStream pipeInput = new PipedInputStream(10240);
-        ou = new BufferedDataOutputStream(new PipedOutputStream(pipeInput));
-        in = new BufferedDataInputStream(pipeInput);
+        ou = new FitsDataOutputStream(new PipedOutputStream(pipeInput));
+        in = new FitsDataInputStream(pipeInput);
     }
 
     @Test
@@ -290,18 +311,16 @@ public class StreamTest {
     @Test
     public void testSkipManyBytes() throws Exception {
         int total = 8192 * 2;
-        BufferedDataInputStream myIn = null;
+        FitsDataInputStream myIn = null;
         InputStream input = null;
         try {
             input = new ByteArrayInputStream(new byte[total]) {
-
                 @Override
                 public synchronized long skip(long n) {
-                    ThrowAnyException.throwIOException("all is broken");
-                    return 0L;
+                    throw new UnsupportedOperationException("skip not supported");
                 }
             };
-            myIn = new BufferedDataInputStream(input);
+            myIn = new FitsDataInputStream(input);
             myIn.skipAllBytes(10000L);
             myIn.readFully(new byte[total - 10000]);
             Assert.assertEquals(0, myIn.available());
@@ -310,29 +329,17 @@ public class StreamTest {
             SafeClose.close(input);
         }
     }
-
+    
+    
     @Test(expected = EOFException.class)
     public void testSkipBytesWithException1() throws Exception {
         int total = 256;
-        BufferedDataInputStream myIn = null;
+        FitsDataInputStream myIn = null;
         InputStream input = null;
         try {
-            input = new ByteArrayInputStream(new byte[total]) {
-
-                @Override
-                public synchronized long skip(long n) {
-                    ThrowAnyException.throwIOException("all is broken");
-                    return 0L;
-                }
-            };
-            myIn = new BufferedDataInputStream(input) {
-
-                @Override
-                public synchronized int read(byte[] b, int off, int len) {
-                    return -10;
-                }
-            };
-            myIn.skipAllBytes(100L);
+            input = new ByteArrayInputStream(new byte[total]);
+            myIn = new FitsDataInputStream(input);
+            myIn.skipAllBytes(1000L);
         } finally {
             SafeClose.close(input);
             SafeClose.close(myIn);
@@ -341,29 +348,25 @@ public class StreamTest {
 
     @Test(expected = EOFException.class)
     public void testSkipBytesWithException2() throws Exception {
-        int total = 8192 + 256;
-        InputStream input = new ByteArrayInputStream(new byte[total]) {
-
-            @Override
-            public synchronized long skip(long n) {
-                ThrowAnyException.throwIOException("all is broken");
-                return 0L;
-            }
-        };
-        BufferedDataInputStream myIn = null;
+        int total = 256;
+        FitsDataInputStream myIn = null;
+        InputStream input = null;
         try {
-            myIn = new BufferedDataInputStream(input) {
-
+            input = new ByteArrayInputStream(new byte[total]) {
                 @Override
-                public synchronized int read(byte[] b, int off, int len) {
-                    return -10;
-                }
+                public synchronized long skip(long n) {
+                    throw new UnsupportedOperationException("skip not supported");
+                }                
             };
-            myIn.skipAllBytes(total - 100L);
+            myIn = new FitsDataInputStream(input);
+            myIn.skipAllBytes(1000L);
         } finally {
+            SafeClose.close(input);
             SafeClose.close(myIn);
         }
     }
+
+  
 
     @Test
     public void testBoolean() throws Exception {
@@ -528,15 +531,15 @@ public class StreamTest {
     @Test
     public void testReadFully() throws Exception {
         PipedInputStream pipeInput = new PipedInputStream(1024);
-        BufferedDataOutputStream out = new BufferedDataOutputStream(new PipedOutputStream(pipeInput));
-        BufferedDataInputStream in = new BufferedDataInputStream(pipeInput);
+        FitsDataOutputStream out = new FitsDataOutputStream(new PipedOutputStream(pipeInput));
+        FitsDataInputStream in = new FitsDataInputStream(pipeInput);
         for (int index = 0; index < 255; index++) {
             out.writeByte(index);
         }
         out.close();
         byte[] readBytes = new byte[255];
         in.readFully(readBytes);
-        in = new BufferedDataInputStream(new ByteArrayInputStream(readBytes));
+        in = new FitsDataInputStream(new ByteArrayInputStream(readBytes));
         for (int index = 0; index < readBytes.length; index++) {
             Assert.assertEquals(index, in.readUnsignedByte());
         }
@@ -583,7 +586,7 @@ public class StreamTest {
 
     @Test
     public void testIntEof() throws Exception {
-        BufferedDataInputStream in = new BufferedDataInputStream(new ByteArrayInputStream(new byte[3]));
+        FitsDataInputStream in = new FitsDataInputStream(new ByteArrayInputStream(new byte[3]));
         EOFException expectedEof = null;
         try {
             in.readInt();
@@ -596,8 +599,8 @@ public class StreamTest {
 
     @Test
     public void testReadLine() throws Exception {
-        BufferedDataInputStream in = new BufferedDataInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes("test line")));
-        Assert.assertTrue(in.toString().contains("pos=0"));
+        FitsDataInputStream in = new FitsDataInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes("test line")));
+        Assert.assertTrue(in.toString(), in.toString().contains("pos=0"));
         Assert.assertEquals("test line", in.readLine());
         Assert.assertEquals(0, in.available());
     }
@@ -649,7 +652,7 @@ public class StreamTest {
     @Test
     public void testEofHandlingShortArray() throws Exception {
         Assert.assertEquals(8, create8ByteInput().read(new short[10]));
-        BufferedDataInputStream create8ByteInput = create8ByteInput();
+        FitsDataInputStream create8ByteInput = create8ByteInput();
         Assert.assertEquals(8, create8ByteInput.readArray(new short[10]));
         EOFException expectedEof = null;
         try {
@@ -663,7 +666,7 @@ public class StreamTest {
     @Test
     public void testEofHandlingByteArray() throws Exception {
 
-        BufferedDataInputStream create8ByteInput = create8ByteInput();
+        FitsDataInputStream create8ByteInput = create8ByteInput();
         EOFException expectedEof = null;
         try {
             create8ByteInput.read(new byte[0], 0, 0);
@@ -676,16 +679,16 @@ public class StreamTest {
     @Test
     public void testReadWriteLine() throws Exception {
         ByteArrayOutputStream o = new ByteArrayOutputStream();
-        BufferedDataOutputStream out = null;
+        FitsDataOutputStream out = null;
         try {
-            out = new BufferedDataOutputStream(o);
+            out = new FitsDataOutputStream(o);
             out.writeBytes("bla bla\n");
         } finally {
             SafeClose.close(out);
         }
-        BufferedDataInputStream input = null;
+        FitsDataInputStream input = null;
         try {
-            input = new BufferedDataInputStream(new ByteArrayInputStream(o.toByteArray()));
+            input = new FitsDataInputStream(new ByteArrayInputStream(o.toByteArray()));
             String line = input.readLine();
             Assert.assertEquals("bla bla", line);
         } finally {
@@ -696,9 +699,9 @@ public class StreamTest {
     @Test(expected = IOException.class)
     public void testFailedWriteArray() throws Exception {
         ByteArrayOutputStream o = new ByteArrayOutputStream();
-        BufferedDataOutputStream out = null;
+        FitsDataOutputStream out = null;
         try {
-            out = new BufferedDataOutputStream(o);
+            out = new FitsDataOutputStream(o);
             out.writePrimitiveArray(3);
             out.flush();
         } finally {
@@ -706,7 +709,7 @@ public class StreamTest {
         }
     }
 
-    private BufferedDataInputStream create8ByteInput() {
+    private FitsDataInputStream create8ByteInput() {
         InputStream fileInput = new ByteArrayInputStream(new byte[1000]) {
 
             int count = 0;
@@ -716,11 +719,10 @@ public class StreamTest {
                 if (count == 0) {
                     return count = 8;
                 }
-                ThrowAnyException.throwAnyAsRuntime(new EOFException("all is broken"));
-                return 1;
+                return -1;
             }
         };
-        BufferedDataInputStream bi = new BufferedDataInputStream(fileInput);
+        FitsDataInputStream bi = new FitsDataInputStream(fileInput);
         return bi;
     }
 

@@ -56,6 +56,11 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     protected TableHDU(Header hdr, T td) {
         super(hdr, td);
+        for (int i = getNCols(); --i >= 0;) {
+            if (getColumnName(i) == null) {
+                setDefaultColumnName(i);
+            }
+        }
     }
 
     /**
@@ -78,8 +83,11 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     public int addColumn(Object newCol) throws FitsException {
         int nCols = getNCols();
         this.myHeader.addValue(TFIELDS, nCols);
+        setDefaultColumnName(nCols);
         return nCols;
     }
+    
+
 
     /**
      * Add a row to the end of the table. If this is the first row, then this
@@ -593,6 +601,22 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         setColumnMeta(index, TTYPEn, name, comment, true);
     }
 
+    private void setDefaultColumnName(int index) {
+        // TODO 
+        // AK: We currently allow undefined column names, but some other software, such as fv, have
+        // problemss processing such files. By uncommenting the lines below, we can enable
+        // setting default column names when columns are created or added to the table...
+        // This should not break anything in principle, but can increase header size,
+        // and therefore some of out unit tests may fail, unless adjusted...
+        
+//        try {
+//            setColumnName(index, "Column" + (index + 1), "default column name");
+//        } catch (Exception e) {
+//            // Should not happen.
+//            e.printStackTrace();
+//        }
+    }
+    
     /**
      * Set the cursor in the header to point after the metadata for the
      * specified column

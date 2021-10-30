@@ -181,13 +181,12 @@ public class ImageData extends Data {
 
     @Override
     public void read(ArrayDataInput i) throws FitsException {
-
         // Don't need to read null data (noted by Jens Knudstrup)
         if (this.byteSize == 0) {
             return;
         }
         setFileOffset(i);
-
+        
         if (i instanceof RandomAccess) {
             this.tiler = new ImageDataTiler((RandomAccess) i, ((RandomAccess) i).getFilePointer(), this.dataDescription);
             try {

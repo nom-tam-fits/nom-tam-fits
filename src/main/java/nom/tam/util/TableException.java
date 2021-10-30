@@ -36,9 +36,9 @@ import nom.tam.fits.FitsException;
 public class TableException extends FitsException {
 
     /**
-     * serial version id.
+     * 
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -560077128369138846L;
 
     public TableException(String msg) {
         super(msg);

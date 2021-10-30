@@ -39,9 +39,9 @@ package nom.tam.fits;
 public class TruncatedFileException extends FitsException {
 
     /**
-     * serial version UID.
+     * 
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -4824457442211702123L;
 
     public TruncatedFileException(String msg) {
         super(msg);

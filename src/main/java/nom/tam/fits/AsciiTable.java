@@ -67,6 +67,7 @@ import nom.tam.util.RandomAccess;
 /**
  * This class represents the data in an ASCII table
  */
+@SuppressWarnings("deprecation")
 public class AsciiTable extends AbstractTableData {
 
     private static final int MAX_INTEGER_LENGTH = 10;

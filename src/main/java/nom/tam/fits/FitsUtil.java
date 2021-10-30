@@ -192,7 +192,7 @@ public final class FitsUtil {
         boolean[] bool = new boolean[bytes.length];
 
         for (int i = 0; i < bytes.length; i += 1) {
-            bool[i] = bytes[i] == 'T';
+            bool[i] = (bytes[i] == 'T');
         }
         return bool;
     }
@@ -331,7 +331,7 @@ public final class FitsUtil {
         try {
             ((RandomAccess) o).seek(offset);
         } catch (IOException e) {
-            throw new FitsException("Unable to repostion stream " + o + " of type " + o.getClass().getName() + " to " + offset + "   Exception:" + e.getMessage(), e);
+            throw new FitsException("Unable to repostion stream " + o + " of type " + o.getClass().getName() + " to " + offset + ": " + e.getMessage(), e);
         }
     }
 

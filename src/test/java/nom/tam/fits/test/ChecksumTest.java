@@ -49,8 +49,8 @@ import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
-import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.FitsDataInputStream;
+import nom.tam.util.FitsDataOutputStream;
 import nom.tam.util.Cursor;
 import nom.tam.util.test.ThrowAnyException;
 
@@ -120,7 +120,7 @@ public class ChecksumTest {
 
         Fits.setChecksum(bhdu);
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
-        BufferedDataOutputStream bdos = new BufferedDataOutputStream(bs);
+        FitsDataOutputStream bdos = new FitsDataOutputStream(bs);
         f.write(bdos);
         bdos.close();
         byte[] stream = bs.toByteArray();
@@ -134,7 +134,7 @@ public class ChecksumTest {
     public void testCheckSumBasic() throws Exception {
         FileInputStream in = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits");
         Fits fits = new Fits();
-        fits.setStream(new BufferedDataInputStream(in));
+        fits.setStream(new FitsDataInputStream(in));
         fits.read();
         in.close();
         fits.setChecksum();
@@ -144,7 +144,7 @@ public class ChecksumTest {
     public void testCheckSum2() throws Exception {
         FileInputStream in = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits");
         Fits fits = new Fits();
-        fits.setStream(new BufferedDataInputStream(in));
+        fits.setStream(new FitsDataInputStream(in));
         fits.read();
         in.close();
         fits.setChecksum();

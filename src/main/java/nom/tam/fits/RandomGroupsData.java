@@ -142,7 +142,7 @@ public class RandomGroupsData extends Data {
         try {
             str.readLArray(this.dataArray);
         } catch (IOException e) {
-            throw new FitsException("IO error reading Random Groups data " + e);
+            throw new FitsException("IO error reading Random Groups data ", e);
         }
         int pad = FitsUtil.padding(getTrueSize());
         try {
@@ -161,7 +161,7 @@ public class RandomGroupsData extends Data {
             str.writeArray(this.dataArray);
             FitsUtil.pad(str, getTrueSize());
         } catch (IOException e) {
-            throw new FitsException("IO error writing random groups data " + e);
+            throw new FitsException("IO error writing random groups data ", e);
         }
     }
 

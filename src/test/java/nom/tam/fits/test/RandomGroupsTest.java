@@ -44,7 +44,7 @@ import nom.tam.fits.RandomGroupsData;
 import nom.tam.fits.RandomGroupsHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsFile;
 import nom.tam.util.SafeClose;
 
 import org.junit.Assert;
@@ -62,9 +62,9 @@ public class RandomGroupsTest {
         float[] pa = new float[3];
 
         Object[][] data = new Object[1][2];
-        BufferedFile bf = null;
+        FitsFile bf = null;
         try {
-            bf = new BufferedFile("target/rg1.fits", "rw");
+            bf = new FitsFile("target/rg1.fits", "rw");
 
             data[0][0] = pa;
             data[0][1] = fa;
@@ -123,7 +123,7 @@ public class RandomGroupsTest {
         // all the data in place first.
         try {
             f = new Fits();
-            bf = new BufferedFile("target/rg2.fits", "rw");
+            bf = new FitsFile("target/rg2.fits", "rw");
             // Generate a FITS HDU from the kernel.
             f.addHDU(Fits.makeHDU(data));
             f.write(bf);
@@ -183,9 +183,9 @@ public class RandomGroupsTest {
         float[][] fa = new float[20][20];
         float[] pa = new float[3];
         RandomGroupsData groups;
-        BufferedFile bf = null;
+        FitsFile bf = null;
         try {
-            bf = new BufferedFile("target/testResetData", "rw");
+            bf = new FitsFile("target/testResetData", "rw");
             Object[][] data = new Object[1][2];
             data[0][0] = pa;
             data[0][1] = fa;
@@ -198,7 +198,7 @@ public class RandomGroupsTest {
 
         // ok now test it
         try {
-            bf = new BufferedFile("target/testResetData", "rw");
+            bf = new FitsFile("target/testResetData", "rw");
             bf.readLong();
             groups = new RandomGroupsData();
             groups.read(bf);

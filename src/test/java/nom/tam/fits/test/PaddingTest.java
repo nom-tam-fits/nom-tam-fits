@@ -39,7 +39,7 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.PaddingException;
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
 
@@ -54,10 +54,10 @@ public class PaddingTest {
     @Test
     public void test1() throws Exception {
         Fits f = null;
-        BufferedFile bf = null;
+        FitsFile bf = null;
         try {
             f = new Fits();
-            bf = new BufferedFile("target/padding1.fits", "rw");
+            bf = new FitsFile("target/padding1.fits", "rw");
 
             byte[][] bimg = new byte[20][20];
             for (int i = 0; i < 20; i += 1) {
@@ -146,7 +146,7 @@ public class PaddingTest {
             f.addHDU(hdu);
 
             // First create a FITS file with a truncated second HDU.
-            BufferedFile bf = new BufferedFile("target/padding2.fits", "rw");
+            FitsFile bf = new FitsFile("target/padding2.fits", "rw");
             f.write(bf);
 
             hdu.getHeader().setXtension(XTENSION_IMAGE);

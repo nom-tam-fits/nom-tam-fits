@@ -1585,17 +1585,17 @@ public class Header implements FitsElement {
             }
         } catch (EOFException e) {
             if (!firstCard) {
-                throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage()));
+                throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage(), e));
             }
             throw e;
 
-        } catch (TruncatedFileException e) {
+        } catch (TruncatedFileException e) {            
             if (firstCard && FitsFactory.getAllowTerminalJunk()) {
                 EOFException eofException = new EOFException("First card truncated");
                 eofException.initCause(e);
                 throw eofException;
             }
-            throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage()));
+            throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage(), e));
         } catch (Exception e) {
             throw new IOException("Invalid FITS Header", e);
         }
@@ -1612,6 +1612,9 @@ public class Header implements FitsElement {
         } catch (IOException e) {
             throw new TruncatedFileException("Failed to skip " + FitsUtil.padding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE) + " bytes", e);
         }
+        
+        // AK: Log if the file ends before the expected end-of-header position.
+        dis.checkTruncated();
     }
 
     /**

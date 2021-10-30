@@ -33,6 +33,14 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * #L%
  */
 
+/**
+ * @deprecated No longer used within the FITS package itself, but will
+ *              stay around until the next major release (2.0) at least.
+ *
+ * @see BufferEncoder
+ * @see BufferDecoder
+ */
+@Deprecated
 public class BufferPointer {
 
     /**
@@ -68,13 +76,5 @@ public class BufferPointer {
     protected void invalidate() {
         this.length = 0;
         this.pos = 0;
-    }
-    
-    public final byte readByte() {
-        return buffer[pos++];
-    }
-    
-    public final void writeByte(byte b) {
-        buffer[pos++] = b;
     }
 }

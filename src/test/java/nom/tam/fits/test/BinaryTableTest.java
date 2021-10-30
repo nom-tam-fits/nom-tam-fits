@@ -72,9 +72,9 @@ import nom.tam.fits.PaddingException;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.BufferedDataOutputStream;
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsDataInputStream;
+import nom.tam.util.FitsDataOutputStream;
+import nom.tam.util.FitsFile;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.SafeClose;
 import nom.tam.util.TableException;
@@ -195,7 +195,7 @@ public class BinaryTableTest {
                 33
         }, btab.getData().getSizes());
 
-        BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/bt3.fits"));
+        FitsDataOutputStream bdos = new FitsDataOutputStream(new FileOutputStream("target/bt3.fits"));
         f.write(bdos);
 
         f = new Fits("target/bt3.fits");
@@ -255,7 +255,7 @@ public class BinaryTableTest {
         Fits f = null;
         try {
             f = new Fits();
-            BufferedFile bf = new BufferedFile("target/bt12.fits", "rw");
+            FitsFile bf = new FitsFile("target/bt12.fits", "rw");
             f.addHDU(hdu);
             f.write(bf);
         } finally {
@@ -327,7 +327,7 @@ public class BinaryTableTest {
 
         f = new Fits();
         f.addHDU(Fits.makeHDU(btab));
-        BufferedFile bf = new BufferedFile("target/bt4.fits", "rw");
+        FitsFile bf = new FitsFile("target/bt4.fits", "rw");
         f.write(bf);
         bf.flush();
         bf.close();
@@ -399,7 +399,7 @@ public class BinaryTableTest {
 
         f = new Fits();
         f.addHDU(Fits.makeHDU(btab));
-        BufferedFile bf = new BufferedFile("target/bt4.fits", "rw");
+        FitsFile bf = new FitsFile("target/bt4.fits", "rw");
         f.write(bf);
         bf.flush();
         bf.close();
@@ -487,7 +487,7 @@ public class BinaryTableTest {
         bhdu.setCurrentColumn(1);
         Assert.assertEquals(-1, bhdu.findColumn("XXX"));
 
-        BufferedFile ff = new BufferedFile("target/bt10.fits", "rw");
+        FitsFile ff = new FitsFile("target/bt10.fits", "rw");
         f.write(ff);
         ff.close();
         f = new Fits("target/bt10.fits");
@@ -644,7 +644,7 @@ public class BinaryTableTest {
         BinaryTableHDU bhdu = (BinaryTableHDU) Fits.makeHDU(objs);
         f.addHDU(bhdu);
 
-        BufferedFile bf = new BufferedFile("target/bt11a.fits", "rw");
+        FitsFile bf = new FitsFile("target/bt11a.fits", "rw");
         f.write(bf);
 
         bf.close();
@@ -662,7 +662,7 @@ public class BinaryTableTest {
 
         bhdu = (BinaryTableHDU) Fits.makeHDU(objs);
         f.addHDU(bhdu);
-        bf = new BufferedFile("target/bt11b.fits", "rw");
+        bf = new FitsFile("target/bt11b.fits", "rw");
         f.write(bf);
 
         bf.close();
@@ -812,7 +812,7 @@ public class BinaryTableTest {
 
         Fits f = new Fits();
         f.addHDU(Fits.makeHDU(data));
-        BufferedFile ff = new BufferedFile("target/bt8.fits", "rw");
+        FitsFile ff = new FitsFile("target/bt8.fits", "rw");
         f.write(ff);
 
         f = new Fits("target/bt8.fits");
@@ -857,7 +857,7 @@ public class BinaryTableTest {
         BinaryTableHDU bhdu = (BinaryTableHDU) Fits.makeHDU(data);
         Header hdr = bhdu.getHeader();
         f.addHDU(bhdu);
-        BufferedFile bf = new BufferedFile("target/bt7.fits", "rw");
+        FitsFile bf = new FitsFile("target/bt7.fits", "rw");
         f.write(bf);
         bf.close();
 
@@ -876,7 +876,7 @@ public class BinaryTableTest {
 
     @Test
     public void testMultHDU() throws Exception {
-        BufferedFile ff = new BufferedFile("target/bt9.fits", "rw");
+        FitsFile ff = new FitsFile("target/bt9.fits", "rw");
         Object[] data = new Object[]{
                 this.bytes,
                 this.bits,
@@ -954,7 +954,7 @@ public class BinaryTableTest {
         Fits f = new Fits();
         BasicHDU<?> hdu = Fits.makeHDU(x);
         f.addHDU(hdu);
-        BufferedFile bf = new BufferedFile("target/bt5.fits", "rw");
+        FitsFile bf = new FitsFile("target/bt5.fits", "rw");
         f.write(bf);
         bf.close();
 
@@ -969,7 +969,7 @@ public class BinaryTableTest {
         xhdu.deleteColumnsIndexZero(1, 1);
         assertEquals("delcol3", 1, xhdu.getNCols());
 
-        bf = new BufferedFile("target/bt6.fits", "rw");
+        bf = new FitsFile("target/bt6.fits", "rw");
         f.write(bf);
 
         f = new Fits("target/bt6.fits");
@@ -993,7 +993,7 @@ public class BinaryTableTest {
         assertEquals("del3", dbl[9], this.doubles[9], 0);
         assertEquals("del4", dbl[10], this.doubles[30], 0);
 
-        BufferedFile bf = new BufferedFile("target/bt1x.fits", "rw");
+        FitsFile bf = new FitsFile("target/bt1x.fits", "rw");
         f.write(bf);
         bf.close();
 
@@ -1028,7 +1028,7 @@ public class BinaryTableTest {
         };
         bhdu.setElement(4, 1, dta);
 
-        BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/bt2a.fits"));
+        FitsDataOutputStream bdos = new FitsDataOutputStream(new FileOutputStream("target/bt2a.fits"));
         f.write(bdos);
         bdos.close();
 
@@ -1055,7 +1055,7 @@ public class BinaryTableTest {
         assertEquals("ts7", true, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), this.vf[4]));
         assertEquals("ts8", true, TestArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
 
-        bdos = new BufferedDataOutputStream(new FileOutputStream("target/bt2b.fits"));
+        bdos = new FitsDataOutputStream(new FileOutputStream("target/bt2b.fits"));
         f.write(bdos);
         bdos.close();
 
@@ -1083,7 +1083,7 @@ public class BinaryTableTest {
         assertEquals("ts14", true, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), trw));
         assertEquals("ts15", true, TestArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
 
-        bdos = new BufferedDataOutputStream(new FileOutputStream("target/bt2c.fits"));
+        bdos = new FitsDataOutputStream(new FileOutputStream("target/bt2c.fits"));
         f.write(bdos);
         bdos.close();
 
@@ -1154,7 +1154,7 @@ public class BinaryTableTest {
             f.addHDU(bhdu);
             bhdu.setColumnName(9, "Complex1", null);
 
-            BufferedFile bf = new BufferedFile("target/bt1c.fits", "rw");
+            FitsFile bf = new FitsFile("target/bt1c.fits", "rw");
             f.write(bf);
             bf.flush();
             bf.close();
@@ -1216,7 +1216,7 @@ public class BinaryTableTest {
         bhdu.setColumnName(6, "doubles", null);
         bhdu.setColumnName(5, "floats", "4 x 4 tiledImageOperation");
 
-        BufferedFile bf = new BufferedFile("target/bt1.fits", "rw");
+        FitsFile bf = new FitsFile("target/bt1.fits", "rw");
         f.write(bf);
         bf.flush();
         bf.close();
@@ -1266,7 +1266,7 @@ public class BinaryTableTest {
             BasicHDU<?> hdu = Fits.makeHDU(data);
             Fits f = new Fits();
             f.addHDU(hdu);
-            BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/bt2.fits"));
+            FitsDataOutputStream bdos = new FitsDataOutputStream(new FileOutputStream("target/bt2.fits"));
             f.write(bdos);
             bdos.close();
 
@@ -1403,7 +1403,7 @@ public class BinaryTableTest {
         ByteArrayInputStream in = new ByteArrayInputStream(new byte[1000]);
         Exception actual = null;
         try {
-            btab.read(new BufferedDataInputStream(in) {
+            btab.read(new FitsDataInputStream(in) {
 
                 @Override
                 public void skipAllBytes(long toSkip) throws IOException {
@@ -1419,7 +1419,7 @@ public class BinaryTableTest {
 
         actual = null;
         try {
-            btab.read(new BufferedDataInputStream(in) {
+            btab.read(new FitsDataInputStream(in) {
 
                 int pass = 0;
 
@@ -1439,7 +1439,7 @@ public class BinaryTableTest {
 
         actual = null;
         try {
-            btab.read(new BufferedDataInputStream(in) {
+            btab.read(new FitsDataInputStream(in) {
 
                 int pass = 0;
 
@@ -1464,7 +1464,7 @@ public class BinaryTableTest {
         setFieldNull(btab, "table");
         Exception actual = null;
         try {
-            btab.read(new BufferedFile("target/testReadExceptions2", "rw") {
+            btab.read(new FitsFile("target/testReadExceptions2", "rw") {
 
                 @Override
                 public void skipAllBytes(long toSkip) throws IOException {
@@ -1480,7 +1480,7 @@ public class BinaryTableTest {
 
         actual = null;
         try {
-            btab.read(new BufferedFile("target/testReadExceptions2") {
+            btab.read(new FitsFile("target/testReadExceptions2") {
 
                 int pass = 0;
 
@@ -1500,7 +1500,7 @@ public class BinaryTableTest {
 
         actual = null;
         try {
-            btab.read(new BufferedFile("target/testReadExceptions2") {
+            btab.read(new FitsFile("target/testReadExceptions2") {
 
                 int pass = 0;
 
@@ -1528,11 +1528,11 @@ public class BinaryTableTest {
         field.setAccessible(true);
         field.set(btab, 10);
 
-        btab.write(new BufferedDataOutputStream(out));
+        btab.write(new FitsDataOutputStream(out));
 
         Exception actual = null;
         try {
-            btab.write(new BufferedDataOutputStream(out) {
+            btab.write(new FitsDataOutputStream(out) {
 
                 @Override
                 public void write(byte[] b) throws IOException {
@@ -1804,7 +1804,7 @@ public class BinaryTableTest {
         BinaryTableHDU tableHdu = new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ArrayDataOutput os = new BufferedDataOutputStream(out);
+        ArrayDataOutput os = new FitsDataOutputStream(out);
 
         Fits f = new Fits();
         f.addHDU(tableHdu);
@@ -1813,7 +1813,7 @@ public class BinaryTableTest {
         SafeClose.close(os);
 
         f = new Fits();
-        f.read(new BufferedDataInputStream(new ByteArrayInputStream(out.toByteArray())));
+        f.read(new FitsDataInputStream(new ByteArrayInputStream(out.toByteArray())));
         btab = (BinaryTable) f.getHDU(1).getData();
 
         assertEquals((int) 'T', ((byte[]) btab.getData().getColumn(0))[0]);
@@ -1850,7 +1850,7 @@ public class BinaryTableTest {
         BinaryTableHDU tableHdu = new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ArrayDataOutput os = new BufferedDataOutputStream(out);
+        ArrayDataOutput os = new FitsDataOutputStream(out);
 
         Fits f = new Fits();
         f.addHDU(tableHdu);
@@ -1860,7 +1860,7 @@ public class BinaryTableTest {
 
         
         f = new Fits();
-        f.read(new BufferedDataInputStream(new ByteArrayInputStream(out.toByteArray())));
+        f.read(new FitsDataInputStream(new ByteArrayInputStream(out.toByteArray())));
         btab = (BinaryTable) f.getHDU(1).getData();
 
         // very strange cast to short?
@@ -1895,7 +1895,7 @@ public class BinaryTableTest {
         BinaryTableHDU tableHdu = new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ArrayDataOutput os = new BufferedDataOutputStream(out);
+        ArrayDataOutput os = new FitsDataOutputStream(out);
 
         Fits f = new Fits();
         f.addHDU(tableHdu);
@@ -1905,7 +1905,7 @@ public class BinaryTableTest {
 
         
         f = new Fits();
-        f.read(new BufferedDataInputStream(new ByteArrayInputStream(out.toByteArray())));
+        f.read(new FitsDataInputStream(new ByteArrayInputStream(out.toByteArray())));
         btab = (BinaryTable) f.getHDU(1).getData();
 
         // very strange cast to short?

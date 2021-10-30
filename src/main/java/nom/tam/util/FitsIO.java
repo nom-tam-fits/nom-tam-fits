@@ -34,6 +34,8 @@ package nom.tam.util;
 import java.io.Closeable;
 import java.io.IOException;
 
+import nom.tam.fits.FitsFactory;
+
 /**
  * super closable interface for all fits reader/writers. It defines the
  * necessary constants common for all reader and writers.
@@ -42,10 +44,11 @@ import java.io.IOException;
  */
 public interface FitsIO extends Closeable {
 
+    // AK: Since FITS has a fixed block size, it makes sense to align buffering to that.
     /**
-     * default buffer size to use if none is specified.
+     * default buffer size to use unless specified otherwise.
      */
-    int DEFAULT_BUFFER_SIZE = 32768;
+    int DEFAULT_BUFFER_SIZE = FitsFactory.FITS_BLOCK_SIZE * 16;
 
     /**
      * number of bits in one byte.

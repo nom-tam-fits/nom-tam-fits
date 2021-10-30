@@ -135,7 +135,7 @@ public class UndefinedData extends Data {
         try {
             i.readFully(this.data);
         } catch (IOException e) {
-            throw new FitsException("Unable to read unknown data:" + e);
+            throw new FitsException("Unable to read unknown data:", e);
         }
 
         int pad = FitsUtil.padding(getTrueSize());
@@ -153,7 +153,7 @@ public class UndefinedData extends Data {
         try {
             o.write(this.data);
         } catch (IOException e) {
-            throw new FitsException("IO Error on unknown data write" + e);
+            throw new FitsException("IO Error on unknown data write", e);
         }
         FitsUtil.pad(o, getTrueSize());
     }

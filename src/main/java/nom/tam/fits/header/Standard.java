@@ -525,7 +525,7 @@ public enum Standard implements IFitsHeader {
 
     /**
      * The value field shall contain a non-negative integer representing the
-     * number of fields in each row of a 'TABLE' or 'BINTABLmacE' extension. The
+     * number of fields in each row of a 'TABLE' or 'BINTABLE' extension. The
      * maximum permissible value is 999. RANGE: [0:999]
      */
     TFIELDS(SOURCE.MANDATORY, HDU.TABLE, VALUE.INTEGER, "number of columns in the table", //

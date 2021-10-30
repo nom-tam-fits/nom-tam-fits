@@ -75,7 +75,7 @@ import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.image.compression.hdu.CompressedImageHDU;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.FitsDataOutputStream;
 import nom.tam.util.SafeClose;
 
 public class ReadWriteProvidedCompressedImageTest {
@@ -586,7 +586,7 @@ public class ReadWriteProvidedCompressedImageTest {
         Fits f = null;
         try {
             f = new Fits();
-            BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/testBlanksInCompressedFloatImage.fits"));
+            FitsDataOutputStream bdos = new FitsDataOutputStream(new FileOutputStream("target/testBlanksInCompressedFloatImage.fits"));
             ImageData imageData = new ImageData(data);
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
             f.addHDU(hdu);
@@ -596,7 +596,7 @@ public class ReadWriteProvidedCompressedImageTest {
         }
         try {
             f = new Fits();
-            BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/testBlanksInCompressedFloatImage.fits.fz"));
+            FitsDataOutputStream bdos = new FitsDataOutputStream(new FileOutputStream("target/testBlanksInCompressedFloatImage.fits.fz"));
             ImageData imageData = new ImageData(data);
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);
@@ -675,9 +675,9 @@ public class ReadWriteProvidedCompressedImageTest {
                     /**/.setBlockSize(32);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
-            BufferedDataOutputStream bdos = null;
+            FitsDataOutputStream bdos = null;
             try {
-                bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_fallback.fits.fz"));
+                bdos = new FitsDataOutputStream(new FileOutputStream("target/write_fallback.fits.fz"));
                 f.write(bdos);
             } finally {
                 SafeClose.close(bdos);
@@ -702,7 +702,7 @@ public class ReadWriteProvidedCompressedImageTest {
         Fits f = null;
         try {
             f = new Fits();
-            BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/testSomeBlanksInCompressedFloatImage.fits.fz"));
+            FitsDataOutputStream bdos = new FitsDataOutputStream(new FileOutputStream("target/testSomeBlanksInCompressedFloatImage.fits.fz"));
             ImageData imageData = new ImageData(data);
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);
@@ -759,9 +759,9 @@ public class ReadWriteProvidedCompressedImageTest {
             f.addHDU(compressedHdu);
             Assert.assertTrue(compressedHdu.isHeader());
             compressedHdu.getHeader().deleteKey(Compression.ZTILEn.n(1));
-            BufferedDataOutputStream bdos = null;
+            FitsDataOutputStream bdos = null;
             try {
-                bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_own_h.fits.fz"));
+                bdos = new FitsDataOutputStream(new FileOutputStream("target/write_m13_own_h.fits.fz"));
                 f.write(bdos);
             } finally {
                 SafeClose.close(bdos);
@@ -807,9 +807,9 @@ public class ReadWriteProvidedCompressedImageTest {
                     /**/.setScale(1);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
-            BufferedDataOutputStream bdos = null;
+            FitsDataOutputStream bdos = null;
             try {
-                bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_own_h.fits.fz"));
+                bdos = new FitsDataOutputStream(new FileOutputStream("target/write_m13_own_h.fits.fz"));
                 f.write(bdos);
             } finally {
                 SafeClose.close(bdos);
@@ -868,9 +868,9 @@ public class ReadWriteProvidedCompressedImageTest {
             compressedHdu.getCompressOption(QuantizeOption.class).setQlevel(1.0);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
-            BufferedDataOutputStream bdos = null;
+            FitsDataOutputStream bdos = null;
             try {
-                bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13real_own_h.fits.fz"));
+                bdos = new FitsDataOutputStream(new FileOutputStream("target/write_m13real_own_h.fits.fz"));
                 f.write(bdos);
             } finally {
                 SafeClose.close(bdos);
@@ -922,9 +922,9 @@ public class ReadWriteProvidedCompressedImageTest {
                     /**/.setBlockSize(32);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
-            BufferedDataOutputStream bdos = null;
+            FitsDataOutputStream bdos = null;
             try {
-                bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13_own.fits.fz"));
+                bdos = new FitsDataOutputStream(new FileOutputStream("target/write_m13_own.fits.fz"));
                 f.write(bdos);
             } finally {
                 SafeClose.close(bdos);
@@ -970,9 +970,9 @@ public class ReadWriteProvidedCompressedImageTest {
                     /**/.setBytePix(4);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
-            BufferedDataOutputStream bdos = null;
+            FitsDataOutputStream bdos = null;
             try {
-                bdos = new BufferedDataOutputStream(new FileOutputStream("target/hmi.fits.fz"));
+                bdos = new FitsDataOutputStream(new FileOutputStream("target/hmi.fits.fz"));
                 f.write(bdos);
             } finally {
                 SafeClose.close(bdos);
@@ -1026,9 +1026,9 @@ public class ReadWriteProvidedCompressedImageTest {
             compressedHdu.getCompressOption(QuantizeOption.class).setQlevel(1.0);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
-            BufferedDataOutputStream bdos = null;
+            FitsDataOutputStream bdos = null;
             try {
-                bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13real_own.fits.fz"));
+                bdos = new FitsDataOutputStream(new FileOutputStream("target/write_m13real_own.fits.fz"));
                 f.write(bdos);
             } finally {
                 SafeClose.close(bdos);
@@ -1068,9 +1068,9 @@ public class ReadWriteProvidedCompressedImageTest {
                     /**/.setBlockSize(32);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
-            BufferedDataOutputStream bdos = null;
+            FitsDataOutputStream bdos = null;
             try {
-                bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13real_own_noloss.fits.fz"));
+                bdos = new FitsDataOutputStream(new FileOutputStream("target/write_m13real_own_noloss.fits.fz"));
                 f.write(bdos);
             } finally {
                 SafeClose.close(bdos);
@@ -1112,9 +1112,9 @@ public class ReadWriteProvidedCompressedImageTest {
                     /**/.setBlockSize(32);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
-            BufferedDataOutputStream bdos = null;
+            FitsDataOutputStream bdos = null;
             try {
-                bdos = new BufferedDataOutputStream(new FileOutputStream("target/write_m13double.fits.fz"));
+                bdos = new FitsDataOutputStream(new FileOutputStream("target/write_m13double.fits.fz"));
                 f.write(bdos);
             } finally {
                 SafeClose.close(bdos);
@@ -1139,10 +1139,10 @@ public class ReadWriteProvidedCompressedImageTest {
     public void writeRiceFloatWithNullPixelMask() throws Exception {
         double[][] data = newTestImageWithSomeBlanks("ForNull");
         Fits f = null;
-        BufferedDataOutputStream bdos = null;
+        FitsDataOutputStream bdos = null;
         try {
             f = new Fits();
-            bdos = new BufferedDataOutputStream(new FileOutputStream("target/testSomeBlanksInCompressedFloatImage.fits.fz"));
+            bdos = new FitsDataOutputStream(new FileOutputStream("target/testSomeBlanksInCompressedFloatImage.fits.fz"));
             ImageData imageData = new ImageData(data);
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);
@@ -1200,10 +1200,10 @@ public class ReadWriteProvidedCompressedImageTest {
             }
         }
         Fits f = null;
-        BufferedDataOutputStream bdos = null;
+        FitsDataOutputStream bdos = null;
         try {
             f = new Fits();
-            bdos = new BufferedDataOutputStream(new FileOutputStream("target/testSomeBlanksInCompressedFloatImage" + suffix + ".fits"));
+            bdos = new FitsDataOutputStream(new FileOutputStream("target/testSomeBlanksInCompressedFloatImage" + suffix + ".fits"));
             ImageData imageData = new ImageData(data);
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
             f.addHDU(hdu);

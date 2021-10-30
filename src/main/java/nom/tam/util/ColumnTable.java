@@ -415,7 +415,7 @@ public class ColumnTable<T> implements DataTable {
             if (row.length != this.arrays.length) {
                 throw new TableException("Row length mismatch");
             }
-            for (int i = 0; i < row.length; i += 1) {
+            for (int i = 0; i < row.length; i++) {
                 if (row[i].getClass() != this.arrays[i].getClass() || Array.getLength(row[i]) != this.sizes[i]) {
                     throw new TableException("Row column mismatch at column:" + i);
                 }
@@ -425,7 +425,7 @@ public class ColumnTable<T> implements DataTable {
                 this.arrays[i] = xarray;
             }
             initializePointers();
-            this.nrow += 1;
+            this.nrow++;
         }
     }
 

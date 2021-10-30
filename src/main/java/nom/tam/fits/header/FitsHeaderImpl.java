@@ -34,11 +34,10 @@ import java.io.Serializable;
  */
 
 public class FitsHeaderImpl implements IFitsHeader, Serializable {
-
     /**
-     * Serialization id.
+     * 
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2393951402526656978L;
 
     private final String comment;
 

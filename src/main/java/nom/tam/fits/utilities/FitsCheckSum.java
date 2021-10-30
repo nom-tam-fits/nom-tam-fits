@@ -45,7 +45,7 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.util.AsciiFuncs;
-import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.FitsDataOutputStream;
 import nom.tam.util.FitsIO;
 
 public final class FitsCheckSum {
@@ -213,7 +213,7 @@ public final class FitsCheckSum {
             // write the header to stream to get the cards sorted. no need to
             // flush because we will ignore the data.
             ByteArrayOutputStream hduByteImage = new ByteArrayOutputStream();
-            hdu.getHeader().write(new BufferedDataOutputStream(hduByteImage));
+            hdu.getHeader().write(new FitsDataOutputStream(hduByteImage));
             hduByteImage.reset();
 
             /*
@@ -224,7 +224,7 @@ public final class FitsCheckSum {
              * Sparc...) supposed that the correct implementation is in the
              * write() interface.
              */
-            BufferedDataOutputStream bdos = new BufferedDataOutputStream(hduByteImage);
+            FitsDataOutputStream bdos = new FitsDataOutputStream(hduByteImage);
             hdu.getData().write(bdos);
             bdos.flush();
             

@@ -38,9 +38,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.BufferedDataOutputStream;
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsDataInputStream;
+import nom.tam.util.FitsDataOutputStream;
+import nom.tam.util.FitsFile;
 import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.Assert;
@@ -78,10 +78,10 @@ public class ImageProtectedTest {
         header.setNaxis(1, 2);
         header.setNaxis(2, 2);
         ImageData data = new ImageData(header);
-        BufferedFile input = new BufferedFile("target/testGetDataFromFileFailing.bin", "rw");
+        FitsFile input = new FitsFile("target/testGetDataFromFileFailing.bin", "rw");
         input.write(new byte[2880]);
         input.close();
-        input = new BufferedFile("target/testGetDataFromFileFailing.bin", "rw");
+        input = new FitsFile("target/testGetDataFromFileFailing.bin", "rw");
         data.read(input);
         input.close();
         // file closed so no possibility to get the image data.
@@ -109,23 +109,26 @@ public class ImageProtectedTest {
         ImageData data = new ImageData(header);
     }
 
-    @Test(expected = FitsException.class)
     public void testReadFileFailing() throws Exception {
+        
         Header header = new Header();
         header.nullImage();
         header.setNaxes(2);
         header.setNaxis(1, 2);
         header.setNaxis(2, 2);
         ImageData data = new ImageData(header);
-        BufferedFile input = new BufferedFile("target/testReadFileFailing.bin", "rw");
+        FitsFile input = new FitsFile("target/truncated.bin", "rw");
         input.write(new byte[2]);
         input.close();
-        input = new BufferedFile("target/testReadFileFailing.bin", "rw");
-        try {
-            data.read(input);
-        } finally {
-            input.close();
-        }
+        input = new FitsFile("target/truncated.bin", "rw");
+        data.read(input);
+        
+        // AK: read used to throw an exception as skipAllByes failed beyond the file's end.
+        // However, the contract of RandomAccess is to allow skipAllBytes() to move beyond
+        // the file's end. But, we can check if the file pointer is beyond the current
+        // end-of-file, so that's what we will check for from now on.
+        Assert.assertTrue(input.checkTruncated());
+        input.close();
     }
 
     @Test(expected = FitsException.class)
@@ -136,7 +139,7 @@ public class ImageProtectedTest {
         header.setNaxis(1, 2);
         header.setNaxis(2, 2);
         ImageData data = new ImageData(header);
-        BufferedDataInputStream input = new BufferedDataInputStream(new ByteArrayInputStream(new byte[2]));
+        FitsDataInputStream input = new FitsDataInputStream(new ByteArrayInputStream(new byte[2]));
         try {
             data.read(input);
         } finally {
@@ -152,7 +155,7 @@ public class ImageProtectedTest {
         header.setNaxis(1, 2);
         header.setNaxis(2, 2);
         ImageData data = new ImageData(header);
-        BufferedDataInputStream input = new BufferedDataInputStream(new ByteArrayInputStream(new byte[20])) {
+        FitsDataInputStream input = new FitsDataInputStream(new ByteArrayInputStream(new byte[20])) {
 
             @Override
             public void skipAllBytes(long toSkip) throws IOException {
@@ -178,7 +181,7 @@ public class ImageProtectedTest {
                 4
             }
         });
-        BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream()) {
+        FitsDataOutputStream out = new FitsDataOutputStream(new ByteArrayOutputStream()) {
 
             @Override
             public void writeArray(Object o) throws IOException {
@@ -196,14 +199,14 @@ public class ImageProtectedTest {
         header.setNaxis(1, 2);
         header.setNaxis(2, 2);
         ImageData data = new ImageData(header);
-        BufferedFile input = new BufferedFile("target/testGetDataFromFileduringWriteFailing.bin", "rw");
+        FitsFile input = new FitsFile("target/testGetDataFromFileduringWriteFailing.bin", "rw");
         input.write(new byte[2880]);
         input.close();
-        input = new BufferedFile("target/testGetDataFromFileduringWriteFailing.bin", "rw");
+        input = new FitsFile("target/testGetDataFromFileduringWriteFailing.bin", "rw");
         data.read(input);
         input.close();
         // file closed so no possibility to get the image data.
-        BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream());
+        FitsDataOutputStream out = new FitsDataOutputStream(new ByteArrayOutputStream());
         data.write(out);
     }
 
@@ -215,15 +218,15 @@ public class ImageProtectedTest {
         header.setNaxis(1, 2);
         header.setNaxis(2, 2);
         ImageData data = new ImageData(header);
-        BufferedFile input = new BufferedFile("target/testGetDataHeaderduringWriteFailing.bin", "rw");
+        FitsFile input = new FitsFile("target/testGetDataHeaderduringWriteFailing.bin", "rw");
         input.write(new byte[2880]);
         input.close();
-        input = new BufferedFile("target/testGetDataHeaderduringWriteFailing.bin", "rw");
+        input = new FitsFile("target/testGetDataHeaderduringWriteFailing.bin", "rw");
         data.read(input);
         input.close();
         data.setTiler(null);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        BufferedDataOutputStream out = new BufferedDataOutputStream(outputStream);
+        FitsDataOutputStream out = new FitsDataOutputStream(outputStream);
         data.write(out);
         out.close();
         for (byte outByte : outputStream.toByteArray()) {
@@ -239,10 +242,10 @@ public class ImageProtectedTest {
         header.setNaxis(1, 2);
         header.setNaxis(2, 2);
         ImageData data = new ImageData(header);
-        BufferedFile input = new BufferedFile("target/testGetDataHeaderduringWriteImposibleFailing.bin", "rw");
+        FitsFile input = new FitsFile("target/testGetDataHeaderduringWriteImposibleFailing.bin", "rw");
         input.write(new byte[2880]);
         input.close();
-        input = new BufferedFile("target/testGetDataHeaderduringWriteImposibleFailing.bin", "rw");
+        input = new FitsFile("target/testGetDataHeaderduringWriteImposibleFailing.bin", "rw");
         data.read(input);
         input.close();
         data.setTiler(null);
@@ -253,7 +256,7 @@ public class ImageProtectedTest {
         field.set(data, null);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        BufferedDataOutputStream out = new BufferedDataOutputStream(outputStream);
+        FitsDataOutputStream out = new FitsDataOutputStream(outputStream);
         FitsException actual = null;
         try {
             data.write(out);

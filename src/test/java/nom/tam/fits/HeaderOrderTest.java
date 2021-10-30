@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayOutputStream;
 
 import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.FitsDataOutputStream;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -73,7 +73,7 @@ public class HeaderOrderTest {
      */
     @Test
     public void headerOrder() throws Exception {
-        ArrayDataOutput dos = new BufferedDataOutputStream(new ByteArrayOutputStream(), 80);
+        ArrayDataOutput dos = new FitsDataOutputStream(new ByteArrayOutputStream(), 80);
         Header header = new Header();
         
         header.addValue(BLOCKED, 1);

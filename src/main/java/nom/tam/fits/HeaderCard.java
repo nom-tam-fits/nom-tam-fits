@@ -51,7 +51,7 @@ import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.AsciiFuncs;
-import nom.tam.util.BufferedDataInputStream;
+import nom.tam.util.FitsDataInputStream;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.CursorValue;
 import nom.tam.util.FlexFormat;
@@ -182,13 +182,13 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         this.type = null;
 
         String card = readOneHeaderLine(dis);
-
+        
         HeaderCardParser parsed = new HeaderCardParser(card);
 
         // extract the key
         this.key = parsed.getKey();
         this.type = parsed.getInferredType();
-
+        
         if (FitsFactory.isLongStringsEnabled() && parsed.isString() && parsed.getValue().endsWith("&")) {
             // Potentially a multi-record long string card...
             parseLongStringCard(dis, parsed);
@@ -197,7 +197,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             this.type = parsed.getInferredType();
             this.comment = parsed.getTrimmedComment();
         }
-        
+
     }
    
     /**
@@ -1632,30 +1632,24 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @param dis the data input stream to read the line
      * 
      * @return a string of exactly 80 characters
-     * 
-     * @throws IOException if the input stream could not be read
-     * @throws TruncatedFileException is there was not a complete line available in the input.
+     *
+     * @throwa EOFException             if already at the end of file.
+     * @throws TruncatedFileException   if there was not a complete line available in the input.
+     * @throws IOException              if the input stream could not be read
      */
     @SuppressWarnings({ "resource", "deprecation" })
-    private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis)
-            throws IOException, TruncatedFileException {
-        byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
-        int len;
-        int need = FITS_HEADER_CARD_SIZE;
-        try {
-            while (need > 0) {
-                len = dis.in().read(buffer, FITS_HEADER_CARD_SIZE - need, need);
-                if (len == 0) {
-                    throw new TruncatedFileException("nothing to read left");
-                }
-                need -= len;
-            }
-        } catch (EOFException e) {
-            if (need == FITS_HEADER_CARD_SIZE) {
-                throw e;
-            }
-            throw new TruncatedFileException(e.getMessage());
+    private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
+        byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];        
+        int got = dis.in().read(buffer);
+  
+        if (got <= 0) {
+            throw new EOFException();
         }
+        
+        if (got < buffer.length) {
+            throw new TruncatedFileException("Got only " + got + " of " + buffer.length + " bytes expected for a header card"); 
+        }
+        
         dis.cardRead();
         
         return AsciiFuncs.asciiString(buffer);
@@ -1685,7 +1679,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             Arrays.fill(newBytes, bytes.length, newBytes.length, (byte) ' ');
             bytes = newBytes;
         }
-        return new BufferedDataInputStream(new ByteArrayInputStream(bytes));
+        return new FitsDataInputStream(new ByteArrayInputStream(bytes));
     }
 
     /**

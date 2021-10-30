@@ -1,5 +1,7 @@
 package nom.tam.util;
 
+import java.io.DataOutput;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -36,7 +38,7 @@ import java.io.IOException;
 /**
  * Special high performance scientific extension of the DataOutput interface.
  */
-public interface ArrayDataOutput extends java.io.DataOutput, FitsIO {
+public interface ArrayDataOutput extends DataOutput, FitsIO {
 
     /**
      * Flush the output buffer
@@ -45,6 +47,8 @@ public interface ArrayDataOutput extends java.io.DataOutput, FitsIO {
      *             if the flush of the underlying stream failed
      */
     void flush() throws IOException;
+
+    void writeBoolean(Boolean b) throws IOException;
 
     /**
      * Write an array of boolean's.
@@ -69,6 +73,31 @@ public interface ArrayDataOutput extends java.io.DataOutput, FitsIO {
      *             if one of the underlying write operations failed
      */
     void write(boolean[] buf, int offset, int size) throws IOException;
+
+    /**
+     * Write an array of booleans, including legal <code>null</code> values.
+     * 
+     * @param buf
+     *            array of booleans.
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(Boolean[] buf) throws IOException;
+
+    /**
+     * Write a segment of an array of booleans, including legal
+     * <code>null</code> values.
+     * 
+     * @param buf
+     *            array of booleans.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to write
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(Boolean[] buf, int offset, int size) throws IOException;
 
     /**
      * Write an array of char's.

@@ -58,7 +58,7 @@ import nom.tam.fits.TruncatedFileException;
 import nom.tam.fits.UnclosedQuoteException;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.util.AsciiFuncs;
-import nom.tam.util.BufferedDataInputStream;
+import nom.tam.util.FitsDataInputStream;
 import nom.tam.util.ComplexValue;
 
 public class HeaderCardTest {
@@ -978,15 +978,15 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard("HIERARCH.TEST.TEST.TEST.TEST.TEST.TEST", //
                 "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla ",
                 " dummy");
-        BufferedDataInputStream data = headerCardToStream(hc);
+        FitsDataInputStream data = headerCardToStream(hc);
         HeaderCard headerCard = new HeaderCard(data);
         assertEquals(hc.getKey(), headerCard.getKey());
         assertEquals(hc.getValue(), headerCard.getValue());
 
     }
 
-    protected BufferedDataInputStream headerCardToStream(HeaderCard hc) throws Exception {
-        BufferedDataInputStream data = new BufferedDataInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(hc.toString())));
+    protected FitsDataInputStream headerCardToStream(HeaderCard hc) throws Exception {
+        FitsDataInputStream data = new FitsDataInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(hc.toString())));
         return data;
     }
 
@@ -1091,17 +1091,7 @@ public class HeaderCardTest {
 
     @Test(expected = TruncatedFileException.class)
     public void testTruncatedLine() throws Exception {
-        new HeaderCard(new BufferedDataInputStream(new ByteArrayInputStream("TO_SHORT    ".getBytes())) {
-
-            @Override
-            public int read(byte[] obuf, int offset, int length) throws IOException {
-                try {
-                    return super.read(obuf, offset, length);
-                } catch (Exception e) {
-                    return 0;
-                }
-            }
-        });
+        new HeaderCard(new FitsDataInputStream(new ByteArrayInputStream("TO_SHORT    ".getBytes())));
     }
 
     @Test

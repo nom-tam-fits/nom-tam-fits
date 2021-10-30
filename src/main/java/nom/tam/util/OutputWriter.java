@@ -1,12 +1,10 @@
 package nom.tam.util;
 
-import java.io.IOException;
-
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -33,25 +31,43 @@ import java.io.IOException;
  * #L%
  */
 
+import java.io.IOException;
+
 /**
- * These packages define the methods which indicate that an i/o stream may be
- * accessed in arbitrary order. The method signatures are taken from
- * RandomAccessFile though that class does not implement this interface.
+ * Basic binary output writing functionality.
+ * 
+ * @author Attila Kovacs
+ * @since 1.16
+ * @see InputReader
  */
-public interface RandomAccess extends ReadWriteAccess, ArrayDataInput {
+public interface OutputWriter {
 
     /**
-     * @return the current position in the stream.
-     */
-    long getFilePointer();
-
-    /**
-     * Move to a specified location in the stream.
+     * Writes a byte. See the general contract of
+     * {@link java.io.DataOutputStream#write(int)}.
      * 
-     * @param offsetFromStart
-     *            set the offset messured from the start
+     * @param b
+     *            the (unsigned) byte value to write.
      * @throws IOException
-     *             if the operation fails
+     *             if there was an underlying IO error
+     * @see java.io.DataOutputStream#write(int)
      */
-    void seek(long offsetFromStart) throws IOException;
+    void write(int b) throws IOException;
+
+    /**
+     * Writes up to the specified number of bytes from a buffer to the stream.
+     * See the general contract of
+     * {@link java.io.DataOutputStream#write(byte[], int, int)}.
+     * 
+     * @param b
+     *            the buffer
+     * @param from
+     *            the starting buffer index
+     * @param len
+     *            the number of bytes to write.
+     * @throws IOException
+     *             if there was an underlying IO error
+     * @see java.io.DataOutputStream#write(byte[], int, int)
+     */
+    void write(byte[] b, int from, int length) throws IOException;
 }

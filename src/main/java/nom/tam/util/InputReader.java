@@ -1,12 +1,10 @@
 package nom.tam.util;
 
-import java.io.IOException;
-
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -33,25 +31,43 @@ import java.io.IOException;
  * #L%
  */
 
+import java.io.IOException;
+
 /**
- * These packages define the methods which indicate that an i/o stream may be
- * accessed in arbitrary order. The method signatures are taken from
- * RandomAccessFile though that class does not implement this interface.
+ * Basic binary input reading functionality.
+ * 
+ * @author Attila Kovacs
+ * @since 1.16
+ * @see OutputWriter
  */
-public interface RandomAccess extends ReadWriteAccess, ArrayDataInput {
+public interface InputReader {
 
     /**
-     * @return the current position in the stream.
-     */
-    long getFilePointer();
-
-    /**
-     * Move to a specified location in the stream.
+     * Reads a byte. See the general contract of
+     * {@link java.io.DataInputStream#read()}.
      * 
-     * @param offsetFromStart
-     *            set the offset messured from the start
+     * @return the (unsigned) byte value or -1 if there is nothing left to read.
      * @throws IOException
-     *             if the operation fails
+     *             if there was an underlying IO error
+     * @see java.io.DataInputStream#read()
      */
-    void seek(long offsetFromStart) throws IOException;
+    int read() throws IOException;
+
+    /**
+     * Reads up to the specified number of bytes into a buffer. See the general
+     * contract of {@link java.io.DataInputStream#read(byte[], int, int)}.
+     * 
+     * @param b
+     *            the buffer
+     * @param from
+     *            the starting buffer index
+     * @param len
+     *            the number of bytes to write.
+     * @return the number of bytes actually read, or -1 if there is nothing left
+     *         to read.
+     * @throws IOException
+     *             if there was an underlying IO error
+     * @see java.io.DataInputStream#read(byte[], int, int)
+     */
+    int read(byte[] b, int from, int length) throws IOException;
 }

@@ -39,7 +39,7 @@ import nom.tam.fits.Header;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsFile;
 import nom.tam.util.SafeClose;
 
 import org.junit.Ignore;
@@ -61,7 +61,7 @@ public class VeryBigFileTest {
             ImageData data = new ImageData(new float[50000][50000]);
             Header manufactureHeader = ImageHDU.manufactureHeader(data);
             f.addHDU(FitsFactory.hduFactory(manufactureHeader, data));
-            BufferedFile bf = new BufferedFile("target/big.fits", "rw");
+            FitsFile bf = new FitsFile("target/big.fits", "rw");
             f.write(bf);
             System.out.println(Arrays.toString(ArrayFuncs.getDimensions(f.getHDU(0).getData().getData())));
         } finally {

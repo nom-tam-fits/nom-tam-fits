@@ -84,9 +84,9 @@ import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
-import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.BufferedDataOutputStream;
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsDataInputStream;
+import nom.tam.util.FitsDataOutputStream;
+import nom.tam.util.FitsFile;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
@@ -263,9 +263,9 @@ public class HeaderTest {
             hdr.addValue("APOS2", sixty + " ''''''''''", "Should be 71 chars long");
 
             // Now try to read the values back.
-            BufferedFile bf = null;
+            FitsFile bf = null;
             try {
-                bf = new BufferedFile("target/ht4.hdr", "rw");
+                bf = new FitsFile("target/ht4.hdr", "rw");
                 hdr.write(bf);
             } finally {
                 SafeClose.close(bf);
@@ -290,7 +290,7 @@ public class HeaderTest {
             assertEquals("Longt4", true, val.length() <= 70);
             assertEquals("longamp1", hdr.getStringValue("SHORT"), "A STRING ENDING IN A &");
             try {
-                bf = new BufferedFile("target/ht4.hdr", "r");
+                bf = new FitsFile("target/ht4.hdr", "r");
                 hdr = new Header(bf);
                 assertEquals("Set state2:", true, FitsFactory.isLongStringsEnabled());
                 val = hdr.getStringValue("LONG1");
@@ -408,7 +408,7 @@ public class HeaderTest {
             byte[] bytes = new byte[cardString.length() + 160];
             Arrays.fill(bytes, (byte) ' ');
             System.arraycopy(AsciiFuncs.getBytes(cardString), 0, bytes, 0, cardString.length());
-            HeaderCard rereadCard = new HeaderCard(new BufferedDataInputStream(new ByteArrayInputStream(bytes)));
+            HeaderCard rereadCard = new HeaderCard(new FitsDataInputStream(new ByteArrayInputStream(bytes)));
 
             assertEquals(cardValue, rereadCard.getValue());
             assertEquals(headerCard.getValue(), rereadCard.getValue());
@@ -498,9 +498,9 @@ public class HeaderTest {
             Cursor<String, HeaderCard> iter = hdu.getHeader().iterator();
             iter.end();
             iter.add(new HeaderCard("KEY", "VALUE", "COMMENT"));
-            BufferedFile bf = null;
+            FitsFile bf = null;
             try {
-                bf = new BufferedFile("target/testHeaderCommentsDrift.fits", "rw");
+                bf = new FitsFile("target/testHeaderCommentsDrift.fits", "rw");
                 f.write(bf);
             } finally {
                 SafeClose.close(bf);
@@ -510,7 +510,7 @@ public class HeaderTest {
         }
         try {
             f = new Fits("target/testHeaderCommentsDrift.fits");
-            BufferedFile bf = new BufferedFile("target/testHeaderCommentsDrift.fits", "rw");
+            FitsFile bf = new FitsFile("target/testHeaderCommentsDrift.fits", "rw");
             f.read();
             f.write(bf);
         } finally {
@@ -614,10 +614,10 @@ public class HeaderTest {
     public void testUpdateHeaderComments() throws Exception {
         byte[][] z = new byte[4][4];
         Fits f = null;
-        BufferedFile bf = null;
+        FitsFile bf = null;
         try {
             f = new Fits();
-            bf = new BufferedFile("target/hx1.fits", "rw");
+            bf = new FitsFile("target/hx1.fits", "rw");
             f.addHDU(FitsFactory.hduFactory(z));
             f.write(bf);
         } finally {
@@ -638,7 +638,7 @@ public class HeaderTest {
         }
         try {
             f = new Fits();
-            bf = new BufferedFile("target/hx2.fits", "rw");
+            bf = new FitsFile("target/hx2.fits", "rw");
             f.addHDU(FitsFactory.hduFactory(z));
             f.write(bf);
         } finally {
@@ -892,7 +892,7 @@ public class HeaderTest {
         assertNull(header.nextCard());
         assertNull(header.getCard(-1));
 
-        BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream());
+        FitsDataOutputStream out = new FitsDataOutputStream(new ByteArrayOutputStream());
         FitsException actual = null;
         try {
             header.write(out);
@@ -966,9 +966,9 @@ public class HeaderTest {
                 }
 
                 f.addHDU(primaryHdu);
-                BufferedFile bf = null;
+                FitsFile bf = null;
                 try {
-                    bf = new BufferedFile(filename, "rw");
+                    bf = new FitsFile(filename, "rw");
                     f.write(bf);
                 } finally {
                     SafeClose.close(bf);
@@ -1019,7 +1019,7 @@ public class HeaderTest {
 
     @Test(expected = FitsException.class)
     public void writeEmptyHeader() throws Exception {
-        ArrayDataOutput dos = new BufferedDataOutputStream(new ByteArrayOutputStream() {
+        ArrayDataOutput dos = new FitsDataOutputStream(new ByteArrayOutputStream() {
 
             @Override
             public synchronized void write(byte[] b, int off, int len) {
@@ -1036,8 +1036,7 @@ public class HeaderTest {
     }
 
     /** Truncate header test. */
-    @Test(expected = TruncatedFileException.class)
-    public void truncatedFileExceptionTest() throws Exception {
+    public void truncatedFileCheckTest() throws Exception {
         FileInputStream f = null;
         FileOutputStream out = null;
         try {
@@ -1051,20 +1050,25 @@ public class HeaderTest {
             SafeClose.close(f);
         }
         Fits fits = null;
+        boolean isTruncated = false;
+        
         try {
             fits = new Fits("target/ht1_truncated.fits");
             ImageHDU hdu = (ImageHDU) fits.getHDU(0);
             Header hdr = hdu.getHeader();
+            isTruncated = fits.getStream().checkTruncated();
         } finally {
             SafeClose.close(fits);
         }
+        
+        assertTrue(isTruncated);
     }
 
     @Test(expected = IOException.class)
-    public void truncatedFileExceptionTest2() throws Exception {
+    public void truncatedFileExceptionTest() throws Exception {
         String header = "SIMPLE                                                                          " + //
                 "XXXXXX                                                                          ";
-        BufferedDataInputStream data = new BufferedDataInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(header)));
+        FitsDataInputStream data = new FitsDataInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(header)));
         new Header().read(data);
     }
 
@@ -1099,7 +1103,7 @@ public class HeaderTest {
         hdr.addValue("VOTMETA", true, "Table metadata in VOTable format");
         hdr.addValue("EXTEND", true, "There are standard extensions");
         // ...
-        BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream());
+        FitsDataOutputStream out = new FitsDataOutputStream(new ByteArrayOutputStream());
         hdr.write(out);
         int votMetaIndex = -1;
         int extendIndex = -1;
@@ -1158,7 +1162,7 @@ public class HeaderTest {
         hdr.addValue("VOTMETA", true, "Table metadata in VOTable format");
         hdr.addValue("EXTEND", true, "There are standard extensions");
         // ...
-        BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream());
+        FitsDataOutputStream out = new FitsDataOutputStream(new ByteArrayOutputStream());
         hdr.write(out);
         int votMetaIndex = -1;
         int extendIndex = -1;
