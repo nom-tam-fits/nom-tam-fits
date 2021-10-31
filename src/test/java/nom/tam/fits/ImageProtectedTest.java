@@ -38,8 +38,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import nom.tam.util.FitsDataInputStream;
-import nom.tam.util.FitsDataOutputStream;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.FitsOutputStream;
 import nom.tam.util.FitsFile;
 import nom.tam.util.test.ThrowAnyException;
 
@@ -139,7 +139,7 @@ public class ImageProtectedTest {
         header.setNaxis(1, 2);
         header.setNaxis(2, 2);
         ImageData data = new ImageData(header);
-        FitsDataInputStream input = new FitsDataInputStream(new ByteArrayInputStream(new byte[2]));
+        FitsInputStream input = new FitsInputStream(new ByteArrayInputStream(new byte[2]));
         try {
             data.read(input);
         } finally {
@@ -155,7 +155,7 @@ public class ImageProtectedTest {
         header.setNaxis(1, 2);
         header.setNaxis(2, 2);
         ImageData data = new ImageData(header);
-        FitsDataInputStream input = new FitsDataInputStream(new ByteArrayInputStream(new byte[20])) {
+        FitsInputStream input = new FitsInputStream(new ByteArrayInputStream(new byte[20])) {
 
             @Override
             public void skipAllBytes(long toSkip) throws IOException {
@@ -181,7 +181,7 @@ public class ImageProtectedTest {
                 4
             }
         });
-        FitsDataOutputStream out = new FitsDataOutputStream(new ByteArrayOutputStream()) {
+        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
 
             @Override
             public void writeArray(Object o) throws IOException {
@@ -206,7 +206,7 @@ public class ImageProtectedTest {
         data.read(input);
         input.close();
         // file closed so no possibility to get the image data.
-        FitsDataOutputStream out = new FitsDataOutputStream(new ByteArrayOutputStream());
+        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
         data.write(out);
     }
 
@@ -226,7 +226,7 @@ public class ImageProtectedTest {
         input.close();
         data.setTiler(null);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        FitsDataOutputStream out = new FitsDataOutputStream(outputStream);
+        FitsOutputStream out = new FitsOutputStream(outputStream);
         data.write(out);
         out.close();
         for (byte outByte : outputStream.toByteArray()) {
@@ -256,7 +256,7 @@ public class ImageProtectedTest {
         field.set(data, null);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        FitsDataOutputStream out = new FitsDataOutputStream(outputStream);
+        FitsOutputStream out = new FitsOutputStream(outputStream);
         FitsException actual = null;
         try {
             data.write(out);

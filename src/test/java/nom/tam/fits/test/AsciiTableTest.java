@@ -61,8 +61,8 @@ import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.FitsDataInputStream;
-import nom.tam.util.FitsDataOutputStream;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.FitsOutputStream;
 import nom.tam.util.FitsFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
@@ -807,7 +807,7 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataInput str = new FitsDataInputStream(new ByteArrayInputStream(new byte[10]));
+        ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[10]));
         FitsException actual = null;
         try {
             new AsciiTable(hdr).read(str);
@@ -826,7 +826,7 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataOutput str = new FitsDataOutputStream(new ByteArrayOutputStream());
+        ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream());
         FitsException actual = null;
         try {
             new AsciiTable(hdr) {
@@ -860,7 +860,7 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataOutput str = new FitsDataOutputStream(new ByteArrayOutputStream());
+        ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream());
         FitsException actual = null;
         try {
             new AsciiTable(hdr) {
@@ -880,7 +880,7 @@ public class AsciiTableTest {
     @Test
     public void testToFailedWrite2() throws Exception {
         AsciiTableHDU table = (AsciiTableHDU) Fits.makeHDU(getSampleCols());
-        ArrayDataOutput str = new FitsDataOutputStream(new ByteArrayOutputStream()) {
+        ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream()) {
 
             int count = 0;
 
@@ -947,7 +947,7 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(2)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataInput str = new FitsDataInputStream(new ByteArrayInputStream(new byte[2880 * 2]));
+        ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 * 2]));
         FitsException actual = null;
         try {
             AsciiTable asciiTable = new AsciiTable(hdr);
@@ -1015,7 +1015,7 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(2)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataInput str = new FitsDataInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
+        ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
         FitsException actual = null;
         try {
             AsciiTable asciiTable = new AsciiTable(hdr) {
@@ -1044,7 +1044,7 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(2)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataInput str = new FitsDataInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
+        ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
         FitsException actual = null;
         try {
             AsciiTable asciiTable = new AsciiTable(hdr);

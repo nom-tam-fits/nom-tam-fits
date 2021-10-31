@@ -31,48 +31,59 @@ package nom.tam.util;
  * #L%
  */
 
-
-import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 
 /**
- * @deprecated  Use {@link FitsDecoder} instead, which provides a similar function but in
- *      a more consistent way and with a less misleading name, or else use {@link ArrayDecoder}
- *      as a base for implementing efficient custom decoding of binary inputs. 
- *
- * @see FitsDecoder
+ * Efficient reading and writing of arrays to and from files, with custom
+ * encoding.
+ * 
+ * @author Attila Kovacs
+ * @since 1.16
+ * @see ArrayInputStream
+ * @see ArrayOutputStream
  */
-@Deprecated
-public class BufferDecoder extends FitsDecoder {
+public class ArrayDataFile extends BufferedFileIO {
 
-    public BufferDecoder(BufferPointer p) {
-        super(new Reader(p));
+    private ArrayEncoder encoder;
+
+    private ArrayDecoder decoder;
+
+    protected ArrayDataFile(File f, String mode, int bufferSize) throws IOException {
+        super(f, mode, bufferSize);
     }
 
-    protected int eofCheck(EOFException e, int start, int index, int elementSize) throws EOFException {
-        return super.eofCheck(e, (index - start) * elementSize);
+    public ArrayDataFile(File f, String mode, int bufferSize, ArrayEncoder java2bin, ArrayDecoder bin2java) throws IOException {
+        this(f, mode, bufferSize);
+        setEncoder(java2bin);
+        setDecoder(bin2java);
     }
-    
-    private static class Reader implements InputReader {
-        private BufferPointer p;
-        
-        Reader(BufferPointer p) {
-            this.p = p;
-        }
-        
-        @Override
-        public int read() throws IOException {
-            return p.buffer[p.pos++];
-        }
 
-        @Override
-        public int read(byte[] b, int from, int length) throws IOException {
-            int n = Math.min(length, p.length - p.pos);
-            System.arraycopy(p.buffer, p.pos, b, from, n);
-            p.pos += n;
-            return n;
-        }
-        
+    protected void setEncoder(ArrayEncoder java2bin) {
+        this.encoder = java2bin;
     }
-    
+
+    protected ArrayEncoder getEncoder() {
+        return encoder;
+    }
+
+    protected void setDecoder(ArrayDecoder bin2java) {
+        this.decoder = bin2java;
+    }
+
+    protected ArrayDecoder getDecoder() {
+        return decoder;
+    }
+
+    public final void readFully(byte[] b) throws IOException {
+        readFully(b, 0, b.length);
+    }
+
+    public final void readFully(byte[] b, int off, int len) throws IOException {
+        decoder.readFully(b, off, len);
+    }
+
+    public final void write(byte[] b) throws IOException {
+        encoder.write(b, 0, b.length);
+    }
 }

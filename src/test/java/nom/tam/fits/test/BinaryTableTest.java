@@ -72,8 +72,8 @@ import nom.tam.fits.PaddingException;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.FitsDataInputStream;
-import nom.tam.util.FitsDataOutputStream;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.FitsOutputStream;
 import nom.tam.util.FitsFile;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.SafeClose;
@@ -195,7 +195,7 @@ public class BinaryTableTest {
                 33
         }, btab.getData().getSizes());
 
-        FitsDataOutputStream bdos = new FitsDataOutputStream(new FileOutputStream("target/bt3.fits"));
+        FitsOutputStream bdos = new FitsOutputStream(new FileOutputStream("target/bt3.fits"));
         f.write(bdos);
 
         f = new Fits("target/bt3.fits");
@@ -1028,7 +1028,7 @@ public class BinaryTableTest {
         };
         bhdu.setElement(4, 1, dta);
 
-        FitsDataOutputStream bdos = new FitsDataOutputStream(new FileOutputStream("target/bt2a.fits"));
+        FitsOutputStream bdos = new FitsOutputStream(new FileOutputStream("target/bt2a.fits"));
         f.write(bdos);
         bdos.close();
 
@@ -1055,7 +1055,7 @@ public class BinaryTableTest {
         assertEquals("ts7", true, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), this.vf[4]));
         assertEquals("ts8", true, TestArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
 
-        bdos = new FitsDataOutputStream(new FileOutputStream("target/bt2b.fits"));
+        bdos = new FitsOutputStream(new FileOutputStream("target/bt2b.fits"));
         f.write(bdos);
         bdos.close();
 
@@ -1083,7 +1083,7 @@ public class BinaryTableTest {
         assertEquals("ts14", true, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), trw));
         assertEquals("ts15", true, TestArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
 
-        bdos = new FitsDataOutputStream(new FileOutputStream("target/bt2c.fits"));
+        bdos = new FitsOutputStream(new FileOutputStream("target/bt2c.fits"));
         f.write(bdos);
         bdos.close();
 
@@ -1266,7 +1266,7 @@ public class BinaryTableTest {
             BasicHDU<?> hdu = Fits.makeHDU(data);
             Fits f = new Fits();
             f.addHDU(hdu);
-            FitsDataOutputStream bdos = new FitsDataOutputStream(new FileOutputStream("target/bt2.fits"));
+            FitsOutputStream bdos = new FitsOutputStream(new FileOutputStream("target/bt2.fits"));
             f.write(bdos);
             bdos.close();
 
@@ -1403,7 +1403,7 @@ public class BinaryTableTest {
         ByteArrayInputStream in = new ByteArrayInputStream(new byte[1000]);
         Exception actual = null;
         try {
-            btab.read(new FitsDataInputStream(in) {
+            btab.read(new FitsInputStream(in) {
 
                 @Override
                 public void skipAllBytes(long toSkip) throws IOException {
@@ -1419,7 +1419,7 @@ public class BinaryTableTest {
 
         actual = null;
         try {
-            btab.read(new FitsDataInputStream(in) {
+            btab.read(new FitsInputStream(in) {
 
                 int pass = 0;
 
@@ -1439,7 +1439,7 @@ public class BinaryTableTest {
 
         actual = null;
         try {
-            btab.read(new FitsDataInputStream(in) {
+            btab.read(new FitsInputStream(in) {
 
                 int pass = 0;
 
@@ -1528,11 +1528,11 @@ public class BinaryTableTest {
         field.setAccessible(true);
         field.set(btab, 10);
 
-        btab.write(new FitsDataOutputStream(out));
+        btab.write(new FitsOutputStream(out));
 
         Exception actual = null;
         try {
-            btab.write(new FitsDataOutputStream(out) {
+            btab.write(new FitsOutputStream(out) {
 
                 @Override
                 public void write(byte[] b) throws IOException {
@@ -1804,7 +1804,7 @@ public class BinaryTableTest {
         BinaryTableHDU tableHdu = new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ArrayDataOutput os = new FitsDataOutputStream(out);
+        ArrayDataOutput os = new FitsOutputStream(out);
 
         Fits f = new Fits();
         f.addHDU(tableHdu);
@@ -1813,7 +1813,7 @@ public class BinaryTableTest {
         SafeClose.close(os);
 
         f = new Fits();
-        f.read(new FitsDataInputStream(new ByteArrayInputStream(out.toByteArray())));
+        f.read(new FitsInputStream(new ByteArrayInputStream(out.toByteArray())));
         btab = (BinaryTable) f.getHDU(1).getData();
 
         assertEquals((int) 'T', ((byte[]) btab.getData().getColumn(0))[0]);
@@ -1850,7 +1850,7 @@ public class BinaryTableTest {
         BinaryTableHDU tableHdu = new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ArrayDataOutput os = new FitsDataOutputStream(out);
+        ArrayDataOutput os = new FitsOutputStream(out);
 
         Fits f = new Fits();
         f.addHDU(tableHdu);
@@ -1860,7 +1860,7 @@ public class BinaryTableTest {
 
         
         f = new Fits();
-        f.read(new FitsDataInputStream(new ByteArrayInputStream(out.toByteArray())));
+        f.read(new FitsInputStream(new ByteArrayInputStream(out.toByteArray())));
         btab = (BinaryTable) f.getHDU(1).getData();
 
         // very strange cast to short?
@@ -1895,7 +1895,7 @@ public class BinaryTableTest {
         BinaryTableHDU tableHdu = new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ArrayDataOutput os = new FitsDataOutputStream(out);
+        ArrayDataOutput os = new FitsOutputStream(out);
 
         Fits f = new Fits();
         f.addHDU(tableHdu);
@@ -1905,7 +1905,7 @@ public class BinaryTableTest {
 
         
         f = new Fits();
-        f.read(new FitsDataInputStream(new ByteArrayInputStream(out.toByteArray())));
+        f.read(new FitsInputStream(new ByteArrayInputStream(out.toByteArray())));
         btab = (BinaryTable) f.getHDU(1).getData();
 
         // very strange cast to short?

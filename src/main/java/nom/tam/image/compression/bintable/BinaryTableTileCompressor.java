@@ -37,7 +37,7 @@ import java.nio.ByteBuffer;
 import nom.tam.fits.FitsException;
 import nom.tam.image.compression.hdu.CompressedTableData;
 import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.FitsDataOutputStream;
+import nom.tam.util.FitsOutputStream;
 import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.ColumnTable;
 
@@ -61,7 +61,7 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
     @Override
     public void run() {
         ByteBuffer buffer = ByteBuffer.wrap(new byte[getUncompressedSizeInBytes()]);
-        try (ArrayDataOutput os = new FitsDataOutputStream(new ByteBufferOutputStream(buffer))) {
+        try (ArrayDataOutput os = new FitsOutputStream(new ByteBufferOutputStream(buffer))) {
             this.data.write(os, this.rowStart, this.rowEnd, this.column);
         } catch (IOException e) {
             throw new IllegalStateException("could not write compressed data", e);

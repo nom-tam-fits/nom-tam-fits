@@ -68,6 +68,8 @@ public class ComplexValue {
     /** The unity along the imaginary axis <i>i</i>, or (0.0, 1.0) **/
     public static final ComplexValue I = new ComplexValue(0.0, 1.0);
     
+    private static final int BYTE_SIZE = 16;
+    
     /** The real and imaginary parts */
     private double re, im;
     
@@ -114,6 +116,14 @@ public class ComplexValue {
     @Override
     public int hashCode() {
         return Double.hashCode(re()) ^ Double.hashCode(im());
+    }
+    
+    /**
+     * Return the number of bytes in a serialized version of this complex value.
+     * 
+     */
+    public final int size() {
+        return BYTE_SIZE;
     }
     
     @Override

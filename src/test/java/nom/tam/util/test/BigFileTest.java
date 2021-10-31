@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.FileInputStream;
 
-import nom.tam.util.FitsDataInputStream;
+import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsFile;
 
 import org.junit.Test;
@@ -81,7 +81,7 @@ public class BigFileTest {
             assertEquals("SkipPos", skip, val2);
             assertEquals("SkipVal", sample, val);
 
-            FitsDataInputStream bdis = new FitsDataInputStream(new FileInputStream(fname));
+            FitsInputStream bdis = new FitsInputStream(new FileInputStream(fname));
             bdis.skipAllBytes(skip);
             val = bdis.read();
             bdis.close();

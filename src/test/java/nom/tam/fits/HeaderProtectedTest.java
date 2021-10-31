@@ -37,7 +37,7 @@ import java.io.ByteArrayOutputStream;
 
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.Standard;
-import nom.tam.util.FitsDataOutputStream;
+import nom.tam.util.FitsOutputStream;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -101,13 +101,13 @@ public class HeaderProtectedTest {
         
         header = new Header();
         header.nullImage();
-        header.write(new FitsDataOutputStream(new ByteArrayOutputStream(), 80));
+        header.write(new FitsOutputStream(new ByteArrayOutputStream(), 80));
         Assert.assertEquals(0L, header.trueDataSize());
         header.setNaxes(2);
         header.setNaxis(1, 0);
         header.setNaxis(2, 2);
         header.addValue(GROUPS, true);
-        header.write(new FitsDataOutputStream(new ByteArrayOutputStream(), 80));
+        header.write(new FitsOutputStream(new ByteArrayOutputStream(), 80));
         Assert.assertEquals(2L, header.trueDataSize());
     }
 

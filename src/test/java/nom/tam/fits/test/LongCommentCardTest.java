@@ -46,7 +46,7 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.LongValueException;
 import nom.tam.fits.header.Standard;
-import nom.tam.util.FitsDataOutputStream;
+import nom.tam.util.FitsOutputStream;
 import nom.tam.util.Cursor;
 
 public class LongCommentCardTest {
@@ -96,7 +96,7 @@ public class LongCommentCardTest {
             Fits fits = new Fits();
             fits.addHDU(Fits.makeHDU(header));
             File file = new File("target/longcommenttest.fits");
-            FitsDataOutputStream stream = new FitsDataOutputStream(new FileOutputStream(file));
+            FitsOutputStream stream = new FitsOutputStream(new FileOutputStream(file));
 
             try {
                 fits.write(stream);

@@ -34,12 +34,13 @@ package nom.tam.util;
 import java.io.OutputStream;
 
 /**
- * @deprecated Use {@link FitsDataOutputStream}, which provides the exact same functionality
- * but with a less misleading name.
+ * @deprecated Use {@link FitsOutputStream}, which provides the exact same functionality
+ * but with a less misleading name, or else use {@link ArrayOutputStream} as a base for an 
+ * implementation with any (non-FITS) encoding.
  * 
  */
 @Deprecated
-public class BufferedDataOutputStream extends FitsDataOutputStream {
+public class BufferedDataOutputStream extends FitsOutputStream {
 
     public BufferedDataOutputStream(OutputStream o, int bufLength) {
         super(o, bufLength);

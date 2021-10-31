@@ -84,8 +84,8 @@ import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
-import nom.tam.util.FitsDataInputStream;
-import nom.tam.util.FitsDataOutputStream;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.FitsOutputStream;
 import nom.tam.util.FitsFile;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
@@ -408,7 +408,7 @@ public class HeaderTest {
             byte[] bytes = new byte[cardString.length() + 160];
             Arrays.fill(bytes, (byte) ' ');
             System.arraycopy(AsciiFuncs.getBytes(cardString), 0, bytes, 0, cardString.length());
-            HeaderCard rereadCard = new HeaderCard(new FitsDataInputStream(new ByteArrayInputStream(bytes)));
+            HeaderCard rereadCard = new HeaderCard(new FitsInputStream(new ByteArrayInputStream(bytes)));
 
             assertEquals(cardValue, rereadCard.getValue());
             assertEquals(headerCard.getValue(), rereadCard.getValue());
@@ -892,7 +892,7 @@ public class HeaderTest {
         assertNull(header.nextCard());
         assertNull(header.getCard(-1));
 
-        FitsDataOutputStream out = new FitsDataOutputStream(new ByteArrayOutputStream());
+        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
         FitsException actual = null;
         try {
             header.write(out);
@@ -1019,7 +1019,7 @@ public class HeaderTest {
 
     @Test(expected = FitsException.class)
     public void writeEmptyHeader() throws Exception {
-        ArrayDataOutput dos = new FitsDataOutputStream(new ByteArrayOutputStream() {
+        ArrayDataOutput dos = new FitsOutputStream(new ByteArrayOutputStream() {
 
             @Override
             public synchronized void write(byte[] b, int off, int len) {
@@ -1068,7 +1068,7 @@ public class HeaderTest {
     public void truncatedFileExceptionTest() throws Exception {
         String header = "SIMPLE                                                                          " + //
                 "XXXXXX                                                                          ";
-        FitsDataInputStream data = new FitsDataInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(header)));
+        FitsInputStream data = new FitsInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(header)));
         new Header().read(data);
     }
 
@@ -1103,7 +1103,7 @@ public class HeaderTest {
         hdr.addValue("VOTMETA", true, "Table metadata in VOTable format");
         hdr.addValue("EXTEND", true, "There are standard extensions");
         // ...
-        FitsDataOutputStream out = new FitsDataOutputStream(new ByteArrayOutputStream());
+        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
         hdr.write(out);
         int votMetaIndex = -1;
         int extendIndex = -1;
@@ -1162,7 +1162,7 @@ public class HeaderTest {
         hdr.addValue("VOTMETA", true, "Table metadata in VOTable format");
         hdr.addValue("EXTEND", true, "There are standard extensions");
         // ...
-        FitsDataOutputStream out = new FitsDataOutputStream(new ByteArrayOutputStream());
+        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
         hdr.write(out);
         int votMetaIndex = -1;
         int extendIndex = -1;

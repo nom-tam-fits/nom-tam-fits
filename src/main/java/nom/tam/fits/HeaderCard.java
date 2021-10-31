@@ -51,7 +51,7 @@ import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.AsciiFuncs;
-import nom.tam.util.FitsDataInputStream;
+import nom.tam.util.FitsInputStream;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.CursorValue;
 import nom.tam.util.FlexFormat;
@@ -1679,7 +1679,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             Arrays.fill(newBytes, bytes.length, newBytes.length, (byte) ' ');
             bytes = newBytes;
         }
-        return new FitsDataInputStream(new ByteArrayInputStream(bytes));
+        return new FitsInputStream(new ByteArrayInputStream(bytes));
     }
 
     /**

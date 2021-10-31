@@ -52,8 +52,8 @@ import nom.tam.fits.compress.CompressionManager;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.FitsDataInputStream;
-import nom.tam.util.FitsDataOutputStream;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.FitsOutputStream;
 import nom.tam.util.FitsFile;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.SafeClose;
@@ -616,7 +616,7 @@ public class Fits implements Closeable {
         if (is instanceof ArrayDataInput) {
             this.dataStr = (ArrayDataInput) is;
         } else {
-            this.dataStr = new FitsDataInputStream(is);
+            this.dataStr = new FitsInputStream(is);
         }
         read();
     }
@@ -792,7 +792,7 @@ public class Fits implements Closeable {
      */
     @SuppressWarnings("resource")
     protected void streamInit(InputStream inputStream) throws FitsException {
-        this.dataStr = new FitsDataInputStream(CompressionManager.decompress(inputStream));
+        this.dataStr = new FitsInputStream(CompressionManager.decompress(inputStream));
     }
 
     /**
@@ -810,7 +810,7 @@ public class Fits implements Closeable {
             obs = (ArrayDataOutput) os;
         } else if (os instanceof DataOutputStream) {
             newOS = true;
-            obs = new FitsDataOutputStream((DataOutputStream) os);
+            obs = new FitsOutputStream((DataOutputStream) os);
         } else {
             throw new FitsException("Cannot create ArrayDataOutput from class " + os.getClass().getName());
         }

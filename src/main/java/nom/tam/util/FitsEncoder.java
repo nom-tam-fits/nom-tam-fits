@@ -34,7 +34,6 @@ package nom.tam.util;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
-import java.nio.ByteBuffer;
 
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.type.ElementType;
@@ -44,40 +43,30 @@ import nom.tam.util.type.ElementType;
  * FITS binary format.
  * 
  * @author Attila Kovacs
+ * 
  * @since 1.16
+ * 
  * @see FitsDecoder
  * @see FitsFile
- * @see FitsDataInputStream
+ * @see FitsInputStream
  */
-public class FitsEncoder {
+public class FitsEncoder extends ArrayEncoder {
 
-    private static final int BUFFER_SIZE = FitsFactory.FITS_BLOCK_SIZE;
 
     private static final byte BYTE_TRUE = (byte) 'T';
 
     private static final byte BYTE_FALSE = (byte) 'F';
 
-    private OutputWriter out;
-
-    private Buffer buf = new Buffer();
+  
 
     public FitsEncoder(OutputWriter o) {
-        this.out = o;
+        super(o);
     }
 
     public FitsEncoder(OutputStream o) {
-        this((OutputWriter) new FitsDataOutputStream(o));
+        super(o);
     }
 
-    protected void write(int b) throws IOException {
-        out.write(b);
-    }
-
-    protected void write(byte[] b, int start, int length) throws IOException {
-        synchronized (out) {
-            out.write(b, start, length);
-        }
-    }
 
     private static byte byteForBoolean(boolean b) {
         return b ? BYTE_TRUE : BYTE_FALSE;
@@ -90,28 +79,71 @@ public class FitsEncoder {
         return byteForBoolean(b.booleanValue());
     }
 
-    protected void writeBoolean(boolean b) throws IOException {
-        out.write(byteForBoolean(b));
+    protected synchronized void writeBoolean(boolean b) throws IOException {
+        write(byteForBoolean(b));
     }
 
-    protected void writeBoolean(Boolean b) throws IOException {
-        out.write(byteForBoolean(b));
+    protected synchronized void writeBoolean(Boolean b) throws IOException {
+        write(byteForBoolean(b));
     }
 
-    protected void writeChar(int c) throws IOException {
+    protected synchronized void writeChar(int c) throws IOException {
         if (FitsFactory.isUseUnicodeChars()) {
             writeShort((short) c);
         } else {
-            out.write(c);
+            write(c);
+        }
+    }
+   
+    
+    
+    private void put(boolean[] b, int start, int length) throws IOException {
+        length += start;
+        while (start < length) {
+            buf.putByte(byteForBoolean(b[start++]));
         }
     }
 
-    protected void write(boolean[] b, int start, int length) throws IOException {
-        buf.put(b, start, length);
+    private void put(char[] c, int start, int length) throws IOException {
+        length += start;
+        if (ElementType.CHAR.size() == 1) {
+            while (start < length) {
+                buf.putByte((byte) c[start++]);
+            }
+        } else {
+            while (start < length) {
+                buf.putShort((short) c[start++]);
+            }
+        }
+    }
+    
+
+    private void put(Boolean[] b, int start, int length) throws IOException {
+        length += start;
+        while (start < length) {
+            buf.putByte(byteForBoolean(b[start++]));
+        }
+    }
+
+    private void put(String[] str, int start, int length) throws IOException {
+        length += start;
+        while (start < length) {
+            put(str[start++]);
+        }
+    }
+
+    void put(String str) throws IOException {
+        for (int i = 0; i < str.length(); i++) {
+            buf.putByte((byte) str.charAt(i));
+        }
+    }
+
+    protected synchronized void write(boolean[] b, int start, int length) throws IOException {
+        put(b, start, length);
         buf.flush();
     }
 
-    protected void write(Boolean[] b, int start, int length) throws IOException {
+    protected synchronized void write(Boolean[] b, int start, int length) throws IOException {
         length += start;
         while (start < length) {
             buf.putByte(byteForBoolean(b[start++]));
@@ -119,43 +151,43 @@ public class FitsEncoder {
         buf.flush();
     }
 
-    protected final void writeByte(int v) throws IOException {
+    protected synchronized void writeByte(int v) throws IOException {
         write(v);
     }
 
-    protected final void writeShort(int v) throws IOException {
+    protected synchronized  void writeShort(int v) throws IOException {
         buf.putShort((short) v);
         buf.flush();
     }
 
-    protected final void writeInt(int v) throws IOException {
+    protected synchronized void writeInt(int v) throws IOException {
         buf.putInt(v);
         buf.flush();
     }
 
-    protected final void writeLong(long v) throws IOException {
+    protected synchronized void writeLong(long v) throws IOException {
         buf.putLong(v);
         buf.flush();
     }
 
-    protected final void writeFloat(float v) throws IOException {
+    protected synchronized void writeFloat(float v) throws IOException {
         buf.putFloat(v);
         buf.flush();
     }
 
-    protected final void writeDouble(double v) throws IOException {
+    protected synchronized void writeDouble(double v) throws IOException {
         buf.putDouble(v);
         buf.flush();
     }
 
-    protected final void writeBytes(String s) throws IOException {
+    protected synchronized void writeBytes(String s) throws IOException {
         for (int i = 0; i < s.length(); i++) {
             buf.putByte((byte) s.charAt(i));
         }
         buf.flush();
     }
 
-    protected final void writeChars(String s) throws IOException {
+    protected synchronized void writeChars(String s) throws IOException {
         if (ElementType.CHAR.size() == 1) {
             writeBytes(s);
         } else {
@@ -166,44 +198,45 @@ public class FitsEncoder {
         buf.flush();
     }
 
-    protected void write(char[] c, int start, int length) throws IOException {
-        buf.put(c, start, length);
+    protected synchronized void write(char[] c, int start, int length) throws IOException {
+        put(c, start, length);
         buf.flush();
     }
 
-    protected void write(short[] s, int start, int length) throws IOException {
+    protected synchronized void write(short[] s, int start, int length) throws IOException {
         buf.put(s, start, length);
         buf.flush();
     }
 
-    protected void write(int[] i, int start, int length) throws IOException {
+    protected synchronized void write(int[] i, int start, int length) throws IOException {
         buf.put(i, start, length);
         buf.flush();
     }
 
-    protected void write(long[] l, int start, int length) throws IOException {
+    protected synchronized void write(long[] l, int start, int length) throws IOException {
         buf.put(l, start, length);
         buf.flush();
     }
 
-    protected void write(float[] f, int start, int length) throws IOException {
+    protected synchronized void write(float[] f, int start, int length) throws IOException {
         buf.put(f, start, length);
         buf.flush();
     }
 
-    protected void write(double[] d, int start, int length) throws IOException {
+    protected synchronized void write(double[] d, int start, int length) throws IOException {
         buf.put(d, start, length);
         buf.flush();
     }
 
-    protected void write(String[] str, int start, int length) throws IOException {
+    protected synchronized void write(String[] str, int start, int length) throws IOException {
         length += start;
         while (start < length) {
             writeBytes(str[start++]);
         }
     }
 
-    public void writeArray(Object o) throws IOException {
+    @Override
+    public synchronized void writeArray(Object o) throws IOException {
         putArray(o);
         buf.flush();
     }
@@ -223,12 +256,15 @@ public class FitsEncoder {
         }
 
         if (o instanceof byte[]) {
+            // Bytes can be written directly to the stream, which is fastest
+            // However, before that we need to flush any pending output in the
+            // conversion buffer...
             buf.flush();
-            out.write((byte[]) o, 0, length);
+            write((byte[]) o, 0, length);
         } else if (o instanceof boolean[]) {
-            buf.put((boolean[]) o, 0, length);
+            put((boolean[]) o, 0, length);
         } else if (o instanceof char[]) {
-            buf.put((char[]) o, 0, length);
+            put((char[]) o, 0, length);
         } else if (o instanceof short[]) {
             buf.put((short[]) o, 0, length);
         } else if (o instanceof int[]) {
@@ -241,9 +277,9 @@ public class FitsEncoder {
             buf.put((double[]) o, 0, length);
         } else if (o instanceof Object[]) {
             if (o instanceof String[]) {
-                buf.put((String[]) o, 0, length);
+                put((String[]) o, 0, length);
             } else if (o instanceof Boolean[]) {
-                buf.put((Boolean[]) o, 0, length);
+                put((Boolean[]) o, 0, length);
             } else {
                 Object[] array = (Object[]) o;
                 // Is this a multidimensional array? If so process recursively
@@ -253,136 +289,6 @@ public class FitsEncoder {
             }
         } else {
             throw new IllegalArgumentException("Cannot write type: " + o.getClass().getName());
-        }
-    }
-
-    private class Buffer {
-
-        private byte[] data = new byte[BUFFER_SIZE];
-
-        private ByteBuffer buffer = ByteBuffer.wrap(data);
-
-        void flush() throws IOException {
-            int n = buffer.position();
-
-            if (n == 1) {
-                out.write(data[0]);
-            } else {
-                out.write(data, 0, n);
-            }
-
-            buffer.rewind();
-        }
-
-        void need(int bytes) throws IOException {
-            if (buffer.remaining() < bytes) {
-                flush();
-            }
-        }
-
-        void putByte(byte b) throws IOException {
-            need(1);
-            buffer.put(b);
-        }
-
-        void putShort(short s) throws IOException {
-            need(FitsIO.BYTES_IN_SHORT);
-            buffer.putShort(s);
-        }
-
-        void putInt(int i) throws IOException {
-            need(FitsIO.BYTES_IN_INTEGER);
-            buffer.putInt(i);
-        }
-
-        void putLong(long l) throws IOException {
-            need(FitsIO.BYTES_IN_LONG);
-            buffer.putLong(l);
-        }
-
-        void putFloat(float f) throws IOException {
-            need(FitsIO.BYTES_IN_FLOAT);
-            buffer.putFloat(f);
-        }
-
-        void putDouble(double d) throws IOException {
-            need(FitsIO.BYTES_IN_DOUBLE);
-            buffer.putDouble(d);
-        }
-
-        void put(boolean[] b, int start, int length) throws IOException {
-            length += start;
-            while (start < length) {
-                putByte(byteForBoolean(b[start++]));
-            }
-        }
-
-        void put(char[] c, int start, int length) throws IOException {
-            length += start;
-            if (ElementType.CHAR.size() == 1) {
-                while (start < length) {
-                    putByte((byte) c[start++]);
-                }
-            } else {
-                while (start < length) {
-                    putShort((short) c[start++]);
-                }
-            }
-        }
-
-        void put(short[] s, int start, int length) throws IOException {
-            length += start;
-            while (start < length) {
-                putShort(s[start++]);
-            }
-        }
-
-        void put(int[] i, int start, int length) throws IOException {
-            length += start;
-            while (start < length) {
-                putInt(i[start++]);
-            }
-        }
-
-        void put(long[] l, int start, int length) throws IOException {
-            length += start;
-            while (start < length) {
-                putLong(l[start++]);
-            }
-        }
-
-        void put(float[] f, int start, int length) throws IOException {
-            length += start;
-            while (start < length) {
-                putFloat(f[start++]);
-            }
-        }
-
-        void put(double[] d, int start, int length) throws IOException {
-            length += start;
-            while (start < length) {
-                putDouble(d[start++]);
-            }
-        }
-
-        void put(Boolean[] b, int start, int length) throws IOException {
-            length += start;
-            while (start < length) {
-                putByte(byteForBoolean(b[start++]));
-            }
-        }
-
-        void put(String[] str, int start, int length) throws IOException {
-            length += start;
-            while (start < length) {
-                put(str[start++]);
-            }
-        }
-
-        void put(String str) throws IOException {
-            for (int i = 0; i < str.length(); i++) {
-                putByte((byte) str.charAt(i));
-            }
         }
     }
 }

@@ -58,7 +58,7 @@ import nom.tam.fits.TruncatedFileException;
 import nom.tam.fits.UnclosedQuoteException;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.util.AsciiFuncs;
-import nom.tam.util.FitsDataInputStream;
+import nom.tam.util.FitsInputStream;
 import nom.tam.util.ComplexValue;
 
 public class HeaderCardTest {
@@ -978,15 +978,15 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard("HIERARCH.TEST.TEST.TEST.TEST.TEST.TEST", //
                 "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla ",
                 " dummy");
-        FitsDataInputStream data = headerCardToStream(hc);
+        FitsInputStream data = headerCardToStream(hc);
         HeaderCard headerCard = new HeaderCard(data);
         assertEquals(hc.getKey(), headerCard.getKey());
         assertEquals(hc.getValue(), headerCard.getValue());
 
     }
 
-    protected FitsDataInputStream headerCardToStream(HeaderCard hc) throws Exception {
-        FitsDataInputStream data = new FitsDataInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(hc.toString())));
+    protected FitsInputStream headerCardToStream(HeaderCard hc) throws Exception {
+        FitsInputStream data = new FitsInputStream(new ByteArrayInputStream(AsciiFuncs.getBytes(hc.toString())));
         return data;
     }
 
@@ -1091,7 +1091,7 @@ public class HeaderCardTest {
 
     @Test(expected = TruncatedFileException.class)
     public void testTruncatedLine() throws Exception {
-        new HeaderCard(new FitsDataInputStream(new ByteArrayInputStream("TO_SHORT    ".getBytes())));
+        new HeaderCard(new FitsInputStream(new ByteArrayInputStream("TO_SHORT    ".getBytes())));
     }
 
     @Test

@@ -36,8 +36,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 
-import nom.tam.util.FitsDataInputStream;
-import nom.tam.util.FitsDataOutputStream;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.FitsOutputStream;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -104,7 +104,7 @@ public class FitsHeapTest {
     public void testHeapReadFailures() throws Exception {
         FitsException actual = null;
         try {
-            FitsDataInputStream in = new FitsDataInputStream(new ByteArrayInputStream(new byte[50]));
+            FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[50]));
 
             new FitsHeap(100).read(in);
         } catch (FitsException e) {
@@ -115,7 +115,7 @@ public class FitsHeapTest {
 
         actual = null;
         try {
-            FitsDataInputStream in = new FitsDataInputStream(new ByteArrayInputStream(new byte[50]));
+            FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[50]));
             in.read(new byte[50]);
             new FitsHeap(100).read(in);
         } catch (FitsException e) {
@@ -129,7 +129,7 @@ public class FitsHeapTest {
     public void testHeapWriteFailures() throws Exception {
         FitsException actual = null;
         try {
-            FitsDataOutputStream out = new FitsDataOutputStream(new ByteArrayOutputStream()){
+            FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()){
                 @Override
                 public synchronized void write(byte[] b, int off, int len) throws IOException {
                     throw new IOException("testHeapWriteFailures");

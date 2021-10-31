@@ -39,7 +39,7 @@ import java.util.logging.Logger;
 
 
 /**
- * This class is intended for high performance I/O for reading and writing
+ * This class is intended for high performance reading and writing
  * FITS files or block of FITS-formatted data. It provides buffered
  * random access and efficient handling of arrays. Primitive arrays
  * may be written using a single method call. Large buffers
@@ -55,30 +55,43 @@ import java.util.logging.Logger;
  * Testing and timing routines are available in the
  * nom.tam.util.test.BufferedFileTester class.
  *
- * Version 1.1 October 12, 2000: Fixed handling of EOF in array reads so that a
+ * <p>
+ * Prior versions of this class under the old <code>BufferedFile</code>
+ * name:
+ * <ul>
+ * <li>
+ * Version 1.1 -- October 12, 2000: Fixed handling of EOF in array reads so that a
  * partial array will be returned when an EOF is detected. Excess bytes that
  * cannot be used to construct array elements will be discarded (e.g., if there
- * are 2 bytes left and the user is reading an int array).<br/>
- * Version 1.2 December 8, 2002: Added getChannel method.<br/>
- * Version 1.3 March 2, 2007: Added File based constructors.<br/>
- * Version 1.4 July 20, 2009: Added support for >2G Object reads.
+ * are 2 bytes left and the user is reading an int array).</li>
+ * 
+ * <li>
+ * Version 1.2 -- December 8, 2002: Added getChannel method.</li>
+ * 
+ * <li>
+ * Version 1.3 -- March 2, 2007: Added File based constructors.</li>
+ * 
+ * <li>
+ * Version 1.4 -- July 20, 2009: Added support for >2G Object reads.
  * This is still a bit problematic in that we do not support primitive arrays
  * larger than 2 GB/atomsize. However except in the case of bytes this is not
- * currently a major issue.
- * Version 1.5 Oct 20, 2021: New hierarchy for more digestible code. Improved
- * buffering, and renamed from BufferedFile to the more appropriate FitsFile.
+ * currently a major issue.</li>
  * 
- * @see FitsDataInputStream
- * @see FitsDataOutputStream
+ * </ul>
+ * 
+ * <p>
+ * Version 2.0 -- Oct 30, 2021: New hierarchy for more digestible code. Improved
+ * buffering, and renamed from <code>BufferedFile</code> to the more appropriate 
+ * name of <code>FitsFile</code>. Performance is 2-4 times better than before.
+ * 
+ * @see FitsInputStream
+ * @see FitsOutputStream
  * 
  * @since 1.16
  */
-public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataOutput {
+public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOutput {
 
     private static final Logger LOG = Logger.getLogger(FitsFile.class.getName());
-
-    private FitsEncoder encoder;
-    private FitsDecoder decoder;
     
     /**
      * marker position
@@ -125,8 +138,8 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
      */
     public FitsFile(File file, String mode, int bufferSize) throws IOException {
         super(file, mode, bufferSize);
-        decoder = new FitsDecoder(this);
-        encoder = new FitsEncoder(this);
+        setDecoder(new FitsDecoder(this));
+        setEncoder(new FitsEncoder(this));
     }
 
     /**
@@ -192,7 +205,143 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
     
     @Override
     public Boolean readBooleanObject() throws IOException {
-        return decoder.readBooleanObject();
+        return getDecoder().readBooleanObject();
+    }
+    
+    @Override   
+    public int skipBytes(int toSkip) throws IOException {
+        int n = (int) skip(toSkip);
+        
+        // Note that we allow negative skips...
+        if (n != toSkip) {
+            throw new EOFException("Skip reached file boundary at " + n + " of " + toSkip);
+        }
+        
+        return n;
+    }
+    
+    @Override
+    public FitsEncoder getEncoder() {
+        return (FitsEncoder) super.getEncoder();
+    }
+    
+    @Override
+    public FitsDecoder getDecoder() {
+        return (FitsDecoder) super.getDecoder();
+    }
+    
+    @Override
+    public boolean readBoolean() throws IOException {
+        return getDecoder().readBoolean();
+    }
+    
+    @Override
+    public final byte readByte() throws IOException {
+        return getDecoder().readByte();
+    }
+   
+    @Override
+    public final int readUnsignedByte() throws IOException {
+        return getDecoder().readUnsignedByte();
+    }
+
+    @Override
+    public char readChar() throws IOException {
+        return getDecoder().readChar();
+    }
+
+    @Override
+    public final short readShort() throws IOException {
+        return getDecoder().readShort();
+    }
+    
+    @Override
+    public final int readUnsignedShort() throws IOException {
+        return getDecoder().readUnsignedShort();
+    }
+
+    @Override
+    public final int readInt() throws IOException {
+        return getDecoder().readInt(); 
+    }
+    
+    @Override
+    public final long readLong() throws IOException {
+        return getDecoder().readLong();
+    }
+
+    @Override
+    public final float readFloat() throws IOException {
+        return getDecoder().readFloat();
+    }
+    
+    @Override
+    public final double readDouble() throws IOException {
+        return getDecoder().readDouble();
+    }
+    
+    @Override
+    public String readLine() throws IOException {
+        return getDecoder().readAsciiLine();
+    }
+
+ 
+
+    @Override
+    public void writeBoolean(boolean v) throws IOException {
+        getEncoder().writeBoolean(v);
+    }
+
+    @Override
+    public final void writeByte(int v) throws IOException {
+        getEncoder().writeByte(v);
+    }
+
+
+    @Override
+    public void writeChar(int v) throws IOException {
+        getEncoder().writeChar(v);
+    }
+
+
+    @Override
+    public final void writeShort(int v) throws IOException {
+        getEncoder().writeShort(v);
+    }
+    
+    @Override
+    public final void writeInt(int v) throws IOException {
+        getEncoder().writeInt(v);
+    }
+
+
+    @Override
+    public final void writeLong(long v) throws IOException {
+        getEncoder().writeLong(v);
+    }
+
+
+    @Override
+    public final void writeFloat(float v) throws IOException {
+        getEncoder().writeFloat(v);
+    }
+
+
+    @Override
+    public final void writeDouble(double v) throws IOException {
+        getEncoder().writeDouble(v);
+    }
+   
+
+    @Override
+    public final void writeBytes(String s) throws IOException {
+        getEncoder().writeBytes(s);
+    }
+
+
+    @Override
+    public final void writeChars(String s) throws IOException {
+        getEncoder().writeChars(s);
     }
 
     
@@ -203,7 +352,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public int read(boolean[] b, int start, int length) throws IOException {
-        return decoder.read(b, start, length);
+        return getDecoder().read(b, start, length);
     }
     
 
@@ -214,7 +363,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public int read(Boolean[] buf, int offset, int size) throws IOException {
-        return decoder.read(buf, offset, size);
+        return getDecoder().read(buf, offset, size);
     }
 
     @Override
@@ -229,7 +378,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public int read(char[] c, int start, int length) throws IOException {
-        return decoder.read(c, start, length);
+        return getDecoder().read(c, start, length);
     }
 
     @Override
@@ -239,7 +388,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public int read(double[] d, int start, int length) throws IOException {
-        return decoder.read(d, start, length);
+        return getDecoder().read(d, start, length);
     }
 
     @Override
@@ -249,7 +398,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public int read(float[] f, int start, int length) throws IOException {
-        return decoder.read(f, start, length);
+        return getDecoder().read(f, start, length);
     }
 
     @Override
@@ -259,7 +408,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public int read(int[] i, int start, int length) throws IOException {
-        return decoder.read(i, start, length);
+        return getDecoder().read(i, start, length);
     }
 
     @Override
@@ -269,7 +418,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public int read(long[] l, int start, int length) throws IOException {
-        return decoder.read(l, start, length);
+        return getDecoder().read(l, start, length);
     }
 
     @Override
@@ -279,7 +428,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public int read(short[] s, int start, int length) throws IOException {
-        return decoder.read(s, start, length);
+        return getDecoder().read(s, start, length);
     }
 
     @Deprecated
@@ -291,7 +440,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
     @Override
     public long readLArray(Object o) throws IOException {
         try {
-            return decoder.readLArray(o);
+            return getDecoder().readLArray(o);
         } catch (IllegalArgumentException e) {
             throw new IOException(e);
         }
@@ -322,7 +471,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
     
     @Override
     public void writeBoolean(Boolean v) throws IOException {
-        encoder.writeBoolean(v);
+        getEncoder().writeBoolean(v);
     }
 
     @Override
@@ -332,7 +481,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public void write(Boolean[] buf, int offset, int size) throws IOException {
-        encoder.write(buf, offset, size);
+        getEncoder().write(buf, offset, size);
     }
 
     
@@ -343,7 +492,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public void write(boolean[] b, int start, int length) throws IOException {
-        encoder.write(b, start, length);
+        getEncoder().write(b, start, length);
     }
 
     @Override
@@ -353,7 +502,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public void write(char[] c, int start, int length) throws IOException {
-        encoder.write(c, start, length);
+        getEncoder().write(c, start, length);
     }
 
     @Override
@@ -363,7 +512,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public void write(double[] d, int start, int length) throws IOException {
-        encoder.write(d, start, length);
+        getEncoder().write(d, start, length);
     }
 
     @Override
@@ -373,7 +522,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public void write(float[] f, int start, int length) throws IOException {
-        encoder.write(f, start, length);
+        getEncoder().write(f, start, length);
     }
 
     @Override
@@ -383,7 +532,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public void write(int[] i, int start, int length) throws IOException {
-        encoder.write(i, start, length);
+        getEncoder().write(i, start, length);
     }
 
     @Override
@@ -393,7 +542,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public void write(long[] l, int start, int length) throws IOException {
-        encoder.write(l, start, length);
+        getEncoder().write(l, start, length);
     }
 
     @Override
@@ -403,7 +552,7 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public void write(short[] s, int start, int length) throws IOException {
-        encoder.write(s, start, length);
+        getEncoder().write(s, start, length);
     }
 
     @Override
@@ -413,23 +562,18 @@ public class FitsFile extends FitsFileDataIO implements RandomAccess, ArrayDataO
 
     @Override
     public void write(String[] s, int start, int length) throws IOException {
-        encoder.write(s, start, length);
+        getEncoder().write(s, start, length);
     }
 
     @Override
     public void writeArray(Object o) throws IOException {
         try {
-            encoder.writeArray(o);
+            getEncoder().writeArray(o);
         } catch (IllegalArgumentException e) {
             throw new IOException(e);
         }
     }
     
-    @Override
-    public void writeChar(int c) throws IOException {
-        encoder.writeChar(c);
-    }
-
     @Override
     public boolean checkTruncated() throws IOException {
         long pos = getFilePointer();

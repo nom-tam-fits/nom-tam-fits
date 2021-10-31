@@ -1,5 +1,3 @@
-package nom.tam.util.array;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -31,301 +29,262 @@ package nom.tam.util.array;
  * #L%
  */
 
+package nom.tam.util.array;
+
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MultiArrayCopyFactory {
+/**
+ * 
+ *
+ * @param <Source>      The generic type of array from which we want to copy elements
+ * @param <Destination> The generic type of array to which we want to copy elements.
+ */
+public class MultiArrayCopyFactory<Source, Destination> {
 
-    private static class ByteToChar extends MultiArrayCopyFactory {
+    private static class ByteToChar extends MultiArrayCopyFactory<byte[], char[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            byte[] src = (byte[]) srcO;
-            char[] dest = (char[]) destO;
+        public void arraycopy(byte[] src, int srcPos, char[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (char) src[index + srcPos];
             }
         }
     }
 
-    private static class ByteToDouble extends MultiArrayCopyFactory {
+    private static class ByteToDouble extends MultiArrayCopyFactory<byte[], double[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            byte[] src = (byte[]) srcO;
-            double[] dest = (double[]) destO;
+        public void arraycopy(byte[] src, int srcPos, double[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class ByteToFloat extends MultiArrayCopyFactory {
+    private static class ByteToFloat extends MultiArrayCopyFactory<byte[], float[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            byte[] src = (byte[]) srcO;
-            float[] dest = (float[]) destO;
+        public void arraycopy(byte[] src, int srcPos, float[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class ByteToInt extends MultiArrayCopyFactory {
+    private static class ByteToInt extends MultiArrayCopyFactory<byte[], int[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            byte[] src = (byte[]) srcO;
-            int[] dest = (int[]) destO;
+        public void arraycopy(byte[] src, int srcPos, int[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class ByteToLong extends MultiArrayCopyFactory {
+    private static class ByteToLong extends MultiArrayCopyFactory<byte[], long[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            byte[] src = (byte[]) srcO;
-            long[] dest = (long[]) destO;
+        public void arraycopy(byte[] src, int srcPos, long[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class ByteToShort extends MultiArrayCopyFactory {
+    private static class ByteToShort extends MultiArrayCopyFactory<byte[], short[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            byte[] src = (byte[]) srcO;
-            short[] dest = (short[]) destO;
+        public void arraycopy(byte[] src, int srcPos, short[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class CharToByte extends MultiArrayCopyFactory {
+    private static class CharToByte extends MultiArrayCopyFactory<char[], byte[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            char[] src = (char[]) srcO;
-            byte[] dest = (byte[]) destO;
+        public void arraycopy(char[] src, int srcPos, byte[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (byte) src[index + srcPos];
             }
         }
     }
 
-    private static class CharToDouble extends MultiArrayCopyFactory {
+    private static class CharToDouble extends MultiArrayCopyFactory<char[], double[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            char[] src = (char[]) srcO;
-            double[] dest = (double[]) destO;
+        public void arraycopy(char[] src, int srcPos, double[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class CharToFloat extends MultiArrayCopyFactory {
+    private static class CharToFloat extends MultiArrayCopyFactory<char[], float[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            char[] src = (char[]) srcO;
-            float[] dest = (float[]) destO;
+        public void arraycopy(char[] src, int srcPos, float[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class CharToInt extends MultiArrayCopyFactory {
+    private static class CharToInt extends MultiArrayCopyFactory<char[], int[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            char[] src = (char[]) srcO;
-            int[] dest = (int[]) destO;
+        public void arraycopy(char[] src, int srcPos, int[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class CharToLong extends MultiArrayCopyFactory {
+    private static class CharToLong extends MultiArrayCopyFactory<char[], long[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            char[] src = (char[]) srcO;
-            long[] dest = (long[]) destO;
+        public void arraycopy(char[] src, int srcPos, long[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class CharToShort extends MultiArrayCopyFactory {
+    private static class CharToShort extends MultiArrayCopyFactory<char[], short[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            char[] src = (char[]) srcO;
-            short[] dest = (short[]) destO;
+        public void arraycopy(char[] src, int srcPos, short[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (short) src[index + srcPos];
             }
         }
     }
 
-    private static class DoubleToByte extends MultiArrayCopyFactory {
+    private static class DoubleToByte extends MultiArrayCopyFactory<double[], byte[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            double[] src = (double[]) srcO;
-            byte[] dest = (byte[]) destO;
+        public void arraycopy(double[] src, int srcPos, byte[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (byte) src[index + srcPos];
             }
         }
     }
 
-    private static class DoubleToChar extends MultiArrayCopyFactory {
+    private static class DoubleToChar extends MultiArrayCopyFactory<double[], char[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            double[] src = (double[]) srcO;
-            char[] dest = (char[]) destO;
+        public void arraycopy(double[] src, int srcPos, char[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (char) src[index + srcPos];
             }
         }
     }
 
-    private static class DoubleToFloat extends MultiArrayCopyFactory {
+    private static class DoubleToFloat extends MultiArrayCopyFactory<double[], float[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            double[] src = (double[]) srcO;
-            float[] dest = (float[]) destO;
+        public void arraycopy(double[] src, int srcPos, float[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (float) src[index + srcPos];
             }
         }
     }
 
-    private static class DoubleToInt extends MultiArrayCopyFactory {
+    private static class DoubleToInt extends MultiArrayCopyFactory<double[], int[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            double[] src = (double[]) srcO;
-            int[] dest = (int[]) destO;
+        public void arraycopy(double[] src, int srcPos, int[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (int) src[index + srcPos];
             }
         }
     }
 
-    private static class DoubleToLong extends MultiArrayCopyFactory {
+    private static class DoubleToLong extends MultiArrayCopyFactory<double[], long[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            double[] src = (double[]) srcO;
-            long[] dest = (long[]) destO;
+        public void arraycopy(double[] src, int srcPos, long[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (long) src[index + srcPos];
             }
         }
     }
 
-    private static class DoubleToShort extends MultiArrayCopyFactory {
+    private static class DoubleToShort extends MultiArrayCopyFactory<double[], short[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            double[] src = (double[]) srcO;
-            short[] dest = (short[]) destO;
+        public void arraycopy(double[] src, int srcPos, short[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (short) src[index + srcPos];
             }
         }
     }
 
-    private static class FloatToByte extends MultiArrayCopyFactory {
+    private static class FloatToByte extends MultiArrayCopyFactory<float[], byte[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            float[] src = (float[]) srcO;
-            byte[] dest = (byte[]) destO;
+        public void arraycopy(float[] src, int srcPos, byte[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (byte) src[index + srcPos];
             }
         }
     }
 
-    private static class FloatToChar extends MultiArrayCopyFactory {
+    private static class FloatToChar extends MultiArrayCopyFactory<float[], char[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            float[] src = (float[]) srcO;
-            char[] dest = (char[]) destO;
+        public void arraycopy(float[] src, int srcPos, char[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (char) src[index + srcPos];
             }
         }
     }
 
-    private static class FloatToDouble extends MultiArrayCopyFactory {
+    private static class FloatToDouble extends MultiArrayCopyFactory<float[], double[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            float[] src = (float[]) srcO;
-            double[] dest = (double[]) destO;
+        public void arraycopy(float[] src, int srcPos, double[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class FloatToInt extends MultiArrayCopyFactory {
+    private static class FloatToInt extends MultiArrayCopyFactory<float[], int[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            float[] src = (float[]) srcO;
-            int[] dest = (int[]) destO;
+        public void arraycopy(float[] src, int srcPos, int[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (int) src[index + srcPos];
             }
         }
     }
 
-    private static class FloatToLong extends MultiArrayCopyFactory {
+    private static class FloatToLong extends MultiArrayCopyFactory<float[], long[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            float[] src = (float[]) srcO;
-            long[] dest = (long[]) destO;
+        public void arraycopy(float[] src, int srcPos, long[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (long) src[index + srcPos];
             }
         }
     }
 
-    private static class FloatToShort extends MultiArrayCopyFactory {
+    private static class FloatToShort extends MultiArrayCopyFactory<float[], short[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            float[] src = (float[]) srcO;
-            short[] dest = (short[]) destO;
+        public void arraycopy(float[] src, int srcPos, short[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (short) src[index + srcPos];
             }
         }
     }
 
-    private static class Generic extends MultiArrayCopyFactory {
+    private static class Generic extends MultiArrayCopyFactory<Object, Object> {
 
         @Override
         public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
@@ -333,231 +292,195 @@ public class MultiArrayCopyFactory {
         }
     }
 
-    private static class IntToByte extends MultiArrayCopyFactory {
+    private static class IntToByte extends MultiArrayCopyFactory<int[], byte[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            int[] src = (int[]) srcO;
-            byte[] dest = (byte[]) destO;
+        public void arraycopy(int[] src, int srcPos, byte[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (byte) src[index + srcPos];
             }
         }
     }
 
-    private static class IntToChar extends MultiArrayCopyFactory {
+    private static class IntToChar extends MultiArrayCopyFactory<int[], char[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            int[] src = (int[]) srcO;
-            char[] dest = (char[]) destO;
+        public void arraycopy(int[] src, int srcPos, char[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (char) src[index + srcPos];
             }
         }
     }
 
-    private static class IntToDouble extends MultiArrayCopyFactory {
+    private static class IntToDouble extends MultiArrayCopyFactory<int[], double[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            int[] src = (int[]) srcO;
-            double[] dest = (double[]) destO;
+        public void arraycopy(int[] src, int srcPos, double[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class IntToFloat extends MultiArrayCopyFactory {
+    private static class IntToFloat extends MultiArrayCopyFactory<int[], float[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            int[] src = (int[]) srcO;
-            float[] dest = (float[]) destO;
+        public void arraycopy(int[] src, int srcPos, float[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class IntToLong extends MultiArrayCopyFactory {
+    private static class IntToLong extends MultiArrayCopyFactory<int[], long[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            int[] src = (int[]) srcO;
-            long[] dest = (long[]) destO;
+        public void arraycopy(int[] src, int srcPos, long[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class IntToShort extends MultiArrayCopyFactory {
+    private static class IntToShort extends MultiArrayCopyFactory<int[], short[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            int[] src = (int[]) srcO;
-            short[] dest = (short[]) destO;
+        public void arraycopy(int[] src, int srcPos, short[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (short) src[index + srcPos];
             }
         }
     }
 
-    private static class LongToByte extends MultiArrayCopyFactory {
+    private static class LongToByte extends MultiArrayCopyFactory<long[], byte[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            long[] src = (long[]) srcO;
-            byte[] dest = (byte[]) destO;
+        public void arraycopy(long[] src, int srcPos, byte[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (byte) src[index + srcPos];
             }
         }
     }
 
-    private static class LongToChar extends MultiArrayCopyFactory {
+    private static class LongToChar extends MultiArrayCopyFactory<long[], char[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            long[] src = (long[]) srcO;
-            char[] dest = (char[]) destO;
+        public void arraycopy(long[] src, int srcPos, char[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (char) src[index + srcPos];
             }
         }
     }
 
-    private static class LongToDouble extends MultiArrayCopyFactory {
+    private static class LongToDouble extends MultiArrayCopyFactory<long[], double[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            long[] src = (long[]) srcO;
-            double[] dest = (double[]) destO;
+        public void arraycopy(long[] src, int srcPos, double[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class LongToFloat extends MultiArrayCopyFactory {
+    private static class LongToFloat extends MultiArrayCopyFactory<long[], float[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            long[] src = (long[]) srcO;
-            float[] dest = (float[]) destO;
+        public void arraycopy(long[] src, int srcPos, float[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class LongToInt extends MultiArrayCopyFactory {
+    private static class LongToInt extends MultiArrayCopyFactory<long[], int[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            long[] src = (long[]) srcO;
-            int[] dest = (int[]) destO;
+        public void arraycopy(long[] src, int srcPos, int[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (int) src[index + srcPos];
             }
         }
     }
 
-    private static class LongToShort extends MultiArrayCopyFactory {
+    private static class LongToShort extends MultiArrayCopyFactory<long[], short[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            long[] src = (long[]) srcO;
-            short[] dest = (short[]) destO;
+        public void arraycopy(long[] src, int srcPos, short[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (short) src[index + srcPos];
             }
         }
     }
 
-    private static class ShortToByte extends MultiArrayCopyFactory {
+    private static class ShortToByte extends MultiArrayCopyFactory<short[], byte[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            short[] src = (short[]) srcO;
-            byte[] dest = (byte[]) destO;
+        public void arraycopy(short[] src, int srcPos, byte[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (byte) src[index + srcPos];
             }
         }
     }
 
-    private static class ShortToChar extends MultiArrayCopyFactory {
+    private static class ShortToChar extends MultiArrayCopyFactory<short[], char[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            short[] src = (short[]) srcO;
-            char[] dest = (char[]) destO;
+        public void arraycopy(short[] src, int srcPos, char[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = (char) src[index + srcPos];
             }
         }
     }
 
-    private static class ShortToDouble extends MultiArrayCopyFactory {
+    private static class ShortToDouble extends MultiArrayCopyFactory<short[], double[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            short[] src = (short[]) srcO;
-            double[] dest = (double[]) destO;
+        public void arraycopy(short[] src, int srcPos, double[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class ShortToFloat extends MultiArrayCopyFactory {
+    private static class ShortToFloat extends MultiArrayCopyFactory<short[], float[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            short[] src = (short[]) srcO;
-            float[] dest = (float[]) destO;
+        public void arraycopy(short[] src, int srcPos, float[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class ShortToInt extends MultiArrayCopyFactory {
+    private static class ShortToInt extends MultiArrayCopyFactory<short[], int[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            short[] src = (short[]) srcO;
-            int[] dest = (int[]) destO;
+        public void arraycopy(short[] src, int srcPos, int[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static class ShortToLong extends MultiArrayCopyFactory {
+    private static class ShortToLong extends MultiArrayCopyFactory<short[], long[]> {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-            short[] src = (short[]) srcO;
-            long[] dest = (long[]) destO;
+        public void arraycopy(short[] src, int srcPos, long[] dest, int destPos, int length) {
             for (int index = 0; index < length; index++) {
                 dest[index + destPos] = src[index + srcPos];
             }
         }
     }
 
-    private static final Map<Class<?>, Map<Class<?>, MultiArrayCopyFactory>> FACTORIES;
+    private static final Map<Class<?>, Map<Class<?>, MultiArrayCopyFactory<?, ?>>> FACTORIES;
 
-    private static final MultiArrayCopyFactory GENERIC = new Generic();
+    private static final MultiArrayCopyFactory<Object, Object> GENERIC = new Generic();
 
     static {
-        Map<Class<?>, Map<Class<?>, MultiArrayCopyFactory>> factories = new HashMap<>();
+        Map<Class<?>, Map<Class<?>, MultiArrayCopyFactory<?, ?>>> factories = new HashMap<>();
 
-        Map<Class<?>, MultiArrayCopyFactory> byteMap = new HashMap<>();
-        byteMap.put(byte.class, new MultiArrayCopyFactory());
+        Map<Class<?>, MultiArrayCopyFactory<byte[], ?>> byteMap = new HashMap<>();
+        byteMap.put(byte.class, new MultiArrayCopyFactory<byte[], byte[]>());
         byteMap.put(char.class, new ByteToChar());
         byteMap.put(short.class, new ByteToShort());
         byteMap.put(int.class, new ByteToInt());
@@ -566,9 +489,9 @@ public class MultiArrayCopyFactory {
         byteMap.put(double.class, new ByteToDouble());
         factories.put(byte.class, Collections.unmodifiableMap(byteMap));
 
-        Map<Class<?>, MultiArrayCopyFactory> charMap = new HashMap<>();
+        Map<Class<?>, MultiArrayCopyFactory<char[], ?>> charMap = new HashMap<>();
         charMap.put(byte.class, new CharToByte());
-        charMap.put(char.class, new MultiArrayCopyFactory());
+        charMap.put(char.class, new MultiArrayCopyFactory<char[], char[]>());
         charMap.put(short.class, new CharToShort());
         charMap.put(int.class, new CharToInt());
         charMap.put(long.class, new CharToLong());
@@ -576,63 +499,63 @@ public class MultiArrayCopyFactory {
         charMap.put(double.class, new CharToDouble());
         factories.put(char.class, Collections.unmodifiableMap(charMap));
 
-        Map<Class<?>, MultiArrayCopyFactory> shortMap = new HashMap<>();
+        Map<Class<?>, MultiArrayCopyFactory<short[], ?>> shortMap = new HashMap<>();
         shortMap.put(byte.class, new ShortToByte());
         shortMap.put(char.class, new ShortToChar());
-        shortMap.put(short.class, new MultiArrayCopyFactory());
+        shortMap.put(short.class, new MultiArrayCopyFactory<short[], short[]>());
         shortMap.put(int.class, new ShortToInt());
         shortMap.put(long.class, new ShortToLong());
         shortMap.put(float.class, new ShortToFloat());
         shortMap.put(double.class, new ShortToDouble());
         factories.put(short.class, Collections.unmodifiableMap(shortMap));
 
-        Map<Class<?>, MultiArrayCopyFactory> intMap = new HashMap<>();
+        Map<Class<?>, MultiArrayCopyFactory<int[], ?>> intMap = new HashMap<>();
         intMap.put(byte.class, new IntToByte());
         intMap.put(char.class, new IntToChar());
         intMap.put(short.class, new IntToShort());
-        intMap.put(int.class, new MultiArrayCopyFactory());
+        intMap.put(int.class, new MultiArrayCopyFactory<int[], int[]>());
         intMap.put(long.class, new IntToLong());
         intMap.put(float.class, new IntToFloat());
         intMap.put(double.class, new IntToDouble());
         factories.put(int.class, Collections.unmodifiableMap(intMap));
 
-        Map<Class<?>, MultiArrayCopyFactory> longMap = new HashMap<>();
+        Map<Class<?>, MultiArrayCopyFactory<long[], ?>> longMap = new HashMap<>();
         longMap.put(byte.class, new LongToByte());
         longMap.put(char.class, new LongToChar());
         longMap.put(short.class, new LongToShort());
         longMap.put(int.class, new LongToInt());
-        longMap.put(long.class, new MultiArrayCopyFactory());
+        longMap.put(long.class, new MultiArrayCopyFactory<long[], long[]>());
         longMap.put(float.class, new LongToFloat());
         longMap.put(double.class, new LongToDouble());
         factories.put(long.class, Collections.unmodifiableMap(longMap));
 
-        Map<Class<?>, MultiArrayCopyFactory> floatMap = new HashMap<>();
+        Map<Class<?>, MultiArrayCopyFactory<float[], ?>> floatMap = new HashMap<>();
         floatMap.put(byte.class, new FloatToByte());
         floatMap.put(char.class, new FloatToChar());
         floatMap.put(short.class, new FloatToShort());
         floatMap.put(int.class, new FloatToInt());
         floatMap.put(long.class, new FloatToLong());
-        floatMap.put(float.class, new MultiArrayCopyFactory());
+        floatMap.put(float.class, new MultiArrayCopyFactory<float[], float[]>());
         floatMap.put(double.class, new FloatToDouble());
         factories.put(float.class, Collections.unmodifiableMap(floatMap));
 
-        Map<Class<?>, MultiArrayCopyFactory> doubleMap = new HashMap<>();
+        Map<Class<?>, MultiArrayCopyFactory<double[], ?>> doubleMap = new HashMap<>();
         doubleMap.put(byte.class, new DoubleToByte());
         doubleMap.put(char.class, new DoubleToChar());
         doubleMap.put(short.class, new DoubleToShort());
         doubleMap.put(int.class, new DoubleToInt());
         doubleMap.put(long.class, new DoubleToLong());
         doubleMap.put(float.class, new DoubleToFloat());
-        doubleMap.put(double.class, new MultiArrayCopyFactory());
+        doubleMap.put(double.class, new MultiArrayCopyFactory<double[], double[]>());
         factories.put(double.class, Collections.unmodifiableMap(doubleMap));
 
         FACTORIES = Collections.unmodifiableMap(factories);
     }
 
-    public static MultiArrayCopyFactory select(Class<?> primitiveType, Class<?> primitiveType2) {
-        Map<Class<?>, MultiArrayCopyFactory> from = MultiArrayCopyFactory.FACTORIES.get(primitiveType);
+    public static MultiArrayCopyFactory<?, ?> select(Class<?> primitiveType, Class<?> primitiveType2) {
+        Map<Class<?>, MultiArrayCopyFactory<?, ?>> from = MultiArrayCopyFactory.FACTORIES.get(primitiveType);
         if (from != null) {
-            MultiArrayCopyFactory to = from.get(primitiveType2);
+            MultiArrayCopyFactory<?, ?> to = from.get(primitiveType2);
             if (to != null) {
                 return to;
             }
@@ -640,7 +563,7 @@ public class MultiArrayCopyFactory {
         return MultiArrayCopyFactory.GENERIC;
     }
 
-    public void arraycopy(Object src, int srcPos, Object dest, int destPos, int length) {
+    public void arraycopy(Source src, int srcPos, Destination dest, int destPos, int length) {
         System.arraycopy(src, srcPos, dest, destPos, length);
     }
 

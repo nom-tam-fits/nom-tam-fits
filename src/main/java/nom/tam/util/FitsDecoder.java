@@ -35,7 +35,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
-import java.nio.ByteBuffer;
 
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.type.ElementType;
@@ -45,31 +44,23 @@ import nom.tam.util.type.ElementType;
  * and supported select Objects.
  * 
  * @author Attila Kovacs
+ * 
  * @since 1.16
+ * 
  * @see FitsEncoder
- * @see FitsDataInputStream
+ * @see FitsInputStream
  * @see FitsFile
  */
-public class FitsDecoder {
-
-    private static final int BUFFER_SIZE = FitsFactory.FITS_BLOCK_SIZE;
-
-    private static final int BYTE_MASK = 0xFF;
-
-    private static final int SHORT_MASK = 0xFFFF;
+public class FitsDecoder extends ArrayDecoder {
 
     private static final byte FITS_TRUE = (byte) 'T';
 
-    private final InputReader in;
-
-    private Buffer buf = new Buffer();
-
     public FitsDecoder(InputReader i) {
-        this.in = i;
+        super(i);
     }
 
     public FitsDecoder(InputStream i) {
-        this((InputReader) new FitsDataInputStream(i));
+        super(i);
     }
 
     int eofCheck(EOFException e, int gotBytes) throws EOFException {
@@ -100,11 +91,11 @@ public class FitsDecoder {
      * @throws IOException
      *             if the underlying operation fails
      */
-    protected boolean readBoolean() throws IOException {
+    protected synchronized boolean readBoolean() throws IOException {
         return booleanFor(readByte());
     }
 
-    protected Boolean readBooleanObject() throws IOException {
+    protected synchronized Boolean readBooleanObject() throws IOException {
         return booleanObjectFor(readByte());
     }
 
@@ -113,7 +104,7 @@ public class FitsDecoder {
      * @throws IOException
      *             if the underlying operation fails
      */
-    protected char readChar() throws IOException {
+    protected synchronized char readChar() throws IOException {
         if (FitsFactory.isUseUnicodeChars()) {
             return (char) readUnsignedShort();
         }
@@ -121,15 +112,15 @@ public class FitsDecoder {
     }
 
     protected final byte readByte() throws IOException {
-        int i = in.read();
+        int i = read();
         if (i < 0) {
             throw new EOFException();
         }
         return (byte) i;
     }
 
-    protected int readUnsignedByte() throws IOException {
-        return in.read();
+    protected synchronized int readUnsignedByte() throws IOException {
+        return read();
     }
 
     protected final short readShort() throws IOException {
@@ -140,35 +131,35 @@ public class FitsDecoder {
         return (short) i;
     }
 
-    protected int readUnsignedShort() throws IOException {
+    protected synchronized int readUnsignedShort() throws IOException {
         buf.loadOne(ElementType.SHORT.size());
         return buf.getUnsignedShort();
     }
 
-    protected int readInt() throws IOException {
+    protected synchronized int readInt() throws IOException {
         buf.loadOne(ElementType.INT.size());
         return buf.getInt();
     }
 
-    protected long readLong() throws IOException {
+    protected synchronized long readLong() throws IOException {
         buf.loadOne(ElementType.LONG.size());
         return buf.getLong();
     }
 
-    protected float readFloat() throws IOException {
+    protected synchronized float readFloat() throws IOException {
         buf.loadOne(ElementType.FLOAT.size());
         return buf.getFloat();
     }
 
-    protected double readDouble() throws IOException {
+    protected synchronized double readDouble() throws IOException {
         buf.loadOne(ElementType.DOUBLE.size());
         return buf.getDouble();
     }
 
-    protected String readAsciiLine() throws IOException {
+    protected synchronized String readAsciiLine() throws IOException {
         StringBuffer str = new StringBuffer();
         int c = 0;
-        while ((c = in.read()) > 0) {
+        while ((c = read()) > 0) {
             if (c == '\n') {
                 break;
             }
@@ -176,85 +167,91 @@ public class FitsDecoder {
         }
         return new String(str);
     }
-
-    protected int read(byte[] b, int start, int length) throws IOException {
-        return in.read(b, start, length);
-    }
-
-    protected final void readFully(byte[] b) throws IOException {
-        readFully(b, 0, b.length);
-    }
-
-    protected void readFully(byte[] b, int off, int len) throws IOException {
-        int n = read(b, off, len);
-        if (n < len) {
-            throw new EOFException("EOF at " + n + " of " + len + " requested");
-        }
-    }
-
-    protected int read(boolean[] b, int start, int length) throws IOException {
+ 
+    protected synchronized int read(boolean[] b, int start, int length) throws IOException {
         buf.loadBytes(length, 1);
         int to = length + start;
         int k = start;
 
-        for (; k < to; k++) {
-            int i = buf.get();
-            if (i < 0) {
-                break;
+        try {
+            for (; k < to; k++) {
+                int i = buf.get();
+                if (i < 0) {
+                    break;
+                }
+                b[k] = booleanFor(i);
             }
-            b[k] = booleanFor(i);
+        } catch (EOFException e) {
+            // The underlying read(byte[], int, int) may throw an EOFException
+            // (even though it should not), and so we should be prepared for that...
+            return eofCheck(e, k - start);
         }
-
+        
         if (k != to) {
-            return eofCheck(new EOFException(), k - start);
+            k -= start;
+            return eofCheck(new EOFException("EOF after reading " + k + " of " + length + " elements."), k);
         }
 
         return length;
     }
 
-    protected int read(Boolean[] b, int start, int length) throws IOException {
+    protected synchronized int read(Boolean[] b, int start, int length) throws IOException {
         buf.loadBytes(length, 1);
         int to = length + start;
         int k = start;
 
-        for (; k < to; k++) {
-            int i = buf.get();
-            if (i < 0) {
-                break;
+        try {
+            for (; k < to; k++) {
+                int i = buf.get();
+                if (i < 0) {
+                    break;
+                }
+                b[k] = booleanObjectFor(i);
             }
-            b[k] = booleanObjectFor(i);
+        } catch (EOFException e) {
+            // The underlying read(byte[], int, int) may throw an EOFException
+            // (even though it should not), and so we should be prepared for that...
+            return eofCheck(e, k - start);
         }
-
+        
         if (k != to) {
-            return eofCheck(new EOFException(), k - start);
+            k -= start;
+            return eofCheck(new EOFException("EOF after reading " + k + " of " + length + " elements."), k);
         }
 
         return length;
     }
 
-    protected int read(char[] c, int start, int length) throws IOException {
+    protected synchronized int read(char[] c, int start, int length) throws IOException {
         buf.loadBytes(length, ElementType.CHAR.size());
         int to = length + start;
         int k = start;
 
         final boolean isUnicode = ElementType.CHAR.size() != 1;
 
-        for (; k < to; k++) {
-            int i = isUnicode ? buf.getUnsignedShort() : buf.get();
-            if (i < 0) {
-                break;
+        try {
+            for (; k < to; k++) {
+                int i = isUnicode ? buf.getUnsignedShort() : buf.get();
+                if (i < 0) {
+                    break;
+                }
+                c[k] = (char) i;
             }
-            c[k] = (char) i;
+        } catch (EOFException e) {
+            // The underlying read(byte[], int, int) may throw an EOFException
+            // (even though it should not), and so we should be prepared for that...
+            return eofCheck(e, (k - start) * ElementType.CHAR.size());
         }
 
         if (k != to) {
-            return eofCheck(new EOFException(), (k - start) * ElementType.CHAR.size());
+            k -= start;
+            return eofCheck(new EOFException("EOF after reading " + k + " of " + length + " elements."), k * ElementType.CHAR.size());
         }
 
         return length * ElementType.CHAR.size();
     }
 
-    protected int read(short[] s, int start, int length) throws IOException {
+    protected synchronized int read(short[] s, int start, int length) throws IOException {
         buf.loadBytes(length, ElementType.SHORT.size());
         int to = length + start;
         int k = start;
@@ -268,13 +265,14 @@ public class FitsDecoder {
         }
 
         if (k != to) {
-            return eofCheck(new EOFException(), (k - start) * ElementType.SHORT.size());
+            k -= start;
+            return eofCheck(new EOFException("EOF after reading " + k + " of " + length + " elements."), k * ElementType.SHORT.size());
         }
 
         return length * ElementType.SHORT.size();
     }
 
-    protected int read(int[] j, int start, int length) throws IOException {
+    protected synchronized int read(int[] j, int start, int length) throws IOException {
         buf.loadBytes(length, ElementType.INT.size());
         int to = length + start;
         int k = start;
@@ -289,7 +287,7 @@ public class FitsDecoder {
         return length * ElementType.INT.size();
     }
 
-    protected int read(long[] l, int start, int length) throws IOException {
+    protected synchronized int read(long[] l, int start, int length) throws IOException {
         buf.loadBytes(length, ElementType.LONG.size());
         int to = length + start;
         int k = start;
@@ -304,7 +302,7 @@ public class FitsDecoder {
         return length * ElementType.LONG.size();
     }
 
-    protected int read(float[] f, int start, int length) throws IOException {
+    protected synchronized int read(float[] f, int start, int length) throws IOException {
         buf.loadBytes(length, ElementType.FLOAT.size());
         int to = length + start;
         int k = start;
@@ -319,7 +317,7 @@ public class FitsDecoder {
         return length * ElementType.FLOAT.size();
     }
 
-    protected int read(double[] d, int start, int length) throws IOException {
+    protected synchronized int read(double[] d, int start, int length) throws IOException {
         buf.loadBytes(length, ElementType.DOUBLE.size());
         int to = length + start;
         int k = start;
@@ -334,7 +332,8 @@ public class FitsDecoder {
         return length * ElementType.DOUBLE.size();
     }
 
-    public long readLArray(Object o) throws IOException {
+    @Override
+    public synchronized long readLArray(Object o) throws IOException {
         if (o == null) {
             return 0L;
         }
@@ -394,129 +393,5 @@ public class FitsDecoder {
         }
 
         throw new IllegalArgumentException("Cannot read type: " + o.getClass().getName());
-    }
-
-    /**
-     * In internal buffer for efficient conversion, and with guaranteed whole
-     * element storage.
-     * 
-     * @author Attila Kovacs
-     */
-    private class Buffer {
-
-        private byte[] data = new byte[BUFFER_SIZE];
-
-        private ByteBuffer buffer = ByteBuffer.wrap(data);
-
-        private int end = 0;
-
-        private long pending = 0;
-
-        void loadBytes(long n, int size) throws IOException {
-            buffer.rewind();
-            this.end = 0;
-            this.pending = n * size;
-        }
-
-        /** 
-         * Loads just a single element of the specified byte size. The element must fit into the
-         * conversion buffer, and it is up to the caller to ensure that. The method itself does not 
-         * check.
-         * 
-         * @param size      The number of bytes in the element
-         * @return          <code>true</code> if the data was successfully read from the uderlying 
-         *                  stream or file, otherwise <code>false</code>.
-         * @throws IOException      if there was an IO error, other than the end-of-file.
-         */
-        boolean loadOne(int size) throws IOException {
-            buffer.rewind();
-            this.pending = size;
-            this.end = in.read(data, 0, size);
-            return end == size;
-        }
-
-        boolean makeAvailable(int size) throws IOException {
-            if (buffer.position() + size > end) {
-                if (!fetch()) {
-                    return false;
-                }
-                if (size > end) {
-                    // We still don't have enough data buffered to even for a
-                    // single element.
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        boolean fetch() throws IOException {
-            int remaining = end - buffer.position();
-
-            if (remaining > 0) {
-                System.arraycopy(data, buffer.position(), data, 0, remaining);
-            }
-
-            buffer.rewind();
-
-            int n = (int) Math.min(pending, data.length - remaining);
-            if (n == 1) {
-                int i = in.read();
-                if (i < 0) {
-                    return false;
-                }
-                data[remaining] = (byte) i;
-            } else {
-                n = in.read(data, remaining, n);
-                if (n < 0) {
-                    return false;
-                }
-            }
-            end = remaining + n;
-            pending -= n;
-
-            return true;
-        }
-
-        int get() throws IOException {
-            if (makeAvailable(1)) {
-                return buffer.get() & BYTE_MASK;
-            }
-            return -1;
-        }
-
-        int getUnsignedShort() throws IOException {
-            if (makeAvailable(FitsIO.BYTES_IN_SHORT)) {
-                return buffer.getShort() & SHORT_MASK;
-            }
-            return -1;
-        }
-
-        int getInt() throws IOException {
-            if (makeAvailable(FitsIO.BYTES_IN_INTEGER)) {
-                return buffer.getInt();
-            }
-            throw new EOFException();
-        }
-
-        long getLong() throws IOException {
-            if (makeAvailable(FitsIO.BYTES_IN_LONG)) {
-                return buffer.getLong();
-            }
-            throw new EOFException();
-        }
-
-        float getFloat() throws IOException {
-            if (makeAvailable(FitsIO.BYTES_IN_FLOAT)) {
-                return buffer.getFloat();
-            }
-            throw new EOFException();
-        }
-
-        double getDouble() throws IOException {
-            if (makeAvailable(FitsIO.BYTES_IN_DOUBLE)) {
-                return buffer.getDouble();
-            }
-            throw new EOFException();
-        }
     }
 }

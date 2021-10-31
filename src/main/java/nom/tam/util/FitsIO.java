@@ -48,7 +48,7 @@ public interface FitsIO extends Closeable {
     /**
      * default buffer size to use unless specified otherwise.
      */
-    int DEFAULT_BUFFER_SIZE = FitsFactory.FITS_BLOCK_SIZE * 16;
+    int DEFAULT_BUFFER_SIZE = FitsFactory.FITS_BLOCK_SIZE * 32;
 
     /**
      * number of bits in one byte.

@@ -81,7 +81,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
         writeAhead = false;
     }
     
-    public final void seek(long newPos) throws IOException {
+    public final synchronized void seek(long newPos) throws IOException {
         // Check that the new position is valid
         if (newPos < 0) {                
             throw new IllegalArgumentException("seek at " + newPos);
@@ -141,7 +141,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * 
      * @return the current byte offset from the beginning of the file.
      */
-    public final long getFilePointer() {
+    public final synchronized long getFilePointer() {
         return startOfBuf + offset;
     }
     
@@ -190,7 +190,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *              
      * @throws IOException  if there was an IO error accessing the file.
      */
-    public final boolean hasAvailable(int need) throws IOException {
+    public final synchronized boolean hasAvailable(int need) throws IOException {
         if (end >= offset + need) {
             return true;
         }
@@ -207,7 +207,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * @throws IOException
      *             if the operation failed
      */
-    public final long length() throws IOException {
+    public final synchronized long length() throws IOException {
         // It's either the file's length or that of the end of the (yet) unsynched buffer...
         return Math.max(file.length(), startOfBuf + end);
     }
@@ -222,7 +222,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * @throws IOException
      *             if the resizing of the underlying stream fails
      */
-    public void setLength(long newLength) throws IOException {
+    public synchronized void setLength(long newLength) throws IOException {
         // Check if we can change the length inside the current buffer.
         final long bufEnd = startOfBuf + end;
         if (newLength >= startOfBuf && newLength < bufEnd) {
@@ -263,7 +263,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
     }
     
     @Override
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
         flush();
         file.close();
         startOfBuf = 0;
@@ -281,7 +281,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
     }
     
     @Override
-    public void flush() throws IOException {
+    public synchronized void flush() throws IOException {
         if (!isModified) {
             return;
         }
@@ -317,7 +317,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
     
     
     @Override
-    public final int read() throws IOException {
+    public final synchronized int read() throws IOException {
         if (!makeAvailable()) {
             // By contract of read(), it returns -1 at th end of file.
             return -1;
@@ -329,7 +329,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
     
     
     @Override
-    public final void write(byte[] b, int from, int len) throws IOException {
+    public final synchronized void write(byte[] b, int from, int len) throws IOException {
         if (len <= 0) {
             return;
         }
@@ -370,7 +370,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
     }
     
     @Override
-    public final int read(byte[] b, int from, int len) throws IOException {
+    public final synchronized int read(byte[] b, int from, int len) throws IOException {
         if (len <= 0) {
             // Nothing to do.
             return 0;
@@ -402,14 +402,14 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
         return got;
     }
     
-    public final String readUTF() throws IOException {
+    public final synchronized String readUTF() throws IOException {
         matchBufferPos();
         String s = file.readUTF();
         matchFilePos();
         return s;
     }
 
-    public final void writeUTF(String s) throws IOException {
+    public final synchronized void writeUTF(String s) throws IOException {
         matchBufferPos();
         file.writeUTF(s);
         matchFilePos();
@@ -424,7 +424,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *              fewer than requested if the file boundary was reached.
      * @throws IOException  if there was an IO error.
      */
-    public final long skip(long n) throws IOException {
+    public final synchronized long skip(long n) throws IOException {
         if (offset + n >= 0 && offset + n <= end) {
             // Skip within the buffered region...
             offset = (int) (offset + n);

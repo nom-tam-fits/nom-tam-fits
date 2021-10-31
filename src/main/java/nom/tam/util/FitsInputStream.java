@@ -1,12 +1,8 @@
-package nom.tam.util;
-
-import static nom.tam.util.LoggerHelper.getLogger;
-
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2015 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -33,8 +29,12 @@ import static nom.tam.util.LoggerHelper.getLogger;
  * #L%
  */
 
+package nom.tam.util;
+
+import static nom.tam.util.LoggerHelper.getLogger;
+
+
 // What do we use in here?
-import java.io.BufferedInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.EOFException;
@@ -44,29 +44,35 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This class is intended for high performance data I/O when reading
- * FITS files or blocks of FITS data.
+ * This class is intended for high performance reading FITS files or blocks 
+ * of FITS data.
  *
  * <p>
  * Testing and timing routines are provided in the
  * nom.tam.util.test.BufferedFileTester class. 
  * 
- * <p>
- * Version 1.1: October 12, 2000:
- * Fixed handling of EOF to return partially read arrays when EOF is detected
- * <p>
- * Version 1.2: July 20, 2009: Added handling of very large Object arrays.
- * Additional work is required to handle very large arrays generally.
+ * <p>Prior versions under the old <code>BufferedDataInputStream</code>:
+ * <ul>
+ * <li>
+ * Version 1.1 -- October 12, 2000:
+ * Fixed handling of EOF to return partially read arrays when EOF is detected</li>
+ * <li>
+ * Version 1.2 -- July 20, 2009: Added handling of very large Object arrays.
+ * Additional work is required to handle very large arrays generally.</li>
+ * </ul>
  * 
- * @see FitsDataInputStream
+ * <p>
+ * Version 2.0 -- October 30, 2021: Completely overhauled, with new name and 
+ * hierarchy. Performance is 2-4 times better than before (Attila Kovacs)
+ * 
+ * 
+ * @see FitsInputStream
  * @see FitsFile
  */
-public class FitsDataInputStream extends BufferedInputStream implements InputReader, ArrayDataInput {
+public class FitsInputStream extends ArrayInputStream implements ArrayDataInput {
 
-    private static final Logger LOG = getLogger(FitsDataInputStream.class);
-    
-    private final FitsDecoder decoder;
-    
+    private static final Logger LOG = getLogger(FitsInputStream.class);
+        
     private DataInput data;
     
     /**
@@ -78,10 +84,10 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
      * @param bufLength
      *            the buffer length to use.
      */
-    public FitsDataInputStream(InputStream i, int bufLength) { 
+    public FitsInputStream(InputStream i, int bufLength) { 
         super(i, bufLength);
         data = new DataInputStream(this);
-        decoder = new FitsDecoder((InputReader) this);
+        setDecoder(new FitsDecoder((InputReader) this));
     }
     
     
@@ -91,9 +97,15 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
      * @param o
      *            the input stream to use for reading.
      */
-    public FitsDataInputStream(InputStream o) {
+    public FitsInputStream(InputStream o) {
         this(o, FitsIO.DEFAULT_BUFFER_SIZE);
     }
+    
+    @Override
+    protected FitsDecoder getDecoder() {
+        return (FitsDecoder) super.getDecoder();
+    }
+    
     
     @Override
     public final int read(boolean[] b) throws IOException {
@@ -102,7 +114,7 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
 
     @Override
     public int read(boolean[] b, int start, int length) throws IOException {
-        return decoder.read(b, start, length);
+        return getDecoder().read(b, start, length);
     }
 
     @Override
@@ -112,7 +124,7 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
 
     @Override
     public int read(Boolean[] b, int start, int length) throws IOException {
-        return decoder.read(b, start, length);
+        return getDecoder().read(b, start, length);
     }
     
    
@@ -123,7 +135,7 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
 
     @Override
     public int read(char[] c, int start, int length) throws IOException {
-        return decoder.read(c, start, length);
+        return getDecoder().read(c, start, length);
     }
 
     @Override
@@ -133,7 +145,7 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
 
     @Override
     public int read(double[] d, int start, int length) throws IOException {
-        return decoder.read(d, start, length);
+        return getDecoder().read(d, start, length);
     }
 
     @Override
@@ -143,7 +155,7 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
 
     @Override
     public int read(float[] f, int start, int length) throws IOException {
-        return decoder.read(f, start, length);
+        return getDecoder().read(f, start, length);
     }
 
     @Override
@@ -153,7 +165,7 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
 
     @Override
     public int read(int[] i, int start, int length) throws IOException {
-        return decoder.read(i, start, length);
+        return getDecoder().read(i, start, length);
     }
 
     @Override
@@ -163,7 +175,7 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
 
     @Override
     public int read(long[] l, int start, int length) throws IOException {
-        return decoder.read(l, start, length);
+        return getDecoder().read(l, start, length);
     }
 
     @Override
@@ -173,7 +185,7 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
 
     @Override
     public int read(short[] s, int start, int length) throws IOException {
-        return decoder.read(s, start, length);
+        return getDecoder().read(s, start, length);
     }
 
     @Deprecated
@@ -181,16 +193,6 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
     public final int readArray(Object o) throws IOException {
         return (int) readLArray(o);
     }
-
-    @Override
-    public long readLArray(Object o) throws IOException {
-        try { 
-            return decoder.readLArray(o);
-        } catch (IllegalArgumentException e) {
-            throw new IOException(e);
-        }
-    }
-
  
     /**
      * This routine provides efficient reading of arrays of any primitive type.
@@ -250,35 +252,35 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
 
     @Override
     public boolean readBoolean() throws IOException {
-        return decoder.readBoolean();
+        return getDecoder().readBoolean();
     }
 
     @Override
     public Boolean readBooleanObject() throws IOException {
-        return decoder.readBooleanObject();
+        return getDecoder().readBooleanObject();
     }
 
     @Override
     public byte readByte() throws IOException {
-        return decoder.readByte();
+        return getDecoder().readByte();
     }
 
 
     @Override
     public char readChar() throws IOException {
-        return decoder.readChar();
+        return getDecoder().readChar();
     }
 
 
     @Override
     public double readDouble() throws IOException {
-        return decoder.readDouble();
+        return getDecoder().readDouble();
     }
 
 
     @Override
     public float readFloat() throws IOException {
-        return decoder.readFloat();
+        return getDecoder().readFloat();
     }
 
 
@@ -290,7 +292,7 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
 
     @Override
     public int readInt() throws IOException {
-        return decoder.readInt();
+        return getDecoder().readInt();
     }
 
     /**
@@ -300,19 +302,19 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
      */
     @Override
     public final String readLine() throws IOException {
-        return decoder.readAsciiLine();
+        return getDecoder().readAsciiLine();
     }
 
 
     @Override
     public long readLong() throws IOException {
-        return decoder.readLong();
+        return getDecoder().readLong();
     }
 
 
     @Override
     public short readShort() throws IOException {
-        return decoder.readShort();
+        return getDecoder().readShort();
     }
 
 
@@ -324,13 +326,13 @@ public class FitsDataInputStream extends BufferedInputStream implements InputRea
 
     @Override
     public int readUnsignedByte() throws IOException {
-        return decoder.readUnsignedByte();
+        return getDecoder().readUnsignedByte();
     }
 
 
     @Override
     public int readUnsignedShort() throws IOException {
-        return decoder.readUnsignedShort();
+        return getDecoder().readUnsignedShort();
     }
 
 

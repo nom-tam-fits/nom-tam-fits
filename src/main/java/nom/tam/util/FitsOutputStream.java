@@ -30,26 +30,28 @@
  */
 package nom.tam.util;
 
-import java.io.BufferedOutputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+
 /**
- * This class is intended for high performance I/O for writing FITS files or 
+ * This class is intended for high performance writing FITS files or 
  * FITS data blocks.
  *
  * <p>
  * Testing and timing for this class is performed in the
  * nom.tam.util.test.BufferedFileTester class.
  * 
- * @see FitsDataInputStream
+ * <p>
+ * Version 2.0 -- October 30, 2021: Completely overhauled, with new name and 
+ * hierarchy. Performance is 2-4 times better than before. (Attila Kovacs)
+ * 
+ * @see FitsInputStream
  * @see FitsFile
  */
-public class FitsDataOutputStream extends BufferedOutputStream implements OutputWriter, ArrayDataOutput {
-
-    private final FitsEncoder encoder;
+public class FitsOutputStream extends ArrayOutputStream implements ArrayDataOutput {
 
     private final DataOutput data;
     
@@ -59,7 +61,7 @@ public class FitsDataOutputStream extends BufferedOutputStream implements Output
      * @param o
      *            An open output stream.
      */
-    public FitsDataOutputStream(OutputStream o) {
+    public FitsOutputStream(OutputStream o) {
         this(o, FitsIO.DEFAULT_BUFFER_SIZE);
     }
 
@@ -71,15 +73,22 @@ public class FitsDataOutputStream extends BufferedOutputStream implements Output
      * @param bufLength
      *            The buffer size.
      */
-    public FitsDataOutputStream(OutputStream o, int bufLength) {
+    public FitsOutputStream(OutputStream o, int bufLength) {
         super(o, bufLength);
-        encoder = new FitsEncoder((OutputWriter) this);
+        setEncoder(new FitsEncoder((OutputWriter) this));
         if (o instanceof DataOutput) {
             data = (DataOutput) o;
         } else {
             data = new DataOutputStream(o);
         }
     }
+    
+    @Override
+    protected FitsEncoder getEncoder() {
+        return (FitsEncoder) super.getEncoder();
+    }
+    
+  
 
     /**
      * @deprecated  No longer used, and it does exactly nothing.
@@ -96,7 +105,7 @@ public class FitsDataOutputStream extends BufferedOutputStream implements Output
 
     @Override
     public void write(boolean[] b, int start, int length) throws IOException {
-        encoder.write(b, start, length);
+        getEncoder().write(b, start, length);
     }
 
     @Override
@@ -106,7 +115,7 @@ public class FitsDataOutputStream extends BufferedOutputStream implements Output
 
     @Override
     public void write(Boolean[] buf, int offset, int size) throws IOException {
-        encoder.write(buf, offset, size);
+        getEncoder().write(buf, offset, size);
     }
     
     @Override
@@ -116,7 +125,7 @@ public class FitsDataOutputStream extends BufferedOutputStream implements Output
 
     @Override
     public void write(char[] c, int start, int length) throws IOException {
-        encoder.write(c, start, length);
+        getEncoder().write(c, start, length);
     }
 
     @Override
@@ -126,7 +135,7 @@ public class FitsDataOutputStream extends BufferedOutputStream implements Output
 
     @Override
     public void write(double[] d, int start, int length) throws IOException {
-        encoder.write(d, start, length);
+        getEncoder().write(d, start, length);
     }
 
     @Override
@@ -136,7 +145,7 @@ public class FitsDataOutputStream extends BufferedOutputStream implements Output
 
     @Override
     public void write(float[] f, int start, int length) throws IOException {
-        encoder.write(f, start, length);
+        getEncoder().write(f, start, length);
     }
 
     @Override
@@ -146,7 +155,7 @@ public class FitsDataOutputStream extends BufferedOutputStream implements Output
 
     @Override
     public void write(int[] i, int start, int length) throws IOException {
-        encoder.write(i, start, length);
+        getEncoder().write(i, start, length);
     }
 
     @Override
@@ -156,7 +165,7 @@ public class FitsDataOutputStream extends BufferedOutputStream implements Output
 
     @Override
     public void write(long[] l, int start, int length) throws IOException {
-        encoder.write(l, start, length);
+        getEncoder().write(l, start, length);
     }
 
     @Override
@@ -166,7 +175,7 @@ public class FitsDataOutputStream extends BufferedOutputStream implements Output
 
     @Override
     public void write(short[] s, int start, int length) throws IOException {
-        encoder.write(s, start, length);
+        getEncoder().write(s, start, length);
     }
 
     @Override
@@ -176,16 +185,7 @@ public class FitsDataOutputStream extends BufferedOutputStream implements Output
 
     @Override
     public void write(String[] s, int start, int len) throws IOException {
-        encoder.write(s, start, len);
-    }
-
-    @Override
-    public void writeArray(Object o) throws IOException {
-        try {
-            encoder.writeArray(o);
-        } catch (IllegalArgumentException e) {
-            throw new IOException(e);
-        }
+        getEncoder().write(s, start, len);
     }
 
     /**
@@ -204,57 +204,57 @@ public class FitsDataOutputStream extends BufferedOutputStream implements Output
 
     @Override
     public void writeBoolean(boolean b) throws IOException {
-        encoder.writeBoolean(b);
+        getEncoder().writeBoolean(b);
     }
     
     @Override
     public void writeBoolean(Boolean b) throws IOException {
-        encoder.writeBoolean(b);
+        getEncoder().writeBoolean(b);
     }
 
     @Override
     public void writeChar(int c) throws IOException {
-        encoder.writeChar(c);
+        getEncoder().writeChar(c);
     }
 
     @Override
     public void writeChars(String s) throws IOException {
-        encoder.writeChars(s);
+        getEncoder().writeChars(s);
     }
     
     @Override
     public void writeByte(int b) throws IOException {
-        encoder.writeByte(b);        
+        getEncoder().writeByte(b);        
     }
 
     @Override
     public void writeBytes(String s) throws IOException {
-        encoder.writeBytes(s);
+        getEncoder().writeBytes(s);
     }
 
     @Override
     public void writeDouble(double d) throws IOException {
-        encoder.writeDouble(d);
+        getEncoder().writeDouble(d);
     }
 
     @Override
     public void writeFloat(float f) throws IOException {
-        encoder.writeFloat(f);
+        getEncoder().writeFloat(f);
     }
 
     @Override
     public void writeInt(int i) throws IOException {
-        encoder.writeInt(i);
+        getEncoder().writeInt(i);
     }
 
     @Override
     public void writeLong(long l) throws IOException {
-        encoder.writeLong(l);
+        getEncoder().writeLong(l);
     }
 
     @Override
     public void writeShort(int s) throws IOException {
-        encoder.writeShort(s);
+        getEncoder().writeShort(s);
     }
 
     @Override

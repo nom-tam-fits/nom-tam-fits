@@ -37,7 +37,8 @@ import java.io.IOException;
 
 /**
  * @deprecated  Use {@link FitsEncoder} instead, which provides a similar function but in
- *      a more generic way, and with a less misleading name.
+ *      a more consistent way and with a less misleading name, or else use {@link ArrayEncoder}
+ *      as a base for implementing efficient custom encoding of binary outputs. 
  *
  * @see FitsEncoder
  */

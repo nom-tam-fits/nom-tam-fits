@@ -37,7 +37,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.util.array.MultiArrayCopier;
-import nom.tam.util.array.MultiArrayIterator;
 import nom.tam.util.type.ElementType;
 
 /**
@@ -67,35 +66,41 @@ public final class ArrayFuncs {
                 .toString();
     }
 
+    /**
+     * Returns the size of this object as the number of bytes in a FITS binary representation.
+     * 
+     * @param o     the object
+     * @return      the number of bytes in the FITS binary representation of the object
+     */
     public static long computeLSize(Object o) {
         if (o == null) {
             return 0;
         }
-        if (o.getClass().isArray()) {
+        
+        if (o instanceof Object[]) {
             long size = 0;
-            MultiArrayIterator iter = new MultiArrayIterator(o);
-            Object array;
-            while ((array = iter.next()) != null) {
-                long length = Array.getLength(array);
-                if (length > 0) {
-                    Class<?> componentType = array.getClass().getComponentType();
-                    ElementType<?> elementType = ElementType.forClass(componentType);
-                    if (componentType.isPrimitive()) {
-                        size += length * elementType.size();
-                    } else {
-                        for (int index = 0; index < length; index++) {
-                            size += elementType.size(Array.get(array, index));
-                        }
-                    }
-                }
+            for (Object e : (Object[]) o) {
+                size += computeLSize(e);
             }
-            return size;
+            return size;            
         }
-        ElementType<?> elementType = ElementType.forClass(o.getClass());
-        if (elementType.isVariableSize()) {
-            return elementType.size(o);
+        
+        Class<?> type = o.getClass();          
+        ElementType<?> eType = type.isArray() ? ElementType.forClass(type.getComponentType()) : ElementType.forClass(type);
+        
+        if (eType == null) {
+            throw new IllegalArgumentException("Don't know FITS size of type " + type.getSimpleName());
+        }   
+        
+        if (eType.isVariableSize()) {
+            return eType.size(o);
         }
-        return elementType.size();
+        
+        if (type.isArray()) {
+            return Array.getLength(o) * eType.size();
+        }
+        
+        return eType.size();
     }
 
     /**
@@ -205,7 +210,10 @@ public final class ArrayFuncs {
         if (input == null) {
             return null;
         }
-        if (!input.getClass().isArray() || input.getClass().getComponentType().isArray()) {
+        if (!input.getClass().isArray()) {
+            throw new RuntimeException("Attempt to curl a non-array");
+        }
+        if (input.getClass().getComponentType().isArray()) {
             throw new RuntimeException("Attempt to curl non-1D array");
         }
         int size = Array.getLength(input);
@@ -320,7 +328,7 @@ public final class ArrayFuncs {
      * @return base array of a multi-dimensional array.
      */
     public static Object getBaseArray(Object o) {
-        if (o.getClass().getComponentType().isArray()) {
+        if (o instanceof Object[]) {
             return getBaseArray(Array.get(o, 0));
         }
         return o;
@@ -429,7 +437,6 @@ public final class ArrayFuncs {
         Object mimic;
 
         if (dims > 1) {
-
             Object[] xarray = (Object[]) array;
             int[] dimens = new int[dims];
             dimens[0] = xarray.length; // Leave other dimensions at 0.
@@ -508,20 +515,20 @@ public final class ArrayFuncs {
             return 0;
         }
 
-        String classname = o.getClass().getName();
-        if (classname.charAt(1) == '[') {
-            int count = 0;
-            for (int i = 0; i < ((Object[]) o).length; i += 1) {
-                count += nLElements(((Object[]) o)[i]);
+        if (o instanceof Object[]) {
+            long count = 0;
+            for (Object e : (Object[]) o) {
+                count += nLElements(e);
             }
             return count;
 
-        } else if (classname.charAt(0) == '[') {
+        } 
+        
+        if (o.getClass().isArray()) {
             return Array.getLength(o);
-
-        } else {
-            return 1;
-        }
+        } 
+        
+        return 1;
     }
 
     /**
