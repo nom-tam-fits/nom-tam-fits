@@ -62,10 +62,44 @@ public class HeaderProtectedTest {
         Assert.assertNotNull(actual);
     }
 
+    @Test(expected = HeaderCardException.class)
+    public void testInvalidReplaceKey1() throws Exception {
+        Header h = new Header();
+        h.addValue("TEST", "string", "comment");
+        h.replaceKey("TEST", "NOTVALID1");
+    }
+    
+    @Test(expected = HeaderCardException.class)
+    public void testInvalidReplaceKey2() throws Exception {
+        Header h = new Header();
+        h.addValue("TEST", "string", "comment");
+        h.replaceKey("TEST", "NOT\tVAL");
+    }
+    
+    @Test(expected = HeaderCardException.class)
+    public void testInvalidReplaceKey3() throws Exception {
+        Header h = new Header();
+        h.addValue("TEST", "string", "comment");
+        h.replaceKey("TEST", "NOT VAL");
+    }
+    
+    @Test(expected = HeaderCardException.class)
+    public void testInvalidReplaceKey4() throws Exception {
+        Header h = new Header();
+        h.addValue("TEST", "string", "comment");
+        h.replaceKey("TEST", "NOT*VAL");
+    }
+    
     @Test
     public void testTrueDataSize() throws Exception {
         Header header = new Header();
-        Assert.assertEquals(0L, header.trueDataSize());
+        // No BITPIX
+        Assert.assertEquals(0L, header.trueDataSize()); 
+        header.addValue(Standard.BITPIX, 32);
+        // No NAXIS
+        Assert.assertEquals(0L, header.trueDataSize()); 
+        
+        header = new Header();
         header.nullImage();
         header.write(new BufferedDataOutputStream(new ByteArrayOutputStream(), 80));
         Assert.assertEquals(0L, header.trueDataSize());

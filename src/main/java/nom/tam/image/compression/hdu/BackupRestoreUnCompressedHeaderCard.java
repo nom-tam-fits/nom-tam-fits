@@ -129,6 +129,7 @@ enum BackupRestoreUnCompressedHeaderCard {
     MAP_ZBLANK(ZBLANK),
     MAP_ZTILELEN(ZTILELEN),
     MAP_ZCTYPn(ZCTYPn),
+    @SuppressWarnings("deprecation")
     MAP_ZBLOCKED(ZBLOCKED),
     MAP_ZCMPTYPE(ZCMPTYPE),
     MAP_ZDATASUM(ZDATASUM),

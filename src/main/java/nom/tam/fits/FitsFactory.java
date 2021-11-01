@@ -52,29 +52,68 @@ import nom.tam.image.compression.hdu.CompressedTableHDU;
  */
 public final class FitsFactory {
 
+    private static final boolean DEFAULT_USE_ASCII_TABLES = false;
+    
+    private static final boolean DEFAULT_USE_HIERARCH = true;
+    
+    private static final boolean DEFAULT_USE_EXPONENT_D = false;
+    
+    private static final boolean DEFAULT_LONG_STRINGS_ENABLED = false;
+    
+    private static final boolean DEFAULT_CHECK_ASCII_STRINGS = false;
+    
+    private static final boolean DEFAULT_ALLOW_TERMINAL_JUNK = false;
+    
+    private static final boolean DEFAULT_ALLOW_HEADER_REPAIRS = false;
+    
+    private static final boolean DEFAULT_SKIP_BLANK_AFTER_ASSIGN = false;
+    
+    private static final boolean DEFAULT_CASE_SENSITIVE_HIERARCH = false;
+    
+    private static final IHierarchKeyFormatter DEFAULT_HIERARCH_FORMATTER = new StandardIHierarchKeyFormatter();
+    
+    
     protected static final class FitsSettings implements Cloneable {
 
-        private boolean useAsciiTables = true;
+        private boolean useAsciiTables;
 
-        // MBT (28-JUL-2017): change default from false to true.
-        // This is required for HIERARCH-based wide fits processing
-        // (see uk.ac.starlink.fits.WideFits).  If that gets backed out of,
-        // this could be set back to its factory setting (false).
-        private boolean useHierarch = true;
+        private boolean useHierarch;
         
-        private boolean checkAsciiStrings = false;
+        private boolean useExponentD;
+        
+        private boolean checkAsciiStrings;
 
-        private boolean allowTerminalJunk = false;
+        private boolean allowTerminalJunk;
 
-        private boolean allowHeaderRepairs = false;
+        private boolean allowHeaderRepairs;
 
-        private boolean longStringsEnabled = false;
+        private boolean longStringsEnabled;
 
-        private boolean skipBlankAfterAssign = false;
+        @Deprecated
+        private boolean skipBlankAfterAssign;
         
 
-        private IHierarchKeyFormatter hierarchKeyFormatter = new StandardIHierarchKeyFormatter();
+        private IHierarchKeyFormatter hierarchKeyFormatter = DEFAULT_HIERARCH_FORMATTER;
 
+        private FitsSettings() {
+            useAsciiTables = DEFAULT_USE_ASCII_TABLES;
+
+            // MBT (28-JUL-2017): change default from false to true.
+            // This is required for HIERARCH-based wide fits processing
+            // (see uk.ac.starlink.fits.WideFits).  If that gets backed out of,
+            // this could be set back to its factory setting (false).
+            useHierarch = DEFAULT_USE_HIERARCH;
+            
+            checkAsciiStrings = DEFAULT_CHECK_ASCII_STRINGS;
+            useExponentD = DEFAULT_USE_EXPONENT_D;
+            allowTerminalJunk = DEFAULT_ALLOW_TERMINAL_JUNK;
+            allowHeaderRepairs = DEFAULT_ALLOW_HEADER_REPAIRS;
+            longStringsEnabled = DEFAULT_LONG_STRINGS_ENABLED;
+            skipBlankAfterAssign = DEFAULT_SKIP_BLANK_AFTER_ASSIGN;
+            hierarchKeyFormatter = DEFAULT_HIERARCH_FORMATTER;
+            hierarchKeyFormatter.setCaseSensitive(DEFAULT_CASE_SENSITIVE_HIERARCH);
+        }
+        
         @Override
         protected FitsSettings clone() {
             try { 
@@ -92,7 +131,9 @@ public final class FitsFactory {
             return this.hierarchKeyFormatter;
         }
         
-        
+        protected boolean isUseExponentD() {
+            return this.useExponentD;
+        }
 
         protected boolean isAllowTerminalJunk() {
             return this.allowTerminalJunk;
@@ -106,6 +147,14 @@ public final class FitsFactory {
             return this.longStringsEnabled;
         }
 
+        /**
+         * @deprecated The FITS standard is very explicit that assignment must be "= ". If we allow
+         *              skipping the space, it will result in a non-standard FITS, that is likely
+         *              to break compatibility with other tools.
+         * 
+         * @return  whether to use only "=", instead of the standard "= " between the keyword
+         *          and the value.
+         */
         protected boolean isSkipBlankAfterAssign() {
             return this.skipBlankAfterAssign;
         }
@@ -162,6 +211,16 @@ public final class FitsFactory {
             throw new FitsException("Unrecognizable header in dataFactory");
         }
 
+    }
+    
+
+    /**
+     * @return Do we allow automatic header repairs, like missing end quotes?
+     * 
+     * @since 1.16
+     */
+    public static boolean isUseExponentD() {
+        return current().isUseExponentD();
     }
 
     /**
@@ -220,9 +279,15 @@ public final class FitsFactory {
     }
 
     /**
-     * @return <code>true</code> If blanks after the assign are ommitted in the
-     *         header.
+     * 
+     * @return  whether to use only "=", instead of the standard "= " between the keyword
+     *          and the value.
+     *          
+     * @deprecated The FITS standard is very explicit that assignment must be "= ". If we allow
+     *              skipping the space, it will result in a non-standard FITS, that is likely
+     *              to break compatibility with other tools.
      */
+    @Deprecated
     public static boolean isSkipBlankAfterAssign() {
         return current().isSkipBlankAfterAssign();
     }
@@ -332,6 +397,38 @@ public final class FitsFactory {
     }
 
     // CHECKSTYLE:ON
+    
+    /**
+     * Restores all settings to their default values.
+     * 
+     * @since 1.16
+     */
+    public static void setDefaults() {
+        FitsSettings s = current();
+        s.useExponentD = DEFAULT_USE_EXPONENT_D;
+        s.allowHeaderRepairs = DEFAULT_ALLOW_HEADER_REPAIRS;
+        s.allowTerminalJunk = DEFAULT_ALLOW_TERMINAL_JUNK;
+        s.checkAsciiStrings = DEFAULT_CHECK_ASCII_STRINGS;
+        s.longStringsEnabled = DEFAULT_LONG_STRINGS_ENABLED;
+        s.skipBlankAfterAssign = DEFAULT_SKIP_BLANK_AFTER_ASSIGN;
+        s.useAsciiTables = DEFAULT_USE_ASCII_TABLES;
+        s.useHierarch = DEFAULT_USE_HIERARCH;        
+        s.hierarchKeyFormatter = DEFAULT_HIERARCH_FORMATTER;
+        s.hierarchKeyFormatter.setCaseSensitive(DEFAULT_CASE_SENSITIVE_HIERARCH);
+    }
+    
+    /**
+     * Do we allow 'D' instead of E to mark the exponent for a floating point
+     * value with precision beyond that of a 32-bit float?
+     *
+     * @param allowExponentD    if <code>true</code> D will be used instead of E to indicate
+     *                          the exponent of a decimal with more precision than a 32-bit float.
+     *                          
+     * @since 1.16
+     */
+    public static void setUseExponentD(boolean allowExponentD) {
+        current().useExponentD = allowExponentD;
+    }
 
     /**
      * Do we allow junk after a valid FITS file?
@@ -395,7 +492,13 @@ public final class FitsFactory {
      *
      * @param skipBlankAfterAssign
      *            value to set
+     * 
+     * @deprecated The FITS standard is very explicit that assignment must be "= ". If we allow
+     *              skipping the space, it will result in a non-standard FITS, that is likely
+     *              to break compatibility with other tools.
+     * 
      */
+    @Deprecated
     public static void setSkipBlankAfterAssign(boolean skipBlankAfterAssign) {
         current().skipBlankAfterAssign = skipBlankAfterAssign;
     }

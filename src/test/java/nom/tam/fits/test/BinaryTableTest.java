@@ -106,18 +106,18 @@ import nom.tam.util.test.ThrowAnyException;
 public class BinaryTableTest {
 
     private static final Object[] TEST_ROW = new Object[]{
-        new float[]{
-            1f
-        },
-        new int[]{
-            2,
-            2
-        },
-        new double[]{
-            3d,
-            3d,
-            3d
-        }
+            new float[]{
+                    1f
+            },
+            new int[]{
+                    2,
+                    2
+            },
+            new double[]{
+                    3d,
+                    3d,
+                    3d
+            }
     };
 
     private static final int NROWS = 50;
@@ -185,14 +185,14 @@ public class BinaryTableTest {
 
         assertEquals(32, ((byte[]) ((Object[]) btab.getData().getRow(1))[2])[4]);
         assertArrayEquals(new int[]{
-            16,
-            2,
-            19,
-            2,
-            1,
-            2,
-            2,
-            33
+                16,
+                2,
+                19,
+                2,
+                1,
+                2,
+                2,
+                33
         }, btab.getData().getSizes());
 
         BufferedDataOutputStream bdos = new BufferedDataOutputStream(new FileOutputStream("target/bt3.fits"));
@@ -240,13 +240,13 @@ public class BinaryTableTest {
         strings[0] = "abcdefghijklmnopqrstuvwxyz";
         for (int i = 0; i < NROWS; i += 1) {
             tab.addRow(new Object[]{
-                strings[i],
-                shorts[i],
-                floats[i],
-                new double[]{
-                    doubles[i]
-                },
-                multiString[i]
+                    strings[i],
+                    shorts[i],
+                    floats[i],
+                    new double[]{
+                            doubles[i]
+                    },
+                    multiString[i]
             });
         }
         Header hdr = new Header();
@@ -455,10 +455,10 @@ public class BinaryTableTest {
     @Test
     public void columnMetaTest() throws Exception {
         Object[] data = new Object[]{
-            this.shorts,
-            this.ints,
-            this.floats,
-            this.doubles
+                this.shorts,
+                this.ints,
+                this.floats,
+                this.doubles
         };
 
         Fits f = new Fits();
@@ -482,7 +482,7 @@ public class BinaryTableTest {
             bhdu.setColumnMeta(i, "TX", i + 1, null, true);
             bhdu.setColumnMeta(i, "TY", 2. * (i + 1), null, true);
             bhdu.setColumnMeta(i, "TZ", 3. * (i + 1), i + 1, null, true);
-            bhdu.setColumnMeta(i, "TSCI", 3. * (i + 1), i + 1, false,null, true);
+            bhdu.setColumnMeta(i, "TSCI", 3. * (i + 1), i + 1, null, true);
         }
         bhdu.setCurrentColumn(1);
         Assert.assertEquals(-1, bhdu.findColumn("XXX"));
@@ -514,26 +514,23 @@ public class BinaryTableTest {
             if (hc.getKey().startsWith("TDIM")) {
                 hc = hdr.nextCard();
             }
+            
+            
             assertEquals("M" + i + "C", "TUNIT" + (i + 1), hc.getKey());
             assertEquals(hc.getValue(),String.format("UNIT%d", i+1));
             hc = hdr.nextCard();
             assertEquals("M" + i + "D", "TX" + (i + 1), hc.getKey());
-            assertEquals(String.format("%d", i+1),hc.getValue());
+            assertEquals(i + 1, (int) hc.getValue(Integer.class, null));
             hc = hdr.nextCard();
             assertEquals("M" + i + "E", "TY" + (i + 1), hc.getKey());
-            assertEquals(String.format("%.1f", 2. * (i + 1)), hc.getValue());
+            assertEquals(2. * (i + 1), hc.getValue(Double.class, null), 1e-12);
             hc = hdr.nextCard();
             assertEquals("M" + i + "F", "TZ" + (i + 1), hc.getKey());
-            assertEquals(String.format("%."+(i+1)+"f", 3. * (i + 1)), hc.getValue());
+            assertEquals(3. * (i + 1), hc.getValue(Double.class, null), 1e-12);
             hc = hdr.nextCard();
             assertEquals("M" + i + "F", "TSCI" + (i + 1), hc.getKey());
-            DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.US);
-            DecimalFormat format = new DecimalFormat("0.0E0", symbols);
-            format.setRoundingMode(RoundingMode.HALF_UP);
-            format.setMinimumFractionDigits(i+1);
-            format.setMaximumFractionDigits(i+1);
-            String value = format.format(3. * (i + 1));
-            assertEquals(value, hc.getValue());
+            
+            assertEquals("3x" + (i + 1), 3.0 * (i + 1), hc.getValue(Double.class, 0.0).doubleValue(), 1e-12);
         }
     }
 
@@ -611,29 +608,29 @@ public class BinaryTableTest {
     @Test
     public void specialStringsTest() throws Exception {
         String[] strings = new String[]{
-            "abc",
-            "abc\000",
-            "abc\012abc",
-            "abc\000abc",
-            "abc\177",
-            "abc\001def\002ghi\003"
+                "abc",
+                "abc\000",
+                "abc\012abc",
+                "abc\000abc",
+                "abc\177",
+                "abc\001def\002ghi\003"
         };
 
         String[] results1 = new String[]{
-            strings[0],
-            strings[0],
-            strings[2],
-            strings[0],
-            strings[4],
-            strings[5]
+                strings[0],
+                strings[0],
+                strings[2],
+                strings[0],
+                strings[4],
+                strings[5]
         };
         String[] results2 = new String[]{
-            strings[0],
-            strings[0],
-            "abc abc",
-            strings[0],
-            "abc ",
-            "abc def ghi "
+                strings[0],
+                strings[0],
+                "abc abc",
+                strings[0],
+                "abc ",
+                "abc def ghi "
         };
 
         FitsFactory.setUseAsciiTables(false);
@@ -642,7 +639,7 @@ public class BinaryTableTest {
         Fits f = new Fits();
 
         Object[] objs = new Object[]{
-            strings
+                strings
         };
         BinaryTableHDU bhdu = (BinaryTableHDU) Fits.makeHDU(objs);
         f.addHDU(bhdu);
@@ -683,20 +680,20 @@ public class BinaryTableTest {
     @Test
     public void testByteArray() {
         String[] sarr = {
-            "abc",
-            " de",
-            "f"
+                "abc",
+                " de",
+                "f"
         };
         byte[] barr = {
-            'a',
-            'b',
-            'c',
-            ' ',
-            'b',
-            'c',
-            'a',
-            'b',
-            ' '
+                'a',
+                'b',
+                'c',
+                ' ',
+                'b',
+                'c',
+                'a',
+                'b',
+                ' '
         };
 
         byte[] obytes = nom.tam.fits.FitsUtil.stringsToByteArray(sarr, 3);
@@ -723,94 +720,94 @@ public class BinaryTableTest {
         FitsFactory.setUseAsciiTables(false);
 
         Object[] data = new Object[]{
-            new String[]{
-                "a",
-                "b",
-                "c",
-                "d",
-                "e",
-                "f"
-            },
-            new int[]{
-                1,
-                2,
-                3,
-                4,
-                5,
-                6
-            },
-            new float[]{
-                1.f,
-                2.f,
-                3.f,
-                4.f,
-                5.f,
-                6.f
-            },
-            new String[]{
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
-            },
-            new String[]{
-                "a",
-                "",
-                "c",
-                "",
-                "e",
-                "f"
-            },
-            new String[]{
-                "",
-                "b",
-                "c",
-                "d",
-                "e",
-                "f"
-            },
-            new String[]{
-                "a",
-                "b",
-                "c",
-                "d",
-                "e",
-                ""
-            },
-            new String[]{
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-            },
-            new String[]{
-                "a",
-                null,
-                "c",
-                null,
-                "e",
-                "f"
-            },
-            new String[]{
-                null,
-                "b",
-                "c",
-                "d",
-                "e",
-                "f"
-            },
-            new String[]{
-                "a",
-                "b",
-                "c",
-                "d",
-                "e",
-                null
-            }
+                new String[]{
+                        "a",
+                        "b",
+                        "c",
+                        "d",
+                        "e",
+                        "f"
+                },
+                new int[]{
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                },
+                new float[]{
+                        1.f,
+                        2.f,
+                        3.f,
+                        4.f,
+                        5.f,
+                        6.f
+                },
+                new String[]{
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        ""
+                },
+                new String[]{
+                        "a",
+                        "",
+                        "c",
+                        "",
+                        "e",
+                        "f"
+                },
+                new String[]{
+                        "",
+                        "b",
+                        "c",
+                        "d",
+                        "e",
+                        "f"
+                },
+                new String[]{
+                        "a",
+                        "b",
+                        "c",
+                        "d",
+                        "e",
+                        ""
+                },
+                new String[]{
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                },
+                new String[]{
+                        "a",
+                        null,
+                        "c",
+                        null,
+                        "e",
+                        "f"
+                },
+                new String[]{
+                        null,
+                        "b",
+                        "c",
+                        "d",
+                        "e",
+                        "f"
+                },
+                new String[]{
+                        "a",
+                        "b",
+                        "c",
+                        "d",
+                        "e",
+                        null
+                }
         };
 
         Fits f = new Fits();
@@ -854,8 +851,8 @@ public class BinaryTableTest {
         }
 
         Object[] data = new Object[]{
-            sa,
-            ia
+                sa,
+                ia
         };
         BinaryTableHDU bhdu = (BinaryTableHDU) Fits.makeHDU(data);
         Header hdr = bhdu.getHeader();
@@ -881,15 +878,15 @@ public class BinaryTableTest {
     public void testMultHDU() throws Exception {
         BufferedFile ff = new BufferedFile("target/bt9.fits", "rw");
         Object[] data = new Object[]{
-            this.bytes,
-            this.bits,
-            this.bools,
-            this.shorts,
-            this.ints,
-            this.floats,
-            this.doubles,
-            this.longs,
-            this.strings
+                this.bytes,
+                this.bits,
+                this.bools,
+                this.shorts,
+                this.ints,
+                this.floats,
+                this.doubles,
+                this.longs,
+                this.strings
         };
 
         Fits f = new Fits();
@@ -939,7 +936,7 @@ public class BinaryTableTest {
         Object[][] x = new Object[5][3];
         for (int i = 0; i < 5; i += 1) {
             x[i][0] = new float[]{
-                i
+                    i
             };
             x[i][1] = new String("AString" + i);
             x[i][2] = new int[][]{
@@ -1025,9 +1022,9 @@ public class BinaryTableTest {
         BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
         // Check the various set methods on variable length data.
         float[] dta = new float[]{
-            22,
-            21,
-            20
+                22,
+                21,
+                20
         };
         bhdu.setElement(4, 1, dta);
 
@@ -1046,10 +1043,10 @@ public class BinaryTableTest {
         assertEquals("ts5", true, TestArrayFuncs.arrayEquals(bhdu.getElement(4, 1), dta));
 
         float tvf[] = new float[]{
-            101,
-            102,
-            103,
-            104
+                101,
+                102,
+                103,
+                104
         };
         this.vf[4] = tvf;
 
@@ -1071,12 +1068,12 @@ public class BinaryTableTest {
         Object[] rw = bhdu.getRow(4);
 
         float[] trw = new float[]{
-            -1,
-            -2,
-            -3,
-            -4,
-            -5,
-            -6
+                -1,
+                -2,
+                -3,
+                -4,
+                -5,
+                -6
         };
         rw[1] = trw;
 
@@ -1098,29 +1095,29 @@ public class BinaryTableTest {
         assertEquals("ts19", true, TestArrayFuncs.arrayEquals(bhdu.getElement(5, 1), this.vf[5]));
 
         assertArrayEquals(new int[]{
-            4,
-            4,
-            2,
-            2,
-            2,
-            3,
-            2,
-            2,
-            2,
-            2,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
+                4,
+                4,
+                2,
+                2,
+                2,
+                3,
+                2,
+                2,
+                2,
+                2,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
         }, (int[]) ArrayFuncs.flatten(bhdu.getData().getDimens()));
 
         assertArrayEquals(new int[]{
-            2,
-            8966
+                2,
+                8966
         }, (int[]) bhdu.getData().getRawElement(1, 1));
     }
 
@@ -1131,20 +1128,20 @@ public class BinaryTableTest {
 
             Fits f = new Fits();
             Object[] data = new Object[]{
-                this.bytes,
-                this.bits,
-                this.bools,
-                this.shorts,
-                this.ints,
-                this.floats,
-                this.doubles,
-                this.longs,
-                this.strings,
-                this.complex,
-                this.dcomplex,
-                this.complex_arr,
-                this.dcomplex_arr,
-                this.vcomplex
+                    this.bytes,
+                    this.bits,
+                    this.bools,
+                    this.shorts,
+                    this.ints,
+                    this.floats,
+                    this.doubles,
+                    this.longs,
+                    this.strings,
+                    this.complex,
+                    this.dcomplex,
+                    this.complex_arr,
+                    this.dcomplex_arr,
+                    this.vcomplex
             };
             BinaryTableHDU bhdu = (BinaryTableHDU) Fits.makeHDU(data);
 
@@ -1197,19 +1194,19 @@ public class BinaryTableTest {
 
         Fits f = new Fits();
         Object[] data = new Object[]{
-            this.bytes,
-            this.bits,
-            this.bools,
-            this.shorts,
-            this.ints,
-            this.floats,
-            this.doubles,
-            this.longs,
-            this.strings,
-            this.complex,
-            this.dcomplex,
-            this.complex_arr,
-            this.dcomplex_arr
+                this.bytes,
+                this.bits,
+                this.bools,
+                this.shorts,
+                this.ints,
+                this.floats,
+                this.doubles,
+                this.longs,
+                this.strings,
+                this.complex,
+                this.dcomplex,
+                this.complex_arr,
+                this.dcomplex_arr
         };
         f.addHDU(Fits.makeHDU(data));
 
@@ -1256,15 +1253,15 @@ public class BinaryTableTest {
     public void testVar() throws Exception {
         try {
             Object[] data = new Object[]{
-                this.floats,
-                this.vf,
-                this.vs,
-                this.vd,
-                this.shorts,
-                this.vbool,
-                this.vc,
-                this.vdc,
-                this.vBytes
+                    this.floats,
+                    this.vf,
+                    this.vs,
+                    this.vd,
+                    this.shorts,
+                    this.vbool,
+                    this.vc,
+                    this.vdc,
+                    this.vBytes
             };
             BasicHDU<?> hdu = Fits.makeHDU(data);
             Fits f = new Fits();
@@ -1613,8 +1610,8 @@ public class BinaryTableTest {
     public void testBinaryTableMemoryFalure() throws Exception {
         Header fitsHeader = new Header();
         fitsHeader//
-                .card(Standard.PCOUNT).value(Integer.MAX_VALUE)//
-                .card(Standard.THEAP).value(-10);
+        .card(Standard.PCOUNT).value(Integer.MAX_VALUE)//
+        .card(Standard.THEAP).value(-10);
         new BinaryTable(fitsHeader);
     }
 
@@ -1622,7 +1619,7 @@ public class BinaryTableTest {
     public void testAddWrongFlattendColumn() throws Exception {
         BinaryTable table = createTestTable();
         int columnSize = table.addFlattenedColumn(longs, new int[]{
-            2
+                2
         });
     }
 
@@ -1634,7 +1631,7 @@ public class BinaryTableTest {
         System.arraycopy(longs, 0, flat, longs.length, longs.length);
 
         int columnSize = table.addFlattenedColumn(flat, new int[]{
-            2
+                2
         });
         table.setFlattenedColumn(columnSize - 1, new float[flat.length]);
 
@@ -1648,18 +1645,18 @@ public class BinaryTableTest {
         System.arraycopy(longs, 0, flat, longs.length, longs.length);
 
         int columnSize = table.addFlattenedColumn(flat, new int[]{
-            2
+                2
         });
         table.getDimens();
         long[] value = (long[]) table.getElement(0, columnSize - 1);
         Assert.assertArrayEquals(new long[]{
-            longs[0],
-            longs[1]
+                longs[0],
+                longs[1]
         }, value);
         value = (long[]) table.getElement(1, columnSize - 1);
         Assert.assertArrayEquals(new long[]{
-            longs[2],
-            longs[3]
+                longs[2],
+                longs[3]
         }, value);
         Assert.assertArrayEquals(new Class<?>[]{
             float.class,
@@ -1757,10 +1754,10 @@ public class BinaryTableTest {
         Assert.assertFalse(new BinaryTableHDU(header, btab).setComplexColumn(1));
 
         btab.setElement(0, 1, new float[]{
-            2f
+                2f
         });
         btab.setElement(2, 1, new float[]{
-            2f
+                2f
         });
         Assert.assertArrayEquals(new float[][]{
             {
@@ -1780,9 +1777,9 @@ public class BinaryTableTest {
         BinaryTable btab = new BinaryTable();
         btab.getData().addRow(TEST_ROW);
         assertArrayEquals(new int[]{
-            1,
-            2,
-            3
+                1,
+                2,
+                3
         }, btab.getData().getSizes());
         assertEquals(3, btab.getData().getNCols());
     }
@@ -1791,11 +1788,11 @@ public class BinaryTableTest {
     public void testColumnAddRowBoolean() throws Exception {
         BinaryTable btab = new BinaryTable();
         Object[] testRow = new Object[]{
-            new boolean[]{
-                true,
-                false,
-                true
-            }
+                new boolean[]{
+                        true,
+                        false,
+                        true
+                }
         };
         btab.addRow(testRow);
 
@@ -1836,11 +1833,11 @@ public class BinaryTableTest {
 
         BinaryTable btab = new BinaryTable();
         Object[] testRow = new Object[]{
-            new char[]{
-                'a',
-                'b',
-                'c'
-            }
+                new char[]{
+                        'a',
+                        'b',
+                        'c'
+                }
         };
         btab.addRow(testRow);
 
@@ -1886,18 +1883,18 @@ public class BinaryTableTest {
     public void testColumnAddWrongRowSize() throws Exception {
         BinaryTable btab = new BinaryTable();
         btab.getData().addRow(new Object[]{
-            new float[]{
-                1f
-            }
+                new float[]{
+                        1f
+                }
         });
         btab.getData().addRow(new Object[]{
-            new float[]{
-                1f
-            },
-            new int[]{
-                2,
-                2
-            }
+                new float[]{
+                        1f
+                },
+                new int[]{
+                        2,
+                        2
+                }
         });
     }
 
@@ -1905,15 +1902,15 @@ public class BinaryTableTest {
     public void testColumnAddWrongRow() throws Exception {
         BinaryTable btab = new BinaryTable();
         btab.getData().addRow(new Object[]{
-            new float[]{
-                1f
-            }
+                new float[]{
+                        1f
+                }
         });
         btab.getData().addRow(new Object[]{
-            new float[]{
-                1f,
-                2f
-            }
+                new float[]{
+                        1f,
+                        2f
+                }
         });
     }
 
@@ -1948,7 +1945,7 @@ public class BinaryTableTest {
         BinaryTable btab = new BinaryTable();
         btab.getData().addRow(TEST_ROW);
         btab.getData().setElement(0, 0, new int[]{
-            3
+                3
         });
     }
 
@@ -1964,8 +1961,8 @@ public class BinaryTableTest {
         BinaryTable btab = new BinaryTable();
         btab.getData().addRow(TEST_ROW);
         btab.getData().setElement(0, 0, new float[]{
-            3f,
-            3f
+                3f,
+                3f
         });
     }
 

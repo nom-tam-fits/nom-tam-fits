@@ -1157,4 +1157,35 @@ public class BaseFitsTest {
     public void testFitsReadEmpty() throws Exception {
         Assert.assertArrayEquals(new BasicHDU<?>[0], new Fits().read());
     }
+    
+    @Test()
+    public void testFitsSaveClose() throws Exception {
+        byte[] b = new byte[80];
+        Exception ex = null;
+        
+        FileInputStream in = new FileInputStream( new File("src/test/resources/nom/tam/fits/test/test.fits.gz"));
+        
+        assertEquals(b.length, in.read(b));
+        
+        Fits.saveClose(in);
+        
+        try {
+            in.read(b);
+        } catch(IOException e) {
+            ex = e;
+        }
+        
+        Assert.assertNotNull(ex);
+        
+        Fits.saveClose(in);
+        
+        try {
+            in.read(b);
+        } catch(IOException e) {
+            ex = e;
+        }
+        
+        Assert.assertNotNull(ex);
+        
+    }
 }

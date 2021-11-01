@@ -4,7 +4,7 @@ package nom.tam.fits;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -32,22 +32,34 @@ package nom.tam.fits;
  */
 
 /**
- * This exception is thrown when an EOF is detected in the middle of an HDU.
+ * The value cannot fit into the available header space, as requested. Perhaps
+ * it's preceded by a very long HIEARACH keyword, or else it's a numerical value
+ * that is too long. Either way, there is no way we can represent this value in
+ * its current form (and keyword) in a FITS header.
  * 
- * @see FitsFactory#setAllowTerminalJunk(boolean)
+ * @author Attila Kovacs
+ * @since 1.16
  */
-public class TruncatedFileException extends FitsException {
+public class LongValueException extends IllegalStateException {
 
     /**
-     * serial version UID.
+     * 
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -1446259888260331392L;
 
-    public TruncatedFileException(String msg) {
-        super(msg);
+    public LongValueException(int spaceAvailable) {
+        super("Not enough space (" + spaceAvailable + ") for value");
     }
 
-    public TruncatedFileException(String msg, Exception cause) {
-        super(msg, cause);
+    public LongValueException(String key, int spaceAvailable) {
+        super("Not enough space (" + spaceAvailable + ") for value of [" + key + "]");
+    }
+
+    public LongValueException(int spaceAvailable, String value) {
+        super("Not enough space (" + spaceAvailable + ") for: [" + value + "]");
+    }
+
+    public LongValueException(int spaceAvailable, String key, String value) {
+        super("Not enough space (" + spaceAvailable + ") for: [" + key + "=" + value + "]");
     }
 }

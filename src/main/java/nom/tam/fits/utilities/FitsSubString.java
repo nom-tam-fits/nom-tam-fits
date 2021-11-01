@@ -38,7 +38,11 @@ package nom.tam.fits.utilities;
  * quote.
  * 
  * @author Richard van Nieuwenhoven
+ * 
+ * @deprecated Was needed by {@link FitsLineAppender} only, which itself is deprecated in
+ *              favor of the package-level <code>nom.tam.fits.HeaderCardFormatter</code>.
  */
+@Deprecated
 public class FitsSubString {
 
     /**

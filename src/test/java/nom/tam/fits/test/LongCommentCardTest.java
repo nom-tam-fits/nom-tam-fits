@@ -34,6 +34,8 @@ package nom.tam.fits.test;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import javax.xml.stream.events.EndDocument;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -42,18 +44,20 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.LongValueException;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.Cursor;
 
 public class LongCommentCardTest {
 
+    private static int length = 200;
+    private static boolean enableLongKeywords = true;
+    
     @Test
-    public void testLongComments() throws Exception {
-        test(200, true);
-    }
-
-    private void test(int length, boolean enableLongKeywords) throws Exception {
+    public void test() throws Exception {
+        length = 200;
+        
         boolean longEnabled = FitsFactory.isLongStringsEnabled();
         try {
             // Enable/disable tthe OGIP 1.0 convention for long entries as
@@ -73,10 +77,20 @@ public class LongCommentCardTest {
             header.addLine(new HeaderCard("HISTORY", counts(length), false));
 
             // Add a non-nullable COMMENT entry with the desired length...
-            header.addLine(new HeaderCard("COMMENT", counts(length), false));
+            header.addLine(HeaderCard.createCommentCard(counts(HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH)));
 
-            header.insertHistory(counts(length));
-            header.insertComment(counts(length));
+            boolean thrown = false;
+            try {
+                header.addLine(HeaderCard.createCommentCard(counts(HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH + 1)));
+            } catch (LongValueException e) {
+                thrown = true;
+            }
+            Assert.assertTrue(thrown);
+              
+            int n = 2;
+            
+            n += header.insertHistory(counts(length));
+            n += header.insertComment(counts(length));
 
             // Write the result to 'longcommenttest.fits' in the user's home...
             Fits fits = new Fits();
@@ -96,13 +110,13 @@ public class LongCommentCardTest {
             fits = new Fits(file);
             Cursor<String, HeaderCard> iterator = fits.getHDU(0).getHeader().iterator();
             while (iterator.hasNext()) {
-                HeaderCard headerCard = (HeaderCard) iterator.next();
-                if (headerCard.getValue() == null && (headerCard.getKey().equals(Standard.COMMENT.key()) || headerCard.getKey().equals(Standard.HISTORY.key()))) {
+                HeaderCard headerCard = iterator.next();
+                if (headerCard.isCommentStyleCard() && !Standard.END.key().equals(headerCard.getKey())) {
                     commentLike++;
-                    Assert.assertEquals(72, headerCard.getComment().length());
+                    Assert.assertTrue(headerCard.getComment(), headerCard.getComment().length() <= HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH);
                 }
             }
-            Assert.assertEquals(4, commentLike);
+            Assert.assertEquals(n, commentLike);
 
         } finally {
             FitsFactory.setLongStringsEnabled(longEnabled);
@@ -113,7 +127,7 @@ public class LongCommentCardTest {
     public String counts(int n) {
         StringBuffer buf = new StringBuffer();
         for (int i = 1; i <= n; i++)
-            buf.append((i % 10));
+            buf.append(i % 10);
         return new String(buf);
     }
 

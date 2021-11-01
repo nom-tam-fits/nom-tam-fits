@@ -1,5 +1,3 @@
-package nom.tam.fits;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -31,23 +29,29 @@ package nom.tam.fits;
  * #L%
  */
 
+package nom.tam.fits;
+
 /**
- * This exception is thrown when an EOF is detected in the middle of an HDU.
+ * Thrown when encountering header value with an unclosed single quote, and the
+ * library does not have automatic header repairs enabled at present.
  * 
- * @see FitsFactory#setAllowTerminalJunk(boolean)
+ * @author Attila Kovacs
+ * @see FitsFactory#setAllowHeaderRepairs(boolean)
+ * @since 1.16
  */
-public class TruncatedFileException extends FitsException {
+public class UnclosedQuoteException extends IllegalStateException {
 
     /**
-     * serial version UID.
+     * 
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1292006588668191639L;
 
-    public TruncatedFileException(String msg) {
-        super(msg);
+    private static String getMessage(String line) {
+        return "Unclosed quotes in: [" + line.trim() + "]" + "\n\n --> Try FitsFactory.setAllowHeaderRepairs(true).\n";
     }
 
-    public TruncatedFileException(String msg, Exception cause) {
-        super(msg, cause);
+    public UnclosedQuoteException(String line) {
+        super(getMessage(line));
     }
+
 }

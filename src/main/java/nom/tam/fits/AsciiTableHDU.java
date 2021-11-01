@@ -239,10 +239,16 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      *            the column index
      * @param newNull
      *            the String representing null
+     * @throws IllegalArgumentException     
+     *            if the string argument contains characters that are not allowed in FITS
+     *            headers. That is if it contains characters outside the range of 0x20
+     *            thru 0x7E.
      */
-    public void setNullString(int col, String newNull) {
+    public void setNullString(int col, String newNull) throws IllegalArgumentException {
         this.myHeader.positionAfterIndex(TBCOLn, col + 1);
-        saveReplaceCard(TNULLn.n(col + 1).key(), true, newNull);
+        HeaderCard card = HeaderCard.create(TNULLn.n(col + 1), newNull);
+        this.myHeader.deleteKey(card.getKey());
+        this.myHeader.addLine(card);
         this.myData.setNullString(col, newNull);
     }
 

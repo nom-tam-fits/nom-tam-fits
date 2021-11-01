@@ -2,6 +2,8 @@ package nom.tam.fits.header.hierarch;
 
 import java.util.Locale;
 
+import nom.tam.fits.utilities.FitsLineAppender;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -33,21 +35,32 @@ import java.util.Locale;
  * #L%
  */
 
-import nom.tam.fits.utilities.FitsLineAppender;
 
+@SuppressWarnings("deprecation")
 public class StandardIHierarchKeyFormatter implements IHierarchKeyFormatter {
     private boolean allowMixedCase;
     
     @Override
-    public void append(String key, FitsLineAppender buffer) {
+    public String toHeaderString(String key) {
         if (!allowMixedCase) {
             key = key.toUpperCase(Locale.US);
         }
-        buffer.appendReplacing(key, '.', ' ');
+       
         // cfitsio specifies a required space before the '=', so let's play nice with it.
-        buffer.append(' ');
+        return key.replace('.', ' ') + " ";
+    }
+    
+    @Override
+    public void append(String key, FitsLineAppender buffer) {
+        buffer.append(toHeaderString(key));
     }
 
+    @Override
+    public int getExtraSpaceRequired(String key) {
+        // The one extra space before '='...
+        return 1;
+    }
+    
     @Override
     public void setCaseSensitive(boolean value) {
         allowMixedCase = value;

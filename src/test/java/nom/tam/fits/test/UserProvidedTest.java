@@ -63,28 +63,16 @@ import nom.tam.util.SafeClose;
 
 public class UserProvidedTest {
 
-    private boolean longStringsEnabled;
-
-    private boolean useHierarch;
-
-    private boolean isAllowTerminalJunk;
-
-    private boolean isAllowHeaderRepairs;
 
     @Before
     public void before() {
-        longStringsEnabled = FitsFactory.isLongStringsEnabled();
-        useHierarch = FitsFactory.getUseHierarch();
-        isAllowTerminalJunk = FitsFactory.getAllowTerminalJunk();
-        isAllowHeaderRepairs = FitsFactory.isAllowHeaderRepairs();
+        FitsFactory.setDefaults();
         FitsFactory.setHierarchFormater(new StandardIHierarchKeyFormatter());
     }
 
     @After
     public void after() {
-        FitsFactory.setLongStringsEnabled(longStringsEnabled);
-        FitsFactory.setUseHierarch(useHierarch);
-        FitsFactory.setAllowTerminalJunk(isAllowTerminalJunk);
+        FitsFactory.setDefaults();
     }
 
     @Test

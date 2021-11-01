@@ -138,6 +138,7 @@ public interface IFitsHeader {
         LOGICAL,
         NONE,
         REAL,
+        COMPLEX,
         STRING,
         ANY
     }

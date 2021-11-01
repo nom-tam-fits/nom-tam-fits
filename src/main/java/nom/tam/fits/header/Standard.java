@@ -79,7 +79,7 @@ public enum Standard implements IFitsHeader {
      * Columns 9-80 may contain any ASCII text. Any number of card images with
      * blank keyword fields may appear in a key.
      */
-    BLANKS("        ", SOURCE.RESERVED, HDU.ANY, VALUE.NONE, "descriptive comment"),
+    BLANKS("        ", SOURCE.RESERVED, HDU.ANY, VALUE.NONE, null),
 
     /**
      * This keyword may be used only in the primary key. It shall appear within
@@ -144,8 +144,23 @@ public enum Standard implements IFitsHeader {
      * This keyword shall have no associated value; columns 9-80 may contain any
      * ASCII text. Any number of COMMENT card images may appear in a key.
      */
-    COMMENT(SOURCE.RESERVED, HDU.ANY, VALUE.NONE, "descriptive comment"),
+    COMMENT(SOURCE.RESERVED, HDU.ANY, VALUE.NONE, null),
 
+    /**
+     * The CONTINUE keyword, when followed by spaces in columns 9 and 10 of the
+     * card image and a character string enclosed in single quotes starting in
+     * column 11 or higher, indicates that the quoted string should be treated
+     * as a continuation of the character string value in the previous key
+     * keyword. To conform to this convention, the character string value on the
+     * previous keyword must end with the ampersand character ('&amp;'), but the
+     * ampersand is not part of the value string and should be deleted before
+     * concatenating the strings together. The character string value may be
+     * continued on any number of consecutive CONTINUE keywords, thus
+     * effectively allowing arbitrarily long strings to be written as keyword
+     * values.
+     */
+    CONTINUE(SOURCE.HEASARC, HDU.ANY, VALUE.NONE, "denotes the CONTINUE long string keyword convention"),
+    
     /**
      * This keyword is used to indicate a rotation from a standard coordinate
      * system described by the CTYPEn to a different coordinate system in which
@@ -217,7 +232,7 @@ public enum Standard implements IFitsHeader {
      * This keyword has no associated value. Columns 9-80 shall be filled with
      * ASCII blanks.
      */
-    END(SOURCE.MANDATORY, HDU.ANY, VALUE.NONE, "marks the end of the key keywords"),
+    END(SOURCE.MANDATORY, HDU.ANY, VALUE.NONE, null),
 
     /**
      * The value field shall contain a floating point number giving the equinox
@@ -435,6 +450,7 @@ public enum Standard implements IFitsHeader {
      * value is 'FK5'.
      */
     RADESYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Coordinate reference frame of major/minor axes."),
+    
     /**
      * Coordinate reference frame of major/minor axes. use RADESYS instead.
      * 
@@ -500,7 +516,7 @@ public enum Standard implements IFitsHeader {
      * conventions using such fields.
      */
     TDISPn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, "display format"),
-
+   
     /**
      * The value field shall contain a character string identifying the
      * telescope used to acquire the data associated with the key.
@@ -509,7 +525,7 @@ public enum Standard implements IFitsHeader {
 
     /**
      * The value field shall contain a non-negative integer representing the
-     * number of fields in each row of a 'TABLE' or 'BINTABLE' extension. The
+     * number of fields in each row of a 'TABLE' or 'BINTABLmacE' extension. The
      * maximum permissible value is 999. RANGE: [0:999]
      */
     TFIELDS(SOURCE.MANDATORY, HDU.TABLE, VALUE.INTEGER, "number of columns in the table", //
@@ -540,7 +556,7 @@ public enum Standard implements IFitsHeader {
     THEAP(SOURCE.RESERVED, HDU.BINTABLE, VALUE.INTEGER, "offset to starting data heap address", //
             replaceable("binarytablehdu:theap", BinaryTable.class) //
     ),
-
+  
     /**
      * In ASCII 'TABLE' extensions, the value field for this indexed keyword
      * shall contain the character string that represents an undefined value for

@@ -1,2 +1,5 @@
 /bin/
+/.classpath
+/.gitignore
+/.project
 /nom/

@@ -73,6 +73,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static nom.tam.fits.header.DataDescription.TDMINn;
+import static nom.tam.fits.header.DataDescription.TDMAXn;
+import static nom.tam.fits.header.DataDescription.TLMINn;
+import static nom.tam.fits.header.DataDescription.TLMAXn;
+
 /**
  * This class tests the AsciiTableHDU and AsciiTable FITS classes and implicitly
  * the ByteFormatter and ByteParser classes in the nam.tam.util library. Tests
@@ -1076,6 +1081,7 @@ public class AsciiTableTest {
         assertEquals(long[].class, tl.getColumn(1).getClass());
     }
 
+    
     private AsciiTable readAsciiTable(String location, boolean preferInt) throws Exception {
         ArrayDataInput in = new BufferedFile(location);
         // Skip the primary HDU
@@ -1085,4 +1091,195 @@ public class AsciiTableTest {
         table.read(in);
         return table;
     }
+    
+    @Test
+    public void testI10Limits1() throws Exception {
+        // I10 column with TLMINn and TLMAXn defined, both within int range ==> use int...
+        String i10loc = "src/test/resources/nom/tam/fits/test/test_i10.fits";
+        int col = 1;
+        
+        // Default configuration is preferInt.
+        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+
+        hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE, null, true);
+        hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE, null, true);
+
+        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+        assertEquals(int.class, t1.getColumnType(col));
+        
+        t1 = new AsciiTable(hdu.getHeader(), false);
+        assertEquals(int.class, t1.getColumnType(col));
+    }
+    
+    @Test
+    public void testI10Limits2() throws Exception {
+        // I10 column with TDMINn and TDMAXn defined, both within int range ==> use int...
+        String i10loc = "src/test/resources/nom/tam/fits/test/test_i10.fits";
+        int col = 1;
+        
+        // Default configuration is preferInt.
+        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+
+        hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE, null, true);
+        hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE, null, true);
+
+        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+        assertEquals(int.class, t1.getColumnType(col));
+        
+        t1 = new AsciiTable(hdu.getHeader(), false);
+        assertEquals(int.class, t1.getColumnType(col));
+    }
+    
+    @Test
+    public void testI10Limits3() throws Exception {
+        // I10 column with TLMAXn in int range, but TLMINn outside ==> use long...
+        String i10loc = "src/test/resources/nom/tam/fits/test/test_i10.fits";
+        int col = 1;
+        
+        // Default configuration is preferInt.
+        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+
+        hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE - 1L, null, true);
+        hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE, null, true);
+
+        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+        assertEquals(long.class, t1.getColumnType(col));
+        
+        t1 = new AsciiTable(hdu.getHeader(), false);
+        assertEquals(long.class, t1.getColumnType(col));
+    }
+    
+    @Test
+    public void testI10Limits3B() throws Exception {
+        // I10 column with TLMAXn in int range, but TLMINn outside ==> use long...
+        String i10loc = "src/test/resources/nom/tam/fits/test/test_i10.fits";
+        int col = 1;
+        
+        // Default configuration is preferInt.
+        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+
+        hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE - 1L, null, true);
+        hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE, null, true);
+
+        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+        assertEquals(long.class, t1.getColumnType(col));
+        
+        t1 = new AsciiTable(hdu.getHeader(), false);
+        assertEquals(long.class, t1.getColumnType(col));
+    }
+    
+    @Test
+    public void testI10Limits4() throws Exception {
+        // I10 column with TLMINn in int range, but TLMAXn outside ==> use long...
+        String i10loc = "src/test/resources/nom/tam/fits/test/test_i10.fits";
+        int col = 1;
+        
+        // Default configuration is preferInt.
+        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+
+        hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE, null, true);
+        hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE + 1L, null, true);
+
+        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+        assertEquals(long.class, t1.getColumnType(col));
+        
+        t1 = new AsciiTable(hdu.getHeader(), false);
+        assertEquals(long.class, t1.getColumnType(col));
+    }
+    
+    @Test
+    public void testI10Limits4B() throws Exception {
+        // I10 column with TLMINn in int range, but TLMAXn outside ==> use long...
+        String i10loc = "src/test/resources/nom/tam/fits/test/test_i10.fits";
+        int col = 1;
+        
+        // Default configuration is preferInt.
+        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+
+        hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE, null, true);
+        hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE + 1L, null, true);
+
+        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+        assertEquals(long.class, t1.getColumnType(col));
+        
+        t1 = new AsciiTable(hdu.getHeader(), false);
+        assertEquals(long.class, t1.getColumnType(col));
+    }
+    
+    @Test
+    public void testI10Limits5() throws Exception {
+        // Only TLMIN, is defined (in int range), use caller's preference for I10...
+        String i10loc = "src/test/resources/nom/tam/fits/test/test_i10.fits";
+        int col = 1;
+        
+        // Default configuration is preferInt.
+        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+
+        hdu.setColumnMeta(col, TLMINn, Integer.MIN_VALUE, null, true);
+
+        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+        assertEquals(int.class, t1.getColumnType(col));
+        
+        t1 = new AsciiTable(hdu.getHeader(), false);
+        assertEquals(long.class, t1.getColumnType(col));
+    }
+    
+    
+    @Test
+    public void testI10Limits6() throws Exception {
+        // Only TLMAX, is defined (in int range), use caller's preference for I10...
+        String i10loc = "src/test/resources/nom/tam/fits/test/test_i10.fits";
+        int col = 1;
+        
+        // Default configuration is preferInt.
+        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+
+        hdu.setColumnMeta(col, TLMAXn, Integer.MAX_VALUE, null, true);
+
+        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+        assertEquals(int.class, t1.getColumnType(col));
+        
+        t1 = new AsciiTable(hdu.getHeader(), false);
+        assertEquals(long.class, t1.getColumnType(col));
+    }
+    
+    
+    @Test
+    public void testI10Limits7() throws Exception {
+        // Only TDMIN, is defined (in int range), use caller's preference for I10...
+        String i10loc = "src/test/resources/nom/tam/fits/test/test_i10.fits";
+        int col = 1;
+        
+        // Default configuration is preferInt.
+        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+
+        hdu.setColumnMeta(col, TDMINn, Integer.MIN_VALUE, null, true);
+
+        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+        assertEquals(int.class, t1.getColumnType(col));
+        
+        t1 = new AsciiTable(hdu.getHeader(), false);
+        assertEquals(long.class, t1.getColumnType(col));
+    }
+    
+    
+    @Test
+    public void testI10Limits8() throws Exception {
+        // Only TDMAX, is defined (in int range), use caller's preference for I10...
+        String i10loc = "src/test/resources/nom/tam/fits/test/test_i10.fits";
+        int col = 1;
+        
+        // Default configuration is preferInt.
+        AsciiTableHDU hdu = (AsciiTableHDU) new Fits(i10loc).getHDU(1);
+
+        hdu.setColumnMeta(col, TDMAXn, Integer.MAX_VALUE, null, true);
+
+        AsciiTable t1 = new AsciiTable(hdu.getHeader(), true);
+        assertEquals(int.class, t1.getColumnType(col));
+        
+        t1 = new AsciiTable(hdu.getHeader(), false);
+        assertEquals(long.class, t1.getColumnType(col));
+    }
+   
+
 }
