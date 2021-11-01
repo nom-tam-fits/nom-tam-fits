@@ -34,6 +34,7 @@ package nom.tam.util;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import nom.tam.fits.FitsFactory;
 
@@ -73,20 +74,86 @@ public abstract class ArrayEncoder {
         }
     }
 
-    public abstract void writeArray(Object o) throws IOException;
+    /**
+     * Writes the contents of a Java array to the output translating the data to
+     * the required binary representation. The argument may be any generic hava
+     * array, including heterogeneous arrays of arrays.
+     * 
+     * @param o
+     *            the Java array, including heterogeneous arrays of arrays. If
+     *            <code>null</code> nothing will be written to the output.
+     * @throws IOException
+     *             if there was an IO error writing to the output
+     * @throws IllegalArgumentException
+     *             if the supplied object is not a Java array or if it contains
+     *             Java types that are not supported by the decoder.
+     */
+    public abstract void writeArray(Object o) throws IOException, IllegalArgumentException;
 
+    /**
+     * The conversion buffer for encoding Java arrays (objects) into a binary
+     * data representation.
+     * 
+     * @author Attila Kovacs
+     */
     protected final class Buffer {
 
+        /** the byte array that stores pending data to be written to the output */
         private byte[] data = new byte[BUFFER_SIZE];
 
+        /** the buffer wrapped for NIO access */
         private ByteBuffer buffer = ByteBuffer.wrap(data);
 
-        private void need(int bytes) throws IOException {
+        /**
+         * Sets the byte order of this conversion buffer
+         * 
+         * @param order
+         *            the new byte order
+         * @see #order()
+         * @see ByteBuffer#order(ByteOrder)
+         */
+        protected void order(ByteOrder order) {
+            buffer.order(order);
+        }
+
+        /**
+         * Returns the current byte order of the conversion buffer.
+         * 
+         * @return the byte order
+         * @see #order(ByteOrder)
+         * @see ByteBuffer#order()
+         */
+        protected ByteOrder order() {
+            return buffer.order();
+        }
+
+        /**
+         * Makes sure that there is room in the conversion buffer for an
+         * upcoming element conversion, and flushes the buffer as necessary to
+         * make room. Subclass implementations should call this method before
+         * attempting a conversion operation.
+         * 
+         * @param bytes
+         *            the size of an element we will want to convert. It cannot
+         *            exceed the size of the conversion buffer.
+         * @throws IOException
+         *             if the conversion buffer could not be flushed to the
+         *             output to make room for the new conversion.
+         */
+        protected void need(int bytes) throws IOException {
             if (buffer.remaining() < bytes) {
                 flush();
             }
         }
 
+        /**
+         * Flushes the contents of the conversion buffer to the underlying
+         * output.
+         * 
+         * @throws IOException
+         *             if there was an IO error writing the contents of this
+         *             buffer to the output.
+         */
         protected void flush() throws IOException {
             int n = buffer.position();
 
@@ -99,36 +166,122 @@ public abstract class ArrayEncoder {
             buffer.rewind();
         }
 
+        /**
+         * Puts a single byte into the conversion buffer, making space for it as
+         * needed by flushing the current buffer contents to the output as
+         * necessary.
+         * 
+         * @param b
+         *            the byte value
+         * @throws IOException
+         *             if the conversion buffer could not be flushed to the
+         *             output to make room for the new conversion.
+         * @see #flush()
+         */
         protected void putByte(byte b) throws IOException {
             need(1);
             buffer.put(b);
         }
 
+        /**
+         * Puts a 2-byte integer into the conversion buffer, making space for it
+         * as needed by flushing the current buffer contents to the output as
+         * necessary.
+         * 
+         * @param s
+         *            the 16-bit integer value
+         * @throws IOException
+         *             if the conversion buffer could not be flushed to the
+         *             output to make room for the new conversion.
+         * @see #flush()
+         */
         protected void putShort(short s) throws IOException {
             need(FitsIO.BYTES_IN_SHORT);
             buffer.putShort(s);
         }
 
+        /**
+         * Puts a 4-byte integer into the conversion buffer, making space for it
+         * as needed by flushing the current buffer contents to the output as
+         * necessary.
+         * 
+         * @param i
+         *            the 32-bit integer value
+         * @throws IOException
+         *             if the conversion buffer could not be flushed to the
+         *             output to make room for the new conversion.
+         * @see #flush()
+         */
         protected void putInt(int i) throws IOException {
             need(FitsIO.BYTES_IN_INTEGER);
             buffer.putInt(i);
         }
 
+        /**
+         * Puts an 8-byte integer into the conversion buffer, making space for
+         * it as needed by flushing the current buffer contents to the output as
+         * necessary.
+         * 
+         * @param l
+         *            the 64-bit integer value
+         * @throws IOException
+         *             if the conversion buffer could not be flushed to the
+         *             output to make room for the new conversion.
+         * @see #flush()
+         */
         protected void putLong(long l) throws IOException {
             need(FitsIO.BYTES_IN_LONG);
             buffer.putLong(l);
         }
 
+        /**
+         * Puts an 4-byte single-precision floating point value into the
+         * conversion buffer, making space for it as needed by flushing the
+         * current buffer contents to the output as necessary.
+         * 
+         * @param f
+         *            the 32-bit single-precision floating point value
+         * @throws IOException
+         *             if the conversion buffer could not be flushed to the
+         *             output to make room for the new conversion.
+         * @see #flush()
+         */
         protected void putFloat(float f) throws IOException {
             need(FitsIO.BYTES_IN_FLOAT);
             buffer.putFloat(f);
         }
 
+        /**
+         * Puts an 8-byte double-precision floating point value into the
+         * conversion buffer, making space for it as needed by flushing the
+         * current buffer contents to the output as necessary.
+         * 
+         * @param d
+         *            the 64-bit double-precision floating point value
+         * @throws IOException
+         *             if the conversion buffer could not be flushed to the
+         *             output to make room for the new conversion.
+         * @see #flush()
+         */
         protected void putDouble(double d) throws IOException {
             need(FitsIO.BYTES_IN_DOUBLE);
             buffer.putDouble(d);
         }
 
+        /**
+         * Puts an array of 16-bit integers into the conversion buffer, flushing
+         * the buffer intermittently as necessary to make room as it goes.
+         * 
+         * @param s
+         *            an array of 16-bit integer values
+         * @param start
+         *            the index of the first element to convert
+         * @param length
+         *            the number of elements to convert
+         * @throws IOException
+         *             if the conversion buffer could not be flushed to the
+         *             output to make room for the new conversion.
+         */
         protected void put(short[] s, int start, int length) throws IOException {
             length += start;
             while (start < length) {
@@ -136,6 +289,20 @@ public abstract class ArrayEncoder {
             }
         }
 
+        /**
+         * Puts an array of 32-bit integers into the conversion buffer, flushing
+         * the buffer intermittently as necessary to make room as it goes.
+         * 
+         * @param i
+         *            an array of 32-bit integer values
+         * @param start
+         *            the index of the first element to convert
+         * @param length
+         *            the number of elements to convert
+         * @throws IOException
+         *             if the conversion buffer could not be flushed to the
+         *             output to make room for the new conversion.
+         */
         protected void put(int[] i, int start, int length) throws IOException {
             length += start;
             while (start < length) {
@@ -143,6 +310,20 @@ public abstract class ArrayEncoder {
             }
         }
 
+        /**
+         * Puts an array of 64-bit integers into the conversion buffer, flushing
+         * the buffer intermittently as necessary to make room as it goes.
+         * 
+         * @param l
+         *            an array of 64-bit integer values
+         * @param start
+         *            the index of the first element to convert
+         * @param length
+         *            the number of elements to convert
+         * @throws IOException
+         *             if the conversion buffer could not be flushed to the
+         *             output to make room for the new conversion.
+         */
         protected void put(long[] l, int start, int length) throws IOException {
             length += start;
             while (start < length) {
@@ -150,6 +331,21 @@ public abstract class ArrayEncoder {
             }
         }
 
+        /**
+         * Puts an array of 32-bit single-precision floating point values into
+         * the conversion buffer, flushing the buffer intermittently as
+         * necessary to make room as it goes.
+         * 
+         * @param f
+         *            an array of 32-bit single-precision floating point values
+         * @param start
+         *            the index of the first element to convert
+         * @param length
+         *            the number of elements to convert
+         * @throws IOException
+         *             if the conversion buffer could not be flushed to the
+         *             output to make room for the new conversion.
+         */
         protected void put(float[] f, int start, int length) throws IOException {
             length += start;
             while (start < length) {
@@ -157,6 +353,21 @@ public abstract class ArrayEncoder {
             }
         }
 
+        /**
+         * Puts an array of 64-bit double-precision floating point values into
+         * the conversion buffer, flushing the buffer intermittently as
+         * necessary to make room as it goes.
+         * 
+         * @param d
+         *            an array of 64-bit double-precision floating point values
+         * @param start
+         *            the index of the first element to convert
+         * @param length
+         *            the number of elements to convert
+         * @throws IOException
+         *             if the conversion buffer could not be flushed to the
+         *             output to make room for the new conversion.
+         */
         protected void put(double[] d, int start, int length) throws IOException {
             length += start;
             while (start < length) {

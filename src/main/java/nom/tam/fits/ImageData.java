@@ -50,6 +50,7 @@ import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.FitsEncoder;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.array.MultiArrayIterator;
 import nom.tam.util.type.ElementType;
@@ -151,7 +152,7 @@ public class ImageData extends Data {
      */
     public ImageData(Object x) {
         this.dataArray = x;
-        this.byteSize = ArrayFuncs.computeLSize(x);
+        this.byteSize = FitsEncoder.computeSize(x);
     }
 
     /**
@@ -199,7 +200,7 @@ public class ImageData extends Data {
         } else {
             this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
             try {
-                i.readLArray(this.dataArray);
+                i.readArrayFully(this.dataArray);
             } catch (IOException e) {
                 throw new FitsException("Unable to read image data:" + e);
             }
@@ -220,7 +221,7 @@ public class ImageData extends Data {
     public void setBuffer(Buffer data) {
         ElementType<Buffer> elementType = ElementType.forClass(this.dataDescription.type);
         this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
-        MultiArrayIterator iterator = new MultiArrayIterator(this.dataArray);
+        MultiArrayIterator<?> iterator = new MultiArrayIterator<>(this.dataArray);
         Object array = iterator.next();
         while (array != null) {
             elementType.getArray(data, array);

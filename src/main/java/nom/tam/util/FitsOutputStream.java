@@ -51,8 +51,10 @@ import java.io.OutputStream;
  * @see FitsInputStream
  * @see FitsFile
  */
+@SuppressWarnings("deprecation")
 public class FitsOutputStream extends ArrayOutputStream implements ArrayDataOutput {
 
+    /** the output, as accessible via the <code>DataInput</code> interface */
     private final DataOutput data;
     
     /**

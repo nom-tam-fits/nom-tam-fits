@@ -45,43 +45,70 @@ import java.io.OutputStream;
  */
 public class ArrayOutputStream extends BufferedOutputStream implements OutputWriter {
 
+    /** conversion from Java arrays to FITS binary representation */
     private ArrayEncoder encoder;
 
+    /**
+     * Instantiates a new output stream for efficient array transactions. For
+     * use by subclass constructors only.
+     * 
+     * @param i
+     *            the underlying input stream
+     * @param bufLength
+     *            the buffer size in bytes.
+     */
     protected ArrayOutputStream(OutputStream o, int bufLength) {
         super(o, bufLength);
     }
 
     /**
-     * Use the BufferedOutputStream constructor
+     * Instantiates a new output stream for efficient array transactions.
      * 
      * @param o
-     *            An open output stream.
-     */
-    public ArrayOutputStream(OutputStream o, ArrayEncoder java2bin) {
-        this(o, FitsIO.DEFAULT_BUFFER_SIZE, java2bin);
-    }
-
-    /**
-     * Use the BufferedOutputStream constructor
-     * 
-     * @param o
-     *            An open output stream.
+     *            the underlying output stream
      * @param bufLength
-     *            The buffer size.
+     *            the buffer size in bytes.
+     * @param java2bin
+     *            the conversion from Java arrays to the binary representation
+     *            in the stream.
      */
     public ArrayOutputStream(OutputStream o, int bufLength, ArrayEncoder java2bin) {
         this(o, bufLength);
         setEncoder(java2bin);
     }
 
+    /**
+     * Sets the conversion from Java arrays to their binary representation in
+     * the stream. For use by subclass constructors only.
+     * 
+     * @param java2bin
+     *            the conversion from Java arrays to their binary representation
+     *            in stream
+     * @see #getEncoder()
+     * @see #setDecoder(ArrayDecoder)
+     */
     protected void setEncoder(ArrayEncoder java2bin) {
         this.encoder = java2bin;
     }
 
+    /**
+     * Returns the conversion from Java arrays to their binary representation in
+     * the stream. Subclass implementeations can use this to access the required
+     * conversion when writing data to file.
+     * 
+     * @return the conversion from Java arrays to their binary representation in
+     *         stream
+     * @see #setEncoder(ArrayEncoder)
+     * @see #getDecoder()
+     */
     protected ArrayEncoder getEncoder() {
         return encoder;
     }
 
+    /**
+     * See {@link ArrayDataOutput#writeArray(Object)} for a contract of this
+     * method.
+     */
     public void writeArray(Object o) throws IOException {
         try {
             encoder.writeArray(o);

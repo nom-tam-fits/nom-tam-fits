@@ -32,6 +32,7 @@
 package nom.tam.util;
 
 import java.io.Closeable;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.Flushable;
@@ -71,6 +72,17 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
     /** Whether the current position is beyond the current ennd-of-file */
     private boolean writeAhead;
     
+    
+    /**
+     * Instantiates a new buffered random access file with the specified IO mode and buffer size.
+     * This class offers up to 2+ orders of magnitude superior performance over {@link RandomAccessFile}
+     * when repeatedly reading or writing chunks of data at consecutive locations
+     * 
+     * @param f             the file
+     * @param mode          the access mode, such as "rw" (see {@link RandomAccessFile} for more info).
+     * @param bufferSize    the size of the buffer in bytes
+     * @throws IOException  if there was an IO error getting the required access to the file.
+     */
     BufferedFileIO(File f, String mode, int bufferSize) throws IOException {
         this.file = new RandomAccessFile(f, mode);
         buf = new byte[bufferSize];
@@ -178,6 +190,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
         // Buffer as much as we can.
         seek(getFilePointer());
         end = file.read(buf, 0, buf.length);
+        
         return end > 0;
     }
     
@@ -399,9 +412,50 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
             offset += n;   
             from += n;
         }
+
         return got;
     }
     
+    /**
+     * Reads bytes to completely fill the supplied buffer. If not enough bytes are avaialable in the
+     * file to fully fill the buffer, an {@link EOFException} will be thrown.
+     * 
+     * @param b             the buffer
+     * @throws IOException  if there was an IO error before the buffer could be fully populated.
+     * 
+     */
+    public final void readFully(byte[] b) throws IOException {
+        readFully(b, 0, b.length);
+    }
+
+    /**
+     * Reads bytes to fill the supplied buffer with the requested number of bytes from the given
+     * starting buffer index. If not enough bytes are avaialable in the
+     * file to deliver the reqauested number of bytes the buffer, an {@link EOFException} will be thrown.
+     * 
+     * @param b             the buffer
+     * @param off           the buffer index at which to start reading data
+     * @param len           the total number of bytes to read.
+     * @throws IOException  if there was an IO error before the requested number of bytes could
+     *                      all be read.
+     */
+    public synchronized void readFully(byte[] b, int off, int len) throws IOException { 
+        while (len > 0) {
+            int n = read(b, off, len);
+            if (n < 0) {
+                throw new EOFException();
+            }
+            off += n;
+            len -= n;
+        }
+    }
+    
+    /**
+     * Same as {@link RandomAccessFile#readUTF()}.
+     * 
+     * @return              a string
+     * @throws IOException  if there was an IO error while reading from the file.
+     */
     public final synchronized String readUTF() throws IOException {
         matchBufferPos();
         String s = file.readUTF();
@@ -409,6 +463,12 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
         return s;
     }
 
+    /**
+     * Same as {@link RandomAccessFile#writeUTF(String)}
+     * 
+     * @param s             a string
+     * @throws IOException  if there was an IO error while writing to the file.
+     */
     public final synchronized void writeUTF(String s) throws IOException {
         matchBufferPos();
         file.writeUTF(s);
@@ -440,4 +500,28 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
     }
 
 
+    /**
+     * Read as many bytes into a byte array as possible. The number of bytes read may be fewer than
+     * the size of the array, for example because the end-of-file is reached during the read.
+     * 
+     * @param b         the byte buffer to fill with data from the file.
+     * @return          the number of bytes actually read.
+     * @throws IOException  if there was an IO error while reading, other than the end-of-file.
+     * 
+     */
+    public final int read(byte[] b) throws IOException {
+        return read(b, 0, b.length);
+    }
+    
+    /**
+     * Writes the contents of a byte array into the file.
+     * 
+     * @param b             the byte buffer to write into the file.
+     * @throws IOException  if there was an IO error while writing to the file...
+     * 
+     */
+    public final void write(byte[] b) throws IOException {
+        write(b, 0, b.length);
+    }
+    
 }

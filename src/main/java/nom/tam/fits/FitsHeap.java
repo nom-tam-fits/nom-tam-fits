@@ -36,7 +36,6 @@ import java.io.IOException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsDecoder;
 import nom.tam.util.FitsEncoder;
 import nom.tam.util.ByteArrayIO;
@@ -49,17 +48,27 @@ import nom.tam.util.ByteArrayIO;
  */
 public class FitsHeap implements FitsElement {
 
+    /** The minimum stoprage size to allocate for the heap, from which it can grow as necessary */
     private static final int MIN_HEAP_CAPACITY = 16384;
     
     // TODO
     // AK: In principle we could use ReadWriteAccess interface as the storage, which can be either an in-memory
     // array or a buffered file region. The latter could support heaps over 2G, and could reduce memory overhead
     // for heap access in some future release...
-    private ByteArrayIO heap; 
+    /** The underlying storage space of the heap */
+    private ByteArrayIO store; 
     
-    private FitsDecoder decoder;
+    /** conversion from Java arrays to FITS binary representation */
     private FitsEncoder encoder;
     
+    /** conversion from FITS binary representation to Java arrays */
+    private FitsDecoder decoder;
+    
+    
+    
+    /** 
+     * Construct a new uninitialized FITS heap object. 
+     */
     private FitsHeap() {   
     }
     
@@ -67,7 +76,6 @@ public class FitsHeap implements FitsElement {
      * Create a heap of a given size.
      */
     FitsHeap(int size) { 
-        this();
         ByteArrayIO data = new ByteArrayIO(Math.max(size, MIN_HEAP_CAPACITY));
         
         if (size < 0) {
@@ -76,13 +84,18 @@ public class FitsHeap implements FitsElement {
        
         data.setLength(Math.max(size, 0));
         setData(data);
-        encoder = new FitsEncoder(heap);
-        decoder = new FitsDecoder(heap);
+        encoder = new FitsEncoder(store);
+        decoder = new FitsDecoder(store);
     }
     
-    
+    /**
+     * Sets the underlying data storage for this heap instance. Constructors should
+     * call this.
+     * 
+     * @param data      the new underlying storage object for this heap instance. 
+     */
     protected void setData(ByteArrayIO data) {
-        this.heap = data;
+        this.store = data;
     }
     
     /**
@@ -92,9 +105,9 @@ public class FitsHeap implements FitsElement {
      */
     FitsHeap copy() {
         FitsHeap copy = new FitsHeap();
-        copy.setData(heap.copy());
-        copy.encoder = new FitsEncoder(copy.heap);
-        copy.decoder = new FitsDecoder(copy.heap);
+        copy.setData(store.copy());
+        copy.encoder = new FitsEncoder(copy.store);
+        copy.decoder = new FitsDecoder(copy.store);
         return copy;
     }
 
@@ -110,8 +123,8 @@ public class FitsHeap implements FitsElement {
      */
     public void getData(int offset, Object array) throws FitsException {
         try {
-            heap.position(offset);
-            decoder.readLArray(array);
+            store.position(offset);
+            decoder.readArrayFully(array);
         } catch (IOException e) {
             throw new FitsException("Error decoding heap area at offset=" + offset + ".", e);
         }
@@ -137,15 +150,15 @@ public class FitsHeap implements FitsElement {
      * Add some data to the heap.
      */
     int putData(Object data) throws FitsException {
-        long lsize = heap.length() + ArrayFuncs.computeLSize(data);
+        long lsize = store.length() + FitsEncoder.computeSize(data);
         if (lsize > Integer.MAX_VALUE) {
             throw new FitsException("FITS Heap > 2 G");
         }
         
-        int oldSize = (int) heap.length();
+        int oldSize = (int) store.length();
         
         try {
-            heap.position(oldSize);
+            store.position(oldSize);
             encoder.writeArray(data);
         } catch (IOException e) {
             throw new FitsException("Unable to write variable column length data", e);
@@ -160,12 +173,12 @@ public class FitsHeap implements FitsElement {
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     @Override
     public void read(ArrayDataInput str) throws FitsException {
-        if (heap.length() == 0) {
+        if (store.length() == 0) {
             return;
         }
        
         try {
-            str.readFully(heap.getBuffer(), 0, (int) heap.length());
+            str.readFully(store.getBuffer(), 0, (int) store.length());
         } catch (IOException e) {
             throw new FitsException("Error reading heap " + e.getMessage(), e);
         }
@@ -190,7 +203,7 @@ public class FitsHeap implements FitsElement {
      * @return the size of the Heap
      */
     public int size() {
-        return (int) heap.length();
+        return (int) store.length();
     }
 
     /**
@@ -199,7 +212,7 @@ public class FitsHeap implements FitsElement {
     @Override
     public void write(ArrayDataOutput str) throws FitsException {
         try {
-            str.write(heap.getBuffer(), 0, (int) heap.length());
+            str.write(store.getBuffer(), 0, (int) store.length());
         } catch (IOException e) {
             throw new FitsException("Error writing heap:" + e.getMessage(), e);
         }

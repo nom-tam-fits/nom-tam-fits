@@ -1639,9 +1639,10 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      */
     @SuppressWarnings({ "resource", "deprecation" })
     private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
-        byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];        
-        int got = dis.in().read(buffer);
-  
+        byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];       
+       
+        int got = dis.in().read(buffer);   
+        
         if (got <= 0) {
             throw new EOFException();
         }

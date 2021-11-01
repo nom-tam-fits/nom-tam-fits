@@ -49,6 +49,7 @@ import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.FitsEncoder;
 
 /**
  * This class provides a simple holder for data which is not handled by other
@@ -88,7 +89,7 @@ public class UndefinedData extends Data {
      *            object to create the hdu from
      */
     public UndefinedData(Object x) {
-        this.data = new byte[(int) ArrayFuncs.computeLSize(x)];
+        this.data = new byte[(int) FitsEncoder.computeSize(x)];
         ArrayFuncs.copyInto(x, this.data);
     }
 

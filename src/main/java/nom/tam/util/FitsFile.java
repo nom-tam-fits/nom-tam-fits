@@ -89,6 +89,7 @@ import java.util.logging.Logger;
  * 
  * @since 1.16
  */
+@SuppressWarnings("deprecation")
 public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOutput {
 
     private static final Logger LOG = Logger.getLogger(FitsFile.class.getName());
@@ -200,12 +201,6 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     @Override
     public boolean markSupported() {
         return true;
-    }
-    
-    
-    @Override
-    public Boolean readBooleanObject() throws IOException {
-        return getDecoder().readBooleanObject();
     }
     
     @Override   
@@ -367,11 +362,6 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     }
 
     @Override
-    public final int read(byte[] buf) throws IOException {
-        return read(buf, 0, buf.length);
-    }
-
-    @Override
     public final int read(char[] c) throws IOException {
         return read(c, 0, c.length);
     }
@@ -437,15 +427,7 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
         return (int) readLArray(o);
     }
 
-    @Override
-    public long readLArray(Object o) throws IOException {
-        try {
-            return getDecoder().readLArray(o);
-        } catch (IllegalArgumentException e) {
-            throw new IOException(e);
-        }
-    }
-
+ 
 
  
     @Override
@@ -563,15 +545,6 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     @Override
     public void write(String[] s, int start, int length) throws IOException {
         getEncoder().write(s, start, length);
-    }
-
-    @Override
-    public void writeArray(Object o) throws IOException {
-        try {
-            getEncoder().writeArray(o);
-        } catch (IllegalArgumentException e) {
-            throw new IOException(e);
-        }
     }
     
     @Override

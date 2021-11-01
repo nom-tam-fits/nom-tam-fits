@@ -2002,7 +2002,7 @@ public class Header implements FitsElement {
                 throw new EOFException("Not FITS format at " + this.fileOffset + ":" + key);
             }
             
-            throw new IOException("Not FITS format at " + this.fileOffset + ":" + key);
+            throw new IOException("Not FITS format at " + this.fileOffset + ": " + key);
         }
     }
 

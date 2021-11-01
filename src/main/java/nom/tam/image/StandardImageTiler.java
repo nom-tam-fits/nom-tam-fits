@@ -302,7 +302,7 @@ public abstract class StandardImageTiler implements ImageTiler {
         long currentOffset = this.randomAccessFile.getFilePointer();
         Object o = ArrayFuncs.newInstance(this.base, this.dims);
         this.randomAccessFile.seek(this.fileOffset);
-        this.randomAccessFile.readLArray(o);
+        this.randomAccessFile.readArrayFully(o);
         this.randomAccessFile.seek(currentOffset);
         return o;
     }

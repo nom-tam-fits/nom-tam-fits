@@ -1390,7 +1390,7 @@ public class BinaryTable extends AbstractTableData {
 
         try {
             FitsUtil.reposition(this.currInput, this.fileOffset + (long) row * (long) this.rowLen);
-            this.currInput.readLArray(data);
+            this.currInput.readArrayFully(data);
         } catch (IOException e) {
             throw new FitsException("Error in deferred row read", e);
         }

@@ -35,6 +35,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import nom.tam.fits.FitsFactory;
 
@@ -50,66 +51,138 @@ import nom.tam.fits.FitsFactory;
  */
 public abstract class ArrayDecoder {
 
+    /** The buffer size for array translation */
     private static final int BUFFER_SIZE = FitsFactory.FITS_BLOCK_SIZE;
 
+    /** bit mask for 1 byte */
     private static final int BYTE_MASK = 0xFF;
 
+    /** bit mask for a 16-byte integer (a Java <code>short</code>). */
     private static final int SHORT_MASK = 0xFFFF;
 
+    /** the input providing the binary representation of data */
     private final InputReader in;
 
+    /** the conversion buffer */
     protected Buffer buf = new Buffer();
 
+    /**
+     * Instantiates a new decoder for converting data representations into Java
+     * arrays.
+     * 
+     * @param i
+     *            the binary input.
+     */
     public ArrayDecoder(InputReader i) {
         this.in = i;
     }
 
+    /**
+     * Instantiates a new decoder for converting data representations into Java
+     * arrays.
+     * 
+     * @param i
+     *            the binary input stream
+     */
     public ArrayDecoder(InputStream i) {
         this((InputReader) new FitsInputStream(i));
     }
 
+    /**
+     * Reads one byte from the input. See the contract of
+     * {@link InputStream#read()}.
+     * 
+     * @return the byte, or -1 if at the end of the file.
+     * @throws IOException
+     *             if an IO error, other than the end-of-file prevented the
+     *             read.
+     */
     protected synchronized int read() throws IOException {
         return in.read();
     }
 
+    /**
+     * Reads bytes into an array from the input. See the contract of
+     * {@link InputStream#read(byte[], int, int)}.
+     * 
+     * @return the number of bytes successfully read, or -1 if at the end of the
+     *         file.
+     * @throws IOException
+     *             if an IO error, other than the end-of-file prevented the
+     *             read.
+     */
     protected synchronized int read(byte[] b, int start, int length) throws IOException {
         return in.read(b, start, length);
     }
 
-    protected final void readFully(byte[] b) throws IOException {
-        readFully(b, 0, b.length);
-    }
-
-    protected void readFully(byte[] b, int off, int len) throws IOException {
-        int n = read(b, off, len);
-        if (n < len) {
-            throw new EOFException("EOF at " + n + " of " + len + " requested");
+    public void readArrayFully(Object o) throws IOException, IllegalArgumentException {
+        if (readArray(o) != FitsEncoder.computeSize(o)) {
+            throw new EOFException("Incomplete array read.");
         }
     }
 
-    public abstract long readLArray(Object o) throws IOException;
+    /**
+     * See the contract of {@link ArrayDataInput#readLArray(Object)}.
+     */
+    public abstract long readArray(Object o) throws IOException, IllegalArgumentException;
 
     /**
-     * In internal buffer for efficient conversion, and with guaranteed whole
-     * element storage.
+     * The conversion buffer for decoding binary data representation into Java
+     * arrays (objects).
      * 
      * @author Attila Kovacs
      */
     protected final class Buffer {
 
+        /** the byte array in which to buffer data from the input */
         private byte[] data = new byte[BUFFER_SIZE];
 
+        /** the buffer wrapped for NIO access */
         private ByteBuffer buffer = ByteBuffer.wrap(data);
 
-        /** The number of bytes requested, but not yet buffered */
+        /** the number of bytes requested, but not yet buffered */
         private long pending = 0;
 
-        protected void loadBytes(long n, int size) throws IOException {
+        /**
+         * Sets the byte order of this conversion buffer
+         * 
+         * @param order
+         *            the new byte order
+         * @see #order()
+         * @see ByteBuffer#order(ByteOrder)
+         */
+        protected void order(ByteOrder order) {
+            buffer.order(order);
+        }
+
+        /**
+         * Returns the current byte order of the conversion buffer.
+         * 
+         * @return the byte order
+         * @see #order(ByteOrder)
+         * @see ByteBuffer#order()
+         */
+        protected ByteOrder order() {
+            return buffer.order();
+        }
+
+        /**
+         * Set the number of bytes we can buffer from the input for subsequent
+         * rettrieval from this buffer. The get methods of this class will be
+         * ensured not to fetch data from the input beyond the requested size.
+         * 
+         * @param n
+         *            the number of elements we can read and buffer from the
+         *            input
+         * @param size
+         *            the number of bytes in each elements.
+         */
+        protected void loadBytes(long n, int size) {
             buffer.rewind();
             buffer.limit(0);
             this.pending = n * size;
         }
-        
+
         /**
          * Loads just a single element of the specified byte size. The element
          * must fit into the conversion buffer, and it is up to the caller to
@@ -129,6 +202,21 @@ public abstract class ArrayDecoder {
             return buffer.limit() == size;
         }
 
+        /**
+         * Makes sure that an elements of the specified size is fully available
+         * in the buffer, prompting additional reading of the underlying stream
+         * as appropriate (but not beyond the limit set by
+         * {@link #loadBytes(long, int)}.
+         * 
+         * @param size
+         *            the number of bytes we need at once from the buffer
+         * @return <code>true</code> if the requested number of bytes are, or
+         *         could be made, available. Otherwise <code>false</code>.
+         * @throws IOException
+         *             if there was an underlying IO error, other than the end
+         *             of file, while trying to fetch additional data from the
+         *             underlying input
+         */
         private boolean makeAvailable(int size) throws IOException {
             if (buffer.remaining() < size) {
                 if (!fetch()) {
@@ -143,6 +231,17 @@ public abstract class ArrayDecoder {
             return true;
         }
 
+        /**
+         * Reads more data into the buffer from the underlying stream,
+         * attempting to fill the buffer if possible.
+         * 
+         * @return <code>true</code> if data was successfully buffered from the
+         *         underlying intput. Othwrwise <code>false</code>.
+         * @throws IOException
+         *             if there as an IO error, other than the end of file,
+         *             while trying to read more data from the underlying input
+         *             into the buffer.
+         */
         private boolean fetch() throws IOException {
             int remaining = buffer.remaining();
 
@@ -171,6 +270,16 @@ public abstract class ArrayDecoder {
             return true;
         }
 
+        /**
+         * Retrieves a single byte from the buffer.
+         * 
+         * @return the byte value, or -1 if no more data is available from the
+         *         buffer or the underlying input.
+         * @throws IOException
+         *             if there as an IO error, other than the end of file,
+         *             while trying to read more data from the underlying input
+         *             into the buffer.
+         */
         protected int get() throws IOException {
             if (makeAvailable(1)) {
                 return buffer.get() & BYTE_MASK;
@@ -178,6 +287,16 @@ public abstract class ArrayDecoder {
             return -1;
         }
 
+        /**
+         * Retrieves a 2-byte unsidned integer from the buffer.
+         * 
+         * @return the 16-bit integer value, or -1 if no more data is available
+         *         from the buffer or the underlying input.
+         * @throws IOException
+         *             if there as an IO error, other than the end of file,
+         *             while trying to read more data from the underlying input
+         *             into the buffer.
+         */
         protected int getUnsignedShort() throws IOException {
             if (makeAvailable(FitsIO.BYTES_IN_SHORT)) {
                 return buffer.getShort() & SHORT_MASK;
@@ -185,6 +304,16 @@ public abstract class ArrayDecoder {
             return -1;
         }
 
+        /**
+         * Retrieves a 4-byte integer from the buffer.
+         * 
+         * @return the 32-bit integer value.
+         * @throws IOException
+         *             if there as an IO error, including and
+         *             {@link EOFExcetion} if the end of file was reached, while
+         *             trying to read more data from the underlying input into
+         *             the buffer.
+         */
         protected int getInt() throws IOException {
             if (makeAvailable(FitsIO.BYTES_IN_INTEGER)) {
                 return buffer.getInt();
@@ -192,6 +321,16 @@ public abstract class ArrayDecoder {
             throw new EOFException();
         }
 
+        /**
+         * Retrieves a 8-byte integer from the buffer.
+         * 
+         * @return the 64-bit integer value.
+         * @throws IOException
+         *             if there as an IO error, including and
+         *             {@link EOFExcetion} if the end of file was reached, while
+         *             trying to read more data from the underlying input into
+         *             the buffer.
+         */
         protected long getLong() throws IOException {
             if (makeAvailable(FitsIO.BYTES_IN_LONG)) {
                 return buffer.getLong();
@@ -199,6 +338,17 @@ public abstract class ArrayDecoder {
             throw new EOFException();
         }
 
+        /**
+         * Retrieves a 4-byte single-precision floating point value from the
+         * buffer.
+         * 
+         * @return the 32-bit single-precision floating-point value.
+         * @throws IOException
+         *             if there as an IO error, including and
+         *             {@link EOFExcetion} if the end of file was reached, while
+         *             trying to read more data from the underlying input into
+         *             the buffer.
+         */
         protected float getFloat() throws IOException {
             if (makeAvailable(FitsIO.BYTES_IN_FLOAT)) {
                 return buffer.getFloat();
@@ -206,6 +356,17 @@ public abstract class ArrayDecoder {
             throw new EOFException();
         }
 
+        /**
+         * Retrieves a 8-byte double-precision floating point value from the
+         * buffer.
+         * 
+         * @return the 64-bit double-precision floating-point value.
+         * @throws IOException
+         *             if there as an IO error, including and
+         *             {@link EOFExcetion} if the end of file was reached, while
+         *             trying to read more data from the underlying input into
+         *             the buffer.
+         */
         protected double getDouble() throws IOException {
             if (makeAvailable(FitsIO.BYTES_IN_DOUBLE)) {
                 return buffer.getDouble();

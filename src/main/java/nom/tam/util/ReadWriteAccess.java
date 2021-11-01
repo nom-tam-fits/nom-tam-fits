@@ -42,6 +42,7 @@ import java.io.IOException;
  * assumed as 64-bit <code>long</code> type.
  * 
  * @author Attila Kovacs
+ * @since 1.16
  */
 public interface ReadWriteAccess extends InputReader, OutputWriter {
 

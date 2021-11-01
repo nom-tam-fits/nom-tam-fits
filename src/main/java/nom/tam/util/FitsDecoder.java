@@ -40,10 +40,7 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.util.type.ElementType;
 
 /**
- * Class for decoding FITS-formatted binary data into Java arrays, primitives
- * and supported select Objects.
- * 
- * @author Attila Kovacs
+ * Class for decoding FITS-formatted binary data into Java arrays.
  * 
  * @since 1.16
  * 
@@ -53,32 +50,88 @@ import nom.tam.util.type.ElementType;
  */
 public class FitsDecoder extends ArrayDecoder {
 
+    /** The FITS byte value for the binary representation of a boolean 'true' value */
     private static final byte FITS_TRUE = (byte) 'T';
 
+    /**
+     * Instantiates a new FITS binary data decoder for converting FITS data representations
+     * into Java arrays.
+     * 
+     * @param i     the FITS input.
+     */
     public FitsDecoder(InputReader i) {
         super(i);
     }
 
+    /**
+     * Instantiates a new FITS binary data decoder for converting FITS data representations
+     * into Java arrays.
+     * 
+     * @param i     the FITS input stream.
+     */
     public FitsDecoder(InputStream i) {
         super(i);
     }
 
-    int eofCheck(EOFException e, int gotBytes) throws EOFException {
-        if (gotBytes == 0) {
+    /**
+     * Decides what to do when an {@link EOFException} is encountered after having read
+     * some number of bytes from the input. The default behavior is to re-throw the
+     * exception only if no data at all was obtained from the input, otherwise return
+     * the non-zero byte count of data that were successfully read. Subclass implementations
+     * may override this method to adjust if an when {@link EOFException} is thrown
+     * upon an incomplete read.
+     * 
+     * @param e         the exception that was thrown, or <code>null</code>.
+     * @param got       the number of elements successfully read
+     * @param expected  the number of elements expected
+     * @return          the number of elements successfully read (same as <code>got</code>).
+     * @throws EOFException     the rethrown exception, or a new one, as appropriate
+     */
+    int eofCheck(EOFException e, int got, int expected) throws EOFException {
+        if (got == 0) {
+            if (e == null) {
+                throw new EOFException("Got only " + got + " of " + expected + " elements.");
+            }
             throw e;
         }
-        return gotBytes;
+        return got;
     }
 
+    /**
+     * Gets the <code>boolean</code> equivalent for a FITS byte value representing a logical
+     * value. This call does not support <code>null</code> values, which are allowed
+     * by the FITS standard, but the similar {@link #booleanObjectFor(int)} does. FITS
+     * defines 'T' as true, 'F' as false, and 0 as null. However, prior versions of this
+     * library have used the value 1 for true, and 0 for false. Therefore, this
+     * implementation will recognise both 'T' and 1 as <code>true</code>, and will
+     * return <code>false</code> for all other byte values.
+     * 
+     * @param c     The FITS byte that defines a boolean value
+     * @return      <code>true</code> if and only if the byte is the ASCII character 'T'
+     *              or has the value of 1, otherwise <code>false</code>.
+     *              
+     * @see #booleanObjectFor(int)
+     *              
+     */
     protected static final boolean booleanFor(int c) {
-        // AK: The FITS standard is to write 'T' and 'F' for logical arrays, but
-        // we have expected 1 here before as true...
-        // We'll continue to support the non-standard 1 (for now), but add
-        // support for the standard 'T'
-        // all other values are considered false.
         return c == FITS_TRUE || c == 1;
     }
 
+    /**
+     * Gets the <code>boolean</code> equivalent for a FITS byte value representing a logical
+     * value. This call supports <code>null</code> values, which are allowed
+     * by the FITS standard. FITS defines 'T' as true, 'F' as false, and 0 as null. Prior 
+     * versions of this library have used the value 1 for true, and 0 for false. Therefore, this
+     * implementation will recognise both 'T' and 1 as <code>true</code>, but 0 will map
+     * to <code>null</code> and everything else will return <code>false</code>.
+     * 
+     * @param c     The FITS byte that defines a boolean value
+     * @return      <code>true</code> if and only if the byte is the ASCII character 'T'
+     *              or has the value of 1, <code>null</code> it the byte is 0, otherwise <code>false</code>.
+     *              
+     * @see #booleanFor(int)
+     *              
+     */
     protected static final Boolean booleanObjectFor(int c) {
         if (c == 0) {
             return null;
@@ -87,23 +140,17 @@ public class FitsDecoder extends ArrayDecoder {
     }
 
     /**
-     * @return a boolean from the buffer
-     * @throws IOException
-     *             if the underlying operation fails
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
      */
+    @Deprecated
     protected synchronized boolean readBoolean() throws IOException {
         return booleanFor(readByte());
     }
 
-    protected synchronized Boolean readBooleanObject() throws IOException {
-        return booleanObjectFor(readByte());
-    }
-
     /**
-     * @return a char from the buffer
-     * @throws IOException
-     *             if the underlying operation fails
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
      */
+    @Deprecated
     protected synchronized char readChar() throws IOException {
         if (FitsFactory.isUseUnicodeChars()) {
             return (char) readUnsignedShort();
@@ -111,6 +158,10 @@ public class FitsDecoder extends ArrayDecoder {
         return (char) readUnsignedByte();
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected final byte readByte() throws IOException {
         int i = read();
         if (i < 0) {
@@ -119,10 +170,18 @@ public class FitsDecoder extends ArrayDecoder {
         return (byte) i;
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected synchronized int readUnsignedByte() throws IOException {
         return read();
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected final short readShort() throws IOException {
         int i = readUnsignedShort();
         if (i < 0) {
@@ -131,31 +190,55 @@ public class FitsDecoder extends ArrayDecoder {
         return (short) i;
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected synchronized int readUnsignedShort() throws IOException {
         buf.loadOne(ElementType.SHORT.size());
         return buf.getUnsignedShort();
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected synchronized int readInt() throws IOException {
         buf.loadOne(ElementType.INT.size());
         return buf.getInt();
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected synchronized long readLong() throws IOException {
         buf.loadOne(ElementType.LONG.size());
         return buf.getLong();
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected synchronized float readFloat() throws IOException {
         buf.loadOne(ElementType.FLOAT.size());
         return buf.getFloat();
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected synchronized double readDouble() throws IOException {
         buf.loadOne(ElementType.DOUBLE.size());
         return buf.getDouble();
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected synchronized String readAsciiLine() throws IOException {
         StringBuffer str = new StringBuffer();
         int c = 0;
@@ -167,7 +250,34 @@ public class FitsDecoder extends ArrayDecoder {
         }
         return new String(str);
     }
- 
+
+    /**
+     * Reads bytes to fill the supplied buffer with the requested number of bytes from the given
+     * starting buffer index. If not enough bytes are avaialable in the
+     * file to deliver the reqauested number of bytes the buffer, an {@link EOFException} will be thrown.
+     * 
+     * @param b             the buffer
+     * @param off           the buffer index at which to start reading data
+     * @param len           the total number of bytes to read.
+     * @throws IOException  if there was an IO error before the requested number of bytes could
+     *                      all be read.
+     */
+    protected void readFully(byte[] b, int off, int len) throws IOException {
+        while (len > 0) {       
+            int n = read(b, off, len);
+            if (n < 0) {
+                throw new EOFException();
+            }
+            off += n;
+            len -= n;
+        } 
+    }
+    
+    /**
+     * See {@link ArrayDataInput#read(boolean[], int, int)} for the general contract of this method.
+     * In FITS, <code>true</code> values are represented by the ASCII byte for 'T', whereas
+     * <code>false</code> is represented by the ASCII byte for 'F'.
+     */
     protected synchronized int read(boolean[] b, int start, int length) throws IOException {
         buf.loadBytes(length, 1);
         int to = length + start;
@@ -184,17 +294,22 @@ public class FitsDecoder extends ArrayDecoder {
         } catch (EOFException e) {
             // The underlying read(byte[], int, int) may throw an EOFException
             // (even though it should not), and so we should be prepared for that...
-            return eofCheck(e, k - start);
+            return eofCheck(e, k - start, length);
         }
         
         if (k != to) {
-            k -= start;
-            return eofCheck(new EOFException("EOF after reading " + k + " of " + length + " elements."), k);
+            return eofCheck(null, k - start, length);
         }
 
         return length;
     }
 
+    /**
+     * See {@link ArrayDataInput#read(Boolean[], int, int)} for the general contract of this method.
+     * In FITS, <code>true</code> values are represented by the ASCII byte for 'T',
+     * <code>false</code> is represented by the ASCII byte for 'F', while <code>null</code>
+     * values are represented by the value 0.
+     */
     protected synchronized int read(Boolean[] b, int start, int length) throws IOException {
         buf.loadBytes(length, 1);
         int to = length + start;
@@ -211,17 +326,26 @@ public class FitsDecoder extends ArrayDecoder {
         } catch (EOFException e) {
             // The underlying read(byte[], int, int) may throw an EOFException
             // (even though it should not), and so we should be prepared for that...
-            return eofCheck(e, k - start);
+            return eofCheck(e, k - start, length);
         }
         
         if (k != to) {
-            k -= start;
-            return eofCheck(new EOFException("EOF after reading " + k + " of " + length + " elements."), k);
+            return eofCheck(null, k - start, length);
         }
 
         return length;
     }
 
+    /**
+     * See {@link ArrayDataInput#read(char[], int, int)} for the general contract of this method. In
+     * FITS characters are usually represented as 1-byte ASCII, not as the 2-byte Java types.
+     * However, previous implementations if this library have erroneously written 2-byte
+     * characters into the FITS. For compatibility both the FITS standard -1-byte ASCII
+     * and the old 2-byte behaviour are supported, and can be selected via 
+     * {@link FitsFactory#setUseUnicodeChars(boolean)}.
+     * 
+     * @see FitsFactory#setUseUnicodeChars(boolean) 
+     */
     protected synchronized int read(char[] c, int start, int length) throws IOException {
         buf.loadBytes(length, ElementType.CHAR.size());
         int to = length + start;
@@ -240,17 +364,19 @@ public class FitsDecoder extends ArrayDecoder {
         } catch (EOFException e) {
             // The underlying read(byte[], int, int) may throw an EOFException
             // (even though it should not), and so we should be prepared for that...
-            return eofCheck(e, (k - start) * ElementType.CHAR.size());
+            return eofCheck(e, (k - start), length) * ElementType.CHAR.size();
         }
 
         if (k != to) {
-            k -= start;
-            return eofCheck(new EOFException("EOF after reading " + k + " of " + length + " elements."), k * ElementType.CHAR.size());
+            return eofCheck(null, k - start, length) * ElementType.CHAR.size();
         }
 
         return length * ElementType.CHAR.size();
     }
 
+    /**
+     * See {@link ArrayDataInput#read(short[], int, int)} for a contract of this method.
+     */
     protected synchronized int read(short[] s, int start, int length) throws IOException {
         buf.loadBytes(length, ElementType.SHORT.size());
         int to = length + start;
@@ -265,13 +391,15 @@ public class FitsDecoder extends ArrayDecoder {
         }
 
         if (k != to) {
-            k -= start;
-            return eofCheck(new EOFException("EOF after reading " + k + " of " + length + " elements."), k * ElementType.SHORT.size());
+            return eofCheck(null, k - start, length) * ElementType.SHORT.size();
         }
 
         return length * ElementType.SHORT.size();
     }
 
+    /**
+     * See {@link ArrayDataInput#read(int[], int, int)} for a contract of this method.
+     */
     protected synchronized int read(int[] j, int start, int length) throws IOException {
         buf.loadBytes(length, ElementType.INT.size());
         int to = length + start;
@@ -282,11 +410,14 @@ public class FitsDecoder extends ArrayDecoder {
                 j[k] = buf.getInt();
             }
         } catch (EOFException e) {
-            return eofCheck(e, (k - start) * ElementType.INT.size());
+            return eofCheck(e, k - start, length) * ElementType.INT.size();
         }
         return length * ElementType.INT.size();
     }
 
+    /**
+     * See {@link ArrayDataInput#read(long[], int, int)} for a contract of this method.
+     */
     protected synchronized int read(long[] l, int start, int length) throws IOException {
         buf.loadBytes(length, ElementType.LONG.size());
         int to = length + start;
@@ -297,11 +428,14 @@ public class FitsDecoder extends ArrayDecoder {
                 l[k] = buf.getLong();
             }
         } catch (EOFException e) {
-            return eofCheck(e, (k - start) * ElementType.LONG.size());
+            return eofCheck(e, k - start, length) * ElementType.LONG.size();
         }
         return length * ElementType.LONG.size();
     }
 
+    /**
+     * See {@link ArrayDataInput#read(float[], int, int)} for a contract of this method.
+     */
     protected synchronized int read(float[] f, int start, int length) throws IOException {
         buf.loadBytes(length, ElementType.FLOAT.size());
         int to = length + start;
@@ -312,11 +446,14 @@ public class FitsDecoder extends ArrayDecoder {
                 f[k] = buf.getFloat();
             }
         } catch (EOFException e) {
-            return eofCheck(e, (k - start) * ElementType.FLOAT.size());
+            return eofCheck(e, k - start, length) * ElementType.FLOAT.size();
         }
         return length * ElementType.FLOAT.size();
     }
 
+    /**
+     * See {@link ArrayDataInput#read(double[], int, int)} for a contract of this method.
+     */
     protected synchronized int read(double[] d, int start, int length) throws IOException {
         buf.loadBytes(length, ElementType.DOUBLE.size());
         int to = length + start;
@@ -327,13 +464,13 @@ public class FitsDecoder extends ArrayDecoder {
                 d[k] = buf.getDouble();
             }
         } catch (EOFException e) {
-            return eofCheck(e, (k - start) * ElementType.DOUBLE.size());
+            return eofCheck(e, k - start, length) * ElementType.DOUBLE.size();
         }
         return length * ElementType.DOUBLE.size();
     }
 
     @Override
-    public synchronized long readLArray(Object o) throws IOException {
+    public synchronized long readArray(Object o) throws IOException, IllegalArgumentException {
         if (o == null) {
             return 0L;
         }
@@ -383,7 +520,7 @@ public class FitsDecoder extends ArrayDecoder {
 
             // Process multidim arrays recursively.
             for (int i = 0; i < length; i++) {
-                long n = readLArray(array[i]);
+                long n = readArray(array[i]);
                 if (n < 0) {
                     return count;
                 }
@@ -394,4 +531,6 @@ public class FitsDecoder extends ArrayDecoder {
 
         throw new IllegalArgumentException("Cannot read type: " + o.getClass().getName());
     }
+
+   
 }

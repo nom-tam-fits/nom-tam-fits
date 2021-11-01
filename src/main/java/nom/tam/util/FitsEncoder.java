@@ -39,10 +39,7 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.util.type.ElementType;
 
 /**
- * Class for encoding select Java arrays, primitives, and select Objects into
- * FITS binary format.
- * 
- * @author Attila Kovacs
+ * Class for encoding select Java arrays into FITS binary format.
  * 
  * @since 1.16
  * 
@@ -52,41 +49,60 @@ import nom.tam.util.type.ElementType;
  */
 public class FitsEncoder extends ArrayEncoder {
 
-
+    /** The FITS byte value for the binary representation of a boolean 'true' value */
     private static final byte BYTE_TRUE = (byte) 'T';
 
+    /** The FITS byte value for the binary representation of a boolean 'false' value */
     private static final byte BYTE_FALSE = (byte) 'F';
-
-  
-
+    
+    /**
+     * Instantiates a new FITS binary data encoder for converting Java arrays into
+     * FITS data representations
+     * 
+     * @param o     the FITS output.
+     */
     public FitsEncoder(OutputWriter o) {
         super(o);
     }
 
+    /**
+     * Instantiates a new FITS binary data encoder for converting Java arrays into
+     * FITS data representations
+     * 
+     * @param o     the FITS output stream.
+     */
     public FitsEncoder(OutputStream o) {
         super(o);
     }
 
-
-    private static byte byteForBoolean(boolean b) {
-        return b ? BYTE_TRUE : BYTE_FALSE;
-    }
-
+    /**
+     * Returns the FITS byte value representing a logical value. 
+     * This call supports <code>null</code> values, which are allowed
+     * by the FITS standard. FITS defines 'T' as true, 'F' as false, and 0 as null. Prior 
+     * versions of this library have used the value 1 for true, and 0 for false. Therefore, this
+     * implementation will recognise both 'T' and 1 as <code>true</code>, but 0 will map
+     * to <code>null</code> and everything else will return <code>false</code>.
+     *              
+     */
     private static byte byteForBoolean(Boolean b) {
         if (b == null) {
             return (byte) 0;
         }
-        return byteForBoolean(b.booleanValue());
+        return b ? BYTE_TRUE : BYTE_FALSE;
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected synchronized void writeBoolean(boolean b) throws IOException {
         write(byteForBoolean(b));
     }
 
-    protected synchronized void writeBoolean(Boolean b) throws IOException {
-        write(byteForBoolean(b));
-    }
-
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected synchronized void writeChar(int c) throws IOException {
         if (FitsFactory.isUseUnicodeChars()) {
             writeShort((short) c);
@@ -96,7 +112,25 @@ public class FitsEncoder extends ArrayEncoder {
     }
    
     
-    
+    /**
+     * Puts a boolean array into the conversion buffer, but with no guarantee of flushing the
+     * conversion buffer to the underlying output. The caller may put multiple data object into
+     * the conversion buffer before eventually calling {@link Buffer#flush()} to ensure
+     * that everything is written to the output. Note, the this call may flush the contents
+     * of the conversion buffer to the output if it needs more conversion space than
+     * what is avaiable.
+     * 
+     * @param b             the Java array containing the values
+     * @param start         the offset in the array from where to start converting values.
+     * @param length        the number of values to convert to FITS representation
+     * @throws IOException  if there was an IO error while trying to flush the conversion
+     *                      buffer to the stream before all elements were converted.
+     *                      
+     *                      
+     * @see #byteForBoolean(Boolean)
+     * @see #put(Boolean[], int, int)
+     * @see #write(boolean[], int, int)
+     */
     private void put(boolean[] b, int start, int length) throws IOException {
         length += start;
         while (start < length) {
@@ -104,6 +138,48 @@ public class FitsEncoder extends ArrayEncoder {
         }
     }
 
+    /**
+     * Puts a boolean array into the conversion buffer, but with no guarantee of flushing the
+     * conversion buffer to the underlying output. The caller may put multiple data object into
+     * the conversion buffer before eventually calling {@link Buffer#flush()} to ensure
+     * that everything is written to the output. Note, the this call may flush the contents
+     * of the conversion buffer to the output if it needs more conversion space than
+     * what is avaiable.
+     * 
+     * @param b             the Java array containing the values
+     * @param start         the offset in the array from where to start converting values.
+     * @param length        the number of values to convert to FITS representation
+     * @throws IOException  if there was an IO error while trying to flush the conversion
+     *                      buffer to the stream before all elements were converted.
+     * 
+     * @see #byteForBoolean(Boolean)
+     * @see #put(boolean[], int, int)
+     * @see #write(Boolean[], int, int)
+     */
+    private void put(Boolean[] b, int start, int length) throws IOException {
+        length += start;
+        while (start < length) {
+            buf.putByte(byteForBoolean(b[start++]));
+        }
+    }
+    
+    /**
+     * Puts a character array into the conversion buffer, but with no guarantee of flushing the
+     * conversion buffer to the underlying output. The caller may put multiple data object into
+     * the conversion buffer before eventually calling {@link Buffer#flush()} to ensure
+     * that everything is written to the output. Note, the this call may flush the contents
+     * of the conversion buffer to the output if it needs more conversion space than
+     * what is avaiable.
+     * 
+     * @param b             the Java array containing the values
+     * @param start         the offset in the array from where to start converting values.
+     * @param length        the number of values to convert to FITS representation
+     * @throws IOException  if there was an IO error while trying to flush the conversion
+     *                      buffer to the stream before all elements were converted.
+     *                      
+     * @see #write(char[], int, int)
+     * @see #put(String)
+     */
     private void put(char[] c, int start, int length) throws IOException {
         length += start;
         if (ElementType.CHAR.size() == 1) {
@@ -117,14 +193,22 @@ public class FitsEncoder extends ArrayEncoder {
         }
     }
     
-
-    private void put(Boolean[] b, int start, int length) throws IOException {
-        length += start;
-        while (start < length) {
-            buf.putByte(byteForBoolean(b[start++]));
-        }
-    }
-
+    /**
+     * Puts a string array into the conversion buffer, but with no guarantee of flushing the
+     * conversion buffer to the underlying output. The caller may put multiple data object into
+     * the conversion buffer before eventually calling {@link Buffer#flush()} to ensure
+     * that everything is written to the output. Note, the this call may flush the contents
+     * of the conversion buffer to the output if it needs more conversion space than
+     * what is avaiable.
+     * 
+     * @param b             the Java array containing the values
+     * @param start         the offset in the array from where to start converting values.
+     * @param length        the number of values to convert to FITS representation
+     * @throws IOException  if there was an IO error while trying to flush the conversion
+     *                      buffer to the stream before all elements were converted.
+     *                      
+     * @see #put(String)
+     */
     private void put(String[] str, int start, int length) throws IOException {
         length += start;
         while (start < length) {
@@ -132,17 +216,43 @@ public class FitsEncoder extends ArrayEncoder {
         }
     }
 
+    /**
+     * Puts a string into the conversion buffer. According to FITS standard, string should
+     * be represented by the restricted set of ASCII characters, or 1-byte per character.
+     * The caller may put multiple data object into
+     * the conversion buffer before eventually calling {@link Buffer#flush()} to ensure
+     * that everything is written to the output. Note, the this call may flush the contents
+     * of the conversion buffer to the output if it needs more conversion space than
+     * what is avaiable.
+     * 
+     * @param str           the Java string
+     * @throws IOException  if there was an IO error while trying to flush the conversion
+     *                      buffer to the stream before all elements were converted.
+     *                      
+     * @see #writeBytes(String)
+     */
     void put(String str) throws IOException {
         for (int i = 0; i < str.length(); i++) {
             buf.putByte((byte) str.charAt(i));
         }
     }
 
+    /**
+     * See {@link ArrayDataOutput#write(boolean[], int, int)} for the general contract of this method.
+     * In FITS, <code>true</code> values are represented by the ASCII byte for 'T', whereas
+     * <code>false</code> is represented by the ASCII byte for 'F'.
+     */
     protected synchronized void write(boolean[] b, int start, int length) throws IOException {
         put(b, start, length);
         buf.flush();
     }
 
+    /**
+     * See {@link ArrayDataOutput#write(Boolean[], int, int)} for the general contract of this method.
+     * In FITS, <code>true</code> values are represented by the ASCII byte for 'T',
+     * <code>false</code> is represented by the ASCII byte for 'F', while <code>null</code>
+     * values are represented by the value 0.
+     */
     protected synchronized void write(Boolean[] b, int start, int length) throws IOException {
         length += start;
         while (start < length) {
@@ -151,42 +261,83 @@ public class FitsEncoder extends ArrayEncoder {
         buf.flush();
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected synchronized void writeByte(int v) throws IOException {
         write(v);
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected synchronized  void writeShort(int v) throws IOException {
         buf.putShort((short) v);
         buf.flush();
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected synchronized void writeInt(int v) throws IOException {
         buf.putInt(v);
         buf.flush();
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected synchronized void writeLong(long v) throws IOException {
         buf.putLong(v);
         buf.flush();
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally by this library only.
+     */
+    @Deprecated
     protected synchronized void writeFloat(float v) throws IOException {
         buf.putFloat(v);
         buf.flush();
     }
 
+    /**
+     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     */
+    @Deprecated
     protected synchronized void writeDouble(double v) throws IOException {
         buf.putDouble(v);
         buf.flush();
     }
 
+    /**
+     * Writes a Java string as a sequence of ASCII bytes to the output. FITS does not support
+     * unicode characters in its version of strings (character arrays), but instead it is
+     * restricted to the ASCII set of 1-byte characters.
+     * 
+     * @param s             the Java string
+     * @throws IOException  if the string could not be fully written to the output
+     * 
+     * @see #put(String)
+     */
     protected synchronized void writeBytes(String s) throws IOException {
-        for (int i = 0; i < s.length(); i++) {
-            buf.putByte((byte) s.charAt(i));
-        }
+        put(s);
         buf.flush();
     }
 
+    /**
+     * In FITS characters are usually represented as 1-byte ASCII, not as the 2-byte Java types.
+     * However, previous implementations if this library have erroneously written 2-byte
+     * characters into the FITS. For compatibility both the FITS standard of 1-byte ASCII
+     * and the old 2-byte behaviour are supported, and can be selected via 
+     * {@link FitsFactory#setUseUnicodeChars(boolean)}.
+     * 
+     * @see FitsFactory#setUseUnicodeChars(boolean) 
+     */
     protected synchronized void writeChars(String s) throws IOException {
         if (ElementType.CHAR.size() == 1) {
             writeBytes(s);
@@ -198,36 +349,64 @@ public class FitsEncoder extends ArrayEncoder {
         buf.flush();
     }
 
+    /**
+     * See {@link ArrayDataOutput#write(char[], int, int)} for the general contract of this method. In
+     * FITS characters are usually represented as 1-byte ASCII, not as the 2-byte Java types.
+     * However, previous implementations if this library have erroneously written 2-byte
+     * characters into the FITS. For compatibility both the FITS standard of 1-byte ASCII
+     * and the old 2-byte behaviour are supported, and can be selected via 
+     * {@link FitsFactory#setUseUnicodeChars(boolean)}.
+     * 
+     * @see FitsFactory#setUseUnicodeChars(boolean) 
+     */
     protected synchronized void write(char[] c, int start, int length) throws IOException {
         put(c, start, length);
         buf.flush();
     }
 
+    /**
+     * See {@link ArrayDataOutput#write(short[], int, int)} for a contract of this method.
+     */
     protected synchronized void write(short[] s, int start, int length) throws IOException {
         buf.put(s, start, length);
         buf.flush();
     }
 
+    /**
+     * See {@link ArrayDataOutput#write(int[], int, int)} for a contract of this method.
+     */
     protected synchronized void write(int[] i, int start, int length) throws IOException {
         buf.put(i, start, length);
         buf.flush();
     }
 
+    /**
+     * See {@link ArrayDataOutput#write(long[], int, int)} for a contract of this method.
+     */
     protected synchronized void write(long[] l, int start, int length) throws IOException {
         buf.put(l, start, length);
         buf.flush();
     }
 
+    /**
+     * See {@link ArrayDataOutput#write(float[], int, int)} for a contract of this method.
+     */
     protected synchronized void write(float[] f, int start, int length) throws IOException {
         buf.put(f, start, length);
         buf.flush();
     }
 
+    /**
+     * See {@link ArrayDataOutput#write(double[], int, int)} for a contract of this method.
+     */
     protected synchronized void write(double[] d, int start, int length) throws IOException {
         buf.put(d, start, length);
         buf.flush();
     }
 
+    /**
+     * See {@link ArrayDataOutput#write(String[], int, int)} for a contract of this method.
+     */
     protected synchronized void write(String[] str, int start, int length) throws IOException {
         length += start;
         while (start < length) {
@@ -241,6 +420,29 @@ public class FitsEncoder extends ArrayEncoder {
         buf.flush();
     }
 
+    
+    /**
+     * <p>
+     * Puts a Java array into the conversion buffer, but with no guarantee of flushing the
+     * conversion buffer to the underlying output. The argument may be any Java array of the
+     * types supported in FITS, including multi-dimensional arrays and heterogeneous arrays 
+     * of arrays.
+     * </p>
+     * <p>
+     * The caller may put multiple data object into
+     * the conversion buffer before eventually calling {@link Buffer#flush()} to ensure
+     * that everything is written to the output. Note, the this call may flush the contents
+     * of the conversion buffer to the output if it needs more conversion space than
+     * what is avaiable.
+     * </p>
+     * 
+     * @param o             A Java array, including multi-dimensional arrays and
+     *                      heterogeneous arrays of arrays.
+     * @throws IOException  if there was an IO error while trying to flush the conversion
+     *                      buffer to the stream before all elements were converted.
+     *                      
+     * @see #put(String)
+     */
     protected void putArray(Object o) throws IOException {
         if (o == null) {
             return;
@@ -290,5 +492,48 @@ public class FitsEncoder extends ArrayEncoder {
         } else {
             throw new IllegalArgumentException("Cannot write type: " + o.getClass().getName());
         }
+    }
+    
+    
+    /**
+     * Returns the size of this object as the number of bytes in a FITS binary representation.
+     * 
+     * @param o     the object
+     * @return      the number of bytes in the FITS binary representation of the object
+     * 
+     * @throws IllegalArgumentException     
+     *              if the object is or contains Jata types that cannot be represented
+     *              in FITS.
+     *                      
+     */
+    public static long computeSize(Object o) throws IllegalArgumentException {
+        if (o == null) {
+            return 0;
+        }
+        
+        if (o instanceof Object[]) {
+            long size = 0;
+            for (Object e : (Object[]) o) {
+                size += computeSize(e);
+            }
+            return size;            
+        }
+        
+        Class<?> type = o.getClass();          
+        ElementType<?> eType = type.isArray() ? ElementType.forClass(type.getComponentType()) : ElementType.forClass(type);
+        
+        if (eType == null) {
+            throw new IllegalArgumentException("Don't know FITS size of type " + type.getSimpleName());
+        }   
+        
+        if (eType.isVariableSize()) {
+            return eType.size(o);
+        }
+        
+        if (type.isArray()) {
+            return Array.getLength(o) * eType.size();
+        }
+        
+        return eType.size();
     }
 }

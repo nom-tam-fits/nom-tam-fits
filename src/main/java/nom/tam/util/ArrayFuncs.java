@@ -67,49 +67,15 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Returns the size of this object as the number of bytes in a FITS binary representation.
-     * 
-     * @param o     the object
-     * @return      the number of bytes in the FITS binary representation of the object
+     * Use {@link FitsEncoder#computeSize(Object)} instead. 
      */
+    @Deprecated
     public static long computeLSize(Object o) {
-        if (o == null) {
-            return 0;
-        }
-        
-        if (o instanceof Object[]) {
-            long size = 0;
-            for (Object e : (Object[]) o) {
-                size += computeLSize(e);
-            }
-            return size;            
-        }
-        
-        Class<?> type = o.getClass();          
-        ElementType<?> eType = type.isArray() ? ElementType.forClass(type.getComponentType()) : ElementType.forClass(type);
-        
-        if (eType == null) {
-            throw new IllegalArgumentException("Don't know FITS size of type " + type.getSimpleName());
-        }   
-        
-        if (eType.isVariableSize()) {
-            return eType.size(o);
-        }
-        
-        if (type.isArray()) {
-            return Array.getLength(o) * eType.size();
-        }
-        
-        return eType.size();
+        return FitsEncoder.computeSize(o);
     }
 
     /**
-     * @return Compute the size of an object. Note that this only handles arrays
-     *         or scalars of the primitive objects and Strings. It returns 0 for
-     *         any object array element it does not understand.
-     * @param o
-     *            The object whose size is desired.
-     * @deprecated May silently underestimate the size if the size &gt; 2 GB.
+     * Use {@link FitsEncoder#computeSize(Object)} instead. 
      */
     @Deprecated
     public static int computeSize(Object o) {

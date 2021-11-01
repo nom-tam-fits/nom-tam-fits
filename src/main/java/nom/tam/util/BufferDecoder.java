@@ -50,7 +50,7 @@ public class BufferDecoder extends FitsDecoder {
     }
 
     protected int eofCheck(EOFException e, int start, int index, int elementSize) throws EOFException {
-        return super.eofCheck(e, (index - start) * elementSize);
+        return super.eofCheck(e, (index - start), -1) * elementSize;
     }
     
     private static class Reader implements InputReader {

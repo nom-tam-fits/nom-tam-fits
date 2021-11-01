@@ -217,8 +217,7 @@ public final class ByteFormatter {
      * @param shift
      *            The exponent of the power of 10 that we shifted val to get the
      *            given mantissa.
-     * @return Offset of next available character in buffer. @ * if the value
-     *         was truncated
+     * @return Offset of next available character in buffer.
      */
     private int combineReal(double val, byte[] buf, int off, int len, byte[] mant, int lmant, int shift) {
 
@@ -390,8 +389,7 @@ public final class ByteFormatter {
      *            Offset within buffer
      * @param len
      *            Maximum length of integer
-     * @return offset of next unused character in input buffer. @ * if the value
-     *         was truncated
+     * @return offset of next unused character in input buffer. 
      */
     public int format(double val, byte[] buf, int off, int len) {
 

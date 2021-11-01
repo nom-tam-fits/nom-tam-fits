@@ -50,9 +50,6 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      */
     void mark(int readlimit) throws IOException;
     
-    Boolean readBooleanObject() throws IOException;
-
-    
     /**
      * See the general contract of the <code>markSupported</code> method of
      * <code>InputStream</code>.
@@ -288,36 +285,49 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
     
     
     /**
-     * Read a generic (possibly multidimensional) primitive array. An Object[]
-     * array is also a legal argument if each element of the array is a legal.
-     * <p>
-     * The ArrayDataInput classes do not support String input since it is
-     * unclear how one would read in an Array of strings.
-     * 
-     * @param o
-     *            A [multidimensional] primitive (or Object) array.
-     * @deprecated use {@link ArrayDataInput#readLArray(Object)} instead.
-     * @return the number of bytes read
-     * @throws IOException
-     *             if the underlying stream failed
+     * @deprecated Use {@link #readLArray(Object)} instead.
      */
     @Deprecated
-    int readArray(Object o) throws IOException;
+    int readArray(Object o) throws IOException, IllegalArgumentException;
 
     /**
-     * Read an object. An EOF will be signaled if the object cannot be fully
-     * read. This version works even if the underlying data is more than 2
-     * Gigabytes.
+     * Reads a Java array from the input, translating it from its binary representation to
+     * Java data format. The argument may be a generic Java array, including multi-dimensional
+     * arrays and heterogeneous arrays of arrays. The implementation may not populate the
+     * supplied object fully. The caller may use the return value to check against the
+     * expected number of bytes to determine whether or not the argument was fully
+     * poupulated or not.
      * 
-     * @param o
-     *            The object to be read. This object should be a primitive
-     *            (possibly multi-dimensional) array.
-     * @return The number of bytes read.
+     * @param o     a Java array object, including heterogeneous arrays of arrays.
+     *              If <code>null</code>, nothing will be read from the output.
+     * @return      the number of bytes read from the input.
      * @throws IOException
-     *             if the underlying stream failed
+     *              if there was an IO error, other than the end-of-file, while reading from the input
+     * @throws IllegalArgumentException
+     *              if the supplied object is not a Java array or if it contains 
+     *              Java types that are not supported by the decoder.
+     *              
+     * @see #readArrayFully(Object)
      */
-    long readLArray(Object o) throws IOException;
+    long readLArray(Object o) throws IOException, IllegalArgumentException;
 
+    /**
+     * Reads a Java array from the input, populating all elements, or else throwing and
+     * {@link java.io.EOFException}.
+     * 
+     * @param o     a Java array object, including heterogeneous arrays of arrays.
+     *              If <code>null</code>, nothing will be read from the output.
+     * @throws IOException
+     *              if there was an IO error, including and {@link java.io.EOFException}, 
+     *              while reading from the input
+     * @throws IllegalArgumentException
+     *              if the supplied object is not a Java array or if it contains 
+     *              Java types that are not supported by the decoder.
+     * 
+     * @see #readLArray(Object)
+     */
+    void readArrayFully(Object o) throws IOException, IllegalArgumentException;
+    
     /**
      * See the general contract of the <code>reset</code> method of
      * <code>InputStream</code>.
@@ -410,6 +420,5 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      */
     @Override
     void readFully(byte[] b, int off, int len) throws IOException;
-    
     
 }

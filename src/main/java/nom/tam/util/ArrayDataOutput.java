@@ -270,20 +270,20 @@ public interface ArrayDataOutput extends DataOutput, FitsIO {
     void write(String[] buf, int offset, int size) throws IOException;
 
     /**
-     * This routine provides efficient writing of arrays of any primitive type.
-     * The String class is also handled but it is an error to invoke this method
-     * with an object that is not an array of these types. If the array is
-     * multidimensional, then it calls itself recursively to write the entire
-     * array. Strings are written using the standard 1 byte format (i.e., as in
-     * writeBytes). If the array is an array of objects, then
-     * writePrimitiveArray will be called for each element of the array.
+     * Writes the contents of a Java array to the output translating the data to
+     * the required binary representation. The argument may be a generic Java
+     * array, including multi-dimensional arrays and heterogeneous arrays of
+     * arrays.
      * 
      * @param o
-     *            The object to be written. It must be an array of a primitive
-     *            type, Object, or String.
+     *            the Java array, including heterogeneous arrays of arrays. If
+     *            <code>null</code> nothing will be written to the output.
      * @throws IOException
-     *             if one of the underlying write operations failed
+     *             if there was an IO error writing to the output
+     * @throws IllegalArgumentException
+     *             if the supplied object is not a Java array or if it contains
+     *             Java types that are not supported by the encoder.
      */
-    void writeArray(Object o) throws IOException;
+    void writeArray(Object o) throws IOException, IllegalArgumentException;
 
 }

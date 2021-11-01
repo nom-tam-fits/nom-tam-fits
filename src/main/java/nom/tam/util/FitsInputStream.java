@@ -69,10 +69,12 @@ import java.util.logging.Logger;
  * @see FitsInputStream
  * @see FitsFile
  */
+@SuppressWarnings("deprecation")
 public class FitsInputStream extends ArrayInputStream implements ArrayDataInput {
 
     private static final Logger LOG = getLogger(FitsInputStream.class);
         
+    /** the input, as accessible via the <code>DataInput</code> interface */ 
     private DataInput data;
     
     /**
@@ -256,11 +258,6 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     }
 
     @Override
-    public Boolean readBooleanObject() throws IOException {
-        return getDecoder().readBooleanObject();
-    }
-
-    @Override
     public byte readByte() throws IOException {
         return getDecoder().readByte();
     }
@@ -344,7 +341,7 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
 
     @Override
     public void readFully(byte[] b, int off, int len) throws IOException {
-        data.readFully(b, off, len);        
+        getDecoder().readFully(b, off, len);        
     }
 
 

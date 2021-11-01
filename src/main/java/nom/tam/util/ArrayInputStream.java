@@ -45,22 +45,34 @@ import java.io.InputStream;
  */
 public class ArrayInputStream extends BufferedInputStream implements InputReader {
 
+    /** conversion from FITS binary representation to Java arrays */
     private ArrayDecoder decoder;
 
+    /**
+     * Instantiates a new input stream for efficient array transactions. For use
+     * by subclass constructors only.
+     * 
+     * @param i
+     *            the underlying input stream
+     * @param bufLength
+     *            the buffer size in bytes.
+     */
     protected ArrayInputStream(InputStream i, int bufLength) {
         super(i, bufLength);
     }
 
     /**
-     * Create a BufferedInputStream based on a input stream with a specified
-     * buffer size.
+     * Instantiates a new input stream for efficient array transactions.
      * 
      * @param i
-     *            the input stream to use for reading.
+     *            the underlying input stream
      * @param bufLength
-     *            the buffer length to use.
+     *            the buffer size in bytes.
+     * @param bin2java
+     *            the conversion from the binary representation of arrays in the
+     *            file to Java arrays.
      */
-    public ArrayInputStream(InputStream i, int bufLength, ArrayDecoder bin2java) {
+    ArrayInputStream(InputStream i, int bufLength, ArrayDecoder bin2java) {
         this(i, bufLength);
         setDecoder(bin2java);
     }
@@ -75,20 +87,50 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
         this(o, FitsIO.DEFAULT_BUFFER_SIZE);
     }
 
+    /**
+     * Sets the conversion from the binary representation of arrays in stream to
+     * Java arrays. For use by subclass constructors only.
+     * 
+     * @param bin2java
+     *            the conversion from the binary representation of arrays in the
+     *            stream to Java arrays.
+     * @see #getDeccoder()
+     */
     protected void setDecoder(ArrayDecoder bin2java) {
         this.decoder = bin2java;
     }
 
+    /**
+     * Returns the conversion from the binary representation of arrays in stream
+     * to Java arrays. Subclass implementeations can use this to access the
+     * required conversion when writing data to file.
+     * 
+     * @return the conversion from the binary representation of arrays in the
+     *         stream to Java arrays
+     * @see #setDecoder(ArrayEncoder)
+     */
     protected ArrayDecoder getDecoder() {
         return decoder;
     }
 
-    public long readLArray(Object o) throws IOException {
+    /**
+     * See {@link ArrayDataInput#readLArray(Object)} for a contract of this
+     * method.
+     */
+    public long readLArray(Object o) throws IOException, IllegalArgumentException {
         try {
-            return decoder.readLArray(o);
+            return decoder.readArray(o);
         } catch (IllegalArgumentException e) {
             throw new IOException(e);
         }
+    }
+
+    /**
+     * See {@link ArrayDataInput#readArrayFully(Object)} for a contract of this
+     * method.
+     */
+    public void readArrayFully(Object o) throws IOException, IllegalArgumentException {
+        decoder.readArrayFully(o);
     }
 
 }
