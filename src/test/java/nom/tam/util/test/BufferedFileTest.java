@@ -584,7 +584,7 @@ public class BufferedFileTest {
 
     private double deltaTime() {
         long time = lastTime;
-        lastTime = new java.util.Date().getTime();
+        lastTime = System.currentTimeMillis();
         return (lastTime - time) / 1000.;
     }
     
@@ -594,30 +594,16 @@ public class BufferedFileTest {
         FitsFactory.setDefaults();
     }
 
-    @Test
-    public void datailTestAscii() throws Exception {
-        FitsFactory.setUseUnicodeChars(false);
-        doTest("target/bufferedFile.test", 1000, 1);
+
+    public void datailTest() throws Exception {
+        doTest("target/bufferedFile.test", 1000, 1000);
     }
 
     @Test
-    public void datailTest2Ascii() throws Exception {
-        FitsFactory.setUseUnicodeChars(false);
-        doTest("target/bufferedFile2.test", 2000, 4);
+    public void datailTest2() throws Exception {
+        doTest("target/bufferedFile2.test", 2000, 4000);
     }
     
-    @Test
-    public void datailTestUnicode() throws Exception {
-        FitsFactory.setUseUnicodeChars(true);
-        doTest("target/bufferedFileU.test", 1000, 1);
-    }
-
-    @Test
-    public void datailTest2Unicode() throws Exception {
-        FitsFactory.setUseUnicodeChars(true);
-        doTest("target/bufferedFile2U.test", 2000, 4);
-    }
-
     /**
      * Usage: java nom.tam.util.test.BufferedFileTester file [dim [iter
      * [flags]]] where file is the file to be read and written. dim is the
@@ -702,7 +688,7 @@ public class BufferedFileTest {
             multi[i][i][i][i] = i;
         }
 
-        standardFileTest(filename, iter, in, in2);
+        standardFileTest(filename, 1, in, in2);
         standardStreamTest(filename, iter, in, in2);
 
         buffStreamSimpleTest(filename, iter, in, in2);
