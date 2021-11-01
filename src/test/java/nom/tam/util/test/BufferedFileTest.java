@@ -575,18 +575,18 @@ public class BufferedFileTest {
 
     private double deltaTime() {
         long time = lastTime;
-        lastTime = new java.util.Date().getTime();
+        lastTime = System.currentTimeMillis();
         return (lastTime - time) / 1000.;
     }
 
     @Test
     public void datailTest() throws Exception {
-        doTest("target/bufferedFile.test", 1000, 1);
+        doTest("target/bufferedFile.test", 1000, 1000);
     }
 
     @Test
     public void datailTest2() throws Exception {
-        doTest("target/bufferedFile2.test", 2000, 4);
+        doTest("target/bufferedFile2.test", 2000, 4000);
     }
 
     /**
@@ -676,7 +676,7 @@ public class BufferedFileTest {
             multi[i][i][i][i] = i;
         }
 
-        standardFileTest(filename, iter, in, in2);
+        standardFileTest(filename, 1, in, in2);
         standardStreamTest(filename, iter, in, in2);
 
         buffStreamSimpleTest(filename, iter, in, in2);
