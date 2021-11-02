@@ -117,7 +117,7 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * See {@link ArrayDataInput#readLArray(Object)} for a contract of this
      * method.
      */
-    public long readLArray(Object o) throws IOException, IllegalArgumentException {
+    public synchronized long readLArray(Object o) throws IOException, IllegalArgumentException {
         try {
             return decoder.readArray(o);
         } catch (IllegalArgumentException e) {
@@ -129,7 +129,7 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * See {@link ArrayDataInput#readArrayFully(Object)} for a contract of this
      * method.
      */
-    public void readArrayFully(Object o) throws IOException, IllegalArgumentException {
+    public synchronized void readArrayFully(Object o) throws IOException, IllegalArgumentException {
         decoder.readArrayFully(o);
     }
 

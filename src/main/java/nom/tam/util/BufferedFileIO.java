@@ -164,7 +164,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * @return                  the number of bytes left to read.
      * @throws IOException      if there was an IO error.
      */
-    private long getRemaining() throws IOException {
+    private synchronized long getRemaining() throws IOException {
         long n = file.length() - getFilePointer();
         return n > 0 ? n : 0L;
     }
@@ -178,7 +178,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *              
      * @throws IOException  if there was an IO error accessing the file.
      */
-    private boolean makeAvailable() throws IOException {
+    private synchronized  boolean makeAvailable() throws IOException {
         if (offset < end) {
             return true;
         }
@@ -261,7 +261,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * 
      * @throws IOException  if there was an IO error
      */
-    private void matchBufferPos() throws IOException {
+    private synchronized void matchBufferPos() throws IOException {
         file.seek(getFilePointer());
     }
     
@@ -271,7 +271,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * 
      * @throws IOException  if there was an IO error
      */
-    private void matchFilePos() throws IOException {
+    private synchronized void matchFilePos() throws IOException {
         seek(file.getFilePointer());
     }
     
@@ -289,7 +289,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * 
      * @throws IOException  if there was an IO error writing the prior data back to the file.
      */
-    private void moveBuffer() throws IOException {
+    private synchronized void moveBuffer() throws IOException {
         seek(getFilePointer());
     }
     
@@ -422,7 +422,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * @throws IOException  if there was an IO error before the buffer could be fully populated.
      * 
      */
-    public final void readFully(byte[] b) throws IOException {
+    public final synchronized void readFully(byte[] b) throws IOException {
         readFully(b, 0, b.length);
     }
 
@@ -507,7 +507,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * @throws IOException  if there was an IO error while reading, other than the end-of-file.
      * 
      */
-    public final int read(byte[] b) throws IOException {
+    public final synchronized int read(byte[] b) throws IOException {
         return read(b, 0, b.length);
     }
     
@@ -518,7 +518,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * @throws IOException  if there was an IO error while writing to the file...
      * 
      */
-    public final void write(byte[] b) throws IOException {
+    public final synchronized void write(byte[] b) throws IOException {
         write(b, 0, b.length);
     }
     

@@ -160,7 +160,7 @@ public class ArrayDataFile extends BufferedFileIO {
      * See {@link ArrayDataInput#readLArray(Object)} for a contract of this
      * method.
      */
-    public long readLArray(Object o) throws IOException, IllegalArgumentException {
+    public synchronized long readLArray(Object o) throws IOException, IllegalArgumentException {
         return decoder.readArray(o);
     }
 
@@ -168,7 +168,7 @@ public class ArrayDataFile extends BufferedFileIO {
      * See {@link ArrayDataInput#readArrayFully(Object)} for a contract of this
      * method.
      */
-    public void readArrayFully(Object o) throws IOException, IllegalArgumentException {
+    public synchronized void readArrayFully(Object o) throws IOException, IllegalArgumentException {
         decoder.readArrayFully(o);
     }
 
@@ -176,7 +176,7 @@ public class ArrayDataFile extends BufferedFileIO {
      * See {@link ArrayDataOutput#writeArray(Object)} for a contract of this
      * method.
      */
-    public void writeArray(Object o) throws IOException, IllegalArgumentException {
+    public synchronized void writeArray(Object o) throws IOException, IllegalArgumentException {
         try {
             getEncoder().writeArray(o);
         } catch (IllegalArgumentException e) {

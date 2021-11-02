@@ -109,7 +109,7 @@ public class ArrayOutputStream extends BufferedOutputStream implements OutputWri
      * See {@link ArrayDataOutput#writeArray(Object)} for a contract of this
      * method.
      */
-    public void writeArray(Object o) throws IOException {
+    public synchronized void writeArray(Object o) throws IOException {
         try {
             encoder.writeArray(o);
         } catch (IllegalArgumentException e) {
