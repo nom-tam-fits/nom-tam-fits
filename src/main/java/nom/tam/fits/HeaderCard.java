@@ -643,7 +643,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #getKey()
      * @see #getComment()
      */
-    public final String getValue() {
+    public final synchronized String getValue() {
         return this.value;
     }
 
@@ -669,7 +669,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @see #getValue()
      */
-    public final long getHexValue() throws NumberFormatException {
+    public final synchronized long getHexValue() throws NumberFormatException {
         if (value == null) {
             throw new NumberFormatException("Card has a null value");
         }

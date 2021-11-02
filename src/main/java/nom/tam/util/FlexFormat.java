@@ -155,9 +155,8 @@ public class FlexFormat {
      * @see #setWidth(int)
      * @see #format(Number)
      */
-    public FlexFormat autoPrecision() {
-        this.decimals = AUTO_PRECISION;
-        return this;
+    public synchronized FlexFormat autoPrecision() {
+        return setPrecision(AUTO_PRECISION);
     }
 
     /**
@@ -173,7 +172,7 @@ public class FlexFormat {
      * @see #autoPrecision()
      * @see #setWidth(int)
      */
-    public final int getPrecision() {
+    public final synchronized int getPrecision() {
         return decimals;
     }
 
@@ -216,7 +215,7 @@ public class FlexFormat {
      * 
      * @return the maximum length for formatted values.
      */
-    public final int getWidth() {
+    public final synchronized int getWidth() {
         return width;
     }
 
