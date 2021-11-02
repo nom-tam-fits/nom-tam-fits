@@ -358,8 +358,6 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
             matchFilePos();
             return;
         }
-     
-        isModified = true;
         
         while (len > 0) {
             if (offset >= buf.length) {
@@ -367,8 +365,8 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
                 moveBuffer();
             }
             
+            isModified = true;
             int n = Math.min(len, buf.length - offset);
-            
             System.arraycopy(b, from, buf, offset, n);
             
             offset += n;
