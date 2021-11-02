@@ -33,8 +33,7 @@ package nom.tam.image.tile.operation.buffer;
 
 import java.nio.Buffer;
 
-import nom.tam.util.type.PrimitiveType;
-import nom.tam.util.type.PrimitiveTypeHandler;
+import nom.tam.util.type.ElementType;
 
 /**
  * This subclass of the row based view, will abstract the problems that occur
@@ -58,7 +57,7 @@ class TileBufferColumnBased extends TileBuffer {
      */
     private final int imageWidth;
 
-    TileBufferColumnBased(PrimitiveType<Buffer> baseType, int dataOffset, int imageWidth, int width, int height) {
+    TileBufferColumnBased(ElementType<Buffer> baseType, int dataOffset, int imageWidth, int width, int height) {
         super(baseType, dataOffset, width, height);
         this.imageWidth = imageWidth;
     }
@@ -85,7 +84,7 @@ class TileBufferColumnBased extends TileBuffer {
         Buffer imagebuffer = getImageBuffer();
         imagebuffer.position(0);
         imagebuffer.limit(0);
-        PrimitiveType<Buffer> type = primitiveType();
+        ElementType<Buffer> type = elementType();
         this.gapLessBuffer = type.newBuffer(getPixelSize());
         while (imagebuffer.limit() < pixelSizeInData) {
             imagebuffer.limit(imagebuffer.position() + getWidth());
@@ -108,7 +107,7 @@ class TileBufferColumnBased extends TileBuffer {
         imagebuffer.rewind();
         this.gapLessBuffer.rewind();
         this.gapLessBuffer.limit(0);
-        PrimitiveType<Buffer> type = primitiveType();
+        ElementType<Buffer> type = elementType();
         while (this.gapLessBuffer.limit() < pixelSize) {
             this.gapLessBuffer.limit(this.gapLessBuffer.position() + getWidth());
             type.appendBuffer(imagebuffer, this.gapLessBuffer);
@@ -126,8 +125,8 @@ class TileBufferColumnBased extends TileBuffer {
         return (getHeight() - 1) * this.imageWidth + getWidth();
     }
 
-    private PrimitiveType<Buffer> primitiveType() {
-        return PrimitiveTypeHandler.valueOf(getImageBuffer().getClass());
+    private ElementType<Buffer> elementType() {
+        return ElementType.forBuffer(getImageBuffer());
     }
 
 }

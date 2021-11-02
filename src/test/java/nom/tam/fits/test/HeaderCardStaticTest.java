@@ -46,8 +46,8 @@ import org.junit.Test;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.IFitsHeader.VALUE;
-import nom.tam.fits.header.Standard;
 import nom.tam.util.ComplexValue;
+import nom.tam.fits.header.Standard;
 
 
 public class HeaderCardStaticTest {

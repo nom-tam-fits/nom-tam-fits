@@ -67,7 +67,7 @@ import nom.tam.image.tile.operation.TileArea;
 import nom.tam.image.tile.operation.buffer.TileBuffer;
 import nom.tam.image.tile.operation.buffer.TileBufferFactory;
 import nom.tam.util.test.ThrowAnyException;
-import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.ElementType;
 import nom.tam.util.type.PrimitiveTypes;
 
 import org.junit.Assert;
@@ -299,7 +299,7 @@ public class TileCompressorProviderTest {
                 return control.option();
             }
         };
-        final TileBuffer tileBuffer = TileBufferFactory.createTileBuffer((PrimitiveType) PrimitiveTypes.BYTE, 0, 10, 10, 10);
+        final TileBuffer tileBuffer = TileBufferFactory.createTileBuffer((ElementType) PrimitiveTypes.BYTE, 0, 10, 10, 10);
         TileDecompressor tileDecompressor = new TileDecompressor(image, 1, new TileArea()) {
 
             @Override

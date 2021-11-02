@@ -31,7 +31,6 @@ package nom.tam.fits;
  * #L%
  */
 
-import static nom.tam.fits.header.Standard.BITPIX;
 import static nom.tam.fits.header.Standard.EXTEND;
 import static nom.tam.fits.header.Standard.GCOUNT;
 import static nom.tam.fits.header.Standard.NAXIS;
@@ -45,6 +44,7 @@ import java.nio.Buffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
@@ -52,9 +52,7 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.array.MultiArrayIterator;
-import nom.tam.util.type.PrimitiveType;
-import nom.tam.util.type.PrimitiveTypeHandler;
-import nom.tam.util.type.PrimitiveTypes;
+import nom.tam.util.type.ElementType;
 
 /**
  * This class instantiates FITS primary HDU and IMAGE extension data.
@@ -221,12 +219,12 @@ public class ImageData extends Data {
     }
 
     public void setBuffer(Buffer data) {
-        PrimitiveType<Buffer> primType = PrimitiveTypeHandler.valueOf(this.dataDescription.type);
+        ElementType<Buffer> elementType = ElementType.forClass(this.dataDescription.type);
         this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
         MultiArrayIterator iterator = new MultiArrayIterator(this.dataArray);
         Object array = iterator.next();
         while (array != null) {
-            primType.getArray(data, array);
+            elementType.getArray(data, array);
             array = iterator.next();
         }
         this.tiler = new ImageDataTiler(null, 0, this.dataDescription);
@@ -294,34 +292,10 @@ public class ImageData extends Data {
             throw new FitsException("Image data object not array");
         }
 
-        int bitpix;
-        switch (classname.charAt(dimens.length)) {
-            case 'B':
-                bitpix = BasicHDU.BITPIX_BYTE;
-                break;
-            case 'S':
-                bitpix = BasicHDU.BITPIX_SHORT;
-                break;
-            case 'I':
-                bitpix = BasicHDU.BITPIX_INT;
-                break;
-            case 'J':
-                bitpix = BasicHDU.BITPIX_LONG;
-                break;
-            case 'F':
-                bitpix = BasicHDU.BITPIX_FLOAT;
-                break;
-            case 'D':
-                bitpix = BasicHDU.BITPIX_DOUBLE;
-                break;
-            default:
-                throw new FitsException("Invalid Object Type for FITS data:" + classname.charAt(dimens.length));
-        }
-
         // if this is neither a primary header nor an image extension,
         // make it a primary header
         head.setSimple(true);
-        head.setBitpix(bitpix);
+        head.setBitpix(Bitpix.forArrayID(classname.charAt(dimens.length)));
         head.setNaxes(dimens.length);
 
         for (int i = 1; i <= dimens.length; i += 1) {
@@ -345,22 +319,15 @@ public class ImageData extends Data {
         return this.byteSize;
     }
 
-    @SuppressWarnings("unchecked")
     protected ArrayDesc parseHeader(Header h) throws FitsException {
         int gCount = h.getIntValue(GCOUNT, 1);
         int pCount = h.getIntValue(PCOUNT, 0);
         if (gCount > 1 || pCount != 0) {
             throw new FitsException("Group data treated as images");
         }
-        int bitPix = h.getIntValue(BITPIX, 0);
-        PrimitiveType<Buffer> primitivType = PrimitiveTypeHandler.valueOf(bitPix);
-        if (primitivType == null) {
-            primitivType = (PrimitiveType<Buffer>) PrimitiveTypeHandler.nearestValueOf(bitPix);
-            if (primitivType == PrimitiveTypes.UNKNOWN) {
-                throw new FitsException("illegal bitpix value " + bitPix);
-            }
-        }
-        Class<?> baseClass = primitivType.primitiveClass();
+        
+        Bitpix bitpix = Bitpix.fromHeader(h);
+        Class<?> baseClass = bitpix.getPrimitiveType();
         int ndim = h.getIntValue(NAXIS, 0);
         int[] dims = new int[ndim];
         // Note that we have to invert the order of the axes
@@ -376,7 +343,7 @@ public class ImageData extends Data {
             this.byteSize *= cdim;
             dims[ndim - i - 1] = cdim;
         }
-        this.byteSize *= primitivType.size();
+        this.byteSize *= bitpix.byteSize();
         if (ndim == 0) {
             this.byteSize = 0;
         }

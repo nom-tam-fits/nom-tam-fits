@@ -43,7 +43,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor;
-import nom.tam.util.type.PrimitiveTypes;
+import nom.tam.util.type.ElementType;
 
 public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T> {
 
@@ -53,7 +53,7 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
     public static class IntGZip2Compressor extends GZip2Compressor<IntBuffer> {
 
         public IntGZip2Compressor() {
-            super(PrimitiveTypes.INT.size());
+            super(ElementType.INT.size());
         }
 
         @Override
@@ -71,7 +71,7 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
     public static class FloatGZip2Compressor extends GZip2Compressor<FloatBuffer> {
 
         public FloatGZip2Compressor() {
-            super(PrimitiveTypes.FLOAT.size());
+            super(ElementType.FLOAT.size());
         }
 
         @Override
@@ -89,7 +89,7 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
     public static class LongGZip2Compressor extends GZip2Compressor<LongBuffer> {
 
         public LongGZip2Compressor() {
-            super(PrimitiveTypes.LONG.size());
+            super(ElementType.LONG.size());
         }
 
         @Override
@@ -107,7 +107,7 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
     public static class DoubleGZip2Compressor extends GZip2Compressor<DoubleBuffer> {
 
         public DoubleGZip2Compressor() {
-            super(PrimitiveTypes.DOUBLE.size());
+            super(ElementType.DOUBLE.size());
         }
 
         @Override
@@ -125,7 +125,7 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
     public static class ShortGZip2Compressor extends GZip2Compressor<ShortBuffer> {
 
         public ShortGZip2Compressor() {
-            super(PrimitiveTypes.SHORT.size());
+            super(ElementType.SHORT.size());
         }
 
         @Override

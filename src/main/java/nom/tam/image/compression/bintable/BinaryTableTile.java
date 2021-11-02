@@ -41,8 +41,7 @@ import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.provider.CompressorProvider;
 import nom.tam.fits.header.Compression;
 import nom.tam.util.ColumnTable;
-import nom.tam.util.type.PrimitiveType;
-import nom.tam.util.type.PrimitiveTypeHandler;
+import nom.tam.util.type.ElementType;
 
 public abstract class BinaryTableTile implements Runnable {
 
@@ -62,7 +61,7 @@ public abstract class BinaryTableTile implements Runnable {
 
     protected String compressionAlgorithm;
 
-    protected final PrimitiveType<Buffer> type;
+    protected final ElementType<Buffer> type;
 
     protected final int length;
 
@@ -77,7 +76,7 @@ public abstract class BinaryTableTile implements Runnable {
         this.column = description.getColumn();
         this.tileIndex = description.getTileIndex();
         this.compressionAlgorithm = description.getCompressionAlgorithm();
-        this.type = PrimitiveTypeHandler.valueOf(data.getTypes()[this.column]);
+        this.type = ElementType.forDataID(data.getTypes()[this.column]);
         this.length = (this.rowEnd - this.rowStart) * data.getSizes()[this.column];
     }
 

@@ -61,6 +61,7 @@ import org.junit.Test;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageData;
@@ -1216,11 +1217,25 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void testImagePlusCompressedImage1() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(true);
         testImagePlusCompressedImage(resolveLocalOrRemoteFileName("03h-80dec--C_CVT_2013-12-29-MW1-03h_Light_600SecISO200_000042.fit"));
     }
 
     @Test
     public void testImagePlusCompressedImage2() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(true);
+        testImagePlusCompressedImage(resolveLocalOrRemoteFileName("17h-75dec--BINT_C_CVT_2014-06-25-MW1-17h_Light_600SecISO200_000031.fit"));
+    }
+    
+    @Test(expected = FitsException.class)
+    public void testImagePlusCompressedImage1A() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(false);
+        testImagePlusCompressedImage(resolveLocalOrRemoteFileName("03h-80dec--C_CVT_2013-12-29-MW1-03h_Light_600SecISO200_000042.fit"));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testImagePlusCompressedImage2A() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(false);
         testImagePlusCompressedImage(resolveLocalOrRemoteFileName("17h-75dec--BINT_C_CVT_2014-06-25-MW1-17h_Light_600SecISO200_000031.fit"));
     }
 

@@ -38,14 +38,22 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.fits.LongValueException;
 
 /**
- * A no-frills complex value, mainly just for representing complex numbers in FITS headers.
- * Its a non-mutable object that is created with a real and imaginary parts, which can be
+ * <p>
+ * A no-frills complex value, for representing complex numbers in FITS headers.
+ * It is a non-mutable object that is created with a real and imaginary parts, which can be
  * retrieved thereafter, and provides string formatting that is suited specifically for
  * representation in FITS headers.
+ * </p>
+ * 
+ * <p>
+ * Note that binary tables handle complex data differently, with elements of `float[2]` or
+ * `double[2]`.
+ * </p>
  * 
  * @author Attila Kovacs
  *
  * @since 1.16
+ * 
  */
 public class ComplexValue {
     
@@ -79,6 +87,92 @@ public class ComplexValue {
         this.re = re;
         this.im = im;
     }
+    
+    
+    /**
+     * Returns the real part of this complex value.
+     * 
+     * @return      the real part
+     * 
+     * @see #im()
+     */
+    public final double re() {
+        return re;
+    }
+
+    /**
+     * Returns the imaginary part of this complex value.
+     * 
+     * @return      the imaginary part
+     * 
+     * @see #re()
+     */
+    public final double im() {
+        return im;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Double.hashCode(re()) ^ Double.hashCode(im());
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        
+        if (!(o instanceof ComplexValue)) {
+            return false;
+        }
+        
+        ComplexValue z = (ComplexValue) o;
+        return z.re() == re() && z.im() == im();        
+    }
+    
+    /**
+     * Checks if the complex value is zero. That is, if both the real or imaginary parts
+     * are zero.
+     * 
+     * @return      <code>true</code>if both the real or imaginary parts are zero.
+     *              Otherwise <code>false</code>.
+     */
+    public final boolean isZero() {
+        return re() == 0.0 && im() == 0.0;
+    }
+    
+    /**
+     * Checks if the complex value is finite. That is, if neither the real or imaginary parts
+     * are NaN or Infinite.
+     * 
+     * @return      <code>true</code>if neither the real or imaginary parts are NaN or Infinite.
+     *              Otherwise <code>false</code>.
+     */
+    public final boolean isFinite() {
+        return Double.isFinite(re()) && Double.isFinite(im());
+    }
+    
+    @Override
+    public String toString() {
+        return "(" + re() + "," + im() + ")";
+    }
+    
+    /**
+     * Converts this complex value to its string representation with up to the specified 
+     * number of decimal places showing after the leading figure, for both the
+     * real and imaginary parts. 
+     * 
+     * @param decimals  the maximum number of decimal places to show.
+     * @return          the string representation with the specified precision, which
+     *                  may be used in a FITS header.
+     *                  
+     * @see FlexFormat
+     */
+    public String toString(int decimals) {
+        FlexFormat f = new FlexFormat().setPrecision(decimals); 
+        return "(" + f.format(re()) + "," + f.format(im()) + ")";
+    }
+    
 
     /**
      * <p>
@@ -143,91 +237,6 @@ public class ComplexValue {
         }
     }
     
-    
-    @Override
-    public int hashCode() {
-        return Double.hashCode(re) ^ Double.hashCode(im);
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        
-        if (!(o instanceof ComplexValue)) {
-            return false;
-        }
-        
-        ComplexValue z = (ComplexValue) o;
-        return z.re() == re() && z.im() == im();        
-    }
-    
-    
-    /**
-     * Checks if the complex value is zero. That is, if both the real or imaginary parts
-     * are zero.
-     * 
-     * @return      <code>true</code>if both the real or imaginary parts are zero.
-     *              Otherwise <code>false</code>.
-     */
-    public final boolean isZero() {
-        return re() == 0.0 && im() == 0.0;
-    }
-    
-    /**
-     * Checks if the complex value is finite. That is, if neither the real or imaginary parts
-     * are NaN or Infinite.
-     * 
-     * @return      <code>true</code>if neither the real or imaginary parts are NaN or Infinite.
-     *              Otherwise <code>false</code>.
-     */
-    public final boolean isFinite() {
-        return Double.isFinite(re) && Double.isFinite(im);
-    }
-    
-    /**
-     * Returns the real part of this complex value.
-     * 
-     * @return      the real part
-     * 
-     * @see #im()
-     */
-    public final double re() {
-        return re;
-    }
-    
-    /**
-     * Returns the imaginary part of this complex value.
-     * 
-     * @return      the imaginary part
-     * 
-     * @see #re()
-     */
-    public final double im() {
-        return im;
-    }
-    
-    @Override
-    public String toString() {
-        return "(" + re + "," + im + ")";
-    }
-    
-    /**
-     * Converts this complex value to its string representation with up to the specified 
-     * number of decimal places showing after the leading figure, for both the
-     * real and imaginary parts. 
-     * 
-     * @param decimals  the maximum number of decimal places to show.
-     * @return          the string representation with the specified precision, which
-     *                  may be used in a FITS header.
-     *                  
-     * @see FlexFormat
-     */
-    public String toString(int decimals) {
-        FlexFormat f = new FlexFormat().setPrecision(decimals); 
-        return "(" + f.format(re) + "," + f.format(im) + ")";
-    }
     
     /**
      * Converts this comlex value to its string representation using up to the

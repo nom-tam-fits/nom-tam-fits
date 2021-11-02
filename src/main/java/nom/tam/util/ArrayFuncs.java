@@ -38,8 +38,7 @@ import java.util.logging.Logger;
 
 import nom.tam.util.array.MultiArrayCopier;
 import nom.tam.util.array.MultiArrayIterator;
-import nom.tam.util.type.PrimitiveType;
-import nom.tam.util.type.PrimitiveTypeHandler;
+import nom.tam.util.type.ElementType;
 
 /**
  * This is a package of static functions which perform computations on arrays.
@@ -80,23 +79,23 @@ public final class ArrayFuncs {
                 long length = Array.getLength(array);
                 if (length > 0) {
                     Class<?> componentType = array.getClass().getComponentType();
-                    PrimitiveType<?> primType = PrimitiveTypeHandler.valueOf(componentType);
+                    ElementType<?> elementType = ElementType.forClass(componentType);
                     if (componentType.isPrimitive()) {
-                        size += length * primType.size();
+                        size += length * elementType.size();
                     } else {
                         for (int index = 0; index < length; index++) {
-                            size += primType.size(Array.get(array, index));
+                            size += elementType.size(Array.get(array, index));
                         }
                     }
                 }
             }
             return size;
         }
-        PrimitiveType<?> primType = PrimitiveTypeHandler.valueOf(o.getClass());
-        if (primType.individualSize()) {
-            return primType.size(o);
+        ElementType<?> elementType = ElementType.forClass(o.getClass());
+        if (elementType.isVariableSize()) {
+            return elementType.size(o);
         }
-        return primType.size();
+        return elementType.size();
     }
 
     /**
@@ -358,7 +357,7 @@ public final class ArrayFuncs {
         if (o == null) {
             return 0;
         }
-        PrimitiveType<?> type = PrimitiveTypeHandler.valueOf(getBaseClass(o));
+        ElementType<?> type = ElementType.forClass(getBaseClass(o));
         if (type != null && type.size() != 0) {
             return type.size();
         }

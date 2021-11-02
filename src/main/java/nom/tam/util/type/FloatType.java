@@ -34,14 +34,14 @@ package nom.tam.util.type;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
-class FloatType extends PrimitiveTypeBase<FloatBuffer> {
+import nom.tam.fits.header.Bitpix;
 
-    private static final int BIT_PIX = -32;
+class FloatType extends ElementType<FloatBuffer> {
 
     private static final int SIZE = 4;
 
     protected FloatType() {
-        super(SIZE, false, float.class, Float.class, FloatBuffer.class, 'F', BIT_PIX);
+        super(SIZE, false, float.class, Float.class, FloatBuffer.class, 'F', Bitpix.VALUE_FOR_FLOAT);
     }
 
     @Override

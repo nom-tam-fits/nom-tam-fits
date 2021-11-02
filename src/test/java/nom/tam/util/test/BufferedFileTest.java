@@ -51,7 +51,10 @@ import java.io.RandomAccessFile;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
 
+import nom.tam.fits.FitsFactory;
 import nom.tam.fits.compress.CloseIS;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;
@@ -59,8 +62,10 @@ import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsIO;
 import nom.tam.util.SafeClose;
 import nom.tam.util.TestArrayFuncs;
+import nom.tam.util.type.ElementType;
 
 /**
  * This class provides runs tests of the BufferedI/O classes: BufferedFile,
@@ -222,7 +227,9 @@ public class BufferedFileTest {
         long ls2;
         short ss = (short) (60000 * (Math.random() - 30000));
         short ss2;
-        char cs = (char) (60000 * Math.random());
+        // AK: FITS only support ASCII characters, not unicode
+        // so we should not write outside of ASCII range.
+        char cs = (char) (256 * Math.random());
         char cs2;
         byte bs = (byte) (256 * Math.random() - 128);
         byte bs2;
@@ -238,35 +245,35 @@ public class BufferedFileTest {
         for (int i = 0; i < iter; i += 1) {
             f.writeArray(db);
         }
-        System.out.println("  BF  Dbl write: " + 8 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Dbl write: " + ElementType.DOUBLE.size() * dim * iter / (1000 * deltaTime()));
         for (int i = 0; i < iter; i += 1) {
             f.writeArray(fl);
         }
-        System.out.println("  BF  Flt write: " + 4 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Flt write: " + ElementType.FLOAT.size() * dim * iter / (1000 * deltaTime()));
         for (int i = 0; i < iter; i += 1) {
             f.writeArray(in);
         }
-        System.out.println("  BF  Int write: " + 4 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Int write: " + ElementType.INT.size() * dim * iter / (1000 * deltaTime()));
         for (int i = 0; i < iter; i += 1) {
             f.writeArray(ln);
         }
-        System.out.println("  BF  Lng write: " + 8 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Lng write: " + ElementType.LONG.size() * dim * iter / (1000 * deltaTime()));
         for (int i = 0; i < iter; i += 1) {
             f.writeArray(sh);
         }
-        System.out.println("  BF  Sht write: " + 2 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Sht write: " + ElementType.SHORT.size() * dim * iter / (1000 * deltaTime()));
         for (int i = 0; i < iter; i += 1) {
             f.writeArray(ch);
         }
-        System.out.println("  BF  Chr write: " + 2 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Chr write: " + ElementType.CHAR.size() * dim * iter / (1000 * deltaTime()));
         for (int i = 0; i < iter; i += 1) {
             f.writeArray(by);
         }
-        System.out.println("  BF  Byt write: " + 1 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Byt write: " + ElementType.BYTE.size() * dim * iter / (1000 * deltaTime()));
         for (int i = 0; i < iter; i += 1) {
             f.writeArray(bl);
         }
-        System.out.println("  BF  Boo write: " + 1 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Boo write: " + ElementType.BOOLEAN.size() * dim * iter / (1000 * deltaTime()));
 
         f.writeByte(bs);
         f.writeChar(cs);
@@ -279,41 +286,41 @@ public class BufferedFileTest {
 
         f.writeArray(multi);
         f.seek(0);
-
+        
         resetTime();
         for (int i = 0; i < iter; i += 1) {
             f.readLArray(db2);
         }
-        System.out.println("  BF  Dbl read:  " + 8 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Dbl read:  " + ElementType.DOUBLE.size() * dim * iter / (1000 * deltaTime()));
         for (int i = 0; i < iter; i += 1) {
             f.readLArray(fl2);
         }
-        System.out.println("  BF  Flt read:  " + 4 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Flt read:  " + ElementType.FLOAT.size() * dim * iter / (1000 * deltaTime()));
         for (int i = 0; i < iter; i += 1) {
             f.readLArray(in2);
         }
-        System.out.println("  BF  Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Int read:  " + ElementType.INT.size() * dim * iter / (1000 * deltaTime()));
         for (int i = 0; i < iter; i += 1) {
             f.readLArray(ln2);
         }
-        System.out.println("  BF  Lng read:  " + 8 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Lng read:  " + ElementType.LONG.size() * dim * iter / (1000 * deltaTime()));
         for (int i = 0; i < iter; i += 1) {
             f.readLArray(sh2);
         }
-        System.out.println("  BF  Sht read:  " + 2 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Sht read:  " + ElementType.SHORT.size() * dim * iter / (1000 * deltaTime()));
         for (int i = 0; i < iter; i += 1) {
             f.readLArray(ch2);
         }
-        System.out.println("  BF  Chr read:  " + 2 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Chr read:  " + ElementType.CHAR.size() * dim * iter / (1000 * deltaTime()));
         for (int i = 0; i < iter; i += 1) {
             f.readLArray(by2);
         }
-        System.out.println("  BF  Byt read:  " + 1 * dim * iter / (1000 * deltaTime()));
+        System.out.println("  BF  Byt read:  " + ElementType.BYTE.size() * dim * iter / (1000 * deltaTime()));
         for (int i = 0; i < iter; i += 1) {
             f.readLArray(bl2);
         }
-        System.out.println("  BF  Boo read:  " + 1 * dim * iter / (1000 * deltaTime()));
-
+        System.out.println("  BF  Boo read:  " + ElementType.BOOLEAN.size() * dim * iter / (1000 * deltaTime()));
+        
         bs2 = f.readByte();
         cs2 = f.readChar();
         ss2 = f.readShort();
@@ -344,7 +351,7 @@ public class BufferedFileTest {
             assertFalse("Int error at " + i, in[i] != in2[i]);
             assertFalse("Long error at " + i, ln[i] != ln2[i]);
             assertFalse("Short error at " + i, sh[i] != sh2[i]);
-            assertFalse("Char error at " + i, ch[i] != ch2[i]);
+            assertFalse("Char error at " + i + ":" + (short) ch[i] + "|" + (short) ch2[i], ch[i] != ch2[i]);
             assertFalse("Byte error at " + i, by[i] != by2[i]);
             assertFalse("Bool error at " + i, bl[i] != bl2[i]);
         }
@@ -387,7 +394,9 @@ public class BufferedFileTest {
         long ls2;
         short ss = (short) (60000 * (Math.random() - 30000));
         short ss2;
-        char cs = (char) (60000 * Math.random());
+        // AK: FITS only support ASCII characters, not unicode
+        // so we should not write outside of ASCII range.
+        char cs = (char) (256 * Math.random());
         char cs2;
         byte bs = (byte) (256 * Math.random() - 128);
         byte bs2;
@@ -403,35 +412,35 @@ public class BufferedFileTest {
             for (int i = 0; i < iter; i += 1) {
                 f.writeArray(db);
             }
-            System.out.println("  BDS Dbl write: " + 8 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Dbl write: " + ElementType.DOUBLE.size() * dim * iter / (1000 * deltaTime()));
             for (int i = 0; i < iter; i += 1) {
                 f.writeArray(fl);
             }
-            System.out.println("  BDS Flt write: " + 4 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Flt write: " + ElementType.FLOAT.size() * dim * iter / (1000 * deltaTime()));
             for (int i = 0; i < iter; i += 1) {
                 f.writeArray(in);
             }
-            System.out.println("  BDS Int write: " + 4 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Int write: " + ElementType.INT.size() * dim * iter / (1000 * deltaTime()));
             for (int i = 0; i < iter; i += 1) {
                 f.writeArray(ln);
             }
-            System.out.println("  BDS Lng write: " + 8 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Lng write: " + ElementType.LONG.size() * dim * iter / (1000 * deltaTime()));
             for (int i = 0; i < iter; i += 1) {
                 f.writeArray(sh);
             }
-            System.out.println("  BDS Sht write: " + 2 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Sht write: " + ElementType.SHORT.size() * dim * iter / (1000 * deltaTime()));
             for (int i = 0; i < iter; i += 1) {
                 f.writeArray(ch);
             }
-            System.out.println("  BDS Chr write: " + 2 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Chr write: " + ElementType.CHAR.size() * dim * iter / (1000 * deltaTime()));
             for (int i = 0; i < iter; i += 1) {
                 f.writeArray(by);
             }
-            System.out.println("  BDS Byt write: " + 1 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Byt write: " + ElementType.BYTE.size() * dim * iter / (1000 * deltaTime()));
             for (int i = 0; i < iter; i += 1) {
                 f.writeArray(bl);
             }
-            System.out.println("  BDS Boo write: " + 1 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Boo write: " + ElementType.BOOLEAN.size() * dim * iter / (1000 * deltaTime()));
 
             f.writeByte(bs);
             f.writeChar(cs);
@@ -454,35 +463,35 @@ public class BufferedFileTest {
             for (int i = 0; i < iter; i += 1) {
                 f.readLArray(db2);
             }
-            System.out.println("  BDS Dbl read:  " + 8 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Dbl read:  " + ElementType.DOUBLE.size() * dim * iter / (1000 * deltaTime()));
             for (int i = 0; i < iter; i += 1) {
                 f.readLArray(fl2);
             }
-            System.out.println("  BDS Flt read:  " + 4 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Flt read:  " + ElementType.FLOAT.size() * dim * iter / (1000 * deltaTime()));
             for (int i = 0; i < iter; i += 1) {
                 f.readLArray(in2);
             }
-            System.out.println("  BDS Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Int read:  " + ElementType.INT.size() * dim * iter / (1000 * deltaTime()));
             for (int i = 0; i < iter; i += 1) {
                 f.readLArray(ln2);
             }
-            System.out.println("  BDS Lng read:  " + 8 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Lng read:  " + ElementType.LONG.size() * dim * iter / (1000 * deltaTime()));
             for (int i = 0; i < iter; i += 1) {
                 f.readLArray(sh2);
             }
-            System.out.println("  BDS Sht read:  " + 2 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Sht read:  " + ElementType.SHORT.size() * dim * iter / (1000 * deltaTime()));
             for (int i = 0; i < iter; i += 1) {
                 f.readLArray(ch2);
             }
-            System.out.println("  BDS Chr read:  " + 2 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Chr read:  " + ElementType.CHAR.size() * dim * iter / (1000 * deltaTime()));
             for (int i = 0; i < iter; i += 1) {
                 f.readLArray(by2);
             }
-            System.out.println("  BDS Byt read:  " + 1 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Byt read:  " + ElementType.BYTE.size() * dim * iter / (1000 * deltaTime()));
             for (int i = 0; i < iter; i += 1) {
                 f.readLArray(bl2);
             }
-            System.out.println("  BDS Boo read:  " + 1 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  BDS Boo read:  " + ElementType.BOOLEAN.size() * dim * iter / (1000 * deltaTime()));
 
             bs2 = f.readByte();
             cs2 = f.readChar();
@@ -578,8 +587,14 @@ public class BufferedFileTest {
         lastTime = System.currentTimeMillis();
         return (lastTime - time) / 1000.;
     }
+    
+    @Before
+    @After
+    public void setDefaults() {
+        FitsFactory.setDefaults();
+    }
 
-    @Test
+
     public void datailTest() throws Exception {
         doTest("target/bufferedFile.test", 1000, 1000);
     }
@@ -588,7 +603,7 @@ public class BufferedFileTest {
     public void datailTest2() throws Exception {
         doTest("target/bufferedFile2.test", 2000, 4000);
     }
-
+    
     /**
      * Usage: java nom.tam.util.test.BufferedFileTester file [dim [iter
      * [flags]]] where file is the file to be read and written. dim is the
@@ -613,19 +628,16 @@ public class BufferedFileTest {
         int sign = 1;
         for (int i = 0; i < dim; i += 1) {
 
-            double x = sign * Math.pow(10., 20 * Math.random() - 10);
+            double x = sign * Math.pow(10., 20 * Math.random());
             db[i] = x;
             fl[i] = (float) x;
-
-            if (Math.abs(x) < 1) {
-                x = 1 / x;
-            }
-
             in[i] = (int) x;
             ln[i] = (long) x;
             sh[i] = (short) x;
             by[i] = (byte) x;
-            ch[i] = (char) x;
+            // AK: FITS only support ASCII characters, not unicode
+            // so we should not test roundtrips outside of ASCII range.
+            ch[i] = FitsFactory.isUseUnicodeChars() ? (char) sh[i] : (char) (sh[i] & 0xFF);
             bl[i] = x > 0;
 
             sign = -sign;
@@ -636,8 +648,8 @@ public class BufferedFileTest {
         by[0] = Byte.MIN_VALUE;
         by[1] = Byte.MAX_VALUE;
         by[2] = 0;
-        ch[0] = Character.MIN_VALUE;
-        ch[1] = Character.MAX_VALUE;
+        ch[0] = FitsFactory.isUseUnicodeChars() ? Character.MIN_VALUE : 0x0;
+        ch[1] = FitsFactory.isUseUnicodeChars() ? Character.MAX_VALUE : 0xFF;
         ch[2] = 0;
         sh[0] = Short.MAX_VALUE;
         sh[1] = Short.MIN_VALUE;
@@ -996,9 +1008,13 @@ public class BufferedFileTest {
         };
         bf.write(testStrings);
         bf.write(testStrings, 1, 3);
+        FitsFactory.setUseUnicodeChars(true);
         bf.writeChars("abc");
+        FitsFactory.setUseUnicodeChars(false);
+        bf.writeChars("def");
         bf.writeBytes("test\n");
-        assertEquals(77, bf.length());
+        assertEquals(80, bf.length());
+        
         bf.close();
 
         bf = new BufferedFile("target/bufferedFilePrim.test");
@@ -1013,9 +1029,16 @@ public class BufferedFileTest {
         bf.read(bytes2);
         assertEquals("string 2string 3string 4", AsciiFuncs.asciiString(bytes2));
 
+        FitsFactory.setUseUnicodeChars(true);
         assertEquals('a', bf.readChar());
         assertEquals('b', bf.readChar());
         assertEquals('c', bf.readChar());
+        
+        FitsFactory.setUseUnicodeChars(false);
+        assertEquals('d', bf.readChar());
+        assertEquals('e', bf.readChar());
+        assertEquals('f', bf.readChar());
+        
         assertEquals("test", bf.readLine());
 
         bf.close();

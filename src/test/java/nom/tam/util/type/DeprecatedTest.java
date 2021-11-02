@@ -31,21 +31,33 @@ package nom.tam.util.type;
  * #L%
  */
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
-import java.nio.Buffer;
+import java.nio.IntBuffer;
 
-/**
- * @deprecated Use {@link ElementType} instead.
- *
- * @param <B>       the generic type of data buffer
- */
-@Deprecated
-public abstract class PrimitiveType<B extends Buffer> extends ElementType<B> {
+import org.junit.Test;
 
-    @Deprecated
-    protected PrimitiveType(int size, boolean individualSize, Class<?> primitiveClass, Class<?> wrapperClass,
-            Class<B> bufferClass, char type, int bitPix) {
-        super(size, individualSize, primitiveClass, wrapperClass, bufferClass, type, bitPix);
+import nom.tam.fits.header.Bitpix;
+
+@SuppressWarnings("deprecation")
+public class DeprecatedTest {
+    
+    @Test
+    public void testPrimitiveTypeConstructor() throws Exception {
+        PrimitiveType<?> i = new PrimitiveType<IntBuffer>(4, false, int.class, Integer.class, IntBuffer.class, 'I', Bitpix.VALUE_FOR_INT) {
+            
+        };
+        assertEquals("size", 4, i.size());
+        assertFalse("isVariableSize", i.individualSize());
+        assertEquals("primitive", int.class, i.primitiveClass());
+        assertEquals("wrapped", Integer.class, i.wrapperClass());
+        assertEquals("bufclass", IntBuffer.class, i.bufferClass());
+        assertEquals("ID", 'I', i.type());
+        assertEquals("BITPIX", Bitpix.INTEGER.getHeaderValue(), i.bitPix());
     }
-
+    
+    public void testElementTypeForID() throws Exception {
+        assertEquals(ElementType.forDataID('J'), PrimitiveTypeHandler.valueOf('J'));
+    }
 }

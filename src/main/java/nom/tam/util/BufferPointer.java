@@ -43,12 +43,12 @@ public class BufferPointer {
     /**
      * The number of valid characters in the buffer
      */
-    protected int bufferLength;
+    protected int length;
 
     /**
      * The current offset into the buffer
      */
-    protected int bufferOffset;
+    protected int pos;
 
     public BufferPointer() {
     }
@@ -60,13 +60,21 @@ public class BufferPointer {
 
     protected BufferPointer init(int bufferSize) {
         this.buffer = new byte[bufferSize];
-        this.bufferOffset = 0;
-        this.bufferLength = 0;
+        this.pos = 0;
+        this.length = 0;
         return this;
     }
 
     protected void invalidate() {
-        this.bufferLength = 0;
-        this.bufferOffset = 0;
+        this.length = 0;
+        this.pos = 0;
+    }
+    
+    public final byte readByte() {
+        return buffer[pos++];
+    }
+    
+    public final void writeByte(byte b) {
+        buffer[pos++] = b;
     }
 }

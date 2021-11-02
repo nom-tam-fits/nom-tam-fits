@@ -36,12 +36,12 @@ import java.nio.ByteBuffer;
 
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
-import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.ElementType;
 
 public interface ITiledImageOperation {
     ICompressOption compressOptions();
     
-    PrimitiveType<Buffer> getBaseType();
+    ElementType<Buffer> getBaseType();
     
     ByteBuffer getCompressedWholeArea();
 

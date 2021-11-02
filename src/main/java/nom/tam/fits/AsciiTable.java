@@ -52,6 +52,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
@@ -634,7 +635,7 @@ public class AsciiTable extends AbstractTableData {
         try {
             Standard.context(AsciiTable.class);
             hdr.setXtension("TABLE");
-            hdr.setBitpix(BasicHDU.BITPIX_BYTE);
+            hdr.setBitpix(Bitpix.BYTE);
             hdr.setNaxes(2);
             hdr.setNaxis(1, this.rowLen);
             hdr.setNaxis(2, this.nRows);

@@ -62,6 +62,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.FitsFactory.FitsSettings;
+import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -1685,6 +1686,8 @@ public class Header implements FitsElement {
     }
 
     /**
+     * @deprecated  Use the safer {@link #setBitpix(Bitpix)} instead.
+     * 
      * Set the BITPIX value for the header. The following values are permitted
      * by FITS conventions:
      * <ul>
@@ -1698,13 +1701,33 @@ public class Header implements FitsElement {
      *
      * @param val
      *            The value set by the user.
+     * @throws IllegalArgumentException     if the value is not a valid BITPIX value.
+     *            
+     * @see #setBitpix(Bitpix)
      */
-    public void setBitpix(int val) {
-        Cursor<String, HeaderCard> iter = iterator();
-        iter.next();
-        iter.add(HeaderCard.create(BITPIX, val));
+    @Deprecated
+    public void setBitpix(int val) throws IllegalArgumentException {
+        try {
+            setBitpix(Bitpix.forValue(val));
+        } catch (FitsException e) {
+            throw new IllegalArgumentException("Invalid BITPIX value: " + val, e);
+        }
     }
 
+    /**
+     * Sets a standard BITPIX value for the header.
+     * 
+     * @param bitpix    The predefined enum value, e.g. {@link Bitpix#INTEGER}.
+     * @since 1.16
+     * 
+     * @see #setBitpix(int)
+     */
+    public void setBitpix(Bitpix bitpix)  {
+        Cursor<String, HeaderCard> iter = iterator();
+        iter.next();
+        iter.add(bitpix.getHeaderCard());
+    }
+    
     /**
      * Overwite the default header card sorter.
      *
@@ -2037,6 +2060,8 @@ public class Header implements FitsElement {
             }
         }
         doCardChecks(iter, isTable, isExtension);
+        
+        Bitpix.fromHeader(this, false);
     }
 
     /**
@@ -2116,7 +2141,7 @@ public class Header implements FitsElement {
     void nullImage() {
         Cursor<String, HeaderCard> iter = iterator();
         iter.add(HeaderCard.create(SIMPLE, true));
-        iter.add(HeaderCard.create(BITPIX, BasicHDU.BITPIX_BYTE));
+        iter.add(Bitpix.BYTE.getHeaderCard());
         iter.add(HeaderCard.create(NAXIS, 0));
         iter.add(HeaderCard.create(EXTEND, true));
     }
@@ -2219,8 +2244,6 @@ public class Header implements FitsElement {
         if (naxis == 0) {
             return 0L;
         }
-
-        getIntValue(BITPIX);
 
         int[] axes = new int[naxis];
 

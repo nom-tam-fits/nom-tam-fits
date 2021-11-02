@@ -1829,8 +1829,9 @@ public class BinaryTableTest {
     }
 
     @Test
-    public void testColumnAddRowChar() throws Exception {
-
+    public void testColumnAddRowUnicodeChar() throws Exception {
+        FitsFactory.setUseUnicodeChars(true);
+        
         BinaryTable btab = new BinaryTable();
         Object[] testRow = new Object[]{
                 new char[]{
@@ -1857,14 +1858,62 @@ public class BinaryTableTest {
         SafeClose.close(f);
         SafeClose.close(os);
 
+        
         f = new Fits();
         f.read(new BufferedDataInputStream(new ByteArrayInputStream(out.toByteArray())));
         btab = (BinaryTable) f.getHDU(1).getData();
 
         // very strange cast to short?
+        // -- AK: It's because we were writing char[] as short[] (while String as byte[])
+        //   It's better write them both as byte[] as per FITS standard for character array columns.
         assertEquals((short) 'a', ((short[]) btab.getData().getColumn(0))[0]);
         assertEquals((short) 'b', ((short[]) btab.getData().getColumn(0))[1]);
         assertEquals((short) 'c', ((short[]) btab.getData().getColumn(0))[2]);
+        assertEquals(1, btab.getData().getNCols());
+
+    }
+    
+    @Test
+    public void testColumnAddRowAsciiChar() throws Exception {
+        FitsFactory.setUseUnicodeChars(false);
+        
+        BinaryTable btab = new BinaryTable();
+        Object[] testRow = new Object[]{
+                new char[]{
+                        'a',
+                        'b',
+                        'c'
+                }
+        };
+        btab.addRow(testRow);
+
+        assertEquals('a', ((char[]) btab.getData().getColumn(0))[0]);
+        assertEquals('b', ((char[]) btab.getData().getColumn(0))[1]);
+        assertEquals('c', ((char[]) btab.getData().getColumn(0))[2]);
+        assertEquals(1, btab.getData().getNCols());
+
+        BinaryTableHDU tableHdu = new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ArrayDataOutput os = new BufferedDataOutputStream(out);
+
+        Fits f = new Fits();
+        f.addHDU(tableHdu);
+        f.write(os);
+        SafeClose.close(f);
+        SafeClose.close(os);
+
+        
+        f = new Fits();
+        f.read(new BufferedDataInputStream(new ByteArrayInputStream(out.toByteArray())));
+        btab = (BinaryTable) f.getHDU(1).getData();
+
+        // very strange cast to short?
+        // -- AK: It's because we were writing char[] as short[] (while String as byte[])
+        //   It's better write them both as byte[] as per FITS standard for character array columns.
+        assertEquals((byte) 'a', ((byte[]) btab.getData().getColumn(0))[0]);
+        assertEquals((byte) 'b', ((byte[]) btab.getData().getColumn(0))[1]);
+        assertEquals((byte) 'c', ((byte[]) btab.getData().getColumn(0))[2]);
         assertEquals(1, btab.getData().getNCols());
 
     }

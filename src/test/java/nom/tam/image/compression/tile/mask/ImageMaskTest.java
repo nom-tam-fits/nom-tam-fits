@@ -46,7 +46,7 @@ import java.util.Arrays;
 
 import nom.tam.image.tile.operation.buffer.TileBuffer;
 import nom.tam.image.tile.operation.buffer.TileBufferFactory;
-import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.ElementType;
 import nom.tam.util.type.PrimitiveTypes;
 
 import org.junit.Assert;
@@ -338,18 +338,18 @@ public class ImageMaskTest {
         constrs[0].newInstance();
     }
 
-    protected TileBuffer createTileBuffer(Buffer buffer, PrimitiveType type) {
+    protected TileBuffer createTileBuffer(Buffer buffer, ElementType type) {
         TileBuffer tileBuffer = TileBufferFactory.createTileBuffer(type, 0, 10, 10, 1);
         tileBuffer.setData(buffer);
         return tileBuffer;
     }
 
-    protected void createTilePreserver(Buffer buffer, ImageNullPixelMask mask, PrimitiveType type, int tileIndex) {
+    protected void createTilePreserver(Buffer buffer, ImageNullPixelMask mask, ElementType type, int tileIndex) {
         TileBuffer tileBuffer = createTileBuffer(buffer, type);
         mask.createTilePreserver(tileBuffer, tileIndex).preserveNull();
     }
 
-    protected NullPixelMaskRestorer createTileRestorer(Buffer buffer, ImageNullPixelMask mask, PrimitiveType type, int tileIndex) {
+    protected NullPixelMaskRestorer createTileRestorer(Buffer buffer, ImageNullPixelMask mask, ElementType type, int tileIndex) {
         TileBuffer tileBuffer = createTileBuffer(buffer, type);
         return mask.createTileRestorer(tileBuffer, tileIndex);
     }

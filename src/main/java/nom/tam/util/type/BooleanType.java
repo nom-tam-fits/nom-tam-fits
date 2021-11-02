@@ -33,7 +33,7 @@ package nom.tam.util.type;
 
 import java.nio.Buffer;
 
-class BooleanType extends PrimitiveTypeBase<Buffer> {
+class BooleanType extends ElementType<Buffer> {
 
     protected BooleanType() {
         super(1, false, boolean.class, Boolean.class, null, 'Z', 0);

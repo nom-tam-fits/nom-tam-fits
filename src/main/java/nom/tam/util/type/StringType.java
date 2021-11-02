@@ -33,7 +33,7 @@ package nom.tam.util.type;
 
 import java.nio.Buffer;
 
-class StringType extends PrimitiveTypeBase<Buffer> {
+class StringType extends ElementType<Buffer> {
 
     protected StringType() {
         super(0, true, CharSequence.class, String.class, null, 'L', 0);

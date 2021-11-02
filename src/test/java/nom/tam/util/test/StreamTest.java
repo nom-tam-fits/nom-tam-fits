@@ -42,9 +42,12 @@ import java.io.PipedOutputStream;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
 
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.FitsFactory;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.BufferedDataInputStream;
 import nom.tam.util.BufferedDataOutputStream;
@@ -56,6 +59,12 @@ public class StreamTest {
 
     private static BufferedDataInputStream in;
 
+    @Before
+    @After
+    public void setDefaults() {
+        FitsFactory.setDefaults();
+    }
+    
     @BeforeClass
     public static void setup() throws Exception {
         PipedInputStream pipeInput = new PipedInputStream(10240);
@@ -91,7 +100,34 @@ public class StreamTest {
     }
 
     @Test
-    public void testCharArray() throws Exception {
+    public void testCharArrayAscii() throws Exception {
+        FitsFactory.setUseUnicodeChars(false);
+        
+        char[] chars = new char[10];
+        char[] expectedChars = new char[10];
+        for (int index = 0; index < expectedChars.length; index++) {
+            expectedChars[index] = (char) ('A' + index);
+        }
+        ou.writePrimitiveArray(expectedChars);
+        ou.write(expectedChars);
+        ou.flush();
+        in.read(chars);
+        Assert.assertEquals(expectedChars.length, chars.length);
+        for (int index = 0; index < expectedChars.length; index++) {
+            Assert.assertEquals("char[" + index + "]", expectedChars[index], chars[index]);
+            chars[index] = ' ';
+        }
+        in.readPrimitiveArray(chars);
+        for (int index = 0; index < expectedChars.length; index++) {
+            Assert.assertEquals("char[" + index + "]", expectedChars[index], chars[index]);
+        }
+        Assert.assertEquals(0, in.available());
+    }
+    
+    @Test
+    public void testCharArrayUnicode() throws Exception {
+        FitsFactory.setUseUnicodeChars(true);
+        
         char[] chars = new char[10];
         char[] expectedChars = new char[10];
         for (int index = 0; index < expectedChars.length; index++) {
@@ -353,7 +389,30 @@ public class StreamTest {
     }
 
     @Test
-    public void testChar() throws Exception {
+    public void testCharAscii() throws Exception {
+        FitsFactory.setUseUnicodeChars(false);
+        
+        char[] value = new char[10];
+        char[] expectedValue = new char[10];
+        for (int index = 0; index < expectedValue.length; index++) {
+            expectedValue[index] = (char) ('A' + index);
+            ou.writeChar(expectedValue[index]);
+        }
+        ou.flush();
+        for (int index = 0; index < expectedValue.length; index++) {
+            value[index] = in.readChar();
+        }
+        Assert.assertEquals(expectedValue.length, value.length);
+        for (int index = 0; index < expectedValue.length; index++) {
+            Assert.assertEquals("boolean[" + index + "]", expectedValue[index], value[index]);
+        }
+        Assert.assertEquals(0, in.available());
+    }
+    
+    @Test
+    public void testCharUnicode() throws Exception {
+        FitsFactory.setUseUnicodeChars(true);
+        
         char[] value = new char[10];
         char[] expectedValue = new char[10];
         for (int index = 0; index < expectedValue.length; index++) {

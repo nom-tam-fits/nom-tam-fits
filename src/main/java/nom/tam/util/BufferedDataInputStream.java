@@ -158,7 +158,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     }
 
     @Override
-    public int read(boolean[] b) throws IOException {
+    public final int read(boolean[] b) throws IOException {
         return read(b, 0, b.length);
     }
 
@@ -189,7 +189,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     }
 
     @Override
-    public int read(char[] c) throws IOException {
+    public final int read(char[] c) throws IOException {
         return read(c, 0, c.length);
     }
 
@@ -199,7 +199,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     }
 
     @Override
-    public int read(double[] d) throws IOException {
+    public final int read(double[] d) throws IOException {
         return read(d, 0, d.length);
     }
 
@@ -209,7 +209,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     }
 
     @Override
-    public int read(float[] f) throws IOException {
+    public final int read(float[] f) throws IOException {
         return read(f, 0, f.length);
     }
 
@@ -219,7 +219,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     }
 
     @Override
-    public int read(int[] i) throws IOException {
+    public final int read(int[] i) throws IOException {
         return read(i, 0, i.length);
     }
 
@@ -229,7 +229,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     }
 
     @Override
-    public int read(long[] l) throws IOException {
+    public final int read(long[] l) throws IOException {
         return read(l, 0, l.length);
     }
 
@@ -239,7 +239,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
     }
 
     @Override
-    public int read(short[] s) throws IOException {
+    public final int read(short[] s) throws IOException {
         return read(s, 0, s.length);
     }
 
@@ -256,7 +256,7 @@ public class BufferedDataInputStream extends BufferedInputStream implements Arra
 
     @Override
     public boolean readBoolean() throws IOException {
-        return read() == 1;
+        return this.bufferDecoder.readBoolean();
     }
 
     @Override

@@ -45,7 +45,7 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
-import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.ElementType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 import nom.tam.util.type.PrimitiveTypes;
 
@@ -54,7 +54,7 @@ import org.junit.Test;
 
 public class PrimitiveTypeTest {
 
-    private <T extends Buffer> Buffer bufferAtPosition(PrimitiveType<T> type, int length, int position) {
+    private <T extends Buffer> Buffer bufferAtPosition(ElementType<T> type, int length, int position) {
         T result = type.newBuffer(length);
         result.position(position);
         return type.sliceBuffer(result);
@@ -78,7 +78,7 @@ public class PrimitiveTypeTest {
         testAppedBuffer(PrimitiveTypes.BYTE, expectedValue);
     }
 
-    private <T extends Buffer> void testGetPutArray(PrimitiveType<T> type, Object value, Object other) {
+    private <T extends Buffer> void testGetPutArray(ElementType<T> type, Object value, Object other) {
         Object array = type.newArray(1);
         Array.set(array, 0, value);
         T buffer = type.newBuffer(1);
@@ -186,7 +186,7 @@ public class PrimitiveTypeTest {
         testAppedBuffer(PrimitiveTypes.SHORT, expectedValue);
     }
 
-    private <T extends Buffer> void testAppedBuffer(PrimitiveType<T> type, Object expectedValue) {
+    private <T extends Buffer> void testAppedBuffer(ElementType<T> type, Object expectedValue) {
         Object oneArray = type.newArray(1);
         Array.set(oneArray, 0, expectedValue);
         T buffer = type.wrap(oneArray);
@@ -249,14 +249,15 @@ public class PrimitiveTypeTest {
 
     @Test
     public void testPrimitiveTypeNearest() throws Exception {
+        assertSame(PrimitiveTypes.UNKNOWN, PrimitiveTypeHandler.nearestValueOf(0));
         assertSame(PrimitiveTypes.BYTE, PrimitiveTypeHandler.nearestValueOf(2));
         assertSame(PrimitiveTypes.FLOAT, PrimitiveTypeHandler.nearestValueOf(-2));
         assertSame(PrimitiveTypes.FLOAT, PrimitiveTypeHandler.nearestValueOf(-17));
         assertSame(PrimitiveTypes.DOUBLE, PrimitiveTypeHandler.nearestValueOf(-40));
-        assertSame(PrimitiveTypes.UNKNOWN, PrimitiveTypeHandler.nearestValueOf(-80));
+        assertSame(PrimitiveTypes.DOUBLE, PrimitiveTypeHandler.nearestValueOf(-80));
         assertSame(PrimitiveTypes.SHORT, PrimitiveTypeHandler.nearestValueOf(9));
         assertSame(PrimitiveTypes.INT, PrimitiveTypeHandler.nearestValueOf(20));
         assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.nearestValueOf(40));
-        assertSame(PrimitiveTypes.UNKNOWN, PrimitiveTypeHandler.nearestValueOf(80));
+        assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.nearestValueOf(80));
     }
 }

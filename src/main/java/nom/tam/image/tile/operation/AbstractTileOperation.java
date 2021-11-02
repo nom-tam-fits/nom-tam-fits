@@ -37,7 +37,7 @@ import java.util.concurrent.Future;
 
 import nom.tam.image.tile.operation.buffer.TileBuffer;
 import nom.tam.image.tile.operation.buffer.TileBufferFactory;
-import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.ElementType;
 
 public abstract class AbstractTileOperation implements Runnable, ITileOperation {
 
@@ -101,7 +101,7 @@ public abstract class AbstractTileOperation implements Runnable, ITileOperation 
         }
     }
 
-    protected PrimitiveType<Buffer> getBaseType() {
+    protected ElementType<Buffer> getBaseType() {
         return this.tiledImageOperation.getBaseType();
     }
 

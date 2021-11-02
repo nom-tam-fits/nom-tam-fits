@@ -33,11 +33,11 @@ package nom.tam.image.tile.operation.buffer;
 
 import java.nio.Buffer;
 
-import nom.tam.util.type.PrimitiveType;
+import nom.tam.util.type.ElementType;
 
 public final class TileBufferFactory {
 
-    public static TileBuffer createTileBuffer(PrimitiveType<Buffer> baseType, int dataOffset, int imageWidth, int width, int height) {
+    public static TileBuffer createTileBuffer(ElementType<Buffer> baseType, int dataOffset, int imageWidth, int width, int height) {
         if (imageWidth > width) {
             return new TileBufferColumnBased(baseType, dataOffset, imageWidth, width, height);
         }

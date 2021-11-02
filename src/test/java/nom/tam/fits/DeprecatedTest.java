@@ -1,4 +1,4 @@
-package nom.tam.util.type;
+package nom.tam.fits;
 
 /*
  * #%L
@@ -31,21 +31,14 @@ package nom.tam.util.type;
  * #L%
  */
 
+import org.junit.Test;
 
-import java.nio.Buffer;
-
-/**
- * @deprecated Use {@link ElementType} instead.
- *
- * @param <B>       the generic type of data buffer
- */
-@Deprecated
-public abstract class PrimitiveType<B extends Buffer> extends ElementType<B> {
-
-    @Deprecated
-    protected PrimitiveType(int size, boolean individualSize, Class<?> primitiveClass, Class<?> wrapperClass,
-            Class<B> bufferClass, char type, int bitPix) {
-        super(size, individualSize, primitiveClass, wrapperClass, bufferClass, type, bitPix);
+@SuppressWarnings("deprecation")
+public class DeprecatedTest {
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testHeaderSetInvalidBitpix() throws Exception {
+        Header h = new Header();
+        h.setBitpix(20);
     }
-
 }

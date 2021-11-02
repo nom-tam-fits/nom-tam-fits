@@ -36,8 +36,18 @@ import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
+
+import nom.tam.fits.FitsFactory;
 
 public class BufferedFileTest {
+    
+    @Before
+    @After
+    public void setDefaults() {
+        FitsFactory.setDefaults();
+    }
 
     @Test
     public void testCheckEof() throws IOException {
@@ -62,12 +72,29 @@ public class BufferedFileTest {
     }
 
     @Test
-    public void testReadWrite() throws IOException {
-        BufferedFile file = new BufferedFile("target/BufferedFileReadWrite", "rw");
+    public void testReadWriteAscii() throws IOException {
+        FitsFactory.setUseUnicodeChars(false);
+        BufferedFile file = new BufferedFile("target/BufferedFileReadWriteAscii", "rw");
         file.write(new byte[10]);
         Assert.assertTrue(file.getChannel().isOpen());
         file.close();
-        file = new BufferedFile("target/BufferedFileReadWrite", "rw");
+        file = new BufferedFile("target/BufferedFileReadWriteAscii", "rw");
+        try {
+            file.write(new char[2]);
+            Assert.assertEquals(3, file.read(new char[3]));
+        } finally {
+            file.close();
+        }
+    }
+    
+    @Test
+    public void testReadWriteUnicode() throws IOException {
+        FitsFactory.setUseUnicodeChars(true);
+        BufferedFile file = new BufferedFile("target/BufferedFileReadWriteUnicode", "rw");
+        file.write(new byte[10]);
+        Assert.assertTrue(file.getChannel().isOpen());
+        file.close();
+        file = new BufferedFile("target/BufferedFileReadWriteUnicode", "rw");
         try {
             file.write(new char[2]);
             Assert.assertEquals(6, file.read(new char[3]));
