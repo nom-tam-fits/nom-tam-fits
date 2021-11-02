@@ -78,37 +78,37 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     private static final Logger LOG = getLogger(BasicHDU.class);
 
     /**
-     * @deprecated Use {@link Bitpix#BITPIX_BYTE} instead.
+     * @deprecated Use {@link Bitpix#VALUE_FOR_BYTE} instead.
      */
     @Deprecated
     public static final int BITPIX_BYTE = 8;
 
     /**
-     * @deprecated Use {@link Bitpix#BITPIX_SHORT} instead.
+     * @deprecated Use {@link Bitpix#VALUE_FOR_SHORT} instead.
      */
     @Deprecated
     public static final int BITPIX_SHORT = 16;
 
     /**
-     * @deprecated Use {@link Bitpix#BITPIX_INT} instead.
+     * @deprecated Use {@link Bitpix#VALUE_FOR_INT} instead.
      */
     @Deprecated
     public static final int BITPIX_INT = 32;
 
     /**
-     * @deprecated Use {@link Bitpix#BITPIX_LONG} instead.
+     * @deprecated Use {@link Bitpix#VALUE_FOR_LONG} instead.
      */
     @Deprecated
     public static final int BITPIX_LONG = 64;
 
     /**
-     * @deprecated Use {@link Bitpix#BITPIX_FLOAT} instead.
+     * @deprecated Use {@link Bitpix#VALUE_FOR_FLOAT} instead.
      */
     @Deprecated
     public static final int BITPIX_FLOAT = -32;
 
     /**
-     * @deprecated Use {@link Bitpix#BITPIX_DOUBLE} instead.
+     * @deprecated Use {@link Bitpix#VALUE_FOR_DOUBLE} instead.
      */
     @Deprecated
     public static final int BITPIX_DOUBLE = -64;

@@ -71,10 +71,10 @@ public abstract class ElementType<B extends Buffer> {
     private final Class<?> wrapperClass;
 
     /**
+     * Instantiates a new FITS data element type.
      * 
-     * 
-     * @param size
-     * @param varSize
+     * @param size              the number of bytes in the FITS representation of that type.
+     * @param varSize           <code>true</code> if the element has a size that varies from object to object.
      * @param primitiveClass    The primitive data type, e.g. `int.class`, or <code>null</code> if no primitive type is associated.
      * @param wrapperClass      The boxed data type, e.g. `Integer.class`, or <code>null</code> if no boxed type is associated.
      * @param bufferClass       The type of underlying buffer (in FITS), or <code>null</code> if arrays of this type 

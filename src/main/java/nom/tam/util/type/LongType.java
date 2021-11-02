@@ -41,7 +41,7 @@ class LongType extends ElementType<LongBuffer> {
     private static final int SIZE = 8;
 
     protected LongType() {
-        super(SIZE, false, long.class, Long.class, LongBuffer.class, 'J', Bitpix.BITPIX_LONG);
+        super(SIZE, false, long.class, Long.class, LongBuffer.class, 'J', Bitpix.VALUE_FOR_LONG);
     }
 
     @Override

@@ -39,7 +39,7 @@ import nom.tam.fits.header.Bitpix;
 class ShortType extends ElementType<ShortBuffer> {
 
     protected ShortType() {
-        super(2, false, short.class, Short.class, ShortBuffer.class, 'S', Bitpix.BITPIX_SHORT);
+        super(2, false, short.class, Short.class, ShortBuffer.class, 'S', Bitpix.VALUE_FOR_SHORT);
     }
 
     @Override
