@@ -1105,7 +1105,10 @@ public class BufferedFileTest {
         assertEquals(bf.readLArray(new byte[11]), 0L);
     }
 
-    @Test(expected = IOException.class)
+    // AK: Was throwing IOException, but there is no IO involved at all. It's a classic case
+    // for IndexOutOfBoundsException, which is exavctly what the underlying read throws
+    // in such a case.
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testFullyOutside() throws IOException {
         BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
         bf.readFully(new byte[5], 10, 5);
