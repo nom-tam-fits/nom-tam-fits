@@ -300,13 +300,8 @@ public abstract class ArrayDecoder {
          *             underlying input
          */
         private boolean makeAvailable(int size) throws IOException {
-            if (buffer.remaining() < size) {
+            while (buffer.remaining() < size) {
                 if (!fetch()) {
-                    return false;
-                }
-                if (buffer.limit() < size) {
-                    // We still don't have enough data buffered to even for a
-                    // single element.
                     return false;
                 }
             }
