@@ -43,14 +43,31 @@ import java.io.IOException;
  * @see FitsDecoder
  */
 @Deprecated
-public class BufferDecoder extends FitsDecoder {
+public abstract class BufferDecoder extends FitsDecoder {
 
     public BufferDecoder(BufferPointer p) {
         super(new Reader(p));
     }
+    
+    /**
+     * @deprecated No longer used or needed. Kept around for back compatibility only.
+     */
+    @Deprecated
+    protected void checkBuffer(int needBytes) throws IOException {
+    }
 
     protected int eofCheck(EOFException e, int start, int index, int elementSize) throws EOFException {
         return super.eofCheck(e, (index - start), -1) * elementSize;
+    }
+   
+    
+    @Deprecated
+    public long readLArray(Object o) throws IOException {
+        try { 
+            return super.readArray(o); 
+        } catch (IllegalArgumentException e) {
+            throw new IOException(e);
+        }
     }
     
     private static class Reader implements InputReader {

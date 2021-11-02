@@ -54,7 +54,7 @@ public abstract class ArrayEncoder {
 
     private OutputWriter out;
 
-    protected Buffer buf = new Buffer();
+    private ConversionBuffer buf = new ConversionBuffer();
 
     public ArrayEncoder(OutputWriter o) {
         this.out = o;
@@ -64,12 +64,31 @@ public abstract class ArrayEncoder {
         this((OutputWriter) new FitsOutputStream(o));
     }
 
+    /**
+     * Returns the buffer that is used for conversion, which can be used to
+     * collate more elements for writing before bulk flushing data to the output
+     * (see {@link ConversionBuffer#flush()}).
+     * 
+     * @return the conversion buffer used by this encoder.
+     */
+    protected ConversionBuffer getBuffer() {
+        return buf;
+    }
+
+    protected synchronized void needBuffer(int need) throws IOException {
+        buf.need(need);
+    }
+
     protected synchronized void write(int b) throws IOException {
-        out.write(b);
+        synchronized (out) {
+            buf.flush();
+            out.write(b);
+        }
     }
 
     protected synchronized void write(byte[] b, int start, int length) throws IOException {
         synchronized (out) {
+            buf.flush();
             out.write(b, start, length);
         }
     }
@@ -91,12 +110,44 @@ public abstract class ArrayEncoder {
     public abstract void writeArray(Object o) throws IOException, IllegalArgumentException;
 
     /**
+     * <p>
      * The conversion buffer for encoding Java arrays (objects) into a binary
      * data representation.
+     * </p>
+     * <p>
+     * The buffering is most efficient if multiple conversions (put methods) are
+     * collated before a forced {@link #flush()} call to the output. The caller
+     * need not worry about space remaining in the buffer. As new data is placed
+     * (put) into the buffer, the buffer will automatically flush the contents
+     * to the output to make space for new elements as it goes. The caller only
+     * needs to call the final {@link #flush()}, to ensure that all elements
+     * bufferes so far are written to the output.
+     * </p>
+     * 
+     * <pre>
+     * short[] shortArray = new short[100];
+     * float[] floaTarray = new float[48];
+     * 
+     * // populate the arrays with data...
+     * 
+     * // Convert to binary representation using the local
+     * // conversion buffer.
+     * ConversionBuffer buf = getBuffer();
+     * 
+     * // Convert as much data as we want to the output format...
+     * buf.putDouble(1.0);
+     * buf.putInt(-1);
+     * buf.put(shortArray, 0, shortArray.length);
+     * buf.put(floatArray, 0, floatArray.length);
+     * 
+     * // Once we are done with a chunk of data, we need to
+     * // make sure all it written to the output
+     * buf.flush();
+     * </pre>
      * 
      * @author Attila Kovacs
      */
-    protected final class Buffer {
+    protected final class ConversionBuffer {
 
         /** the byte array that stores pending data to be written to the output */
         private byte[] data = new byte[BUFFER_SIZE];
@@ -105,25 +156,27 @@ public abstract class ArrayEncoder {
         private ByteBuffer buffer = ByteBuffer.wrap(data);
 
         /**
-         * Sets the byte order of this conversion buffer
+         * Sets the byte order of the binary representation to which data is
+         * encoded.
          * 
          * @param order
          *            the new byte order
-         * @see #order()
+         * @see #byteOrder()
          * @see ByteBuffer#order(ByteOrder)
          */
-        protected void order(ByteOrder order) {
+        protected void setByteOrder(ByteOrder order) {
             buffer.order(order);
         }
 
         /**
-         * Returns the current byte order of the conversion buffer.
+         * Returns the current byte order of the binary representation to which
+         * data is encoded.
          * 
          * @return the byte order
-         * @see #order(ByteOrder)
+         * @see #setByteOrder(ByteOrder)
          * @see ByteBuffer#order()
          */
-        protected ByteOrder order() {
+        protected ByteOrder byteOrder() {
             return buffer.order();
         }
 

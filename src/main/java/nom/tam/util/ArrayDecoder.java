@@ -64,7 +64,7 @@ public abstract class ArrayDecoder {
     private final InputReader in;
 
     /** the conversion buffer */
-    protected Buffer buf = new Buffer();
+    private ConversionBuffer buf = new ConversionBuffer();
 
     /**
      * Instantiates a new decoder for converting data representations into Java
@@ -86,6 +86,19 @@ public abstract class ArrayDecoder {
      */
     public ArrayDecoder(InputStream i) {
         this((InputReader) new FitsInputStream(i));
+    }
+
+    /**
+     * Returns the buffer that is used for conversion, which can be used to bulk
+     * read bytes ahead from the input (see
+     * {@link ConversionBuffer#loadBytes(long, int)}) and
+     * {@link ConversionBuffer#loadOne(int)}) before doing conversions to Java
+     * types locally.
+     * 
+     * @return the conversion buffer used by this decoder.
+     */
+    protected ConversionBuffer getBuffer() {
+        return buf;
     }
 
     /**
@@ -115,6 +128,22 @@ public abstract class ArrayDecoder {
         return in.read(b, start, length);
     }
 
+    /**
+     * Based on {@link #readArray(Object)}, but guaranteeing a complete read of
+     * the supplied object or else an {@link EOFException} is thrown.
+     * 
+     * @param o
+     *            the array, including multi-dimensional, and heterogeneous
+     *            arrays of arrays.
+     * @throws IOException
+     *             if there was an IO error, uncluding end-of-file (
+     *             {@link EOFException}, before all components of the supplied
+     *             array were populated from the input.
+     * @throws IllegalArgumentException
+     *             if the argument is not a Java array, or is or contains
+     *             elements that do not have supported conversions from binary
+     *             representation.
+     */
     public void readArrayFully(Object o) throws IOException, IllegalArgumentException {
         if (readArray(o) != FitsEncoder.computeSize(o)) {
             throw new EOFException("Incomplete array read.");
@@ -127,12 +156,63 @@ public abstract class ArrayDecoder {
     public abstract long readArray(Object o) throws IOException, IllegalArgumentException;
 
     /**
+     * <p>
      * The conversion buffer for decoding binary data representation into Java
      * arrays (objects).
+     * </p>
+     * <p>
+     * The buffering is most efficient, if we fist specify how many bytes of
+     * input maybe be consumed first (buffered from the input), via
+     * {@link #loadBytes(long, int)}. After that, we can call the get routines
+     * of this class to return binary data converted to Java format until we
+     * exhaust the specified alotment of bytes.
+     * </p>
+     * 
+     * <pre>
+     * // The data we want to retrieve
+     * double d;
+     * int i;
+     * short[] shortArray = new short[100];
+     * float[] floaTarray = new float[48];
+     * 
+     * // We convert from the binary format to Java format using
+     * // the local conversion buffer
+     * ConversionBuffer buf = getBuffer();
+     * 
+     * // We can allow the conversion buffer to read enough bytes for all
+     * // data we want to retrieve:
+     * buf.loadBytes(FitsIO.BYTES_IN_DOUBLE + FitsIO.BYTES_IN_INT + FitsIO.BYTES_IN_SHORT * shortArray.length + FitsIO.BYTES_IN_FLOAT * floatArray.length);
+     * 
+     * // Now we can get the data with minimal underlying IO calls...
+     * d = buf.getDouble();
+     * i = buf.getInt();
+     * 
+     * for (int i = 0; i &lt; shortArray.length; i++) {
+     *     shortArray[i] = buf.getShort();
+     * }
+     * 
+     * for (int i = 0; i &lt; floatArray.length; i++) {
+     *     floatArray[i] = buf.getFloat();
+     * }
+     * </pre>
+     * <p>
+     * In the special case that one needs just a single element (or a few single
+     * elements) from the input, rather than lots of elements or arrays, one may
+     * use {@link #loadOne(int)} instead of {@link #loadBytes(long, int)} to
+     * read just enough bytes for a single data element from the input before
+     * each conversion. For example:
+     * </p>
+     * 
+     * <pre>
+     * ConversionBuffer buf = getBuffer();
+     * 
+     * buf.loadOne(FitsIO.BYTES_IN_FLOAT);
+     * float f = buf.getFloat();
+     * </pre>
      * 
      * @author Attila Kovacs
      */
-    protected final class Buffer {
+    protected final class ConversionBuffer {
 
         /** the byte array in which to buffer data from the input */
         private byte[] data = new byte[BUFFER_SIZE];
@@ -144,25 +224,27 @@ public abstract class ArrayDecoder {
         private long pending = 0;
 
         /**
-         * Sets the byte order of this conversion buffer
+         * Sets the byte order of the binary data representation from which we
+         * are decoding data.
          * 
          * @param order
          *            the new byte order
-         * @see #order()
+         * @see #byteOrder()
          * @see ByteBuffer#order(ByteOrder)
          */
-        protected void order(ByteOrder order) {
+        protected void setByteOrder(ByteOrder order) {
             buffer.order(order);
         }
 
         /**
-         * Returns the current byte order of the conversion buffer.
+         * Returns the current byte order of the binary data representation from
+         * which we are decoding.
          * 
          * @return the byte order
-         * @see #order(ByteOrder)
+         * @see #setByteOrder(ByteOrder)
          * @see ByteBuffer#order()
          */
-        protected ByteOrder order() {
+        protected ByteOrder byteOrder() {
             return buffer.order();
         }
 

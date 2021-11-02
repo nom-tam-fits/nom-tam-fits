@@ -1,5 +1,7 @@
 package nom.tam.util;
 
+import java.io.IOException;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -48,6 +50,14 @@ public class BufferedDataOutputStream extends FitsOutputStream {
 
     public BufferedDataOutputStream(OutputStream o) {
         super(o);
+    }
+    
+    /**
+     * @deprecated  No longer used internally, but kept for back compatibility
+     */
+    @Deprecated
+    protected void checkBuf(int need) throws IOException {
+        getEncoder().needBuffer(need);
     }
 
 }

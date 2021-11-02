@@ -92,7 +92,6 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
         setDecoder(new FitsDecoder((InputReader) this));
     }
     
-    
     /**
      * Create a BufferedInputStream based on an input stream.
      * 
@@ -108,7 +107,16 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
         return (FitsDecoder) super.getDecoder();
     }
     
-    
+    @Override
+    public synchronized void readFully(byte[] b) throws IOException {
+        readFully(b, 0, b.length);
+    }
+
+    @Override
+    public synchronized void readFully(byte[] b, int off, int len) throws IOException {
+        getDecoder().readFully(b, off, len);        
+    }
+
     @Override
     public final synchronized int read(boolean[] b) throws IOException {
         return read(b, 0, b.length);
@@ -128,7 +136,6 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     public synchronized int read(Boolean[] b, int start, int length) throws IOException {
         return getDecoder().read(b, start, length);
     }
-    
    
     @Override
     public final synchronized int read(char[] c) throws IOException {
@@ -141,24 +148,15 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     }
 
     @Override
-    public final synchronized int read(double[] d) throws IOException {
-        return read(d, 0, d.length);
+    public final synchronized int read(short[] s) throws IOException {
+        return read(s, 0, s.length);
     }
 
     @Override
-    public synchronized int read(double[] d, int start, int length) throws IOException {
-        return getDecoder().read(d, start, length);
+    public synchronized int read(short[] s, int start, int length) throws IOException {
+        return getDecoder().read(s, start, length);
     }
 
-    @Override
-    public final synchronized int read(float[] f) throws IOException {
-        return read(f, 0, f.length);
-    }
-
-    @Override
-    public synchronized int read(float[] f, int start, int length) throws IOException {
-        return getDecoder().read(f, start, length);
-    }
 
     @Override
     public final synchronized int read(int[] i) throws IOException {
@@ -175,19 +173,30 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
         return read(l, 0, l.length);
     }
 
+
     @Override
     public synchronized int read(long[] l, int start, int length) throws IOException {
         return getDecoder().read(l, start, length);
     }
 
     @Override
-    public final synchronized int read(short[] s) throws IOException {
-        return read(s, 0, s.length);
+    public final synchronized int read(float[] f) throws IOException {
+        return read(f, 0, f.length);
     }
 
     @Override
-    public synchronized int read(short[] s, int start, int length) throws IOException {
-        return getDecoder().read(s, start, length);
+    public synchronized int read(float[] f, int start, int length) throws IOException {
+        return getDecoder().read(f, start, length);
+    }
+
+    @Override
+    public final synchronized int read(double[] d) throws IOException {
+        return read(d, 0, d.length);
+    }
+
+    @Override
+    public synchronized int read(double[] d, int start, int length) throws IOException {
+        return getDecoder().read(d, start, length);
     }
 
     @Deprecated
@@ -215,11 +224,7 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     public final synchronized int readPrimitiveArray(Object o) throws IOException {
         return (int) readLArray(o);
     }
-
-    @Override
-    public final synchronized void skipAllBytes(int toSkip) throws IOException {
-        skipAllBytes((long) toSkip);
-    }
+    
 
     @Override
     public synchronized long skip(long n) throws IOException {
@@ -242,9 +247,30 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
         return skipped;
     }
     
+    
+    @Override
+    public synchronized int skipBytes(int n) throws IOException {
+        return (int) super.skip(n);
+    }
+    
+    
+    @Override
+    public final synchronized void skipAllBytes(int toSkip) throws IOException {
+        skipAllBytes((long) toSkip);
+    }
+
+    
     @Override
     public synchronized void skipAllBytes(long toSkip) throws IOException {
-        long got = skip(toSkip);
+        long got = 0;
+        
+        while (got < toSkip) {
+            long n = skip(toSkip - got);
+            if (n <= 0) {
+                break;
+            }
+            got += n;
+        }
 
         if (got != toSkip) {
             throw new EOFException("Reached end-of-stream after skipping " + got + " of " + toSkip);
@@ -256,6 +282,13 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     public synchronized boolean readBoolean() throws IOException {
         return getDecoder().readBoolean();
     }
+    
+
+    @Override
+    public synchronized int readUnsignedByte() throws IOException {
+        return getDecoder().readUnsignedByte();
+    }
+
 
     @Override
     public synchronized byte readByte() throws IOException {
@@ -270,42 +303,8 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
 
 
     @Override
-    public synchronized double readDouble() throws IOException {
-        return getDecoder().readDouble();
-    }
-
-
-    @Override
-    public synchronized float readFloat() throws IOException {
-        return getDecoder().readFloat();
-    }
-
-
-    @Override
-    public synchronized void readFully(byte[] b) throws IOException {
-        readFully(b, 0, b.length);
-    }
-
-
-    @Override
-    public synchronized int readInt() throws IOException {
-        return getDecoder().readInt();
-    }
-
-    /**
-     * Read a line of input.
-     * 
-     * @return the next line.
-     */
-    @Override
-    public final synchronized String readLine() throws IOException {
-        return getDecoder().readAsciiLine();
-    }
-
-
-    @Override
-    public synchronized long readLong() throws IOException {
-        return getDecoder().readLong();
+    public synchronized int readUnsignedShort() throws IOException {
+        return getDecoder().readUnsignedShort();
     }
 
 
@@ -316,32 +315,38 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
 
 
     @Override
+    public synchronized int readInt() throws IOException {
+        return getDecoder().readInt();
+    }
+
+
+    @Override
+    public synchronized long readLong() throws IOException {
+        return getDecoder().readLong();
+    }
+
+
+    @Override
+    public synchronized float readFloat() throws IOException {
+        return getDecoder().readFloat();
+    }
+
+
+    @Override
+    public synchronized double readDouble() throws IOException {
+        return getDecoder().readDouble();
+    }
+    
+
+    @Override
     public synchronized String readUTF() throws IOException {
         return data.readUTF();
     }
 
-
+    
     @Override
-    public synchronized int readUnsignedByte() throws IOException {
-        return getDecoder().readUnsignedByte();
-    }
-
-
-    @Override
-    public synchronized int readUnsignedShort() throws IOException {
-        return getDecoder().readUnsignedShort();
-    }
-
-
-    @Override
-    public synchronized int skipBytes(int n) throws IOException {
-        return (int) super.skip(n);
-    }
-
-
-    @Override
-    public synchronized void readFully(byte[] b, int off, int len) throws IOException {
-        getDecoder().readFully(b, off, len);        
+    public final synchronized String readLine() throws IOException {
+        return getDecoder().readAsciiLine();
     }
 
 
@@ -349,7 +354,7 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     public String toString() {
         return super.toString() + "[count=" + this.count + ",pos=" + this.pos + "]";
     }
-
+    
 
     @Override
     public final boolean checkTruncated() throws IOException {

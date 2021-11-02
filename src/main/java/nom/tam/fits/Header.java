@@ -1325,8 +1325,7 @@ public class Header implements FitsElement {
             cursor().add(hc);
             return hc;
         } catch (HeaderCardException e) {
-            LOG.warning("Ignoring comment card with invalid key [" + HeaderCard.sanitize(key) + "]");
-            e.printStackTrace();
+            LOG.log(Level.WARNING, "Ignoring comment card with invalid key [" + HeaderCard.sanitize(key) + "]", e);
             return null;
         }
     }

@@ -990,7 +990,7 @@ public class BufferedFileTest {
         testArray(bi, "slong1", tl0);
         testArray(bi, "slongnull", tl1);
         testArray(bi, "sshort2", ts);
-        bi.skipBytes(10000);
+        bi.skipAllBytes(10000);
         assertEquals('Y', bi.read());
     }
 

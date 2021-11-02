@@ -195,8 +195,8 @@ public class FitsDecoder extends ArrayDecoder {
      */
     @Deprecated
     protected synchronized int readUnsignedShort() throws IOException {
-        buf.loadOne(ElementType.SHORT.size());
-        return buf.getUnsignedShort();
+        getBuffer().loadOne(ElementType.SHORT.size());
+        return getBuffer().getUnsignedShort();
     }
 
     /**
@@ -204,8 +204,8 @@ public class FitsDecoder extends ArrayDecoder {
      */
     @Deprecated
     protected synchronized int readInt() throws IOException {
-        buf.loadOne(ElementType.INT.size());
-        return buf.getInt();
+        getBuffer().loadOne(ElementType.INT.size());
+        return getBuffer().getInt();
     }
 
     /**
@@ -213,8 +213,8 @@ public class FitsDecoder extends ArrayDecoder {
      */
     @Deprecated
     protected synchronized long readLong() throws IOException {
-        buf.loadOne(ElementType.LONG.size());
-        return buf.getLong();
+        getBuffer().loadOne(ElementType.LONG.size());
+        return getBuffer().getLong();
     }
 
     /**
@@ -222,8 +222,8 @@ public class FitsDecoder extends ArrayDecoder {
      */
     @Deprecated
     protected synchronized float readFloat() throws IOException {
-        buf.loadOne(ElementType.FLOAT.size());
-        return buf.getFloat();
+        getBuffer().loadOne(ElementType.FLOAT.size());
+        return getBuffer().getFloat();
     }
 
     /**
@@ -231,8 +231,8 @@ public class FitsDecoder extends ArrayDecoder {
      */
     @Deprecated
     protected synchronized double readDouble() throws IOException {
-        buf.loadOne(ElementType.DOUBLE.size());
-        return buf.getDouble();
+        getBuffer().loadOne(ElementType.DOUBLE.size());
+        return getBuffer().getDouble();
     }
 
     /**
@@ -279,13 +279,13 @@ public class FitsDecoder extends ArrayDecoder {
      * <code>false</code> is represented by the ASCII byte for 'F'.
      */
     protected synchronized int read(boolean[] b, int start, int length) throws IOException {
-        buf.loadBytes(length, 1);
+        getBuffer().loadBytes(length, 1);
         int to = length + start;
         int k = start;
 
         try {
             for (; k < to; k++) {
-                int i = buf.get();
+                int i = getBuffer().get();
                 if (i < 0) {
                     break;
                 }
@@ -311,13 +311,13 @@ public class FitsDecoder extends ArrayDecoder {
      * values are represented by the value 0.
      */
     protected synchronized int read(Boolean[] b, int start, int length) throws IOException {
-        buf.loadBytes(length, 1);
+        getBuffer().loadBytes(length, 1);
         int to = length + start;
         int k = start;
 
         try {
             for (; k < to; k++) {
-                int i = buf.get();
+                int i = getBuffer().get();
                 if (i < 0) {
                     break;
                 }
@@ -347,7 +347,7 @@ public class FitsDecoder extends ArrayDecoder {
      * @see FitsFactory#setUseUnicodeChars(boolean) 
      */
     protected synchronized int read(char[] c, int start, int length) throws IOException {
-        buf.loadBytes(length, ElementType.CHAR.size());
+        getBuffer().loadBytes(length, ElementType.CHAR.size());
         int to = length + start;
         int k = start;
 
@@ -355,7 +355,7 @@ public class FitsDecoder extends ArrayDecoder {
 
         try {
             for (; k < to; k++) {
-                int i = isUnicode ? buf.getUnsignedShort() : buf.get();
+                int i = isUnicode ? getBuffer().getUnsignedShort() : getBuffer().get();
                 if (i < 0) {
                     break;
                 }
@@ -378,12 +378,12 @@ public class FitsDecoder extends ArrayDecoder {
      * See {@link ArrayDataInput#read(short[], int, int)} for a contract of this method.
      */
     protected synchronized int read(short[] s, int start, int length) throws IOException {
-        buf.loadBytes(length, ElementType.SHORT.size());
+        getBuffer().loadBytes(length, ElementType.SHORT.size());
         int to = length + start;
         int k = start;
 
         for (; k < to; k++) {
-            int i = buf.getUnsignedShort();
+            int i = getBuffer().getUnsignedShort();
             if (i < 0) {
                 break;
             }
@@ -401,13 +401,13 @@ public class FitsDecoder extends ArrayDecoder {
      * See {@link ArrayDataInput#read(int[], int, int)} for a contract of this method.
      */
     protected synchronized int read(int[] j, int start, int length) throws IOException {
-        buf.loadBytes(length, ElementType.INT.size());
+        getBuffer().loadBytes(length, ElementType.INT.size());
         int to = length + start;
         int k = start;
 
         try {
             for (; k < to; k++) {
-                j[k] = buf.getInt();
+                j[k] = getBuffer().getInt();
             }
         } catch (EOFException e) {
             return eofCheck(e, k - start, length) * ElementType.INT.size();
@@ -419,13 +419,13 @@ public class FitsDecoder extends ArrayDecoder {
      * See {@link ArrayDataInput#read(long[], int, int)} for a contract of this method.
      */
     protected synchronized int read(long[] l, int start, int length) throws IOException {
-        buf.loadBytes(length, ElementType.LONG.size());
+        getBuffer().loadBytes(length, ElementType.LONG.size());
         int to = length + start;
         int k = start;
 
         try {
             for (; k < to; k++) {
-                l[k] = buf.getLong();
+                l[k] = getBuffer().getLong();
             }
         } catch (EOFException e) {
             return eofCheck(e, k - start, length) * ElementType.LONG.size();
@@ -437,13 +437,13 @@ public class FitsDecoder extends ArrayDecoder {
      * See {@link ArrayDataInput#read(float[], int, int)} for a contract of this method.
      */
     protected synchronized int read(float[] f, int start, int length) throws IOException {
-        buf.loadBytes(length, ElementType.FLOAT.size());
+        getBuffer().loadBytes(length, ElementType.FLOAT.size());
         int to = length + start;
         int k = start;
 
         try {
             for (; k < to; k++) {
-                f[k] = buf.getFloat();
+                f[k] = getBuffer().getFloat();
             }
         } catch (EOFException e) {
             return eofCheck(e, k - start, length) * ElementType.FLOAT.size();
@@ -455,13 +455,13 @@ public class FitsDecoder extends ArrayDecoder {
      * See {@link ArrayDataInput#read(double[], int, int)} for a contract of this method.
      */
     protected synchronized int read(double[] d, int start, int length) throws IOException {
-        buf.loadBytes(length, ElementType.DOUBLE.size());
+        getBuffer().loadBytes(length, ElementType.DOUBLE.size());
         int to = length + start;
         int k = start;
 
         try {
             for (; k < to; k++) {
-                d[k] = buf.getDouble();
+                d[k] = getBuffer().getDouble();
             }
         } catch (EOFException e) {
             return eofCheck(e, k - start, length) * ElementType.DOUBLE.size();

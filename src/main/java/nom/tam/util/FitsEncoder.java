@@ -115,7 +115,7 @@ public class FitsEncoder extends ArrayEncoder {
     /**
      * Puts a boolean array into the conversion buffer, but with no guarantee of flushing the
      * conversion buffer to the underlying output. The caller may put multiple data object into
-     * the conversion buffer before eventually calling {@link Buffer#flush()} to ensure
+     * the conversion buffer before eventually calling {@link ConversionBuffer#flush()} to ensure
      * that everything is written to the output. Note, the this call may flush the contents
      * of the conversion buffer to the output if it needs more conversion space than
      * what is avaiable.
@@ -134,14 +134,14 @@ public class FitsEncoder extends ArrayEncoder {
     private void put(boolean[] b, int start, int length) throws IOException {
         length += start;
         while (start < length) {
-            buf.putByte(byteForBoolean(b[start++]));
+            getBuffer().putByte(byteForBoolean(b[start++]));
         }
     }
 
     /**
      * Puts a boolean array into the conversion buffer, but with no guarantee of flushing the
      * conversion buffer to the underlying output. The caller may put multiple data object into
-     * the conversion buffer before eventually calling {@link Buffer#flush()} to ensure
+     * the conversion buffer before eventually calling {@link ConversionBuffer#flush()} to ensure
      * that everything is written to the output. Note, the this call may flush the contents
      * of the conversion buffer to the output if it needs more conversion space than
      * what is avaiable.
@@ -159,14 +159,14 @@ public class FitsEncoder extends ArrayEncoder {
     private void put(Boolean[] b, int start, int length) throws IOException {
         length += start;
         while (start < length) {
-            buf.putByte(byteForBoolean(b[start++]));
+            getBuffer().putByte(byteForBoolean(b[start++]));
         }
     }
     
     /**
      * Puts a character array into the conversion buffer, but with no guarantee of flushing the
      * conversion buffer to the underlying output. The caller may put multiple data object into
-     * the conversion buffer before eventually calling {@link Buffer#flush()} to ensure
+     * the conversion buffer before eventually calling {@link ConversionBuffer#flush()} to ensure
      * that everything is written to the output. Note, the this call may flush the contents
      * of the conversion buffer to the output if it needs more conversion space than
      * what is avaiable.
@@ -184,11 +184,11 @@ public class FitsEncoder extends ArrayEncoder {
         length += start;
         if (ElementType.CHAR.size() == 1) {
             while (start < length) {
-                buf.putByte((byte) c[start++]);
+                getBuffer().putByte((byte) c[start++]);
             }
         } else {
             while (start < length) {
-                buf.putShort((short) c[start++]);
+                getBuffer().putShort((short) c[start++]);
             }
         }
     }
@@ -196,7 +196,7 @@ public class FitsEncoder extends ArrayEncoder {
     /**
      * Puts a string array into the conversion buffer, but with no guarantee of flushing the
      * conversion buffer to the underlying output. The caller may put multiple data object into
-     * the conversion buffer before eventually calling {@link Buffer#flush()} to ensure
+     * the conversion buffer before eventually calling {@link ConversionBuffer#flush()} to ensure
      * that everything is written to the output. Note, the this call may flush the contents
      * of the conversion buffer to the output if it needs more conversion space than
      * what is avaiable.
@@ -220,7 +220,7 @@ public class FitsEncoder extends ArrayEncoder {
      * Puts a string into the conversion buffer. According to FITS standard, string should
      * be represented by the restricted set of ASCII characters, or 1-byte per character.
      * The caller may put multiple data object into
-     * the conversion buffer before eventually calling {@link Buffer#flush()} to ensure
+     * the conversion buffer before eventually calling {@link ConversionBuffer#flush()} to ensure
      * that everything is written to the output. Note, the this call may flush the contents
      * of the conversion buffer to the output if it needs more conversion space than
      * what is avaiable.
@@ -233,7 +233,7 @@ public class FitsEncoder extends ArrayEncoder {
      */
     void put(String str) throws IOException {
         for (int i = 0; i < str.length(); i++) {
-            buf.putByte((byte) str.charAt(i));
+            getBuffer().putByte((byte) str.charAt(i));
         }
     }
 
@@ -244,7 +244,7 @@ public class FitsEncoder extends ArrayEncoder {
      */
     protected synchronized void write(boolean[] b, int start, int length) throws IOException {
         put(b, start, length);
-        buf.flush();
+        getBuffer().flush();
     }
 
     /**
@@ -256,11 +256,21 @@ public class FitsEncoder extends ArrayEncoder {
     protected synchronized void write(Boolean[] b, int start, int length) throws IOException {
         length += start;
         while (start < length) {
-            buf.putByte(byteForBoolean(b[start++]));
+            getBuffer().putByte(byteForBoolean(b[start++]));
         }
-        buf.flush();
+        getBuffer().flush();
     }
 
+    /**
+     * @deprecated Use {@link #writeByte(int)} or use {@link ConversionBuffer#putByte(byte)} (followed by and eventual
+     * {@link ConversionBuffer#flush()}) instead.
+     */
+    @Deprecated
+    protected void writeUncheckedByte(byte b) {
+        
+    }
+    
+    
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
      */
@@ -268,14 +278,14 @@ public class FitsEncoder extends ArrayEncoder {
     protected synchronized void writeByte(int v) throws IOException {
         write(v);
     }
-
+    
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
      */
     @Deprecated
     protected synchronized  void writeShort(int v) throws IOException {
-        buf.putShort((short) v);
-        buf.flush();
+        getBuffer().putShort((short) v);
+        getBuffer().flush();
     }
 
     /**
@@ -283,8 +293,8 @@ public class FitsEncoder extends ArrayEncoder {
      */
     @Deprecated
     protected synchronized void writeInt(int v) throws IOException {
-        buf.putInt(v);
-        buf.flush();
+        getBuffer().putInt(v);
+        getBuffer().flush();
     }
 
     /**
@@ -292,8 +302,8 @@ public class FitsEncoder extends ArrayEncoder {
      */
     @Deprecated
     protected synchronized void writeLong(long v) throws IOException {
-        buf.putLong(v);
-        buf.flush();
+        getBuffer().putLong(v);
+        getBuffer().flush();
     }
 
     /**
@@ -301,8 +311,8 @@ public class FitsEncoder extends ArrayEncoder {
      */
     @Deprecated
     protected synchronized void writeFloat(float v) throws IOException {
-        buf.putFloat(v);
-        buf.flush();
+        getBuffer().putFloat(v);
+        getBuffer().flush();
     }
 
     /**
@@ -310,8 +320,8 @@ public class FitsEncoder extends ArrayEncoder {
      */
     @Deprecated
     protected synchronized void writeDouble(double v) throws IOException {
-        buf.putDouble(v);
-        buf.flush();
+        getBuffer().putDouble(v);
+        getBuffer().flush();
     }
 
     /**
@@ -326,7 +336,7 @@ public class FitsEncoder extends ArrayEncoder {
      */
     protected synchronized void writeBytes(String s) throws IOException {
         put(s);
-        buf.flush();
+        getBuffer().flush();
     }
 
     /**
@@ -343,10 +353,10 @@ public class FitsEncoder extends ArrayEncoder {
             writeBytes(s);
         } else {
             for (int i = 0; i < s.length(); i++) {
-                buf.putShort((short) s.charAt(i));
+                getBuffer().putShort((short) s.charAt(i));
             }
         }
-        buf.flush();
+        getBuffer().flush();
     }
 
     /**
@@ -361,47 +371,47 @@ public class FitsEncoder extends ArrayEncoder {
      */
     protected synchronized void write(char[] c, int start, int length) throws IOException {
         put(c, start, length);
-        buf.flush();
+        getBuffer().flush();
     }
 
     /**
      * See {@link ArrayDataOutput#write(short[], int, int)} for a contract of this method.
      */
     protected synchronized void write(short[] s, int start, int length) throws IOException {
-        buf.put(s, start, length);
-        buf.flush();
+        getBuffer().put(s, start, length);
+        getBuffer().flush();
     }
 
     /**
      * See {@link ArrayDataOutput#write(int[], int, int)} for a contract of this method.
      */
     protected synchronized void write(int[] i, int start, int length) throws IOException {
-        buf.put(i, start, length);
-        buf.flush();
+        getBuffer().put(i, start, length);
+        getBuffer().flush();
     }
 
     /**
      * See {@link ArrayDataOutput#write(long[], int, int)} for a contract of this method.
      */
     protected synchronized void write(long[] l, int start, int length) throws IOException {
-        buf.put(l, start, length);
-        buf.flush();
+        getBuffer().put(l, start, length);
+        getBuffer().flush();
     }
 
     /**
      * See {@link ArrayDataOutput#write(float[], int, int)} for a contract of this method.
      */
     protected synchronized void write(float[] f, int start, int length) throws IOException {
-        buf.put(f, start, length);
-        buf.flush();
+        getBuffer().put(f, start, length);
+        getBuffer().flush();
     }
 
     /**
      * See {@link ArrayDataOutput#write(double[], int, int)} for a contract of this method.
      */
     protected synchronized void write(double[] d, int start, int length) throws IOException {
-        buf.put(d, start, length);
-        buf.flush();
+        getBuffer().put(d, start, length);
+        getBuffer().flush();
     }
 
     /**
@@ -417,7 +427,7 @@ public class FitsEncoder extends ArrayEncoder {
     @Override
     public synchronized void writeArray(Object o) throws IOException {
         putArray(o);
-        buf.flush();
+        getBuffer().flush();
     }
 
     
@@ -430,7 +440,7 @@ public class FitsEncoder extends ArrayEncoder {
      * </p>
      * <p>
      * The caller may put multiple data object into
-     * the conversion buffer before eventually calling {@link Buffer#flush()} to ensure
+     * the conversion buffer before eventually calling {@link ConversionBuffer#flush()} to ensure
      * that everything is written to the output. Note, the this call may flush the contents
      * of the conversion buffer to the output if it needs more conversion space than
      * what is avaiable.
@@ -461,22 +471,22 @@ public class FitsEncoder extends ArrayEncoder {
             // Bytes can be written directly to the stream, which is fastest
             // However, before that we need to flush any pending output in the
             // conversion buffer...
-            buf.flush();
+            getBuffer().flush();
             write((byte[]) o, 0, length);
         } else if (o instanceof boolean[]) {
             put((boolean[]) o, 0, length);
         } else if (o instanceof char[]) {
             put((char[]) o, 0, length);
         } else if (o instanceof short[]) {
-            buf.put((short[]) o, 0, length);
+            getBuffer().put((short[]) o, 0, length);
         } else if (o instanceof int[]) {
-            buf.put((int[]) o, 0, length);
+            getBuffer().put((int[]) o, 0, length);
         } else if (o instanceof float[]) {
-            buf.put((float[]) o, 0, length);
+            getBuffer().put((float[]) o, 0, length);
         } else if (o instanceof long[]) {
-            buf.put((long[]) o, 0, length);
+            getBuffer().put((long[]) o, 0, length);
         } else if (o instanceof double[]) {
-            buf.put((double[]) o, 0, length);
+            getBuffer().put((double[]) o, 0, length);
         } else if (o instanceof Object[]) {
             if (o instanceof String[]) {
                 put((String[]) o, 0, length);

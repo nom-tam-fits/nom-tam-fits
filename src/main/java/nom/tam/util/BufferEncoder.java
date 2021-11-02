@@ -48,6 +48,9 @@ public class BufferEncoder extends FitsEncoder {
         super(new Writer(p));
     }
     
+
+    
+    
     private static class Writer implements OutputWriter {
         private BufferPointer p;
         

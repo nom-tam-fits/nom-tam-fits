@@ -1384,7 +1384,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      */
     private static void checkType(IFitsHeader key, VALUE type) {
         if (key.valueType() != VALUE.ANY && key.valueType() != type) {
-            new IllegalArgumentException("[" + key + "] created with unexpected value type.").printStackTrace();
+            LOG.log(Level.WARNING, "[" + key + "] created with unexpected value type.", new IllegalArgumentException("Expected " + type + ", got " + key.valueType()));
         }
     }
     
