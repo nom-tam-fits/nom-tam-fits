@@ -59,9 +59,9 @@ import nom.tam.fits.compress.CloseIS;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.AsciiFuncs;
-import nom.tam.util.FitsInputStream;
-import nom.tam.util.FitsOutputStream;
-import nom.tam.util.FitsFile;
+import nom.tam.util.BufferedDataInputStream;
+import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.BufferedFile;
 import nom.tam.util.FitsIO;
 import nom.tam.util.SafeClose;
 import nom.tam.util.TestArrayFuncs;
@@ -239,7 +239,7 @@ public class BufferedFileTest {
         System.out.println("New libraries: nom.tam.util.BufferedFile");
         System.out.println("               Using tiledImageOperation I/O methods.");
 
-        FitsFile f = new FitsFile(filename, "rw");
+        BufferedFile f = new BufferedFile(filename, "rw");
 
         resetTime();
         for (int i = 0; i < iter; i += 1) {
@@ -351,7 +351,7 @@ public class BufferedFileTest {
             assertFalse("Int error at " + i, in[i] != in2[i]);
             assertFalse("Long error at " + i, ln[i] != ln2[i]);
             assertFalse("Short error at " + i, sh[i] != sh2[i]);
-            assertFalse("Char error at " + i, ch[i] != ch2[i]);
+            assertFalse("Char error at " + i + ":" + (short) ch[i] + "|" + (short) ch2[i], ch[i] != ch2[i]);
             assertFalse("Byte error at " + i, by[i] != by2[i]);
             assertFalse("Bool error at " + i, bl[i] != bl2[i]);
         }
@@ -406,7 +406,7 @@ public class BufferedFileTest {
         System.out.println("               Using tiledImageOperation I/O methods");
 
         {
-            FitsOutputStream f = new FitsOutputStream(new FileOutputStream(filename));
+            BufferedDataOutputStream f = new BufferedDataOutputStream(new FileOutputStream(filename));
 
             resetTime();
             for (int i = 0; i < iter; i += 1) {
@@ -457,7 +457,7 @@ public class BufferedFileTest {
         }
 
         {
-            FitsInputStream f = new FitsInputStream(new FileInputStream(filename));
+            BufferedDataInputStream f = new BufferedDataInputStream(new FileInputStream(filename));
 
             resetTime();
             for (int i = 0; i < iter; i += 1) {
@@ -560,10 +560,10 @@ public class BufferedFileTest {
 
         System.out.println("New libraries:  nom.tam.BufferedDataXXputStream");
         System.out.println("                Using non-tiledImageOperation I/O");
-        FitsOutputStream f = new FitsOutputStream(new FileOutputStream(filename), 32768);
+        BufferedDataOutputStream f = new BufferedDataOutputStream(new FileOutputStream(filename), 32768);
         resetTime();
         int dim = in.length;
-        for (int j = 0; j < iter; j ++) {
+        for (int j = 0; j < iter; j += 1) {
             for (int i = 0; i < dim; i += 1) {
                 f.writeInt(in[i]);
             }
@@ -572,9 +572,9 @@ public class BufferedFileTest {
         f.close();
         System.out.println("  BDS Int write: " + 4 * dim * iter / (1000 * deltaTime()));
 
-        FitsInputStream is = new FitsInputStream(new BufferedInputStream(new FileInputStream(filename), 32768));
+        BufferedDataInputStream is = new BufferedDataInputStream(new BufferedInputStream(new FileInputStream(filename), 32768));
         resetTime();
-        for (int j = 0; j < iter; j ++) {
+        for (int j = 0; j < iter; j += 1) {
             for (int i = 0; i < dim; i += 1) {
                 in2[i] = is.readInt();
             }
@@ -594,19 +594,16 @@ public class BufferedFileTest {
         FitsFactory.setDefaults();
     }
 
-    @Test
-    public void datailTestUnicode() throws Exception {
-        FitsFactory.setUseUnicodeChars(true);
+
+    public void datailTest() throws Exception {
         doTest("target/bufferedFile.test", 1000, 1000);
     }
 
     @Test
-    public void datailTest2Unicode() throws Exception {
-        FitsFactory.setUseUnicodeChars(true);
+    public void datailTest2() throws Exception {
         doTest("target/bufferedFile2.test", 2000, 4000);
     }
     
-
     /**
      * Usage: java nom.tam.util.test.BufferedFileTester file [dim [iter
      * [flags]]] where file is the file to be read and written. dim is the
@@ -768,7 +765,7 @@ public class BufferedFileTest {
             }
             f.flush();
             f.close();
-            System.out.println("  DOS Int write: " + 4 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  DIS Int write: " + 4 * dim * iter / (1000 * deltaTime()));
 
             is = new DataInputStream(new BufferedInputStream(new FileInputStream(filename), 32768));
             resetTime();
@@ -791,7 +788,7 @@ public class BufferedFileTest {
                 }
                 f.flush();
                 f.close();
-                System.out.println("  DOS Sync Int write: " + 4 * dim * iter / (1000 * deltaTime()));
+                System.out.println("  DIS Int write: " + 4 * dim * iter / (1000 * deltaTime()));
 
                 is = new DataInputStream(new BufferedInputStream(new FileInputStream(filename), 32768));
                 resetTime();
@@ -802,7 +799,7 @@ public class BufferedFileTest {
                 }
                 is.close();
             }
-            System.out.println("  DIS Sync Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
+            System.out.println("  DIS Int read:  " + 4 * dim * iter / (1000 * deltaTime()));
         } finally {
             SafeClose.close(f);
             SafeClose.close(is);
@@ -861,7 +858,7 @@ public class BufferedFileTest {
         long[][][] tl0 = new long[1][1][1];
         long[][][] tl1 = new long[1][1][0];
 
-        FitsFile bf = new FitsFile("jtest.fil", "rw", 64);
+        BufferedFile bf = new BufferedFile("jtest.fil", "rw", 64);
 
         bf.writeArray(td);
         bf.writeArray(tf);
@@ -876,7 +873,7 @@ public class BufferedFileTest {
 
         bf.close();
         // extra small buffer to get into special cases
-        bf = new FitsFile("jtest.fil", "r", 64);
+        bf = new BufferedFile("jtest.fil", "r", 64);
 
         boolean thrown = false;
 
@@ -893,7 +890,7 @@ public class BufferedFileTest {
         }
 
         // extra small buffer to get into special cases
-        bf = new FitsFile("jtest.fil", "r", 64);
+        bf = new BufferedFile("jtest.fil", "r", 64);
 
         testArray(bf, "double", td);
         testArray(bf, "float", tf);
@@ -952,7 +949,7 @@ public class BufferedFileTest {
         long[][][] tl0 = new long[1][1][1];
         long[][][] tl1 = new long[1][1][0];
 
-        FitsOutputStream bf = new FitsOutputStream(new FileOutputStream("jtest.fil"));
+        BufferedDataOutputStream bf = new BufferedDataOutputStream(new FileOutputStream("jtest.fil"));
 
         bf.writeArray(td);
         bf.writeArray(tf);
@@ -981,7 +978,7 @@ public class BufferedFileTest {
                 throw new IOException("not supported");
             }
         };
-        FitsInputStream bi = new FitsInputStream(fileInput);
+        BufferedDataInputStream bi = new BufferedDataInputStream(fileInput);
 
         testArray(bi, "sdouble", td);
         testArray(bi, "sfloat", tf);
@@ -999,7 +996,7 @@ public class BufferedFileTest {
 
     @Test
     public void testSomePrimitives() throws Exception {
-        FitsFile bf = new FitsFile("target/bufferedFilePrim.test", "rw");
+        BufferedFile bf = new BufferedFile("target/bufferedFilePrim.test", "rw");
         bf.writeByte(120);
         bf.writeByte(255);
         String[] testStrings = {
@@ -1020,7 +1017,7 @@ public class BufferedFileTest {
         
         bf.close();
 
-        bf = new FitsFile("target/bufferedFilePrim.test");
+        bf = new BufferedFile("target/bufferedFilePrim.test");
         assertEquals(120, bf.read());
         assertEquals(255, bf.readUnsignedByte());
 
@@ -1092,33 +1089,31 @@ public class BufferedFileTest {
 
     @Test
     public void testNullArray() throws IOException {
-        FitsInputStream bf = new FitsInputStream(new ByteArrayInputStream(new byte[10]));
+        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
         assertEquals(bf.readLArray(null), 0L);
     }
 
     @Test(expected = IOException.class)
     public void testNoArray() throws IOException {
-        FitsInputStream bf = new FitsInputStream(new ByteArrayInputStream(new byte[10]));
-        bf.readLArray(0);
+        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
+        assertEquals(bf.readLArray(Integer.valueOf(0)), 0L);
     }
 
     @Test(expected = EOFException.class)
     public void testSmallArray() throws IOException {
-        FitsInputStream bf = new FitsInputStream(new ByteArrayInputStream(new byte[10]));
-        assertEquals(0L, bf.readLArray(new byte[11]));
+        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
+        assertEquals(bf.readLArray(new byte[11]), 0L);
     }
 
-    // AK: The exception for a bad argument should be IndexOutOfBoundsException, not an IOException
-    // There is no IO involved at all...
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void testFullyOutside() throws Exception {
-        FitsInputStream bf = new FitsInputStream(new ByteArrayInputStream(new byte[10]));
+    @Test(expected = IOException.class)
+    public void testFullyOutside() throws IOException {
+        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
         bf.readFully(new byte[5], 10, 5);
     }
 
     @Test(expected = EOFException.class)
     public void testFullyEOF() throws IOException {
-        FitsInputStream bf = new FitsInputStream(new ByteArrayInputStream(new byte[10]));
+        BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
         bf.readFully(new byte[12], 0, 12);
     }
 }

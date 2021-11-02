@@ -41,7 +41,7 @@ class DoubleType extends ElementType<DoubleBuffer> {
     private static final int SIZE = 8;
 
     protected DoubleType() {
-        super(SIZE, false, double.class, Double.class, DoubleBuffer.class, 'D', Bitpix.BITPIX_DOUBLE);
+        super(SIZE, false, double.class, Double.class, DoubleBuffer.class, 'D', Bitpix.VALUE_FOR_DOUBLE);
     }
 
     @Override

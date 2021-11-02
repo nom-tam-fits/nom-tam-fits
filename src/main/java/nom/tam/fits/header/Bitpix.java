@@ -41,7 +41,7 @@ import nom.tam.util.type.ElementType;
 
 /**
  * Standard BITPIX values and associated functions. Since the FITS BITPIX keyword has 
- * only a handful of legal values, an <code>enum</code> provides ideal safe
+ * only a handful of legal values, an <code>enum</code> provides ideal type-safe
  * representation. It also allows to interface the value for the type of data
  * it represents in a natural way.
  * 
@@ -63,22 +63,22 @@ public enum Bitpix {
     private static final int BITS_TO_BYTES_SHIFT = 3;
     
     /** BITPIX value for <code>byte</code> type data */
-    public static final int BITPIX_BYTE = 8;
+    public static final int VALUE_FOR_BYTE = 8;
     
     /** BITPIX value for <code>short</code> type data */
-    public static final int BITPIX_SHORT = 16;
+    public static final int VALUE_FOR_SHORT = 16;
     
     /** BITPIX value for <code>int</code> type data */
-    public static final int BITPIX_INT = 32;
+    public static final int VALUE_FOR_INT = 32;
     
     /** BITPIX value for <code>long</code> type data */
-    public static final int BITPIX_LONG = 64;
+    public static final int VALUE_FOR_LONG = 64;
     
     /** BITPIX value for <code>float</code> type data */
-    public static final int BITPIX_FLOAT = -32;
+    public static final int VALUE_FOR_FLOAT = -32;
     
     /** BITPIX value for <code>double</code> type data */
-    public static final int BITPIX_DOUBLE = -64;
+    public static final int VALUE_FOR_DOUBLE = -64;
     
     
     /** the number subclass represented this BITPIX instance */
@@ -146,14 +146,15 @@ public enum Bitpix {
     }
     
     /**
-     * Returns the FITS data letter ID for this BITPIX instance, such as the letter ID
-     * used by the TTYPE<i>n</i> keywords for the same type of data.
+     * Returns the Java letter ID for this BITPIX instance, such as the letter ID
+     * used in the Java array representation of that class. For example, an <code>int[]</code>
+     * array has class <code>I[</code>, so the letter ID is <code>I</code>.
      * 
-     * @return  The FITS data letter ID for this BITPIX instance. 
+     * @return  The Java letter ID for arrays corresponding to this BITPIX instance. 
      * 
-     * @see Bitpix#forDataID(char)
+     * @see Bitpix#forArrayID(char)
      */
-    public final char getDataID() {
+    public final char getArrayID() {
         return elementType.type();
     }
     
@@ -345,11 +346,11 @@ public enum Bitpix {
             int fixed = 0;
 
             if (ival < 0) {
-                fixed = ival < BITPIX_FLOAT ? BITPIX_DOUBLE : BITPIX_FLOAT;
-            } else if (ival < BITPIX_BYTE) {
-                fixed = BITPIX_BYTE;
-            } else if (ival > BITPIX_LONG) {
-                fixed = BITPIX_LONG;
+                fixed = ival < VALUE_FOR_FLOAT ? VALUE_FOR_DOUBLE : VALUE_FOR_FLOAT;
+            } else if (ival < VALUE_FOR_BYTE) {
+                fixed = VALUE_FOR_BYTE;
+            } else if (ival > VALUE_FOR_LONG) {
+                fixed = VALUE_FOR_LONG;
             } else if (ival > Integer.highestOneBit(ival)) {
                 fixed = (Integer.highestOneBit(ival) << 1);
             }
@@ -361,17 +362,17 @@ public enum Bitpix {
         }
         
         switch (ival) {
-        case BITPIX_BYTE: 
+        case VALUE_FOR_BYTE: 
             return BYTE;
-        case BITPIX_SHORT: 
+        case VALUE_FOR_SHORT: 
             return SHORT;
-        case BITPIX_INT: 
+        case VALUE_FOR_INT: 
             return INTEGER;
-        case BITPIX_LONG: 
+        case VALUE_FOR_LONG: 
             return LONG;
-        case BITPIX_FLOAT: 
+        case VALUE_FOR_FLOAT: 
             return FLOAT;
-        case BITPIX_DOUBLE: 
+        case VALUE_FOR_DOUBLE: 
             return DOUBLE;
         default:
             throw new FitsException("Invalid BITPIX value:" + ival);
@@ -379,16 +380,18 @@ public enum Bitpix {
     }
     
     /**
-     * Returns the standard BITPIX object for the given data ID. The data ID is the same
-     * letter code as FITS uses for identifying data types for table columns using the TTYPE<i>n</i>
-     * keyword, such as 'I' for 32-bit integer, 'D' for <code>double</code> etc.
+     * Returns the standard BITPIX object for the given Java array ID. The array ID is the same
+     * letter code as Java uses for identifying ptrimitive array types. For example a Java 
+     * array of <code>long[][]</code> has a class name of <code>J[[</code>, so so the array ID for 
+     * <code>long</code> arrays is <code>J</code>.
      * 
-     * @param id        The standard FITS letter ID for a data type, same as used for TTYPE<i>n</i> keywords.
+     * @param id        The Java letter ID for arrays of the underlying primitive type. E.g. <code>J</code>
+     *                  for <code>long</code>.
      * @return          The standard BITPIX enum corresponding to the data type.
      * @throws FitsException    if the data type is unknown or does not have a BITPIX ewquivalent.
      * 
      */
-    public static Bitpix forDataID(char id) throws FitsException {
+    public static Bitpix forArrayID(char id) throws FitsException {
         switch (id) {
         case 'B': 
             return BYTE;

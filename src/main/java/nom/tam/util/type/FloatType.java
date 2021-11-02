@@ -41,7 +41,7 @@ class FloatType extends ElementType<FloatBuffer> {
     private static final int SIZE = 4;
 
     protected FloatType() {
-        super(SIZE, false, float.class, Float.class, FloatBuffer.class, 'F', Bitpix.BITPIX_FLOAT);
+        super(SIZE, false, float.class, Float.class, FloatBuffer.class, 'F', Bitpix.VALUE_FOR_FLOAT);
     }
 
     @Override

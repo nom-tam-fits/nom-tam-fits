@@ -41,7 +41,7 @@ class IntType extends ElementType<IntBuffer> {
     private static final int SIZE = 4;
 
     protected IntType() {
-        super(SIZE, false, int.class, Integer.class, IntBuffer.class, 'I', Bitpix.BITPIX_INT);
+        super(SIZE, false, int.class, Integer.class, IntBuffer.class, 'I', Bitpix.VALUE_FOR_INT);
     }
 
     @Override

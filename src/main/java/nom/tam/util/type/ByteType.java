@@ -39,7 +39,7 @@ class ByteType extends ElementType<ByteBuffer> {
 
 
     protected ByteType() {
-        super(1, false, byte.class, Byte.class, ByteBuffer.class, 'B', Bitpix.BITPIX_BYTE);
+        super(1, false, byte.class, Byte.class, ByteBuffer.class, 'B', Bitpix.VALUE_FOR_BYTE);
     }
 
     @Override

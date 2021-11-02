@@ -295,7 +295,7 @@ public class ImageData extends Data {
         // if this is neither a primary header nor an image extension,
         // make it a primary header
         head.setSimple(true);
-        head.setBitpix(Bitpix.forDataID(classname.charAt(dimens.length)));
+        head.setBitpix(Bitpix.forArrayID(classname.charAt(dimens.length)));
         head.setNaxes(dimens.length);
 
         for (int i = 1; i <= dimens.length; i += 1) {
