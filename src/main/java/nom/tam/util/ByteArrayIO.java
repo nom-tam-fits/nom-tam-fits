@@ -44,24 +44,45 @@ import java.util.Arrays;
  * @since 1.16
  */
 public class ByteArrayIO implements ReadWriteAccess {
+    
+    /** Mask for 1-byte */
     private static final int BYTE_MASK = 0xFF;
     
+    /** The underlying buffer */
     private byte[] buf;
+    
+    /** Whether the buffer is allowed to grow as needed to contain more data */
     private boolean isGrowable;
     
+    /** The current pointer position, for the next read or write in the buffer */
     private int pos;
+    
+    /** The current end of the buffer, that is the total number of bytes available for reading from the buffer */
     private int end;
    
-  
-    public ByteArrayIO(byte[] buffer, boolean growable) {
+    /**
+     * Instantiates a new byte array with an IO interface, with a fixed-size buffer using the
+     * specified array as its backing storage.
+     * 
+     * @param buffer        the fixed buffer.
+     */
+    public ByteArrayIO(byte[] buffer) {
         this.buf = buffer;
-        this.end = buffer.length;
-        this.isGrowable = growable;
+        this.end = 0;
+        this.isGrowable = false;
     }
     
-    public ByteArrayIO(int initialCapacity) {
-        if (initialCapacity < 0) {
-            throw new IllegalArgumentException("Illegal size for FITS heap:" + initialCapacity);
+    /**
+     * Instantiates a new byte array with an IO interface, with a growable buffer initialized
+     * to the specific size.
+     * 
+     * @param initialCapacity       the number of bytes to contain in the buffer.
+     * @throws IllegalArgumentException
+     *                              if the initial capacity is 0 or negative
+     */
+    public ByteArrayIO(int initialCapacity) throws IllegalArgumentException {
+        if (initialCapacity <= 0) {
+            throw new IllegalArgumentException("Illegal buffer size:" + initialCapacity);
         }
         
         this.buf = new byte[initialCapacity];
@@ -69,56 +90,114 @@ public class ByteArrayIO implements ReadWriteAccess {
         this.isGrowable = true;
     }
     
-    public ByteArrayIO copy() {
-        ByteArrayIO copy = new ByteArrayIO(Arrays.copyOf(buf, buf.length), isGrowable);
-        copy.pos = pos;
-        copy.end = end;
+    /**
+     * Returns a copy of this byte array with an IO interface, including a deep copy of
+     * the buffered data.
+     * 
+     * @return      a deep copy of this byte array with an IO interface instance.
+     */
+    public synchronized ByteArrayIO copy() {
+        ByteArrayIO copy = new ByteArrayIO(Arrays.copyOf(buf, buf.length));
+        copy.isGrowable = this.isGrowable;
+        copy.pos = this.pos;
+        copy.end = this.end;
         return copy;
     }
     
-    public byte[] getBuffer() {
+    /**
+     * Returns the underlying byte array, which is the backing array of this buffer.
+     * 
+     * @return  the backing array of this buffer.
+     */
+    public synchronized byte[] getBuffer() {
         return buf;
     }
     
-    public final int capacity() {
+    /**
+     * Returns the current capacity of this buffer, that is the total number of
+     * bytes that may be written into the current backing buffer.
+     * 
+     * @return  the current size of the backing array.
+     */
+    public final synchronized int capacity() {
         return buf.length;
     }
     
     @Override
-    public final long length() {
+    public final synchronized long length() {
         return end;
     }
     
-    public final int getRemaining() {
+    /**
+     * Returns the number of bytes available for reading from the current position.
+     * 
+     * @return  the number of bytes that can be read from this buffer from the current position.
+     */
+    public final synchronized int getRemaining() {
+        if (pos >= end) {
+            return 0;
+        }
         return end - pos;
     }
     
     @Override
-    public final long position() {
+    public final synchronized long position() {
         return pos;
     }
     
     @Override
-    public void position(long offset) throws IOException { 
+    public synchronized void position(long offset) throws IOException { 
         if (offset < 0 || offset > buf.length) {
             throw new EOFException("Position " + offset + " not in buffer of size " + buf.length);
-        }
-        
-        if (offset > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Long offsets not supported.");
-        }
-            
+        }  
         pos = (int) offset;
     }
     
-    public void setLength(int length) {
+    /**
+     * Changes the length of this buffer. The total number of bytes available
+     * from reading from this buffer will be that of the new length. If the buffer
+     * is truncated and its pointer is positioned beyond the new size, then the pointer
+     * is changed to point to the new buffer end. If the buffer is enlarged beyond
+     * it current capacity, its capacity will grow as necessary provided the
+     * buffer is growable. Otherwise, an EOFException is thrown if the new length
+     * is beyond the fixed buffer capacity. If the new length is larger than the old 
+     * one, the added buffer segment may have undefined contents.
+     * 
+     * @param length        The buffer length, that is number of bytes available for
+     *                      reading.
+     * @throws IllegalArgumentException 
+     *                      if the length is negative or if the new new length 
+     *                      exceeds the capacity of a fixed-type buffer.
+     *                      
+     * @see #length()
+     * @see #capacity()
+     */
+    public synchronized void setLength(int length) throws IllegalArgumentException {
+        if (length < 0) {
+            throw new IllegalArgumentException("Buffer set to negative length: " + length);
+        }
+        
         if (length > capacity()) {
+            if (!isGrowable) {
+                throw new IllegalArgumentException("the new length " + length + " is larger than the fixed capacity " + capacity());
+            }
             grow(length - capacity());
         }
         end = length;
+        
+        // If the pointer is beyond the new size, move it back to the new end...
+        if (pos > end) {
+            pos = end;
+        }
     }
     
-    public void grow(int need) {
+    /**
+     * Grows the buffer by at least the number of specified bytes. A new buffer is
+     * allocated, and the contents of the previous buffer are copied over.
+     * 
+     * @param need      the minimum number of extra bytes needed beyond the current capacity. 
+     */
+    private synchronized void grow(int need) {
         int size = capacity() + need;
         int below = Integer.highestOneBit(size);
         if (below != size) {
@@ -130,12 +209,12 @@ public class ByteArrayIO implements ReadWriteAccess {
     }
     
     @Override
-    public void write(int b) throws IOException {
+    public final synchronized void write(int b) throws IOException {
         if (buf.length - pos < 1) {
             if (isGrowable) {
                 grow(1);
             } else {
-                throw new EOFException();
+                throw new EOFException("buffer is full (size=" + length() + ")");
             }
         }
         buf[pos++] = (byte) b;
@@ -145,7 +224,7 @@ public class ByteArrayIO implements ReadWriteAccess {
     }
     
     @Override
-    public void write(byte[] b, int from, int length) throws IOException {
+    public final synchronized void write(byte[] b, int from, int length) throws IOException {
         int l = Math.min(length, buf.length - pos);
         
         if (l < length) {
@@ -162,25 +241,31 @@ public class ByteArrayIO implements ReadWriteAccess {
         }
         
         if (l < length) {
-            throw new EOFException();
+            throw new EOFException("Incomplete write of " + l + " of " + length + " bytes in buffer of size " + length());
         }
     }
 
     @Override
-    public int read() throws IOException {
-        if (getRemaining() < 0) {
-            throw new EOFException("Reached end at " + end);
+    public final synchronized int read() throws IOException {
+        if (getRemaining() <= 0) {
+            return -1;
         }
         return buf[pos++] & BYTE_MASK;
     }
 
     @Override
-    public int read(byte[] b, int from, int length) {
-        if (getRemaining() < 0) {
+    public final synchronized int read(byte[] b, int from, int length) {
+        if (length <= 0) {
+            return 0;
+        }
+        
+        int remaining = getRemaining();
+        
+        if (remaining <= 0) {
             return -1;
         }
         
-        int n = Math.min(getRemaining(), length);
+        int n = Math.min(remaining, length);
         System.arraycopy(buf, pos, b, from, n);
         pos += n;
         

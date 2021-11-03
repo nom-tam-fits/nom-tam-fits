@@ -1,5 +1,7 @@
 package nom.tam.fits;
 
+
+
 /*
  * #%L
  * nom.tam FITS library
@@ -64,8 +66,6 @@ public class FitsHeap implements FitsElement {
     /** conversion from FITS binary representation to Java arrays */
     private FitsDecoder decoder;
     
-    
-    
     /** 
      * Construct a new uninitialized FITS heap object. 
      */
@@ -73,16 +73,21 @@ public class FitsHeap implements FitsElement {
     }
     
     /**
-     * Create a heap of a given size.
+     * Creates a heap of a given initial size. The new heap is initialized with 0's, and
+     * up to the specified number of bytes are immediately available for reading
+     * (as zeroes). The heap can grow as needed if more data is written into it.
+     * 
+     * @throws IllegalArgumentException 
+     *                  if the size argument is negative.
+     * 
      */
     FitsHeap(int size) { 
-        ByteArrayIO data = new ByteArrayIO(Math.max(size, MIN_HEAP_CAPACITY));
-        
         if (size < 0) {
-            throw new IllegalArgumentException("Illegal size for FITS heap:" + size);
+            throw new IllegalArgumentException("Illegal size for FITS heap: " + size);
         }
-       
-        data.setLength(Math.max(size, 0));
+        
+        ByteArrayIO data = new ByteArrayIO(Math.max(size, MIN_HEAP_CAPACITY));
+        data.setLength(Math.max(0, size));
         setData(data);
         encoder = new FitsEncoder(store);
         decoder = new FitsDecoder(store);
@@ -112,10 +117,11 @@ public class FitsHeap implements FitsElement {
     }
 
     /**
-     * Get data from the heap.
+     * Gets data for a Java array from the heap. The array may be a multi-dimensional or a 
+     * heterogenetous array of arrays.
      * 
      * @param offset
-     *            The offset at which the data begins.
+     *            the heap byte offset at which the data begins.
      * @param array
      *            The array to be extracted.
      * @throws FitsException
@@ -167,9 +173,6 @@ public class FitsHeap implements FitsElement {
         return oldSize;
     }
     
-    /**
-     * Read the heap
-     */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     @Override
     public void read(ArrayDataInput str) throws FitsException {
@@ -200,15 +203,14 @@ public class FitsHeap implements FitsElement {
     }
 
     /**
-     * @return the size of the Heap
+     * Returns the current heap size.
+     * 
+     * @return      the size of the heap in bytes
      */
     public int size() {
         return (int) store.length();
     }
 
-    /**
-     * Write the heap
-     */
     @Override
     public void write(ArrayDataOutput str) throws FitsException {
         try {
