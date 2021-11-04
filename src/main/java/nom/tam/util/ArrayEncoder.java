@@ -54,7 +54,7 @@ public abstract class ArrayEncoder {
     private OutputWriter out;
 
     private OutputBuffer buf;
-    
+
     protected ArrayEncoder() {
         buf = new OutputBuffer(BUFFER_SIZE);
     }
@@ -63,7 +63,7 @@ public abstract class ArrayEncoder {
         this();
         setWriter(o);
     }
-    
+
     protected void setWriter(OutputWriter o) {
         this.out = o;
     }
@@ -78,24 +78,25 @@ public abstract class ArrayEncoder {
     protected OutputBuffer getOutputBuffer() {
         return buf;
     }
-  
 
     /**
-     * Makes sure that there is room in the conversion buffer for an
-     * upcoming element conversion, and flushes the buffer as necessary to
-     * make room. Subclass implementations should call this method before
-     * attempting a conversion operation.
+     * Makes sure that there is room in the conversion buffer for an upcoming
+     * element conversion, and flushes the buffer as necessary to make room.
+     * Subclass implementations should call this method before attempting a
+     * conversion operation.
      * 
      * @param bytes
      *            the size of an element we will want to convert. It cannot
      *            exceed the size of the conversion buffer.
      * @throws IOException
-     *             if the conversion buffer could not be flushed to the
-     *             output to make room for the new conversion.
+     *             if the conversion buffer could not be flushed to the output
+     *             to make room for the new conversion.
      */
     void need(int bytes) throws IOException {
-        // TODO Once the deprecated {@link BufferEncoder} is retired, this should become
-        // a private method of OutputBuffer, with leading 'buf.' references stripped.
+        // TODO Once the deprecated {@link BufferEncoder} is retired, this
+        // should become
+        // a private method of OutputBuffer, with leading 'buf.' references
+        // stripped.
         if (buf.buffer.remaining() < bytes) {
             buf.flush();
         }
@@ -114,7 +115,7 @@ public abstract class ArrayEncoder {
             out.write(b, start, length);
         }
     }
-    
+
     /**
      * Writes the contents of a Java array to the output translating the data to
      * the required binary representation. The argument may be any generic hava
@@ -181,7 +182,7 @@ public abstract class ArrayEncoder {
             this.data = new byte[size];
             buffer = ByteBuffer.wrap(data);
         }
-        
+
         /**
          * Sets the byte order of the binary representation to which data is
          * encoded.
@@ -206,8 +207,7 @@ public abstract class ArrayEncoder {
         protected ByteOrder byteOrder() {
             return buffer.order();
         }
-        
-        
+
         /**
          * Flushes the contents of the conversion buffer to the underlying
          * output.
@@ -220,15 +220,6 @@ public abstract class ArrayEncoder {
             int n = buffer.position();
             out.write(data, 0, n);
             buffer.rewind();
-        }
-        
-        /**
-         * @deprecated Use {@link #writeByte(int)} or use {@link OutputBuffer#putByte(byte)} (followed by and eventual
-         * {@link OutputBuffer#flush()}) instead.
-         */
-        @Deprecated
-        protected void putUnchecked(byte b) {
-            buffer.put(b);
         }
 
         /**

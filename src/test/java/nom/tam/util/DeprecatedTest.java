@@ -32,6 +32,8 @@ package nom.tam.util;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,6 +42,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
+
+import nom.tam.fits.Header;
 
 @SuppressWarnings("deprecation")
 public class DeprecatedTest {
@@ -178,6 +182,44 @@ public class DeprecatedTest {
             }
         };
         assertEquals(-1, bd.read());
+    }
+
+    @Test
+    public void testBDWriteByte() throws Exception {
+        final byte[] B = new byte[1];
+        
+        BufferEncoder be = new BufferEncoder(new BufferPointer()) {
+            @Override
+            public void write(byte[] b, int off, int len) throws IOException {
+                B[0] = b[0];
+            }
+        };
+        be.write(1);
+        assertEquals(1, B[0]);
+    }
+    
+    @Test(expected = IOException.class)
+    public void testReadInvalidArray() throws Exception {
+        BufferDecoder bd = new BufferDecoder(new BufferPointer()) {
+        };
+        bd.readLArray(new Header());
+    }
+    
+    @Test
+    public void testWhiteSpace() throws Exception {
+        assertTrue("' '", AsciiFuncs.isWhitespace(' '));
+        assertTrue("'\\t'", AsciiFuncs.isWhitespace('\t'));
+        assertTrue("'\\n'", AsciiFuncs.isWhitespace('\n'));
+        assertFalse("'A'", AsciiFuncs.isWhitespace('A'));
+        assertFalse("'Z'", AsciiFuncs.isWhitespace('Z'));
+        assertFalse("'0'", AsciiFuncs.isWhitespace('0'));
+        assertFalse("'9'", AsciiFuncs.isWhitespace('9'));
+        assertFalse("'+'", AsciiFuncs.isWhitespace('+'));
+        assertFalse("'-'", AsciiFuncs.isWhitespace('-'));
+        assertFalse("'.'", AsciiFuncs.isWhitespace('.'));
+        assertFalse("';'", AsciiFuncs.isWhitespace(';'));
+        assertFalse("'#'", AsciiFuncs.isWhitespace('#'));
+        assertFalse("'$'", AsciiFuncs.isWhitespace('$'));
     }
     
 }

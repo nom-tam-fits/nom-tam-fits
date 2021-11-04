@@ -166,6 +166,7 @@ public class BufferedFileIOTest {
         assertEquals("beginning", 0, b.getFilePointer());
     }
     
+    @Test
     public void testWriteManySingles() throws Exception {
         BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 100);
         for(int i=0; i<300; i++) {
@@ -173,14 +174,16 @@ public class BufferedFileIOTest {
         }
     }
     
+    @Test
     public void testWriteAhead() throws Exception {
         BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 100);
         b.setLength(10);
-        b.seek(20);
+        b.seek(200);
         b.write(1);
-        assertEquals(21, b.length());
+        assertEquals(201, b.length());
     }
     
+    @Test
     public void testWriteAgain() throws Exception {
         BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 100);
         b.write(1);

@@ -125,7 +125,7 @@ public abstract class ArrayDecoder {
         }
         return true;
     }
-    
+
     /**
      * Reads one byte from the input. See the contract of
      * {@link InputStream#read()}.
@@ -276,22 +276,6 @@ public abstract class ArrayDecoder {
          */
         protected ByteOrder byteOrder() {
             return buffer.order();
-        }
-
-        /**
-         * @deprecated Its sole purpose is to support the deprecated {@link BufferDecoder}
-         */
-        @Deprecated
-        protected void position(int n) {
-            buffer.position(n);
-        }
-
-        /**
-         * @deprecated Its sole purpose is to support the deprecated {@link BufferDecoder}
-         */
-        @Deprecated
-        protected void limit(int n) {
-            buffer.limit(n);
         }
 
         /**

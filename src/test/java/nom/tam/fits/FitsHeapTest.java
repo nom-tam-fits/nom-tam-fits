@@ -142,4 +142,18 @@ public class FitsHeapTest {
         Assert.assertTrue(actual.getCause().getMessage().equals("testHeapWriteFailures"));
     }
 
+    @Test(expected = FitsException.class)
+    public void testHeapGetDataEOF() throws Exception {
+        FitsHeap heap = new FitsHeap(3);
+        // The full size of the float is beyond the heap size.
+        heap.getData(0, new float[1]);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testHeapPutDataEOF() throws Exception {
+        FitsHeap heap = new FitsHeap(3);
+        // Trying to put an object on the heap that does not belong...
+        heap.putData(new Header());
+    }
+    
 }

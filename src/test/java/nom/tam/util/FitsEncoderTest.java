@@ -33,6 +33,7 @@ package nom.tam.util;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.math.BigInteger;
@@ -91,5 +92,14 @@ public class FitsEncoderTest {
         assertEquals("null", 0, data[2]); 
     }
     
-   
+    @Test
+    public void testReadWriteOneByte() throws Exception {
+        ByteArrayOutputStream o = new ByteArrayOutputStream(100);
+        FitsEncoder e = new FitsEncoder(OutputWriter.from(o));
+        
+        e.write(1);
+        
+        FitsDecoder d = new FitsDecoder(InputReader.from(new ByteArrayInputStream(o.toByteArray())));
+        assertEquals(1, d.read());
+    }
 }

@@ -44,8 +44,6 @@ import java.io.IOException;
 @Deprecated
 public abstract class BufferEncoder extends FitsEncoder {
     
-    private byte[] b1 = new byte[1];
-    
     private BufferPointer p;
     private OutputBuffer buf;
     
@@ -69,10 +67,13 @@ public abstract class BufferEncoder extends FitsEncoder {
         buf = getOutputBuffer();
 
         setWriter(new OutputWriter() {
-
+             
+            private byte[] b1 = new byte[1];
+           
             @Override
             public void write(int b) throws IOException {
-                BufferEncoder.this.write(b);
+                b1[0] = (byte) b;
+                BufferEncoder.this.write(b1, 0, 1);
             }
 
             @Override
@@ -105,13 +106,7 @@ public abstract class BufferEncoder extends FitsEncoder {
         pretendHalfPopulated();
         super.need(bytes);
     }
-    
-    @Override
-    protected void write(int b) throws IOException {
-        b1[0] = (byte) b;
-        write(b1, 0, 1);
-    }
-    
+
     @Override
     protected void write(byte[] b, int from, int len) throws IOException {
         throw new UnsupportedOperationException("You need to override this with an implementation that writes to the desired output.");

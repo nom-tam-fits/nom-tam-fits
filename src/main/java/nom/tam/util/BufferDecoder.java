@@ -48,7 +48,7 @@ import java.io.IOException;
 @Deprecated
 public abstract class BufferDecoder extends FitsDecoder {
 
-    private byte[] b1 = new byte[1];
+   
     
     private BufferPointer p;
     
@@ -70,10 +70,15 @@ public abstract class BufferDecoder extends FitsDecoder {
         pretendHalfPopulated();
         
         setReader(new InputReader() {
+            private byte[] b1 = new byte[1];
 
             @Override
             public int read() throws IOException {
-                return BufferDecoder.this.read();
+                int n = BufferDecoder.this.read(b1, 0, 1);
+                if (n < 0) {
+                    return n;
+                }
+                return b1[0];
             }
 
             @Override
@@ -106,15 +111,6 @@ public abstract class BufferDecoder extends FitsDecoder {
      *              It's safest if you never override or call this method from your code!
      */
     protected void checkBuffer(int needBytes) throws IOException {
-    }
-
-    @Override
-    protected synchronized int read() throws IOException {
-        int n = read(b1, 0, 1);
-        if (n < 0) {
-            return n;
-        }
-        return b1[0];
     }
     
     @Override
