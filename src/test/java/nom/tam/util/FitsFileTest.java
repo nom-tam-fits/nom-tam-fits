@@ -1,7 +1,5 @@
 package nom.tam.util;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -33,54 +31,26 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * #L%
  */
 
-/**
- * @deprecated No longer used within the FITS package itself, but will
- *              stay around until the next major release (2.0) at least.
- *              If you do attempt to use it with the deprecated APIs,
- *              beware that no data will be filled into the buffer
- *              of this object ever, although its length and position
- *              fields may be updated to pretend as if there were
- *              transactions happening...
- *
- * @see BufferEncoder
- * @see BufferDecoder
- */
-@Deprecated
-public class BufferPointer {
+import java.io.File;
+import java.io.IOException;
 
-    /**
-     * The data buffer.
-     */
-    protected byte[] buffer;
+import org.junit.After;
+import org.junit.Test;
 
-    /**
-     * The number of valid characters in the buffer
-     */
-    protected int length;
+public class FitsFileTest {
 
-    /**
-     * The current offset into the buffer
-     */
-    protected int pos;
-
-    public BufferPointer() {
+    @After
+    public void cleanup() {
+        new File("fftest.bin").delete();
     }
-
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
-    public BufferPointer(byte[] buffer) {
-        this();
-        this.buffer = buffer;
+    
+    @Test(expected = IOException.class)
+    public void writeNotArray() throws Exception {
+        try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
+            // Not an array
+            f.writeArray(new String("hello"));
+        }
     }
-
-    protected BufferPointer init(int bufferSize) {
-        this.buffer = new byte[bufferSize];
-        this.pos = 0;
-        this.length = 0;
-        return this;
-    }
-
-    protected void invalidate() {
-        this.length = 0;
-        this.pos = 0;
-    }
+   
+    
 }

@@ -178,7 +178,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *              
      * @throws IOException  if there was an IO error accessing the file.
      */
-    private synchronized  boolean makeAvailable() throws IOException {
+    private synchronized boolean makeAvailable() throws IOException {
         if (offset < end) {
             return true;
         }
@@ -496,7 +496,6 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
         seek(pos + n);
         return n;
     }
-
 
     /**
      * Read as many bytes into a byte array as possible. The number of bytes read may be fewer than

@@ -61,10 +61,14 @@ public abstract class ArrayDecoder {
     private static final int SHORT_MASK = 0xFFFF;
 
     /** the input providing the binary representation of data */
-    private final InputReader in;
+    private InputReader in;
 
     /** the conversion buffer */
-    private ConversionBuffer buf = new ConversionBuffer();
+    private InputBuffer buf;
+
+    protected ArrayDecoder() {
+        buf = new InputBuffer(BUFFER_SIZE);
+    }
 
     /**
      * Instantiates a new decoder for converting data representations into Java
@@ -74,33 +78,54 @@ public abstract class ArrayDecoder {
      *            the binary input.
      */
     public ArrayDecoder(InputReader i) {
-        this.in = i;
+        this();
+        setReader(i);
+
     }
 
-    /**
-     * Instantiates a new decoder for converting data representations into Java
-     * arrays.
-     * 
-     * @param i
-     *            the binary input stream
-     */
-    public ArrayDecoder(InputStream i) {
-        this((InputReader) new FitsInputStream(i));
+    protected void setReader(InputReader i) {
+        this.in = i;
     }
 
     /**
      * Returns the buffer that is used for conversion, which can be used to bulk
      * read bytes ahead from the input (see
-     * {@link ConversionBuffer#loadBytes(long, int)}) and
-     * {@link ConversionBuffer#loadOne(int)}) before doing conversions to Java
-     * types locally.
+     * {@link InputBuffer#loadBytes(long, int)}) and
+     * {@link InputBuffer#loadOne(int)}) before doing conversions to Java types
+     * locally.
      * 
      * @return the conversion buffer used by this decoder.
      */
-    protected ConversionBuffer getBuffer() {
+    protected InputBuffer getInputBuffer() {
         return buf;
     }
 
+    /**
+     * Makes sure that an elements of the specified size is fully available in
+     * the buffer, prompting additional reading of the underlying stream as
+     * appropriate (but not beyond the limit set by
+     * {@link #loadBytes(long, int)}.
+     * 
+     * @param size
+     *            the number of bytes we need at once from the buffer
+     * @return <code>true</code> if the requested number of bytes are, or could
+     *         be made, available. Otherwise <code>false</code>.
+     * @throws IOException
+     *             if there was an underlying IO error, other than the end of
+     *             file, while trying to fetch additional data from the
+     *             underlying input
+     */
+    boolean makeAvailable(int size) throws IOException {
+        // TODO Once the deprecated BufferDecoder is retired, this should become
+        // a private method of InputBuffer (with buf. prefixed removed below).
+        while (buf.buffer.remaining() < size) {
+            if (!buf.fetch()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     /**
      * Reads one byte from the input. See the contract of
      * {@link InputStream#read()}.
@@ -212,16 +237,21 @@ public abstract class ArrayDecoder {
      * 
      * @author Attila Kovacs
      */
-    protected final class ConversionBuffer {
+    protected final class InputBuffer {
 
         /** the byte array in which to buffer data from the input */
-        private byte[] data = new byte[BUFFER_SIZE];
+        private final byte[] data;
 
         /** the buffer wrapped for NIO access */
-        private ByteBuffer buffer = ByteBuffer.wrap(data);
+        private final ByteBuffer buffer;
 
         /** the number of bytes requested, but not yet buffered */
         private long pending = 0;
+
+        private InputBuffer(int size) {
+            this.data = new byte[size];
+            buffer = ByteBuffer.wrap(data);
+        }
 
         /**
          * Sets the byte order of the binary data representation from which we
@@ -246,6 +276,22 @@ public abstract class ArrayDecoder {
          */
         protected ByteOrder byteOrder() {
             return buffer.order();
+        }
+
+        /**
+         * @deprecated Its sole purpose is to support the deprecated {@link BufferDecoder}
+         */
+        @Deprecated
+        protected void position(int n) {
+            buffer.position(n);
+        }
+
+        /**
+         * @deprecated Its sole purpose is to support the deprecated {@link BufferDecoder}
+         */
+        @Deprecated
+        protected void limit(int n) {
+            buffer.limit(n);
         }
 
         /**
@@ -285,30 +331,6 @@ public abstract class ArrayDecoder {
         }
 
         /**
-         * Makes sure that an elements of the specified size is fully available
-         * in the buffer, prompting additional reading of the underlying stream
-         * as appropriate (but not beyond the limit set by
-         * {@link #loadBytes(long, int)}.
-         * 
-         * @param size
-         *            the number of bytes we need at once from the buffer
-         * @return <code>true</code> if the requested number of bytes are, or
-         *         could be made, available. Otherwise <code>false</code>.
-         * @throws IOException
-         *             if there was an underlying IO error, other than the end
-         *             of file, while trying to fetch additional data from the
-         *             underlying input
-         */
-        private boolean makeAvailable(int size) throws IOException {
-            while (buffer.remaining() < size) {
-                if (!fetch()) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        /**
          * Reads more data into the buffer from the underlying stream,
          * attempting to fill the buffer if possible.
          * 
@@ -329,17 +351,9 @@ public abstract class ArrayDecoder {
             buffer.rewind();
 
             int n = (int) Math.min(pending, data.length - remaining);
-            if (n == 1) {
-                int i = in.read();
-                if (i < 0) {
-                    return false;
-                }
-                data[remaining] = (byte) i;
-            } else {
-                n = in.read(data, remaining, n);
-                if (n < 0) {
-                    return false;
-                }
+            n = in.read(data, remaining, n);
+            if (n < 0) {
+                return false;
             }
             buffer.limit(remaining + n);
             pending -= n;

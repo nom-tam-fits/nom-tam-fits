@@ -38,58 +38,85 @@ import java.io.IOException;
 /**
  * @deprecated  Use {@link FitsDecoder} instead, which provides a similar function but in
  *      a more consistent way and with a less misleading name, or else use {@link ArrayDecoder}
- *      as a base for implementing efficient custom decoding of binary inputs. 
+ *      as a base for implementing efficient custom decoding of binary inputs.
  *
  * @see FitsDecoder
  */
 @Deprecated
 public abstract class BufferDecoder extends FitsDecoder {
-
+    
+    private byte[] b1 = new byte[1];
+    
+    private BufferPointer p;
+    
+    /**
+     * 
+     * @param p     Unused, but the position and length fields are set/reset as to pretend data traffic.
+     *              However, at no point will there be any data actually in the buffer of this object.
+     */
     public BufferDecoder(BufferPointer p) {
-        super(new Reader(p));
+        super();
+        
+        this.p = p;
+        
+        setReader(new InputReader() {
+
+            @Override
+            public int read() throws IOException {
+                return BufferDecoder.this.read();
+            }
+
+            @Override
+            public int read(byte[] b, int from, int length) throws IOException {
+                return BufferDecoder.this.read(b, from, length);
+            }
+            
+        });
+    }
+    
+    @Override
+    boolean makeAvailable(int needBytes) throws IOException {
+        // We'll pretend that the BufferPointer just has the new data.
+        p.invalidate();
+        boolean result = super.makeAvailable(needBytes);
+        p.length = needBytes;
+        return result;
     }
     
     /**
-     * @deprecated No longer used or needed. Kept around for back compatibility only.
+     * @deprecated  No longer used internally, kept only for back-compatibility since it used to be a needed abstract method.
      */
-    @Deprecated
     protected void checkBuffer(int needBytes) throws IOException {
     }
 
+    @Override
+    protected synchronized int read() throws IOException {
+        int n = read(b1, 0, 1);
+        if (n < 0) {
+            return n;
+        }
+        return b1[0];
+    }
+    
+    @Override
+    protected int read(byte[] buf, int offset, int length) throws IOException {
+        throw new UnsupportedOperationException("You need to override this with an implementation that reads from the desired input.");
+    }
+    
+    /**
+     * @deprecated  No longer used internally, kept only for back-compatibility since it used to be a needed abstract method.
+     */
     protected int eofCheck(EOFException e, int start, int index, int elementSize) throws EOFException {
         return super.eofCheck(e, (index - start), -1) * elementSize;
     }
    
-    
-    @Deprecated
-    public long readLArray(Object o) throws IOException {
+    protected long readLArray(Object o) throws IOException {
         try { 
             return super.readArray(o); 
         } catch (IllegalArgumentException e) {
             throw new IOException(e);
         }
     }
-    
-    private static class Reader implements InputReader {
-        private BufferPointer p;
-        
-        Reader(BufferPointer p) {
-            this.p = p;
-        }
-        
-        @Override
-        public int read() throws IOException {
-            return p.buffer[p.pos++];
-        }
-
-        @Override
-        public int read(byte[] b, int from, int length) throws IOException {
-            int n = Math.min(length, p.length - p.pos);
-            System.arraycopy(p.buffer, p.pos, b, from, n);
-            p.pos += n;
-            return n;
-        }
-        
-    }
+ 
     
 }

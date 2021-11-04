@@ -89,7 +89,7 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     public FitsInputStream(InputStream i, int bufLength) { 
         super(i, bufLength);
         data = new DataInputStream(this);
-        setDecoder(new FitsDecoder((InputReader) this));
+        setDecoder(new FitsDecoder(this));
     }
     
     /**

@@ -73,34 +73,6 @@ public class ArrayDataFile extends BufferedFileIO {
     }
 
     /**
-     * Instantiates a new file for high-performance array IO operations, using
-     * the specified converters translating between Java arrays and the binary
-     * representation of these in the file.
-     * 
-     * @param f
-     *            the file
-     * @param mode
-     *            the access mode, such as "rw" (see
-     *            {@link java.io.RandomAccessFile} for more info).
-     * @param bufferSize
-     *            the size of the buffer in bytes
-     * @param java2bin
-     *            the conversion from Java arrays to their binary representation
-     *            in file
-     * @param bin2java
-     *            the conversion from the binary representation of arrays in the
-     *            file to Java arrays.
-     * @throws IOException
-     *             if there was an IO error getting the required access to the
-     *             file.
-     */
-    public ArrayDataFile(File f, String mode, int bufferSize, ArrayEncoder java2bin, ArrayDecoder bin2java) throws IOException {
-        this(f, mode, bufferSize);
-        setEncoder(java2bin);
-        setDecoder(bin2java);
-    }
-
-    /**
      * Sets the conversion from Java arrays to their binary representation in
      * file. For use by subclass constructors only.
      * 

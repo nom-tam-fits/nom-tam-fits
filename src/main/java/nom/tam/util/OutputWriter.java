@@ -32,6 +32,7 @@ package nom.tam.util;
  */
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Basic binary output writing functionality.
@@ -70,4 +71,26 @@ public interface OutputWriter {
      * @see java.io.DataOutputStream#write(byte[], int, int)
      */
     void write(byte[] b, int from, int length) throws IOException;
+
+    /**
+     * Wraps an output stream with this interface.
+     * 
+     * @param o
+     *            any output stream
+     * @return the stream wrapped to this interface
+     */
+    static OutputWriter from(final OutputStream o) {
+        return new OutputWriter() {
+
+            @Override
+            public void write(int b) throws IOException {
+                o.write(b);
+            }
+
+            @Override
+            public void write(byte[] b, int from, int length) throws IOException {
+                o.write(b, from, length);
+            }            
+        };
+    }
 }

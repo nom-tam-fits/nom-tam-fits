@@ -31,9 +31,7 @@ package nom.tam.util;
  * #L%
  */
 
-import java.io.EOFException;
 import java.io.IOException;
-
 
 /**
  * @deprecated  Use {@link FitsEncoder} instead, which provides a similar function but in
@@ -42,36 +40,81 @@ import java.io.IOException;
  *
  * @see FitsEncoder
  */
-public class BufferEncoder extends FitsEncoder {
-
+public abstract class BufferEncoder extends FitsEncoder {
+    
+    private byte[] b1 = new byte[1];
+    
+    private BufferPointer p;
+    private OutputBuffer buf;
+    
+    /**
+     * 
+     * @param p     Unused, but the position and length fields are set/reset as to pretend data traffic.
+     *              However, at no point will there be any data actually in the buffer of this object.
+     */
     public BufferEncoder(BufferPointer p) {
-        super(new Writer(p));
+        super();
+       
+        this.p = p;
+        
+        buf = getOutputBuffer();
+
+        setWriter(new OutputWriter() {
+
+            @Override
+            public void write(int b) throws IOException {
+                BufferEncoder.this.write(b);
+            }
+
+            @Override
+            public void write(byte[] b, int from, int length) throws IOException {
+                BufferEncoder.this.write(b, from, length);
+            }
+            
+        });
+    }
+  
+    /**
+     * @deprecated No longer used internally, kept only for back-compatibility since it used to be a needed abstract method.
+     */ 
+    protected void needBuffer(int need) throws IOException {
     }
     
-
+    @Override
+    protected void write(int b) throws IOException {
+        b1[0] = (byte) b;
+        write(b1, 0, 1);
+    }
     
+    @Override
+    protected void write(byte[] b, int from, int len) {
+        throw new UnsupportedOperationException("You need to override this with an implementation that writes to the desired output.");
+    }
     
-    private static class Writer implements OutputWriter {
-        private BufferPointer p;
-        
-        Writer(BufferPointer p) {
-            this.p = p;
+    /**
+     * Writes a single byte to the output, after flushing the contents of the conversion buffer. The supplied
+     * {@link BufferPointer} is not used at all, and is immediately invalidated (which is consistent with 
+     * having flushed all pending output). It's not all that efficient, but then again one should be using
+     * the new {@link FitsEncoder} instead. This is really just a rusty rail solution. Also, since this
+     * methods does not throw an exception, and {@link #needBuffer(int)} (which did throw an exception) is
+     * no longer in use, the duct-tape solution is to convert any IOException encountered here into
+     * a runtime exception... 
+     * 
+     * 
+     * @param b     the byte to write
+     * 
+     * @throws IllegalStateException    
+     * 
+     *              if there was an IO error flushing the conversion buffer or writing
+     *              the new byte after it.    
+     */
+    protected void writeUncheckedByte(byte b) {
+        p.invalidate();
+        try { 
+            buf.flush();
+            write(b); 
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
-        
-        @Override
-        public void write(int b) throws IOException {
-            p.buffer[p.pos++] = (byte) b;
-        }
-
-        @Override
-        public void write(byte[] b, int from, int length) throws IOException {
-            int n = Math.min(length, p.length - p.pos);
-            System.arraycopy(b, from, p.buffer, p.pos, n);
-            p.pos += n;
-            if (n < length) {
-                throw new EOFException(); 
-            }
-        }
-        
     }
 }

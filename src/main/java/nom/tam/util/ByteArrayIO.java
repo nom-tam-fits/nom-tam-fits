@@ -147,9 +147,16 @@ public class ByteArrayIO implements ReadWriteAccess {
     
     @Override
     public synchronized void position(long offset) throws IOException { 
-        if (offset < 0 || offset > buf.length) {
-            throw new EOFException("Position " + offset + " not in buffer of size " + buf.length);
-        }  
+        if (offset < 0) {
+            throw new EOFException("Negative buffer index: " + offset);
+        }
+        
+        if (offset > buf.length) {
+            if (!isGrowable) {
+                throw new EOFException("Position " + offset + " beyond fixed buffer size " + buf.length);
+            }
+        }
+        
         pos = (int) offset;
     }
     
@@ -210,9 +217,9 @@ public class ByteArrayIO implements ReadWriteAccess {
     
     @Override
     public final synchronized void write(int b) throws IOException {
-        if (buf.length - pos < 1) {
+        if (pos + 1 > buf.length) {
             if (isGrowable) {
-                grow(1);
+                grow(pos + 1 - buf.length);
             } else {
                 throw new EOFException("buffer is full (size=" + length() + ")");
             }
@@ -225,14 +232,16 @@ public class ByteArrayIO implements ReadWriteAccess {
     
     @Override
     public final synchronized void write(byte[] b, int from, int length) throws IOException {
-        int l = Math.min(length, buf.length - pos);
-        
-        if (l < length) {
-            if (isGrowable) {
-                grow(length - l);
-                l = length;
-            }
+        if (length <= 0) {
+            return;
         }
+        
+        if (pos > buf.length || (isGrowable && pos + length > buf.length)) {
+            // This may only happen in a growable buffer...
+            grow(buf.length + length - pos);
+        }
+        
+        int l = Math.min(length, buf.length - pos);
         
         System.arraycopy(b, from, buf, pos, l);
         pos += l;

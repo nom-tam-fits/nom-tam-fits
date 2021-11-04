@@ -77,7 +77,7 @@ public class FitsOutputStream extends ArrayOutputStream implements ArrayDataOutp
      */
     public FitsOutputStream(OutputStream o, int bufLength) {
         super(o, bufLength);
-        setEncoder(new FitsEncoder((OutputWriter) this));
+        setEncoder(new FitsEncoder(this));
         if (o instanceof DataOutput) {
             data = (DataOutput) o;
         } else {

@@ -32,7 +32,6 @@
 package nom.tam.util;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -54,30 +53,33 @@ public abstract class ArrayEncoder {
 
     private OutputWriter out;
 
-    private ConversionBuffer buf = new ConversionBuffer();
-
-    public ArrayEncoder(OutputWriter o) {
-        this.out = o;
+    private OutputBuffer buf;
+    
+    protected ArrayEncoder() {
+        buf = new OutputBuffer(BUFFER_SIZE);
     }
 
-    public ArrayEncoder(OutputStream o) {
-        this((OutputWriter) new FitsOutputStream(o));
+    public ArrayEncoder(OutputWriter o) {
+        this();
+        setWriter(o);
+    }
+    
+    protected void setWriter(OutputWriter o) {
+        this.out = o;
     }
 
     /**
      * Returns the buffer that is used for conversion, which can be used to
      * collate more elements for writing before bulk flushing data to the output
-     * (see {@link ConversionBuffer#flush()}).
+     * (see {@link OutputBuffer#flush()}).
      * 
      * @return the conversion buffer used by this encoder.
      */
-    protected ConversionBuffer getBuffer() {
+    protected OutputBuffer getOutputBuffer() {
         return buf;
     }
+  
 
-    protected synchronized void needBuffer(int need) throws IOException {
-        buf.need(need);
-    }
 
     protected synchronized void write(int b) throws IOException {
         synchronized (out) {
@@ -92,7 +94,7 @@ public abstract class ArrayEncoder {
             out.write(b, start, length);
         }
     }
-
+    
     /**
      * Writes the contents of a Java array to the output translating the data to
      * the required binary representation. The argument may be any generic hava
@@ -147,14 +149,19 @@ public abstract class ArrayEncoder {
      * 
      * @author Attila Kovacs
      */
-    protected final class ConversionBuffer {
+    protected final class OutputBuffer {
 
         /** the byte array that stores pending data to be written to the output */
-        private byte[] data = new byte[BUFFER_SIZE];
+        private final byte[] data;
 
         /** the buffer wrapped for NIO access */
-        private ByteBuffer buffer = ByteBuffer.wrap(data);
+        private final ByteBuffer buffer;
 
+        private OutputBuffer(int size) {
+            this.data = new byte[size];
+            buffer = ByteBuffer.wrap(data);
+        }
+        
         /**
          * Sets the byte order of the binary representation to which data is
          * encoded.
@@ -179,7 +186,7 @@ public abstract class ArrayEncoder {
         protected ByteOrder byteOrder() {
             return buffer.order();
         }
-
+        
         /**
          * Makes sure that there is room in the conversion buffer for an
          * upcoming element conversion, and flushes the buffer as necessary to
@@ -198,7 +205,7 @@ public abstract class ArrayEncoder {
                 flush();
             }
         }
-
+        
         /**
          * Flushes the contents of the conversion buffer to the underlying
          * output.
@@ -209,14 +216,17 @@ public abstract class ArrayEncoder {
          */
         protected void flush() throws IOException {
             int n = buffer.position();
-
-            if (n == 1) {
-                out.write(data[0]);
-            } else {
-                out.write(data, 0, n);
-            }
-
+            out.write(data, 0, n);
             buffer.rewind();
+        }
+        
+        /**
+         * @deprecated Use {@link #writeByte(int)} or use {@link OutputBuffer#putByte(byte)} (followed by and eventual
+         * {@link OutputBuffer#flush()}) instead.
+         */
+        @Deprecated
+        protected void putUnchecked(byte b) {
+            buffer.put(b);
         }
 
         /**

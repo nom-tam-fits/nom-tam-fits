@@ -1,7 +1,5 @@
 package nom.tam.util;
 
-import java.io.IOException;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -33,31 +31,37 @@ import java.io.IOException;
  * #L%
  */
 
-import java.io.OutputStream;
+import static org.junit.Assert.assertEquals;
 
-/**
- * @deprecated Use {@link FitsOutputStream}, which provides the exact same functionality
- * but with a less misleading name, or else use {@link ArrayOutputStream} as a base for an 
- * implementation with any (non-FITS) encoding.
- * 
- */
-@Deprecated
-public class BufferedDataOutputStream extends FitsOutputStream {
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
-    public BufferedDataOutputStream(OutputStream o, int bufLength) {
-        super(o, bufLength);
-    }
+import org.junit.Test;
 
-    public BufferedDataOutputStream(OutputStream o) {
-        super(o);
+public class FitsStreamTest {
+
+    @Test
+    public void testReadWriteBooleanObjects() throws Exception {
+        ByteArrayOutputStream bo = new ByteArrayOutputStream(100);
+        
+        Boolean[] b = new Boolean[] { Boolean.TRUE, Boolean.FALSE, null };
+        
+        FitsOutputStream o = new FitsOutputStream(bo);
+        o.write(b);
+        o.writeBoolean(b[0]);
+        o.flush();
+        
+        FitsInputStream i = new FitsInputStream(new ByteArrayInputStream(bo.toByteArray()));
+        
+        Boolean[] b2 = new Boolean[b.length];
+        i.read(b2);
+        
+        for(int k=0; k<b.length; k++) {
+            assertEquals("[" + k + "]", b[k], b2[k]);
+        }
+        
+        assertEquals("standalone", b[0].booleanValue(), i.readBoolean());
     }
     
-    /**
-     * @deprecated  No longer used internally, but kept for back compatibility
-     */
-    @Deprecated
-    protected void checkBuf(int need) throws IOException {
-        getEncoder().getOutputBuffer().need(need);
-    }
-
+    
 }

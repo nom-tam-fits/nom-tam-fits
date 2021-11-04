@@ -32,6 +32,7 @@ package nom.tam.util;
  */
 
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Basic binary input reading functionality.
@@ -70,4 +71,27 @@ public interface InputReader {
      * @see java.io.DataInputStream#read(byte[], int, int)
      */
     int read(byte[] b, int from, int length) throws IOException;
+
+    /**
+     * Wraps an input stream with this interface.
+     * 
+     * @param i
+     *            any input stream
+     * @return the stream wrapped to this interface
+     */
+    static InputReader from(final InputStream i) {
+        return new InputReader() {
+
+            @Override
+            public int read() throws IOException {
+                return i.read();
+            }
+
+            @Override
+            public int read(byte[] b, int from, int length) throws IOException {
+                return i.read(b, from, length);
+            }
+            
+        };
+    }
 }
