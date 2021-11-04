@@ -33,6 +33,8 @@ package nom.tam.util;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.type.ElementType;
@@ -47,6 +49,8 @@ import nom.tam.util.type.ElementType;
  * @see FitsInputStream
  */
 public class FitsEncoder extends ArrayEncoder {
+    
+    private static final Logger LOG = Logger.getLogger(FitsEncoder.class.getName());
 
     /** The FITS byte value for the binary representation of a boolean 'true' value */
     private static final byte BYTE_TRUE = (byte) 'T';
@@ -477,21 +481,17 @@ public class FitsEncoder extends ArrayEncoder {
             getOutputBuffer().put((long[]) o, 0, length);
         } else if (o instanceof double[]) {
             getOutputBuffer().put((double[]) o, 0, length);
-        } else if (o instanceof Object[]) {
-            if (o instanceof String[]) {
-                put((String[]) o, 0, length);
-            } else if (o instanceof Boolean[]) {
-                put((Boolean[]) o, 0, length);
-            } else {
-                Object[] array = (Object[]) o;
-                // Is this a multidimensional array? If so process recursively
-                for (int i = 0; i < length; i++) {
-                    putArray(array[i]);
-                }
-            }
+        } else if (o instanceof Boolean[]) {
+            put((Boolean[]) o, 0, length);
+        } else if (o instanceof String[]) {
+            put((String[]) o, 0, length);
         } else {
-            throw new IllegalArgumentException("Cannot write type: " + o.getClass().getName());
-        }
+            Object[] array = (Object[]) o;
+            // Is this a multidimensional array? If so process recursively
+            for (int i = 0; i < length; i++) {
+                putArray(array[i]);
+            }
+        } 
     }
     
     
@@ -499,14 +499,12 @@ public class FitsEncoder extends ArrayEncoder {
      * Returns the size of this object as the number of bytes in a FITS binary representation.
      * 
      * @param o     the object
-     * @return      the number of bytes in the FITS binary representation of the object
-     * 
-     * @throws IllegalArgumentException     
-     *              if the object is or contains Jata types that cannot be represented
-     *              in FITS.
+     * @return      the number of bytes in the FITS binary representation of the object or
+     *              0 if the object has no FITS representation. (Also elements not known to
+     *              FITS will count as 0 sized).
      *                      
      */
-    public static long computeSize(Object o) throws IllegalArgumentException {
+    public static long computeSize(Object o) {
         if (o == null) {
             return 0;
         }
@@ -522,8 +520,8 @@ public class FitsEncoder extends ArrayEncoder {
         Class<?> type = o.getClass();          
         ElementType<?> eType = type.isArray() ? ElementType.forClass(type.getComponentType()) : ElementType.forClass(type);
         
-        if (eType == null) {
-            throw new IllegalArgumentException("Don't know FITS size of type " + type.getSimpleName());
+        if (eType == ElementType.UNKNOWN) {
+            LOG.log(Level.WARNING, "computeSize() called with unknown type.", new IllegalArgumentException("Don't know FITS size of type " + type.getSimpleName()));
         }   
         
         if (eType.isVariableSize()) {

@@ -36,28 +36,38 @@ import java.io.EOFException;
 import java.io.IOException;
 
 /**
- * @deprecated  Use {@link FitsDecoder} instead, which provides a similar function but in
+ * @deprecated  This is a rusty rail implementation only, unsafe for general use.
+ *      Use {@link FitsDecoder} instead, which provides a similar function but in
  *      a more consistent way and with a less misleading name, or else use {@link ArrayDecoder}
- *      as a base for implementing efficient custom decoding of binary inputs.
+ *      as a base for implementing efficient custom decoding of binary inputs. 
+ *      
+ *      
  *
  * @see FitsDecoder
  */
 @Deprecated
 public abstract class BufferDecoder extends FitsDecoder {
-    
+
     private byte[] b1 = new byte[1];
     
     private BufferPointer p;
     
     /**
      * 
-     * @param p     Unused, but the position and length fields are set/reset as to pretend data traffic.
-     *              However, at no point will there be any data actually in the buffer of this object.
+     * @param p     Unused, but the position and length fields are set/reset as to pretend that half of
+     *              the buffer is perpetually available for reading.
+     *              However, at no point will there be any data actually in the buffer of this object,
+     *              and you should by all means avoid directly loading data from the stream into this
+     *              dead-end buffer, other than the hopefully untiggered existing implementation
+     *              of <code>checkBuffer(int)</code> (and it's safest if you don't override
+     *              or ever call <code>checkBuffer(int)</code> from your code!).
      */
     public BufferDecoder(BufferPointer p) {
         super();
         
         this.p = p;
+        
+        pretendHalfPopulated();
         
         setReader(new InputReader() {
 
@@ -74,17 +84,26 @@ public abstract class BufferDecoder extends FitsDecoder {
         });
     }
     
+    /**
+     * We'll always pretend the buffer to be half populated at pos=0, in order to avoid triggering
+     * a read from the input into the unused buffer of BufferPointer, or a write to the
+     * output from that buffer... If the pointer has no buffer, length will be 0 also.
+     */
+    private void pretendHalfPopulated() {
+        p.pos = 0; 
+        p.length = p.buffer == null ? 0 : p.buffer.length >>> 1;   
+    }
+    
     @Override
     boolean makeAvailable(int needBytes) throws IOException {
-        // We'll pretend that the BufferPointer just has the new data.
-        p.invalidate();
+        pretendHalfPopulated();
         boolean result = super.makeAvailable(needBytes);
-        p.length = needBytes;
         return result;
     }
     
     /**
      * @deprecated  No longer used internally, kept only for back-compatibility since it used to be a needed abstract method.
+     *              It's safest if you never override or call this method from your code!
      */
     protected void checkBuffer(int needBytes) throws IOException {
     }
@@ -109,7 +128,6 @@ public abstract class BufferDecoder extends FitsDecoder {
     protected int eofCheck(EOFException e, int start, int index, int elementSize) throws EOFException {
         return super.eofCheck(e, (index - start), -1) * elementSize;
     }
-   
     protected long readLArray(Object o) throws IOException {
         try { 
             return super.readArray(o); 

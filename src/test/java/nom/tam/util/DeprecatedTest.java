@@ -147,8 +147,7 @@ public class DeprecatedTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testBENoOverride() throws Exception {
         BufferEncoder be = new BufferEncoder(new BufferPointer()) {
-        };    
-        
+        };
         be.write(1);
     }
     

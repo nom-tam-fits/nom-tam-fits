@@ -34,6 +34,7 @@ package nom.tam.util;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -82,7 +83,7 @@ public class FitsEncoderTest {
         ByteArrayOutputStream o = new ByteArrayOutputStream(100);
         FitsEncoder e = new FitsEncoder(OutputWriter.from(o));
         Boolean[] b = new Boolean[] { Boolean.TRUE, Boolean.FALSE, null };
-        e.write(b, 0, b.length);
+        e.writeArray(b);
         
         byte[] data = o.toByteArray();
         assertEquals("true", 'T', data[0]);

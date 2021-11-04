@@ -34,12 +34,14 @@ package nom.tam.util;
 import java.io.IOException;
 
 /**
- * @deprecated  Use {@link FitsEncoder} instead, which provides a similar function but in
+ * @deprecated  This is a rusty rail implementation only, unsafe for general use.
+ *      Use {@link FitsEncoder} instead, which provides a similar function but in
  *      a more consistent way and with a less misleading name, or else use {@link ArrayEncoder}
- *      as a base for implementing efficient custom encoding of binary outputs. 
+ *      as a base for implementing efficient custom encoding of binary outputs.
  *
  * @see FitsEncoder
  */
+@Deprecated
 public abstract class BufferEncoder extends FitsEncoder {
     
     private byte[] b1 = new byte[1];
@@ -49,13 +51,20 @@ public abstract class BufferEncoder extends FitsEncoder {
     
     /**
      * 
-     * @param p     Unused, but the position and length fields are set/reset as to pretend data traffic.
+     * @param p     Unused, but the position and length fields are set/reset as to pretend that the
+     *              buffer is perpetually half filled with data, and with position at 0.
      *              However, at no point will there be any data actually in the buffer of this object.
+     *              You should by all means avoid directly writing data from this buffer to the
+     *              output stream, other than the hopefully untriggered write of an existing 
+     *              <code>needBuffer(int)</code> implementation (and it's safest if you don't override
+     *              or ever call <code>needBuffer(int)</code> from your code!). 
      */
     public BufferEncoder(BufferPointer p) {
         super();
        
         this.p = p;
+        
+        pretendHalfPopulated();
         
         buf = getOutputBuffer();
 
@@ -73,11 +82,28 @@ public abstract class BufferEncoder extends FitsEncoder {
             
         });
     }
+    
+    /**
+     * We'll always pretend the buffer to be half populated at pos=0, in order to avoid triggering
+     * a read from the input into the unused buffer of BufferPointer, or a write to the
+     * output from that buffer... If the pointer has no buffer, length will be 0 also.
+     */
+    private void pretendHalfPopulated() {
+        p.pos = 0; 
+        p.length = p.buffer == null ? 0 : p.buffer.length >>> 1;   
+    }
   
     /**
      * @deprecated No longer used internally, kept only for back-compatibility since it used to be a needed abstract method.
+     *             It's safest if you never override or call this method from your code!
      */ 
     protected void needBuffer(int need) throws IOException {
+    }
+    
+    @Override
+    void need(int bytes) throws IOException {
+        pretendHalfPopulated();
+        super.need(bytes);
     }
     
     @Override
@@ -92,14 +118,13 @@ public abstract class BufferEncoder extends FitsEncoder {
     }
     
     /**
-     * Writes a single byte to the output, after flushing the contents of the conversion buffer. The supplied
-     * {@link BufferPointer} is not used at all, and is immediately invalidated (which is consistent with 
-     * having flushed all pending output). It's not all that efficient, but then again one should be using
-     * the new {@link FitsEncoder} instead. This is really just a rusty rail solution. Also, since this
-     * methods does not throw an exception, and {@link #needBuffer(int)} (which did throw an exception) is
-     * no longer in use, the duct-tape solution is to convert any IOException encountered here into
-     * a runtime exception... 
-     * 
+     * Writes a single byte to the output, but not before flushing the contents of the conversion buffer. 
+     * The supplied {@link BufferPointer} is not used at all, and is immediately invalidated (which is 
+     * consistent with having flushed all pending output). It's not all that efficient, but then again 
+     * one should be using the new {@link FitsEncoder} instead. This is really just a rusty rail solution. 
+     * Also, since this methods does not throw an exception, and {@link #needBuffer(int)} (which did 
+     * throw an exception) is no longer in use, the duct-tape solution is to convert any IOException 
+     * encountered here into a runtime exception... 
      * 
      * @param b     the byte to write
      * 
@@ -109,7 +134,6 @@ public abstract class BufferEncoder extends FitsEncoder {
      *              the new byte after it.    
      */
     protected void writeUncheckedByte(byte b) {
-        p.invalidate();
         try { 
             buf.flush();
             write(b); 

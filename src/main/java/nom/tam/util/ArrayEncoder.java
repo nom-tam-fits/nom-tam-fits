@@ -80,6 +80,26 @@ public abstract class ArrayEncoder {
     }
   
 
+    /**
+     * Makes sure that there is room in the conversion buffer for an
+     * upcoming element conversion, and flushes the buffer as necessary to
+     * make room. Subclass implementations should call this method before
+     * attempting a conversion operation.
+     * 
+     * @param bytes
+     *            the size of an element we will want to convert. It cannot
+     *            exceed the size of the conversion buffer.
+     * @throws IOException
+     *             if the conversion buffer could not be flushed to the
+     *             output to make room for the new conversion.
+     */
+    void need(int bytes) throws IOException {
+        // TODO Once the deprecated {@link BufferEncoder} is retired, this should become
+        // a private method of OutputBuffer, with leading 'buf.' references stripped.
+        if (buf.buffer.remaining() < bytes) {
+            buf.flush();
+        }
+    }
 
     protected synchronized void write(int b) throws IOException {
         synchronized (out) {
@@ -187,24 +207,6 @@ public abstract class ArrayEncoder {
             return buffer.order();
         }
         
-        /**
-         * Makes sure that there is room in the conversion buffer for an
-         * upcoming element conversion, and flushes the buffer as necessary to
-         * make room. Subclass implementations should call this method before
-         * attempting a conversion operation.
-         * 
-         * @param bytes
-         *            the size of an element we will want to convert. It cannot
-         *            exceed the size of the conversion buffer.
-         * @throws IOException
-         *             if the conversion buffer could not be flushed to the
-         *             output to make room for the new conversion.
-         */
-        private void need(int bytes) throws IOException {
-            if (buffer.remaining() < bytes) {
-                flush();
-            }
-        }
         
         /**
          * Flushes the contents of the conversion buffer to the underlying

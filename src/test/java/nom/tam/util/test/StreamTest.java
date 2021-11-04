@@ -52,9 +52,13 @@ import org.junit.After;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
+import nom.tam.util.ArrayInputStream;
 import nom.tam.util.AsciiFuncs;
+import nom.tam.util.FitsDecoder;
+import nom.tam.util.FitsEncoder;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
+import nom.tam.util.InputReader;
 import nom.tam.util.SafeClose;
 
 public class StreamTest {
@@ -744,4 +748,6 @@ public class StreamTest {
     public void testReadWithoutSource() throws FitsException, IOException {
         Assert.assertNull(new Fits().readHDU());
     }
+    
+   
 }

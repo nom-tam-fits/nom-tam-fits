@@ -172,4 +172,21 @@ public class BufferedFileIOTest {
             b.write(i);
         }
     }
+    
+    public void testWriteAhead() throws Exception {
+        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 100);
+        b.setLength(10);
+        b.seek(20);
+        b.write(1);
+        assertEquals(21, b.length());
+    }
+    
+    public void testWriteAgain() throws Exception {
+        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 100);
+        b.write(1);
+        b.seek(0);
+        b.write(2);
+        b.seek(0);
+        assertEquals(2, b.read());
+    }
 }

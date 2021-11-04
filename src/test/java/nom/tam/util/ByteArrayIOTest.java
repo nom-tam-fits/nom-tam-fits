@@ -202,4 +202,31 @@ public class ByteArrayIOTest {
         ByteArrayIO b = new ByteArrayIO(16);
         assertEquals(0, b.read(new byte[10], 0, -1));
     }
+    
+    @Test
+    public void testWriteAgain() throws Exception {
+        ByteArrayIO b = new ByteArrayIO(10);
+        byte[] b1 = new byte[] { 10, 11, 12 };
+        byte[] b2 = new byte[] { 20, 21, 22 };
+        
+        b.write(1);
+        b.write(b1, 0, b1.length);
+        b.position(0);
+        assertEquals("len", 1 + b1.length, b.length());
+        
+        b.write(b2, 0, b2.length);
+        b.write(2);
+        assertEquals("pos", 1 + b2.length, b.position());
+        
+        b.position(0);
+        byte[] bi = new byte[b2.length];
+        b.read(bi, 0, bi.length);
+        
+        assertEquals("single", 2, b.read());
+        for (int i=0; i<bi.length; i++) {
+            assertEquals("[" + i + "]", b2[i], bi[i]);
+        }
+    }
+    
+    
 }

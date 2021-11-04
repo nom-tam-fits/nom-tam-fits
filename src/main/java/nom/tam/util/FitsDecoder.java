@@ -517,26 +517,24 @@ public class FitsDecoder extends ArrayDecoder {
         if (o instanceof double[]) {
             return read((double[]) o, 0, length);
         }
-        if (o instanceof Object[]) {
-            if (o instanceof Boolean[]) {
-                return read((Boolean[]) o, 0, length);
-            }
 
-            Object[] array = (Object[]) o;
-            long count = 0L;
 
-            // Process multidim arrays recursively.
-            for (int i = 0; i < length; i++) {
-                long n = readArray(array[i]);
-                if (n < 0) {
-                    return count;
-                }
-                count += n;
-            }
-            return count;
+        if (o instanceof Boolean[]) {
+            return read((Boolean[]) o, 0, length);
         }
 
-        throw new IllegalArgumentException("Cannot read type: " + o.getClass().getName());
+        Object[] array = (Object[]) o;
+        long count = 0L;
+
+        // Process multidim arrays recursively.
+        for (int i = 0; i < length; i++) {
+            try {
+                count += readArray(array[i]);
+            } catch (EOFException e) {
+                return count;
+            }  
+        }
+        return count;
     }
 
    

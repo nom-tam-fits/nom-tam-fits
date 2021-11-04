@@ -49,13 +49,32 @@ public class FitsDecoderTest {
 
     
     @Test
-    public void testIncomleteReadArray() throws Exception {
+    public void testIncomleteReadByteArray() throws Exception {
         byte[] data = new byte[100];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         byte[] need = new byte[101];
         assertEquals(100, e.read(need, 0, need.length));
     }
 
+    @Test
+    public void testIncompleteReadBooleanObjectArray() throws Exception {
+        byte[] data = new byte[100];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        Boolean[] b = new Boolean[data.length + 1];
+        assertEquals(data.length, e.readArray(b));
+    }
+    
+    @Test
+    public void testIncompleteReadObjectArray() throws Exception {
+        byte[] data = new byte[100];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        Boolean[] b = new Boolean[1];
+        Object[] array = new Object[] { data, b };
+        assertEquals(data.length, e.readArray(array));
+    }
+    
+    
+    
     @Test(expected = EOFException.class)
     public void testIncomleteReadFully() throws Exception {
         byte[] data = new byte[100];
@@ -71,6 +90,7 @@ public class FitsDecoderTest {
         int[] need = new int[26];
         e.readArrayFully(need);
     }
+    
     
     @Test
     public void testReadNullArray() throws Exception {
@@ -136,6 +156,7 @@ public class FitsDecoderTest {
         e.readByte(); // should throw exception.
     }
     
+    
     @Test(expected = EOFException.class)
     public void testReadShortEOF() throws Exception {
         byte[] data = new byte[100];
@@ -194,5 +215,8 @@ public class FitsDecoderTest {
         
         e.read(new char[1], 0, 1);
     }
+    
+  
+    
     
 }

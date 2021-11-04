@@ -78,16 +78,6 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
     }
 
     /**
-     * Create a BufferedInputStream based on an input stream.
-     * 
-     * @param o
-     *            the input stream to use for reading.
-     */
-    public ArrayInputStream(InputStream o) {
-        this(o, FitsIO.DEFAULT_BUFFER_SIZE);
-    }
-
-    /**
      * Sets the conversion from the binary representation of arrays in stream to
      * Java arrays. For use by subclass constructors only.
      * 
