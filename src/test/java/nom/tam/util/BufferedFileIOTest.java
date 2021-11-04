@@ -166,4 +166,10 @@ public class BufferedFileIOTest {
         assertEquals("beginning", 0, b.getFilePointer());
     }
     
+    public void testWriteManySingles() throws Exception {
+        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 100);
+        for(int i=0; i<300; i++) {
+            b.write(i);
+        }
+    }
 }

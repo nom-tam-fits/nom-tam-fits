@@ -64,6 +64,14 @@ public class DeprecatedTest {
     }
         
     @Test
+    public void testBufferedDataInputStreamConstructors() throws Exception {
+        ByteArrayInputStream bi = new ByteArrayInputStream(new byte[100]);
+        BufferedDataInputStream i = new BufferedDataInputStream(bi);    
+        i = new BufferedDataInputStream(bi, 16);
+    }
+    
+    
+    @Test
     public void testBufferPointer() throws Exception {
         BufferPointer p = new BufferPointer();
         p.init(100);
@@ -75,7 +83,7 @@ public class DeprecatedTest {
         assertEquals("invalidpos", 0, p.pos);
         assertEquals("invalidlen", 0, p.length);
     }
-        
+    
     @Test
     public void testBufferEncoderDecoder() throws Exception {
         ByteArrayOutputStream bo = new ByteArrayOutputStream(100);
@@ -130,5 +138,47 @@ public class DeprecatedTest {
         d.eofCheck(new EOFException(), 2, 2, 4);
     }
     
+    @Test
+    public void testBOSCheckBuf() throws Exception {
+        BufferedDataOutputStream bos = new BufferedDataOutputStream(new ByteArrayOutputStream(100));
+        bos.checkBuf(8);
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void testBENoOverride() throws Exception {
+        BufferEncoder be = new BufferEncoder(new BufferPointer()) {
+        };    
+        
+        be.write(1);
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void testBDNoOverride() throws Exception {
+        BufferDecoder bd = new BufferDecoder(new BufferPointer()) {
+        };
+        bd.read();
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void testBEUncheckedWriteException() throws Exception {
+        BufferEncoder be = new BufferEncoder(new BufferPointer()) {
+            @Override
+            public void write(byte[] b, int off, int len) throws IOException {
+                throw new EOFException();
+            }
+        };
+        be.writeUncheckedByte((byte) 1);
+    }
+    
+    @Test
+    public void testBDReadEOF() throws Exception {
+        BufferDecoder bd = new BufferDecoder(new BufferPointer()) {
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                return -1;
+            }
+        };
+        assertEquals(-1, bd.read());
+    }
     
 }

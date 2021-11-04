@@ -200,7 +200,7 @@ public abstract class ArrayEncoder {
          *             if the conversion buffer could not be flushed to the
          *             output to make room for the new conversion.
          */
-        protected void need(int bytes) throws IOException {
+        private void need(int bytes) throws IOException {
             if (buffer.remaining() < bytes) {
                 flush();
             }

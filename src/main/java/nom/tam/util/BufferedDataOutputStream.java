@@ -53,11 +53,10 @@ public class BufferedDataOutputStream extends FitsOutputStream {
     }
     
     /**
-     * @deprecated  No longer used internally, but kept for back compatibility
+     * @deprecated  No longer used internally, but kept for back compatibility (and it does exactly nothing)
      */
     @Deprecated
     protected void checkBuf(int need) throws IOException {
-        getEncoder().getOutputBuffer().need(need);
     }
 
 }

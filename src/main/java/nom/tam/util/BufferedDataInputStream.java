@@ -46,8 +46,8 @@ public class BufferedDataInputStream extends FitsInputStream {
         super(i, bufLength);
     }
 
-    public BufferedDataInputStream(InputStream o) {
-        super(o);
+    public BufferedDataInputStream(InputStream i) {
+        super(i);
     }
 
 }

@@ -1,4 +1,4 @@
-package nom.tam.util.test;
+package nom.tam.util;
 
 /*
  * #%L
@@ -126,10 +126,27 @@ public class ByteArrayIOTest {
         b.write(new byte[11], 0, 11);
     }
     
+    @Test(expected = EOFException.class)
+    public void testWriteBeyondFixed2() throws Exception {
+        ByteArrayIO b = new ByteArrayIO(new byte[10]);
+        for(int i=0; i<11; i++) {
+            b.write(i);
+        }
+    }
+    
     @Test
     public void testWriteBeyondGrowable() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
         b.write(new byte[11], 0, 11);
+        assertEquals(11L, b.length());
+    }
+    
+    @Test
+    public void testWriteBeyondGrowable2() throws Exception {
+        ByteArrayIO b = new ByteArrayIO(10);
+        for(int i=0; i<11; i++) {
+            b.write(i);
+        }
         assertEquals(11L, b.length());
     }
     
@@ -159,4 +176,30 @@ public class ByteArrayIOTest {
         b.setLength(11);
     }
     
+    @Test
+    public void testSetLengthBeyondGrowable() throws Exception {
+        ByteArrayIO b = new ByteArrayIO(10);
+        b.setLength(11);
+    }
+    
+    @Test
+    public void testTruncate() throws Exception {
+        ByteArrayIO b = new ByteArrayIO(10);
+        b.position(10);
+        b.setLength(5);
+        assertEquals(5, b.position());
+    }
+    
+    @Test
+    public void testGrowPow2() throws Exception {
+        ByteArrayIO b = new ByteArrayIO(16);
+        b.setLength(32);
+        assertEquals(32, b.capacity());
+    }
+    
+    @Test
+    public void testReadNegativeLength() throws Exception {
+        ByteArrayIO b = new ByteArrayIO(16);
+        assertEquals(0, b.read(new byte[10], 0, -1));
+    }
 }

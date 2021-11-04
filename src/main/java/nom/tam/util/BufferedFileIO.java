@@ -222,13 +222,15 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      */
     public final synchronized long length() throws IOException {
         // It's either the file's length or that of the end of the (yet) unsynched buffer...
-        return Math.max(file.length(), startOfBuf + end);
+        if (end > 0) {
+            return Math.max(file.length(), startOfBuf + end);
+        }
+        return file.length();
     }
     
     /**
      * Sets the length of the file. This method calls the method of the same name
-     * in RandomAccessFile which is only available in JDK1.2 and greater. This
-     * method may be deleted for compilation with earlier versions.
+     * in {@link RandomAccessFile}.
      * 
      * @param newLength
      *            The number of bytes at which the file is set.
@@ -246,14 +248,12 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
             end = 0;
         }
         
-        // Before changing size, make sure the file's pointer matches the buffered pointer.
-        matchBufferPos();
+        if (getFilePointer() > newLength) {
+            seek(newLength);
+        }
         
         // Change the length of the file itself...
         file.setLength(newLength);
-        
-        // Realign the buffer pointer to the (possibly truncated) file pointer.
-        matchFilePos();
     }
     
     /** 

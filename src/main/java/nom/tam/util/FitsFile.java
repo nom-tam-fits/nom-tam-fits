@@ -361,14 +361,7 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
 
     @Override   
     public synchronized int skipBytes(int toSkip) throws IOException {
-        int n = (int) skip(toSkip);
-        
-        // Note that we allow negative skips...
-        if (n != toSkip) {
-            throw new EOFException("Skip reached file boundary at " + n + " of " + toSkip);
-        }
-        
-        return n;
+        return (int) skip(toSkip);
     }
 
     @Override
