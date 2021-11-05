@@ -44,6 +44,9 @@ class StringType extends ElementType<Buffer> {
         if (instance == null) {
             return 0;
         }
-        return ((CharSequence) instance).length();
+        if (instance instanceof CharSequence) {
+            return ((CharSequence) instance).length();
+        }
+        throw new IllegalArgumentException("Class " + instance.getClass().getName() + " is not an instance of CharSequence");
     }
 }

@@ -260,4 +260,6 @@ public class PrimitiveTypeTest {
         assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.nearestValueOf(40));
         assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.nearestValueOf(80));
     }
+    
+
 }

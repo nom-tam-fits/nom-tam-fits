@@ -171,47 +171,68 @@ public class FitsDecoderTest {
     
     @Test(expected = EOFException.class)
     public void testBooleanArrayUnexpectedReadEOF1() throws Exception {
-        FitsDecoder e = new FitsDecoder(InputReader.from(new InputStream() {
+        FitsDecoder e = new FitsDecoder(new InputReader() {
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                throw new EOFException();
+            }
+
             @Override
             public int read() throws IOException {
                 throw new EOFException();
             }
-        }));
+        });
         
         e.read(new boolean[1], 0, 1);
     }
     
     @Test(expected = EOFException.class)
     public void testBooleanArrayUnexpectedReadEOF2() throws Exception {
-        FitsDecoder e = new FitsDecoder(InputReader.from(new InputStream() {
+        FitsDecoder e = new FitsDecoder(new InputReader() {
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                throw new EOFException();
+            }
+
             @Override
             public int read() throws IOException {
                 throw new EOFException();
             }
-        }));
+        });
+        
         e.read(new Boolean[1], 0, 1);
     }
     
     @Test(expected = EOFException.class)
     public void testShortArrayUnexpectedReadEOF() throws Exception {
-        FitsDecoder e = new FitsDecoder(InputReader.from(new InputStream() {
+        FitsDecoder e = new FitsDecoder(new InputReader() {
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                throw new EOFException();
+            }
+
             @Override
             public int read() throws IOException {
                 throw new EOFException();
             }
-        }));
+        });
         
         e.read(new short[1], 0, 1);
     }
     
     @Test(expected = EOFException.class)
     public void testCharArrayUnexpectedReadEOF() throws Exception {
-        FitsDecoder e = new FitsDecoder(InputReader.from(new InputStream() {
+        FitsDecoder e = new FitsDecoder(new InputReader() {
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                throw new EOFException();
+            }
+
             @Override
             public int read() throws IOException {
                 throw new EOFException();
             }
-        }));
+        });
         
         e.read(new char[1], 0, 1);
     }
