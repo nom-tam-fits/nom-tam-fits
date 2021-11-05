@@ -151,9 +151,6 @@ public class Header implements FitsElement {
         try {
             myHeader.read(dis);
         } catch (EOFException e) {
-            if (e.getCause() instanceof TruncatedFileException) {
-                throw e;
-            }
             // An EOF exception is thrown only if the EOF was detected
             // when reading the first card. In this case we want
             // to return a null.
@@ -1584,22 +1581,24 @@ public class Header implements FitsElement {
             }
         } catch (EOFException e) {
             // Normal end-of-file
-            throw e;
-        } catch (HeaderCardException e) {
-            // Garbage header start
-            if (FitsFactory.getAllowTerminalJunk()) {
-                // Treat is as if end-of-file if terminal junk is allowed
-                LOG.log(Level.WARNING, "Junk detected at " + this.fileOffset, e);
-                throw new EOFException("Forced EOF at " + this.fileOffset + " due to terminal junk.");
+            throw e;   
+        } catch (Exception e) { 
+            if (firstCard && FitsFactory.getAllowTerminalJunk()) {
+                // If this happened where we expect a new header to start, then
+                // treat is as if end-of-file if terminal junk is allowed
+                forceEOF("Junk detected at " + this.fileOffset + ".", e);
+            } 
+            if (e instanceof TruncatedFileException) {
+                throw (TruncatedFileException) e;
             }
-            throw new IOException("Invalid FITS Header", e);
-        } catch (Exception e) {            
-            throw new IOException("Invalid FITS Header", e);
+            throw new IOException("Invalid FITS Header" + (FitsFactory.getAllowTerminalJunk() 
+                    ? "" : ":\n\n --> Try FitsFactory.setAllowTerminalJunk(true) prior to reading to work around.\n"), e);
         }        
         
         if (this.fileOffset >= 0) {
             this.input = dis;
         }
+        
         ensureCardSpace(cardCountingArray.getPhysicalCardsRead());
         readSize = FitsUtil.addPadding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE);
         
@@ -1608,11 +1607,27 @@ public class Header implements FitsElement {
         try {
             dis.skipAllBytes(FitsUtil.padding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE));
         } catch (IOException e) {
-            throw new TruncatedFileException("Failed to skip " + FitsUtil.padding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE) + " bytes", e);
+            // No biggy, we'll log it and but we have a complete header
+            forceEOF("Missing padding after header.", e);
         }
         
         // AK: Log if the file ends before the expected end-of-header position.
-        dis.checkTruncated();
+        if (dis.checkTruncated()) {
+            LOG.warning("Missing padding after header.");
+        }
+    }
+    
+    /**
+     * Forces an EOFException to be thrown when some other exception happened, essentially
+     * treating the exception to force  a normal end the reading of the header.
+     * 
+     * @param message       the message to log.
+     * @param cause         the exception encountered while reading the header
+     * @throws EOFException the EOFException we'll throw instead.
+     */
+    private void forceEOF(String message, Exception cause) throws EOFException {
+        LOG.log(Level.WARNING, message, cause);
+        throw new EOFException("Forced EOF at " + this.fileOffset + " due to terminal junk.");
     }
 
     /**

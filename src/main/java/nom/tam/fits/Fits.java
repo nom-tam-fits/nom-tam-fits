@@ -642,20 +642,30 @@ public class Fits implements Closeable {
         if (this.dataStr instanceof RandomAccess && this.lastFileOffset > 0) {
             FitsUtil.reposition(this.dataStr, this.lastFileOffset);
         }
+        
         Header hdr = Header.readHeader(this.dataStr);
         if (hdr == null) {
             this.atEOF = true;
             return null;
         }
+        
         Data data = hdr.makeData();
         try {
             data.read(this.dataStr);
-            this.dataStr.checkTruncated();
         } catch (PaddingException e) {
+            // Stream end before required padding after data...
             e.updateHeader(hdr);
-            if (!FitsFactory.getAllowTerminalJunk()) {
-                throw e;
-            }
+            LOG.warning("Missing padding after data segment.");
+        }
+        
+
+        // Check for truncation even if we successfully skipped to the expected end
+        // since skip may allow going beyond the EOF.
+        if (this.dataStr.checkTruncated()) {
+            // File ends before required padding after data...
+            // (files allow skipping beyond the end, which is why we don't
+            // catch it above)
+            LOG.warning("Missing padding after data segment.");
         }
         
         this.lastFileOffset = FitsUtil.findOffset(this.dataStr);
@@ -673,22 +683,20 @@ public class Fits implements Closeable {
      */
     private void readToEnd() throws FitsException {
 
-        while (this.dataStr != null && !this.atEOF) {
-            try {
+        try {
+            while (this.dataStr != null && !this.atEOF) {
                 if (readHDU() == null) {
-                    break;
-                }
-            } catch (IOException e) {
-                if (FitsFactory.getAllowTerminalJunk() && e.getCause() instanceof TruncatedFileException && getNumberOfHDUs() > 0) {
-                    this.atEOF = true;
+                    if (getNumberOfHDUs() == 0) {
+                        throw new FitsException("Not FITS file.");
+                    }
                     return;
                 }
-                
-                throw new FitsException("Corrupted FITS file." + (FitsFactory.getAllowTerminalJunk() 
-                        ? "" : ":\n\n --> Try FitsFactory.setAllowTerminalJunk(true) prior to reading to work around.\n"), e);
             }
+        } catch (IOException e) {
+            throw new FitsException("Corrupted FITS file.", e);
         }
     }
+       
 
     /**
      * Add or Modify the CHECKSUM keyword in all headers. by R J Mathar
