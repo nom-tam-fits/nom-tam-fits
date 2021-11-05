@@ -123,6 +123,8 @@ public final class ArrayFuncs {
     }
 
     /**
+     * @deprecated No longer used within the library itself.
+     * 
      * Copy one array into another. This function copies the contents of one
      * array into a previously allocated array. The arrays must agree in type
      * and size.
@@ -132,22 +134,35 @@ public final class ArrayFuncs {
      * @param copy
      *            The array to be copied into. This array must already be fully
      *            allocated.
+     * @throws IllegalArgumentException
+     *            if the two arrays do not match in type or size.
      */
-    public static void copyArray(Object original, Object copy) {
-        Class<? extends Object> originalClass = original.getClass();
-        if (!originalClass.isArray()) {
-            return;
+    @Deprecated
+    public static void copyArray(Object original, Object copy) throws IllegalArgumentException {
+        Class<? extends Object> cl = original.getClass();
+        if (!cl.isArray()) {
+            throw new IllegalArgumentException("original is not an array");
         }
+        
+        if (!copy.getClass().equals(cl)) {
+            throw new IllegalArgumentException("mismatch of types: " + cl.getName() + " vs " + copy.getClass().getName());
+        }
+        
         int length = Array.getLength(original);
-        if (originalClass.getComponentType().isArray()) {
-            if (length != Array.getLength(copy)) {
-                return;
-            }
-            for (int index = 0; index < length; index++) {
-                copyArray(Array.get(original, index), Array.get(copy, index));
-            }
+        
+        if (Array.getLength(copy) != length) {
+            throw new IllegalArgumentException("mismatch of sizes: " + length + " vs " + Array.getLength(copy));
         }
-        System.arraycopy(original, 0, copy, 0, length);
+        
+        if (original instanceof Object[]) {
+            Object[] from = (Object[]) original;
+            Object[] to = (Object[]) copy;
+            for (int index = 0; index < length; index++) {
+                copyArray(from[index], to[index]);
+            }
+        } else {
+            System.arraycopy(original, 0, copy, 0, length);
+        }
     }
 
     /**
