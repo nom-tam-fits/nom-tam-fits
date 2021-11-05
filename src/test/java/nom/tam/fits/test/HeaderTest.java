@@ -237,7 +237,7 @@ public class HeaderTest {
 
     @Test
     public void longStringTest() throws Exception {
-        FitsFactory.setLongStringsEnabled(false);
+        FitsFactory.setLongStringsEnabled(true);
         String seq = "0123456789";
         String lng = "";
         String sixty = seq + seq + seq + seq + seq + seq;
@@ -249,8 +249,7 @@ public class HeaderTest {
         try {
             f = new Fits("target/ht1.fits");
             Header hdr = f.getHDU(0).getHeader();
-            assertEquals("Initial state:", false, FitsFactory.isLongStringsEnabled());
-            FitsFactory.setLongStringsEnabled(true);
+
             assertEquals("Set state:", true, FitsFactory.isLongStringsEnabled());
             hdr.addValue("LONG1", lng, "Here is a comment that is also very long and will be truncated at least a little");
             hdr.addValue("LONG2", "xx'yy'zz" + lng, "Another comment");
@@ -293,10 +292,8 @@ public class HeaderTest {
                 bf = new FitsFile("target/ht4.hdr", "r");
                 hdr = new Header(bf);
                 assertEquals("Set state2:", true, FitsFactory.isLongStringsEnabled());
-                val = hdr.getStringValue("LONG1");
-                assertEquals("LongT5", val, lng);
-                val = hdr.getStringValue("LONG2");
-                assertEquals("LongT6", "xx'yy'zz" + lng, val);
+                assertEquals("LongT5", lng, hdr.getStringValue("LONG1"));
+                assertEquals("LongT6", "xx'yy'zz" + lng, hdr.getStringValue("LONG2"));
                 assertEquals("longamp2", lng + "&", hdr.getStringValue("LONGISH"));
                 assertEquals("APOS1b", 70, hdr.getStringValue("APOS1").length());
                 assertEquals("APOS2b", 71, hdr.getStringValue("APOS2").length());

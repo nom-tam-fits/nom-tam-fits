@@ -519,7 +519,7 @@ public class HeaderCardTest {
         hc = new HeaderCard(key, "a verly long value that must be splitted over multiple lines to fit the card", "the comment is also not the smallest");
 
         assertEquals("HIERARCH TEST1 TEST2 INT = 'a verly long value that must be splitted over mult&'" + //
-                "CONTINUE  'iple lines to fit the card' /the comment is also not the smallest    ", hc.toString());
+                "CONTINUE  'iple lines to fit the card' / the comment is also not the smallest   ", hc.toString());
 
     }
     
@@ -591,7 +591,7 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard(key, "a verly long value that must be splitted over multiple lines to fit the card", "the comment is also not the smallest");
 
         assertEquals("HIERARCH TEST1 TEST2 INT ='a verly long value that must be splitted over multi&'" + //
-                "CONTINUE  'ple lines to fit the card' /the comment is also not the smallest     ", hc.toString());
+                "CONTINUE  'ple lines to fit the card' / the comment is also not the smallest    ", hc.toString());
 
     }
     

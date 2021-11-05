@@ -117,10 +117,8 @@ public class JunkTest {
         } finally {
             SafeClose.close(f);
         }
-        assertTrue("Junk Test: Valid File OK,Dft", readSuccess("target/j1.fits"));
-        assertTrue("Junk Test: Invalid File Fails, Dft", !readSuccess("target/j2.fits"));
-        assertTrue("Junk Test: Short junk fails, Dft", !readSuccess("target/j3.fits"));
-        assertTrue("Junk Test: Long junk fails, Dft", !readSuccess("target/j4.fits"));
+    
+        assertTrue("allow junk", FitsFactory.getAllowTerminalJunk());
 
         FitsFactory.setAllowTerminalJunk(true);
 

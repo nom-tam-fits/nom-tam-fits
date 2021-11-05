@@ -142,6 +142,8 @@ public class ChecksumTest {
 
     @Test
     public void testCheckSum2() throws Exception {
+        // AK: This test requires long strings to be disabled.
+        FitsFactory.setLongStringsEnabled(false);
         FileInputStream in = new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits");
         Fits fits = new Fits();
         fits.setStream(new FitsInputStream(in));

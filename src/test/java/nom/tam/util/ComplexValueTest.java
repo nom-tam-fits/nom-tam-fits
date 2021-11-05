@@ -167,8 +167,16 @@ public class ComplexValueTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void testBadComplex2() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(false);
         // Missing closing bracket
         new ComplexValue("(5566.2,-1123.1"); 
+    }
+    
+    public void testBadComplex2A() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(true);
+        // Missing closing bracket
+        new ComplexValue("(5566.2,-1123.1"); 
+        // no exception
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -179,22 +187,45 @@ public class ComplexValueTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void testBadComplex4() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(false);
         // Missing closing bracket
         new ComplexValue("(5566.2,,   "); 
     }
     
+    public void testBadComplex4A() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(true);
+        // Missing closing bracket
+        new ComplexValue("(5566.2,,   "); 
+        // no exception
+    }
+    
     @Test(expected = IllegalArgumentException.class)
     public void testBadComplex5() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(false);
         // Missing closing bracket
         new ComplexValue("5566.2   )"); 
     }
     
+    public void testBadComplex5A() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(true);
+        // Missing closing bracket
+        new ComplexValue("5566.2   )");
+        // no exception
+    }
+    
     @Test(expected = IllegalArgumentException.class)
     public void testBadComplex6() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(false);
         // Wrong number of components
         new ComplexValue("(5566.2,1.0,-11.4)"); 
     }
     
+    public void testBadComplex6A() throws Exception {
+        FitsFactory.setAllowHeaderRepairs(true);
+        // Wrong number of components
+        new ComplexValue("(5566.2,1.0,-11.4)"); 
+        // no exception
+    }
     
     @Test
     public void testRepairComplex() throws Exception {

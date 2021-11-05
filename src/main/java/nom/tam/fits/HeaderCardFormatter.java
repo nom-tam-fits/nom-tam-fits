@@ -285,12 +285,15 @@ class HeaderCardFormatter {
             return true;
         }
         
-        if (!card.isCommentStyleCard() && FitsFactory.isLongStringsEnabled() && buf.charAt(buf.length() - 1) == '\'') {
-            appendLongStringComment(buf, card);
-            return true;
-        }
-        
         int available = getAvailable(buf);
+        
+        if (!card.isCommentStyleCard() && FitsFactory.isLongStringsEnabled() && card.isStringValue()) {
+            if (card.getComment().length() + COMMENT_PREFIX.length() > available) {
+                // No room for a complete regular comment, but we can do a long string comment...
+                appendLongStringComment(buf, card);
+                return true;
+            }
+        }
 
         if (card.isCommentStyleCard()) {
             // '  ' instead of '= '
@@ -398,8 +401,7 @@ class HeaderCardFormatter {
             buf.append(LONG_COMMENT_PREFIX);
             append(buf, comment, 0);
             return;
-        }
-          
+        }   
         
         // Add '&' to the end of the string value.
         // appendQuotedValue() must always leave space for it!
@@ -408,11 +410,20 @@ class HeaderCardFormatter {
         
         int from = 0;
         
-        // If there is room for an inline comment, then go for it
-        if (getAvailable(buf) > LONG_COMMENT_PREFIX.length()) {
-            buf.append(LONG_COMMENT_PREFIX);
-            from = append(buf, comment, 0);
-        } 
+        int available = getAvailable(buf);
+        
+        // If there is room for a standard inline comment, then go for it
+        if (available >= COMMENT_PREFIX.length()) {
+            buf.append(COMMENT_PREFIX);
+        } else {
+            // Add a CONTINUE card with an empty string and try again...
+            pad(buf);
+            buf.append(CONTINUE.key() + "  ''");
+            appendComment(buf, card);
+            return;
+        }
+            
+        from = append(buf, comment, 0);
         
         // Now add records as needed to write the comment fully...
         while (from < comment.length()) {
@@ -498,6 +509,7 @@ class HeaderCardFormatter {
                 }
                 
                 buf.append('\'');
+                
                 
                 return text.length() - from;
             }
