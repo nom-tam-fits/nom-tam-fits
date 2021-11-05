@@ -1583,21 +1583,20 @@ public class Header implements FitsElement {
                 }
             }
         } catch (EOFException e) {
-            if (!firstCard) {
-                throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage(), e));
-            }
+            // Normal end-of-file
             throw e;
-
-        } catch (TruncatedFileException e) {            
-            if (firstCard && FitsFactory.getAllowTerminalJunk()) {
-                EOFException eofException = new EOFException("First card truncated");
-                eofException.initCause(e);
-                throw eofException;
+        } catch (HeaderCardException e) {
+            // Garbage header start
+            if (FitsFactory.getAllowTerminalJunk()) {
+                // Treat is as if end-of-file if terminal junk is allowed
+                LOG.log(Level.WARNING, "Junk detected at " + this.fileOffset, e);
+                throw new EOFException("Forced EOF at " + this.fileOffset + " due to terminal junk.");
             }
-            throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage(), e));
-        } catch (Exception e) {
             throw new IOException("Invalid FITS Header", e);
-        }
+        } catch (Exception e) {            
+            throw new IOException("Invalid FITS Header", e);
+        }        
+        
         if (this.fileOffset >= 0) {
             this.input = dis;
         }
@@ -1994,14 +1993,10 @@ public class Header implements FitsElement {
         }
     }
 
-    private void checkFirstCard(String key) throws IOException {
+    private void checkFirstCard(String key) throws HeaderCardException {
         // AK: key cannot be null by the caller already, so checking for it makes dead code.
-        if (!key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {            
-            if (this.fileOffset > 0 && FitsFactory.getAllowTerminalJunk()) {
-                throw new EOFException("Not FITS format at " + this.fileOffset + ":" + key);
-            }
-            
-            throw new IOException("Not FITS format at " + this.fileOffset + ": " + key);
+        if (!key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {      
+            throw new HeaderCardException("Not a proper FITS header: " + HeaderCard.sanitize(key) + " at " + this.fileOffset);
         }
     }
 
