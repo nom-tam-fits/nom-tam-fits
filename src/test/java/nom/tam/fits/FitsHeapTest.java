@@ -4,7 +4,7 @@ package nom.tam.fits;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2016 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -36,8 +36,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 
-import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.FitsOutputStream;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -104,35 +104,36 @@ public class FitsHeapTest {
     public void testHeapReadFailures() throws Exception {
         FitsException actual = null;
         try {
-            BufferedDataInputStream in = new BufferedDataInputStream(new ByteArrayInputStream(new byte[50]));
+            FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[50]));
 
             new FitsHeap(100).read(in);
         } catch (FitsException e) {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("no more data"));
+        Assert.assertTrue(actual.getCause() instanceof EOFException);
 
         actual = null;
         try {
-            BufferedDataInputStream in = new BufferedDataInputStream(new ByteArrayInputStream(new byte[50]));
+            FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[50]));
             in.read(new byte[50]);
             new FitsHeap(100).read(in);
         } catch (FitsException e) {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getCause()instanceof EOFException);
+        Assert.assertTrue(actual.getCause() instanceof EOFException);
     }
 
     @Test
     public void testHeapWriteFailures() throws Exception {
         FitsException actual = null;
         try {
-            BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream()){@Override
-            public synchronized void write(byte[] b, int off, int len) throws IOException {
-                throw new IOException("testHeapWriteFailures");
-            }};
+            FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()){
+                @Override
+                public synchronized void write(byte[] b, int off, int len) throws IOException {
+                    throw new IOException("testHeapWriteFailures");
+                }};
             new FitsHeap(100).write(out);
         } catch (FitsException e) {
             actual = e;
@@ -141,4 +142,18 @@ public class FitsHeapTest {
         Assert.assertTrue(actual.getCause().getMessage().equals("testHeapWriteFailures"));
     }
 
+    @Test(expected = FitsException.class)
+    public void testHeapGetDataEOF() throws Exception {
+        FitsHeap heap = new FitsHeap(3);
+        // The full size of the float is beyond the heap size.
+        heap.getData(0, new float[1]);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testHeapPutDataEOF() throws Exception {
+        FitsHeap heap = new FitsHeap(3);
+        // Trying to put an object on the heap that does not belong...
+        heap.putData(new Header());
+    }
+    
 }

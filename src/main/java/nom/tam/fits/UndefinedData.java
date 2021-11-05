@@ -4,7 +4,7 @@ package nom.tam.fits;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -49,6 +49,7 @@ import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.FitsEncoder;
 
 /**
  * This class provides a simple holder for data which is not handled by other
@@ -88,7 +89,7 @@ public class UndefinedData extends Data {
      *            object to create the hdu from
      */
     public UndefinedData(Object x) {
-        this.data = new byte[(int) ArrayFuncs.computeLSize(x)];
+        this.data = new byte[(int) FitsEncoder.computeSize(x)];
         ArrayFuncs.copyInto(x, this.data);
     }
 
@@ -135,7 +136,7 @@ public class UndefinedData extends Data {
         try {
             i.readFully(this.data);
         } catch (IOException e) {
-            throw new FitsException("Unable to read unknown data:" + e);
+            throw new FitsException("Unable to read unknown data:", e);
         }
 
         int pad = FitsUtil.padding(getTrueSize());
@@ -153,7 +154,7 @@ public class UndefinedData extends Data {
         try {
             o.write(this.data);
         } catch (IOException e) {
-            throw new FitsException("IO Error on unknown data write" + e);
+            throw new FitsException("IO Error on unknown data write", e);
         }
         FitsUtil.pad(o, getTrueSize());
     }

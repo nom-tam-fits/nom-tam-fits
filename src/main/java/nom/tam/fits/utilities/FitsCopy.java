@@ -4,7 +4,7 @@ package nom.tam.fits.utilities;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -33,7 +33,7 @@ package nom.tam.fits.utilities;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsFile;
 
 public final class FitsCopy {
 
@@ -59,7 +59,7 @@ public final class FitsCopy {
                 }
             } while (h != null);
             f.close();
-            try (BufferedFile bf = new BufferedFile(args[1], "rw")) {
+            try (FitsFile bf = new FitsFile(args[1], "rw")) {
                 f.write(bf);
                 bf.close();
             }

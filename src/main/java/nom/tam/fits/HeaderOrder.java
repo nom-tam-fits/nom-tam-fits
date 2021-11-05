@@ -18,7 +18,7 @@ import java.io.Serializable;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -51,12 +51,10 @@ import java.io.Serializable;
  */
 public class HeaderOrder implements java.util.Comparator<String>, Serializable {
 
-
-    
     /**
-     * Serialization id.
+     * 
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -5900038332559417655L;
 
     /**
      * Which order should the cards indexed by these keys be written out? This

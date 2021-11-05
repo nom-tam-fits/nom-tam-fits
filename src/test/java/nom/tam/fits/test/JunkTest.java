@@ -4,7 +4,7 @@ package nom.tam.fits.test;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -34,7 +34,7 @@ package nom.tam.fits.test;
 import static org.junit.Assert.assertTrue;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsFile;
 import nom.tam.util.SafeClose;
 
 import org.junit.Test;
@@ -77,9 +77,9 @@ public class JunkTest {
             // Write a FITS file.
 
             // Valid FITS with one HDU
-            BufferedFile bfx = null;
+            FitsFile bfx = null;
             try {
-                bfx = new BufferedFile("target/j1.fits", "rw");
+                bfx = new FitsFile("target/j1.fits", "rw");
                 f.write(bfx);
                 bfx.flush();
             } finally {
@@ -87,18 +87,18 @@ public class JunkTest {
             }
 
             // Invalid junk with no valid FITS.
-            BufferedFile bf = new BufferedFile("target/j2.fits", "rw");
+            FitsFile bf = new FitsFile("target/j2.fits", "rw");
             bf.write(new byte[10]);
             bf.close();
 
             // Valid FITS followed by short junk.
-            bf = new BufferedFile("target/j3.fits", "rw");
+            bf = new FitsFile("target/j3.fits", "rw");
             f.write(bf);
             bf.write("JUNKJUNK".getBytes());
             bf.close();
 
             // Valid FITS followed by long junk.
-            bf = new BufferedFile("target/j4.fits", "rw");
+            bf = new FitsFile("target/j4.fits", "rw");
             f.write(bf);
             for (int i = 0; i < 100; i += 1) {
                 bf.write("A random string".getBytes());

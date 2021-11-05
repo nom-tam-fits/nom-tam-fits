@@ -4,7 +4,7 @@ package nom.tam.fits;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -1325,8 +1325,7 @@ public class Header implements FitsElement {
             cursor().add(hc);
             return hc;
         } catch (HeaderCardException e) {
-            LOG.warning("Ignoring comment card with invalid key [" + HeaderCard.sanitize(key) + "]");
-            e.printStackTrace();
+            LOG.log(Level.WARNING, "Ignoring comment card with invalid key [" + HeaderCard.sanitize(key) + "]", e);
             return null;
         }
     }
@@ -1585,17 +1584,17 @@ public class Header implements FitsElement {
             }
         } catch (EOFException e) {
             if (!firstCard) {
-                throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage()));
+                throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage(), e));
             }
             throw e;
 
-        } catch (TruncatedFileException e) {
+        } catch (TruncatedFileException e) {            
             if (firstCard && FitsFactory.getAllowTerminalJunk()) {
                 EOFException eofException = new EOFException("First card truncated");
                 eofException.initCause(e);
                 throw eofException;
             }
-            throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage()));
+            throw new IOException("Invalid FITS Header:", new TruncatedFileException(e.getMessage(), e));
         } catch (Exception e) {
             throw new IOException("Invalid FITS Header", e);
         }
@@ -1612,6 +1611,9 @@ public class Header implements FitsElement {
         } catch (IOException e) {
             throw new TruncatedFileException("Failed to skip " + FitsUtil.padding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE) + " bytes", e);
         }
+        
+        // AK: Log if the file ends before the expected end-of-header position.
+        dis.checkTruncated();
     }
 
     /**
@@ -1999,7 +2001,7 @@ public class Header implements FitsElement {
                 throw new EOFException("Not FITS format at " + this.fileOffset + ":" + key);
             }
             
-            throw new IOException("Not FITS format at " + this.fileOffset + ":" + key);
+            throw new IOException("Not FITS format at " + this.fileOffset + ": " + key);
         }
     }
 

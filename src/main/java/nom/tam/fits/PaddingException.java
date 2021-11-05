@@ -4,7 +4,7 @@ package nom.tam.fits;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -48,11 +48,11 @@ package nom.tam.fits;
  */
 public class PaddingException extends FitsException {
 
-    /**
-     * serial version id.
-     */
-    private static final long serialVersionUID = 1L;
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8716484905278318366L;
     /**
      * The HDU where the error happened.
      */
@@ -60,8 +60,12 @@ public class PaddingException extends FitsException {
 
     public PaddingException(String msg, Data data, Exception cause) throws FitsException {
         super(msg, cause);
-        this.truncatedHDU = FitsFactory.hduFactory(data.getKernel());
-        this.truncatedHDU = FitsFactory.hduFactory(this.truncatedHDU.getHeader(), data);
+        try {
+            this.truncatedHDU = FitsFactory.hduFactory(data.getKernel());
+            //this.truncatedHDU = FitsFactory.hduFactory(this.truncatedHDU.getHeader(), data);
+        } catch (Exception e) {
+            // TODO nothing to do
+        }
     }
 
     public BasicHDU<?> getTruncatedHDU() {

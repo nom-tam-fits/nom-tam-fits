@@ -4,7 +4,7 @@ package nom.tam.util;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2016 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -51,10 +51,10 @@ public class BufferedFileTest {
 
     @Test
     public void testCheckEof() throws IOException {
-        BufferedFile file = new BufferedFile("target/BufferedFileCheckEof", "rw");
+        FitsFile file = new FitsFile("target/BufferedFileCheckEof", "rw");
         file.write(new byte[2]);
         file.close();
-        file = new BufferedFile("target/BufferedFileCheckEof", "rw");
+        file = new FitsFile("target/BufferedFileCheckEof", "rw");
         try {
             // there are only 2 so ready them
             Assert.assertEquals(2, file.read(new char[3]));
@@ -74,11 +74,11 @@ public class BufferedFileTest {
     @Test
     public void testReadWriteAscii() throws IOException {
         FitsFactory.setUseUnicodeChars(false);
-        BufferedFile file = new BufferedFile("target/BufferedFileReadWriteAscii", "rw");
+        FitsFile file = new FitsFile("target/BufferedFileReadWriteAscii", "rw");
         file.write(new byte[10]);
         Assert.assertTrue(file.getChannel().isOpen());
         file.close();
-        file = new BufferedFile("target/BufferedFileReadWriteAscii", "rw");
+        file = new FitsFile("target/BufferedFileReadWriteAscii", "rw");
         try {
             file.write(new char[2]);
             Assert.assertEquals(3, file.read(new char[3]));
@@ -90,11 +90,11 @@ public class BufferedFileTest {
     @Test
     public void testReadWriteUnicode() throws IOException {
         FitsFactory.setUseUnicodeChars(true);
-        BufferedFile file = new BufferedFile("target/BufferedFileReadWriteUnicode", "rw");
+        FitsFile file = new FitsFile("target/BufferedFileReadWriteUnicode", "rw");
         file.write(new byte[10]);
         Assert.assertTrue(file.getChannel().isOpen());
         file.close();
-        file = new BufferedFile("target/BufferedFileReadWriteUnicode", "rw");
+        file = new FitsFile("target/BufferedFileReadWriteUnicode", "rw");
         try {
             file.write(new char[2]);
             Assert.assertEquals(6, file.read(new char[3]));
@@ -105,18 +105,18 @@ public class BufferedFileTest {
 
     @Test
     public void testBigMark() throws IOException {
-        BufferedFile file = new BufferedFile("target/BufferedFileBigMark", "rw");
+        FitsFile file = new FitsFile("target/BufferedFileBigMark", "rw");
         file.write(new byte[10]);
         file.close();
-        file = new BufferedFile("target/BufferedFileBigMark", "rw");
+        file = new FitsFile("target/BufferedFileBigMark", "rw");
         Assert.assertTrue(file.markSupported());
         try {
             file.read();
-            long expectesd = file.getFilePointer();
+            long expected = file.getFilePointer();
             file.mark(20);
             file.read();
             file.reset();
-            Assert.assertEquals(expectesd, file.getFilePointer());
+            Assert.assertEquals(expected, file.getFilePointer());
         } finally {
             file.close();
         }
@@ -124,12 +124,12 @@ public class BufferedFileTest {
 
     @Test
     public void testReadFully() throws IOException {
-        BufferedFile file = new BufferedFile("target/BufferedFileReadFully", "rw");
+        FitsFile file = new FitsFile("target/BufferedFileReadFully", "rw");
         file.write(0xffffffff);
         file.write(0xffffffff);
         file.write(0xffffffff);
         file.close();
-        file = new BufferedFile("target/BufferedFileReadFully", "rw");
+        file = new FitsFile("target/BufferedFileReadFully", "rw");
         try {
             byte[] fully = new byte[3];
             file.readFully(fully);
@@ -145,12 +145,12 @@ public class BufferedFileTest {
 
     @Test
     public void testReadFully2() throws IOException {
-        BufferedFile file = new BufferedFile("target/BufferedFileReadFully2", "rw");
+        FitsFile file = new FitsFile("target/BufferedFileReadFully2", "rw");
         file.write(0xffffffff);
         file.write(0xffffffff);
         file.write(0xffffffff);
         file.close();
-        file = new BufferedFile("target/BufferedFileReadFully2", "rw");
+        file = new FitsFile("target/BufferedFileReadFully2", "rw");
         try {
             byte[] fully = new byte[3];
             file.readFully(fully, 0, fully.length);

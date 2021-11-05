@@ -4,7 +4,7 @@ package nom.tam.image.compression.bintable;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2016 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -38,7 +38,7 @@ import java.nio.ByteBuffer;
 import nom.tam.fits.FitsException;
 import nom.tam.image.compression.hdu.CompressedTableData;
 import nom.tam.util.ArrayDataInput;
-import nom.tam.util.BufferedDataInputStream;
+import nom.tam.util.FitsInputStream;
 import nom.tam.util.ColumnTable;
 
 public class BinaryTableTileDecompressor extends BinaryTableTile {
@@ -57,7 +57,7 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
         if (this.is == null) {
             ByteBuffer unCompressedBytes = ByteBuffer.wrap(new byte[getUncompressedSizeInBytes()]);
             getCompressorControl().decompress(this.compressedBytes, type.asTypedBuffer(unCompressedBytes), null);
-            this.is = new BufferedDataInputStream(new ByteArrayInputStream(unCompressedBytes.array()));
+            this.is = new FitsInputStream(new ByteArrayInputStream(unCompressedBytes.array()));
         }
         try {
             this.data.read(this.is, this.rowStart, this.rowEnd, this.column);

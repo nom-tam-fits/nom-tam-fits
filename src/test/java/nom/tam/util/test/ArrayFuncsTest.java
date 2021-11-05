@@ -4,7 +4,7 @@ package nom.tam.util.test;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -39,7 +39,9 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 
+import nom.tam.fits.Header;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.TestArrayFuncs;
@@ -689,5 +691,58 @@ public class ArrayFuncsTest {
     public void testnLElementsFail() throws Exception {
         Assert.assertEquals(1, ArrayFuncs.nLElements(this));
     }
+    
+    @Test
+    public void testArrayDescriptionOfNull() throws Exception {
+        Assert.assertEquals("NULL", ArrayFuncs.arrayDescription(null));
+    }
+    
+    @Test
+    public void testCopyMultidim() throws Exception {
+        int[][] from = new int[2][3];
+        
+        int k = 0;
+        for (int i=0; i<from.length; i++) {
+            for (int j=0; j<from[i].length; j++) {
+                from[i][j] = ++k;
+            }
+        }
 
+        int[][] to = new int[2][3];
+        ArrayFuncs.copyArray(from, to);
+        
+        for (int i=0; i<from.length; i++) {
+            for (int j=0; j<from[i].length; j++) {
+                assertEquals("[" + i + ", " + j + "]", from[i][j], to[i][j]);
+            }
+        }
+    }
+    
+    @Test
+    public void testCopyHeterogeneous() throws Exception {
+        int[] i = new int[] { 1, 2, 3 };
+        double[] d = new double[] { 1.1, 2.1 };
+        Object from = new Object[] { i, d };
+        Object[] to = new Object[] { new int[i.length], new double[d.length] };
+        ArrayFuncs.copyArray(from, to);
+        
+        assertTrue(Arrays.equals(i, (int[]) to[0]));
+        assertTrue(Arrays.equals(d, (double[]) to[1]));
+    }
+    
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testCopyNotArray() throws Exception {
+        ArrayFuncs.copyArray(new Header(), new Header());
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testCopyMismatchedType() throws Exception {
+        ArrayFuncs.copyArray(new int[3], new double[3]);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testCopyMismatchedSize() throws Exception {
+        ArrayFuncs.copyArray(new int[3], new int[4]);
+    }
 }

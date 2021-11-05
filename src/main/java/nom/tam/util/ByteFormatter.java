@@ -4,7 +4,7 @@ package nom.tam.util;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -32,6 +32,11 @@ package nom.tam.util;
  */
 
 /**
+ * @deprecated  This class should not be exposed in the publi API and is meant
+ *  for internal use only in ASCII tables. Also, it may have overlapping 
+ *  functionality with other classes, which should probably be eliminated for
+ *  simplicity's sake (and thus less chance of nasty bugs).
+ * 
  * This class provides mechanisms for efficiently formatting numbers and
  * Strings. Data is appended to existing byte arrays. Note that the formatting
  * of real or double values may differ slightly (in the last bit) from the
@@ -54,6 +59,7 @@ package nom.tam.util;
  * transitions take place the user can force either exponential or decimal
  * notation.
  */
+@Deprecated
 public final class ByteFormatter {
 
     public static final String NOT_A_NUMBER = "NaN";
@@ -211,8 +217,7 @@ public final class ByteFormatter {
      * @param shift
      *            The exponent of the power of 10 that we shifted val to get the
      *            given mantissa.
-     * @return Offset of next available character in buffer. @ * if the value
-     *         was truncated
+     * @return Offset of next available character in buffer.
      */
     private int combineReal(double val, byte[] buf, int off, int len, byte[] mant, int lmant, int shift) {
 
@@ -384,8 +389,7 @@ public final class ByteFormatter {
      *            Offset within buffer
      * @param len
      *            Maximum length of integer
-     * @return offset of next unused character in input buffer. @ * if the value
-     *         was truncated
+     * @return offset of next unused character in input buffer. 
      */
     public int format(double val, byte[] buf, int off, int len) {
 

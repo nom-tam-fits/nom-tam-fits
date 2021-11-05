@@ -4,7 +4,7 @@ package nom.tam.util.test;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,7 +31,7 @@ package nom.tam.util.test;
  * #L%
  */
 
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsFile;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -40,14 +40,14 @@ import org.junit.Test;
 
 public class StreamFileTest {
 
-    private BufferedFile out;
+    private FitsFile out;
 
-    private BufferedFile in;
+    private FitsFile in;
 
     @Before
     public void setup() throws Exception {
-        out = new BufferedFile("target/streamFileTest.bin", "rw");
-        in = new BufferedFile("target/streamFileTest.bin", "r");
+        out = new FitsFile("target/streamFileTest.bin", "rw");
+        in = new FitsFile("target/streamFileTest.bin", "r");
     }
 
     @After

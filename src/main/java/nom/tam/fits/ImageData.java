@@ -4,7 +4,7 @@ package nom.tam.fits;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -50,6 +50,7 @@ import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.FitsEncoder;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.array.MultiArrayIterator;
 import nom.tam.util.type.ElementType;
@@ -151,7 +152,7 @@ public class ImageData extends Data {
      */
     public ImageData(Object x) {
         this.dataArray = x;
-        this.byteSize = ArrayFuncs.computeLSize(x);
+        this.byteSize = FitsEncoder.computeSize(x);
     }
 
     /**
@@ -181,13 +182,12 @@ public class ImageData extends Data {
 
     @Override
     public void read(ArrayDataInput i) throws FitsException {
-
         // Don't need to read null data (noted by Jens Knudstrup)
         if (this.byteSize == 0) {
             return;
         }
         setFileOffset(i);
-
+        
         if (i instanceof RandomAccess) {
             this.tiler = new ImageDataTiler((RandomAccess) i, ((RandomAccess) i).getFilePointer(), this.dataDescription);
             try {
@@ -200,7 +200,7 @@ public class ImageData extends Data {
         } else {
             this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
             try {
-                i.readLArray(this.dataArray);
+                i.readArrayFully(this.dataArray);
             } catch (IOException e) {
                 throw new FitsException("Unable to read image data:" + e);
             }
@@ -212,16 +212,16 @@ public class ImageData extends Data {
         try {
             i.skipAllBytes(pad);
         } catch (EOFException e) {
-            throw new PaddingException("Error skipping padding after image", this, e);
+            throw new PaddingException("EOF while skipping padding after image", this, e);
         } catch (IOException e) {
-            throw new FitsException("Error skipping padding after image", e);
+            throw new FitsException("IO error while skipping padding after image", e);
         }
     }
 
     public void setBuffer(Buffer data) {
         ElementType<Buffer> elementType = ElementType.forClass(this.dataDescription.type);
         this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
-        MultiArrayIterator iterator = new MultiArrayIterator(this.dataArray);
+        MultiArrayIterator<?> iterator = new MultiArrayIterator<>(this.dataArray);
         Object array = iterator.next();
         while (array != null) {
             elementType.getArray(data, array);

@@ -4,7 +4,7 @@ package nom.tam.util;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -37,7 +37,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.util.array.MultiArrayCopier;
-import nom.tam.util.array.MultiArrayIterator;
 import nom.tam.util.type.ElementType;
 
 /**
@@ -67,44 +66,16 @@ public final class ArrayFuncs {
                 .toString();
     }
 
+    /**
+     * Use {@link FitsEncoder#computeSize(Object)} instead. 
+     */
+    @Deprecated
     public static long computeLSize(Object o) {
-        if (o == null) {
-            return 0;
-        }
-        if (o.getClass().isArray()) {
-            long size = 0;
-            MultiArrayIterator iter = new MultiArrayIterator(o);
-            Object array;
-            while ((array = iter.next()) != null) {
-                long length = Array.getLength(array);
-                if (length > 0) {
-                    Class<?> componentType = array.getClass().getComponentType();
-                    ElementType<?> elementType = ElementType.forClass(componentType);
-                    if (componentType.isPrimitive()) {
-                        size += length * elementType.size();
-                    } else {
-                        for (int index = 0; index < length; index++) {
-                            size += elementType.size(Array.get(array, index));
-                        }
-                    }
-                }
-            }
-            return size;
-        }
-        ElementType<?> elementType = ElementType.forClass(o.getClass());
-        if (elementType.isVariableSize()) {
-            return elementType.size(o);
-        }
-        return elementType.size();
+        return FitsEncoder.computeSize(o);
     }
 
     /**
-     * @return Compute the size of an object. Note that this only handles arrays
-     *         or scalars of the primitive objects and Strings. It returns 0 for
-     *         any object array element it does not understand.
-     * @param o
-     *            The object whose size is desired.
-     * @deprecated May silently underestimate the size if the size &gt; 2 GB.
+     * Use {@link FitsEncoder#computeSize(Object)} instead. 
      */
     @Deprecated
     public static int computeSize(Object o) {
@@ -152,6 +123,8 @@ public final class ArrayFuncs {
     }
 
     /**
+     * @deprecated No longer used within the library itself.
+     * 
      * Copy one array into another. This function copies the contents of one
      * array into a previously allocated array. The arrays must agree in type
      * and size.
@@ -161,22 +134,35 @@ public final class ArrayFuncs {
      * @param copy
      *            The array to be copied into. This array must already be fully
      *            allocated.
+     * @throws IllegalArgumentException
+     *            if the two arrays do not match in type or size.
      */
-    public static void copyArray(Object original, Object copy) {
-        Class<? extends Object> originalClass = original.getClass();
-        if (!originalClass.isArray()) {
-            return;
+    @Deprecated
+    public static void copyArray(Object original, Object copy) throws IllegalArgumentException {
+        Class<? extends Object> cl = original.getClass();
+        if (!cl.isArray()) {
+            throw new IllegalArgumentException("original is not an array");
         }
+        
+        if (!copy.getClass().equals(cl)) {
+            throw new IllegalArgumentException("mismatch of types: " + cl.getName() + " vs " + copy.getClass().getName());
+        }
+        
         int length = Array.getLength(original);
-        if (originalClass.getComponentType().isArray()) {
-            if (length != Array.getLength(copy)) {
-                return;
-            }
-            for (int index = 0; index < length; index++) {
-                copyArray(Array.get(original, index), Array.get(copy, index));
-            }
+        
+        if (Array.getLength(copy) != length) {
+            throw new IllegalArgumentException("mismatch of sizes: " + length + " vs " + Array.getLength(copy));
         }
-        System.arraycopy(original, 0, copy, 0, length);
+        
+        if (original instanceof Object[]) {
+            Object[] from = (Object[]) original;
+            Object[] to = (Object[]) copy;
+            for (int index = 0; index < length; index++) {
+                copyArray(from[index], to[index]);
+            }
+        } else {
+            System.arraycopy(original, 0, copy, 0, length);
+        }
     }
 
     /**
@@ -205,7 +191,10 @@ public final class ArrayFuncs {
         if (input == null) {
             return null;
         }
-        if (!input.getClass().isArray() || input.getClass().getComponentType().isArray()) {
+        if (!input.getClass().isArray()) {
+            throw new RuntimeException("Attempt to curl a non-array");
+        }
+        if (input.getClass().getComponentType().isArray()) {
             throw new RuntimeException("Attempt to curl non-1D array");
         }
         int size = Array.getLength(input);
@@ -320,7 +309,7 @@ public final class ArrayFuncs {
      * @return base array of a multi-dimensional array.
      */
     public static Object getBaseArray(Object o) {
-        if (o.getClass().getComponentType().isArray()) {
+        if (o instanceof Object[]) {
             return getBaseArray(Array.get(o, 0));
         }
         return o;
@@ -429,7 +418,6 @@ public final class ArrayFuncs {
         Object mimic;
 
         if (dims > 1) {
-
             Object[] xarray = (Object[]) array;
             int[] dimens = new int[dims];
             dimens[0] = xarray.length; // Leave other dimensions at 0.
@@ -508,20 +496,20 @@ public final class ArrayFuncs {
             return 0;
         }
 
-        String classname = o.getClass().getName();
-        if (classname.charAt(1) == '[') {
-            int count = 0;
-            for (int i = 0; i < ((Object[]) o).length; i += 1) {
-                count += nLElements(((Object[]) o)[i]);
+        if (o instanceof Object[]) {
+            long count = 0;
+            for (Object e : (Object[]) o) {
+                count += nLElements(e);
             }
             return count;
 
-        } else if (classname.charAt(0) == '[') {
+        } 
+        
+        if (o.getClass().isArray()) {
             return Array.getLength(o);
-
-        } else {
-            return 1;
-        }
+        } 
+        
+        return 1;
     }
 
     /**

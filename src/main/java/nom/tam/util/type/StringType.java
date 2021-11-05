@@ -4,7 +4,7 @@ package nom.tam.util.type;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -44,6 +44,9 @@ class StringType extends ElementType<Buffer> {
         if (instance == null) {
             return 0;
         }
-        return ((CharSequence) instance).length();
+        if (instance instanceof CharSequence) {
+            return ((CharSequence) instance).length();
+        }
+        throw new IllegalArgumentException("Class " + instance.getClass().getName() + " is not an instance of CharSequence");
     }
 }

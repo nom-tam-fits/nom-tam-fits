@@ -6,7 +6,7 @@ import static nom.tam.util.LoggerHelper.getLogger;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -150,7 +150,7 @@ public abstract class Data implements FitsElement {
         try {
             ((ArrayDataOutput) this.input).flush();
         } catch (IOException e) {
-            throw new FitsException("Error in rewrite flush: " + e);
+            throw new FitsException("Error in rewrite flush: ", e);
         }
     }
 

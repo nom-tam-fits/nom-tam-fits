@@ -1,0 +1,257 @@
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+package nom.tam.util;
+
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
+
+/**
+ * This class is intended for high performance writing FITS files or 
+ * FITS data blocks.
+ *
+ * <p>
+ * Testing and timing for this class is performed in the
+ * nom.tam.util.test.BufferedFileTester class.
+ * 
+ * <p>
+ * Version 2.0 -- October 30, 2021: Completely overhauled, with new name and 
+ * hierarchy. Performance is 2-4 times better than before. (Attila Kovacs)
+ * 
+ * @see FitsInputStream
+ * @see FitsFile
+ */
+@SuppressWarnings("deprecation")
+public class FitsOutputStream extends ArrayOutputStream implements ArrayDataOutput {
+
+    /** the output, as accessible via the <code>DataInput</code> interface */
+    private final DataOutput data;
+    
+    /**
+     * Use the BufferedOutputStream constructor
+     * 
+     * @param o
+     *            An open output stream.
+     */
+    public FitsOutputStream(OutputStream o) {
+        this(o, FitsIO.DEFAULT_BUFFER_SIZE);
+    }
+
+    /**
+     * Use the BufferedOutputStream constructor
+     * 
+     * @param o
+     *            An open output stream.
+     * @param bufLength
+     *            The buffer size.
+     */
+    public FitsOutputStream(OutputStream o, int bufLength) {
+        super(o, bufLength);
+        setEncoder(new FitsEncoder(this));
+        if (o instanceof DataOutput) {
+            data = (DataOutput) o;
+        } else {
+            data = new DataOutputStream(o);
+        }
+    }
+    
+    @Override
+    protected FitsEncoder getEncoder() {
+        return (FitsEncoder) super.getEncoder();
+    }
+    
+
+    @Override
+    public final synchronized void write(boolean[] b) throws IOException {
+        write(b, 0, b.length);
+    }
+
+    @Override
+    public synchronized void write(boolean[] b, int start, int length) throws IOException {
+        getEncoder().write(b, start, length);
+    }
+
+    @Override
+    public final synchronized void write(Boolean[] buf) throws IOException {
+        write(buf, 0, buf.length);
+    }
+
+    @Override
+    public synchronized void write(Boolean[] buf, int offset, int size) throws IOException {
+        getEncoder().write(buf, offset, size);
+    }
+    
+    @Override
+    public final synchronized void write(char[] c) throws IOException {
+        write(c, 0, c.length);
+    }
+
+    @Override
+    public synchronized void write(char[] c, int start, int length) throws IOException {
+        getEncoder().write(c, start, length);
+    }
+
+    @Override
+    public final synchronized void write(short[] s) throws IOException {
+        write(s, 0, s.length);
+    }
+
+    @Override
+    public synchronized void write(short[] s, int start, int length) throws IOException {
+        getEncoder().write(s, start, length);
+    }
+
+    @Override
+    public final synchronized void write(int[] i) throws IOException {
+        write(i, 0, i.length);
+    }
+
+    @Override
+    public synchronized void write(int[] i, int start, int length) throws IOException {
+        getEncoder().write(i, start, length);
+    }
+
+    @Override
+    public final synchronized void write(long[] l) throws IOException {
+        write(l, 0, l.length);
+    }
+
+    @Override
+    public synchronized void write(long[] l, int start, int length) throws IOException {
+        getEncoder().write(l, start, length);
+    }
+
+    @Override
+    public final synchronized void write(float[] f) throws IOException {
+        write(f, 0, f.length);
+    }
+
+    @Override
+    public synchronized void write(float[] f, int start, int length) throws IOException {
+        getEncoder().write(f, start, length);
+    }
+
+    @Override
+    public final synchronized void write(double[] d) throws IOException {
+        write(d, 0, d.length);
+    }
+
+    @Override
+    public synchronized void write(double[] d, int start, int length) throws IOException {
+        getEncoder().write(d, start, length);
+    }
+
+    @Override
+    public final synchronized void write(String[] s) throws IOException {
+        write(s, 0, s.length);
+    }
+
+    @Override
+    public synchronized void writeBytes(String s) throws IOException {
+        getEncoder().writeBytes(s);
+    }
+
+    @Override
+    public synchronized void writeChars(String s) throws IOException {
+        getEncoder().writeChars(s);
+    }
+
+    @Override
+    public synchronized void writeUTF(String s) throws IOException {
+        data.writeUTF(s);
+    }
+
+    @Override
+    public synchronized void write(String[] s, int start, int len) throws IOException {
+        getEncoder().write(s, start, len);
+    }
+
+    @Override
+    public synchronized void writeByte(int b) throws IOException {
+        getEncoder().writeByte(b);        
+    }
+
+    @Override
+    public synchronized void writeBoolean(boolean b) throws IOException {
+        getEncoder().writeBoolean(b);
+    }
+    
+    @Override
+    public synchronized void writeBoolean(Boolean b) throws IOException {
+        getEncoder().writeBoolean(b);
+    }
+
+    @Override
+    public synchronized void writeChar(int c) throws IOException {
+        getEncoder().writeChar(c);
+    }
+
+    @Override
+    public synchronized void writeShort(int s) throws IOException {
+        getEncoder().writeShort(s);
+    }
+
+    @Override
+    public synchronized void writeInt(int i) throws IOException {
+        getEncoder().writeInt(i);
+    }
+
+    @Override
+    public synchronized void writeLong(long l) throws IOException {
+        getEncoder().writeLong(l);
+    }
+
+    @Override
+    public synchronized void writeFloat(float f) throws IOException {
+        getEncoder().writeFloat(f);
+    }
+
+    @Override
+    public synchronized void writeDouble(double d) throws IOException {
+        getEncoder().writeDouble(d);
+    }
+
+    /**
+     * Deprecated use {@link #writeArray(Object)}.
+     * 
+     * @param o
+     *            The object to be written.
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     * @deprecated use {@link #writeArray(Object)} instead
+     */
+    @Deprecated
+    public final synchronized void writePrimitiveArray(Object o) throws IOException {
+        writeArray(o);
+    }
+}

@@ -4,7 +4,7 @@ package nom.tam.fits.test;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -77,9 +77,9 @@ import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.BufferedDataOutputStream;
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.FitsOutputStream;
+import nom.tam.util.FitsFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.LoggerHelper;
 import nom.tam.util.SafeClose;
@@ -87,7 +87,14 @@ import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.MethodRule;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.rules.TestWatchman;
+import org.junit.runner.Description;
+import org.junit.runners.model.FrameworkMethod;
 
 public class BaseFitsTest {
 
@@ -108,6 +115,13 @@ public class BaseFitsTest {
 
     public static final String FILE = "file:" + File.separator + File.separator + File.separator;
 
+//    @Rule
+//    public TestRule watcher = new TestWatcher() {
+//       protected void starting(Description description) {
+//          System.out.println("Starting test: " + description.getMethodName());
+//       }
+//    };
+    
     @Before
     public void setup() {
         FitsFactory.setUseAsciiTables(true);
@@ -213,7 +227,7 @@ public class BaseFitsTest {
     }
 
     private void writeFile(Fits f, String name) throws Exception {
-        BufferedFile bf = new BufferedFile(name, "rw");
+        FitsFile bf = new FitsFile(name, "rw");
         f.write(bf);
         bf.flush();
         bf.close();
@@ -276,7 +290,7 @@ public class BaseFitsTest {
             undefinedData[index] = (byte) index;
         }
         fits1.addHDU(Fits.makeHDU(new UndefinedData(undefinedData)));
-        BufferedDataOutputStream os = new BufferedDataOutputStream(new FileOutputStream("target/UndefindedHDU.fits"));
+        FitsOutputStream os = new FitsOutputStream(new FileOutputStream("target/UndefindedHDU.fits"));
         fits1.write(os);
         os.close();
 
@@ -299,7 +313,7 @@ public class BaseFitsTest {
         Header header = UndefinedHDU.manufactureHeader(data);
 
         fits1.addHDU(FitsFactory.HDUFactory(header, data));
-        BufferedDataOutputStream os = new BufferedDataOutputStream(new FileOutputStream("target/UndefindedHDU2.fits"));
+        FitsOutputStream os = new FitsOutputStream(new FileOutputStream("target/UndefindedHDU2.fits"));
         fits1.write(os);
         os.close();
 
@@ -339,7 +353,7 @@ public class BaseFitsTest {
         }
 
         fits1.addHDU(FitsFactory.hduFactory(newHeader, data));
-        BufferedDataOutputStream os = new BufferedDataOutputStream(new FileOutputStream("target/UndefindedHDU3.fits"));
+        FitsOutputStream os = new FitsOutputStream(new FileOutputStream("target/UndefindedHDU3.fits"));
         fits1.write(os);
         os.close();
 
@@ -365,7 +379,7 @@ public class BaseFitsTest {
         header.pointToData(data);
 
         fits1.addHDU(FitsFactory.hduFactory(header, data));
-        BufferedDataOutputStream os = new BufferedDataOutputStream(new FileOutputStream("target/UndefindedHDU4.fits"));
+        FitsOutputStream os = new FitsOutputStream(new FileOutputStream("target/UndefindedHDU4.fits"));
         fits1.write(os);
         os.close();
 
@@ -396,12 +410,12 @@ public class BaseFitsTest {
         byte[] data = (byte[]) hdu.getData().getData();
         Assert.assertEquals(2000, data.length);
         Arrays.fill(data, (byte) 1);
-        BufferedFile buf = new BufferedFile("target/testFitsUndefinedHdu5", "rw");
+        FitsFile buf = new FitsFile("target/testFitsUndefinedHdu5", "rw");
         hdu.write(buf);
         buf.close();
         Arrays.fill(data, (byte) 2);
 
-        buf = new BufferedFile("target/testFitsUndefinedHdu5", "rw");
+        buf = new FitsFile("target/testFitsUndefinedHdu5", "rw");
         hdu.read(buf);
         data = (byte[]) hdu.getData().getData();
         buf.close();
@@ -419,10 +433,10 @@ public class BaseFitsTest {
         head.addValue("PCOUNT", 0, null);
         head.addValue("GCOUNT", 2, null);
         final UndefinedHDU hdu = (UndefinedHDU) FitsFactory.hduFactory(head);
-        BufferedDataOutputStream os = null;
+        FitsOutputStream os = null;
         Exception e = null;
         try {
-            os = new BufferedDataOutputStream(new ByteArrayOutputStream()) {
+            os = new FitsOutputStream(new ByteArrayOutputStream()) {
 
                 public void write(byte[] b) throws IOException {
                     ThrowAnyException.throwIOException("could not write");
@@ -436,10 +450,10 @@ public class BaseFitsTest {
         }
         Assert.assertNotNull(e);
 
-        BufferedDataInputStream is = null;
+        FitsInputStream is = null;
         e = null;
         try {
-            is = new BufferedDataInputStream(new ByteArrayInputStream(new byte[1000]) {
+            is = new FitsInputStream(new ByteArrayInputStream(new byte[1000]) {
 
                 @Override
                 public synchronized int read(byte[] b, int off, int len) {
@@ -458,10 +472,10 @@ public class BaseFitsTest {
         is = null;
         e = null;
         try {
-            is = new BufferedDataInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
+            is = new FitsInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
 
                 @Override
-                public void skipAllBytes(int toSkip) throws IOException {
+                public void skipAllBytes(long toSkip) throws IOException {
                     ThrowAnyException.throwIOException("could not write");
                     super.skipAllBytes(toSkip);
                 }
@@ -478,10 +492,10 @@ public class BaseFitsTest {
         is = null;
         e = null;
         try {
-            is = new BufferedDataInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
+            is = new FitsInputStream(new ByteArrayInputStream(new byte[(int) hdu.getData().getSize()])) {
 
                 @Override
-                public void skipAllBytes(int toSkip) throws IOException {
+                public void skipAllBytes(long toSkip) throws IOException {
                     ThrowAnyException.throwAnyAsRuntime(new EOFException("could not write"));
                     super.skipAllBytes(toSkip);
                 }
@@ -575,7 +589,7 @@ public class BaseFitsTest {
                 new int[10],
             }
         });
-        BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream()) {
+        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
 
             @Override
             public void writeArray(Object o) throws IOException {
@@ -596,7 +610,7 @@ public class BaseFitsTest {
     @Test
     public void testFitsRandomGroupDataRead() throws Exception {
         ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
-        BufferedDataOutputStream out = new BufferedDataOutputStream(outBytes);
+        FitsOutputStream out = new FitsOutputStream(outBytes);
         Object[][] dataArray = new Object[][]{
             new Object[]{
                 new int[10],
@@ -607,7 +621,7 @@ public class BaseFitsTest {
         out.close();
 
         RandomGroupsData data = new RandomGroupsData(dataArray);
-        BufferedDataInputStream in = new BufferedDataInputStream(new ByteArrayInputStream(new byte[0]));
+        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[0]));
         FitsException actual = null;
         try {
             data.read(in);
@@ -617,7 +631,7 @@ public class BaseFitsTest {
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual.getMessage().toLowerCase().contains("error reading"));
 
-        in = new BufferedDataInputStream(new ByteArrayInputStream(outBytes.toByteArray()));
+        in = new FitsInputStream(new ByteArrayInputStream(outBytes.toByteArray()));
         actual = null;
         try {
             data.read(in);
@@ -628,10 +642,10 @@ public class BaseFitsTest {
         Assert.assertTrue(actual.getMessage().toLowerCase().contains("eof reading padding"));
 
         outBytes.write(new byte[2880]);
-        in = new BufferedDataInputStream(new ByteArrayInputStream(outBytes.toByteArray())) {
+        in = new FitsInputStream(new ByteArrayInputStream(outBytes.toByteArray())) {
 
             @Override
-            public void skipAllBytes(int toSkip) throws IOException {
+            public void skipAllBytes(long toSkip) throws IOException {
                throw new IOException();
             }
         };
@@ -681,11 +695,11 @@ public class BaseFitsTest {
 
         hdu.getHeader().deleteKey("EXTEND");
 
-        BufferedFile stream = new BufferedFile("target/rewriteHduTest.bin", "rw");
+        FitsFile stream = new FitsFile("target/rewriteHduTest.bin", "rw");
         hdu.write(stream);
         stream.close();
 
-        stream = new BufferedFile("target/rewriteHduTest.bin", "rw");
+        stream = new FitsFile("target/rewriteHduTest.bin", "rw");
         data = UndefinedHDU.encapsulate(new byte[0]);
         hdu = new UndefinedHDU(new Header(data), data);
         hdu.read(stream);
@@ -883,7 +897,7 @@ public class BaseFitsTest {
             expected = e;
         }
         Assert.assertNotNull(expected);
-        BufferedFile file = new BufferedFile("target/TestUndefinedRewrite.data", "rw") {
+        FitsFile file = new FitsFile("target/TestUndefinedRewrite.data", "rw") {
 
             @Override
             public void flush() throws IOException {
@@ -897,7 +911,7 @@ public class BaseFitsTest {
         data.setFileOffset(file);
         data.rewrite();
         Assert.assertTrue(data.reset());
-        fail[0] = 3;
+        fail[0] = 0;
         expected = null;
         try {
             data.rewrite();
@@ -905,7 +919,9 @@ public class BaseFitsTest {
             expected = e;
         }
         Assert.assertNotNull(expected);
-        Assert.assertFalse(data.reset());
+        // AK: There is no good reason why reset should fail, as the contract of seek() allows
+        // going beyond the end of file...
+        //Assert.assertFalse(data.reset());
     }
 
     @Test
@@ -955,7 +971,7 @@ public class BaseFitsTest {
 
     @Test(expected = FitsException.class)
     public void testFitsUtilPad() throws Exception {
-        BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream()) {
+        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
 
             @Override
             public void write(byte[] b) throws IOException {
@@ -972,7 +988,7 @@ public class BaseFitsTest {
 
     @Test(expected = FitsException.class)
     public void testFitsUtilReposition() throws Exception {
-        BufferedDataOutputStream out = new BufferedDataOutputStream(new ByteArrayOutputStream());
+        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
         FitsUtil.reposition(out, -1);
     }
 
@@ -1014,7 +1030,7 @@ public class BaseFitsTest {
 
     @Test(expected = FitsException.class)
     public void testFitsWriteException3() throws Exception {
-        DataOutput out = new BufferedFile("target/testFitsWriteException3", "rw") {
+        DataOutput out = new FitsFile("target/testFitsWriteException3", "rw") {
 
             @Override
             public void setLength(long newLength) throws IOException {
@@ -1066,10 +1082,10 @@ public class BaseFitsTest {
 
     @Test
     public void testFitsWithArrayDataInput() throws Exception {
-        BufferedDataInputStream in = null;
+        FitsInputStream in = null;
         Fits f = null;
         try {
-            in = new BufferedDataInputStream(new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits"));
+            in = new FitsInputStream(new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits"));
             f = new Fits(in);
             Assert.assertNotNull(f.getStream());
             Assert.assertEquals(1, f.size());
@@ -1101,10 +1117,10 @@ public class BaseFitsTest {
 
     @Test
     public void testFitsReadWithArrayDataInput() throws Exception {
-        BufferedDataInputStream in = null;
+        FitsInputStream in = null;
         Fits f = null;
         try {
-            in = new BufferedDataInputStream(new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits"));
+            in = new FitsInputStream(new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits"));
             f = new Fits();
             f.read(in);
             Assert.assertEquals(1, f.size());

@@ -4,7 +4,7 @@ package nom.tam.fits;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2016 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -37,7 +37,7 @@ import java.io.ByteArrayOutputStream;
 
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.Standard;
-import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.FitsOutputStream;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -101,13 +101,13 @@ public class HeaderProtectedTest {
         
         header = new Header();
         header.nullImage();
-        header.write(new BufferedDataOutputStream(new ByteArrayOutputStream(), 80));
+        header.write(new FitsOutputStream(new ByteArrayOutputStream(), 80));
         Assert.assertEquals(0L, header.trueDataSize());
         header.setNaxes(2);
         header.setNaxis(1, 0);
         header.setNaxis(2, 2);
         header.addValue(GROUPS, true);
-        header.write(new BufferedDataOutputStream(new ByteArrayOutputStream(), 80));
+        header.write(new FitsOutputStream(new ByteArrayOutputStream(), 80));
         Assert.assertEquals(2L, header.trueDataSize());
     }
 

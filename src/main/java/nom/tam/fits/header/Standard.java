@@ -12,7 +12,7 @@ import nom.tam.fits.UndefinedData;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -525,7 +525,7 @@ public enum Standard implements IFitsHeader {
 
     /**
      * The value field shall contain a non-negative integer representing the
-     * number of fields in each row of a 'TABLE' or 'BINTABLmacE' extension. The
+     * number of fields in each row of a 'TABLE' or 'BINTABLE' extension. The
      * maximum permissible value is 999. RANGE: [0:999]
      */
     TFIELDS(SOURCE.MANDATORY, HDU.TABLE, VALUE.INTEGER, "number of columns in the table", //

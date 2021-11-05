@@ -17,13 +17,13 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.ImageHDU;
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsFile;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -275,7 +275,7 @@ public class CreateTstImages {
         BasicHDU<?> hdu = FitsFactory.hduFactory(image);
         Fits fits = new Fits();
         fits.addHDU(hdu);
-        BufferedFile bf = new BufferedFile("target/compress/test" + edge + "Data8.fits", "rw");
+        FitsFile bf = new FitsFile("target/compress/test" + edge + "Data8.fits", "rw");
         fits.write(bf);
         bf.flush();
         bf.close();
@@ -295,7 +295,7 @@ public class CreateTstImages {
         BasicHDU<?> hdu = FitsFactory.hduFactory(image);
         Fits fits = new Fits();
         fits.addHDU(hdu);
-        BufferedFile bf = new BufferedFile("target/compress/test" + edge + "Data-64.fits", "rw");
+        FitsFile bf = new FitsFile("target/compress/test" + edge + "Data-64.fits", "rw");
         fits.write(bf);
         bf.flush();
         bf.close();
@@ -315,7 +315,7 @@ public class CreateTstImages {
         BasicHDU<?> hdu = FitsFactory.hduFactory(image);
         Fits fits = new Fits();
         fits.addHDU(hdu);
-        BufferedFile bf = new BufferedFile("target/compress/test" + edge + "Data-32.fits", "rw");
+        FitsFile bf = new FitsFile("target/compress/test" + edge + "Data-32.fits", "rw");
         fits.write(bf);
         bf.flush();
         bf.close();
@@ -335,7 +335,7 @@ public class CreateTstImages {
         BasicHDU<?> hdu = FitsFactory.hduFactory(image);
         Fits fits = new Fits();
         fits.addHDU(hdu);
-        BufferedFile bf = new BufferedFile("target/compress/test" + edge + "Data32.fits", "rw");
+        FitsFile bf = new FitsFile("target/compress/test" + edge + "Data32.fits", "rw");
         fits.write(bf);
         bf.flush();
         bf.close();
@@ -355,7 +355,7 @@ public class CreateTstImages {
         BasicHDU<?> hdu = FitsFactory.hduFactory(image);
         Fits fits = new Fits();
         fits.addHDU(hdu);
-        BufferedFile bf = new BufferedFile("target/compress/test" + edge + "Data64.fits", "rw");
+        FitsFile bf = new FitsFile("target/compress/test" + edge + "Data64.fits", "rw");
         fits.write(bf);
         bf.flush();
         bf.close();
@@ -375,7 +375,7 @@ public class CreateTstImages {
         BasicHDU<?> hdu = FitsFactory.hduFactory(image);
         Fits fits = new Fits();
         fits.addHDU(hdu);
-        BufferedFile bf = new BufferedFile("target/compress/test" + edge + "Data16.fits", "rw");
+        FitsFile bf = new FitsFile("target/compress/test" + edge + "Data16.fits", "rw");
         fits.write(bf);
         bf.flush();
         bf.close();

@@ -4,7 +4,7 @@ package nom.tam.fits.test;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -61,9 +61,9 @@ import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.BufferedDataOutputStream;
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.FitsOutputStream;
+import nom.tam.util.FitsFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
 import nom.tam.util.TestArrayFuncs;
@@ -184,7 +184,7 @@ public class AsciiTableTest {
         assertEquals("delrAft", 48, th.getNRows());
         th.deleteRows(50);
         assertEquals("delrAft", 48, th.getNRows());
-        BufferedFile bf = new BufferedFile("target/at1y.fits", "rw");
+        FitsFile bf = new FitsFile("target/at1y.fits", "rw");
         f.write(bf);
         bf.close();
 
@@ -197,7 +197,7 @@ public class AsciiTableTest {
         assertEquals("delcAft1", 3, th.getNCols());
         th.deleteColumnsIndexZero(0, 2);
         assertEquals("delcAft2", 1, th.getNCols());
-        bf = new BufferedFile("target/at1z.fits", "rw");
+        bf = new FitsFile("target/at1z.fits", "rw");
         f.write(bf);
         bf.close();
 
@@ -314,7 +314,7 @@ public class AsciiTableTest {
             54321
         });
 
-        BufferedFile bf = new BufferedFile("target/at1x.fits", "rw");
+        FitsFile bf = new FitsFile("target/at1x.fits", "rw");
         f.write(bf);
 
         f = new Fits("target/at1x.fits");
@@ -383,7 +383,7 @@ public class AsciiTableTest {
     // have a least one character in the output column.
     @Test
     public void nullAscii() throws Exception {
-        BufferedFile bf = new BufferedFile("target/at3.fits", "rw");
+        FitsFile bf = new FitsFile("target/at3.fits", "rw");
         Object[] o = new Object[]{
             new String[]{
                 null,
@@ -517,7 +517,7 @@ public class AsciiTableTest {
     }
 
     public void writeFile(Fits f, String name) throws Exception {
-        BufferedFile bf = new BufferedFile(name, "rw");
+        FitsFile bf = new FitsFile(name, "rw");
         f.write(bf);
         bf.flush();
         bf.close();
@@ -807,7 +807,7 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataInput str = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
+        ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[10]));
         FitsException actual = null;
         try {
             new AsciiTable(hdr).read(str);
@@ -826,7 +826,7 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataOutput str = new BufferedDataOutputStream(new ByteArrayOutputStream());
+        ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream());
         FitsException actual = null;
         try {
             new AsciiTable(hdr) {
@@ -860,7 +860,7 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataOutput str = new BufferedDataOutputStream(new ByteArrayOutputStream());
+        ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream());
         FitsException actual = null;
         try {
             new AsciiTable(hdr) {
@@ -880,7 +880,7 @@ public class AsciiTableTest {
     @Test
     public void testToFailedWrite2() throws Exception {
         AsciiTableHDU table = (AsciiTableHDU) Fits.makeHDU(getSampleCols());
-        ArrayDataOutput str = new BufferedDataOutputStream(new ByteArrayOutputStream()) {
+        ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream()) {
 
             int count = 0;
 
@@ -947,7 +947,7 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(2)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataInput str = new BufferedDataInputStream(new ByteArrayInputStream(new byte[2880 * 2]));
+        ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 * 2]));
         FitsException actual = null;
         try {
             AsciiTable asciiTable = new AsciiTable(hdr);
@@ -1015,7 +1015,7 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(2)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataInput str = new BufferedDataInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
+        ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
         FitsException actual = null;
         try {
             AsciiTable asciiTable = new AsciiTable(hdr) {
@@ -1044,13 +1044,7 @@ public class AsciiTableTest {
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(2)//
                 .card(Standard.TFORMn.n(1)).value("I1");
-        ArrayDataInput str = new BufferedDataInputStream(new ByteArrayInputStream(new byte[2880 - 1])) {
-
-            @Override
-            public void readFully(byte[] b) throws IOException {
-                throw new IOException("XXXXX");
-            }
-        };
+        ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
         FitsException actual = null;
         try {
             AsciiTable asciiTable = new AsciiTable(hdr);
@@ -1059,7 +1053,6 @@ public class AsciiTableTest {
             actual = e;
         }
         assertNotNull(actual);
-        assertTrue(actual.getCause().getMessage().contains("XXXXX"));
     }
 
     @Test
@@ -1083,7 +1076,7 @@ public class AsciiTableTest {
 
     
     private AsciiTable readAsciiTable(String location, boolean preferInt) throws Exception {
-        ArrayDataInput in = new BufferedFile(location);
+        ArrayDataInput in = new FitsFile(location);
         // Skip the primary HDU
         Header primaryHdr = Header.readHeader(in);
         Header tblHdr = Header.readHeader(in);

@@ -1,10 +1,12 @@
 package nom.tam.util;
 
+import java.io.DataInput;
+
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -33,7 +35,7 @@ package nom.tam.util;
 
 import java.io.IOException;
 
-public interface ArrayDataInput extends java.io.DataInput, FitsIO {
+public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
 
     /**
      * See the general contract of the <code>mark</code> method of
@@ -47,7 +49,7 @@ public interface ArrayDataInput extends java.io.DataInput, FitsIO {
      *             if the operation failed
      */
     void mark(int readlimit) throws IOException;
-
+    
     /**
      * See the general contract of the <code>markSupported</code> method of
      * <code>InputStream</code>.
@@ -58,9 +60,11 @@ public interface ArrayDataInput extends java.io.DataInput, FitsIO {
     boolean markSupported();
 
     /**
-     * Read an array of byte's.
+     * Read an array of byte's. The call generally follows the contract of
+     * {@link InputReader#read(byte[], int, int)}, for the full length
+     * of the array, starting from the first element (index 0).
      * 
-     * @return number of bytes read.
+     * @return number of bytes read, or -1 if at the end of the file.
      * @see #readFully(byte[])
      * @param buf
      *            array of byte's.
@@ -69,21 +73,6 @@ public interface ArrayDataInput extends java.io.DataInput, FitsIO {
      */
     int read(byte[] buf) throws IOException;
 
-    /**
-     * Read a segment of an array of byte's.
-     * 
-     * @return number of bytes read.
-     * @see #readFully(byte[], int, int)
-     * @param buf
-     *            array of byte's.
-     * @param offset
-     *            start index in the array
-     * @param size
-     *            number of array elements to read
-     * @throws IOException
-     *             if one of the underlying read operations failed
-     */
-    int read(byte[] buf, int offset, int size) throws IOException;
 
     /**
      * Read an array of boolean's.
@@ -111,6 +100,33 @@ public interface ArrayDataInput extends java.io.DataInput, FitsIO {
      */
     int read(boolean[] buf, int offset, int size) throws IOException;
 
+    /**
+     * Read an array of booleans, including legal <code>null</code> values. 
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of boolean's.
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(Boolean[] buf) throws IOException;
+
+    /**
+     * Read a segment of an array of booleans, including <code>null</code> values.
+     * 
+     * @return number of bytes read.
+     * @param buf
+     *            array of boolean's.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to read
+     * @throws IOException
+     *             if one of the underlying read operations failed
+     */
+    int read(Boolean[] buf, int offset, int size) throws IOException;
+    
+    
     /**
      * Read an array of char's.
      * 
@@ -266,38 +282,52 @@ public interface ArrayDataInput extends java.io.DataInput, FitsIO {
      *             if one of the underlying read operations failed
      */
     int read(short[] buf, int offset, int size) throws IOException;
-
+    
+    
     /**
-     * Read a generic (possibly multidimensional) primitive array. An Object[]
-     * array is also a legal argument if each element of the array is a legal.
-     * <p>
-     * The ArrayDataInput classes do not support String input since it is
-     * unclear how one would read in an Array of strings.
-     * 
-     * @param o
-     *            A [multidimensional] primitive (or Object) array.
-     * @deprecated use {@link ArrayDataInput#readLArray(Object)} instead.
-     * @return the number of bytes read
-     * @throws IOException
-     *             if the underlying stream failed
+     * @deprecated Use {@link #readLArray(Object)} instead.
      */
     @Deprecated
-    int readArray(Object o) throws IOException;
+    int readArray(Object o) throws IOException, IllegalArgumentException;
 
     /**
-     * Read an object. An EOF will be signaled if the object cannot be fully
-     * read. This version works even if the underlying data is more than 2
-     * Gigabytes.
+     * Reads a Java array from the input, translating it from its binary representation to
+     * Java data format. The argument may be a generic Java array, including multi-dimensional
+     * arrays and heterogeneous arrays of arrays. The implementation may not populate the
+     * supplied object fully. The caller may use the return value to check against the
+     * expected number of bytes to determine whether or not the argument was fully
+     * poupulated or not.
      * 
-     * @param o
-     *            The object to be read. This object should be a primitive
-     *            (possibly multi-dimensional) array.
-     * @return The number of bytes read.
+     * @param o     a Java array object, including heterogeneous arrays of arrays.
+     *              If <code>null</code>, nothing will be read from the output.
+     * @return      the number of bytes read from the input.
      * @throws IOException
-     *             if the underlying stream failed
+     *              if there was an IO error, other than the end-of-file, while reading from the input
+     * @throws IllegalArgumentException
+     *              if the supplied object is not a Java array or if it contains 
+     *              Java types that are not supported by the decoder.
+     *              
+     * @see #readArrayFully(Object)
      */
-    long readLArray(Object o) throws IOException;
+    long readLArray(Object o) throws IOException, IllegalArgumentException;
 
+    /**
+     * Reads a Java array from the input, populating all elements, or else throwing and
+     * {@link java.io.EOFException}.
+     * 
+     * @param o     a Java array object, including heterogeneous arrays of arrays.
+     *              If <code>null</code>, nothing will be read from the output.
+     * @throws IOException
+     *              if there was an IO error, including and {@link java.io.EOFException}, 
+     *              while reading from the input
+     * @throws IllegalArgumentException
+     *              if the supplied object is not a Java array or if it contains 
+     *              Java types that are not supported by the decoder.
+     * 
+     * @see #readLArray(Object)
+     */
+    void readArrayFully(Object o) throws IOException, IllegalArgumentException;
+    
     /**
      * See the general contract of the <code>reset</code> method of
      * <code>InputStream</code>.
@@ -356,6 +386,26 @@ public interface ArrayDataInput extends java.io.DataInput, FitsIO {
     void skipAllBytes(int toSkip) throws IOException;
 
     /**
+     * Checks if the file ends before the current read positon, and if so, it 
+     * may log a warning. This may happen with {@link FitsFile} where the 
+     * contract of {@link RandomAccess} allows for skipping ahead beyond the 
+     * end of file, since expanding the file is allowed when writing. Only a 
+     * subsequent read call would fail.
+     *
+     * @return      <code>true</code> if the current read position is beyond
+     *              the end-of-file, otherwise <code>false</code>.
+     * @throws IOException  if there was an IO error accessing the file or stream.
+     * 
+     * @see #skip(long)
+     * @see #skipBytes(int)
+     * @see #skipAllBytes(long)
+     * 
+     * 
+     * @since 1.16
+     */
+    boolean checkTruncated() throws IOException;
+    
+    /**
      * Read a buffer and signal an EOF if the requested elements cannot be read.
      * This differs from read(b,off,len) since that call will not signal and end
      * of file unless no bytes can be read. However both of these routines will
@@ -370,4 +420,5 @@ public interface ArrayDataInput extends java.io.DataInput, FitsIO {
      */
     @Override
     void readFully(byte[] b, int off, int len) throws IOException;
+    
 }

@@ -4,7 +4,7 @@ package nom.tam.util;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -34,9 +34,9 @@ package nom.tam.util;
 public class FormatException extends java.lang.Exception {
 
     /**
-     * serial version id.
+     * 
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -9171883302575945803L;
 
     protected FormatException(String msg) {
         super(msg);

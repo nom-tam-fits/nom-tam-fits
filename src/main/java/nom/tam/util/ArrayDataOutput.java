@@ -1,10 +1,12 @@
 package nom.tam.util;
 
+import java.io.DataOutput;
+
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -36,7 +38,7 @@ import java.io.IOException;
 /**
  * Special high performance scientific extension of the DataOutput interface.
  */
-public interface ArrayDataOutput extends java.io.DataOutput, FitsIO {
+public interface ArrayDataOutput extends DataOutput, FitsIO {
 
     /**
      * Flush the output buffer
@@ -45,6 +47,8 @@ public interface ArrayDataOutput extends java.io.DataOutput, FitsIO {
      *             if the flush of the underlying stream failed
      */
     void flush() throws IOException;
+
+    void writeBoolean(Boolean b) throws IOException;
 
     /**
      * Write an array of boolean's.
@@ -69,6 +73,31 @@ public interface ArrayDataOutput extends java.io.DataOutput, FitsIO {
      *             if one of the underlying write operations failed
      */
     void write(boolean[] buf, int offset, int size) throws IOException;
+
+    /**
+     * Write an array of booleans, including legal <code>null</code> values.
+     * 
+     * @param buf
+     *            array of booleans.
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(Boolean[] buf) throws IOException;
+
+    /**
+     * Write a segment of an array of booleans, including legal
+     * <code>null</code> values.
+     * 
+     * @param buf
+     *            array of booleans.
+     * @param offset
+     *            start index in the array
+     * @param size
+     *            number of array elements to write
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     */
+    void write(Boolean[] buf, int offset, int size) throws IOException;
 
     /**
      * Write an array of char's.
@@ -241,20 +270,20 @@ public interface ArrayDataOutput extends java.io.DataOutput, FitsIO {
     void write(String[] buf, int offset, int size) throws IOException;
 
     /**
-     * This routine provides efficient writing of arrays of any primitive type.
-     * The String class is also handled but it is an error to invoke this method
-     * with an object that is not an array of these types. If the array is
-     * multidimensional, then it calls itself recursively to write the entire
-     * array. Strings are written using the standard 1 byte format (i.e., as in
-     * writeBytes). If the array is an array of objects, then
-     * writePrimitiveArray will be called for each element of the array.
+     * Writes the contents of a Java array to the output translating the data to
+     * the required binary representation. The argument may be a generic Java
+     * array, including multi-dimensional arrays and heterogeneous arrays of
+     * arrays.
      * 
      * @param o
-     *            The object to be written. It must be an array of a primitive
-     *            type, Object, or String.
+     *            the Java array, including heterogeneous arrays of arrays. If
+     *            <code>null</code> nothing will be written to the output.
      * @throws IOException
-     *             if one of the underlying write operations failed
+     *             if there was an IO error writing to the output
+     * @throws IllegalArgumentException
+     *             if the supplied object is not a Java array or if it contains
+     *             Java types that are not supported by the encoder.
      */
-    void writeArray(Object o) throws IOException;
+    void writeArray(Object o) throws IOException, IllegalArgumentException;
 
 }

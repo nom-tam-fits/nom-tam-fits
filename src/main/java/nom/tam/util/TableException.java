@@ -6,7 +6,7 @@ import nom.tam.fits.FitsException;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -36,9 +36,9 @@ import nom.tam.fits.FitsException;
 public class TableException extends FitsException {
 
     /**
-     * serial version id.
+     * 
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -560077128369138846L;
 
     public TableException(String msg) {
         super(msg);

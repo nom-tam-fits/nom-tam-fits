@@ -10,7 +10,7 @@ import java.nio.charset.Charset;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -88,11 +88,10 @@ public final class AsciiFuncs {
     }
 
     /**
-     * @param character
-     *            the charater to check
-     * @return true is the character is a whitespace.
+     * @deprecated Use {@link Character#isWhitespace(char)} instead.
      */
-    public static boolean isWhitespace(char character) {
-        return character == ' ' || character == '\t' || character == '\n' || character == '\r';
+    @Deprecated
+    public static boolean isWhitespace(char c) {
+        return Character.isWhitespace(c);
     }
 }

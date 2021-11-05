@@ -4,7 +4,7 @@ package nom.tam.fits;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2016 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayOutputStream;
 
 import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.FitsOutputStream;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -73,7 +73,7 @@ public class HeaderOrderTest {
      */
     @Test
     public void headerOrder() throws Exception {
-        ArrayDataOutput dos = new BufferedDataOutputStream(new ByteArrayOutputStream(), 80);
+        ArrayDataOutput dos = new FitsOutputStream(new ByteArrayOutputStream(), 80);
         Header header = new Header();
         
         header.addValue(BLOCKED, 1);

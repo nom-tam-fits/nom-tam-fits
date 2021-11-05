@@ -1,10 +1,8 @@
-package nom.tam.util.array;
-
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,41 +29,43 @@ package nom.tam.util.array;
  * #L%
  */
 
+package nom.tam.util.array;
+
 import java.lang.reflect.Array;
 
-public final class MultiArrayCopier {
+public final class MultiArrayCopier<Source, Destination> {
 
-    public static void copyInto(Object fromArray, Object toArray) {
-        new MultiArrayCopier(fromArray, toArray).copyInto();
+    public static <Source, Destination> void copyInto(Source fromArray, Destination toArray) {
+        new MultiArrayCopier<>(fromArray, toArray).copyInto();
     }
 
-    private final MultiArrayIterator from;
+    private final MultiArrayIterator<Source> from;
 
-    private final MultiArrayIterator to;
+    private final MultiArrayIterator<Destination> to;
 
-    private Object currentToArray;
+    private Destination currentToArray;
 
     private int currentToArrayOffset;
 
     private int currentToArrayLength;
 
-    private final MultiArrayCopyFactory copyFactory;
+    private final MultiArrayCopyFactory<Source, Destination> copyFactory;
 
-    private MultiArrayCopier(Object fromArray, Object toArray) {
-        this.from = new MultiArrayIterator(fromArray);
-        this.to = new MultiArrayIterator(toArray);
-        this.copyFactory = MultiArrayCopyFactory.select(this.from.deepComponentType(), this.to.deepComponentType());
+    private MultiArrayCopier(Source fromArray, Destination toArray) {
+        this.from = new MultiArrayIterator<>(fromArray);
+        this.to = new MultiArrayIterator<>(toArray);
+        this.copyFactory = (MultiArrayCopyFactory<Source, Destination>) MultiArrayCopyFactory.select(this.from.deepComponentType(), this.to.deepComponentType());
     }
 
     private void copyInto() {
-        Object current = this.from.next();
+        Source current = this.from.next();
         while (current != null) {
             copyInto(current);
             current = this.from.next();
         }
     }
 
-    private void copyInto(Object currentFromArray) {
+    private void copyInto(Source currentFromArray) {
         int currentFromArrayOffset = 0;
         int currentFromArrayLength = Array.getLength(currentFromArray);
         while (currentFromArrayOffset < currentFromArrayLength) {

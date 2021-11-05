@@ -44,8 +44,8 @@ import nom.tam.fits.header.Bitpix;
 public class DeprecatedTest {
     
     @Test
-    public void testPrimitiveTypeConstructor() throws Exception {
-        PrimitiveType<?> i = new PrimitiveType<IntBuffer>(4, false, int.class, Integer.class, IntBuffer.class, 'I', Bitpix.VALUE_FOR_INT) {
+    public void testPrimitiveTypeBaseConstructor() throws Exception {
+        PrimitiveTypeBase<?> i = new PrimitiveTypeBase<IntBuffer>(4, false, int.class, Integer.class, IntBuffer.class, 'I', Bitpix.VALUE_FOR_INT) {
             
         };
         assertEquals("size", 4, i.size());
@@ -57,7 +57,10 @@ public class DeprecatedTest {
         assertEquals("BITPIX", Bitpix.INTEGER.getHeaderValue(), i.bitPix());
     }
     
+    @Test
     public void testElementTypeForID() throws Exception {
         assertEquals(ElementType.forDataID('J'), PrimitiveTypeHandler.valueOf('J'));
     }
+    
+
 }

@@ -4,7 +4,7 @@ package nom.tam.fits.test;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -59,7 +59,7 @@ import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsFile;
 import nom.tam.util.SafeClose;
 import nom.tam.util.TestArrayFuncs;
 import nom.tam.util.test.ThrowAnyException;
@@ -169,9 +169,9 @@ public class ImageTest {
             assertEquals("HDU count before", f.getNumberOfHDUs(), 8);
 
             // Write a FITS file.
-            BufferedFile bf = null;
+            FitsFile bf = null;
             try {
-                bf = new BufferedFile("target/image1.fits", "rw");
+                bf = new FitsFile("target/image1.fits", "rw");
                 f.write(bf);
                 bf.flush();
             } finally {
@@ -181,9 +181,9 @@ public class ImageTest {
             SafeClose.close(f);
         }
 
-        BufferedFile bf = null;
+        FitsFile bf = null;
         try {
-            bf = new BufferedFile(new File("target/image1.fits"));
+            bf = new FitsFile(new File("target/image1.fits"));
             f = new Fits("target/image1.fits");
 
             // Read a FITS file

@@ -4,7 +4,7 @@ package nom.tam.util.type;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -192,11 +192,19 @@ public abstract class ElementType<B extends Buffer> {
      * @param instance
      *            the object to calculate the size
      * @return the size in bytes of the object instance
+     * @throws IllegalArgumentException
+     *              if the object is not of the type expected by this class.
      */
     public int size(Object instance) {
         if (instance == null) {
             return 0;
         }
+        
+        Class<?> cl = instance.getClass();
+        if (!(primitiveClass.isAssignableFrom(cl) || wrapperClass.isAssignableFrom(cl))) {
+            throw new IllegalArgumentException("Class " + cl.getName() + " does not match type " + getClass().getSimpleName());
+        }
+        
         return size();
     }
 

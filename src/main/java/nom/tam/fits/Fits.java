@@ -4,7 +4,7 @@ package nom.tam.fits;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -52,9 +52,9 @@ import nom.tam.fits.compress.CompressionManager;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.BufferedDataOutputStream;
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.FitsOutputStream;
+import nom.tam.util.FitsFile;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.SafeClose;
 
@@ -579,8 +579,8 @@ public class Fits implements Closeable {
             permissions += "w";
         }
         try {
-            this.dataStr = new BufferedFile(file, permissions);
-            ((BufferedFile) this.dataStr).seek(0);
+            this.dataStr = new FitsFile(file, permissions);
+            ((FitsFile) this.dataStr).seek(0);
         } catch (IOException e) {
             throw new FitsException("Unable to open file " + file.getPath(), e);
         }
@@ -616,7 +616,7 @@ public class Fits implements Closeable {
         if (is instanceof ArrayDataInput) {
             this.dataStr = (ArrayDataInput) is;
         } else {
-            this.dataStr = new BufferedDataInputStream(is);
+            this.dataStr = new FitsInputStream(is);
         }
         read();
     }
@@ -650,15 +650,18 @@ public class Fits implements Closeable {
         Data data = hdr.makeData();
         try {
             data.read(this.dataStr);
+            this.dataStr.checkTruncated();
         } catch (PaddingException e) {
             e.updateHeader(hdr);
             if (!FitsFactory.getAllowTerminalJunk()) {
                 throw e;
             }
         }
+        
         this.lastFileOffset = FitsUtil.findOffset(this.dataStr);
         BasicHDU<Data> nextHDU = FitsFactory.hduFactory(hdr, data);
         this.hduList.add(nextHDU);
+      
         return nextHDU;
     }
 
@@ -789,7 +792,7 @@ public class Fits implements Closeable {
      */
     @SuppressWarnings("resource")
     protected void streamInit(InputStream inputStream) throws FitsException {
-        this.dataStr = new BufferedDataInputStream(CompressionManager.decompress(inputStream));
+        this.dataStr = new FitsInputStream(CompressionManager.decompress(inputStream));
     }
 
     /**
@@ -807,7 +810,7 @@ public class Fits implements Closeable {
             obs = (ArrayDataOutput) os;
         } else if (os instanceof DataOutputStream) {
             newOS = true;
-            obs = new BufferedDataOutputStream((DataOutputStream) os);
+            obs = new FitsOutputStream((DataOutputStream) os);
         } else {
             throw new FitsException("Cannot create ArrayDataOutput from class " + os.getClass().getName());
         }
@@ -822,9 +825,9 @@ public class Fits implements Closeable {
                 throw new FitsException("Error flushing/closing the FITS output stream: " + e, e);
             }
         }
-        if (obs instanceof BufferedFile) {
+        if (obs instanceof FitsFile) {
             try {
-                ((BufferedFile) obs).setLength(((BufferedFile) obs).getFilePointer());
+                ((FitsFile) obs).setLength(((FitsFile) obs).getFilePointer());
             } catch (IOException e) {
                 throw new FitsException("Error resizing the FITS output stream: " + e, e);
             }
@@ -834,7 +837,7 @@ public class Fits implements Closeable {
     /**
      * Write the FITS to the specified file. This is a wrapper method provided
      * for convenience, which calls the {@link #write(DataOutput)} method. It
-     * creates a suitable {@link nom.tam.util.BufferedFile}, to which the FITS
+     * creates a suitable {@link nom.tam.util.FitsFile}, to which the FITS
      * is then written. Upon completion the underlying stream is closed.
      * 
      * @param file
@@ -846,7 +849,7 @@ public class Fits implements Closeable {
      *             closed.
      */
     public void write(File file) throws IOException, FitsException {
-        try (BufferedFile bf = new BufferedFile(file, "rw")) {
+        try (FitsFile bf = new FitsFile(file, "rw")) {
             write(bf);
         }
     }

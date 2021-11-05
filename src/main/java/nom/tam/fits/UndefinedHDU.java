@@ -4,7 +4,7 @@ package nom.tam.fits;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -36,7 +36,7 @@ import static nom.tam.fits.header.Standard.XTENSION;
 
 import java.io.PrintStream;
 
-import nom.tam.util.ArrayFuncs;
+import nom.tam.util.FitsEncoder;
 
 /**
  * Holder for unknown data types.
@@ -64,7 +64,11 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      * @return true if o can be an Undefined FITS block.
      */
     public static boolean isData(Object o) {
-        return ArrayFuncs.computeLSize(o) > 0;
+        try { 
+            return FitsEncoder.computeSize(o) > 0;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     /**

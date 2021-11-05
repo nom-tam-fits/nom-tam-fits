@@ -4,7 +4,7 @@ package nom.tam.fits;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -67,6 +67,7 @@ import nom.tam.util.RandomAccess;
 /**
  * This class represents the data in an ASCII table
  */
+@SuppressWarnings("deprecation")
 public class AsciiTable extends AbstractTableData {
 
     private static final int MAX_INTEGER_LENGTH = 10;

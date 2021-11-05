@@ -4,7 +4,7 @@ package nom.tam.image;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2016 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -36,7 +36,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsFile;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.SafeClose;
 
@@ -74,7 +74,7 @@ public class StandardImageTilerTest {
 
     private TestImageTiler tiler;
 
-    private BufferedFile file;
+    private FitsFile file;
 
     private int[][] dataArray;
 
@@ -86,7 +86,7 @@ public class StandardImageTilerTest {
                 dataArray[index][index2] = 1;
             }
         }
-        BufferedFile file = new BufferedFile("target/StandardImageTilerTest", "rw");
+        FitsFile file = new FitsFile("target/StandardImageTilerTest", "rw");
         file.writeArray(dataArray);
         file.seek(0);
         tiler = new TestImageTiler(file, 0, ArrayFuncs.getDimensions(dataArray), ArrayFuncs.getBaseClass(dataArray));

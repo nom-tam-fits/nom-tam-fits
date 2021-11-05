@@ -4,7 +4,7 @@ package nom.tam.util.test;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -990,7 +990,7 @@ public class BufferedFileTest {
         testArray(bi, "slong1", tl0);
         testArray(bi, "slongnull", tl1);
         testArray(bi, "sshort2", ts);
-        bi.skipBytes(10000);
+        bi.skipAllBytes(10000);
         assertEquals('Y', bi.read());
     }
 
@@ -1105,7 +1105,10 @@ public class BufferedFileTest {
         assertEquals(bf.readLArray(new byte[11]), 0L);
     }
 
-    @Test(expected = IOException.class)
+    // AK: Was throwing IOException, but there is no IO involved at all. It's a classic case
+    // for IndexOutOfBoundsException, which is exavctly what the underlying read throws
+    // in such a case.
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testFullyOutside() throws IOException {
         BufferedDataInputStream bf = new BufferedDataInputStream(new ByteArrayInputStream(new byte[10]));
         bf.readFully(new byte[5], 10, 5);

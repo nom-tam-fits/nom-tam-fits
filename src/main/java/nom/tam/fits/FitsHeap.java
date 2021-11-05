@@ -1,10 +1,12 @@
 package nom.tam.fits;
 
+
+
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,125 +33,106 @@ package nom.tam.fits;
  * #L%
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.ArrayFuncs;
-import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.FitsDecoder;
+import nom.tam.util.FitsEncoder;
+import nom.tam.util.ByteArrayIO;
 
 /**
  * This class supports the FITS heap. This is currently used for variable length
- * columns in binary tables.
+ * columns in binary tables. The newer implementation of the heap now provides
+ * proper random access to the byte buffer as of version 1.16.
+ * 
  */
 public class FitsHeap implements FitsElement {
 
-    private static final int MINIMUM_HEAP_SIZE = 16384;
-
-    /**
-     * The storage buffer
+    /** The minimum stoprage size to allocate for the heap, from which it can grow as necessary */
+    private static final int MIN_HEAP_CAPACITY = 16384;
+    
+    // TODO
+    // AK: In principle we could use ReadWriteAccess interface as the storage, which can be either an in-memory
+    // array or a buffered file region. The latter could support heaps over 2G, and could reduce memory overhead
+    // for heap access in some future release...
+    /** The underlying storage space of the heap */
+    private ByteArrayIO store; 
+    
+    /** conversion from Java arrays to FITS binary representation */
+    private FitsEncoder encoder;
+    
+    /** conversion from FITS binary representation to Java arrays */
+    private FitsDecoder decoder;
+    
+    /** 
+     * Construct a new uninitialized FITS heap object. 
      */
-    private byte[] heap;
-
+    private FitsHeap() {   
+    }
+    
     /**
-     * The current used size of the buffer <= heap.length
+     * Creates a heap of a given initial size. The new heap is initialized with 0's, and
+     * up to the specified number of bytes are immediately available for reading
+     * (as zeroes). The heap can grow as needed if more data is written into it.
+     * 
+     * @throws IllegalArgumentException 
+     *                  if the size argument is negative.
+     * 
      */
-    private int heapSize;
-
-    /**
-     * Our current offset into the heap. When we read from the heap we use a
-     * byte array input stream. So long as we continue to read further into the
-     * heap, we can continue to use the same stream, but we need to recreate the
-     * stream whenever we skip backwards.
-     */
-    private int heapOffset = 0;
-
-    /**
-     * A stream used to read the heap data
-     */
-    private BufferedDataInputStream bstr;
-
-    /**
-     * Create a heap of a given size.
-     */
-    FitsHeap(int size) {
-        this.heapSize = size;
+    FitsHeap(int size) { 
         if (size < 0) {
-            throw new IllegalArgumentException("Illegal size for FITS heap:" + size);
+            throw new IllegalArgumentException("Illegal size for FITS heap: " + size);
         }
+        
+        ByteArrayIO data = new ByteArrayIO(Math.max(size, MIN_HEAP_CAPACITY));
+        data.setLength(Math.max(0, size));
+        setData(data);
+        encoder = new FitsEncoder(store);
+        decoder = new FitsDecoder(store);
     }
-
-    private void allocate() {
-        if (this.heap == null) {
-            this.heap = new byte[this.heapSize];
-        }
+    
+    /**
+     * Sets the underlying data storage for this heap instance. Constructors should
+     * call this.
+     * 
+     * @param data      the new underlying storage object for this heap instance. 
+     */
+    protected void setData(ByteArrayIO data) {
+        this.store = data;
     }
-
+    
     /**
      * Add a copy constructor to allow us to duplicate a heap. This would be
      * necessary if we wanted to copy an HDU that included variable length
      * columns.
      */
     FitsHeap copy() {
-        FitsHeap copy = new FitsHeap(0);
-        if (this.heap != null) {
-            copy.heap = this.heap.clone();
-        }
-        copy.heapSize = this.heapSize;
-        copy.heapOffset = this.heapOffset;
+        FitsHeap copy = new FitsHeap();
+        copy.setData(store.copy());
+        copy.encoder = new FitsEncoder(copy.store);
+        copy.decoder = new FitsDecoder(copy.store);
         return copy;
     }
 
     /**
-     * Check if the Heap can accommodate a given requirement. If not expand the
-     * heap.
-     */
-    void expandHeap(int need) {
-
-        // Invalidate any existing input stream to the heap.
-        this.bstr = null;
-        allocate();
-
-        if (this.heapSize + need > this.heap.length) {
-            int newlen = (this.heapSize + need) * 2;
-            if (newlen < MINIMUM_HEAP_SIZE) {
-                newlen = MINIMUM_HEAP_SIZE;
-            }
-            byte[] newHeap = new byte[newlen];
-            System.arraycopy(this.heap, 0, newHeap, 0, this.heapSize);
-            this.heap = newHeap;
-        }
-    }
-
-    /**
-     * Get data from the heap.
+     * Gets data for a Java array from the heap. The array may be a multi-dimensional or a 
+     * heterogenetous array of arrays.
      * 
      * @param offset
-     *            The offset at which the data begins.
+     *            the heap byte offset at which the data begins.
      * @param array
      *            The array to be extracted.
      * @throws FitsException
      *             if the operation failed
      */
     public void getData(int offset, Object array) throws FitsException {
-        allocate();
         try {
-            // Can we reuse the existing byte stream?
-            if (this.bstr == null || this.heapOffset > offset) {
-                this.heapOffset = 0;
-                this.bstr = new BufferedDataInputStream(new ByteArrayInputStream(this.heap));
-            }
-
-            this.bstr.skipAllBytes(offset - this.heapOffset);
-            this.heapOffset = offset;
-            this.heapOffset += this.bstr.readLArray(array);
-
-        } catch (IOException e) {
-            throw new FitsException("Error decoding heap area at offset=" + offset + ".  Exception: Exception " + e);
+            store.position(offset);
+            decoder.readArrayFully(array);
+        } catch (Exception e) {
+            throw new FitsException("Error decoding heap area at offset=" + offset + ".", e);
         }
     }
 
@@ -173,48 +156,35 @@ public class FitsHeap implements FitsElement {
      * Add some data to the heap.
      */
     int putData(Object data) throws FitsException {
-
-        long lsize = ArrayFuncs.computeLSize(data);
+        long lsize = store.length() + FitsEncoder.computeSize(data);
         if (lsize > Integer.MAX_VALUE) {
             throw new FitsException("FITS Heap > 2 G");
         }
-        int size = (int) lsize;
-        expandHeap(size);
-        ByteArrayOutputStream bo = new ByteArrayOutputStream(size);
-
-        try (BufferedDataOutputStream o = new BufferedDataOutputStream(bo)) {
-            o.writeArray(data);
-            o.flush();
-            o.close();
-        } catch (IOException e) {
+        
+        int oldSize = (int) store.length();
+        
+        try {
+            store.position(oldSize);
+            encoder.writeArray(data);
+        } catch (Exception e) {
             throw new FitsException("Unable to write variable column length data", e);
         }
-
-        System.arraycopy(bo.toByteArray(), 0, this.heap, this.heapSize, size);
-        int oldOffset = this.heapSize;
-        this.heapSize += size;
-
-        return oldOffset;
+       
+        return oldSize;
     }
-
-    /**
-     * Read the heap
-     */
+    
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     @Override
     public void read(ArrayDataInput str) throws FitsException {
-        if (this.heapSize > 0) {
-            allocate();
-            try {
-                if (str.read(this.heap, 0, this.heapSize) < this.heapSize) {
-                    throw new FitsException("Error reading heap, no more data");
-                }
-            } catch (IOException e) {
-                throw new FitsException("Error reading heap " + e.getMessage(), e);
-            }
+        if (store.length() == 0) {
+            return;
         }
-
-        this.bstr = null;
+       
+        try {
+            str.readFully(store.getBuffer(), 0, (int) store.length());
+        } catch (IOException e) {
+            throw new FitsException("Error reading heap " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -233,22 +203,22 @@ public class FitsHeap implements FitsElement {
     }
 
     /**
-     * @return the size of the Heap
+     * Returns the current heap size.
+     * 
+     * @return      the size of the heap in bytes
      */
     public int size() {
-        return this.heapSize;
+        return (int) store.length();
     }
 
-    /**
-     * Write the heap
-     */
     @Override
     public void write(ArrayDataOutput str) throws FitsException {
-        allocate();
         try {
-            str.write(this.heap, 0, this.heapSize);
+            str.write(store.getBuffer(), 0, (int) store.length());
         } catch (IOException e) {
             throw new FitsException("Error writing heap:" + e.getMessage(), e);
         }
     }
+    
+    
 }

@@ -6,7 +6,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -34,6 +34,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 
 /**
+ * @deprecated This class should not be exposed in the public API and should
+ *  be for internal use only in ASCII tables. Also, it may have overlapping 
+ *  functionality with other classes, which should probably be eliminated for
+ *  simplicity's sake (and thus less chance of nasty bugs). 
+ * 
  * This class provides routines for efficient parsing of data stored in a byte
  * array. This routine is optimized (in theory at least!) for efficiency rather
  * than accuracy. The values read in for doubles or floats may differ in the
@@ -56,6 +61,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * getInteger and getFloat call would return true, 123, and 2.58e12 when called
  * in succession.
  */
+@Deprecated
 public class ByteParser {
 
     private static final int EXPONENT_DENORMALISATION_CORR_LIMIT = -300;

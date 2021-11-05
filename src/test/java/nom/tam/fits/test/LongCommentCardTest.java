@@ -4,7 +4,7 @@ package nom.tam.fits.test;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2016 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -46,7 +46,7 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.LongValueException;
 import nom.tam.fits.header.Standard;
-import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.FitsOutputStream;
 import nom.tam.util.Cursor;
 
 public class LongCommentCardTest {
@@ -96,7 +96,7 @@ public class LongCommentCardTest {
             Fits fits = new Fits();
             fits.addHDU(Fits.makeHDU(header));
             File file = new File("target/longcommenttest.fits");
-            BufferedDataOutputStream stream = new BufferedDataOutputStream(new FileOutputStream(file));
+            FitsOutputStream stream = new FitsOutputStream(new FileOutputStream(file));
 
             try {
                 fits.write(stream);

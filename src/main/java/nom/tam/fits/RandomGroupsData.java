@@ -4,7 +4,7 @@ package nom.tam.fits;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -45,6 +45,7 @@ import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.FitsEncoder;
 
 /**
  * This class instantiates FITS Random Groups data. Random groups are
@@ -128,7 +129,7 @@ public class RandomGroupsData extends Data {
     protected long getTrueSize() {
 
         if (this.dataArray != null && this.dataArray.length > 0) {
-            return (ArrayFuncs.computeLSize(this.dataArray[0][0]) + ArrayFuncs.computeLSize(this.dataArray[0][1])) * this.dataArray.length;
+            return (FitsEncoder.computeSize(this.dataArray[0][0]) + FitsEncoder.computeSize(this.dataArray[0][1])) * this.dataArray.length;
         }
         return 0;
     }
@@ -140,9 +141,9 @@ public class RandomGroupsData extends Data {
         setFileOffset(str);
 
         try {
-            str.readLArray(this.dataArray);
+            str.readArrayFully(this.dataArray);
         } catch (IOException e) {
-            throw new FitsException("IO error reading Random Groups data " + e);
+            throw new FitsException("IO error reading Random Groups data ", e);
         }
         int pad = FitsUtil.padding(getTrueSize());
         try {
@@ -161,7 +162,7 @@ public class RandomGroupsData extends Data {
             str.writeArray(this.dataArray);
             FitsUtil.pad(str, getTrueSize());
         } catch (IOException e) {
-            throw new FitsException("IO error writing random groups data " + e);
+            throw new FitsException("IO error writing random groups data ", e);
         }
     }
 

@@ -6,7 +6,7 @@ import java.io.IOException;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -38,7 +38,7 @@ import java.io.IOException;
  * accessed in arbitrary order. The method signatures are taken from
  * RandomAccessFile though that class does not implement this interface.
  */
-public interface RandomAccess extends ArrayDataInput {
+public interface RandomAccess extends ReadWriteAccess, ArrayDataInput {
 
     /**
      * @return the current position in the stream.

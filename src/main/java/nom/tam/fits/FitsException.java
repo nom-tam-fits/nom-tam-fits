@@ -4,7 +4,7 @@ package nom.tam.fits;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -38,9 +38,9 @@ package nom.tam.fits;
 public class FitsException extends Exception {
 
     /**
-     * serial version UID.
+     * 
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 7713834647104490578L;
 
     public FitsException(String msg) {
         super(msg);

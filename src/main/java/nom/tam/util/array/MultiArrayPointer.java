@@ -4,7 +4,7 @@ package nom.tam.util.array;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -38,20 +38,19 @@ public class MultiArrayPointer {
     public static final Object END = new Object();
 
     public static boolean isSubArray(Object element) {
-        Class<? extends Object> elementClazz = element.getClass();
-        boolean isArray = elementClazz.isArray();
-        if (isArray && Object.class.equals(elementClazz.getComponentType())) {
-            // ok object array lets check it the elements are arrays.
-            int length = Array.getLength(element);
-            for (int index = 0; index < length; index++) {
-                Object subElement = Array.get(element, index);
-                if (subElement != null) {
-                    return subElement.getClass().isArray();
-                }
-            }
+        if (!(element instanceof Object[])) {
             return false;
         }
-        return isArray && elementClazz.getComponentType().isArray();
+
+        for (Object o : (Object[]) element) {
+            if (o != null) {
+                if (o.getClass().isArray()) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 
     private Object array;

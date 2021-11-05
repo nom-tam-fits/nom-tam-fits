@@ -4,7 +4,7 @@ package nom.tam.fits;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2016 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -39,7 +39,7 @@ import static nom.tam.fits.header.Standard.NAXIS;
 
 import java.io.IOException;
 
-import nom.tam.util.BufferedFile;
+import nom.tam.util.FitsFile;
 import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
 
@@ -110,9 +110,9 @@ public class BasicHduFailureTest {
     @Test
     public void testDefaultFileOffset() throws Exception {
         BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-        BufferedFile out = null;
+        FitsFile out = null;
         try {
-            out = new BufferedFile("target/BasicHduFailureTeststestDefaultFileOffset", "rw");
+            out = new FitsFile("target/BasicHduFailureTeststestDefaultFileOffset", "rw");
             dummyHDU.write(out);
         } finally {
             SafeClose.close(out);
@@ -121,7 +121,7 @@ public class BasicHduFailureTest {
         FitsException actual = null;
         out = null;
         try {
-            out = new BufferedFile("target/BasicHduFailureTeststestDefaultFileOffset", "rw") {
+            out = new FitsFile("target/BasicHduFailureTeststestDefaultFileOffset", "rw") {
 
                 int count = 0;
 
