@@ -32,6 +32,7 @@ package nom.tam.fits.test;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.DataOutputStream;
@@ -76,7 +77,7 @@ public class DupTest {
         assertEquals("Internal size, after rewrite", 2880, hdr.getSize());
         assertEquals("External size, after rewrite", 2880, hdr.getMinimumSize());
         assertTrue("Now rewriteable", hdr.rewriteable());
-        assertTrue("No duplicates", !hdr.hadDuplicates());
+        assertFalse("No duplicates", hdr.hadDuplicates());
         assertTrue("Dups is null", hdr.getDuplicates() == null);
     }
 }

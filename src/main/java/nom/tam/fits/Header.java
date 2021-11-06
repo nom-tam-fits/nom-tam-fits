@@ -106,10 +106,10 @@ public class Header implements FitsElement {
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
      */
-    private final HashedList<HeaderCard> cards = new HashedList<>();
+    private final HashedList<HeaderCard> cards;
 
     /** Offset of this Header in the FITS file */
-    private long fileOffset = -1;
+    private long fileOffset;
 
     private List<HeaderCard> duplicates;
 
@@ -120,18 +120,18 @@ public class Header implements FitsElement {
      * The mimimum number of cards to write, including blank header space as
      * described in the FITS 4.0 standard.
      */
-    private int minCards = 0;
+    private int minCards;
     
     /**
      * The number of bytes that this header occupied in file.
      * (for re-writing).
      */
-    private long readSize = 0;
+    private long readSize;
     
     /**
      * the sorter used to sort the header cards defore writing the header.
      */
-    private Comparator<String> headerSorter = new HeaderOrder();
+    private Comparator<String> headerSorter;
 
     
     /**
@@ -172,7 +172,10 @@ public class Header implements FitsElement {
 
     /** Create an empty header */
     public Header() {
-        super();
+        this.cards = new HashedList<>();
+        this.headerSorter = new HeaderOrder();
+        this.duplicates = null;
+        clear();
     }
 
     /**
@@ -186,6 +189,7 @@ public class Header implements FitsElement {
      *             if the stream ended prematurely
      */
     public Header(ArrayDataInput is) throws TruncatedFileException, IOException {
+        this();
         read(is);
     }
 
@@ -198,6 +202,7 @@ public class Header implements FitsElement {
      *             if the data was not valid for this header.
      */
     public Header(Data o) throws FitsException {
+        this();
         o.fillHeader(this);
     }
 
@@ -208,6 +213,7 @@ public class Header implements FitsElement {
      *            Card images to be placed in the header.
      */
     public Header(String[] newCards) {
+        this();
         for (String newCard : newCards) {
             this.cards.add(HeaderCard.create(newCard));
         }
@@ -1504,10 +1510,36 @@ public class Header implements FitsElement {
     public void pointToData(Data o) throws FitsException {
         o.fillHeader(this);
     }
+    
+    /**
+     * Remove all cards and reset the header to its default status.
+     * 
+     */
+    private void clear() {
+        cards.clear();
+        if (duplicates != null) {
+            duplicates.clear();
+        }
+        readSize = 0;
+        fileOffset = -1;
+        minCards = 0;
+    }
+    
+    /**
+     * Checks if the header is empty, that is if it contains no cards at all.
+     * 
+     * @return  <code>true</code> if the header contains no cards, otherwise <code>false</code>.
+     * 
+     * @since 1.16
+     */
+    public boolean isEmpty() {
+        return cards.isEmpty();
+    }
 
+    
     /**
      * <p>
-     * Read a stream for header data.
+     * Reads new header data from an input, discarding any prior content.
      * </p>
      * <p>
      * As of 1.16, the header is ensured to (re)write at least the same number of
@@ -1527,6 +1559,9 @@ public class Header implements FitsElement {
     @SuppressWarnings("deprecation")
     @Override
     public void read(ArrayDataInput dis) throws TruncatedFileException, IOException {
+        // AK: Start afresh, in case the header had prior contents from before.
+        clear();
+        
         if (dis instanceof RandomAccess) {
             this.fileOffset = FitsUtil.findOffset(dis);
         } else {
@@ -1534,7 +1569,6 @@ public class Header implements FitsElement {
         }
         
         int trailingBlanks = 0;
-        boolean firstCard = true;
         
         HeaderCardCountingArrayDataInput cardCountingArray = new HeaderCardCountingArrayDataInput(dis);
         try {
@@ -1544,46 +1578,42 @@ public class Header implements FitsElement {
                 // AK: Note, 'key' can never be null, as per contract of getKey(). So no need to check...
                 String key = fcard.getKey();
                 
-                if (firstCard) {
+                if (isEmpty()) {
                     checkFirstCard(key);
-                    firstCard = false;
                 } else if (fcard.isBlank()) {
                     // AK: We don't add the trailing blank cards, but keep count of them.
                     // (esp. in case the aren't trailing...) 
                     trailingBlanks++;
                     continue;
-                } else if (!END.key().equals(key)) {
-                    // AK: The preceding blank spaces were internal, not trailing
-                    // so add them back in now...
-                    for (int i = 0; i < trailingBlanks; i++) {
-                        insertBlankCard();
-                    }
-                    trailingBlanks = 0;
-                } 
+                } else if (END.key().equals(key)) {
+                    addLine(fcard);
+                    break; // Out of reading the header.
+                } else if (LONGSTRN.key().equals(key)) {
+                    // We don't check the value here. If the user
+                    // wants to be sure that long strings are disabled,
+                    // they can call setLongStringsEnabled(false) after
+                    // reading the header.
+                    FitsFactory.setLongStringsEnabled(true);
+                }
+                            
+                // AK: The preceding blank spaces were internal, not trailing
+                // so add them back in now...
+                for (int i = 0; i < trailingBlanks; i++) {
+                    insertBlankCard();
+                }
+                trailingBlanks = 0;
                 
                 if (this.cards.containsKey(key)) {
                     addDuplicate(this.cards.get(key));
                 }
 
-                // We don't check the value here. If the user
-                // wants to be sure that long strings are disabled,
-                // they can call setLongStringsEnabled(false) after
-                // reading the header.
-                if (LONGSTRN.key().equals(key)) {
-                    FitsFactory.setLongStringsEnabled(true);
-                }
-
                 addLine(fcard);
-
-                if (END.key().equals(key)) {
-                    break; // Out of reading the header.
-                }
             }
         } catch (EOFException e) {
             // Normal end-of-file
             throw e;   
         } catch (Exception e) { 
-            if (firstCard && FitsFactory.getAllowTerminalJunk()) {
+            if (isEmpty() && FitsFactory.getAllowTerminalJunk()) {
                 // If this happened where we expect a new header to start, then
                 // treat is as if end-of-file if terminal junk is allowed
                 forceEOF("Junk detected at " + this.fileOffset + ".", e);
@@ -1591,7 +1621,7 @@ public class Header implements FitsElement {
             if (e instanceof TruncatedFileException) {
                 throw (TruncatedFileException) e;
             }
-            throw new IOException("Invalid FITS Header" + (firstCard 
+            throw new IOException("Invalid FITS Header" + (isEmpty() 
                     ? "" : ":\n\n --> Try FitsFactory.setAllowTerminalJunk(true) prior to reading to work around.\n"), e);
         }        
         
@@ -2008,10 +2038,10 @@ public class Header implements FitsElement {
         }
     }
 
-    private void checkFirstCard(String key) throws HeaderCardException {
+    private void checkFirstCard(String key) throws FitsException {
         // AK: key cannot be null by the caller already, so checking for it makes dead code.
-        if (!key.equals(SIMPLE.key()) && !key.equals(XTENSION.key())) {      
-            throw new HeaderCardException("Not a proper FITS header: " + HeaderCard.sanitize(key) + " at " + this.fileOffset);
+        if (!SIMPLE.key().equals(key) && !XTENSION.key().equals(key)) {
+            throw new FitsException("Not a proper FITS header: " + HeaderCard.sanitize(key) + " at " + this.fileOffset);
         }
     }
 
