@@ -55,6 +55,7 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -86,6 +87,7 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
+import nom.tam.util.InputReader;
 import nom.tam.util.FitsFile;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
@@ -237,7 +239,7 @@ public class HeaderTest {
 
     @Test
     public void longStringTest() throws Exception {
-        FitsFactory.setLongStringsEnabled(false);
+        FitsFactory.setLongStringsEnabled(true);
         String seq = "0123456789";
         String lng = "";
         String sixty = seq + seq + seq + seq + seq + seq;
@@ -249,8 +251,7 @@ public class HeaderTest {
         try {
             f = new Fits("target/ht1.fits");
             Header hdr = f.getHDU(0).getHeader();
-            assertEquals("Initial state:", false, FitsFactory.isLongStringsEnabled());
-            FitsFactory.setLongStringsEnabled(true);
+
             assertEquals("Set state:", true, FitsFactory.isLongStringsEnabled());
             hdr.addValue("LONG1", lng, "Here is a comment that is also very long and will be truncated at least a little");
             hdr.addValue("LONG2", "xx'yy'zz" + lng, "Another comment");
@@ -293,10 +294,8 @@ public class HeaderTest {
                 bf = new FitsFile("target/ht4.hdr", "r");
                 hdr = new Header(bf);
                 assertEquals("Set state2:", true, FitsFactory.isLongStringsEnabled());
-                val = hdr.getStringValue("LONG1");
-                assertEquals("LongT5", val, lng);
-                val = hdr.getStringValue("LONG2");
-                assertEquals("LongT6", "xx'yy'zz" + lng, val);
+                assertEquals("LongT5", lng, hdr.getStringValue("LONG1"));
+                assertEquals("LongT6", "xx'yy'zz" + lng, hdr.getStringValue("LONG2"));
                 assertEquals("longamp2", lng + "&", hdr.getStringValue("LONGISH"));
                 assertEquals("APOS1b", 70, hdr.getStringValue("APOS1").length());
                 assertEquals("APOS2b", 71, hdr.getStringValue("APOS2").length());
@@ -1431,4 +1430,66 @@ public class HeaderTest {
         }
         
     }
+    
+    @Test(expected = IOException.class)
+    public void testNoSkipStream() throws Exception {
+        ByteArrayOutputStream bo = new ByteArrayOutputStream(4000);
+        FitsOutputStream o = new FitsOutputStream(bo);
+        int[][] i = new int[10][10];
+        BasicHDU<?> hdu = FitsFactory.hduFactory(i);
+        hdu.getHeader().write(o);
+        
+        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(bo.toByteArray())) {
+            @Override
+            public void skipAllBytes(long n) throws IOException {
+                throw new IOException("disabled skipping");
+            }
+        };
+        
+        new Header(in);
+    }
+    
+    @Test
+    public void testMissingPaddingStream() throws Exception {
+        ByteArrayOutputStream bo = new ByteArrayOutputStream(4000);
+        FitsOutputStream o = new FitsOutputStream(bo);
+        int[][] i = new int[10][10];
+        BasicHDU<?> hdu = FitsFactory.hduFactory(i);
+        hdu.getHeader().write(o);
+        
+        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(bo.toByteArray())) {
+            @Override
+            public void skipAllBytes(long n) throws IOException {
+                throw new EOFException("nothing left");
+            }
+        };
+        
+        new Header(in);
+        // No exception
+    }
+
+    @Test
+    public void testCheckTruncatedFile() throws Exception {
+        File file = new File("noskip.bin");
+        
+        FitsFile f = new FitsFile(file, "rw");
+        int[][] i = new int[10][10];
+        BasicHDU<?> hdu = FitsFactory.hduFactory(i);
+        hdu.getHeader().write(f);
+        
+        FitsFile f2 = new FitsFile(file, "rw") {
+            @Override
+            public void skipAllBytes(long n) throws IOException {
+                // Skip just beyond the end, so checkTruncated() will return true.
+                super.skipAllBytes(length() - getFilePointer() + 1);
+            }
+        };
+        
+        new Header(f2);
+        file.delete();
+        // No exception
+    }
+    
+    
+    
 }

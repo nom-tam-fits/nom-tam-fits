@@ -39,6 +39,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -519,7 +520,7 @@ public class HeaderCardTest {
         hc = new HeaderCard(key, "a verly long value that must be splitted over multiple lines to fit the card", "the comment is also not the smallest");
 
         assertEquals("HIERARCH TEST1 TEST2 INT = 'a verly long value that must be splitted over mult&'" + //
-                "CONTINUE  'iple lines to fit the card' /the comment is also not the smallest    ", hc.toString());
+                "CONTINUE  'iple lines to fit the card' / the comment is also not the smallest   ", hc.toString());
 
     }
     
@@ -591,7 +592,7 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard(key, "a verly long value that must be splitted over multiple lines to fit the card", "the comment is also not the smallest");
 
         assertEquals("HIERARCH TEST1 TEST2 INT ='a verly long value that must be splitted over multi&'" + //
-                "CONTINUE  'ple lines to fit the card' /the comment is also not the smallest     ", hc.toString());
+                "CONTINUE  'ple lines to fit the card' / the comment is also not the smallest    ", hc.toString());
 
     }
     
@@ -1656,6 +1657,77 @@ public class HeaderCardTest {
         assertEquals("HIERARCH TIMESYS BBBB CCCC ='UTC' / All dates are in UTC time                   ", card.toString());
     }
     
+    private String makeTestString(int n) {
+        if (n < 0) {
+            return null;
+        }
+        StringBuffer b = new StringBuffer(n);
+        for (int i=0; i<n; i++) {
+            b.append((char) ('0' + (i % 10)));
+        }
+        return new String(b);
+    }
     
+    @Test
+    public void testLongStringsAndComments() throws Exception {        
+        for (int i=60; i < 70; i++) {
+            String value = makeTestString(i);
+            for (int j = -1; j < 70; j++) {
+                String comment = makeTestString(j);
+                HeaderCard hc = new HeaderCard("LONGTEST", value, comment);
+                if(j == 0) {
+                    // Empty comments will read back as null...
+                    comment = null;
+                }
+                HeaderCard hc2 = HeaderCard.create(hc.toString());
+                assertEquals("value[" + i + "," + j + "]", value, hc2.getValue());
+                assertEquals("comment[" + i + "," + j + "]", comment, hc2.getComment());
+            }
+        }
+        
+    }
     
+    @Test
+    public void testSkipBlankAfterAssign() throws Exception {
+        FitsFactory.setSkipBlankAfterAssign(true);
+        
+        HeaderCard hc = new HeaderCard("BADASSIG", "value", "comment");
+        HeaderCard hc2 = HeaderCard.create(hc.toString());
+        
+        assertEquals("value", hc.getValue(), hc2.getValue());
+        assertEquals("comment", hc.getComment(), hc2.getComment());
+        
+        assertEquals(71, hc.spaceForValue());
+    }
+    
+    @Test(expected = EOFException.class)
+    public void testHeaderReadThrowsEOF() throws Exception {
+        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[100])) {
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                // The contract of read is that it should not throw EOFException, but return -1.
+                // But, we want to see what happens if the stream does not follow that
+                // contract and throws an exception anyway.
+                throw new EOFException();
+            }
+        };
+        new HeaderCard(in);
+    }
+    
+    @Test(expected = TruncatedFileException.class)
+    public void testHeaderReadThrowsEOF2() throws Exception {
+        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[100])) {  
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                if (off > 0) {               
+                    // The contract of read is that it should not throw EOFException, but return -1.
+                    // But, we want to see what happens if the stream does not follow that
+                    // contract and throws an exception anyway, after getting some input...
+                    throw new EOFException();
+                }
+                return 1;
+            }
+        };
+        new HeaderCard(in);
+    }
 }

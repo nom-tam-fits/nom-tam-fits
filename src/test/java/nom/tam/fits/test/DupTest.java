@@ -32,6 +32,7 @@ package nom.tam.fits.test;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.DataOutputStream;
@@ -61,10 +62,13 @@ public class DupTest {
         assertEquals("External size:", 8640, hdr.getMinimumSize());
         assertTrue("Has duplicates:", hdr.hadDuplicates());
         List<HeaderCard> dups = hdr.getDuplicates();
-        System.out.println("Number of duplicates:" + dups.size());
+        
+        int nDups = dups.size();
+        System.out.println("Number of duplicates:" + nDups);
         assertTrue("Has dups:", dups != null && dups.size() > 0);
         // AK: It is rewritable with preallocated blank space that is now supported!
         assertTrue("Not rewriteable:", hdr.rewriteable());
+           
         DataOutputStream bf = new DataOutputStream(new FileOutputStream("target/created_dup.fits"));
         hdr.resetOriginalSize();
         assertEquals("External size, after reset", 2880, hdr.getMinimumSize());
@@ -76,7 +80,7 @@ public class DupTest {
         assertEquals("Internal size, after rewrite", 2880, hdr.getSize());
         assertEquals("External size, after rewrite", 2880, hdr.getMinimumSize());
         assertTrue("Now rewriteable", hdr.rewriteable());
-        assertTrue("No duplicates", !hdr.hadDuplicates());
+        assertFalse("No duplicates", hdr.hadDuplicates());
         assertTrue("Dups is null", hdr.getDuplicates() == null);
     }
 }

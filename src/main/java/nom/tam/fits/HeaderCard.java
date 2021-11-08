@@ -1641,16 +1641,31 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
         byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];       
        
-        int got = dis.in().read(buffer);   
+        int got = 0;
         
-        if (got <= 0) {
+        try {
+            // Read as long as there is more available, even if it comes in a trickle...
+            while (got < buffer.length) {
+                int n = dis.in().read(buffer, got, buffer.length - got);
+                if (n <= 0) {
+                    break;
+                }
+                got += n;
+            }
+        } catch (EOFException e) {
+            // Just in case read throws EOFException instead of returning -1 by contract.
+        }
+        
+        if (got == 0) {
+            // Nothing left to read.
             throw new EOFException();
         }
         
         if (got < buffer.length) {
+            // Got an incomplete header card...
             throw new TruncatedFileException("Got only " + got + " of " + buffer.length + " bytes expected for a header card"); 
         }
-        
+            
         dis.cardRead();
         
         return AsciiFuncs.asciiString(buffer);

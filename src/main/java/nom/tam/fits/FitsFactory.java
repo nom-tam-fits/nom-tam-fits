@@ -58,13 +58,13 @@ public final class FitsFactory {
     
     private static final boolean DEFAULT_USE_EXPONENT_D = false;
     
-    private static final boolean DEFAULT_LONG_STRINGS_ENABLED = false;
+    private static final boolean DEFAULT_LONG_STRINGS_ENABLED = true;
     
     private static final boolean DEFAULT_CHECK_ASCII_STRINGS = false;
     
-    private static final boolean DEFAULT_ALLOW_TERMINAL_JUNK = false;
+    private static final boolean DEFAULT_ALLOW_TERMINAL_JUNK = true;
     
-    private static final boolean DEFAULT_ALLOW_HEADER_REPAIRS = false;
+    private static final boolean DEFAULT_ALLOW_HEADER_REPAIRS = true;
     
     private static final boolean DEFAULT_SKIP_BLANK_AFTER_ASSIGN = false;
     

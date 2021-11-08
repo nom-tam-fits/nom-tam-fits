@@ -535,6 +535,7 @@ public class BaseFitsTest {
         }
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual.getMessage().toLowerCase().contains("invalid"));
+        FitsFactory.setAllowHeaderRepairs(false);
         header.card(Standard.NAXIS).value(2)//
                 .card(NAXISn.n(2)).value(2)//
                 .card(Standard.NAXIS.BITPIX).value(22);
