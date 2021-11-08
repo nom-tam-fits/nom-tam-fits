@@ -286,9 +286,10 @@ class HeaderCardFormatter {
         }
         
         int available = getAvailable(buf);
+        boolean longCommentOK = FitsFactory.isLongStringsEnabled() && card.isStringValue();
         
-        if (!card.isCommentStyleCard() && FitsFactory.isLongStringsEnabled() && card.isStringValue()) {
-            if (card.getComment().length() + COMMENT_PREFIX.length() > available) {
+        if (!card.isCommentStyleCard() && longCommentOK) {
+            if (COMMENT_PREFIX.length() + card.getComment().length() > available) {
                 // No room for a complete regular comment, but we can do a long string comment...
                 appendLongStringComment(buf, card);
                 return true;
@@ -302,7 +303,9 @@ class HeaderCardFormatter {
             // ' / '
             available -= COMMENT_PREFIX.length();
             if (getMinTruncatedCommentSize(card) > available) {
-                return false;
+                if (!longCommentOK) {
+                    return false;
+                }
             }
         }
         

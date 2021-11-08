@@ -1656,6 +1656,34 @@ public class HeaderCardTest {
         assertEquals("HIERARCH TIMESYS BBBB CCCC ='UTC' / All dates are in UTC time                   ", card.toString());
     }
     
+    private String makeTestString(int n) {
+        if (n < 0) {
+            return null;
+        }
+        StringBuffer b = new StringBuffer(n);
+        for (int i=0; i<n; i++) {
+            b.append((char) ('0' + (i % 10)));
+        }
+        return new String(b);
+    }
     
+    @Test
+    public void testLongStringsAndComments() throws Exception {        
+        for (int i=60; i < 70; i++) {
+            String value = makeTestString(i);
+            for (int j = -1; j < 70; j++) {
+                String comment = makeTestString(j);
+                HeaderCard hc = new HeaderCard("LONGTEST", value, comment);
+                if(j == 0) {
+                    // Empty comments will read back as null...
+                    comment = null;
+                }
+                HeaderCard hc2 = HeaderCard.create(hc.toString());
+                assertEquals("value[" + i + "," + j + "]", value, hc2.getValue());
+                assertEquals("comment[" + i + "," + j + "]", comment, hc2.getComment());
+            }
+        }
+        
+    }
     
 }

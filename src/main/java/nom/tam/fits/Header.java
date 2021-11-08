@@ -1517,9 +1517,7 @@ public class Header implements FitsElement {
      */
     private void clear() {
         cards.clear();
-        if (duplicates != null) {
-            duplicates.clear();
-        }
+        duplicates = null;
         readSize = 0;
         fileOffset = -1;
         minCards = 0;
@@ -1610,7 +1608,7 @@ public class Header implements FitsElement {
                 addLine(fcard);
             }
         } catch (EOFException e) {
-            // Normal end-of-file
+            // Normal end-of-file before END key...
             throw e;   
         } catch (Exception e) { 
             if (isEmpty() && FitsFactory.getAllowTerminalJunk()) {
@@ -1634,16 +1632,11 @@ public class Header implements FitsElement {
         
         // Read to the end of the current FITS block.
         //
-        try {
-            dis.skipAllBytes(FitsUtil.padding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE));
-        } catch (IOException e) {
-            // No biggy, we'll log it and but we have a complete header
-            forceEOF("Missing padding after header.", e);
-        }
-        
+        dis.skipAllBytes(FitsUtil.padding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE));
+      
         // AK: Log if the file ends before the expected end-of-header position.
         if (dis.checkTruncated()) {
-            LOG.warning("Missing padding after header.");
+            LOG.log(Level.WARNING, "Premature end-of-file: no padding after header.");
         }
     }
     
@@ -1657,7 +1650,7 @@ public class Header implements FitsElement {
      */
     private void forceEOF(String message, Exception cause) throws EOFException {
         LOG.log(Level.WARNING, message, cause);
-        throw new EOFException("Forced EOF at " + this.fileOffset + " due to terminal junk.");
+        throw new EOFException("Forced EOF at " + this.fileOffset + " due to: " + message);
     }
 
     /**

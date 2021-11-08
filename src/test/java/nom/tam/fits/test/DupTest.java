@@ -62,10 +62,13 @@ public class DupTest {
         assertEquals("External size:", 8640, hdr.getMinimumSize());
         assertTrue("Has duplicates:", hdr.hadDuplicates());
         List<HeaderCard> dups = hdr.getDuplicates();
-        System.out.println("Number of duplicates:" + dups.size());
+        
+        int nDups = dups.size();
+        System.out.println("Number of duplicates:" + nDups);
         assertTrue("Has dups:", dups != null && dups.size() > 0);
         // AK: It is rewritable with preallocated blank space that is now supported!
         assertTrue("Not rewriteable:", hdr.rewriteable());
+           
         DataOutputStream bf = new DataOutputStream(new FileOutputStream("target/created_dup.fits"));
         hdr.resetOriginalSize();
         assertEquals("External size, after reset", 2880, hdr.getMinimumSize());

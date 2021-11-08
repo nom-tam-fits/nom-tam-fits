@@ -55,6 +55,7 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -86,6 +87,7 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
+import nom.tam.util.InputReader;
 import nom.tam.util.FitsFile;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
@@ -1428,4 +1430,45 @@ public class HeaderTest {
         }
         
     }
+    
+    @Test(expected = IOException.class)
+    public void testMissingPaddingStream() throws Exception {
+        ByteArrayOutputStream bo = new ByteArrayOutputStream(4000);
+        FitsOutputStream o = new FitsOutputStream(bo);
+        int[][] i = new int[10][10];
+        BasicHDU<?> hdu = FitsFactory.hduFactory(i);
+        hdu.getHeader().write(o);
+        
+        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(bo.toByteArray())) {
+            @Override
+            public void skipAllBytes(long n) throws IOException {
+                throw new IOException("disabled skipping");
+            }
+        };
+        
+        Header h = new Header(in);
+    }
+
+    @Test
+    public void testCheckTruncatedFile() throws Exception {
+        File file = new File("noskip.bin");
+        
+        FitsFile f = new FitsFile(file, "rw");
+        int[][] i = new int[10][10];
+        BasicHDU<?> hdu = FitsFactory.hduFactory(i);
+        hdu.getHeader().write(f);
+        
+        FitsFile f2 = new FitsFile(file, "rw") {
+            @Override
+            public void skipAllBytes(long n) throws IOException {
+                // Skip just beyond the end, so checkTruncated() will return true.
+                super.skipAllBytes(length() - getFilePointer() + 1);
+            }
+        };
+        
+        Header h = new Header(f2);
+        file.delete();
+        // No exception
+    }
+    
 }
