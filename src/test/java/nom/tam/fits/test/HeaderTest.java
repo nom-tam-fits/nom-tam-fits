@@ -1432,7 +1432,7 @@ public class HeaderTest {
     }
     
     @Test(expected = IOException.class)
-    public void testMissingPaddingStream() throws Exception {
+    public void testNoSkipStream() throws Exception {
         ByteArrayOutputStream bo = new ByteArrayOutputStream(4000);
         FitsOutputStream o = new FitsOutputStream(bo);
         int[][] i = new int[10][10];
@@ -1446,7 +1446,26 @@ public class HeaderTest {
             }
         };
         
-        Header h = new Header(in);
+        new Header(in);
+    }
+    
+    @Test
+    public void testMissingPaddingStream() throws Exception {
+        ByteArrayOutputStream bo = new ByteArrayOutputStream(4000);
+        FitsOutputStream o = new FitsOutputStream(bo);
+        int[][] i = new int[10][10];
+        BasicHDU<?> hdu = FitsFactory.hduFactory(i);
+        hdu.getHeader().write(o);
+        
+        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(bo.toByteArray())) {
+            @Override
+            public void skipAllBytes(long n) throws IOException {
+                throw new EOFException("nothing left");
+            }
+        };
+        
+        new Header(in);
+        // No exception
     }
 
     @Test
@@ -1466,9 +1485,11 @@ public class HeaderTest {
             }
         };
         
-        Header h = new Header(f2);
+        new Header(f2);
         file.delete();
         // No exception
     }
+    
+    
     
 }

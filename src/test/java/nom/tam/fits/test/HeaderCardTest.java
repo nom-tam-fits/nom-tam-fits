@@ -39,6 +39,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -1699,4 +1700,34 @@ public class HeaderCardTest {
         assertEquals(71, hc.spaceForValue());
     }
     
+    @Test(expected = EOFException.class)
+    public void testHeaderReadThrowsEOF() throws Exception {
+        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[100])) {
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                // The contract of read is that it should not throw EOFException, but return -1.
+                // But, we want to see what happens if the stream does not follow that
+                // contract and throws an exception anyway.
+                throw new EOFException();
+            }
+        };
+        new HeaderCard(in);
+    }
+    
+    @Test(expected = TruncatedFileException.class)
+    public void testHeaderReadThrowsEOF2() throws Exception {
+        FitsInputStream in = new FitsInputStream(new ByteArrayInputStream(new byte[100])) {  
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                if (off > 0) {               
+                    // The contract of read is that it should not throw EOFException, but return -1.
+                    // But, we want to see what happens if the stream does not follow that
+                    // contract and throws an exception anyway, after getting some input...
+                    throw new EOFException();
+                }
+                return 1;
+            }
+        };
+        new HeaderCard(in);
+    }
 }
