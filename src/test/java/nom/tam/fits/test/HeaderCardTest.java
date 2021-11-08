@@ -1686,4 +1686,17 @@ public class HeaderCardTest {
         
     }
     
+    @Test
+    public void testSkipBlankAfterAssign() throws Exception {
+        FitsFactory.setSkipBlankAfterAssign(true);
+        
+        HeaderCard hc = new HeaderCard("BADASSIG", "value", "comment");
+        HeaderCard hc2 = HeaderCard.create(hc.toString());
+        
+        assertEquals("value", hc.getValue(), hc2.getValue());
+        assertEquals("comment", hc.getComment(), hc2.getComment());
+        
+        assertEquals(71, hc.spaceForValue());
+    }
+    
 }

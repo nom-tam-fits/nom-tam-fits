@@ -1632,11 +1632,19 @@ public class Header implements FitsElement {
         
         // Read to the end of the current FITS block.
         //
-        dis.skipAllBytes(FitsUtil.padding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE));
+        try {
+            dis.skipAllBytes(FitsUtil.padding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE));
+        } catch (EOFException e) {
+            // No biggy. We got a complete header just fine, it's only that there was no
+            // padding before EOF. We'll just log that, but otherwise keep going.
+            LOG.log(Level.WARNING, "Premature end-of-file: no padding after header.", e);
+        }
       
         // AK: Log if the file ends before the expected end-of-header position.
         if (dis.checkTruncated()) {
-            LOG.log(Level.WARNING, "Premature end-of-file: no padding after header.");
+            // No biggy. We got a complete header just fine, it's only that there was no
+            // padding before EOF. We'll just log that, but otherwise keep going.
+            LOG.warning("Premature end-of-file: no padding after header.");
         }
     }
     
