@@ -35,6 +35,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.util.Arrays;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * A class for reading and writing into byte arrays with a stream-like
  * interface.
@@ -66,6 +68,7 @@ public class ByteArrayIO implements ReadWriteAccess {
      * 
      * @param buffer        the fixed buffer.
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "by design this class provides an IO interface for an accessible array.")
     public ByteArrayIO(byte[] buffer) {
         this.buf = buffer;
         this.end = 0;
@@ -98,9 +101,11 @@ public class ByteArrayIO implements ReadWriteAccess {
      */
     public synchronized ByteArrayIO copy() {
         ByteArrayIO copy = new ByteArrayIO(Arrays.copyOf(buf, buf.length));
-        copy.isGrowable = this.isGrowable;
-        copy.pos = this.pos;
-        copy.end = this.end;
+        synchronized (copy) {
+            copy.isGrowable = this.isGrowable;
+            copy.pos = this.pos;
+            copy.end = this.end;
+        }
         return copy;
     }
     
@@ -109,6 +114,7 @@ public class ByteArrayIO implements ReadWriteAccess {
      * 
      * @return  the backing array of this buffer.
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "by design this class provides an IO interface for an accessible array.")
     public synchronized byte[] getBuffer() {
         return buf;
     }

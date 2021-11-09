@@ -49,22 +49,53 @@ import nom.tam.fits.FitsFactory;
  */
 public abstract class ArrayEncoder {
 
+    /**
+     * The default local buffer size to use for encoding data into binary format
+     */
     private static final int BUFFER_SIZE = FitsFactory.FITS_BLOCK_SIZE;
 
+    /**
+     * The output to which to write encoded data (directly or from the
+     * conversion buffer)
+     */
     private OutputWriter out;
 
+    /**
+     * A local buffer for efficient conversions before bulk writing to the
+     * output
+     */
     private OutputBuffer buf;
 
+    /**
+     * Instantiates a new Java-to-binary encoder for arrays. To be used by
+     * subclass implementations only
+     * 
+     * @see #setOutput(OutputWriter)
+     */
     protected ArrayEncoder() {
         buf = new OutputBuffer(BUFFER_SIZE);
     }
 
+    /**
+     * Instantiates a new Java-to-binary encoder for arrays, writing encoded
+     * data to the specified output.
+     * 
+     * @param o
+     *            the output to which encoded data is to be written.
+     */
     public ArrayEncoder(OutputWriter o) {
         this();
-        setWriter(o);
+        setOutput(o);
     }
 
-    protected void setWriter(OutputWriter o) {
+    /**
+     * Sets the output to which encoded data should be written (directly or from
+     * the conversion buffer).
+     * 
+     * @param o
+     *            the new output to which encoded data is to be written.
+     */
+    protected synchronized void setOutput(OutputWriter o) {
         this.out = o;
     }
 
@@ -98,27 +129,61 @@ public abstract class ArrayEncoder {
         // a private method of OutputBuffer, with leading 'buf.' references
         // stripped.
         if (buf.buffer.remaining() < bytes) {
-            buf.flush();
-        }
-    }
-
-    protected synchronized void write(int b) throws IOException {
-        synchronized (out) {
-            buf.flush();
-            out.write(b);
-        }
-    }
-
-    protected synchronized void write(byte[] b, int start, int length) throws IOException {
-        synchronized (out) {
-            buf.flush();
-            out.write(b, start, length);
+            flush();
         }
     }
 
     /**
+     * Flushes the contents of the conversion buffer to the underlying output.
+     * 
+     * @throws IOException
+     *             if there was an IO error writing the contents of this buffer
+     *             to the output.
+     */
+    protected synchronized void flush() throws IOException {
+        int n = buf.buffer.position();
+        out.write(buf.data, 0, n);
+        buf.buffer.rewind();
+    }
+
+    /**
+     * Writes a byte. See the general contract of
+     * {@link java.io.DataOutputStream#write(int)}.
+     * 
+     * @param b
+     *            the (unsigned) byte value to write.
+     * @throws IOException
+     *             if there was an underlying IO error
+     * @see java.io.DataOutputStream#write(int)
+     */
+    protected synchronized void write(int b) throws IOException {
+        flush();
+        out.write(b);
+    }
+
+    /**
+     * Writes up to the specified number of bytes from a buffer to the stream.
+     * See the general contract of
+     * {@link java.io.DataOutputStream#write(byte[], int, int)}.
+     * 
+     * @param b
+     *            the buffer
+     * @param start
+     *            the starting buffer index
+     * @param length
+     *            the number of bytes to write.
+     * @throws IOException
+     *             if there was an underlying IO error
+     * @see java.io.DataOutputStream#write(byte[], int, int)
+     */
+    protected synchronized void write(byte[] b, int start, int length) throws IOException {
+        flush();
+        out.write(b, start, length);
+    }
+
+    /**
      * Writes the contents of a Java array to the output translating the data to
-     * the required binary representation. The argument may be any generic hava
+     * the required binary representation. The argument may be any generic Java
      * array, including heterogeneous arrays of arrays.
      * 
      * @param o
@@ -129,6 +194,7 @@ public abstract class ArrayEncoder {
      * @throws IllegalArgumentException
      *             if the supplied object is not a Java array or if it contains
      *             Java types that are not supported by the decoder.
+     * @see ArrayDataOutput#writeArray(Object)
      */
     public abstract void writeArray(Object o) throws IOException, IllegalArgumentException;
 
@@ -206,20 +272,6 @@ public abstract class ArrayEncoder {
          */
         protected ByteOrder byteOrder() {
             return buffer.order();
-        }
-
-        /**
-         * Flushes the contents of the conversion buffer to the underlying
-         * output.
-         * 
-         * @throws IOException
-         *             if there was an IO error writing the contents of this
-         *             buffer to the output.
-         */
-        protected void flush() throws IOException {
-            int n = buffer.position();
-            out.write(data, 0, n);
-            buffer.rewind();
         }
 
         /**

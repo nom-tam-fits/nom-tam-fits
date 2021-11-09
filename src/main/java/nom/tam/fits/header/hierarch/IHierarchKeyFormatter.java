@@ -56,6 +56,7 @@ public interface IHierarchKeyFormatter {
      * space separated components following "HIERARCH " and the "= " prior to
      * the value.
      * 
+     * @param key   the HIERARCH-style header key.
      * @return the number of extra spaces relative to the most compact notation
      *         for the components.
      * @since 1.16

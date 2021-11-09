@@ -84,7 +84,7 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * @param bin2java
      *            the conversion from the binary representation of arrays in the
      *            stream to Java arrays.
-     * @see #getDeccoder()
+     * @see #getDecoder()
      */
     protected void setDecoder(ArrayDecoder bin2java) {
         this.decoder = bin2java;
@@ -97,7 +97,7 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * 
      * @return the conversion from the binary representation of arrays in the
      *         stream to Java arrays
-     * @see #setDecoder(ArrayEncoder)
+     * @see #setDecoder(ArrayDecoder)
      */
     protected ArrayDecoder getDecoder() {
         return decoder;
@@ -106,6 +106,17 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
     /**
      * See {@link ArrayDataInput#readLArray(Object)} for a contract of this
      * method.
+     * 
+     * @param o
+     *            an array, to be populated
+     * @return the actual number of bytes read from the input, or -1 if already
+     *         at the end-of-file.
+     * @throws IllegalArgumentException
+     *             if the argument is not an array or if it contains an element
+     *             that is not supported for decoding.
+     * @throws IOException
+     *             if there was an IO error reading from the input
+     * @see #readArrayFully(Object)
      */
     public synchronized long readLArray(Object o) throws IOException, IllegalArgumentException {
         try {
@@ -118,6 +129,15 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
     /**
      * See {@link ArrayDataInput#readArrayFully(Object)} for a contract of this
      * method.
+     * 
+     * @param o
+     *            an array, to be populated
+     * @throws IllegalArgumentException
+     *             if the argument is not an array or if it contains an element
+     *             that is not supported for decoding.
+     * @throws IOException
+     *             if there was an IO error reading from the input
+     * @see #readLArray(Object)
      */
     public synchronized void readArrayFully(Object o) throws IOException, IllegalArgumentException {
         decoder.readArrayFully(o);

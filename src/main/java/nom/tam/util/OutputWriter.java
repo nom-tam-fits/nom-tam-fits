@@ -64,7 +64,7 @@ public interface OutputWriter {
      *            the buffer
      * @param from
      *            the starting buffer index
-     * @param len
+     * @param length
      *            the number of bytes to write.
      * @throws IOException
      *             if there was an underlying IO error

@@ -309,7 +309,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
     
    
     @Override
-    public final void write(int b) throws IOException {
+    public final synchronized void write(int b) throws IOException {
         if (writeAhead) {
             setLength(getFilePointer());
         }

@@ -52,8 +52,8 @@ public class ArrayOutputStream extends BufferedOutputStream implements OutputWri
      * Instantiates a new output stream for efficient array transactions. For
      * use by subclass constructors only.
      * 
-     * @param i
-     *            the underlying input stream
+     * @param o
+     *            the underlying output stream
      * @param bufLength
      *            the buffer size in bytes.
      */
@@ -85,7 +85,6 @@ public class ArrayOutputStream extends BufferedOutputStream implements OutputWri
      *            the conversion from Java arrays to their binary representation
      *            in stream
      * @see #getEncoder()
-     * @see #setDecoder(ArrayDecoder)
      */
     protected void setEncoder(ArrayEncoder java2bin) {
         this.encoder = java2bin;
@@ -99,7 +98,6 @@ public class ArrayOutputStream extends BufferedOutputStream implements OutputWri
      * @return the conversion from Java arrays to their binary representation in
      *         stream
      * @see #setEncoder(ArrayEncoder)
-     * @see #getDecoder()
      */
     protected ArrayEncoder getEncoder() {
         return encoder;
@@ -108,8 +106,16 @@ public class ArrayOutputStream extends BufferedOutputStream implements OutputWri
     /**
      * See {@link ArrayDataOutput#writeArray(Object)} for a contract of this
      * method.
+     * 
+     * @param o
+     *            an array ot any type.
+     * @throws IllegalArgumentException
+     *             if the argument is not an array or if it contains an element
+     *             that is not supported for encoding.
+     * @throws IOException
+     *             if there was an IO error writing to the output.
      */
-    public synchronized void writeArray(Object o) throws IOException {
+    public synchronized void writeArray(Object o) throws IOException, IllegalArgumentException {
         try {
             encoder.writeArray(o);
         } catch (IllegalArgumentException e) {

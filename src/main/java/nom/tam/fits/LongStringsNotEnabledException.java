@@ -32,8 +32,8 @@
 package nom.tam.fits;
 
 /**
- * Thrown when an operation requires support for long header strings, but the
- * library does not have long string support enabled at present.
+ * The string value does not fit into a signle 80-character wide FITS header
+ * record, and the library does not have long string support enabled at present.
  * 
  * @author Attila Kovacs
  * @see FitsFactory#setLongStringsEnabled(boolean)
@@ -50,6 +50,14 @@ public class LongStringsNotEnabledException extends IllegalStateException {
         return "Long string support is not enabled for [" + key + "]" + "\n\n --> Try FitsFactory.setLongStringsEnabled(true).\n";
     }
 
+    /**
+     * Instantiates a new exception for when a string value does not fit in a
+     * single 80-character header record, and support for the standard long
+     * string convention has not been enabled.
+     * 
+     * @param key
+     *            the header keyword for which the exception occurred.
+     */
     public LongStringsNotEnabledException(String key) {
         super(getMessage(key));
     }

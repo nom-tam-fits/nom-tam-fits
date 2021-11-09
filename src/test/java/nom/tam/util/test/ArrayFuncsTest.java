@@ -36,6 +36,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
@@ -343,7 +344,12 @@ public class ArrayFuncsTest {
             }
         }
     }
-
+    
+    @Test
+    public void testDeepCloneNull() {
+        assertNull(ArrayFuncs.deepClone(null));
+    }
+    
     /**
      * Test of doubleArrayEquals method, of class nom.tam.util.ArrayFuncs.
      */
@@ -522,7 +528,7 @@ public class ArrayFuncsTest {
         byte b = 0;
         TestArrayFuncs.testPattern(test, b);
 
-        assertEquals(ArrayFuncs.getBaseArray(test), test[0][0]);
+        assertEquals(test[0][0], ArrayFuncs.getBaseArray(test));
     }
 
     /**
@@ -532,8 +538,8 @@ public class ArrayFuncsTest {
     public void testGetBaseClass() {
         System.out.println("getBaseClass");
 
-        assertEquals(ArrayFuncs.getBaseClass(new int[2][3]), int.class);
-        assertEquals(ArrayFuncs.getBaseClass(new String[3]), String.class);
+        assertEquals(int.class, ArrayFuncs.getBaseClass(new int[2][3]));
+        assertEquals(String.class, ArrayFuncs.getBaseClass(new String[3]));
     }
 
     /**
@@ -542,14 +548,14 @@ public class ArrayFuncsTest {
     @Test
     public void testGetBaseLength() {
 
-        assertEquals(ArrayFuncs.getBaseLength(new int[2][3]), ElementType.INT.size());
-        assertEquals(ArrayFuncs.getBaseLength(new double[2][3]), ElementType.DOUBLE.size());
-        assertEquals(ArrayFuncs.getBaseLength(new byte[2][3]), ElementType.BYTE.size());
-        assertEquals(ArrayFuncs.getBaseLength(new short[2][3]), ElementType.SHORT.size());
-        assertEquals(ArrayFuncs.getBaseLength(new char[2][3]), ElementType.CHAR.size());
-        assertEquals(ArrayFuncs.getBaseLength(new float[2][3]), ElementType.FLOAT.size());
-        assertEquals(ArrayFuncs.getBaseLength(new boolean[2][3]), ElementType.BOOLEAN.size());
-        assertEquals(ArrayFuncs.getBaseLength(new Object[2][3]), -1);
+        assertEquals(ElementType.INT.size(), ArrayFuncs.getBaseLength(new int[2][3]));
+        assertEquals(ElementType.DOUBLE.size(), ArrayFuncs.getBaseLength(new double[2][3]));
+        assertEquals(ElementType.BYTE.size(), ArrayFuncs.getBaseLength(new byte[2][3]));
+        assertEquals(ElementType.SHORT.size(), ArrayFuncs.getBaseLength(new short[2][3]));
+        assertEquals(ElementType.CHAR.size(), ArrayFuncs.getBaseLength(new char[2][3]));
+        assertEquals(ElementType.FLOAT.size(), ArrayFuncs.getBaseLength(new float[2][3]));
+        assertEquals(ElementType.BOOLEAN.size(), ArrayFuncs.getBaseLength(new boolean[2][3]));
+        assertEquals(-1, ArrayFuncs.getBaseLength(new Object[2][3]));
     }
 
     /**
@@ -567,9 +573,9 @@ public class ArrayFuncsTest {
         assertEquals(ArrayFuncs.getDimensions(new Integer(0)).length, 0);
         int[][] test = new int[2][3];
         int[] dims = ArrayFuncs.getDimensions(test);
-        assertEquals(dims.length, 2);
-        assertEquals(dims[0], 2);
-        assertEquals(dims[1], 3);
+        assertEquals(2, dims.length);
+        assertEquals(2, dims[0]);
+        assertEquals(3, dims[1]);
     }
 
     /**
@@ -583,8 +589,8 @@ public class ArrayFuncsTest {
         Class<?> newType = double.class;
 
         double[][] result = (double[][]) nom.tam.util.ArrayFuncs.mimicArray(array, newType);
-        assertEquals(result.length, array.length);
-        assertEquals(result[0].length, array[0].length);
+        assertEquals(array.length, result.length);
+        assertEquals(array[0].length, result[0].length);
     }
 
     /**
@@ -666,6 +672,11 @@ public class ArrayFuncsTest {
         Assert.assertNull(ArrayFuncs.curl(this, null));
     }
 
+    @Test(expected = RuntimeException.class)
+    public void testCurlMultiArray() throws Exception {
+        Assert.assertNull(ArrayFuncs.curl(new int[10][10], new int[] {20, 5}));
+    }
+    
     @Test(expected = RuntimeException.class)
     public void testCurlWrongArray() throws Exception {
         Assert.assertNull(ArrayFuncs.curl(new int[]{

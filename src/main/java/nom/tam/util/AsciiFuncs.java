@@ -89,6 +89,9 @@ public final class AsciiFuncs {
 
     /**
      * @deprecated Use {@link Character#isWhitespace(char)} instead.
+     * 
+     * @param c     the character to check
+     * @return      <code>true</code> if it is a white-space character, otherwise <code>false</code>.
      */
     @Deprecated
     public static boolean isWhitespace(char c) {

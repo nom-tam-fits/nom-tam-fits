@@ -58,7 +58,10 @@ public class FitsEncoder extends ArrayEncoder {
     /** The FITS byte value for the binary representation of a boolean 'false' value */
     private static final byte BYTE_FALSE = (byte) 'F';
     
-    
+    /**
+     * Instantiates a new encoder from Java arrays to FITS binary output. To be used by subclass
+     * constructors only.
+     */
     protected FitsEncoder() {
         super();
     }
@@ -91,6 +94,11 @@ public class FitsEncoder extends ArrayEncoder {
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @param b     a boolean value or <code>null</code>.
+     * @throws IOException
+     *              if there was an IO error writing to the output.
+     * 
      */
     @Deprecated
     protected synchronized void writeBoolean(Boolean b) throws IOException {
@@ -99,6 +107,11 @@ public class FitsEncoder extends ArrayEncoder {
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @param c     An ASCII character.
+     * @throws IOException
+     *              if there was an IO error writing to the output.
+     * 
      */
     @Deprecated
     protected synchronized void writeChar(int c) throws IOException {
@@ -243,10 +256,19 @@ public class FitsEncoder extends ArrayEncoder {
      * See {@link ArrayDataOutput#write(boolean[], int, int)} for the general contract of this method.
      * In FITS, <code>true</code> values are represented by the ASCII byte for 'T', whereas
      * <code>false</code> is represented by the ASCII byte for 'F'.
+     * 
+     * @param b
+     *            array of booleans.
+     * @param start
+     *            the index of the first element in the array to write
+     * @param length
+     *            number of array elements to write
+     * @throws IOException
+     *            if there was an IO error writing to the output
      */
     protected synchronized void write(boolean[] b, int start, int length) throws IOException {
         put(b, start, length);
-        getOutputBuffer().flush();
+        flush();
     }
 
     /**
@@ -254,14 +276,27 @@ public class FitsEncoder extends ArrayEncoder {
      * In FITS, <code>true</code> values are represented by the ASCII byte for 'T',
      * <code>false</code> is represented by the ASCII byte for 'F', while <code>null</code>
      * values are represented by the value 0.
+     * 
+     * @param b
+     *            array of booleans.
+     * @param start
+     *            the index of the first element in the array to write
+     * @param length
+     *            number of array elements to write
+     * @throws IOException
+     *            if there was an IO error writing to the output
      */
     protected synchronized void write(Boolean[] b, int start, int length) throws IOException {
         put(b, start, length);
-        getOutputBuffer().flush();
+        flush();
     }    
     
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @param b     a single byte.
+     * @throws IOException
+     *              if there was an IO error writing to the output.
      */
     @Deprecated
     protected synchronized void writeByte(int b) throws IOException {
@@ -270,47 +305,67 @@ public class FitsEncoder extends ArrayEncoder {
     
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @param s     a 16-bit integer value.
+     * @throws IOException
+     *              if there was an IO error writing to the output.
      */
     @Deprecated
     protected synchronized  void writeShort(int s) throws IOException {
         getOutputBuffer().putShort((short) s);
-        getOutputBuffer().flush();
+        flush();
     }
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @param i     a 32-bit integer value.
+     * @throws IOException
+     *              if there was an IO error writing to the output.
      */
     @Deprecated
     protected synchronized void writeInt(int i) throws IOException {
         getOutputBuffer().putInt(i);
-        getOutputBuffer().flush();
+        flush();
     }
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @param l     a 64-bit integer value.
+     * @throws IOException
+     *              if there was an IO error writing to the output.
      */
     @Deprecated
     protected synchronized void writeLong(long l) throws IOException {
         getOutputBuffer().putLong(l);
-        getOutputBuffer().flush();
+        flush();
     }
 
     /**
      * @deprecated Low-level reading/writing should be handled internally by this library only.
+     * 
+     * @param f     a single-precision (32-bit) floating point value.
+     * @throws IOException
+     *              if there was an IO error writing to the output.
      */
     @Deprecated
     protected synchronized void writeFloat(float f) throws IOException {
         getOutputBuffer().putFloat(f);
-        getOutputBuffer().flush();
+        flush();
     }
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @param d     a double-precision (64-bit) floating point value.
+     * @throws IOException
+     *              if there was an IO error writing to the output.
      */
     @Deprecated
     protected synchronized void writeDouble(double d) throws IOException {
         getOutputBuffer().putDouble(d);
-        getOutputBuffer().flush();
+        flush();
     }
 
     /**
@@ -321,11 +376,11 @@ public class FitsEncoder extends ArrayEncoder {
      * @param s             the Java string
      * @throws IOException  if the string could not be fully written to the output
      * 
-     * @see #put(String)
+     * @see #writeChars(String)
      */
     protected synchronized void writeBytes(String s) throws IOException {
         put(s);
-        getOutputBuffer().flush();
+        flush();
     }
 
     /**
@@ -335,6 +390,11 @@ public class FitsEncoder extends ArrayEncoder {
      * and the old 2-byte behaviour are supported, and can be selected via 
      * {@link FitsFactory#setUseUnicodeChars(boolean)}.
      * 
+     * @param s     a string containing ASCII-only characters
+     * @throws IOException 
+     *              if there was an IO error writing all the characters to the output.
+     * 
+     * @see #writeBytes(String)
      * @see FitsFactory#setUseUnicodeChars(boolean) 
      */
     protected synchronized void writeChars(String s) throws IOException {
@@ -345,7 +405,7 @@ public class FitsEncoder extends ArrayEncoder {
             for (int i = 0; i < s.length(); i++) {
                 out.putShort((short) s.charAt(i));
             }
-            out.flush();
+            flush();
         }
         
     }
@@ -358,55 +418,119 @@ public class FitsEncoder extends ArrayEncoder {
      * and the old 2-byte behaviour are supported, and can be selected via 
      * {@link FitsFactory#setUseUnicodeChars(boolean)}.
      * 
+     * @param c
+     *            array of character (ASCII only is supported).
+     * @param start
+     *            the index of the first element in the array to write
+     * @param length
+     *            number of array elements to write
+     * @throws IOException
+     *            if there was an IO error writing to the output
+     * 
      * @see FitsFactory#setUseUnicodeChars(boolean) 
      */
     protected synchronized void write(char[] c, int start, int length) throws IOException {
         put(c, start, length);
-        getOutputBuffer().flush();
+        flush();
     }
 
     /**
      * See {@link ArrayDataOutput#write(short[], int, int)} for a contract of this method.
+     * 
+     * @param s
+     *            array of 16-bit integers.
+     * @param start
+     *            the index of the first element in the array to write
+     * @param length
+     *            number of array elements to write
+     * @throws IOException
+     *            if there was an IO error writing to the output
      */
     protected synchronized void write(short[] s, int start, int length) throws IOException {
         getOutputBuffer().put(s, start, length);
-        getOutputBuffer().flush();
+        flush();
     }
 
     /**
      * See {@link ArrayDataOutput#write(int[], int, int)} for a contract of this method.
+     * 
+     * @param i
+     *            array of 32-bit integers.
+     * @param start
+     *            the index of the first element in the array to write
+     * @param length
+     *            number of array elements to write
+     * @throws IOException
+     *            if there was an IO error writing to the output
      */
     protected synchronized void write(int[] i, int start, int length) throws IOException {
         getOutputBuffer().put(i, start, length);
-        getOutputBuffer().flush();
+        flush();
     }
 
     /**
      * See {@link ArrayDataOutput#write(long[], int, int)} for a contract of this method.
+     * 
+     * @param l
+     *            array of 64-bit integers.
+     * @param start
+     *            the index of the first element in the array to write
+     * @param length
+     *            number of array elements to write
+     * @throws IOException
+     *            if there was an IO error writing to the output
      */
     protected synchronized void write(long[] l, int start, int length) throws IOException {
         getOutputBuffer().put(l, start, length);
-        getOutputBuffer().flush();
+        flush();
     }
 
     /**
      * See {@link ArrayDataOutput#write(float[], int, int)} for a contract of this method.
+     * 
+     * @param f
+     *            array of single precision (32-bit) floating point values.
+     * @param start
+     *            the index of the first element in the array to write
+     * @param length
+     *            number of array elements to write
+     * @throws IOException
+     *            if there was an IO error writing to the output
      */
     protected synchronized void write(float[] f, int start, int length) throws IOException {
         getOutputBuffer().put(f, start, length);
-        getOutputBuffer().flush();
+        flush();
     }
 
     /**
      * See {@link ArrayDataOutput#write(double[], int, int)} for a contract of this method.
+     * 
+     * @param d
+     *            array of double-precision (64-bit) floating point values.
+     * @param start
+     *            the index of the first element in the array to write
+     * @param length
+     *            number of array elements to write
+     * @throws IOException
+     *            if there was an IO error writing to the output
+     * 
      */
     protected synchronized void write(double[] d, int start, int length) throws IOException {
         getOutputBuffer().put(d, start, length);
-        getOutputBuffer().flush();
+        flush();
     }
 
     /**
      * See {@link ArrayDataOutput#write(String[], int, int)} for a contract of this method.
+     * 
+     * @param str
+     *            array of strings (containing ASCII characters only).
+     * @param start
+     *            the index of the first element in the array to write
+     * @param length
+     *            number of array elements to write
+     * @throws IOException
+     *            if there was an IO error writing to the output
      */
     protected synchronized void write(String[] str, int start, int length) throws IOException {
         length += start;
@@ -418,7 +542,7 @@ public class FitsEncoder extends ArrayEncoder {
     @Override
     public synchronized void writeArray(Object o) throws IOException, IllegalArgumentException {
         putArray(o);
-        getOutputBuffer().flush();
+        flush();
     }
 
     
@@ -431,7 +555,7 @@ public class FitsEncoder extends ArrayEncoder {
      * </p>
      * <p>
      * The caller may put multiple data object into
-     * the conversion buffer before eventually calling {@link OutputBuffer#flush()} to ensure
+     * the conversion buffer before eventually calling {@link nom.tam.util.ArrayEncoder.OutputBuffer#flush()} to ensure
      * that everything is written to the output. Note, the this call may flush the contents
      * of the conversion buffer to the output if it needs more conversion space than
      * what is avaiable.
@@ -445,7 +569,7 @@ public class FitsEncoder extends ArrayEncoder {
      *                      if the argument is not an array, or if it is or contains
      *                      an element that does not have a known FITS representation.
      *                      
-     * @see #put(String)
+     * @see #writeArray(Object)
      */
     protected void putArray(Object o) throws IOException, IllegalArgumentException {
         if (o == null) {
@@ -465,7 +589,7 @@ public class FitsEncoder extends ArrayEncoder {
             // Bytes can be written directly to the stream, which is fastest
             // However, before that we need to flush any pending output in the
             // conversion buffer...
-            getOutputBuffer().flush();
+            flush();
             write((byte[]) o, 0, length);
         } else if (o instanceof boolean[]) {
             put((boolean[]) o, 0, length);

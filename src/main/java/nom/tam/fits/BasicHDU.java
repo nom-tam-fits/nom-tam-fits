@@ -70,6 +70,8 @@ import nom.tam.util.ArrayDataOutput;
 /**
  * This abstract class is the parent of all HDU types. It provides basic
  * functionality for an HDU.
+ * 
+ * @param <DataClass>  the generic type of data contained in this HDU instance.
  */
 public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 

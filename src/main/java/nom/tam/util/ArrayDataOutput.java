@@ -36,7 +36,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 /**
- * Special high performance scientific extension of the DataOutput interface.
+ * Interface for writing array data to outputs.
  */
 public interface ArrayDataOutput extends DataOutput, FitsIO {
 
@@ -48,6 +48,16 @@ public interface ArrayDataOutput extends DataOutput, FitsIO {
      */
     void flush() throws IOException;
 
+    /**
+     * Writes a boolean value to the output.
+     * 
+     * @param b
+     *            the boolean value. Subclass implementations may allow
+     *            <code>null</code> if it can be supported by the output data
+     *            format.
+     * @throws IOException
+     *             if there was an IO error writing the value to the output.
+     */
     void writeBoolean(Boolean b) throws IOException;
 
     /**

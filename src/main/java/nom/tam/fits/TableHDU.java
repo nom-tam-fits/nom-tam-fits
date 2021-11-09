@@ -42,6 +42,8 @@ import nom.tam.fits.header.IFitsHeader;
 /**
  * This class allows FITS binary and ASCII tables to be accessed via a common
  * interface.
+ * 
+ * @param <T> the generic type of table data contained in this HDU instance.
  */
 public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> {
 

@@ -35,6 +35,10 @@ import java.io.DataInput;
 
 import java.io.IOException;
 
+/**
+ * Interface for reading array data from inputs.
+ *
+ */
 public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
 
     /**
@@ -286,6 +290,15 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
     
     /**
      * @deprecated Use {@link #readLArray(Object)} instead.
+     * 
+     * @param o     a Java array object, including heterogeneous arrays of arrays.
+     *              If <code>null</code>, nothing will be read from the output.
+     * @return      the number of bytes read from the input.
+     * @throws IOException
+     *              if there was an IO error, other than the end-of-file, while reading from the input
+     * @throws IllegalArgumentException
+     *              if the supplied object is not a Java array or if it contains 
+     *              Java types that are not supported by the decoder.
      */
     @Deprecated
     int readArray(Object o) throws IOException, IllegalArgumentException;

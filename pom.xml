@@ -7,7 +7,7 @@
 		<version>7</version>
 	</parent>
 	<groupId>gov.nasa.gsfc.heasarc</groupId>
-	<version>1.15.3-SNAPSHOT</version>
+	<version>1.16.0-rc1</version>
 	<packaging>jar</packaging>
 	<artifactId>nom-tam-fits</artifactId>
 	<name>nom.tam FITS library</name>
@@ -42,6 +42,16 @@
 			<properties>
 				<picUrl>http://www.gravatar.com/avatar/9e2c2e7aa94335b72952a4b2d56bfc89.png</picUrl>
 			</properties>
+		</developer>
+		<developer>
+		  <id>attipaci</id>
+			<name>Attila Kovacs</name>
+			<email>attila [dot] kovacs [at] cfa [dot] harvard [dot] edu</email>
+			<roles>
+				<role>Developer</role>
+				<role>Admin</role>
+			</roles>
+			<url>https://www.sigmyne.com/attila</url>
 		</developer>
 		<developer>
 			<id>erikfk</id>
@@ -85,11 +95,6 @@
 		</contributor>
 		<contributor>
 			<name>Jorgo Baker</name>
-		</contributor>
-		<contributor>
-			<name>Attila Kovacs</name>
-			<email>attila [dot] kovacs [at] cfa [dot] harvard [dot] edu</email>
-			<url>https://www.sigmyne.com/attila</url>
 		</contributor>
 		<contributor>
 			<name>Vincenzo Forchi</name>

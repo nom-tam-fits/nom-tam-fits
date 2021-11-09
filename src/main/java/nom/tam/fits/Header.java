@@ -71,6 +71,7 @@ import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
 import nom.tam.util.FitsIO;
 import nom.tam.util.HashedList;
+import nom.tam.util.LoggerHelper;
 import nom.tam.util.RandomAccess;
 
 /**
@@ -226,7 +227,7 @@ public class Header implements FitsElement {
      * then the remaining space will be padded with blanks, leaving space for future additions, as specified
      * by the FITS 4.0 standard for <a href="https://fits.gsfc.nasa.gov/registry/headerspace.html">
      * preallocated header space</a>. 
-     * <p>
+     * </p>
      * <p>
      * This method is also called by {@link #read(ArrayDataInput)}, with the number of cards (including 
      * reserved blank space) contained in the header input stream, in order to ensure that the header remains 
@@ -278,7 +279,7 @@ public class Header implements FitsElement {
      *            The header key.
      * @param val
      *            The boolean value.
-     * @returns   the new card that was added.
+     * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      *             
@@ -296,7 +297,7 @@ public class Header implements FitsElement {
      *            The header key.
      * @param val
      *            The double value.
-     * @returns   the new card that was added.
+     * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      * 
@@ -313,7 +314,7 @@ public class Header implements FitsElement {
      *            The header key.
      * @param val
      *            The string value.
-     * @returns   the new card that was added.
+     * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      *             
@@ -333,7 +334,7 @@ public class Header implements FitsElement {
      *            The boolean value.
      * @param comment
      *            A comment to append to the card.
-     * @returns   the new card that was added.
+     * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      *             
@@ -358,7 +359,7 @@ public class Header implements FitsElement {
      *            The number value.
      * @param comment
      *            A comment to append to the card.
-     * @returns   the new card that was added.
+     * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      *
@@ -387,7 +388,7 @@ public class Header implements FitsElement {
      *            whichever fits in the available card space.
      * @param comment
      *            A comment to append to the card.
-     * @returns   the new card that was added.
+     * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      *             
@@ -410,7 +411,7 @@ public class Header implements FitsElement {
      *            The complex number value.
      * @param comment
      *            A comment to append to the card.
-     * @returns   the new card that was added.
+     * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      *             
@@ -439,7 +440,7 @@ public class Header implements FitsElement {
      *            whichever fits in the available card space.
      * @param comment
      *            A comment to append to the card.
-     * @returns   the new card that was added.
+     * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      *             
@@ -464,7 +465,7 @@ public class Header implements FitsElement {
      *            The integer value.
      * @param comment
      *            A comment to append to the card.
-     * @returns   the new card that was added.
+     * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      * 
@@ -489,7 +490,7 @@ public class Header implements FitsElement {
      *            The string value.
      * @param comment
      *            A comment to append to the card.
-     * @returns   the new card that was added.
+     * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      *             
@@ -1337,7 +1338,7 @@ public class Header implements FitsElement {
      * Adds a line to the header using the COMMENT style, i.e., no '=' in column
      * 9. If the comment does not fit in a single record, then it will be split
      * (wrapped) among multiple consecutive records with the same keyword. Wrapped
-     * lines will end with '&' (not itself a standard) to indicate comment cards
+     * lines will end with '&amp;' (not itself a standard) to indicate comment cards
      * that might belong together.
      *
      * @param key
@@ -1363,12 +1364,11 @@ public class Header implements FitsElement {
             comment = " ";
         } else if (comment.isEmpty()) {
             comment = " ";
-        }
-        
+        }  
         
         int n = 0;    
         
-        for (int from = 0; from < comment.length(); n++) {
+        for (int from = 0; from < comment.length();) {
             int to = from + HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH;
             String part = null;
             if (to < comment.length()) {
@@ -1381,6 +1381,7 @@ public class Header implements FitsElement {
                 return n;
             }
             from = to;
+            n++;
         }
         
         return n;
@@ -2345,8 +2346,8 @@ public class Header implements FitsElement {
      */
     public static void setParserWarningsEnabled(boolean value) {
         Level level = value ? Level.WARNING : Level.SEVERE;
-        Logger.getLogger(HeaderCardParser.class.getName()).setLevel(level);
-        Logger.getLogger(ComplexValue.class.getName()).setLevel(level);
+        LoggerHelper.getLogger(HeaderCardParser.class).setLevel(level);
+        LoggerHelper.getLogger(ComplexValue.class).setLevel(level);
     }
     
     /**

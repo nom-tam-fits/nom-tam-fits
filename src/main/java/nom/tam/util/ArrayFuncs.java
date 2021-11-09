@@ -67,7 +67,12 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Use {@link FitsEncoder#computeSize(Object)} instead. 
+     * Use {@link FitsEncoder#computeSize(Object)} instead.
+     * 
+     * @param o     the object
+     * @return      the number of bytes in the FITS binary representation of the object or
+     *              0 if the object has no FITS representation. (Also elements not known to
+     *              FITS will count as 0 sized).
      */
     @Deprecated
     public static long computeLSize(Object o) {
@@ -76,6 +81,11 @@ public final class ArrayFuncs {
 
     /**
      * Use {@link FitsEncoder#computeSize(Object)} instead. 
+     * 
+     * @param o     the object
+     * @return      the number of bytes in the FITS binary representation of the object or
+     *              0 if the object has no FITS representation. (Also elements not known to
+     *              FITS will count as 0 sized).
      */
     @Deprecated
     public static int computeSize(Object o) {
@@ -347,10 +357,7 @@ public final class ArrayFuncs {
             return 0;
         }
         ElementType<?> type = ElementType.forClass(getBaseClass(o));
-        if (type != null && type.size() != 0) {
-            return type.size();
-        }
-        return -1;
+        return type.size();
     }
 
     /**
@@ -410,27 +417,24 @@ public final class ArrayFuncs {
     public static Object mimicArray(Object array, Class<?> newType) {
         int dims = 0;
         Class<?> arrayClass = array.getClass();
-        while (arrayClass != null && arrayClass.isArray()) {
+        while (arrayClass.isArray()) {
             arrayClass = arrayClass.getComponentType();
             dims += 1;
         }
 
-        Object mimic;
+        if (dims <= 1) {
+            return ArrayFuncs.newInstance(newType, Array.getLength(array));
+        }
+        
+        Object[] xarray = (Object[]) array;
+        int[] dimens = new int[dims];
+        dimens[0] = xarray.length; // Leave other dimensions at 0.
 
-        if (dims > 1) {
-            Object[] xarray = (Object[]) array;
-            int[] dimens = new int[dims];
-            dimens[0] = xarray.length; // Leave other dimensions at 0.
+        Object mimic = ArrayFuncs.newInstance(newType, dimens);
 
-            mimic = ArrayFuncs.newInstance(newType, dimens);
-
-            for (int i = 0; i < xarray.length; i += 1) {
-                Object temp = mimicArray(xarray[i], newType);
-                ((Object[]) mimic)[i] = temp;
-            }
-
-        } else {
-            mimic = ArrayFuncs.newInstance(newType, Array.getLength(array));
+        for (int i = 0; i < xarray.length; i += 1) {
+            Object temp = mimicArray(xarray[i], newType);
+            ((Object[]) mimic)[i] = temp;
         }
 
         return mimic;

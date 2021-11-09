@@ -42,6 +42,10 @@ public final class PrimitiveTypeHandler {
 
     /**
      * @deprecated Use {@link ElementType#forDataID(char)} instead.
+     * 
+     * @param type  the Java array type character ID. For example 'J' for long integers.
+     * @return the corresponding FITS element type.
+     * 
      */
     public static ElementType<Buffer> valueOf(char type) {
         return ElementType.forDataID(type);
@@ -49,6 +53,11 @@ public final class PrimitiveTypeHandler {
 
     /**
      * @deprecated Use {@link ElementType#forClass(Class)} instead.
+     * 
+     * @param clazz  the Java class of an element or an array thereof
+     * @return the corresponding FITS element type.
+     * 
+     * @param <B> the generic tpye of buffer used by the returned element type.
      */
     public static <B extends Buffer> ElementType<B> valueOf(Class<?> clazz) {
         return ElementType.forClass(clazz);
@@ -56,6 +65,9 @@ public final class PrimitiveTypeHandler {
 
     /**
      * @deprecated Use {@link ElementType#forBitpix(int)} instead.
+     * 
+     * @param bitPix  the FITS BITPIX value
+     * @return the corresponding FITS element type.
      */
     public static ElementType<Buffer> valueOf(int bitPix) {
         return ElementType.forBitpix(bitPix);
@@ -63,6 +75,9 @@ public final class PrimitiveTypeHandler {
     
     /**
      * @deprecated Use {@link ElementType#forNearestBitpix(int)} instead.
+     * 
+     * @param bitPix  a FITS BITPIX value
+     * @return the nearest corresponding FITS element type.
      */
     public static ElementType<Buffer> nearestValueOf(int bitPix) {
         return ElementType.forNearestBitpix(bitPix);

@@ -66,6 +66,12 @@ public abstract class ArrayDecoder {
     /** the conversion buffer */
     private InputBuffer buf;
 
+    /**
+     * Instantiates a new decoder of binary input to Java arrays. To be used by
+     * subclass constructors only.
+     * 
+     * @see #setInput(InputReader)
+     */
     protected ArrayDecoder() {
         buf = new InputBuffer(BUFFER_SIZE);
     }
@@ -79,11 +85,16 @@ public abstract class ArrayDecoder {
      */
     public ArrayDecoder(InputReader i) {
         this();
-        setReader(i);
-
+        setInput(i);
     }
 
-    protected void setReader(InputReader i) {
+    /**
+     * Sets the input from which to read the binary output.
+     * 
+     * @param i
+     *            the new binary input.
+     */
+    protected void setInput(InputReader i) {
         this.in = i;
     }
 
@@ -143,6 +154,12 @@ public abstract class ArrayDecoder {
      * Reads bytes into an array from the input. See the contract of
      * {@link InputStream#read(byte[], int, int)}.
      * 
+     * @param b
+     *            the destination array
+     * @param start
+     *            the first index in the array to be populated
+     * @param length
+     *            the number of bytes to read into the array.
      * @return the number of bytes successfully read, or -1 if at the end of the
      *         file.
      * @throws IOException
@@ -177,6 +194,17 @@ public abstract class ArrayDecoder {
 
     /**
      * See the contract of {@link ArrayDataInput#readLArray(Object)}.
+     * 
+     * @param o
+     *            an array, to be populated
+     * @return the actual number of bytes read from the input, or -1 if already
+     *         at the end-of-file.
+     * @throws IllegalArgumentException
+     *             if the argument is not an array or if it contains an element
+     *             that is not supported for decoding.
+     * @throws IOException
+     *             if there was an IO error reading from the input
+     * @see #readArrayFully(Object)
      */
     public abstract long readArray(Object o) throws IOException, IllegalArgumentException;
 
@@ -385,9 +413,9 @@ public abstract class ArrayDecoder {
          * @return the 32-bit integer value.
          * @throws IOException
          *             if there as an IO error, including and
-         *             {@link EOFExcetion} if the end of file was reached, while
-         *             trying to read more data from the underlying input into
-         *             the buffer.
+         *             {@link EOFException} if the end of file was reached,
+         *             while trying to read more data from the underlying input
+         *             into the buffer.
          */
         protected int getInt() throws IOException {
             if (makeAvailable(FitsIO.BYTES_IN_INTEGER)) {
@@ -402,9 +430,9 @@ public abstract class ArrayDecoder {
          * @return the 64-bit integer value.
          * @throws IOException
          *             if there as an IO error, including and
-         *             {@link EOFExcetion} if the end of file was reached, while
-         *             trying to read more data from the underlying input into
-         *             the buffer.
+         *             {@link EOFException} if the end of file was reached,
+         *             while trying to read more data from the underlying input
+         *             into the buffer.
          */
         protected long getLong() throws IOException {
             if (makeAvailable(FitsIO.BYTES_IN_LONG)) {
@@ -420,9 +448,9 @@ public abstract class ArrayDecoder {
          * @return the 32-bit single-precision floating-point value.
          * @throws IOException
          *             if there as an IO error, including and
-         *             {@link EOFExcetion} if the end of file was reached, while
-         *             trying to read more data from the underlying input into
-         *             the buffer.
+         *             {@link EOFException} if the end of file was reached,
+         *             while trying to read more data from the underlying input
+         *             into the buffer.
          */
         protected float getFloat() throws IOException {
             if (makeAvailable(FitsIO.BYTES_IN_FLOAT)) {
@@ -438,9 +466,9 @@ public abstract class ArrayDecoder {
          * @return the 64-bit double-precision floating-point value.
          * @throws IOException
          *             if there as an IO error, including and
-         *             {@link EOFExcetion} if the end of file was reached, while
-         *             trying to read more data from the underlying input into
-         *             the buffer.
+         *             {@link EOFException} if the end of file was reached,
+         *             while trying to read more data from the underlying input
+         *             into the buffer.
          */
         protected double getDouble() throws IOException {
             if (makeAvailable(FitsIO.BYTES_IN_DOUBLE)) {

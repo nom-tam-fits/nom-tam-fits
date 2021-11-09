@@ -32,8 +32,8 @@
 package nom.tam.fits;
 
 /**
- * Thrown when encountering header value with an unclosed single quote, and the
- * library does not have automatic header repairs enabled at present.
+ * A header value with an unclosed single quote. Thrown when the library does
+ * not have automatic header repairs enabled at present.
  * 
  * @author Attila Kovacs
  * @see FitsFactory#setAllowHeaderRepairs(boolean)
@@ -50,6 +50,14 @@ public class UnclosedQuoteException extends IllegalStateException {
         return "Unclosed quotes in: [" + line.trim() + "]" + "\n\n --> Try FitsFactory.setAllowHeaderRepairs(true).\n";
     }
 
+    /**
+     * Instantiates a new exception indicated an unclosed string quote in a
+     * parsed header value.
+     * 
+     * @param line
+     *            the 80-character header record fro which the exception
+     *            occurred.
+     */
     public UnclosedQuoteException(String line) {
         super(getMessage(line));
     }
